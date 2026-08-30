@@ -24,7 +24,7 @@ comunicación con el usuario en español.
 | Archivo | Qué contiene |
 |---|---|
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
-| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con su corrección propuesta. **Todavía no existe:** `SPEC.md` §Decisiones sobre los documentos en conflicto lo cita (rev. 3, 29/08/2026 — diecisiete hallazgos abiertos) y es la única copia de esos hallazgos hasta que se escriba. |
+| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 30/08/2026, rev. 5 — los 42 hallazgos (`INC-01`..`INC-42`) están cerrados en los documentos; quedan solo residuos cosméticos y los puntos abiertos del guion. |
 | `docs/*.docx` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. **Nunca editarlos desde código.** |
 
 **Leer un `.docx`:** siempre con markitdown, nunca con Read ni descomprimiendo el zip:
@@ -44,8 +44,7 @@ explícitamente.
 **Orden de precedencia entre los `.docx`** cuando se contradicen: trabajo de grado → OE1 →
 guion → OE2 → historias de usuario → arquitectura. Gana el de mayor prioridad y se corrige el
 otro. Las contradicciones internas a un mismo documento no las resuelve la precedencia: están
-listadas con su redacción propuesta en `SPEC.md` §Decisiones sobre los documentos en conflicto
-(y en `INCONSISTENCIAS.md` cuando ese archivo exista).
+resueltas y registradas en `claudeDocs/INCONSISTENCIAS.md` (rev. 5, 30/08/2026).
 
 **Numeración de requerimientos.** Los RF están cerrados en `RF-01..RF-47`. Los RNF **no**: OE1
 insertó `RNF-18` (parametrización de contenidos) el 24/08/2026 y desplazó en uno todo lo

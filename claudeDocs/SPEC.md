@@ -4,7 +4,7 @@ Contrato de desarrollo derivado de los seis documentos en `docs/`. Los identific
 RF/RNF/CP/CT/CN/CU/HU/PG remiten a esos documentos y son la unidad de trazabilidad (CT-10).
 
 **Orden de precedencia.** Cuando dos documentos se contradicen gana el de mayor prioridad, y se
-corrige el otro. Verificado contra su estado del 30/08/2026:
+corrige el otro. Verificado contra su estado del 30/08/2026 (rev. 5):
 
 | # | Documento | Qué gobierna |
 |---|---|---|
@@ -16,9 +16,10 @@ corrige el otro. Verificado contra su estado del 30/08/2026:
 | 6 | `arquitectura_videojuego_v2.docx` | Decisiones técnicas de implementación |
 
 La precedencia no resuelve las contradicciones **internas** a un documento: esas se corrigen
-editándolo. Las veintitrés vigentes están en `INCONSISTENCIAS.md` (verificación del 30/08/2026,
-rev. 4), con la redacción propuesta para cada una. Este documento aplica ya la resolución de
-todas ellas; donde una corrección sigue pendiente en el `.docx`, se dice explícitamente.
+editándolo. `INCONSISTENCIAS.md` (rev. 5, 30/08/2026) registra los 42 hallazgos históricos; **todos
+están cerrados en los `.docx`** salvo dos residuos cosméticos (pies de página de HU-17/HU-18).
+Este documento ya no necesita separar «lo que dice el documento» de «lo que implementa el
+código»: coinciden.
 
 **Numeración.** Los RF están cerrados en `RF-01..RF-47`. Los RNF **no**: el control de cambios de
 OE1 del 24/08/2026 insertó `RNF-18` (parametrización de contenidos, el enunciado de CT-05) y
@@ -33,10 +34,10 @@ desplazó en uno todo lo que venía después. El rango vigente es `RNF-01..RNF-2
 | Sin violencia, publicidad ni enlaces externos | RNF-21 | **RNF-22** |
 | Recursos propios o con autorización escrita | RNF-22 | **RNF-23** |
 
-OE2 y el documento de arquitectura ya citan la numeración nueva. Queda un residuo: la arquitectura
-no menciona `RNF-18` en ninguna parte, y traza la parametrización de contenidos solo a CT-05
-(INC-16). Al verificar cualquier cita, compararla contra el **nombre** del requerimiento y no
-contra su número: un desplazamiento mal aplicado produce ids que existen y parecen correctos.
+OE2 y el documento de arquitectura ya citan la numeración nueva, y la arquitectura menciona
+`RNF-18` junto a `CT-05` en §1, §6 y §11 (INC-16, cerrado). Al verificar cualquier cita,
+compararla contra el **nombre** del requerimiento y no contra su número: un desplazamiento mal
+aplicado produce ids que existen y parecen correctos.
 
 **Prioridades.** 45 RF de prioridad Alta, 1 Media (RF-06, omisión de diálogos) y 1 Baja (RF-21,
 iluminación progresiva). RF-46 subió de Media a Alta el 29/08/2026, con lo que la dependencia
@@ -247,7 +248,7 @@ prohíbe pantallas de derrota y **CP-03** prohíbe puntajes; RF-17 prohíbe cifr
 retroalimentación. No se implementan. El `InputHandler` tampoco abstrae gamepad: la entrada se
 limita a **clic y clic sostenido, sin excepciones** (CT-06, RNF-02). El desplazamiento del
 personaje en el Nivel 3 usa botones de dirección **en pantalla**, accionados con clic — no el
-teclado; ver «Decisiones sobre los documentos en conflicto», INC-01.
+teclado (RF-35, guion §2.1/§8.2, CU-09; INC-01, cerrado).
 
 ---
 
@@ -295,10 +296,10 @@ Los namespaces siguen la ruta relativa a `Scripts`, elidiendo `Runtime`:
 cada uno. Ningún assembly de nivel referencia a otro assembly de nivel: eso es lo que hace
 ejecutable la prueba de exclusión de RNF-16.
 
-`Game.UI` y `Game.Audio` no están en la lista de la arquitectura §9, que se quedó en los seis
-primeros (INC-40). Se añaden aquí porque `HUDController` y `AudioManager` tienen que compilar en
-algún sitio, y meterlos en `Game.Core` haría que el núcleo dependiera de la UI — justo lo que
-impediría probar `GameFlow` en EditMode sin escena. **Dependen de `Game.Core`; nunca al revés.**
+`Game.UI` y `Game.Audio` están en la lista de la arquitectura §9 (INC-40, cerrado): `HUDController`
+y `AudioManager` tienen que compilar en algún sitio, y meterlos en `Game.Core` haría que el
+núcleo dependiera de la UI — justo lo que impediría probar `GameFlow` en EditMode sin escena.
+**Dependen de `Game.Core`; nunca al revés.**
 
 ---
 
@@ -484,44 +485,31 @@ Verificables, uno por KPI del trabajo de grado (§2.3):
 
 ## Decisiones sobre los documentos en conflicto
 
-`INCONSISTENCIAS.md` (rev. 4, 30/08/2026) lista veintitrés hallazgos vigentes con su corrección
-propuesta para el `.docx` correspondiente. Mientras esas ediciones se aplican, el código no puede
-quedarse esperando: la tabla fija qué se implementa **hoy** y contra qué se prueba. Los siete que
-la rev. 3 dejó abiertos y ya están corregidos en los documentos —INC-02, INC-13, INC-17, INC-18,
-INC-19, INC-20 e INC-23— no se repiten aquí: son letra vigente y el código sigue sencillamente lo
-que dicen.
+`INCONSISTENCIAS.md` (rev. 5, 30/08/2026) registra los 42 hallazgos históricos entre los seis
+`.docx`. **Todos están cerrados en los documentos**; el código sigue sencillamente lo que dicen.
+Lo que el código materializa de cada decisión, para que no se pierda al leer solo el `.docx`:
 
-| Hallazgo | Qué implementa el código | Estado del documento |
-|---|---|---|
-| INC-25 · HU-17 lleva el flujo y los criterios de otras historias | La pausa se implementa según RF-07 y OE2 §2: capa de UI sobre `Playing` con Continuar, Reiniciar nivel y Volver al menú; Continuar restituye el estado exacto; Reiniciar pide confirmación y nunca vuelve a bloquear un nivel desbloqueado | Pendiente: truncar el flujo en el paso 5, borrar el FA-01 duplicado, devolverle sus criterios de aceptación y añadir la tabla de datos de entrada que le falta |
-| INC-26 · HU-14 muestra cifras al estudiante | El resumen de fin de nivel es **narrativo y sin cifras** (RF-45, RF-17, CP-03). Las cifras solo existen en `TeacherReport` (RF-46) | Pendiente: corregir el paso 6 y la tabla de datos de entrada de HU-14 |
-| INC-01 · «teclas de dirección» residual | **Botones de dirección en pantalla, accionados con clic.** No se usa el teclado en ningún nivel; el mapa de controles se inspecciona sin salvedades (RNF-02, CT-06) | **RF-35 ya está corregido**: dice «botones de dirección mostradas en los costados… de la pantalla». Pendiente solo en guion §8.2, en HU-11 —datos de entrada y la regla que declara una «única excepción» al control por clic— y en arquitectura §1 |
-| INC-27 · RNF-09 prohíbe guardar el progreso que RF-04 obliga a guardar | Se persisten nombre o alias, nivel alcanzado, fases confirmadas y los cuatro indicadores. Nada más | Pendiente: ampliar RNF-09 y la última viñeta de OE1 §3.6.1 al progreso de avance |
-| INC-28 · la omisión de escenas está limitada en OE1 y libre en el resto | El botón de omitir aparece **solo si la escena ya fue vista** (RF-06). El cierre reflexivo nunca se omite la primera vez (CP-07, RF-12) | Pendiente: corregir HU-02 (FA-01/FA-02), HU-14 (FA-01) y CU-03 |
-| INC-29 · HU-10 nombra indicadores fuera de la lista cerrada | El Nivel 2 fase 3 emite exactamente los cuatro de OE1 §3.6.1, con su definición operativa | Pendiente: reescribir la regla de negocio de HU-10 |
-| INC-16 · la arquitectura no cita RNF-18 | La parametrización de contenidos se trata como requerimiento verificable, no solo como criterio | Pendiente: añadir `RNF-18` junto a `CT-05` en §1, §6 y §11 |
-| INC-21 · CN-04 traza a RNF-22 | Sin efecto en el código | **RNF-20 ya está añadido.** Pendiente: retirar RNF-22, que trata de violencia y publicidad, no de coherencia visual |
-| INC-22 · la introducción del TdG da por concedidos los personajes | Personajes originales por defecto (supuesto 3) | Pendiente: condicionar también la afirmación de la introducción |
-| INC-24 · nombres de archivo y paginación desfasados | Sin efecto en el código | **El documento de HU ya se renombró a `HU01_HU18_v2`.** Pendiente: rehacer su paginación, que sigue diciendo «Página N de 16» para dieciocho historias, y corregir la primera línea de la arquitectura, que dice reemplazar al archivo que ella misma es |
-| INC-30 · tres fases de ensamblaje, dos tareas de construcción | **Tarea 3 se marca al confirmar la fase de amarre** —es la que cierra la estructura de la balsa, base más amarre—; tarea 4, al confirmar mástil y vela. La fase de base no marca tarea por sí sola | Pendiente: fijar la correspondencia fase↔tarea en el guion §8.2 y en HU-11, y desambiguar la enumeración de OE1 §3.6.1, que lista cuatro confirmaciones para tres fases |
-| INC-31 · actores y referencias cruzadas | Sin efecto en el código | Pendiente: «Docente, Estudiante» en HU-18, corregir la referencia a HU-16 y el actor de HU-01 |
-| INC-32 · el deslizante tras la convergencia | Una vez habilitado, «Soplar» **no** vuelve a deshabilitarse: lo ganado permanece (guion §4.3.6, CP-02) | Pendiente: suprimir la condición de posición de RF-19, o precisarla |
-| INC-33 · semántica de los bloques del laberinto | «Avanzar» es relativo a la orientación de la carretilla; «Girar» rota 90° en un sentido fijo. Los dos bloques de avance son avance y retroceso | Pendiente y **es decisión de diseño**, no de redacción: fijarla en el guion §6.3.2 antes de construir el laberinto |
-| INC-34 · el fallback de persistencia | La rutina de eliminación borra `Datos/` **y** la ruta de respaldo; la prueba de RNF-11 cubre los dos escenarios | Pendiente: dejarlo escrito en arquitectura §7 y en el plan de pruebas de OE4 |
-| INC-35 · granularidad del informe docente | `TeacherReport` presenta los indicadores por nivel **y por fase** (RF-46) | Pendiente: alinear CU-11 |
-| INC-36 · datos internos del TdG | Sin efecto en el código | Pendiente: unificar edades (9–10 en §1.2 contra 9–11 en §3.4 y §5.3), países Bebras (77 contra 78), puntaje de grado cuarto (4,57 contra 4,6) y las semanas del presupuesto (12 facturadas contra 14 del cronograma). El subtotal de hardware **sí cuadra**: se retira del hallazgo |
-| INC-37 · RF-44 y RF-46 no tienen historia de usuario | Se implementan igual: los dos son de prioridad Alta y están descritos en CU-10 y CU-11 | Pendiente: crear dos HU —o absorberlos en HU-13 y HU-16— y añadir a CU-11 la fila «Historias de usuario asociadas», la única que falta entre los doce casos de uso |
-| INC-38 · la arquitectura cita `TRAZABILIDAD.md`, que no existe | Sin efecto en el código | Pendiente: remitir a OE1 §5.1 y OE2 §3.1–3.5, donde están las matrices |
-| INC-39 · nada lleva a `Credits` al terminar el Nivel 3 | Tras completar el Nivel 3: `LevelSummary` → `Narrative` (escena final del guion §9) → `Credits` → `MainMenu` (RF-44, RF-08) | Pendiente: añadir esa transición a la tabla de arquitectura §4, cuya última fila devuelve siempre a `LevelSelect` |
-| INC-40 · UI y Audio sin assembly | Se crean `Game.UI` y `Game.Audio`, dependientes de `Game.Core` y nunca al revés | Pendiente: añadirlos a la lista de arquitectura §9 |
-| INC-41 · HU-02 generaliza la lista de tareas a todos los niveles | La lista permanente es del Nivel 3 (RF-36). En los niveles 1 y 2 no hay lista. RNF-03 restringe la tarea **activa**, no cuántas se muestran | Pendiente: acotar el criterio de aceptación de HU-02 y precisar la redacción de RNF-03 |
-| INC-42 · norma de citación declarada distinta de la usada | Sin efecto en el código | Pendiente: declarar IEEE en §6 del trabajo de grado —es lo que usa el documento y lo que dice su nombre de archivo— o rehacer la bibliografía en ISO 690 |
+| Hallazgo (cerrado) | Lo que el código materializa |
+|---|---|
+| INC-25 · HU-17 | Pausa como capa de UI sobre `Playing`: Continuar (restituye el estado exacto), Reiniciar nivel (confirmación, nunca re-bloquea un nivel desbloqueado, no borra indicadores), Volver al menú. Sin `GameOver`. |
+| INC-26 · HU-14 | El resumen de fin de nivel es **narrativo y sin cifras** (RF-45, RF-17, CP-03). Las cifras solo viven en `TeacherReport` (RF-46); no hay `ScoreManager`. |
+| INC-01 · controles | **Botones de dirección en pantalla, accionados con clic.** Nunca teclado. El mapa de controles se inspecciona sin salvedades (RNF-02, CT-06). |
+| INC-27 · RNF-09 | Se persisten nombre o alias, nivel alcanzado, fases confirmadas y los cuatro indicadores. Nada más. |
+| INC-28 · omisión | El botón de omitir aparece **solo si la escena ya fue vista** (RF-06). El cierre reflexivo no se omite la primera vez (CP-07, RF-12). |
+| INC-29 · HU-10 | El Nivel 2 fase 3 emite exactamente los cuatro indicadores de OE1 §3.6.1, con su definición operativa. |
+| INC-30 · Nivel 3 | Lista de **cuatro tareas** (RF-36). Ensamblaje de **tres fases** (RF-40). Tarea 3 se marca al confirmar la fase de amarre; tarea 4, al confirmar mástil y vela; la fase de base no marca tarea por sí sola. |
+| INC-32 · «Soplar» | Una vez habilitado, «Soplar» **no** vuelve a deshabilitarse: lo ganado permanece (guion §4.3.6, CP-02). El desbloqueo depende solo del número de golpes efectivos. |
+| INC-33 · bloques del laberinto | «Avanzar» y «Retroceder» son relativos a la orientación de la carretilla; «Girar» rota 90° en sentido horario. Con la lectura absoluta el refugio podía ser inalcanzable. |
+| INC-34 · persistencia | La eliminación de un perfil borra `Datos/` **y** la ruta de respaldo; la prueba de RNF-11 corre en los dos escenarios (`Datos/` escribible y de solo lectura). |
+| INC-35 · informe docente | `TeacherReport` presenta los indicadores **por nivel y por fase** (RF-45, RF-46). |
+| INC-37 · RF-44 / RF-46 | `RF-44` (cruce y cierre del juego) trazado a HU-13; `RF-46` (consulta docente) a HU-16. La numeración de historias sigue cerrada en HU-01..HU-18. |
+| INC-39 · fin del juego | Tras el Nivel 3: `LevelSummary` → `Narrative` (escena final, guion §9) → `Credits` → `MainMenu` (RF-44, RF-08). |
+| INC-40 · assemblies | Existen `Game.UI` y `Game.Audio`, dependientes de `Game.Core` y nunca al revés. |
+| INC-41 · lista de tareas | La lista permanente es del Nivel 3 (RF-36); los niveles 1 y 2 no tienen lista. RNF-03 restringe la tarea **activa**, no cuántas se muestran. |
+| INC-16, 21, 22, 24, 31, 36, 38, 42 | Correcciones de coherencia documental sin efecto en el código (trazas de `RNF-18`, `CN-04→RNF-20`, condición de personajes en la introducción, paginación y cabecera, actores de HU, datos internos del trabajo de grado, referencia a `TRAZABILIDAD.md`, norma de citación IEEE). |
 
-Las dos primeras son de severidad **Alta**: INC-25 deja RF-07 sin historia que lo describa e
-INC-26 ordena hoy mostrar cifras al estudiante, que es el invariante pedagógico que más
-documentos sostienen. **INC-33** no bloquea el cronograma pero sí el diseño del laberinto: hay que
-decidirla antes de dibujarlo. **INC-37** no bloquea el código, pero sí el tablero: `RNF-17` exige
-que cada commit cite su tarjeta, y hoy dos requerimientos de prioridad Alta no tienen ninguna.
+**Residuo cosmético:** HU-17 y HU-18 no llevan el encabezado «Página 17/18 de 18» (se añadieron
+sin él). No afecta a ningún criterio de verificación.
 
 ---
 
@@ -532,9 +520,9 @@ Corregir cualquiera de estos ahora sale más barato que después.
 1. **Persistencia**: un archivo JSON por perfil en una carpeta `Datos/` junto al ejecutable, para
    que «portable» y «sin residuos» (RNF-07, RNF-11) signifiquen lo mismo: borrar la carpeta borra
    todo. Si la ruta no es escribible, se cae a `Application.persistentDataPath` y se advierte al
-   docente. Ya no es solo un supuesto: el documento de arquitectura §7 lo adopta con esa misma
-   justificación. **La eliminación de un perfil borra las dos rutas**, porque el criterio de
-   RNF-11 se comprueba mirando el almacenamiento local entero, no una sola carpeta (INC-34).
+   docente. Ya no es solo un supuesto: la arquitectura §7 lo adopta con esa justificación e
+   incluye que **la eliminación de un perfil borra las dos rutas** y que la prueba de RNF-11 corre
+   en los dos escenarios (INC-34, cerrado).
 2. **Guardado automático** al completar cada fase, no en cada acción (RF-04), que es lo que hace
    verificable la recuperación tras cierre forzado (RNF-14). Los cuatro indicadores de OE1 §3.6.1
    se persisten en ese mismo punto.
@@ -545,74 +533,57 @@ Corregir cualquiera de estos ahora sale más barato que después.
 5. **El guía se llama Chispa** provisionalmente, siguiendo el guion, que es el único documento con
    escena de origen y caracterización visual (PG-02). Al vivir en ScriptableObjects, el nombre se
    cambia sin tocar código.
-6. **Nivel 3 usa botones de dirección en pantalla**, accionados con clic — no el teclado. Ya no
-   es un supuesto sino letra vigente: RF-35 dice «botones de dirección mostradas en los costados
-   derechos y izquierdos de la pantalla», y coinciden el guion §2.1 y CU-09. Con esta lectura **no
-   hay excepción alguna a RNF-02 ni a CT-06**, y la regla de negocio de HU-11 que declara una
-   «única excepción al control de solo clic» debe suprimirse, no matizarse. Quedan residuos de
-   «teclas» en el guion §8.2, en los datos de entrada de HU-11 y en arquitectura §1 (INC-01).
+6. **Nivel 3 usa botones de dirección en pantalla**, accionados con clic — no el teclado. Letra
+   vigente en todos los documentos: RF-35, guion §2.1 y §8.2, CU-09, HU-11 y arquitectura §1.
+   **No hay excepción alguna a RNF-02 ni a CT-06** (INC-01, cerrado).
 7. **Los valores del Nivel 1** (`posicionEfectiva` = Muy cerca, `golpesEfectivosMinimos` = 3,
    `intentosParaPista` = 3) son los propuestos por el guion §4.3.2 y siguen sin validarse jugando
    (PG-06, hoy correctamente abierto). Viven en `FireLevelConfig` para que ajustarlos no cueste
    una recompilación.
 8. **Los bloques del laberinto** son relativos a la orientación de la carretilla: «Girar» rota 90°
-   en un sentido fijo y los dos bloques de avance mueven adelante y atrás respecto de esa
-   orientación. Con la lectura absoluta —izquierda y derecha de pantalla— ninguna secuencia se
-   desplaza en vertical (INC-33).
+   en sentido horario y «Avanzar» / «Retroceder» mueven adelante y atrás respecto de esa
+   orientación. Letra vigente en RF-31 y en el guion §6.3.2 (INC-33, cerrado). Con la lectura
+   absoluta ninguna secuencia se desplazaba en vertical.
 9. **Se guarda el progreso de avance** —nivel alcanzado y fases confirmadas— además del nombre y
-   los cuatro indicadores. RF-03 y RF-04 lo exigen; RNF-09 todavía no lo autoriza en su letra
-   (INC-27).
+   los cuatro indicadores. RF-03, RF-04 y ahora también RNF-09 lo contemplan (INC-27, cerrado).
 10. Los equipos de la institución tienen Windows 10 o superior con audio funcional, y el docente
     acompaña la sesión.
 11. **El Nivel 3 tiene tres fases de ensamblaje y cuatro tareas visibles.** Las tareas 1 y 2 se
     marcan al recoger troncos y sogas; la 3 al confirmar la fase de **amarre**, que es la que cierra
     la estructura de la balsa; la 4 al confirmar mástil y vela. La fase de base no marca tarea por
-    sí sola. Ningún documento fija hoy esta correspondencia (INC-30).
-12. **`Game.UI` y `Game.Audio` son assemblies propios**, dependientes de `Game.Core`. La
-    arquitectura §9 no los lista, pero `HUDController` y `AudioManager` tienen que compilar en
-    algún sitio y `Game.Core` no puede depender de la UI sin perder su testabilidad en EditMode
-    (INC-40).
+    sí sola. La correspondencia está fijada en el guion §8.1/§8.2 y en HU-11 (INC-30, cerrado).
+12. **`Game.UI` y `Game.Audio` son assemblies propios**, dependientes de `Game.Core`. Listados en
+    la arquitectura §9 (INC-40, cerrado): `Game.Core` no puede depender de la UI sin perder su
+    testabilidad en EditMode.
 
-Ya no son supuestos, sino letra vigente de los documentos: el resumen de fin de nivel que ve el
-estudiante **no lleva cifras** y las cifras son del informe docente (RF-45 y RF-46, ya
-redactados en ese sentido); **RF-46 es de prioridad Alta**, así que la consulta docente y la
-eliminación de datos entran juntas en el mismo slice sin depender de una decisión de producto; el
-botón de ejecutar del laberinto usa **clic simple** (PG-04 cerrado, RF-32); golpear desde una
-posición incorrecta **produce chispas visibles que se apagan** (PG-03 cerrado, RF-16, y HU-06 ya
-lo recoge en su flujo); y la **definición operativa de los cuatro indicadores** por nivel está
-fijada en OE1 §3.6.1, con lista cerrada.
+Letra vigente de los documentos: el resumen de fin de nivel que ve el estudiante **no lleva
+cifras** y las cifras son del informe docente, por nivel y por fase (RF-45, RF-46); **RF-46 es de
+prioridad Alta**, así que la consulta docente y la eliminación de datos entran juntas en el mismo
+slice; el botón de ejecutar del laberinto usa **clic simple** (PG-04 cerrado, RF-32); golpear
+desde una posición incorrecta **produce chispas visibles que se apagan** (PG-03 cerrado, RF-16;
+guion §4.3.3/§4.3.4 y HU-06 coinciden); y la **definición operativa de los cuatro indicadores**
+por nivel está fijada en OE1 §3.6.1, con lista cerrada.
 
 ---
 
 ## Preguntas abiertas
 
-**De diseño — hay que decidirla antes de dibujar el laberinto del Nivel 2:** la semántica de los
-tres bloques de instrucción. Ni RF-31 ni el guion §6.3.2 dicen si «avanzar izquierda / derecha» es
-absoluto o relativo a la orientación de la carretilla, ni cuánto rota «girar». Con la lectura
-absoluta, el refugio puede ser inalcanzable (INC-33). El supuesto 8 fija una respuesta; hace falta
-confirmarla o cambiar el juego de bloques.
+Ya no hay preguntas de diseño ni de redacción con efecto en el código: los 42 hallazgos de
+`INCONSISTENCIAS.md` están cerrados en los `.docx` y este documento sigue su resolución.
 
-**Del guion (§12), sin resolver:** **PG-01** título del producto · **PG-02** nombre definitivo del
-guía · **PG-05** verificar en pruebas que el cambio de esquema de control entre el Nivel 1 y el 2
-no confunde · **PG-06** validar jugando los valores del Nivel 1 · **PG-07** autorización de los
-personajes.
+**Del guion (§12), sin resolver** — son del guion, no conflictos entre documentos:
+**PG-01** título del producto · **PG-02** nombre definitivo del guía (Chispa, provisional) ·
+**PG-05** verificar en pruebas que el cambio de esquema de control entre el Nivel 1 y el 2 no
+confunde · **PG-06** validar jugando los valores del Nivel 1 (`FireLevelConfig`) · **PG-07**
+autorización de los personajes de la Familia Anonaky (por defecto, personajes originales).
 
-**De redacción, con efecto en el código si se resuelven al revés:** que RNF-09 admita el progreso
-de avance (INC-27), que RF-06 mantenga o no la restricción «escena ya vista» (INC-28), que RF-19
-deje de recondicionar «Soplar» a la posición una vez alcanzada la convergencia (INC-32) y a qué
-fase de ensamblaje corresponde la tarea 3 del Nivel 3 (INC-30). El código sigue mientras tanto la
-resolución de la tabla de decisiones.
+**Residuo cosmético en `docs/`:** HU-17 y HU-18 no llevan el encabezado «Página 17/18 de 18».
 
-**De trazabilidad, sin efecto en el código pero sí en el tablero:** RF-44 y RF-46 —los dos de
-prioridad Alta— no tienen historia de usuario, y CU-11 es el único caso de uso al que le falta el
-campo de historias asociadas (INC-37). Hay que decidir si se crean HU-19 y HU-20 o si se absorben
-en historias existentes, antes de repartir el slice de `progreso-registro`.
-
-**Ya no está abierto:** la redacción de RF-35, que ya dice «botones de dirección… de la pantalla»
-y cierra la duda teclado/pantalla en el documento que manda (INC-01 queda como limpieza de
-residuos en tres documentos de menor prioridad); la prioridad de RF-46, hoy Alta, que era la
-única decisión de producto pendiente; la definición operativa de cada indicador por nivel, fijada en OE1 §3.6.1 con lista
-cerrada —intentos, errores corregidos, pasos utilizados y tiempo de resolución, excluidas las
-escenas narrativas y el tiempo en pausa—; y el alcance de las sesiones con estudiantes, que el
-trabajo de grado §1.6 y §5.3 declaran verificación funcional y de usabilidad, sin medición del
-efecto pedagógico.
+**Cerrado desde la rev. 4:** la semántica de los bloques del laberinto (lectura relativa, giro
+90° horario, fijada en RF-31 y guion §6.3.2 — INC-33); `RF-19` sin condición de posición
+(INC-32); `RNF-09` admite el progreso de avance (INC-27); la restricción «escena ya vista» de
+`RF-06` en todos los documentos (INC-28); `RF-44` y `RF-46` trazados a HU-13 y HU-16, con la fila
+de historia asociada en CU-11 (INC-37); la definición operativa de los cuatro indicadores por
+nivel y por fase, con lista cerrada (OE1 §3.6.1); y el alcance de las sesiones con estudiantes,
+verificación funcional y de usabilidad sin medición del efecto pedagógico (trabajo de grado §1.6
+y §5.3).
