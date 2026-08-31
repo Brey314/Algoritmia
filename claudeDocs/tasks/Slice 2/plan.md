@@ -909,291 +909,346 @@ y comprobar que ninguno depende solo del color.
 
 # Assets visuales del Slice 2
 
-Diez assets. Generador principal: **Gemini / Nano Banana Pro**. Los prompts están en español y se
-pegan tal cual.
+Diez assets. Generador: **Gemini / Nano Banana Pro**. Los prompts están en español y se pegan
+tal cual, en un solo mensaje, **sin resumirlos**.
 
-**Regla de uso:** copiar el bloque de estilo y el bloque de paleta **literalmente** al inicio de
-cada prompt, antes de la descripción del asset. Ahí está la consistencia entre generaciones: lo
-que varía es solo la descripción; lo que se repite palabra por palabra es todo lo demás.
+**Documento que manda:** `claudeDocs/Direccion_de_Arte.md`, §8.2 para este nivel. Si algo se
+contradice, gana la dirección de arte; si esta contradice a `SPEC.md`, gana `SPEC.md`.
+
+**Cómo se arma un prompt.** Los mismos cinco bloques fijos del Slice 1, cambiando solo el de
+paleta, y después la descripción del asset:
+
+```
+[1 CONTEXTO N2]  [2 ESTILO]  [3 PALETA N2]  [4 ENTREGA]  [5 PROHIBICIONES]  +  ELEMENTO
+```
+
+`[2 ESTILO]`, `[4 ENTREGA]` y `[5 PROHIBICIONES]` se copian **idénticos** a los del
+`Slice 1/plan.md` — no se reescriben ni se resumen: que sean literalmente los mismos es lo que
+hace que los dos niveles parezcan el mismo juego. Aquí abajo solo se redefinen el contexto y la
+paleta, que sí cambian de nivel.
 
 **Los personajes no se vuelven a generar.** Chispa, Papá, Mamá, la Niña y el Niño son los assets
 `A1`..`A5` del Slice 1 y se reutilizan tal cual. La Niña es la personaje jugable de este nivel
-(guion §1.2): si su lámina del Slice 1 no trae la pose que el bosque necesita, se regenera **con
-el prompt de `A2`..`A5` del Slice 1**, no con uno nuevo.
+(guion §1.2, CN-02); las poses que el bosque necesite salen de **animar su sprite en A-pose con
+2D Animation**, no de una generación nueva (`Direccion_de_Arte.md` §13.1).
 
-**Autoría (CT-09, RNF-23).** Todos son **escenarios y objetos originales**. Los personajes siguen
-siendo originales mientras PG-07 no llegue por escrito. Cada asset generado se reconoce en la
-pantalla de créditos (Slice 1, T08).
+**Autoría (CT-09, RNF-23).** Los assets de este slice —escenarios, props e interfaz— son
+**originales del proyecto**. Los personajes que reutiliza del Slice 1 son **obra derivada** de
+los diseños de la Familia Anonaky, con **autorización escrita concedida** (PG-07 cerrado el
+30/08/2026) y reconocimiento obligatorio en créditos. Cada asset generado se registra en
+`CreditsContent.asset` (Slice 1, T08).
 
 **Transparencia.** Gemini no produce canal alfa fiable, así que se genera sobre fondo plano y se
-recorta después. **El verde no sirve en este slice para nada vegetal**: los assets marcados
+recorta después. **El verde no sirve en este nivel para nada vegetal**: los assets marcados
 **Chroma magenta** se piden sobre `#FF00FF`, los marcados **Chroma verde** sobre `#00FF00`, y los
 fondos de escena no llevan chroma.
 
 ---
 
-## Bloque de estilo fijo — copiar al inicio de cada prompt
-
-Es el bloque del Slice 1 con **una sola frase cambiada**: la de la iluminación, que allí era «luz
-del fuego como única fuente» y aquí sería falsa. Todo lo demás es idéntico, palabra por palabra,
-para que el arte de los dos slices sea el mismo juego.
+## Bloque 1 · CONTEXTO N2 — sustituye al del Slice 1
 
 ```
-ESTILO (fijo, no variar): ilustración plana 2D vectorial para videojuego educativo infantil.
-Formas redondeadas y macizas, sin puntas agresivas. Contorno limpio y uniforme de 4 px en
-color #1C2333. Color en planos sólidos, sin degradados complejos, sin texturas fotográficas,
-sin sombreado realista: como máximo una sombra plana de un solo tono. Sin efectos de brillo
-volumétrico ni destellos intensos. Iluminación diurna suave y pareja, procedente de arriba,
-sin sol visible en el encuadre y sin sombras largas. Tono amable, acogedor y no amenazante,
-apropiado para niños de 9 a 11 años. Ambientación prehistórica estilizada, no realista. Sin
-violencia, sin sangre, sin armas, sin texto de ningún tipo dentro de la imagen, sin marcas de
-agua, sin logotipos. Composición centrada y legible a tamaño pequeño, pensada para proyector y
-pantallas de baja calidad: siluetas distinguibles y alto contraste entre figura y fondo.
+CONTEXTO DEL ENCARGO
+Soy diseñador de un videojuego educativo 2D hecho en Unity para estudiantes de grado cuarto de
+primaria, de 9 a 11 años. El juego acompaña a una familia prehistórica en tres descubrimientos:
+el fuego, la rueda y el cruce de un río. Este encargo pertenece al Nivel 2, «La Rueda», que
+transcurre de día en un BOSQUE: un claro donde la familia observa objetos, un área de trabajo
+junto a su refugio, y un sendero cerrado por vegetación. No es un desierto, no hay mesetas, no
+hay cañón, no hay arena y no hay cactus.
+
+Lo que necesito NO es una ilustración de escena, ni una lámina de presentación, ni un concept
+art. Es un ASSET DE PRODUCCIÓN: un archivo que voy a recortar e importar a Unity como sprite,
+que se verá en movimiento, superpuesto a otros elementos, a un tamaño mucho menor que el de
+generación, y proyectado en pantallas de aula de baja calidad. Una imagen bonita que no se pueda
+recortar limpiamente, o que no se lea a tamaño pequeño, no me sirve y la descarto.
+
+Tres condiciones mandan sobre cualquier consideración estética:
+1. PÚBLICO INFANTIL. Nada amenazante, afilado, sombrío, triste ni violento. No hay animales
+   peligrosos, no hay armas, no hay heridas.
+2. BAJO CONSUMO DE RECURSOS. Los equipos del colegio no tienen tarjeta gráfica dedicada. El arte
+   es plano y simple por diseño, no por descuido.
+3. LEGIBILIDAD ANTES QUE DETALLE. Este nivel se juega distinguiendo objetos entre sí: si un
+   detalle compite con la lectura de la silueta, sobra.
+
+INSTRUCCIÓN SOBRE LO QUE NO TE DIGA: sigue las secciones de abajo al pie de la letra. Donde no
+te dé un dato, NO lo inventes ni lo rellenes con tu criterio: elige la opción más simple
+compatible con las reglas y deja el resto vacío. No añadas objetos, personajes, adornos, texto,
+fondo, marcos ni elementos decorativos que no haya pedido explícitamente. Si crees que falta
+algo, omítelo: prefiero un asset incompleto a uno inventado.
 ```
 
-## Bloque de paleta fija — copiar al inicio de cada prompt
-
-La paleta del Slice 1 **se conserva íntegra** —los personajes y el marco de diálogo ya generados
-tienen que seguir encajando— y se le añade el bloque de exteriores. Copiar las dos partes.
+## Bloque 3 · PALETA DEL NIVEL 2 — usar solo estos colores
 
 ```
-PALETA (fija, usar solo estos colores):
+PALETA (fija, no usar ningún color fuera de esta lista)
 
-  — Heredada del Nivel 1 —
-  Oscuridad de cueva      #0B0E14
-  Piedra en sombra        #1C2333
-  Piedra iluminada        #2E3A4F
-  Roca cálida             #4A3B32
-  Tierra                  #6B5344
-  Piel cálida clara       #E8B48C
-  Piel cálida media       #C98B62
-  Piel cálida oscura      #8E5A3B
-  Pieles / ropa ocre      #A9713F
-  Pieles / ropa terracota #8C4A2F
-  Hoja seca               #B08541
-  Fuego amarillo          #FFC94A
-  Fuego naranja           #FF8A3D
-  Fuego rojo              #E4572E
-  Hueso (texto y UI)      #F2E8D5
+PERSONAJES (idéntica en los tres niveles, no se tiñe con la luz del entorno):
+  Piel base #F2D3BC        Piel sombra #D9AF95
+  Cabello base #5C2B22     Cabello sombra #3D1A14
+  Piel de leopardo (adultos) #E8C07A   su sombra #C49A55   manchas #2B1A12
+  Túnica del niño (oliva) #C4C24E      su sombra #9BA03A   manchas #3F6B2E
+  Conjunto de la niña (ocre) #D9B23A   su sombra #B08A25   manchas #7A5418
+  Rubor infantil #F0A5A0
+  Contorno de personaje #3A1E18
 
-  — Exteriores del Nivel 2 —
-  Cielo de día            #A8C8D8
-  Follaje claro           #7FA05A
-  Follaje medio           #5A7A3F
-  Follaje oscuro          #3C5429
-  Planta baja             #6E9B4E
-  Corteza clara           #8A6B4A
-  Corteza oscura          #5C4530
-  Madera trabajada        #C79A5E
-  Piedra fría             #7A8290
-  Piedra fría oscura      #4E5561
-  Metal de herramienta    #9AA3AE
+BOSQUE DEL NIVEL 2:
+  Follaje cercano #7FA05A      Follaje medio #5A7A3F      Follaje lejano #3C5429
+  Planta baja #6E9B4E          Musgo #4A5C42
+  Suelo de tierra #8A6B4A      Suelo en sombra #6B5344
+  Corteza de árbol #5C4530     (decorado: SIEMPRE oscura y desaturada)
+  Piedra fría #7A8290          Piedra fría en sombra #4E5561
+  Cielo entre las copas #A8DCE6    Nubes #F2F7F5 con sombra #D8E4E8
+
+ACENTO DEL NIVEL — SOLO PARA LO INTERACTIVO:
+  Madera trabajada #C79A5E     su sombra #A67C4A
+
+NEUTROS DE INTERFAZ (comunes a todo el juego):
+  Marfil #F7EFE2   Marfil sombra #E0D4C0   Borde de panel #C4A882
+  Carbón #3A1E18 (texto y contorno)        Carbón suave #6B5248
+  Éxito #5FA842    Atención #E8A33D
+
+REGLA DE ACENTO (crítica): la madera clara trabajada #C79A5E pertenece EXCLUSIVAMENTE a los
+objetos del reto —tronco cortado, rueda, eje, tabla, carretilla—. Ningún árbol, arbusto, suelo
+ni elemento de decorado puede llevarla: la corteza del decorado es siempre #5C4530, oscura. Lo
+CORTADO y TRABAJADO se distingue de lo natural. Esa distinción es el nivel entero.
 ```
-
-*Las dos familias hacen el trabajo de RNF-19 sin depender del color: lo que **rueda** es cálido y
-de corteza (`#8A6B4A`, `#5C4530`, `#C79A5E`); lo que **no rueda** es frío y mineral (`#7A8290`,
-`#4E5561`) o vegetal (`#6E9B4E`). Aun así, la forma tiene que bastar por sí sola.*
-
-*Para RNF-20: el texto sigue siendo `#F2E8D5` sobre el interior `#0B0E14` del marco de diálogo del
-Slice 1. Sobre el bosque claro, ningún texto va directo al fondo — siempre sobre marco.*
 
 ---
 
 ## B1 · Escenario del bosque
 
 **Traza:** RF-22, guion §6.1.1 y §6.1.2 (escenario de la fase 1).
-**Chroma:** **no** — es el fondo completo de la escena.
-**Entregar:** una lámina 16:9.
+**Chroma:** **no** — es el fondo completo de la escena. **Archivo:** `env_n2_bosque_claro.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N2] [2 ESTILO] [3 PALETA N2] [5 PROHIBICIONES]
 
-ASSET: Fondo de escena — claro de bosque prehistórico de día. Vista lateral, plano fijo, SIN
-personajes y SIN objetos sueltos en el suelo.
+ELEMENTO: fondo completo de escena. Claro de bosque prehistórico de día, vista LATERAL, plano
+fijo, SIN personajes y SIN objetos sueltos en el suelo.
 
-COMPOSICIÓN FIJA: claro amplio de bosque visto de lado. Suelo de tierra despejado en el tercio
-inferior, en #6B5344, con textura mínima. A izquierda y derecha, troncos de árbol verticales en
-#5C4530 que enmarcan la escena sin cerrarla. Copas de follaje en tres planos: #3C5429 al fondo,
-#5A7A3F en el medio, #7FA05A al frente, todas en planos sólidos sin degradado. Al fondo, cielo
-despejado #A8C8D8 visible entre los troncos. Arbustos bajos en #6E9B4E pegados a los bordes
-inferiores izquierdo y derecho.
+FORMATO: rectangular 16:9 horizontal. Este asset NO lleva fondo de croma: la imagen entera es el
+escenario y se importa tal cual. Ignora la instrucción de croma; el resto de las reglas sigue
+vigente.
 
-ZONA LIBRE OBLIGATORIA: el centro del suelo debe quedar completamente despejado y sin detalle:
-es donde se dispersarán los objetos seleccionables y donde irá el contador. No poner nada ahí.
+COMPOSICIÓN FIJA:
+- Suelo de tierra compacta en el tercio inferior, en #8A6B4A con sombra #6B5344, de ondulaciones
+  muy suaves y sin textura de grano.
+- A izquierda y derecha, dos troncos de árbol verticales que enmarcan la escena sin cerrarla, de
+  sección ovalada y corteza OSCURA #5C4530. Nunca madera clara: la madera clara es de los objetos
+  del reto, no del decorado.
+- Copas de follaje en tres profundidades, construidas con círculos superpuestos y NUNCA con hojas
+  individuales: #3C5429 al fondo, #5A7A3F en el medio, #7FA05A al frente. El follaje del fondo va
+  SIN contorno; el del frente, con contorno fino #5C4038.
+- Entre las copas, huecos por los que se ve el cielo #A8DCE6 con una o dos nubes #F2F7F5 de
+  sombra inferior #D8E4E8. El cielo se ve a retazos, nunca como un horizonte abierto.
+- Arbustos bajos #6E9B4E y dos manchas de musgo #4A5C42 pegados a los bordes inferiores.
+- Dos piedras de canto rodado #7A8290 semienterradas, una a cada lado, pequeñas.
 
-Relación de aspecto 16:9. Sin animales, sin fuego, sin humo, sin sendero marcado.
+ZONA LIBRE OBLIGATORIA: toda la franja central del suelo queda COMPLETAMENTE despejada y sin
+detalle. Ahí se dispersarán los objetos seleccionables y el contador. No pongas nada.
+
+Sin animales, sin fuego, sin humo, sin sendero marcado, sin flores llamativas.
 ```
+
+**Verificación (§17):** ninguna madera clara `#C79A5E` en el decorado · franja central vacía ·
+follaje del fondo sin contorno y desaturado · pasa la prueba de entrecerrado (§6).
 
 ---
 
 ## B2 · Objetos del bosque — válidos y distractores
 
-**Traza:** RF-22, RF-23, RNF-19 (los estados se distinguen por forma), guion §6.1.2.
+**Traza:** RF-22, RF-23, RNF-19 (las categorías se distinguen por forma), guion §6.1.2.
 **Chroma:** **magenta `#FF00FF`** — hay plantas verdes entre ellos.
-**Entregar:** una lámina con las cuatro familias separadas y etiquetadas por posición, no por texto.
+**Archivo:** `prop_n2_tronco_a.png` … `prop_n2_herramienta_c.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N2] [2 ESTILO] [3 PALETA N2] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Objetos seleccionables del bosque del Nivel 2. Lámina de objetos sueltos, cada uno
-completo y separado de los demás, sin superponerse.
+ELEMENTO: los objetos seleccionables del claro del bosque. Lámina de objetos sueltos, cada uno
+completo, separado de los demás y sin superponerse. Sin texto de ningún tipo.
 
-Generar CUATRO FILAS, en este orden y sin texto de ningún tipo dentro de la imagen:
+FONDO: en lugar del verde, usa MAGENTA croma puro #FF00FF, plano y uniforme. Aquí hay plantas
+verdes y el verde se comería el recorte.
 
-FILA 1 — TRONCOS REDONDOS (los válidos): cinco troncos cortos, cada uno una sección de tronco
-vista en perspectiva de tres cuartos, con la CARA CIRCULAR bien visible y una silueta claramente
-CILÍNDRICA. Corteza en #8A6B4A con vetas en #5C4530; cara circular en #C79A5E con anillos
-concéntricos simples. Los cinco iguales en forma, con variación mínima de tamaño. La redondez
-debe ser el rasgo más evidente del objeto, legible en silueta.
+Generar CUATRO FILAS, en este orden:
+
+FILA 1 — TRONCOS CORTADOS (los VÁLIDOS, los que ruedan): cinco secciones cortas de tronco vistas
+en perspectiva de tres cuartos, con la CARA CIRCULAR bien visible y silueta claramente
+CILÍNDRICA. Corteza lateral #5C4530; cara circular en MADERA TRABAJADA #C79A5E con sombra
+#A67C4A y tres anillos concéntricos simples. Contorno de objeto interactivo, 7 a 9 px, #3A1E18.
+Los cinco iguales en forma, con variación mínima de tamaño. La REDONDEZ debe ser el rasgo más
+evidente, legible en silueta.
 
 FILA 2 — PIEDRAS IRREGULARES (distractor): cuatro piedras de silueta ANGULOSA y facetada, con
-esquinas planas marcadas, ninguna curva. Cuerpo en #7A8290 con facetas en sombra #4E5561.
-Deben leerse como lo contrario de un cilindro.
+cuatro o cinco caras planas marcadas y ninguna curva, aunque con los vértices suavizados. Cuerpo
+#7A8290 con facetas en sombra #4E5561. Contorno #5C4038, más fino que el de los troncos. Deben
+leerse como lo contrario de un cilindro.
 
-FILA 3 — PLANTAS (distractor): tres matas de hojas anchas y flexibles, silueta abierta y
-ramificada. Hojas en #6E9B4E con nervadura #3C5429, tallos delgados en #5A7A3F.
+FILA 3 — PLANTAS (distractor): tres matas de hojas anchas, de silueta ABIERTA y ramificada, que
+deja ver el fondo entre las hojas. Hojas #6E9B4E con nervadura #3C5429 de una sola línea, tallos
+delgados #5A7A3F. Contorno #5C4038.
 
-FILA 4 — HERRAMIENTAS (distractor): tres herramientas prehistóricas simples, silueta ALARGADA y
-recta: un mango de madera #8A6B4A con una cabeza de piedra pulida #7A8290 atada con tira de
-cuero #8C4A2F. Sin filo agresivo, sin punta, no debe leerse como arma.
+FILA 4 — HERRAMIENTAS (distractor): tres herramientas prehistóricas simples, de silueta ALARGADA
+y RECTA: mango de madera oscura #5C4530 con una cabeza de piedra pulida #7A8290 de punta ROMA,
+atada con una tira de cuero #8C4A2F. Sin filo, sin punta afilada; no debe leerse como arma.
+Contorno #5C4038.
 
-REQUISITO DE ACCESIBILIDAD: las cuatro familias deben distinguirse por SILUETA en escala de
-grises, sin depender del color: cilindro, faceta angulosa, mata abierta, barra alargada.
-
-FONDO: magenta chroma key plano #FF00FF, sin sombra proyectada sobre el fondo.
+REQUISITO DE ACCESIBILIDAD (obligatorio): las cuatro familias deben distinguirse por SILUETA en
+escala de grises, sin depender del color — cilindro, faceta angulosa, mata abierta, barra
+alargada. Es el criterio de verificación de RNF-19.
 ```
+
+**Verificación (§17):** las cuatro familias se separan en negro sólido · solo los troncos llevan
+`#C79A5E` · las herramientas no parecen armas · contorno más grueso en los válidos que en los
+distractores (§9.2).
 
 ---
 
 ## B3 · Caja de alimentos — tres estados
 
-**Traza:** RF-25, RF-26, guion §5 y §6.1.2.
-**Chroma:** verde `#00FF00`.
-**Entregar:** tres versiones del mismo objeto.
+**Traza:** RF-25, RF-26, guion §5 y §6.1.2. **Chroma:** verde `#00FF00`.
+**Archivo:** `prop_n2_caja_suelo.png`, `_sobre_troncos`, `_rodando`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N2] [2 ESTILO] [3 PALETA N2] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Caja de alimentos de la familia, del Nivel 2.
+ELEMENTO: la caja de alimentos que la familia no logra mover. Es el objetivo de la fase 1.
 
-FORMA FIJA: cesto bajo y ancho de mimbre trenzado en #B08541, de esquinas redondeadas y base
-plana, con dos asas laterales de cuerda trenzada #6B5344. Dentro, asomando por el borde: frutos
-redondos en #E4572E y #FFC94A y hojas verdes #6E9B4E. Misma forma y mismo tamaño en los tres
-estados: solo cambia la relación con el suelo.
+FORMA FIJA (idéntica en los tres estados): cesto bajo y ancho de fibra trenzada #C4A882 con
+sombra #A67C4A, de esquinas redondeadas y base plana, con dos asas laterales de cuerda trenzada
+#5C2B22. Dentro, asomando por el borde, frutos redondos #E8A33D y hojas #6E9B4E. Contorno de
+objeto interactivo, 7 a 9 px, #3A1E18.
 
-Generar TRES versiones de la MISMA caja, idénticas en forma:
+Generar TRES versiones de la MISMA caja, idénticas en forma, tamaño y contenido:
   (1) EN EL SUELO: apoyada directamente sobre la tierra, ligeramente hundida, con una sombra
-      plana ancha debajo. Debe leerse pesada y atascada.
-  (2) SOBRE LOS TRONCOS: la misma caja apoyada encima de tres troncos redondos alineados en
-      paralelo bajo ella, vistos de lado como círculos. Sombra plana más corta.
+      plana ancha #6B5344 debajo. Debe leerse pesada y atascada.
+  (2) SOBRE LOS TRONCOS: la misma caja apoyada encima de TRES troncos cortados alineados en
+      paralelo bajo ella, vistos de lado como círculos de cara #C79A5E con anillos y corteza
+      #5C4530. Sombra plana más corta.
   (3) RODANDO: la misma caja desplazada hacia la derecha sobre los mismos tres troncos, con los
-      troncos girados —los anillos de la cara circular rotados— y tres líneas cortas de
-      movimiento horizontales en #F2E8D5 detrás de la caja. Sin destellos, sin polvo brillante.
+      anillos de las caras GIRADOS respecto de (2) para que se lea el movimiento, y tres líneas
+      cortas horizontales #F7EFE2 detrás de la caja. Sin destellos, sin polvo brillante, sin
+      estelas de velocidad curvas.
 
-FONDO: verde chroma key plano #00FF00.
+La diferencia entre (1) y (2) debe leerse por FORMA —hundida contra elevada sobre cilindros— y
+no por color: es lo que enseña el patrón del nivel.
 ```
+
+**Verificación (§17):** la caja es idéntica en los tres · los troncos llevan el acento y la caja
+no · el estado (3) se distingue de (2) en escala de grises.
 
 ---
 
 ## B4 · Escenario del área de trabajo
 
 **Traza:** RF-27, guion §6.2.2 (escenario de la fase 2).
-**Chroma:** **no** — es el fondo completo de la escena.
-**Entregar:** una lámina 16:9.
+**Chroma:** **no** — fondo completo de escena. **Archivo:** `env_n2_taller.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N2] [2 ESTILO] [3 PALETA N2] [5 PROHIBICIONES]
 
-ASSET: Fondo de escena — área de trabajo al aire libre junto al refugio prehistórico. Vista
-lateral, plano fijo, SIN personajes y SIN las piezas de la carretilla.
+ELEMENTO: fondo completo de escena. Área de trabajo al aire libre junto al refugio de la
+familia, en un claro del bosque. Vista LATERAL, plano fijo, SIN personajes y SIN las piezas de
+la carretilla.
 
-COMPOSICIÓN FIJA: explanada de tierra compacta #6B5344 que ocupa la mitad inferior. A la
-izquierda, la entrada de un refugio simple de ramas y pieles: estructura triangular baja con
-palos #5C4530 y pieles #A9713F, sin interior visible. A la derecha, un banco de trabajo rústico:
-una losa de piedra plana #7A8290 apoyada sobre dos troncos cortos #8A6B4A. Al fondo, línea de
-follaje #5A7A3F y cielo #A8C8D8. Una fogata apagada con brasas #E4572E y un hilo tenue de humo
-#2E3A4F junto al refugio, pequeña y en el borde izquierdo.
+FORMATO: rectangular 16:9 horizontal, sin croma, igual que B1.
 
-ZONA LIBRE OBLIGATORIA: toda la franja central y baja del encuadre debe quedar despejada y sin
-detalle: es donde se dispondrán las seis piezas y donde se ensamblará la carretilla. No poner
-nada ahí.
+COMPOSICIÓN FIJA:
+- Explanada de tierra compacta #8A6B4A con sombra #6B5344 en la mitad inferior.
+- A la IZQUIERDA, el refugio: estructura triangular baja hecha de palos #5C4530 y pieles #E8C07A
+  con manchas #2B1A12, cerrada, sin interior visible. Pequeño, ocupa como mucho un cuarto del
+  ancho.
+- A la DERECHA, el banco de trabajo: una losa de piedra plana #7A8290 con sombra #4E5561 apoyada
+  sobre dos troncos cortos de corteza #5C4530. Sin herramientas encima.
+- Al fondo, una línea de follaje #5A7A3F y, tras ella, la masa #3C5429 sin contorno. Huecos de
+  cielo #A8DCE6 entre las copas.
+- Junto al refugio, una fogata APAGADA: círculo de piedras #7A8290 con brasas #E2571F muy
+  pequeñas y un hilo tenue de humo #6B5A60. Discreta, en el borde izquierdo. Es lo único cálido
+  del encuadre y no debe robar la mirada.
 
-Relación de aspecto 16:9.
+ZONA LIBRE OBLIGATORIA: toda la franja central y baja queda despejada y sin detalle. Ahí se
+dispondrán las seis piezas y se ensamblará la carretilla. No pongas nada.
+
+Sin madera clara trabajada en ninguna parte del decorado.
 ```
+
+**Verificación (§17):** franja central vacía · el refugio no compite con el centro · ninguna
+madera `#C79A5E` en el decorado · la fogata apagada no atrae la mirada antes que el centro.
 
 ---
 
 ## B5 · Piezas del taller — las seis de RF-27
 
-**Traza:** RF-27, RF-28, guion §6.2.2.
-**Chroma:** verde `#00FF00`.
-**Entregar:** una lámina con las seis piezas separadas.
+**Traza:** RF-27, RF-28, guion §6.2.2. **Chroma:** verde `#00FF00`.
+**Archivo:** `prop_n2_pieza_1.png` … `prop_n2_pieza_6.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N2] [2 ESTILO] [3 PALETA N2] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Las seis piezas del área de trabajo del Nivel 2, sueltas y separadas, sin superponerse.
-Sin texto de ningún tipo dentro de la imagen.
+ELEMENTO: las seis piezas del área de trabajo, sueltas y separadas, sin superponerse. Sin texto
+de ningún tipo. Todas son objetos INTERACTIVOS: contorno de 7 a 9 px en #3A1E18.
 
-Generar las SEIS piezas, cada una completa y aislada:
-  (1) TRONCO CORTO A: sección cilíndrica de tronco vista de tres cuartos, cara circular visible.
-      Corteza #8A6B4A, cara #C79A5E con anillos concéntricos. Centro SIN agujero.
-  (2) TRONCO CORTO B: idéntico al anterior en forma y tamaño.
-  (3) TRONCO LARGO: barra cilíndrica larga y recta, de diámetro claramente menor que el de los
-      troncos cortos, en #8A6B4A con extremos #C79A5E. Debe leerse como algo que cabría por el
-      centro de los troncos cortos.
-  (4) TABLA: pieza rectangular plana de madera trabajada #C79A5E con vetas #8A6B4A y borde
-      recto, esquinas ligeramente redondeadas.
-  (5) HERRAMIENTA: mango de madera #8A6B4A con cabeza de piedra pulida y punta roma #7A8290,
-      atada con tira de cuero #8C4A2F. Sin filo, no debe leerse como arma.
-  (6) CAJA DE ALIMENTOS: el mismo cesto del asset B3, estado (1), sin variar su forma.
+Generar las SEIS piezas, cada una completa y aislada, en una fila o en dos filas de tres:
+  (1) TRONCO CORTO A: sección cilíndrica vista de tres cuartos, cara circular visible en madera
+      trabajada #C79A5E con sombra #A67C4A y tres anillos concéntricos; corteza lateral #5C4530.
+      Centro MACIZO, SIN agujero.
+  (2) TRONCO CORTO B: idéntico al anterior en forma, tamaño y color. Que sean gemelos.
+  (3) EJE LARGO: barra cilíndrica larga y recta, de diámetro claramente MENOR que el de los
+      troncos cortos —como un tercio—, en #C79A5E con extremos #A67C4A. Debe leerse a simple
+      vista que cabría por el centro de los troncos cortos.
+  (4) TABLA: pieza rectangular plana de madera trabajada #C79A5E con vetas #A67C4A dibujadas
+      como dos líneas rectas largas, borde recto y esquinas ligeramente redondeadas. Es una de
+      las pocas formas angulosas del juego, y es intencional: está fabricada.
+  (5) HERRAMIENTA: mango de madera oscura #5C4530 con cabeza de piedra pulida de punta ROMA
+      #7A8290, atada con tira de cuero #8C4A2F. Sin filo, no debe leerse como arma.
+  (6) CESTO DE ALIMENTOS: el mismo cesto del asset B3, estado (1), sin variar su forma ni su
+      color.
 
-Las seis deben distinguirse por SILUETA en escala de grises: cilindro corto, cilindro corto,
-barra fina larga, placa plana, mango con cabeza, cesto.
-
-FONDO: verde chroma key plano #00FF00.
+REQUISITO: las seis deben distinguirse por SILUETA en escala de grises — cilindro corto,
+cilindro corto gemelo, barra fina larga, placa plana, mango con cabeza, cesto. Que los dos
+troncos cortos sean indistinguibles entre sí es correcto y deliberado: son dos piezas iguales.
 ```
+
+**Verificación (§17):** seis siluetas separables · troncos (1) y (2) idénticos · el eje se ve
+más fino que el hueco de los troncos · la herramienta no parece un arma.
 
 ---
 
 ## B6 · La rueda y la carretilla — cinco estados de ensamblaje
 
 **Traza:** RF-28, RF-29, HU-09, CU-07, guion §6.2.2. Es el asset que hace legible la secuencia.
-**Chroma:** verde `#00FF00`.
-**Entregar:** cinco versiones encadenadas, en el orden exacto del ensamblaje.
+**Chroma:** verde `#00FF00`. **Archivo:** `prop_n2_carretilla_e1.png` … `_e5.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N2] [2 ESTILO] [3 PALETA N2] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Los cinco estados del ensamblaje de la carretilla del Nivel 2. Vista lateral de tres
-cuartos, la MISMA en los cinco. Sin personajes, sin texto dentro de la imagen.
+ELEMENTO: los cinco estados del ensamblaje de la carretilla. Vista lateral de tres cuartos, LA
+MISMA en los cinco. Sin personajes, sin manos, sin texto, sin fondo.
 
-Generar CINCO estados en secuencia, cada uno construido literalmente sobre el anterior sin
-cambiar lo ya presente:
-  (1) TRONCO SIN PERFORAR: un tronco corto cilíndrico, corteza #8A6B4A, cara circular #C79A5E con
-      anillos concéntricos, centro macizo, SIN agujero.
+REGLA QUE MANDA SOBRE TODO: cada estado se construye LITERALMENTE sobre el anterior. Lo que ya
+está no cambia de forma, de color, de tamaño ni de ángulo. Los cinco tienen que leerse como el
+mismo objeto creciendo, no como cinco objetos distintos. Mantén escala, ángulo de cámara y
+posición constantes en los cinco, alineados sobre la misma línea de base.
+
+  (1) TRONCO SIN PERFORAR: un tronco corto cilíndrico, corteza lateral #5C4530, cara circular
+      #C79A5E con sombra #A67C4A y tres anillos concéntricos. Centro MACIZO, sin agujero.
   (2) RUEDA PERFORADA: el MISMO tronco, ahora con un agujero circular limpio en el centro exacto
-      de la cara, oscuro #4A3B32, con el borde interior en #8A6B4A. Nada más cambia.
-  (3) EJE FORMADO: DOS ruedas perforadas idénticas, separadas y paralelas, atravesadas por el
-      tronco largo #8A6B4A que entra por el centro de ambas y sobresale un poco a cada lado.
-      Las ruedas quedan verticales; el eje, horizontal.
-  (4) TABLA MONTADA: el mismo conjunto de (3) con la tabla #C79A5E apoyada horizontalmente
-      encima del eje, centrada, sobresaliendo por delante y por detrás.
-  (5) CARRETILLA COMPLETA: el conjunto de (4) con el cesto de alimentos del asset B3 apoyado
-      encima de la tabla, y dos varas de empuje #8A6B4A saliendo hacia atrás desde la tabla, en
-      diagonal ascendente, terminadas en mango redondeado.
+      de la cara, relleno oscuro #4E5561, con el borde interior del agujero en #A67C4A. Nada más
+      cambia: mismo diámetro, mismos anillos, misma corteza.
+  (3) EJE FORMADO: DOS ruedas perforadas idénticas a (2), separadas y paralelas, atravesadas por
+      el eje largo #C79A5E que entra por el centro de ambas y sobresale un poco a cada lado. Las
+      ruedas quedan verticales; el eje, horizontal.
+  (4) TABLA MONTADA: el conjunto de (3) con la tabla #C79A5E apoyada horizontalmente encima del
+      eje, centrada, sobresaliendo por delante y por detrás por igual.
+  (5) CARRETILLA COMPLETA: el conjunto de (4) con el cesto de alimentos de B3 apoyado encima de
+      la tabla, y dos varas de empuje #C79A5E saliendo hacia atrás desde la tabla en diagonal
+      ascendente, terminadas en mango redondeado.
 
-REQUISITO: los cinco estados deben leerse como el mismo objeto creciendo, no como cinco objetos
-distintos. Mantener escala, ángulo y posición constantes entre los cinco.
-
-FONDO: verde chroma key plano #00FF00.
+Contorno de objeto interactivo, 7 a 9 px, #3A1E18, en los cinco.
 ```
+
+**Verificación (§17):** los cinco comparten escala, ángulo y línea de base · (2) solo añade el
+agujero · el crecimiento se lee en negro sólido · sin manos ni personajes.
 
 ---
 
@@ -1201,36 +1256,39 @@ FONDO: verde chroma key plano #00FF00.
 
 **Traza:** RF-30, RF-31, INC-33, supuesto 8, guion §6.3.2. **Sin las cuatro orientaciones, la
 lectura relativa de los bloques es incomprensible en pantalla.**
-**Chroma:** **magenta `#FF00FF`** — irá sobre un tablero con vegetación.
-**Entregar:** cuatro versiones del mismo objeto, rotadas.
+**Chroma:** **magenta `#FF00FF`** — va sobre un tablero con vegetación.
+**Archivo:** `prop_n2_carretilla_cenital_norte.png`, `_este`, `_sur`, `_oeste`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N2] [2 ESTILO] [3 PALETA N2] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: La carretilla del Nivel 2 vista DESDE ARRIBA, en perspectiva cenital pura (90 grados),
-para el tablero del laberinto. Sin personajes, sin texto dentro de la imagen.
+ELEMENTO: la carretilla vista DESDE ARRIBA, en perspectiva cenital pura de 90 grados, para el
+tablero del laberinto. Sin personajes, sin texto, sin suelo debajo.
 
-FORMA FIJA vista desde arriba: la tabla rectangular #C79A5E ocupa el centro; sobre ella el cesto
-de alimentos #B08541 con frutos #E4572E y #FFC94A asomando. A cada lado de la tabla, una rueda
-vista de canto como un rectángulo estrecho y redondeado en #8A6B4A. Por detrás, las dos varas de
-empuje #8A6B4A en paralelo. El conjunto debe caber holgadamente en una casilla cuadrada.
+FONDO: MAGENTA croma puro #FF00FF, plano y uniforme. No uses verde: va sobre vegetación.
 
-INDICADOR DE ORIENTACIÓN OBLIGATORIO: un triángulo macizo #FFC94A con contorno #E4572E en el
-frente de la carretilla, apuntando hacia donde mira. Es el único elemento que le dice al jugador
-hacia dónde avanzará. Debe ser grande, inconfundible y legible a tamaño pequeño.
+FORMA FIJA vista desde arriba: la tabla rectangular #C79A5E con sombra #A67C4A ocupa el centro;
+encima, el cesto #C4A882 con frutos #E8A33D asomando. A cada lado de la tabla, una rueda vista
+de canto como un rectángulo estrecho y redondeado en #5C4530. Por detrás, las dos varas de
+empuje #C79A5E en paralelo. El conjunto debe caber holgadamente dentro de una casilla cuadrada,
+con margen a los cuatro lados.
 
-Generar CUATRO versiones del MISMO objeto, idénticas salvo por la rotación:
+INDICADOR DE ORIENTACIÓN (obligatorio, es lo más importante del asset): un triángulo macizo
+#E8A33D con contorno #3A1E18 en el frente de la carretilla, apuntando hacia donde mira. Es lo
+único que le dice al jugador hacia dónde avanzará. Grande, inconfundible y legible a 32 px.
+
+Generar CUATRO versiones del MISMO objeto, idénticas en todo salvo en la rotación:
   (1) mirando hacia ARRIBA;
   (2) mirando hacia la DERECHA;
   (3) mirando hacia ABAJO;
   (4) mirando hacia la IZQUIERDA.
 
-Cada una es la anterior rotada 90 grados en SENTIDO HORARIO. Verificar que la secuencia
-(1)→(2)→(3)→(4) sea exactamente eso.
-
-FONDO: magenta chroma key plano #FF00FF.
+Cada una es la anterior rotada 90 grados en SENTIDO HORARIO. Comprueba que la secuencia
+(1)→(2)→(3)→(4) sea exactamente eso: el sentido del giro es una regla del juego, no un detalle.
 ```
+
+**Verificación (§17):** el triángulo de orientación se lee a 32 px · las cuatro son el mismo
+objeto rotado · el giro es horario · cabe en una casilla con margen.
 
 ---
 
@@ -1238,125 +1296,140 @@ FONDO: magenta chroma key plano #FF00FF.
 
 **Traza:** RF-30, RF-33, guion §6.3.2.
 **Chroma:** **no** — es el fondo del área izquierda de la escena.
-**Entregar:** una lámina cuadrada, más las piezas de obstáculo sueltas.
+**Archivo:** `env_n2_tablero.png`, `prop_n2_obstaculo_piedra.png`, `_curva`, `_pendiente`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N2] [2 ESTILO] [3 PALETA N2] [5 PROHIBICIONES]
 
-ASSET: Tablero del laberinto del Nivel 2, VISTA CENITAL pura (90 grados). Sin la carretilla y
-sin texto dentro de la imagen.
+ELEMENTO: el tablero del laberinto, VISTA CENITAL pura de 90 grados. Sin la carretilla y sin
+texto de ningún tipo.
 
-COMPOSICIÓN FIJA: rejilla cuadrada de 8 por 8 casillas, con la línea de rejilla apenas insinuada
-en #6B5344 sobre suelo de sendero #8A6B4A. Alrededor de la rejilla, un borde de follaje denso
-#3C5429 y #5A7A3F que cierra el tablero: fuera de la rejilla no se puede ir, y debe verse así.
+FORMATO: lámina cuadrada, sin croma.
 
-En la esquina superior izquierda, sobre una casilla, el REFUGIO visto desde arriba: estructura
-triangular de ramas #5C4530 y pieles #A9713F, con la abertura orientada hacia el interior de la
-rejilla. Es el destino y debe ser el elemento más llamativo del tablero.
+COMPOSICIÓN FIJA: rejilla cuadrada de 8 por 8 casillas sobre suelo de sendero #8A6B4A, con la
+línea de rejilla apenas insinuada en #6B5344 —visible pero discreta: el estudiante cuenta pasos
+sobre ella—. Alrededor de la rejilla, un borde de follaje denso #3C5429 y #5A7A3F que la cierra
+por los cuatro lados: fuera de la rejilla no se puede ir, y tiene que verse así de claro.
 
-Generar además, SUELTAS y separadas al lado del tablero, las tres piezas de obstáculo, cada una
-del tamaño de una casilla y distinguibles entre sí POR FORMA en escala de grises:
-  (1) PIEDRA: bloque angular facetado #7A8290 con sombra #4E5561, silueta cerrada y compacta.
-  (2) CURVA: tramo de sendero que gira, con dos bordes de arbusto #6E9B4E en las esquinas
-      exteriores, silueta en ángulo.
-  (3) PENDIENTE: franja de terreno inclinado con tres líneas paralelas de nivel en #5C4530
-      cruzando la casilla en diagonal, silueta rayada.
+En la casilla de la esquina SUPERIOR IZQUIERDA, el REFUGIO visto desde arriba: estructura
+triangular de palos #5C4530 y pieles #E8C07A con manchas #2B1A12, con la abertura orientada
+hacia el interior de la rejilla. Es el destino, y debe ser el elemento más llamativo del tablero.
 
-La rejilla debe quedar limpia y con las casillas claramente separables a simple vista: es sobre
-ella donde el estudiante cuenta los pasos de su secuencia.
+Generar ADEMÁS, sueltas y separadas al lado del tablero, las tres piezas de obstáculo, cada una
+del tamaño exacto de una casilla y distinguibles entre sí POR FORMA en escala de grises:
+  (1) PIEDRA: bloque angular facetado #7A8290 con sombra #4E5561, silueta cerrada y compacta que
+      ocupa casi toda la casilla.
+  (2) CURVA: tramo de sendero que gira en ángulo recto, con dos matas de arbusto #6E9B4E en las
+      esquinas exteriores. Silueta en codo.
+  (3) PENDIENTE: franja de terreno inclinado, cruzada en diagonal por tres líneas paralelas de
+      nivel en #6B5344. Silueta rayada.
+
+La rejilla debe quedar limpia y con las casillas claramente separables a simple vista.
 ```
+
+**Verificación (§17):** las 8×8 casillas se cuentan a simple vista · el refugio destaca sobre
+todo lo demás · los tres obstáculos se separan en escala de grises · el borde de follaje lee
+como límite infranqueable.
 
 ---
 
 ## B9 · Bloques de instrucción y botón «Ejecutar»
 
-**Traza:** RF-31, RF-32, RNF-19, PG-04, guion §6.3.2. **Los tres bloques tienen que distinguirse
-por forma: es el criterio de verificación literal de RNF-19.**
-**Chroma:** verde `#00FF00`.
-**Entregar:** los tres bloques en dos estados cada uno, más el botón.
+**Traza:** RF-31, RF-32, RNF-19, PG-04 (clic simple), guion §6.3.2. **Los tres bloques tienen
+que distinguirse por forma: es el criterio de verificación literal de RNF-19.**
+**Chroma:** verde `#00FF00`. **Archivo:** `ui_n2_bloque_avanzar_reposo.png` …
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N2] [2 ESTILO] [3 PALETA N2] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Bloques de instrucción del editor del Nivel 2 y su botón de ejecutar. Sin texto de ningún
-tipo dentro de la imagen: los bloques se leen por su icono, no por una palabra.
+ELEMENTO: los bloques de instrucción del editor de secuencia y su botón de ejecutar. Elementos
+de INTERFAZ: planos, frontales, sin perspectiva y sin volumen, legibles a 32 px. SIN TEXTO de
+ningún tipo: los bloques se leen por su icono, nunca por una palabra escrita.
 
-FORMA COMÚN: ficha rectangular horizontal de esquinas redondeadas, en cuero #8C4A2F con contorno
-#1C2333, con una muesca cóncava en el borde superior y una lengüeta convexa en el inferior, de
-modo que las fichas se encajen visualmente unas con otras al apilarse en vertical. Todas del
-mismo tamaño.
+FORMA COMÚN: ficha rectangular horizontal de esquinas muy redondeadas, en cuero #C4A882 con
+contorno #3A1E18, con una muesca cóncava en el borde superior y una lengüeta convexa en el
+inferior, de modo que las fichas se encajen visualmente al apilarse en vertical. Todas del mismo
+tamaño, área táctil generosa.
 
-Generar TRES bloques, cada uno en DOS estados (reposo y resaltado en ejecución):
-  (1) AVANZAR: flecha maciza recta apuntando HACIA ARRIBA, en #F2E8D5, centrada en la ficha.
-  (2) RETROCEDER: flecha maciza recta apuntando HACIA ABAJO, en #F2E8D5, con el asta partida por
-      dos líneas transversales cortas para que no se confunda con (1) al girar la lámina.
-  (3) GIRAR: flecha CURVA en arco de tres cuartos de círculo, con la punta apuntando en sentido
-      horario, en #F2E8D5.
+Generar TRES bloques, cada uno en DOS estados, ordenados en tres filas de dos:
+  (1) AVANZAR: flecha maciza RECTA apuntando HACIA ARRIBA, en #3A1E18, centrada en la ficha.
+  (2) RETROCEDER: flecha maciza RECTA apuntando HACIA ABAJO, en #3A1E18, con el asta cruzada por
+      DOS líneas transversales cortas, para que no se confunda con (1) si se gira la lámina.
+  (3) GIRAR: flecha CURVA en arco de tres cuartos de círculo, con la punta apuntando en SENTIDO
+      HORARIO, en #3A1E18.
 
-  Estado REPOSO: ficha #8C4A2F, icono #F2E8D5.
-  Estado RESALTADO: la MISMA ficha con el cuerpo en #FFC94A, el icono en #1C2333 y un marco
-      exterior grueso continuo en #E4572E. El cambio debe leerse también sin color, por el marco.
+  Estado REPOSO: ficha #C4A882, icono #3A1E18.
+  Estado RESALTADO (el bloque que se está ejecutando): la MISMA ficha con el cuerpo en #E8A33D,
+      el icono en #3A1E18 y un MARCO EXTERIOR grueso y continuo en #5C2B22 rodeando la ficha. El
+      cambio tiene que leerse también sin color, por la presencia del marco.
 
-Generar además el BOTÓN EJECUTAR: botón redondeado ancho en #A9713F con contorno #1C2333 y, en
-el centro, un triángulo macizo #F2E8D5 apuntando a la derecha. Un solo botón, sin variantes: se
+Generar ADEMÁS el BOTÓN EJECUTAR: botón redondeado ancho en #E8A33D con contorno #3A1E18 y, en
+el centro, un triángulo macizo #3A1E18 apuntando a la derecha. UN SOLO botón, sin variantes: se
 acciona con un clic simple.
 
 REQUISITO DE ACCESIBILIDAD: los tres iconos deben distinguirse entre sí en escala de grises y a
-tamaño pequeño. Recta arriba, recta abajo con marcas, curva en arco.
-
-FONDO: verde chroma key plano #00FF00.
+tamaño pequeño — recta arriba, recta abajo con marcas, curva en arco.
 ```
+
+**Verificación (§17):** los tres iconos se separan en escala de grises · reposo y resaltado se
+distinguen por el marco, no solo por color (RNF-19) · sin texto · fichas encajables · área
+táctil generosa.
 
 ---
 
 ## B10 · Contador de acopio y marco de retroalimentación de fase
 
-**Traza:** RF-24, RF-11, RF-17, RNF-19, RNF-20, guion §6.1.2.
-**Chroma:** verde `#00FF00`.
-**Entregar:** el marco del contador vacío, más los dos iconos de resultado.
+**Traza:** RF-24, RF-11, RF-17, RNF-19, RNF-20, CP-03, guion §6.1.2.
+**Chroma:** verde `#00FF00`. **Archivo:** `ui_n2_contador_marco.png`, `ui_estado_aceptado.png`,
+`ui_estado_devuelto.png`.
+
+> **Sin cifras a la vista.** El marco va vacío: el número lo escribe el motor y **solo** aparece
+> como «n de 5» del acopio en curso, que es progreso de tarea, no puntaje (RF-24). Ningún
+> indicador de desempeño se muestra al estudiante (CP-03, RF-17).
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N2] [2 ESTILO] [3 PALETA N2] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Contador de acopio del Nivel 2 y los iconos de resultado de una selección. Sin texto
-dentro de la imagen: el número y el mensaje los pone el juego.
+ELEMENTO: el contador de acopio de la fase 1 y los dos iconos de resultado de una selección.
+Elementos de INTERFAZ, planos y frontales. Sin texto dentro de la imagen.
 
-Generar TRES elementos separados:
+Generar TRES elementos separados en la misma lámina:
 
-  (1) MARCO DEL CONTADOR: placa horizontal pequeña de hueso #F2E8D5 con borde de cuero cosido
-      #8C4A2F y puntadas #6B5344, de esquinas redondeadas. A la izquierda de la placa, la
-      silueta de un tronco redondo visto de frente —círculo con anillos concéntricos #C79A5E y
-      corteza #8A6B4A—. El resto de la placa queda VACÍO: ahí irá «n de 5». Interior liso
-      #0B0E14 con opacidad alta para sostener el contraste del texto.
+  (1) MARCO DEL CONTADOR: placa horizontal pequeña en marfil #F7EFE2 con borde de cuero cosido
+      #C4A882 y puntadas #6B5248, de esquinas muy redondeadas. A la IZQUIERDA de la placa, la
+      silueta de un tronco cortado visto de frente —círculo con tres anillos concéntricos
+      #C79A5E y borde de corteza #5C4530—. El resto de la placa queda COMPLETAMENTE VACÍO, liso
+      y en marfil: ahí escribirá el motor. Sin líneas, sin renglones, sin números.
 
-  (2) ICONO DE ACEPTADO: círculo macizo #7FA05A con contorno #1C2333 y, dentro, una marca de
-      verificación #F2E8D5 de trazo grueso.
+  (2) ICONO DE ACEPTADO: círculo macizo #5FA842 con contorno #3A1E18 y, dentro, una marca de
+      verificación #F7EFE2 de trazo grueso y puntas redondeadas.
 
-  (3) ICONO DE DEVUELTO: rombo macizo #E4572E con contorno #1C2333 y, dentro, una flecha curva
-      #F2E8D5 que apunta hacia atrás, indicando que el objeto regresa a su lugar. NO usar una
-      equis ni una cruz: el objeto no está mal, vuelve a su sitio.
+  (3) ICONO DE DEVUELTO: ROMBO macizo #E8A33D con contorno #3A1E18 y, dentro, una flecha curva
+      #F7EFE2 que apunta hacia atrás, indicando que el objeto regresa a su lugar. NO uses una
+      equis, ni una cruz, ni el color rojo: el objeto no está mal, simplemente vuelve a su sitio.
+      Esta distinción es una decisión pedagógica del proyecto, no una preferencia estética.
 
 REQUISITO DE ACCESIBILIDAD: (2) y (3) deben distinguirse por FORMA además de por color —círculo
-frente a rombo, marca frente a flecha— y ser legibles en escala de grises. Es el criterio de
-verificación de RNF-19.
-
-FONDO: verde chroma key plano #00FF00.
+frente a rombo, marca frente a flecha— y ser legibles en escala de grises.
 ```
+
+**Verificación (§17):** el marco va vacío · aceptado y devuelto se separan en escala de grises ·
+ningún rojo de error en la lámina (§12.3) · contraste del texto ≥ 4.5:1 sobre el marfil (RNF-20).
 
 ---
 
 ## Postproceso de los assets con chroma
 
-1. Recortar el fondo —`#00FF00` o `#FF00FF` según lo marcado en cada asset— y exportar PNG con alfa.
-2. Revisar el halo de color en los bordes; si queda, encogerlo un píxel. **El halo magenta se nota
-   más que el verde sobre follaje**: revisar B2 y B7 con especial cuidado.
-3. Importar como Sprite en `Assets/Game/Art/`, con el **mismo `Pixels Per Unit` que el Slice 1** —
-   si difiere, la carretilla y los personajes no comparten escala.
-4. Verificar RNF-19 sobre el arte final: desaturar B2, B9 y B10 y comprobar que las categorías y
-   los estados siguen distinguiéndose. Si no, la corrección es de forma, no de color.
-5. Verificar RNF-20 sobre el arte final, no sobre la paleta nominal: el contraste se mide en la
-   imagen, y el bosque es claro.
-6. Registrar cada asset en `CreditsContent.asset` (Slice 1, T08) — CT-09, RNF-23.
+1. **Verificar** contra la checklist de `Direccion_de_Arte.md` §17 y contra la línea
+   «Verificación» de cada asset. Si falla una, se vuelve a generar.
+2. **Recortar** el fondo —`#00FF00` o `#FF00FF` según lo marcado— y exportar PNG con alfa.
+   Revisar el halo; si queda, encogerlo un píxel. **El halo magenta se nota más que el verde
+   sobre follaje**: revisar `B2` y `B7` con especial cuidado.
+3. **Nombrar** según §15.4 y **importar** con los ajustes de §15.2. **Pixels Per Unit `100`**,
+   el mismo del Slice 1: si difiere, la carretilla y los personajes no comparten escala.
+4. **Verificar RNF-19 sobre el arte final**: desaturar `B2`, `B7`, `B8`, `B9` y `B10` y comprobar
+   que las categorías y los estados siguen distinguiéndose. Si no, la corrección es de forma, no
+   de color.
+5. **Verificar RNF-20 sobre el arte final**, no sobre la paleta nominal: el bosque es claro y el
+   contraste se mide en la imagen.
+6. **Registrar** cada asset en `CreditsContent.asset` (Slice 1, T08) — CT-09, RNF-23.

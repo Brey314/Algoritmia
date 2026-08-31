@@ -4,7 +4,7 @@ Contrato de desarrollo derivado de los seis documentos en `docs/`. Los identific
 RF/RNF/CP/CT/CN/CU/HU/PG remiten a esos documentos y son la unidad de trazabilidad (CT-10).
 
 **Orden de precedencia.** Cuando dos documentos se contradicen gana el de mayor prioridad, y se
-corrige el otro. Verificado contra su estado del 30/08/2026 (rev. 5):
+corrige el otro. Verificado contra su estado del 30/08/2026 (rev. 6):
 
 | # | Documento | Qué gobierna |
 |---|---|---|
@@ -16,8 +16,9 @@ corrige el otro. Verificado contra su estado del 30/08/2026 (rev. 5):
 | 6 | `arquitectura_videojuego_v2.docx` | Decisiones técnicas de implementación |
 
 La precedencia no resuelve las contradicciones **internas** a un documento: esas se corrigen
-editándolo. `INCONSISTENCIAS.md` (rev. 5, 30/08/2026) registra los 42 hallazgos históricos; **todos
-están cerrados en los `.docx`** salvo dos residuos cosméticos (pies de página de HU-17/HU-18).
+editándolo. `INCONSISTENCIAS.md` (rev. 6, 30/08/2026) registra los 43 hallazgos históricos; **todos
+están cerrados en los `.docx`** salvo `INC-43` (el guion §12 aún declara `PG-07` pendiente después
+de concederse la autorización) y dos residuos cosméticos (pies de página de HU-17/HU-18).
 Este documento ya no necesita separar «lo que dice el documento» de «lo que implementa el
 código»: coinciden.
 
@@ -40,7 +41,7 @@ compararla contra el **nombre** del requerimiento y no contra su número: un des
 aplicado produce ids que existen y parecen correctos.
 
 **Prioridades.** 45 RF de prioridad Alta, 1 Media (RF-06, omisión de diálogos) y 1 Baja (RF-21,
-iluminación progresiva). RF-46 subió de Media a Alta el 29/08/2026, con lo que la dependencia
+iluminación progresiva). RF-46 subió de Media a Alta el 24/08/2026, con lo que la dependencia
 RF-47 → RF-46 deja de ser un riesgo de cronograma.
 
 ---
@@ -110,8 +111,10 @@ replicarlo dos veces.
 **Slice 4.** `progreso-registro`: los niveles ya emiten los indicadores; F los agrega,
 los presenta al docente y añade la eliminación definitiva (RF-47, RNF-11).
 
-Cada módulo recibe su propio `claudeDocs/SPEC-<id>.md`, escrito en orden de dependencia y solo
-cuando le llega el turno. Este documento es la parte compartida: no se repite en ellos.
+El trabajo de cada slice vive en `claudeDocs/tasks/Slice N/` (`plan.md` + `todo.md`), escrito en
+orden de dependencia y trazado a los ids de módulo de esta tabla. No hay un `SPEC-<id>.md` por
+módulo: el plan del slice cumple ese papel y este documento es la parte compartida que ninguno
+repite ni rediscute.
 
 ---
 
@@ -130,6 +133,11 @@ cuando le llega el turno. Este documento es la parte compartida: no se repite en
 
 **Presupuestos duros** (RNF-04..RNF-06): carga de escena < 10 s, memoria en ejecución < 2 GB,
 paquete de distribución < 500 MB. Se verifican en el equipo de referencia, no se estiman.
+
+**CT-02 — sin tarjeta gráfica dedicada.** El prototipo tiene que correr en los equipos de la
+institución, que no la tienen. Es una restricción de aceptación, no una aspiración: acota las
+opciones de URP (sin post-procesado costoso, sin luces 2D por objeto en masa) y se verifica
+midiendo en un equipo sin GPU discreta, junto con los tres presupuestos de arriba.
 
 ---
 
@@ -425,6 +433,9 @@ Flujo de trabajo test-first por slice: `plan-feature` → `test-designer` → `f
 - Acompañar toda señal por color con un segundo indicador — icono, texto o forma (RNF-19).
 - Redactar los textos del estudiante a nivel lector de grado cuarto: máximo 20 palabras por
   oración, sin tecnicismos sin explicar (RNF-01).
+- Mantener toda instrucción en **máximo dos líneas** y acompañar todo texto instruccional con
+  **refuerzo icónico** (CP-08). Es distinto del doble indicador de RNF-19: aquel acompaña al
+  color, este acompaña a la instrucción. Se decide al crear el ScriptableObject, no después.
 - Ofrecer los dos mecanismos de andamiaje por separado: ayuda a demanda que repite la
   instrucción vigente sin alterar el estado, y pista automática tras tres fallos consecutivos.
 - Asociar cada commit a su tarjeta del tablero Kanban (RNF-17).
@@ -447,6 +458,8 @@ Flujo de trabajo test-first por slice: `plan-feature` → `test-designer` → `f
   progreso hoy no está en su letra, ver INC-27).
 - Transmitir dato alguno por red, ni requerir internet en ejecución (RNF-08, RNF-10).
 - Usar la clase `Input` legada.
+- Incluir violencia explícita, publicidad, compras integradas o enlaces externos (RNF-22). Se
+  verifica por inspección integral del contenido en el cierre del proyecto, no por prueba.
 - Incluir un asset gráfico o sonoro sin autoría propia ni autorización escrita, o sin su
   reconocimiento en la pantalla de créditos (CT-09, RNF-23).
 - Editar los `.docx` de `docs/` desde el código.
@@ -487,8 +500,10 @@ Verificables, uno por KPI del trabajo de grado (§2.3):
 
 ## Decisiones sobre los documentos en conflicto
 
-`INCONSISTENCIAS.md` (rev. 5, 30/08/2026) registra los 42 hallazgos históricos entre los seis
-`.docx`. **Todos están cerrados en los documentos**; el código sigue sencillamente lo que dicen.
+`INCONSISTENCIAS.md` (rev. 6, 30/08/2026) registra los 43 hallazgos históricos entre los seis
+`.docx`. **Todos están cerrados en los documentos** salvo `INC-43`, que no toca al código: el
+guion §12 declara `PG-07` pendiente cuando la autorización ya se concedió. El código sigue
+sencillamente lo que dicen.
 Lo que el código materializa de cada decisión, para que no se pierda al leer solo el `.docx`:
 
 | Hallazgo (cerrado) | Lo que el código materializa |
@@ -528,8 +543,14 @@ Corregir cualquiera de estos ahora sale más barato que después.
 2. **Guardado automático** al completar cada fase, no en cada acción (RF-04), que es lo que hace
    verificable la recuperación tras cierre forzado (RNF-14). Los cuatro indicadores de OE1 §3.6.1
    se persisten en ese mismo punto.
-3. **Personajes originales** por defecto. Los de la Familia Anonaky autorización para trabajar en esos diseños ya ha sido aprobada por
-   escrito (PG-07, CT-09, RNF-23), como establecen el trabajo de grado §3.3.2 y §5.2.
+3. **Los personajes son obra derivada de los diseños de la Familia Anonaky, con autorización
+   escrita concedida** (PG-07 cerrado el 30/08/2026). Se rediseñaron —proporciones, vestuario,
+   paleta y rasgos propios— pero **partieron** de esos personajes, y cambiar el diseño no
+   extingue el derecho del autor original: por eso el permiso hacía falta, y por eso se pidió.
+   Consecuencias vigentes: el reconocimiento expreso en la pantalla de créditos es **obligatorio**
+   (CT-09, RNF-23, trabajo de grado §3.3.2 y §5.2), y la constancia escrita se archiva con los
+   anexos del trabajo de grado. Lo que sí es **original del proyecto** y no depende de PG-07:
+   entornos, props, interfaz, tipografía, efectos y animación (`Direccion_de_Arte.md` §19).
 4. **Raíz de assets** `Assets/Game/` y namespace `Game.*`: el título aún no está definido (PG-01)
    y no conviene atar la estructura de carpetas a una decisión pendiente.
 5. **El guía se llama Chispa** provisionalmente, siguiendo el guion, que es el único documento con
@@ -570,14 +591,17 @@ por nivel está fijada en OE1 §3.6.1, con lista cerrada.
 
 ## Preguntas abiertas
 
-Ya no hay preguntas de diseño ni de redacción con efecto en el código: los 42 hallazgos de
-`INCONSISTENCIAS.md` están cerrados en los `.docx` y este documento sigue su resolución.
+Ya no hay preguntas de diseño ni de redacción con efecto en el código: de los 43 hallazgos de
+`INCONSISTENCIAS.md` solo `INC-43` sigue abierto —una fila desactualizada del guion §12, sin
+efecto en el código— y este documento sigue su resolución.
 
 **Del guion (§12), sin resolver** — son del guion, no conflictos entre documentos:
 **PG-01** título del producto · **PG-02** nombre definitivo del guía (Chispa, provisional) ·
 **PG-05** verificar en pruebas que el cambio de esquema de control entre el Nivel 1 y el 2 no
-confunde · **PG-06** validar jugando los valores del Nivel 1 (`FireLevelConfig`) · **PG-07**
-autorización de los personajes de la Familia Anonaky (Ya aprobado).
+confunde · **PG-06** validar jugando los valores del Nivel 1 (`FireLevelConfig`).
+
+**PG-07 cerrado (30/08/2026):** la autorización escrita de los personajes de la Familia Anonaky
+fue concedida. Falta reflejarlo en el guion §12 (INC-43).
 
 **Residuo cosmético en `docs/`:** HU-17 y HU-18 no llevan el encabezado «Página 17/18 de 18».
 

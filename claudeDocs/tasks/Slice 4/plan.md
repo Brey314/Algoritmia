@@ -660,6 +660,10 @@ importados es la primera vez que RNF-06 se puede medir de verdad.
 - [ ] Golden Path del juego entero en 20–40 minutos, dos veces (RNF-13, `SPEC.md` §Objetivo).
 - [ ] **PG-01** (título) y **PG-02** (nombre del guía) cerrados: aparecen en pantalla y en créditos.
 - [ ] **RNF-12**: formato de consentimiento informado presente en los anexos del proyecto.
+- [ ] **RNF-22**: inspección integral del contenido — sin violencia explícita, publicidad,
+      compras integradas ni enlaces externos, en los tres niveles y en los créditos
+- [ ] **CT-02**: el ejecutable corre en un equipo **sin tarjeta gráfica dedicada**, dentro de
+      los presupuestos de RNF-04 y RNF-05
 - [ ] Revisado con el usuario. Fin del prototipo.
 
 ---
@@ -705,219 +709,264 @@ importados es la primera vez que RNF-06 se puede medir de verdad.
 
 # Assets visuales del Slice 4
 
-**Tres assets, y ninguno es de juego.** Este slice es interfaz: iconografía y layout. No hay
-personajes ni escenarios nuevos, y por eso los prompts son más cortos que los de los slices
-anteriores.
+**Tres assets, y ninguno es de juego.** Este slice es interfaz: iconografía y maquetas de layout.
+No hay personajes ni escenarios nuevos.
 
-**Nada de chroma key.** Estos elementos se componen sobre el interior oscuro `#0B0E14` de los
-paneles, que es el mismo color en el que se generan: se importan tal cual, sin recorte. Es la
-razón de que aquí no haga falta el verde ni el magenta de los slices anteriores.
+**Documento que manda:** `claudeDocs/Direccion_de_Arte.md` §10 (interfaz), §11 (tipografía) y
+§14 (accesibilidad). Si algo se contradice, gana la dirección de arte; si esta contradice a
+`SPEC.md`, gana `SPEC.md`.
+
+**Cómo se arma un prompt.** Los mismos bloques fijos de los slices anteriores, con el de paleta
+reducido a los neutros de interfaz:
+
+```
+[1 CONTEXTO UI]  [2 ESTILO]  [3 PALETA UI]  [4 ENTREGA UI]  [5 PROHIBICIONES]  +  ELEMENTO
+```
+
+`[2 ESTILO]` y `[5 PROHIBICIONES]` se copian **idénticos** a los del `Slice 1/plan.md`.
+`[4 ENTREGA UI]` sustituye al bloque de entrega de los otros slices, porque aquí no hay croma.
+
+> **Cambio respecto de la versión anterior de este plan: el informe docente es CLARO, no oscuro.**
+> La dirección de arte §10.3 y la checklist §17 lo fijan sin excepción — «texto oscuro sobre fondo
+> claro, nunca al revés»—, y la pantalla más densa del juego es justo donde más importa. El par
+> vigente es carbón `#3A1E18` sobre marfil `#F7EFE2`, que sostiene RNF-20 con holgura.
 
 **El resumen de fin de nivel no genera arte.** Reutiliza el marco de diálogo `A10` del Slice 1,
 igual que las escenas narrativas — es lo que hace que el resumen se lea como andamiaje y no como
-una pantalla de puntaje. Si alguien pide un marco nuevo para el resumen, la respuesta es `A10`.
+una pantalla de puntaje (CP-03, RF-45). Si alguien pide un marco nuevo para el resumen, la
+respuesta es `A10`.
 
-**Autoría (CT-09, RNF-23).** Iconografía original, registrada en `CreditsContent.asset` como todo
-lo demás.
+**Autoría (CT-09, RNF-23).** Iconografía original del proyecto, registrada en
+`CreditsContent.asset` (Slice 1, T08) como todo lo demás.
 
-**Una precisión sobre los iconos.** Pediste «uno por faceta de pensamiento computacional que
-miden», y conviene ajustarlo: los cuatro indicadores de §3.6.1 —intentos, errores corregidos,
-pasos utilizados, tiempo de resolución— **no se corresponden uno a uno con las facetas**. Las
-facetas se mapean a RF, no a indicadores, en la matriz de OE1 §5.1: la depuración, por ejemplo,
-la evidencian «intentos» y «errores corregidos» a la vez. Así que son **cuatro iconos, uno por
-indicador**, que es lo que la tabla de `P06` necesita.
+**Una precisión sobre los iconos.** Los cuatro indicadores de OE1 §3.6.1 —intentos, errores
+corregidos, pasos utilizados, tiempo de resolución— **no se corresponden uno a uno con las
+facetas** del pensamiento computacional: las facetas se mapean a RF, no a indicadores (OE1 §5.1).
+La depuración, por ejemplo, la evidencian «intentos» y «errores corregidos» a la vez. Son
+**cuatro iconos, uno por indicador**, que es lo que necesita la tabla de `P06`.
 
 ---
 
-## Bloque de estilo fijo — copiar al inicio de cada prompt
-
-El mismo bloque de los Slices 2 y 3, con **una frase añadida al final** para acotar que son
-elementos de interfaz y no objetos de un escenario.
+## Bloque 1 · CONTEXTO UI — sustituye al de los otros slices
 
 ```
-ESTILO (fijo, no variar): ilustración plana 2D vectorial para videojuego educativo infantil.
-Formas redondeadas y macizas, sin puntas agresivas. Contorno limpio y uniforme de 4 px en
-color #1C2333. Color en planos sólidos, sin degradados complejos, sin texturas fotográficas,
-sin sombreado realista: como máximo una sombra plana de un solo tono. Sin efectos de brillo
-volumétrico ni destellos intensos. Iluminación diurna suave y pareja, procedente de arriba,
-sin sol visible en el encuadre y sin sombras largas. Tono amable, acogedor y no amenazante,
-apropiado para niños de 9 a 11 años. Ambientación prehistórica estilizada, no realista. Sin
-violencia, sin sangre, sin armas, sin texto de ningún tipo dentro de la imagen, sin marcas de
-agua, sin logotipos. Composición centrada y legible a tamaño pequeño, pensada para proyector y
-pantallas de baja calidad: siluetas distinguibles y alto contraste entre figura y fondo.
-ELEMENTOS DE INTERFAZ: planos, frontales, sin perspectiva y sin volumen; legibles a 32 píxeles.
+CONTEXTO DEL ENCARGO
+Soy diseñador de un videojuego educativo 2D hecho en Unity para estudiantes de grado cuarto de
+primaria. Este encargo NO es para la parte que juega el estudiante: es para la pantalla que
+consulta el DOCENTE, donde se muestran los datos de desempeño de sus estudiantes, y para un
+diálogo de confirmación de borrado de datos.
+
+Lo que necesito son ELEMENTOS DE INTERFAZ de producción: iconos que voy a importar a Unity y
+maquetas de estructura que voy a reconstruir con componentes de UI reales. No es una ilustración
+y no es una propuesta de diseño gráfico para presentar: es material de trabajo.
+
+Condiciones que mandan:
+1. La pantalla se ve proyectada en un aula, a veces con luz ambiente alta. La legibilidad manda
+   sobre cualquier consideración estética.
+2. Texto oscuro sobre fondo claro, SIEMPRE. Nunca al revés.
+3. Estética de piedra, hueso y cuero tallados, coherente con la ambientación prehistórica del
+   juego. NUNCA estética digital moderna: sin bordes metálicos, sin brillos de cristal, sin
+   sombras difuminadas, sin gradientes de interfaz.
+4. Los elementos son planos y frontales, sin perspectiva y sin volumen, y deben ser legibles a
+   32 píxeles de alto.
+
+INSTRUCCIÓN SOBRE LO QUE NO TE DIGA: sigue las secciones de abajo al pie de la letra. Donde no
+te dé un dato, NO lo inventes: elige la opción más simple compatible con las reglas y deja el
+resto vacío. No añadas adornos, texto, iconos ni elementos que no haya pedido explícitamente.
 ```
 
-## Bloque de paleta — copiar al inicio de cada prompt
-
-La misma paleta acumulada de los tres slices. Para la interfaz del docente bastan estos colores;
-copiar el bloque completo igualmente, para que el estilo no derive.
+## Bloque 3 · PALETA UI — usar solo estos colores
 
 ```
-PALETA (fija, usar solo estos colores):
-  Fondo de panel          #0B0E14
-  Línea y contorno        #1C2333
-  Separador               #2E3A4F
-  Cuero de marco          #8C4A2F
-  Cuero claro             #A9713F
-  Fibra y borde interior  #A98C5F
-  Hueso (texto y UI)      #F2E8D5
-  Acento cálido           #FFC94A
-  Alerta                  #E4572E
-  Confirmación            #7FA05A
-  Neutro atenuado         #4E5561
+PALETA (fija, no usar ningún color fuera de esta lista)
+  Marfil #F7EFE2            Fondo de panel y de tabla
+  Marfil sombra #E0D4C0     Separadores y fondo de fila alterna
+  Borde de panel #C4A882    Cuero del marco
+  Carbón #3A1E18            Texto, contorno e iconos
+  Carbón suave #6B5248      Texto secundario y puntadas
+  Éxito #5FA842             Confirmación
+  Atención #E8A33D          Selección, alerta y acción destacada
+
+REGLA DE CONTRASTE: el par que sostiene la lectura es carbón #3A1E18 sobre marfil #F7EFE2. No
+inviertas esa relación en ningún elemento.
+
+NO HAY ROJO DE ERROR en toda la interfaz del juego. La alerta se marca con ámbar #E8A33D más una
+FORMA —triángulo, rombo, contorno discontinuo—, nunca con rojo. Es una decisión pedagógica del
+proyecto: el rojo comunica castigo, y este juego no castiga.
 ```
 
-*El par `#F2E8D5` sobre `#0B0E14` es el que sostiene RNF-20 en la tabla del informe, que es la
-pantalla más densa del juego.*
+## Bloque 4 · ENTREGA UI — sustituye al bloque de entrega con croma
+
+```
+ENTREGA TÉCNICA (obligatoria)
+FONDO: marfil plano #F7EFE2, uniforme, sin degradado, sin viñeta y sin sombra proyectada.
+
+ENCUADRE: el elemento completo dentro del lienzo, sin recortes, con al menos un 10 por ciento de
+margen vacío a cada lado.
+
+NADA DE TEXTO: ni letras, ni números, ni palabras, ni firmas, ni marcas de agua. Donde vaya a ir
+texto, dibuja una BARRA RECTANGULAR llena en #E0D4C0 como marcador de posición, del largo
+aproximado que ocuparía la frase. El texto real lo escribe el motor del juego.
+
+FORMATO: PNG sin compresión con pérdida. Los iconos, en lámina cuadrada; las maquetas de panel,
+en 16:9 horizontal.
+
+SI TE PIDO VARIOS ELEMENTOS: genéralos en la MISMA imagen, separados y alineados, sin marcos ni
+títulos entre ellos, y con el mismo tamaño de caja y el mismo grosor de trazo en todos.
+```
 
 ---
 
 ## D1 · Iconografía de los cuatro indicadores
 
 **Traza:** RF-46, RF-45, RNF-19, RNF-20, OE1 §3.6.1, CU-11, HU-16.
-**Chroma:** no — se generan sobre el fondo de panel y se usan tal cual.
-**Entregar:** cuatro iconos en una lámina, mismo tamaño y mismo peso de trazo.
+**Chroma:** no. **Archivo:** `ui_ind_intentos.png`, `_errores`, `_pasos`, `_tiempo`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO UI] [2 ESTILO] [3 PALETA UI] [4 ENTREGA UI] [5 PROHIBICIONES]
 
-ASSET: Los cuatro iconos de indicadores del informe docente. Sin texto de ningún tipo dentro de
-la imagen: cada icono va acompañado de su nombre escrito por el juego.
+ELEMENTO: los cuatro iconos de indicadores del informe docente. Sin texto de ningún tipo: cada
+icono va acompañado de su nombre, escrito por el motor.
 
-Generar CUATRO iconos, todos del mismo tamaño, mismo grosor de trazo y misma caja cuadrada
-imaginaria, en #F2E8D5 sobre fondo #0B0E14:
+Generar CUATRO iconos en una sola lámina, alineados horizontalmente, TODOS con el mismo tamaño,
+el mismo grosor de trazo y la misma caja cuadrada imaginaria, dibujados en carbón #3A1E18 sobre
+el marfil del fondo:
 
-  (1) INTENTOS — «acciones que el sistema evalúa y que no producen avance»: una mano cerrada
-      golpeando suavemente sobre una superficie plana, vista de perfil, con dos arcos cortos de
-      repetición sobre ella. Debe leerse como «volver a probar», nunca como agresión ni fracaso.
+  (1) INTENTOS — «acciones que el sistema evalúa y que no producen avance en la tarea activa»:
+      una mano cerrada, vista de perfil, golpeando suavemente sobre una superficie plana, con
+      DOS arcos cortos de repetición sobre ella. Debe leerse como «volver a probar», nunca como
+      agresión ni como fracaso.
 
-  (2) ERRORES CORREGIDOS — «intentos fallidos que tras cambiar la hipótesis terminan en
+  (2) ERRORES CORREGIDOS — «intentos fallidos que, tras cambiar la hipótesis, terminan en
       acierto»: una flecha que traza una curva en U, saliendo hacia abajo y regresando hacia
-      arriba, con una marca de verificación pequeña #7FA05A en su extremo final. Es corrección,
+      arriba, con una marca de verificación pequeña #5FA842 en su extremo final. Es corrección,
       no castigo.
 
-  (3) PASOS UTILIZADOS — «unidades de acción que componen la solución aceptada»: tres huellas de
-      pie descalzo en fila diagonal ascendente, la primera más tenue y la última plena.
+  (3) PASOS UTILIZADOS — «unidades de acción que componen la solución aceptada»: TRES huellas de
+      pie descalzo en fila diagonal ascendente, la primera con el trazo más fino y la última con
+      el trazo pleno.
 
   (4) TIEMPO DE RESOLUCIÓN: un reloj de arena de silueta simple y simétrica, con la arena
       superior e inferior insinuadas por dos triángulos macizos. SIN números, SIN manecillas y
-      SIN cuenta regresiva: este juego no tiene temporizador y el icono no debe sugerirlo.
+      SIN cuenta regresiva: este juego no tiene temporizador y el icono no debe sugerir que lo
+      tenga.
 
 REQUISITOS: los cuatro deben distinguirse por SILUETA en escala de grises y ser legibles a 32
-píxeles. Ninguno debe leerse como acierto o error, premio o castigo: son medidas, no juicios —
-el estudiante nunca los ve, y el docente no debe leer un veredicto en el icono.
-
-FONDO: plano #0B0E14, sin borde y sin marco.
+píxeles. Ninguno debe leerse como acierto o error, premio o castigo: son medidas, no juicios. El
+estudiante nunca los ve, y el docente no debe leer un veredicto en el icono.
 ```
+
+**Verificación (§17):** las cuatro siluetas se separan a 32 px y en escala de grises · ninguno
+sugiere premio ni castigo · el reloj no sugiere cuenta atrás (CP-02) · sin texto.
 
 ---
 
-## D2 · Layout del panel de `TeacherReport`
+## D2 · Maqueta del panel de `TeacherReport`
 
 **Traza:** RF-46, RF-45, RNF-19, RNF-20, RNF-01, CU-11, HU-16, **INC-35** (por nivel y por fase).
-**Chroma:** no.
-**Entregar:** una maqueta del panel completo, sin texto, con la estructura de filas y columnas.
+**Chroma:** no. **Archivo:** `ui_teacherreport_maqueta.png`.
+
+> **Es una maqueta, no arte final.** Sirve para construir la jerarquía de UI en la escena. Una
+> tabla generada como imagen no se puede rellenar con datos.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO UI] [2 ESTILO] [3 PALETA UI] [4 ENTREGA UI] [5 PROHIBICIONES]
 
-ASSET: Maqueta del panel de consulta de progreso del docente. VISTA FRONTAL PLANA, relación de
-aspecto 16:9. Sin texto de ningún tipo dentro de la imagen: es una maqueta de estructura, y todo
-el contenido lo escribe el juego. Usar barras rectangulares #4E5561 como marcadores de posición
-donde iría el texto.
+ELEMENTO: maqueta de estructura del panel de consulta de progreso del docente. VISTA FRONTAL
+PLANA, relación de aspecto 16:9. Sin texto: todo el contenido lo escribe el motor. Donde vaya
+texto, una barra rectangular #E0D4C0 como marcador de posición.
 
 ESTRUCTURA FIJA, de arriba abajo:
 
-  (1) CABECERA: banda horizontal delgada de cuero #8C4A2F con puntadas #A98C5F. A la izquierda,
-      una barra marcadora larga (título de la pantalla). A la derecha, un botón redondeado
-      #A9713F con una flecha #F2E8D5 apuntando a la izquierda (volver al menú).
+  (1) CABECERA: banda horizontal delgada de cuero #C4A882 con puntadas #6B5248. A la izquierda,
+      una barra marcadora larga (el título de la pantalla). A la derecha, un botón redondeado
+      #E8A33D con contorno #3A1E18 y una flecha #3A1E18 apuntando a la izquierda: volver al menú.
 
-  (2) COLUMNA IZQUIERDA, un tercio del ancho: lista vertical de perfiles. Seis filas iguales,
-      cada una con una barra marcadora, separadas por líneas #2E3A4F. Una de las filas —la
-      segunda— aparece seleccionada: fondo #2E3A4F y una barra vertical #FFC94A pegada a su
-      borde izquierdo. Al pie de la columna, un botón ancho #8C4A2F con un icono de papelera
-      #E4572E: es eliminar datos, y debe verse claramente separado del resto de la lista, nunca
-      contiguo a la fila seleccionada.
+  (2) COLUMNA IZQUIERDA, un tercio del ancho: lista vertical de perfiles. SEIS filas iguales,
+      cada una con una barra marcadora, separadas por líneas finas #E0D4C0. La SEGUNDA fila
+      aparece seleccionada: fondo #E0D4C0 y una barra vertical gruesa #E8A33D pegada a su borde
+      izquierdo —la selección se marca por color Y por esa barra, no solo por color—.
+      Al PIE de la columna, separado del resto por un espacio generoso y una línea, un botón
+      ancho de contorno #3A1E18 con un icono de papelera #3A1E18: es eliminar datos. Tiene que
+      verse claramente apartado de la lista, nunca contiguo a la fila seleccionada.
 
-  (3) COLUMNA DERECHA, dos tercios del ancho: la tabla de indicadores. Se organiza en TRES
-      BLOQUES apilados, uno por nivel, separados por una línea #2E3A4F más gruesa. Cada bloque
-      lleva arriba una barra marcadora ancha (nombre del nivel) y debajo VARIAS FILAS, una por
-      fase: el primer bloque con una fila, el segundo con tres, el tercero con cuatro. Es la
-      estructura por nivel y por fase, y tiene que verse en la maqueta.
+  (3) COLUMNA DERECHA, dos tercios del ancho: la tabla de indicadores, en TRES BLOQUES apilados,
+      uno por nivel, separados por una línea #C4A882 más gruesa. Cada bloque lleva arriba una
+      barra marcadora ancha (el nombre del nivel) y debajo VARIAS FILAS, una por fase: el primer
+      bloque con UNA fila, el segundo con TRES, el tercero con CUATRO. Que los bloques tengan
+      distinto número de filas es parte de la estructura y tiene que verse.
       Cada fila de fase se divide en cinco columnas: una barra marcadora estrecha a la izquierda
-      (nombre de la fase) y, a su derecha, CUATRO celdas iguales, cada una con un cuadrado
-      pequeño #F2E8D5 arriba (donde irá el icono del indicador) y una barra marcadora corta
-      debajo (donde irá la cifra).
+      (el nombre de la fase) y, a su derecha, CUATRO celdas iguales, cada una con un cuadrado
+      pequeño de contorno #3A1E18 arriba —donde irá el icono del indicador— y una barra marcadora
+      corta debajo —donde irá la cifra—.
 
-  (4) Todo el panel sobre fondo #0B0E14, enmarcado por un borde de cuero #8C4A2F con esquinas
+  (4) Todo el panel sobre marfil #F7EFE2, enmarcado por un borde de cuero #C4A882 de esquinas
       redondeadas.
 
-REQUISITO: la maqueta debe dejar claro que las cifras viven aquí y en ninguna otra pantalla, y
-que un nivel puede tener más filas que otro. Densa pero respirada: es una pantalla para
-proyector.
-
-FONDO: plano #0B0E14.
+REQUISITO: densa pero respirada; es una pantalla para proyector. La maqueta debe dejar claro que
+un nivel puede tener más filas que otro y que las cifras viven aquí y en ninguna otra pantalla.
 ```
+
+**Verificación (§17):** tres bloques con 1, 3 y 4 filas · la selección se marca por barra además
+de por fondo (RNF-19) · el botón de eliminar queda separado de la lista · texto oscuro sobre
+fondo claro · sin texto real en la imagen.
 
 ---
 
 ## D3 · Diálogo de confirmación de eliminación
 
 **Traza:** RF-47, RNF-11, RNF-19, RNF-20, CU-12 (pasos 3 y 4, FA-4a), HU-16.
-**Chroma:** no.
-**Entregar:** el marco del diálogo, sin texto, con sus dos botones diferenciados.
+**Chroma:** no. **Archivo:** `ui_dialogo_eliminar.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO UI] [2 ESTILO] [3 PALETA UI] [4 ENTREGA UI] [5 PROHIBICIONES]
 
-ASSET: Marco del diálogo de confirmación de eliminación de datos. VISTA FRONTAL PLANA. Sin texto
-dentro: la advertencia la escribe el juego. Usar barras rectangulares #4E5561 como marcadores de
-posición del texto.
+ELEMENTO: marco del diálogo de confirmación de eliminación de datos. VISTA FRONTAL PLANA. Sin
+texto: la advertencia la escribe el motor. Donde vaya texto, barras marcadoras #E0D4C0.
 
-FORMA FIJA: recuadro compacto de esquinas redondeadas, centrado, con borde de cuero #8C4A2F de
-grosor uniforme y puntadas #A98C5F. Fondo interior #0B0E14. El recuadro es notablemente más
-pequeño que un panel de pantalla completa: es un diálogo, se superpone.
+FORMA FIJA: recuadro compacto de esquinas muy redondeadas, centrado, con borde de cuero #C4A882
+de grosor uniforme y puntadas #6B5248, sobre interior marfil #F7EFE2. El recuadro es
+notablemente más pequeño que un panel de pantalla completa: es un diálogo que se superpone.
 
 CONTENIDO, de arriba abajo:
-  (1) Un icono de advertencia centrado arriba: triángulo de contorno grueso #E4572E con un signo
-      de admiración #F2E8D5 dentro. Es la única forma de color de alerta del diálogo, y va
-      acompañado de la forma triangular: no depende del color (RNF-19).
-  (2) Dos barras marcadoras apiladas y centradas (la advertencia de irreversibilidad).
+  (1) Un icono de advertencia centrado arriba: TRIÁNGULO de contorno grueso #E8A33D con un signo
+      de admiración #3A1E18 dentro. Es la única marca de alerta del diálogo y va acompañada de
+      la forma triangular: no depende del color (RNF-19). NO uses rojo.
+  (2) Dos barras marcadoras apiladas y centradas: la advertencia de que la acción es
+      irreversible.
   (3) Abajo, DOS BOTONES lado a lado, deliberadamente distintos entre sí:
-      — IZQUIERDA, «Cancelar»: botón ancho y sólido de cuero #A9713F con contorno continuo
-        #1C2333 y una barra marcadora #F2E8D5 dentro. Es el más grande y el más visible de los
-        dos.
-      — DERECHA, «Eliminar»: botón más estrecho, de fondo #0B0E14 con contorno #E4572E DISCONTINUO
-        a trazos, una barra marcadora #E4572E dentro y un icono de papelera #E4572E a su
-        izquierda.
+      — IZQUIERDA, «Cancelar»: botón ANCHO y sólido en #E8A33D con contorno CONTINUO #3A1E18 y
+        una barra marcadora #3A1E18 dentro. Es el más grande y el más visible de los dos.
+      — DERECHA, «Eliminar»: botón MÁS ESTRECHO, de fondo marfil #F7EFE2 con contorno #3A1E18
+        DISCONTINUO a trazos, una barra marcadora #6B5248 dentro y un icono de papelera #3A1E18
+        a su izquierda.
 
-REQUISITO DE DISEÑO: la acción destructiva NO puede ser la más fácil de accionar por error. El
-botón de cancelar es el prominente; el de eliminar se distingue por su contorno discontinuo y su
-menor peso visual, y esa diferencia debe leerse también en escala de grises. Es un requisito de
-protección de datos (RF-47, RNF-11), no una preferencia estética.
-
-FONDO: plano #0B0E14.
+REQUISITO DE DISEÑO (no es preferencia estética): la acción destructiva NO puede ser la más fácil
+de accionar por error. El botón de cancelar es el prominente; el de eliminar se distingue por su
+contorno discontinuo y su menor peso visual, y esa diferencia debe leerse también en escala de
+grises. Es un requisito de protección de datos (RF-47, RNF-11).
 ```
+
+**Verificación (§17):** cancelar es visiblemente más prominente que eliminar · la diferencia se
+mantiene en escala de grises · ningún rojo en el diálogo (§12.3) · la alerta lleva forma además
+de color (RNF-19) · sin texto real.
 
 ---
 
 ## Postproceso de los assets
 
-No hay recorte de chroma en este slice. Aun así:
+No hay recorte de croma en este slice. Aun así:
 
-1. Exportar PNG con alfa: los iconos de `D1` deben poder ir sobre cualquier fila de la tabla, no
-   solo sobre `#0B0E14`.
-2. Importar como Sprite en `Assets/Game/Art/UI/`, con el **mismo `Pixels Per Unit` que los tres
-   slices anteriores**.
-3. **`D2` y `D3` son maquetas, no arte final**: se usan para construir la jerarquía de UI en la
-   escena, no se importan como una imagen de fondo. Una tabla generada como imagen no se puede
-   rellenar con datos.
-4. Verificar RNF-19: desaturar `D1` y `D3` y comprobar que los cuatro iconos se distinguen entre
-   sí y que los dos botones del diálogo se siguen diferenciando.
-5. Verificar RNF-20 sobre la tabla **construida y llena de datos**, no sobre la maqueta: el
+1. **Verificar** contra la checklist de `Direccion_de_Arte.md` §17 y contra la línea
+   «Verificación» de cada asset.
+2. **Exportar PNG con alfa**: los iconos de `D1` deben poder ir sobre cualquier fila de la tabla,
+   incluida la fila alterna en `#E0D4C0`, no solo sobre el marfil.
+3. **`D2` y `D3` son maquetas, no arte final**: se usan para construir la jerarquía de UI con
+   componentes reales en la escena. Una tabla generada como imagen no se puede rellenar con datos.
+4. **Nombrar** según §15.4 e **importar** en `Assets/Game/Art/UI/` con los ajustes de §15.2 y el
+   **mismo `Pixels Per Unit` `100`** de los tres slices anteriores.
+5. **Verificar RNF-19**: desaturar `D1` y `D3` y comprobar que los cuatro iconos se distinguen
+   entre sí y que los dos botones del diálogo se siguen diferenciando.
+6. **Verificar RNF-20 sobre la tabla construida y llena de datos**, no sobre la maqueta: el
    contraste se mide en la pantalla real (`P06`).
-6. Registrar los tres en `CreditsContent.asset` (Slice 1, T08) — CT-09, RNF-23.
+7. **Registrar** los tres en `CreditsContent.asset` (Slice 1, T08) — CT-09, RNF-23.

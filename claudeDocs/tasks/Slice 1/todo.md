@@ -98,20 +98,34 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ## Assets visuales — `plan.md` §Assets visuales del Slice 1
 
-Personajes **originales** mientras PG-07 siga sin autorización (CT-09, RNF-23).
+Personajes = **obra derivada** de los diseños Anonaky con **autorización escrita concedida**
+(PG-07 cerrado): su reconocimiento en créditos es obligatorio. Entornos, props e interfaz son
+originales del proyecto (CT-09, RNF-23).
 Cada asset generado se registra en `CreditsContent.asset` (T08).
 
+**Cinco bloques fijos por prompt**, copiados palabra por palabra antes de la descripción:
+`[1 CONTEXTO] [2 ESTILO] [3 PALETA] [4 ENTREGA] [5 PROHIBICIONES]`. Un asset generado sin los
+cinco se descarta y se vuelve a pedir. La paleta y las especificaciones salen de
+`claudeDocs/Direccion_de_Arte.md`.
+
+**Los personajes se piden en A-pose**, no en poses de acción: las poses del nivel se producen
+animando el sprite con 2D Animation (`Direccion_de_Arte.md` §7.5 y §13.1). Pedirle a Gemini tres
+poses del mismo personaje devuelve tres personajes distintos.
+
 - [ ] **A1 · Chispa, el guía** — chroma sí — guion §1.1/§4.1, PG-02, RF-10, RF-12, RF-13
-- [ ] **A2 · Papá (jugable N1)** — chroma sí — guion §1.1/§4.2, RF-14, HU-06
-- [ ] **A3 · Mamá** — chroma sí — guion §1.1/§4.2
-- [ ] **A4 · Niña** — chroma sí — guion §1.1/§4.2
-- [ ] **A5 · Niño** — chroma sí — guion §1.1/§4.2
+- [ ] **A2 · Papá (jugable N1)** — chroma sí — **A-pose** — guion §1.1/§4.2, RF-14, HU-06, CN-02
+- [ ] **A3 · Mamá** — chroma sí — **A-pose** — guion §1.1/§4.2
+- [ ] **A4 · Niña** — chroma sí — **A-pose**, penacho alto — guion §1.1/§4.2
+- [ ] **A5 · Niño** — chroma sí — **A-pose**, copete hacia adelante — guion §1.1/§4.2
 - [ ] **A6 · Cueva, cuatro escalones de luz** — chroma **no** — guion §3.1/§4, RF-21
 - [ ] **A7 · Montón de hojas, cuatro estados** — chroma sí — guion §4.3.1/§4.3.3, RF-14, RF-16
 - [ ] **A8 · Sílex y pedernal** — chroma sí — guion §4.1/§4.2, RF-16, RNF-19
 - [ ] **A9 · Controles del panel de encendido** — chroma sí — RF-14, RF-15, RF-19, RNF-19
 - [ ] **A10 · Marco de diálogo del guía** — chroma sí — RF-05, RF-06, RNF-20
-- [ ] Postproceso: recorte del verde, alfa, halo, import como Sprite, verificación de RNF-20
+- [ ] Cada asset pasa la **checklist de `Direccion_de_Arte.md` §17** y su línea «Verificación»
+- [ ] Postproceso: recorte del verde, alfa, halo, nombre según §15.4, import con los ajustes de
+      §15.2 (**PPU 100**, pivot `Bottom` en personajes y `Center` en props e interfaz)
+- [ ] Verificar RNF-20 y RNF-19 sobre el arte final, no sobre el prompt
 
 ---
 

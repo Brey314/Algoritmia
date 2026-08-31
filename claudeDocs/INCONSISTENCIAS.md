@@ -4,9 +4,10 @@ Registro de los conflictos detectados entre los seis `.docx` de `docs/`, con la 
 aplicada a cada uno. Documento hermano de `SPEC.md`: aquí está **qué estaba mal en los
 documentos y cómo quedó**; allí está **qué implementa el código**.
 
-**Verificación vigente: 30/08/2026, rev. 5.** Los seis documentos se releyeron de principio a
-fin y se editaron directamente. **Todos los hallazgos INC-01 … INC-42 están cerrados**; quedan
-solo dos residuos menores y los puntos abiertos del guion, listados al final.
+**Verificación vigente: 30/08/2026, rev. 6.** Los seis documentos se releyeron de principio a
+fin y se editaron directamente. **Los hallazgos INC-01 … INC-42 están cerrados**; queda
+**INC-43 abierto** (el guion aún declara `PG-07` pendiente después de obtenerse la autorización),
+más dos residuos menores, listados al final.
 
 > **Nota sobre esta revisión.** La rev. 4 dejaba veintitrés hallazgos abiertos. Entre esa
 > revisión y esta se corrigieron en los `.docx`: los nueve que la rev. 4 mantenía abiertos
@@ -62,6 +63,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-40 | UI y Audio no tenían assembly en la lista de §9 | Arquitectura | **Cerrado** |
 | INC-41 | HU-02 generalizaba la lista de tareas a todos los niveles | HU, OE1 | **Cerrado** |
 | INC-42 | Norma de citación declarada distinta de la usada | Trabajo de grado | **Cerrado** |
+| INC-43 | `PG-07` sigue «Abierto» tras aprobarse la autorización | Guion | **Abierto** |
 
 ---
 
@@ -226,6 +228,24 @@ La lista de assemblies de la arquitectura §9 incluye `Game.UI` y `Game.Audio`, 
 - **OE1 `RNF-03`** lleva la misma aclaración: «la limitación recae sobre la tarea activa, no
   sobre cuántas se muestran».
 
+### INC-43 · `PG-07` desactualizado en el guion — abierto
+El guion §12 declara `PG-07` **Abierto**: «El uso de los personajes de la Familia Anonaky depende
+de una autorización aún no obtenida». La autorización **ya fue concedida por escrito**
+(confirmado el 30/08/2026), de modo que la fila quedó desactualizada.
+
+**Por qué el permiso hacía falta, que es lo que conviene no volver a perder.** Los personajes del
+prototipo **se rediseñaron pero partieron de los diseños Anonaky**: son **obra derivada**.
+Cambiar proporciones, vestuario y paleta no extingue el derecho del autor original, y generarlos
+con una IA tampoco. De ahí que se solicitara la autorización en vez de darla por innecesaria.
+
+**Corrección a aplicar en el `.docx`** —el código nunca edita `docs/`, así que la edición es
+manual—: en la tabla del guion §12, marcar `PG-07` como **Cerrado (30/08/2026)** y sustituir la
+acción requerida por la constancia de la autorización escrita.
+
+Mientras el `.docx` no se edite, gana lo que dice aquí: `PG-07` está cerrado. El reconocimiento
+expreso de los personajes en la pantalla de créditos sigue siendo **obligatorio** (CT-09,
+RNF-23), y la constancia escrita se archiva con los anexos del trabajo de grado.
+
 ### INC-42 · Norma de citación — cerrado
 El trabajo de grado §6 declara «elaborado conforme a la norma NTC 1486 y con citación bajo la
 norma **IEEE**», que es la que usa el documento (citas numéricas entre corchetes, nota de la
@@ -243,13 +263,17 @@ bibliografía) y la que dice el nombre del archivo (`…ICONTEC_IEEE.docx`).
 **Puntos abiertos del guion (§12)** — son del guion, no conflictos entre documentos:
 `PG-01` (título del producto), `PG-02` (nombre definitivo del guía), `PG-05` (verificar en
 pruebas que el cambio de esquema de control entre niveles no confunde), `PG-06` (validar jugando
-los valores del Nivel 1), `PG-07` (autorización de los personajes). `PG-03` y `PG-04` están
-cerrados (redacción de `RF-16` y `RF-32`).
+los valores del Nivel 1). `PG-03` y `PG-04` están cerrados (redacción de `RF-16` y `RF-32`), y
+`PG-07` (autorización de los personajes) está **cerrado desde el 30/08/2026**: la autorización se
+concedió por escrito. El guion aún no lo refleja — ver INC-43.
 
 ---
 
 ## Historial de revisiones
 
+- **rev. 6 (30/08/2026)** — Confirmada la autorización escrita de los personajes de la Familia
+  Anonaky: `PG-07` se cierra y se abre **INC-43**, porque el guion §12 todavía lo declara
+  pendiente.
 - **rev. 5 (30/08/2026)** — Se cerraron los 42 hallazgos editando los seis `.docx`. Cambios
   registrados en el control de cambios de OE1 §6, OE2 §4 y arquitectura §12.
 - **rev. 4 (30/08/2026)** — Reconstrucción releyendo los seis documentos; 23 hallazgos abiertos,

@@ -132,15 +132,24 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ## Assets visuales — `plan.md` §Assets visuales del Slice 3
 
-Escenarios y objetos **originales** (CT-09, RNF-23). **Los personajes no se rediseñan**: Mamá es
-`A3` del Slice 1 y `C2` solo genera su vista cenital **con los rasgos fijos de `A3` copiados
+Escenarios, props e interfaz **originales del proyecto**. **Los personajes no se rediseñan**:
+Mamá es `A3` del Slice 1 —**obra derivada** con autorización concedida y mención obligatoria en
+créditos (CT-09, RNF-23)— y `C2` solo genera su vista cenital **con sus rasgos copiados
 literalmente**. Cada asset se registra en `CreditsContent.asset` (Slice 1, T08).
 
-**Chroma:** verde `#00FF00` en todos los que lo llevan — en este slice **ningún asset con chroma
-contiene verde**, así que no hace falta el magenta que exigió el bosque del Slice 2.
+**Cinco bloques fijos por prompt**, copiados palabra por palabra antes de la descripción:
+`[1 CONTEXTO] [2 ESTILO] [3 PALETA] [4 ENTREGA] [5 PROHIBICIONES]`. Un asset generado sin los
+cinco se descarta y se vuelve a pedir. La paleta y las especificaciones salen de
+`claudeDocs/Direccion_de_Arte.md`.
+
+**Todo el nivel se dibuja en vista cenital pura de 90 grados**, salvo `C10`, que es la
+ilustración lateral de la escena final.
+
+**Chroma:** verde `#00FF00` por defecto; **magenta `#FF00FF`** en `C2`, porque el personaje se
+recorta sobre un entorno de follaje. Los fondos de escena no llevan chroma.
 
 - [ ] **C1 · Escenario del río, vista superior** — chroma **no** — RF-35, RF-39, guion §8/§8.2
-- [ ] **C2 · Mamá vista superior, cuatro direcciones** — chroma verde — RF-35, CU-09, HU-11
+- [ ] **C2 · Mamá vista superior, cuatro direcciones** — chroma **magenta** — RF-35, CU-09, HU-11
       ⚠️ pegar el bloque «RASGOS FÍSICOS FIJOS» de `A3` (Slice 1) literalmente
 - [ ] **C3 · Botones de dirección y botón «Recoger»** — chroma verde — **RF-35**, RF-37, RNF-02,
       RNF-19, **INC-01**

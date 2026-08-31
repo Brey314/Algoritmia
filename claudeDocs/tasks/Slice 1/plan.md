@@ -752,7 +752,7 @@ sin comprometer el Golden Path; va último por eso.
 | **R1** | **No hay corredor de pruebas MCP.** `run_unity_tests`, `get_unity_compilation_result` y `unity_play_control` no están conectados; solo existe `coplay-mcp`. Todo el flujo test-first de este plan depende de poder ver una prueba fallar. | **Alto — abierto** | Mientras no se instale: correr cada suite **a mano** en la ventana Test Runner y **declarar el resultado explícitamente**, nunca darlo por hecho. Instalar el servidor MCP de Unity es la acción que desbloquea el plan; conviene hacerla antes de T02. |
 | R2 | PG-06: los valores del Nivel 1 (`Muy cerca`, 3, 3) no se han validado jugando | Medio | Viven en `FireLevelConfig`; ajustarlos no cuesta recompilación (RNF-18). Validar en el checkpoint D. |
 | R3 | PG-01: el título del producto sigue sin definirse y RF-01 lo exige en pantalla | Medio | Título en `GameTitleConfig` (SO), con marcador provisional. Cambiarlo es editar un asset. |
-| R4 | PG-07: sin autorización escrita de la Familia Anonaky | Medio | **Personajes originales por defecto** (supuesto 3, CT-09, RNF-23). Los prompts de la sección siguiente generan personajes originales. |
+| R4 | ~~PG-07: sin autorización escrita de la Familia Anonaky~~ | **Cerrado (30/08/2026)** | La autorización se concedió por escrito. Los personajes son **obra derivada** de los diseños Anonaky —rediseñados, pero partiendo de ellos—, así que su **reconocimiento en créditos es obligatorio** (T08, supuesto 3, CT-09, RNF-23). |
 | R5 | `Datos/` no escribible en los equipos de la institución | Medio | Caída a `Application.persistentDataPath` con advertencia; T02 lo prueba en los dos escenarios (INC-34). |
 | R6 | Deriva visual entre generaciones de arte | Medio | Bloque de estilo y paleta fijos, copiados literalmente al inicio de cada prompt. |
 | R7 | Gemini no genera transparencia real | Bajo | Fondo chroma key `#00FF00` y limpieza posterior; marcado asset por asset abajo. |
@@ -770,396 +770,668 @@ sin comprometer el Golden Path; va último por eso.
 
 # Assets visuales del Slice 1
 
-Diez assets. Generador principal: **Gemini / Nano Banana Pro**. Los prompts están en español y se
-pegan tal cual.
+Diez assets. Generador: **Gemini / Nano Banana Pro**. Los prompts están en español y se pegan
+tal cual, en un solo mensaje, **sin resumirlos**.
 
-**Regla de uso:** copiar el bloque de estilo y el bloque de paleta **literalmente** al inicio de
-cada prompt, antes de la descripción del asset. Ahí está la consistencia entre generaciones: lo
-que varía es solo la descripción; lo que se repite palabra por palabra es todo lo demás.
+**Documento que manda:** `claudeDocs/Direccion_de_Arte.md`. La paleta, el grosor de línea, el
+sombreado y las especificaciones técnicas de abajo salen de ahí; si algo se contradice, gana la
+dirección de arte, y si esta contradice a `SPEC.md`, gana `SPEC.md`.
 
-**Autoría (CT-09, RNF-23).** Todos son **personajes y escenarios originales**. No se usa la
-Familia Anonaky mientras no llegue la autorización escrita de PG-07. Cada asset generado se
-reconoce en la pantalla de créditos (T08).
+**Cómo se arma un prompt.** Cinco bloques fijos, siempre en este orden, y después la descripción
+del asset:
 
-**Transparencia.** Gemini no produce canal alfa fiable. Los assets marcados **Chroma sí** se piden
-sobre fondo verde `#00FF00` plano y se recorta después en el importador de sprites de Unity.
+```
+[1 CONTEXTO]  [2 ESTILO]  [3 PALETA N1]  [4 ENTREGA]  [5 PROHIBICIONES]  +  ELEMENTO
+```
+
+Los cinco primeros se copian **literalmente, palabra por palabra, en cada generación**. Ahí está
+la consistencia entre piezas: lo único que cambia de un asset a otro es el bloque `ELEMENTO`.
+Un asset generado sin los cinco bloques se descarta y se vuelve a pedir; no se «arregla» a mano.
+
+**Autoría (CT-09, RNF-23).** Dos regímenes distintos, y conviene no mezclarlos:
+
+- **Personajes (`A1`..`A5`): obra derivada** de los diseños de la Familia Anonaky. Se
+  rediseñaron, pero partieron de ellos, y por eso hacía falta permiso. La **autorización escrita
+  está concedida** (PG-07 cerrado el 30/08/2026) y su reconocimiento expreso en la pantalla de
+  créditos es **obligatorio**, no opcional (T08).
+- **Entornos, props e interfaz (`A6`..`A10`): originales del proyecto.** No dependen de PG-07.
+
+Todo asset generado —de cualquiera de los dos grupos— se registra en `CreditsContent.asset`
+(T08), con la mención de autoría que le corresponda.
+
+**Transparencia.** Gemini no produce canal alfa fiable. Los assets marcados **Chroma sí** se
+piden sobre verde `#00FF00` plano y se recortan después en Unity. El único **Chroma no** es `A6`,
+que es el fondo completo de la escena.
 
 ---
 
-## Bloque de estilo fijo — copiar al inicio de cada prompt
+## Bloque 1 · CONTEXTO — copiar primero, siempre
 
 ```
-ESTILO (fijo, no variar): ilustración plana 2D vectorial para videojuego educativo infantil.
-Formas redondeadas y macizas, sin puntas agresivas. Contorno limpio y uniforme de 4 px en
-color #1C2333. Color en planos sólidos, sin degradados complejos, sin texturas fotográficas,
-sin sombreado realista: como máximo una sombra plana de un solo tono. Sin efectos de brillo
-volumétrico ni destellos intensos. Iluminación cálida, procedente del fuego, como única fuente
-de luz cálida de la escena. Tono amable, acogedor y no amenazante, apropiado para niños de 9 a
-11 años. Ambientación prehistórica estilizada, no realista. Sin violencia, sin sangre, sin
-armas, sin texto de ningún tipo dentro de la imagen, sin marcas de agua, sin logotipos.
-Composición centrada y legible a tamaño pequeño, pensada para proyector y pantallas de baja
-calidad: siluetas distinguibles y alto contraste entre figura y fondo.
+CONTEXTO DEL ENCARGO
+Soy diseñador de un videojuego educativo 2D hecho en Unity para estudiantes de grado cuarto de
+primaria, de 9 a 11 años. El juego acompaña a una familia prehistórica en tres descubrimientos:
+el fuego, la rueda y el cruce de un río. Este encargo pertenece al Nivel 1, «La Oscuridad», que
+transcurre de noche dentro de una cueva.
+
+Lo que necesito NO es una ilustración de escena, ni una lámina de presentación, ni un concept
+art. Es un ASSET DE PRODUCCIÓN: un archivo que voy a recortar e importar a Unity como sprite,
+que se verá en movimiento, superpuesto a otros elementos, a un tamaño mucho menor que el de
+generación, y proyectado en pantallas de aula de baja calidad. Una imagen bonita que no se pueda
+recortar limpiamente, o que no se lea a tamaño pequeño, no me sirve y la descarto.
+
+Tres condiciones mandan sobre cualquier consideración estética:
+1. PÚBLICO INFANTIL. Nada amenazante, afilado, sombrío, triste ni violento. La prehistoria se
+   representa como un mundo de descubrimiento y asombro, nunca de supervivencia o peligro. No
+   hay depredadores, no hay armas, no hay heridas, no hay muerte.
+2. BAJO CONSUMO DE RECURSOS. Los equipos del colegio no tienen tarjeta gráfica dedicada. El arte
+   es plano y simple por diseño, no por descuido.
+3. LEGIBILIDAD ANTES QUE DETALLE. Si un detalle compite con la lectura de la silueta, sobra.
+
+INSTRUCCIÓN SOBRE LO QUE NO TE DIGA: sigue las secciones de abajo al pie de la letra. Donde no
+te dé un dato, NO lo inventes ni lo rellenes con tu criterio: elige la opción más simple
+compatible con las reglas y deja el resto vacío. No añadas objetos, personajes, adornos, texto,
+fondo, marcos ni elementos decorativos que no haya pedido explícitamente. Si crees que falta
+algo, omítelo: prefiero un asset incompleto a uno inventado.
 ```
 
-## Bloque de paleta fija — copiar al inicio de cada prompt
+## Bloque 2 · ESTILO — fijo para los tres niveles
 
 ```
-PALETA (fija, usar solo estos colores):
-  Oscuridad de cueva      #0B0E14
-  Piedra en sombra        #1C2333
-  Piedra iluminada        #2E3A4F
-  Roca cálida             #4A3B32
-  Tierra                  #6B5344
-  Piel cálida clara       #E8B48C
-  Piel cálida media       #C98B62
-  Piel cálida oscura      #8E5A3B
-  Pieles / ropa ocre      #A9713F
-  Pieles / ropa terracota #8C4A2F
-  Hoja seca               #B08541
-  Fuego amarillo          #FFC94A
-  Fuego naranja           #FF8A3D
-  Fuego rojo              #E4572E
-  Hueso (texto y UI)      #F2E8D5
+ESTILO (fijo, no variar entre generaciones)
+Ilustración vectorial 2D, cartoon clásico de animación televisiva, formas grandes y contornos
+firmes. Aspecto limpio y macizo, nunca esbozado ni pintado.
+
+COLOR: completamente plano y saturado. PROHIBIDOS los degradados de cualquier tipo, el
+aerógrafo, el difuminado, las transiciones suaves, el ruido, la textura de superficie y el
+volumen pintado.
+
+SOMBRA (crítico): exactamente DOS tonos por color, base y sombra, separados por un borde duro y
+nítido, como un recorte de papel. Ni un tercer tono, ni luz especular, ni brillo. Luz global
+desde arriba a la izquierda a 45 grados: la sombra ocupa el lado derecho de cada forma. ÚNICA
+EXCEPCIÓN: el fuego, que lleva tres tonos por ser fuente de luz.
+
+LÍNEA: contorno cerrado en todo el perímetro, sin aberturas. Grosor según la capa, medido a
+1024 px de alto:
+  - personajes: 8 a 12 px, color #3A1E18, más grueso en la silueta exterior que en los
+    detalles internos;
+  - objetos interactivos: 7 a 9 px, color #3A1E18;
+  - decorado de primer plano: 6 px, color #4A2E24;
+  - decorado de plano medio: 4 px, color #5C4038;
+  - fondo lejano: SIN contorno.
+Sin líneas internas innecesarias: nada de pliegues de ropa, arrugas, músculos, clavículas,
+vetas de madera ni texturas de piedra. Una superficie es un color plano con su contorno.
+
+FORMA: todo redondeado. Rocas de cantos romos, troncos de sección ovalada, esquinas suaves.
+Ningún vértice en ángulo agudo, salvo en objetos que deban leerse como «fabricados por alguien»
+(herramientas, piezas talladas), donde la angulosidad es intencional.
+
+SILUETA: el asset debe ser reconocible solo por su contorno, relleno de negro sólido, a 128 px
+de alto. Si dos elementos no se distinguen en silueta, están mal diseñados.
 ```
 
-*El par `#F2E8D5` sobre `#0B0E14` es el que sostiene RNF-20 (contraste ≥ 4.5:1) en el estado más
-oscuro del nivel.*
+## Bloque 3 · PALETA DEL NIVEL 1 — usar solo estos colores
+
+```
+PALETA (fija, no usar ningún color fuera de esta lista)
+
+PERSONAJES (idéntica en los tres niveles, no se tiñe con la luz del entorno):
+  Piel base #F2D3BC        Piel sombra #D9AF95
+  Cabello base #5C2B22     Cabello sombra #3D1A14
+  Piel de leopardo (adultos) #E8C07A   su sombra #C49A55   manchas #2B1A12
+  Túnica del niño (oliva) #C4C24E      su sombra #9BA03A   manchas #3F6B2E
+  Conjunto de la niña (ocre) #D9B23A   su sombra #B08A25   manchas #7A5418
+  Rubor infantil #F0A5A0
+  Contorno de personaje #3A1E18
+
+ENTORNO DEL NIVEL 1 (cueva de noche):
+  Cielo exterior #1B2A4A       Silueta del exterior #141F38 (sin contorno)
+  Roca #3E3550                 Roca en sombra #2A2438
+  Suelo #5E4A52                Suelo en sombra #42333A
+  Estalagmitas #6B5A60         Musgo #4A5C42
+  Charcos #2E4258 con reflejo de línea recta #4A6B8C
+  Pinturas rupestres #8C4A2F (sin contorno, formas muy simplificadas)
+  Estrellas #F7EFE2 y #BFD4E8 (puntos de dos tamaños)
+
+ACENTO DEL NIVEL — SOLO PARA EL FUEGO Y LO INTERACTIVO:
+  Núcleo de llama #FFE9A8    Cuerpo de llama #F5A62E    Borde de llama #E2571F
+  Halo de luz #F0A84E al 20 por ciento, círculo plano
+
+NEUTROS DE INTERFAZ (comunes a todo el juego):
+  Marfil #F7EFE2   Marfil sombra #E0D4C0   Borde de panel #C4A882
+  Carbón #3A1E18 (texto y contorno)        Carbón suave #6B5248
+  Éxito #5FA842    Atención #E8A33D
+
+REGLA DE ACENTO (crítica): el naranja, el amarillo y el rojo pertenecen EXCLUSIVAMENTE al fuego
+y a los objetos del reto. Ninguna roca, pared, planta, sombra ni elemento de decorado puede
+usarlos. Si el elemento que te pido no es fuego ni es interactivo, no lleva ni una pincelada de
+esos tonos.
+```
+
+## Bloque 4 · ENTREGA TÉCNICA — lo que hace que el archivo sirva
+
+```
+ENTREGA TÉCNICA (obligatoria)
+FONDO: verde croma puro #00FF00, plano y absolutamente uniforme, sin degradado, sin viñeta y
+sin sombra proyectada sobre él. El verde no aparece en ninguna otra parte de la imagen.
+
+ENCUADRE: el elemento completo dentro del lienzo, sin recortes por ningún borde, con al menos un
+10 por ciento de margen vacío arriba, abajo, a izquierda y a derecha.
+
+COMPOSICIÓN: un único elemento centrado, de frente al plano indicado, sin perspectiva dramática,
+sin escorzo y sin inclinación de cámara. Sin suelo, sin horizonte y sin escenario detrás: el
+elemento flota aislado sobre el verde.
+
+RESOLUCIÓN: imagen cuadrada, la mayor que puedas, con el elemento ocupando al menos el 70 por
+ciento de la altura útil. PNG sin compresión con pérdida.
+
+NADA DE TEXTO: ni letras, ni números, ni palabras, ni firmas, ni marcas de agua, ni logotipos,
+ni viñetas, ni bordes decorativos, ni fichas de personaje, ni paletas de color al margen. Las
+etiquetas las pone el motor del juego, no la imagen.
+
+SI TE PIDO VARIAS VERSIONES: genéralas en la MISMA imagen, separadas y alineadas, sobre el mismo
+verde, sin marcos ni títulos entre ellas, y sin variar ni un rasgo del elemento entre una versión
+y otra: solo cambia lo que yo indique que cambia.
+```
+
+## Bloque 5 · PROHIBICIONES — la lista que más se incumple
+
+```
+PROHIBIDO (si aparece alguno, el asset se descarta)
+- Degradados, difuminados, aerógrafo, ruido, textura, papel, acuarela o pintura visible.
+- Un tercer tono de sombra, brillo especular, reflejo o iluminación volumétrica.
+- Halos, glows, destellos, rayos de luz, partículas brillantes o lens flare.
+- Sombra proyectada sobre el fondo verde.
+- Contorno abierto o interrumpido en cualquier punto del perímetro.
+- Texto, números, firmas, marcas de agua o logotipos.
+- Violencia, armas, sangre, heridas, dientes afilados, gestos de enfado o de tristeza.
+- Colores fuera de la paleta indicada arriba.
+- Naranja, amarillo o rojo en cualquier cosa que no sea fuego o un objeto del reto.
+- Elementos de escenario, suelo, cielo o decorado alrededor del elemento pedido.
+- Estilo realista, 3D, render, pixel art, anime o acuarela.
+```
 
 ---
 
 ## A1 · Chispa, el guía
 
 **Traza:** guion §1.1 y §4.1, PG-02, RF-10, RF-12, RF-13, CN-03 (presente en los tres niveles).
-**Chroma:** sí — aparece flotando sobre escenarios distintos.
-**Entregar:** tres variantes en la misma generación — reposo, girando con estela, atenuado.
+**Chroma:** sí. **Archivo:** `char_chispa_base_reposo.png`, `_girando`, `_atenuado`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO] [2 ESTILO] [3 PALETA N1] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Chispa, guía luminoso del videojuego.
+ELEMENTO: Chispa, el personaje guía del juego. No es humano ni animal: es una pequeña criatura
+de luz con forma de estrella.
 
-RASGOS FÍSICOS FIJOS: pequeña criatura luminosa con forma de estrella de cinco puntas
-redondeadas, del tamaño de una palma de mano. Cuerpo relleno en #FFC94A con un halo plano
-inmediato en #FF8A3D, sin degradado. Dos ojos negros grandes, ovalados, muy separados, con un
-punto de luz blanco en la esquina superior de cada uno. Boca pequeña y sonriente, en línea
-simple. Sin nariz, sin brazos, sin piernas. Contorno de 4 px en #E4572E, no en azul: es el único
-elemento de la paleta que lleva contorno cálido. Estela de cinco a siete puntos de luz sueltos
-en #FFC94A de tamaño decreciente detrás del cuerpo.
+FORMA EXACTA: estrella de CINCO puntas, todas ellas REDONDEADAS en el extremo, nunca en punta
+afilada. El cuerpo es macizo y compacto, del tamaño de una palma de mano adulta; su anchura
+total equivale a poco más de una cabeza humana. Las cinco puntas son de la misma longitud y
+están repartidas de forma regular, con la punta superior apuntando verticalmente hacia arriba.
 
-COMPOSICIÓN: personaje completo, centrado, de frente, flotando.
-Generar tres versiones lado a lado del MISMO personaje sin variar sus rasgos:
-  (1) en reposo, estela corta, sonrisa suave;
-  (2) girando como un trompo, inclinado 25 grados, estela larga en arco;
-  (3) atenuado, a punto de apagarse: mismo cuerpo con opacidad reducida y estela de dos puntos.
+RELLENO: cuerpo entero en #F5A62E. Sobre él, un área de núcleo más clara en #FFE9A8 que ocupa
+aproximadamente la mitad central de la estrella y repite su forma en pequeño, con BORDE DURO,
+sin degradado alguno entre los dos tonos.
 
-FONDO: verde chroma key plano #00FF00, sin sombra proyectada sobre el fondo.
+CONTORNO: 8 px en #E2571F. Es el único elemento del nivel con contorno cálido en lugar del
+#3A1E18 habitual, y es intencional: marca que Chispa emite luz propia.
+
+CARA: dos ojos negros grandes y ovalados, muy separados entre sí, situados en el tercio superior
+del cuerpo, cada uno con un punto de luz blanco circular en su esquina superior izquierda. Boca
+pequeña, una sola línea curva hacia arriba, sonrisa cerrada y amable. SIN nariz, SIN cejas, SIN
+brazos, SIN piernas, SIN manos, SIN sombrero, SIN accesorios.
+
+ESTELA: entre cinco y siete puntos de luz sueltos en #FFE9A8, circulares, de tamaño decreciente,
+alineados en una curva suave detrás del cuerpo. Puntos separados y bien definidos, nunca una
+nube difuminada ni un rastro degradado.
+
+GENERAR TRES VERSIONES en la misma imagen, alineadas horizontalmente, IDÉNTICAS en forma, color,
+tamaño y expresión salvo en lo que se indica:
+  (1) EN REPOSO: estrella vertical, estela corta de tres puntos, sonrisa suave.
+  (2) GIRANDO: la misma estrella inclinada 25 grados hacia la derecha, estela larga de siete
+      puntos describiendo un arco. Sigue siendo la misma estrella: no la deformes.
+  (3) ATENUADA: la misma estrella con el relleno más apagado —cuerpo en #E2571F y núcleo en
+      #F5A62E, un escalón más oscuro— y estela de solo dos puntos. Sin transparencia y sin
+      difuminado: el apagado se consigue cambiando de tono, no bajando la opacidad.
 ```
+
+**Verificación (§17):** silueta de estrella reconocible en negro a 128 px · dos tonos de relleno
+con borde duro · contorno cálido cerrado · sin brazos ni piernas · estela de puntos separados ·
+las tres versiones son la misma criatura.
 
 ---
 
 ## A2 · Papá — personaje jugable del Nivel 1
 
-**Traza:** guion §1.1 y §4.2, RF-14, HU-06, personajes **originales** (PG-07, CT-09, RNF-23).
-**Chroma:** sí.
-**Entregar:** cuerpo entero de perfil (vista lateral, que es la del Nivel 1) en tres poses.
+**Traza:** guion §1.1 y §4.2, RF-14, HU-06, CN-02. Obra derivada con autorización concedida
+(PG-07, CT-09, RNF-23) — mención obligatoria en créditos.
+**Chroma:** sí. **Archivo:** `char_papa_base_apose.png`.
+
+> **Por qué A-pose y no las poses del nivel.** Las poses de golpear y soplar **no se generan**:
+> se producen en Unity animando este sprite con el paquete 2D Animation, que ya está en
+> `manifest.json` (`Direccion_de_Arte.md` §13.1). Pedirle a Gemini tres poses del mismo personaje
+> devuelve tres personajes distintos; pedirle una pose de producción devuelve un asset que se
+> puede riggear. Lo que el rig necesita es que **los brazos y las piernas estén separados del
+> torso, con fondo visible entre ellos**.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO] [2 ESTILO] [3 PALETA N1] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Papá, personaje jugable del Nivel 1. Personaje ORIGINAL, no basado en ninguna franquicia
-ni personaje existente.
+ELEMENTO: Papá, personaje jugable del Nivel 1. Hombre adulto prehistórico, de aspecto amable y
+tranquilo. Personaje de diseño propio: NO reproduzcas ningún personaje de franquicia, película,
+serie ni videojuego existente.
 
-RASGOS FÍSICOS FIJOS: hombre adulto prehistórico, complexión ancha y robusta, estatura media,
-hombros marcados. Piel #C98B62. Cabello negro azabache, tupido, largo hasta el hombro, recogido
-atrás con una tira de cuero. Barba corta y espesa del mismo negro. Cejas gruesas y rectas. Ojos
-negros pequeños y tranquilos, mirada atenta y serena, nunca fiera. Nariz ancha y redondeada.
-Túnica de piel sin mangas en #A9713F que cae hasta media pierna, ceñida con una cuerda trenzada
-en #6B5344 a la cintura. Brazalete de cuero en el antebrazo derecho, en #8C4A2F. Descalzo.
-Sin cicatrices, sin pinturas de guerra, sin armas.
+PROPORCIÓN (crítica, es lo que produce la lectura infantil): la CABEZA ocupa un tercio de la
+altura total del cuerpo. Cuerpo ancho y robusto, hombros marcados, torso macizo, piernas cortas
+y sólidas. Altura total de referencia: 1.00 (mamá 0.92, los niños 0.60).
 
-CARÁCTER QUE DEBE LEERSE: prudente y reflexivo, alguien que escucha antes de actuar.
+CABEZA: redonda y grande. Cabello #5C2B22 con sombra #3D1A14, tupido, hasta el hombro, recogido
+atrás con una tira de cuero. Barba corta y espesa del mismo color, de contorno redondeado, nunca
+en punta. Cejas gruesas y RECTAS, separadas entre sí. Ojos negros, ovalados, medianos, mirada
+serena y atenta, NUNCA fiera ni entrecerrada con agresividad. Nariz ancha y redondeada, dibujada
+con una sola línea curva. Boca en sonrisa cerrada suave. Piel #F2D3BC con sombra #D9AF95 en el
+lado derecho del rostro y bajo el mentón.
 
-COMPOSICIÓN: cuerpo entero, VISTA LATERAL mirando a la derecha.
-Generar tres poses del MISMO personaje sin variar sus rasgos:
-  (1) de pie, brazos relajados, en reposo;
-  (2) arrodillado sobre una rodilla, inclinado hacia adelante, sosteniendo una piedra en cada
-      mano a la altura del pecho, a punto de golpearlas;
-  (3) arrodillado, soplando: torso inclinado hacia abajo, labios fruncidos, manos apoyadas en
-      el suelo.
+VESTUARIO: túnica de piel de leopardo sin mangas en #E8C07A con sombra #C49A55, que cae hasta
+media pierna, con manchas ovaladas irregulares en #2B1A12 repartidas sin patrón regular. Ceñida
+a la cintura con una cuerda trenzada en #5C2B22. Descalzo, pies desnudos. SIN cicatrices, SIN
+pinturas de guerra, SIN collares, SIN armas, SIN garrote, SIN objetos en las manos.
 
-FONDO: verde chroma key plano #00FF00.
+MANOS: color piel, CUATRO dedos visibles, dedos gruesos y redondeados, mano abierta y relajada.
+Nunca puño cerrado, nunca guante, nunca mano fundida con el cuerpo.
+
+POSE (crítica; es una pose de producción y debe verse rígida a propósito): A-POSE de frente.
+Cuerpo completamente frontal a la cámara, mirando al espectador. Brazos extendidos hacia los
+lados y hacia abajo, formando unos 45 grados con el torso, COMPLETAMENTE SEPARADOS del cuerpo,
+con fondo verde claramente visible entre cada brazo y el costado, y las axilas abiertas. Piernas
+rectas y ligeramente separadas, con fondo verde visible entre ellas. Pies apoyados, apuntando al
+frente. Expresión neutra: cejas rectas, ojos abiertos, sonrisa cerrada suave.
+
+NO generes poses de acción, ni de perfil, ni arrodillado, ni soplando, ni sosteniendo nada. Una
+sola figura, una sola pose, centrada.
+
+SIN LÍNEAS INTERNAS ANATÓMICAS: nada de pectorales, clavículas, abdominales, ombligo, rodillas
+marcadas ni músculos. El torso es un color plano con su contorno y su sombra.
 ```
+
+**Verificación (§17):** cabeza = 1/3 de la altura · A-pose con axilas abiertas y verde entre
+brazos y torso · cuatro dedos, mano abierta · sin líneas anatómicas internas · piel `#F2D3BC` sin
+teñir · silueta distinguible de mamá, niña y niño en negro sólido.
 
 ---
 
 ## A3 · Mamá
 
-**Traza:** guion §1.1 y §4.2 (acompañante en el Nivel 1; jugable en el Nivel 3).
-**Chroma:** sí.
+**Traza:** guion §1.1 y §4.2 (acompañante en el Nivel 1; jugable en el Nivel 3, CN-02).
+**Chroma:** sí. **Archivo:** `char_mama_base_apose.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO] [2 ESTILO] [3 PALETA N1] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Mamá, personaje acompañante del Nivel 1. Personaje ORIGINAL.
+ELEMENTO: Mamá, personaje de la familia. Acompaña en el Nivel 1 y es la jugable del Nivel 3.
+Mujer adulta prehistórica, serena y metódica. Diseño propio, sin parecido con personajes de
+franquicias existentes.
 
-RASGOS FÍSICOS FIJOS: mujer adulta prehistórica, complexión esbelta y erguida, estatura media.
-Piel #E8B48C. Cabello castaño muy oscuro, ondulado, largo hasta la cintura, recogido en una
-trenza gruesa que cae sobre el hombro izquierdo. Ojos color miel, grandes y almendrados, mirada
-observadora y calmada. Cejas finas y arqueadas. Túnica de piel en #8C4A2F que cubre un hombro y
-deja el otro descubierto, hasta la rodilla. Collar de cuentas redondas de hueso en #F2E8D5
-alrededor del cuello. Descalza.
+PROPORCIÓN: la cabeza ocupa un tercio de la altura total. Altura relativa 0.92 respecto a papá
+—algo más baja— y torso claramente MÁS ESTRECHO: 0.68 frente a 1.00. Figura esbelta y de curvas
+suaves, que es lo que la separa de papá en silueta.
 
-CARÁCTER QUE DEBE LEERSE: serena y metódica, observa en silencio antes de decidir.
+CABEZA: redonda. Cabello #5C2B22 con sombra #3D1A14, largo hasta media espalda, liso, apartado
+del rostro y recogido en la nuca con una tira de cuero; el volumen del recogido debe verse por
+detrás de la silueta de la cabeza. Cejas finas y ligeramente arqueadas. Ojos negros ovalados,
+algo más grandes que los de papá, mirada atenta y cálida. Nariz pequeña y redondeada. Boca en
+sonrisa cerrada suave. Rubor #F0A5A0 en dos óvalos planos, uno en cada mejilla. Piel #F2D3BC con
+sombra #D9AF95.
 
-COMPOSICIÓN: cuerpo entero, VISTA LATERAL mirando a la derecha.
-Generar tres poses del MISMO personaje sin variar sus rasgos:
-  (1) de pie, brazos cruzados con suavidad, observando;
-  (2) de pie, una mano apoyada en el hombro de un niño invisible a su lado, gesto protector;
-  (3) de pie, ambas manos en el pecho, expresión de alegría emocionada.
+VESTUARIO: túnica de piel de leopardo #E8C07A con sombra #C49A55, sin mangas, hasta la rodilla,
+con manchas ovaladas #2B1A12 irregulares. Ceñida con cuerda trenzada #5C2B22. Descalza. SIN
+collares, SIN pulseras, SIN flores en el pelo, SIN objetos en las manos.
 
-FONDO: verde chroma key plano #00FF00.
+MANOS: color piel, cuatro dedos, abiertas y relajadas.
+
+POSE: A-POSE de frente, idéntica en criterio a la de papá. Brazos a 45 grados, separados del
+torso, axilas abiertas y fondo verde visible entre brazos y costados. Piernas rectas y
+ligeramente separadas, con verde visible entre ellas. Expresión neutra.
+
+SIN LÍNEAS INTERNAS ANATÓMICAS: nada de busto marcado, cintura sombreada, clavículas ni ombligo.
+La túnica es un color plano con su contorno y su sombra.
 ```
+
+**Verificación (§17):** torso más estrecho y silueta claramente distinta de la de papá en negro
+sólido · A-pose con axilas abiertas · sin líneas anatómicas · misma piel `#F2D3BC` que el resto.
 
 ---
 
 ## A4 · Niña
 
-**Traza:** guion §1.1 y §4.2 (acompañante en el Nivel 1; jugable en el Nivel 2).
-**Chroma:** sí.
+**Traza:** guion §1.1 y §4.2 (acompañante en el Nivel 1; jugable en el Nivel 2, CN-02).
+**Chroma:** sí. **Archivo:** `char_nina_base_apose.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO] [2 ESTILO] [3 PALETA N1] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Niña, personaje acompañante del Nivel 1. Personaje ORIGINAL.
+ELEMENTO: la Niña de la familia, de unos nueve años. Observadora y curiosa. Acompaña en el
+Nivel 1 y es la jugable del Nivel 2. Diseño propio, sin parecido con personajes existentes.
 
-RASGOS FÍSICOS FIJOS: niña prehistórica de unos nueve años, delgada, estatura de niña, cabeza
-proporcionalmente grande respecto del cuerpo. Piel #E8B48C. Cabello negro, liso y desordenado,
-a la altura de la mandíbula, con un mechón que le cae sobre la frente. Ojos negros MUY grandes y
-redondos, expresivos, con dos puntos de luz blancos: son su rasgo más característico. Cejas
-delgadas y altas, que le dan permanente cara de estar preguntando algo. Túnica corta de piel en
-#A9713F hasta media pierna, sin mangas. Una pulsera de cuerda trenzada en #6B5344 en la muñeca
-izquierda. Descalza.
+PROPORCIÓN (distinta a la de los adultos): la CABEZA ocupa DOS QUINTOS de la altura total, no un
+tercio. Cabeza grande y muy redonda. Altura relativa 0.60 respecto a papá, torso 0.52. Cuerpo
+delgado, brazos y piernas finos.
 
-CARÁCTER QUE DEBE LEERSE: observadora, la que formula la pregunta que nadie más hace.
+RASGO DE SILUETA (crítico): el pelo forma un PENACHO ALTO, un mechón recogido en lo alto de la
+cabeza que se eleva verticalmente y termina redondeado. Es lo que la distingue del niño en negro
+sólido, así que debe ser inconfundible y sobresalir con claridad del cráneo. Cabello #5C2B22 con
+sombra #3D1A14.
 
-COMPOSICIÓN: cuerpo entero, VISTA LATERAL mirando a la derecha.
-Generar tres poses de la MISMA personaje sin variar sus rasgos:
-  (1) de pie, cabeza ligeramente inclinada, mirando con curiosidad;
-  (2) en cuclillas, golpeando dos piedras pequeñas una contra otra frente a ella;
-  (3) de pie, ambos brazos alzados, expresión de asombro con la boca abierta.
+CARA: ojos negros muy grandes y redondos, más grandes en proporción que los de los adultos, muy
+separados, con un punto de luz blanco en la esquina superior de cada uno. Cejas finas y rectas.
+Nariz mínima, un solo trazo curvo corto. Boca pequeña en sonrisa cerrada. Rubor #F0A5A0 en dos
+óvalos planos. Piel #F2D3BC con sombra #D9AF95.
 
-FONDO: verde chroma key plano #00FF00.
+VESTUARIO: conjunto ocre #D9B23A con sombra #B08A25, una pieza sin mangas hasta la rodilla, con
+manchas irregulares #7A5418. Descalza. SIN adornos, SIN collares, SIN juguetes.
+
+MANOS: color piel, cuatro dedos, abiertas.
+
+POSE: A-POSE de frente, mismo criterio que los adultos. Brazos a 45 grados separados del torso,
+axilas abiertas con verde visible, piernas ligeramente separadas con verde entre ellas. Expresión
+neutra pero despierta.
+
+MISMA ALTURA Y MISMA LÍNEA DE SUELO que el niño del asset A5: los dos comparten estatura exacta.
+No hagas a uno más alto que el otro.
 ```
+
+**Verificación (§17):** cabeza = 2/5 de la altura · penacho alto inconfundible en silueta · misma
+altura exacta que el niño · A-pose con axilas abiertas.
 
 ---
 
 ## A5 · Niño
 
-**Traza:** guion §1.1 y §4.2 (acompañante; su función narrativa es el ensayo sin método).
-**Chroma:** sí.
+**Traza:** guion §1.1 y §4.2 (acompañante en los tres niveles).
+**Chroma:** sí. **Archivo:** `char_nino_base_apose.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO] [2 ESTILO] [3 PALETA N1] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Niño, personaje acompañante del Nivel 1. Personaje ORIGINAL.
+ELEMENTO: el Niño de la familia, de unos siete años. Impulsivo y entusiasta. Acompaña en los
+tres niveles y nunca es jugable. Diseño propio, sin parecido con personajes existentes.
 
-RASGOS FÍSICOS FIJOS: niño prehistórico de unos siete años, más bajo y algo más rechoncho que la
-niña, cabeza grande y redonda. Piel #C98B62. Cabello negro, muy corto y revuelto, con dos
-mechones que sobresalen hacia arriba en la coronilla. Ojos negros redondos y pequeños, siempre
-muy abiertos. Cejas cortas y altas. Sonrisa amplia que deja ver un diente delantero faltante.
-Mejillas redondas con un plano de rubor en #C98B62 más saturado. Túnica corta de piel en
-#8C4A2F hasta el muslo, sin mangas, ligeramente torcida. Descalzo.
+PROPORCIÓN: la cabeza ocupa DOS QUINTOS de la altura total, igual que la niña. Altura relativa
+0.60 —EXACTAMENTE la misma que la niña, con la misma línea de suelo— pero cuerpo algo más
+rechoncho: torso 0.55. Cabeza muy grande y redonda.
 
-CARÁCTER QUE DEBE LEERSE: impulsivo y entusiasta, prueba todo sin detenerse a pensar.
+RASGO DE SILUETA (crítico): el pelo forma un COPETE PUNTIAGUDO hacia adelante, corto y revuelto,
+que sobresale sobre la frente. Es lo que lo distingue de la niña en negro sólido: ella lleva un
+penacho vertical alto, él un copete inclinado hacia el frente. Que no se parezcan. Cabello
+#5C2B22 con sombra #3D1A14.
 
-COMPOSICIÓN: cuerpo entero, VISTA LATERAL mirando a la derecha.
-Generar tres poses del MISMO personaje sin variar sus rasgos:
-  (1) de pie, inclinado hacia adelante, señalando con el índice, boca abierta gritando de
-      entusiasmo;
-  (2) arrodillado, ambas manos tanteando el suelo a ciegas;
-  (3) saltando con los dos brazos en alto, celebrando.
+CARA: ojos negros muy grandes y redondos, con punto de luz blanco. Cejas cortas y elevadas, que
+le dan expresión despierta. Nariz mínima. Boca en sonrisa abierta pequeña, alegre, sin mostrar
+dientes afilados. Rubor #F0A5A0 en dos óvalos planos. Piel #F2D3BC con sombra #D9AF95.
 
-FONDO: verde chroma key plano #00FF00.
+VESTUARIO: túnica oliva #C4C24E con sombra #9BA03A, sin mangas, hasta la rodilla, con manchas
+irregulares #3F6B2E. Descalzo. SIN adornos, SIN armas, SIN palos.
+
+MANOS: color piel, cuatro dedos, abiertas.
+
+POSE: A-POSE de frente, mismo criterio que los demás. Brazos a 45 grados separados del torso,
+axilas abiertas con verde visible entre brazo y costado, piernas ligeramente separadas.
 ```
+
+**Verificación (§17):** copete hacia adelante claramente distinto del penacho de la niña en negro
+sólido · misma altura y línea de suelo que ella · cabeza = 2/5.
 
 ---
 
-## A6 · Escenario — interior de la cueva
+## A6 · Escenario — interior de la cueva, cuatro escalones de luz
 
-**Traza:** guion §3.1 y §4 (escenario del Nivel 1), RF-21 (iluminación progresiva), RNF-20.
-**Chroma:** **no** — es el fondo completo de la escena.
-**Entregar:** cuatro versiones del **mismo encuadre** para los escalones de RF-21.
+**Traza:** guion §3.1 y §4 (escenario del Nivel 1), RF-21 (iluminación progresiva, prioridad
+Baja), RNF-20. **Chroma:** **no** — es el fondo completo de la escena.
+**Archivo:** `env_n1_cueva_luz1.png` … `env_n1_cueva_luz4.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO] [2 ESTILO] [3 PALETA N1] [5 PROHIBICIONES]
 
-ASSET: Fondo de escena — interior de una cueva prehistórica. Vista lateral, plano fijo, sin
-personajes y sin objetos sueltos.
+ELEMENTO: fondo completo de escena. Interior de una cueva prehistórica de noche, vista LATERAL,
+plano fijo, SIN personajes y SIN objetos sueltos.
 
-COMPOSICIÓN FIJA: interior de cueva amplia vista de lado. Suelo de roca irregular pero
-transitable en el tercio inferior. Paredes de roca a izquierda y derecha que enmarcan la escena.
-Techo abovedado con estalactitas cortas y redondeadas, nunca puntiagudas ni amenazantes. Al
-fondo, a la izquierda, la boca de la cueva como una abertura ovalada hacia la noche exterior.
-En el centro del suelo, un claro despejado que es donde se encenderá el fuego: dejar esa zona
-libre de detalle. Relación de aspecto 16:9.
+FORMATO: rectangular 16:9 horizontal. Este asset NO lleva fondo verde: la imagen entera es el
+escenario y se importa tal cual. Ignora la instrucción de croma; el resto de las reglas sigue
+vigente.
 
-Generar CUATRO versiones del MISMO encuadre, idénticas en composición y variando solo la luz:
-  (1) OSCURIDAD TOTAL: casi todo en #0B0E14; apenas se insinúan las siluetas de las paredes.
-  (2) PENUMBRA: las paredes cercanas al centro se leen en #1C2333, el resto sigue en #0B0E14.
-  (3) LUZ MEDIA: la mitad inferior de la escena en #2E3A4F y #4A3B32, con un tinte cálido
-      #FF8A3D naciendo del claro central.
-  (4) LUZ PLENA: la cueva entera iluminada por fuego, paredes en #4A3B32 y #6B5344, luz cálida
-      #FFC94A que baña el centro y se degrada en planos hacia los bordes.
+COMPOSICIÓN FIJA (idéntica en las cuatro versiones, no la muevas ni un píxel):
+- Suelo de roca en el tercio inferior, superficie irregular pero continua y transitable, de
+  ondulaciones suaves y cantos romos. Color #5E4A52 con sombra #42333A.
+- Paredes de roca a izquierda y derecha que enmarcan la escena, en #3E3550 con sombra #2A2438.
+- Techo abovedado de curva amplia, con cuatro o cinco estalactitas CORTAS y de punta REDONDEADA
+  colgando, nunca afiladas ni amenazantes, en #6B5A60.
+- Tres estalagmitas bajas y romas en el suelo, dos a la izquierda y una a la derecha, en #6B5A60.
+- En el fondo a la IZQUIERDA, la boca de la cueva: una abertura con forma de arco redondeado que
+  deja ver el exterior nocturno. El exterior es una silueta plana #141F38 SIN contorno y SIN
+  detalle, con unos quince puntos de estrella repartidos irregularmente, unos en #F7EFE2 y otros
+  más pequeños en #BFD4E8. SIN luna: la única fuente de luz cálida del nivel es el fuego.
+- Decorado escaso y pegado a las paredes: dos manchas de musgo #4A5C42, un charco ovalado
+  #2E4258 con un solo reflejo de línea recta #4A6B8C, y dos pinturas rupestres muy simplificadas
+  en #8C4A2F sobre la pared derecha —siluetas de mano y de animal, sin contorno—.
+- EN EL CENTRO DEL SUELO, UN CLARO COMPLETAMENTE VACÍO: una zona despejada, sin rocas, sin musgo
+  y sin detalle, donde el motor colocará la hoguera. Déjala limpia.
 
-La transición entre las cuatro debe ser gradual y suave. Sin destellos, sin rayos de luz
-marcados, sin partículas brillantes.
+GENERAR CUATRO VERSIONES de la MISMA imagen, idénticas en composición, encuadre y posición de
+cada elemento. Lo ÚNICO que cambia es cuánta oscuridad las cubre, como si una lámina plana
+#0F1526 se fuera retirando:
+  (1) 65 por ciento de oscuridad: casi todo el encuadre en #0F1526; apenas se insinúan las
+      siluetas de las paredes y las estrellas de la abertura.
+  (2) 45 por ciento: se leen las paredes cercanas al centro y el contorno del suelo.
+  (3) 25 por ciento: se lee la cueva entera con sus colores de paleta, aún apagada.
+  (4) 0 por ciento: la cueva completamente visible con sus colores plenos.
+
+La lámina de oscuridad es un COLOR PLANO uniforme sobre toda la imagen: no es una viñeta, no es
+un degradado radial y no es un foco de luz. Sin rayos de luz, sin haces, sin partículas.
+NO añadas fuego en ninguna de las cuatro versiones: el fuego es otro asset.
 ```
+
+**Verificación (§17):** las cuatro versiones son el mismo encuadre · el claro central está vacío
+en las cuatro · nada de naranja, amarillo ni rojo en el decorado · el contorno del escenario es
+más fino que el de un personaje · pasa la prueba de entrecerrado (§6).
 
 ---
 
 ## A7 · Montón de hojas secas — cuatro estados
 
-**Traza:** guion §4.3.1 (elemento de escena con cuatro estados visuales), §4.3.3, RF-14, RF-16.
-**Chroma:** sí.
+**Traza:** guion §4.3.1, §4.3.3 y §4.3.4, RF-14, RF-16, RNF-19.
+**Chroma:** sí. **Archivo:** `prop_n1_hojas_intacto.png` … `prop_n1_hojas_encendido.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO] [2 ESTILO] [3 PALETA N1] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Montón de hojas secas y ramitas finas del Nivel 1.
+ELEMENTO: el montón de hojas secas y ramitas del Nivel 1. Es el objetivo del reto: el estudiante
+tiene que encenderlo. Objeto INTERACTIVO, así que lleva contorno grueso de 7 a 9 px en #3A1E18.
 
-FORMA FIJA: montículo bajo y ancho, de silueta redondeada e irregular, compuesto por hojas
-alargadas en #B08541 y ramitas delgadas en #6B5344 que sobresalen en distintos ángulos. Mismo
-tamaño y misma silueta en los cuatro estados: solo cambia lo que ocurre encima.
+FORMA FIJA (idéntica en los cuatro estados, no la varíes): montículo bajo y ancho, más ancho que
+alto, de silueta redondeada e irregular. Compuesto por unas ocho hojas alargadas y ovaladas en
+#D9B23A con sombra #B08A25, superpuestas en distintos ángulos, y cinco ramitas delgadas en
+#5C2B22 que asoman entre ellas por los lados. Nada más: sin piedras, sin suelo, sin hierba.
 
-Generar CUATRO versiones del MISMO montón, idénticas en forma:
-  (1) INTACTO: solo hojas y ramitas, sin luz.
-  (2) CON CHISPAS APAGADAS: cinco o seis puntos pequeños en #FF8A3D alrededor del montón y sobre
-      la piedra a su lado, apagándose, sin llama.
-  (3) HUMEANTE: un hilo de humo gris azulado #2E3A4F que sube en curva desde el centro, y un
-      punto de brasa #E4572E visible entre las hojas.
-  (4) ENCENDIDO: llama de tres planos, #FFC94A en el núcleo, #FF8A3D en el cuerpo y #E4572E en
-      los bordes, de altura moderada. Sin chispas voladoras rápidas ni destellos.
+GENERAR CUATRO VERSIONES en la misma imagen, alineadas horizontalmente, con el montón IDÉNTICO
+en forma, tamaño y color en las cuatro. Lo único que cambia es lo que ocurre encima:
+  (1) INTACTO: solo el montón. Sin fuego, sin humo, sin chispas.
+  (2) CHISPAS QUE SE APAGAN: seis puntos pequeños en #FFE9A8 repartidos alrededor del montón, de
+      tamaño decreciente, algunos ya casi extinguidos. SIN llama, SIN humo, SIN brasa. Es el
+      resultado de un intento que no prendió.
+  (3) HUMEANTE: un hilo de humo que sube desde el centro, dibujado como una cinta ondulada de
+      color plano #6B5A60, de anchura decreciente hacia arriba, con contorno propio. En el centro
+      del montón, una brasa: un óvalo pequeño #E2571F con un núcleo #F5A62E.
+  (4) ENCENDIDO: una llama de TRES tonos, única excepción a la regla de dos: núcleo #FFE9A8 en
+      forma de óvalo pequeño, cuerpo #F5A62E como lengua de llama redondeada de altura moderada,
+      y borde exterior #E2571F. Los tres con BORDE DURO entre sí, sin degradado. La llama no
+      supera el doble de la altura del montón. SIN chispas volando y SIN destellos.
 
-Los cuatro estados deben distinguirse por FORMA además de por color: sin chispas, chispas
-sueltas, hilo de humo, llama. Es un requisito de accesibilidad, no un capricho.
-
-FONDO: verde chroma key plano #00FF00.
+CRITERIO DE ACCESIBILIDAD (obligatorio): los cuatro estados deben distinguirse por FORMA además
+de por color —nada encima, puntos sueltos, cinta de humo, llama—, de modo que sigan siendo
+distinguibles en escala de grises.
 ```
+
+**Verificación (§17):** el montículo es idéntico en los cuatro · los cuatro estados se distinguen
+en escala de grises (RNF-19) · la llama tiene exactamente tres tonos de borde duro · ningún
+estado lleva destellos ni chispas rápidas (RNF-21).
 
 ---
 
 ## A8 · Las dos piedras: sílex y pedernal
 
-**Traza:** guion §4.1 («esa piedra gris es sílex… esa redonda y café es pedernal») y §4.2, RF-16.
-**Chroma:** sí.
+**Traza:** guion §4.1 («esa piedra gris es sílex… esa redonda y café es pedernal») y §4.2, RF-16,
+RNF-19. **Chroma:** sí.
+**Archivo:** `prop_n1_silex.png`, `prop_n1_pedernal.png`, `prop_n1_piedras_choque.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO] [2 ESTILO] [3 PALETA N1] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Las dos piedras del Nivel 1, generadas juntas y claramente distinguibles entre sí.
+ELEMENTO: las dos piedras con las que se enciende el fuego en el Nivel 1. Objetos INTERACTIVOS:
+contorno de 7 a 9 px en #3A1E18. Se generan juntas en la misma imagen y tienen que ser
+inconfundibles entre sí.
 
-PIEDRA 1 — SÍLEX: gris, angulosa pero de aristas suavizadas, alargada, con bordes que se leen
-afilados sin ser puntiagudos. Color base #2E3A4F con un plano más claro #4A3B32 en la cara
-iluminada.
+PIEDRA 1 — SÍLEX: gris, ALARGADA y de silueta ANGULOSA, con cuatro o cinco caras planas y
+aristas marcadas, pero con los vértices SUAVIZADOS: se lee como piedra tallada, nunca como
+cuchilla ni punta de lanza. Proporción aproximada de dos de largo por uno de alto. Color base
+#6B5A60 con sombra #42333A en el lado derecho.
 
-PIEDRA 2 — PEDERNAL: café, claramente REDONDEADA, más maciza y compacta que la anterior, del
-tamaño de un puño. Color base #6B5344 con un plano más claro #A9713F en la cara iluminada.
+PIEDRA 2 — PEDERNAL: café, claramente REDONDEADA y compacta, del tamaño de un puño, sin aristas
+de ningún tipo, silueta casi ovalada. Más maciza y más baja que el sílex. Color base #5E4A52 con
+un plano más claro #8C4A2F en la cara superior izquierda.
 
-La diferencia entre ambas debe leerse por SILUETA —angulosa contra redonda— y no solo por color
-(RNF-19).
+LA DIFERENCIA ENTRE AMBAS DEBE LEERSE POR SILUETA —angulosa contra redonda— y no solo por color:
+si las rellenas de negro sólido, tienen que seguir siendo distinguibles (RNF-19).
 
-COMPOSICIÓN: las dos piedras separadas sobre la misma imagen, vistas de tres cuartos, sin
-manos y sin personaje. Añadir debajo una segunda fila con las mismas dos piedras en contacto,
-en el instante del choque, con tres o cuatro chispas pequeñas en #FFC94A saliendo del punto de
-contacto. Chispas discretas, nunca una explosión de luz.
-
-FONDO: verde chroma key plano #00FF00.
+COMPOSICIÓN: dos filas sobre la misma imagen.
+  FILA SUPERIOR: las dos piedras separadas entre sí, vistas de tres cuartos, sin tocarse. SIN
+  manos, SIN personaje, SIN suelo debajo.
+  FILA INFERIOR: las mismas dos piedras en contacto por un punto, en el instante del choque, con
+  TRES chispas pequeñas en #FFE9A8 saliendo de ese punto como líneas cortas radiales. Tres
+  chispas, no más. Nunca una explosión de luz, nunca un destello, nunca un halo.
 ```
+
+**Verificación (§17):** las dos siluetas se distinguen en negro sólido · aristas suavizadas,
+ninguna punta afilada · exactamente tres chispas en la fila inferior · sin manos ni suelo.
 
 ---
 
 ## A9 · Panel de encendido — controles
 
-**Traza:** RF-14 (los tres elementos), RF-15 (deslizante de tres posiciones), RF-19 («Soplar»
-deshabilitado y habilitado), RNF-19, RNF-02, guion §4.3.1.
-**Chroma:** sí.
+**Traza:** RF-14 (los tres elementos del panel), RF-15 (deslizante de tres posiciones), RF-19
+(«Soplar» deshabilitado y habilitado), RNF-19, RNF-02, CP-08, guion §4.3.1.
+**Chroma:** sí. **Archivo:** `ui_n1_panel_<pieza>_<estado>.png`.
+
+> **PG-06 abierto:** el deslizante lleva **tres** muescas porque es lo que propone el guion
+> §4.3.2 (Lejos / Cerca / Muy cerca). Si al validarlo jugando cambia el número, este asset se
+> vuelve a generar — el valor vive en `FireLevelConfig`, no en el arte.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO] [2 ESTILO] [3 PALETA N1] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Elementos de interfaz del panel de encendido del Nivel 1. Estética de piedra y cuero
-tallados, coherente con la ambientación prehistórica, NO estética digital moderna. Sin texto
-dentro de la imagen: las etiquetas las pone el motor.
+ELEMENTO: los controles de interfaz del panel de encendido del Nivel 1. Son elementos de
+INTERFAZ, no objetos de escenario: planos, frontales, sin perspectiva y sin volumen, legibles a
+32 px de alto. Estética de piedra y cuero tallados, coherente con la prehistoria, NUNCA estética
+digital moderna: sin bordes metálicos, sin brillos de cristal, sin sombras suaves.
 
-Generar en una sola lámina, ordenados en filas:
+Generar todas las piezas en UNA sola imagen, ordenadas en cuatro filas separadas, sin marcos ni
+títulos entre ellas.
 
-FILA 1 — CONTROL DESLIZANTE DE POSICIÓN: riel horizontal tallado en piedra #2E3A4F con tres
-muescas marcadas y equidistantes. Sobre él, un tirador con forma de guijarro redondeado en
-#A9713F con contorno #1C2333. Dibujar el riel una vez y el tirador tres veces por separado,
-para colocarlo en cada muesca. Cada muesca lleva un icono grabado distinto —una silueta pequeña,
-una mediana y una grande— para que las tres posiciones se distingan por forma además de por
-posición (RNF-19).
+FILA 1 — CONTROL DESLIZANTE: un riel horizontal tallado en piedra #6B5A60 con contorno #3A1E18,
+de esquinas muy redondeadas, con TRES muescas marcadas, equidistantes y del mismo tamaño. Cada
+muesca lleva grabado un icono distinto que indica distancia: en la primera un círculo pequeño, en
+la segunda uno mediano, en la tercera uno grande. Los iconos van grabados en #42333A, hundidos en
+la piedra. Dibujar ADEMÁS, separado del riel, un tirador suelto: un guijarro redondeado en
+#8C4A2F con contorno #3A1E18, del ancho de una muesca. Un solo tirador: el motor lo coloca.
 
-FILA 2 — BOTÓN «GOLPEAR»: botón rectangular de esquinas redondeadas, tallado en piedra #4A3B32,
-borde de cuero #8C4A2F, con un icono grabado de dos piedras chocando en #F2E8D5. Dos estados:
-en reposo, y presionado (mismo botón, ligeramente más bajo y con el plano de sombra reducido).
+FILA 2 — BOTÓN «GOLPEAR», dos estados uno al lado del otro:
+  (a) EN REPOSO: botón rectangular de esquinas muy redondeadas, tallado en piedra #5E4A52 con
+      borde de cuero #8C4A2F y contorno #3A1E18, con una sombra plana inferior de 6 px en
+      #42333A. Grabado en el centro, un icono de dos piedras chocando en #F7EFE2.
+  (b) PRESIONADO: el mismo botón, desplazado hacia abajo lo que medía su sombra, y sin la sombra
+      inferior. Nada más cambia.
 
 FILA 3 — BOTÓN «SOPLAR», dos estados que deben distinguirse por FORMA y no solo por color:
-  (a) DESHABILITADO: mismo botón en tonos apagados #1C2333 y #2E3A4F, con un icono grabado de
-      candado cerrado en #6B5344.
-  (b) HABILITADO: botón en #4A3B32 con borde cálido #FFC94A y un icono grabado de soplo —tres
-      líneas curvas de aire— en #F2E8D5.
+  (a) DESHABILITADO: el mismo botón en tonos apagados #42333A y #2A2438, con un icono grabado de
+      CANDADO CERRADO en #6B5248. Sin borde de cuero.
+  (b) HABILITADO: botón en #5E4A52 con borde de cuero #E8A33D y un icono grabado de SOPLO —tres
+      líneas curvas paralelas que sugieren aire— en #F7EFE2.
+  El candado y las líneas de aire son el segundo canal de información además del color: sin ellos
+  el asset no sirve (RNF-19).
 
-FILA 4 — MARCO DEL ÁREA DE REGISTRO: recuadro vertical vacío, de esquinas redondeadas, con borde
-de cuero cosido en #8C4A2F y fondo interior liso #0B0E14 para que el texto en #F2E8D5 se lea con
-contraste alto. Completamente vacío por dentro: sin líneas, sin texto, sin adornos.
+FILA 4 — MARCO DEL ÁREA DE REGISTRO: un recuadro VERTICAL vacío, de esquinas muy redondeadas, con
+borde de cuero cosido #8C4A2F y puntadas visibles en #F7EFE2 a lo largo del borde. Interior
+completamente liso y VACÍO en marfil #F7EFE2, para que el motor escriba texto oscuro encima con
+contraste alto. Nada dentro: sin líneas, sin renglones, sin texto, sin adornos.
 
-FONDO: verde chroma key plano #00FF00.
+TAMAÑO TÁCTIL: todos los botones son cuadrados o casi, de proporción generosa, pensados para
+dedos de un niño de nueve años. Ninguno alargado ni estrecho.
 ```
+
+**Verificación (§17):** cada estado se distingue por forma y no solo por color (RNF-19) · interior
+del marco completamente vacío · sin texto en la imagen · el par `#3A1E18` sobre `#F7EFE2` sostiene
+el contraste ≥ 4.5:1 (RNF-20) · botones de área generosa (§10.1).
 
 ---
 
 ## A10 · Marco de diálogo del guía
 
-**Traza:** RF-05, RF-06 (botón de omitir), RNF-01, RNF-20, guion §2.
-**Chroma:** sí.
+**Traza:** RF-05, RF-06 (botón de omitir, solo en escena ya vista), RNF-01, RNF-20, CP-08,
+guion §2. **Chroma:** sí. **Archivo:** `ui_dialogo_marco.png`, `ui_dialogo_continuar.png`,
+`ui_dialogo_omitir.png`.
+
+> Este asset lo reutilizan los cuatro slices: las escenas narrativas de los tres niveles y el
+> resumen de fin de nivel del Slice 4. Es lo que hace que el resumen se lea como andamiaje y no
+> como una pantalla de puntaje (CP-03, RF-45). No se genera otro.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO] [2 ESTILO] [3 PALETA N1] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Marco del cuadro de diálogo de las escenas narrativas. Sin texto dentro.
+ELEMENTO: el marco del cuadro de diálogo de las escenas narrativas. Elemento de INTERFAZ: plano,
+frontal, sin perspectiva. Va a llevar texto encima, escrito por el motor, así que su interior
+tiene que quedar completamente limpio.
 
-FORMA FIJA: recuadro horizontal ancho de esquinas redondeadas, ocupando el tercio inferior del
-encuadre. Borde de cuero cosido en #8C4A2F de grosor uniforme, con puntadas visibles en #F2E8D5
-a lo largo del borde. Fondo interior liso #0B0E14 con opacidad alta, para contraste de lectura.
-En la esquina superior izquierda, una placa pequeña de hueso #F2E8D5 con forma de óvalo
-irregular: es donde irá el nombre del personaje que habla. Interior completamente vacío.
+PIEZA 1 — MARCO: recuadro HORIZONTAL ancho, de proporción aproximada 3 de ancho por 1 de alto,
+con las esquinas MUY redondeadas. Aspecto de tablilla clara enmarcada en cuero: interior liso en
+marfil #F7EFE2, borde de cuero #C4A882 de grosor uniforme con contorno #3A1E18 de 6 px, y
+puntadas cortas visibles en #6B5248 repartidas regularmente a lo largo del borde.
+En la esquina SUPERIOR IZQUIERDA, sobresaliendo un poco del marco, una placa pequeña con forma de
+óvalo irregular en #E0D4C0 con su propio contorno: es donde el motor escribirá el nombre de quien
+habla. La placa también va VACÍA.
+INTERIOR COMPLETAMENTE VACÍO: sin líneas, sin renglones, sin texto, sin iconos, sin adornos y sin
+sombra interior.
 
-Generar además, por separado en la misma lámina:
-  (1) un icono de flecha triangular hacia la derecha en #FFC94A, para «continuar»;
-  (2) un icono de doble flecha hacia la derecha en #F2E8D5 dentro de un botón redondeado de
-      cuero #8C4A2F, para «omitir».
+PIEZA 2 — ICONO DE CONTINUAR: un triángulo relleno apuntando a la derecha, de esquinas
+redondeadas, en #E8A33D con contorno #3A1E18. Suelto, sin botón alrededor.
 
-FONDO: verde chroma key plano #00FF00.
+PIEZA 3 — BOTÓN DE OMITIR: un botón redondeado en cuero #C4A882 con contorno #3A1E18 y, dentro,
+grabado en #3A1E18, un icono de DOBLE triángulo apuntando a la derecha. La doble punta es lo que
+lo distingue del icono de continuar por forma y no solo por tamaño.
+
+Generar las tres piezas en la misma imagen, separadas y alineadas, sobre el verde.
 ```
+
+**Verificación (§17):** interior del marco y de la placa completamente vacíos · texto oscuro sobre
+fondo claro, nunca al revés (§10.3) · continuar y omitir se distinguen por forma · esquinas muy
+redondeadas · sin texto en la imagen.
 
 ---
 
-## Postproceso de los assets con chroma
+## Postproceso — de la imagen generada al asset importado
 
-1. Recortar el verde `#00FF00` y exportar PNG con alfa.
-2. Revisar el halo verde en los bordes; si queda, encogerlo un píxel.
-3. Importar como Sprite en `Assets/Game/Art/`, filtro **Point (no filter)** si el arte se ve mejor
-   nítido, `Pixels Per Unit` uniforme para todo el slice.
-4. Verificar RNF-20 sobre el arte final, no sobre el prompt: el contraste se mide en la imagen.
-5. Registrar el asset en `CreditsContent.asset` (T08) — CT-09, RNF-23.
+Un asset no está terminado cuando Gemini lo devuelve, sino cuando pasa por estos seis pasos.
+
+1. **Verificar contra la checklist** de `Direccion_de_Arte.md` §17 y contra la línea
+   «Verificación» de cada asset de arriba. Si falla una, se vuelve a generar: no se retoca a mano
+   lo que el prompt puede corregir.
+2. **Recortar el verde** `#00FF00` y exportar PNG con alfa. Revisar el halo verde del borde; si
+   queda, encogerlo un píxel.
+3. **Nombrar** según `Direccion_de_Arte.md` §15.4 — prefijos `char_`, `prop_`, `env_`, `ui_`,
+   `fx_`, sin tildes, sin espacios y sin mayúsculas.
+4. **Importar** en `Assets/Game/Art/` con los ajustes de §15.2: Texture Type `Sprite (2D and UI)`,
+   Filter Mode `Bilinear`, Compression `Normal Quality`, Max Size `2048`, Generate Physics Shape
+   desactivado. **Pivot `Bottom`** en personajes y **`Center`** en props e interfaz. **Pixels Per
+   Unit `100`** en todo el proyecto, sin excepción: papá mide 1.8 unidades.
+5. **Medir** el contraste sobre la imagen final, no sobre el prompt (RNF-20), y comprobar en un
+   simulador de deuteranopía que nada dependa solo del color (RNF-19, §14.2).
+6. **Registrar** el asset en `CreditsContent.asset` (T08) con su mención de autoría — obligatoria
+   en los personajes, que son obra derivada autorizada (CT-09, RNF-23).

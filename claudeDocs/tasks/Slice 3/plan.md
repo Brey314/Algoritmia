@@ -846,179 +846,208 @@ degrada en la siguiente sesión.
 
 # Assets visuales del Slice 3
 
-Diez assets. Generador principal: **Gemini / Nano Banana Pro**. Los prompts están en español y se
-pegan tal cual.
+Diez assets. Generador: **Gemini / Nano Banana Pro**. Los prompts están en español y se pegan
+tal cual, en un solo mensaje, **sin resumirlos**.
 
-**Regla de uso:** copiar el bloque de estilo y el bloque de paleta **literalmente** al inicio de
-cada prompt, antes de la descripción del asset. Lo que varía es solo la descripción; lo que se
-repite palabra por palabra es todo lo demás.
+**Documento que manda:** `claudeDocs/Direccion_de_Arte.md`, §8.3 para este nivel. Si algo se
+contradice, gana la dirección de arte; si esta contradice a `SPEC.md`, gana `SPEC.md`.
 
-**Los personajes no se rediseñan.** Mamá es la personaje jugable de este nivel (guion §1.2) y ya
-existe como asset `A3` del Slice 1, en vista lateral. Este nivel es en **vista superior**, así que
-`C2` genera su versión cenital — pero **reutilizando los rasgos físicos fijos del prompt de `A3`
-palabra por palabra**, no inventando un personaje nuevo. Papá, la Niña y el Niño acompañan y se
+**Cómo se arma un prompt.** Los mismos cinco bloques fijos del Slice 1, cambiando el de contexto
+y el de paleta:
+
+```
+[1 CONTEXTO N3]  [2 ESTILO]  [3 PALETA N3]  [4 ENTREGA]  [5 PROHIBICIONES]  +  ELEMENTO
+```
+
+`[2 ESTILO]`, `[4 ENTREGA]` y `[5 PROHIBICIONES]` se copian **idénticos** a los del
+`Slice 1/plan.md`, palabra por palabra. Que sean literalmente los mismos es lo que hace que los
+tres niveles parezcan el mismo juego.
+
+**Los personajes no se rediseñan.** Mamá es la personaje jugable de este nivel (guion §1.2,
+CN-02) y ya existe como asset `A3` del Slice 1, en A-pose frontal. Este nivel es en **vista
+superior**, así que `C2` genera su versión cenital —**reutilizando su bloque de rasgos físicos
+palabra por palabra**, no inventando un personaje nuevo—. Papá, la Niña y el Niño acompañan y se
 reutilizan tal cual; Chispa es `A1`.
 
-**Autoría (CT-09, RNF-23).** Escenarios y objetos **originales**. Los personajes siguen siendo
-originales mientras PG-07 no llegue por escrito. Cada asset se reconoce en la pantalla de créditos
-(Slice 1, T08).
+**Autoría (CT-09, RNF-23).** Escenarios, props e interfaz **originales del proyecto**. Los
+personajes reutilizados del Slice 1 son **obra derivada** de los diseños de la Familia Anonaky,
+con **autorización escrita concedida** (PG-07 cerrado el 30/08/2026) y reconocimiento obligatorio
+en créditos. Cada asset se registra en `CreditsContent.asset` (Slice 1, T08).
 
-**Transparencia.** Gemini no produce canal alfa fiable. Los assets marcados **Chroma** se generan
-sobre fondo verde plano `#00FF00` y se recortan después. En este slice **ningún asset con chroma
-contiene verde**, así que no hace falta el magenta que exigió el bosque del Slice 2.
+**Transparencia.** Los assets marcados **Chroma** se generan sobre verde plano `#00FF00` y se
+recortan después. En este nivel el follaje es abundante, así que **todo asset con chroma que
+contenga verde vegetal se pide sobre magenta `#FF00FF`**, igual que en el Slice 2; se indica en
+cada uno.
 
 ---
 
-## Bloque de estilo fijo — copiar al inicio de cada prompt
-
-**Idéntico al del Slice 2, sin cambiar una palabra.** El Nivel 3 también transcurre de día y al
-aire libre, así que el bloque sirve tal cual; que los dos slices compartan bloque es lo que hace
-que el juego se vea como un solo producto.
+## Bloque 1 · CONTEXTO N3 — sustituye al del Slice 1
 
 ```
-ESTILO (fijo, no variar): ilustración plana 2D vectorial para videojuego educativo infantil.
-Formas redondeadas y macizas, sin puntas agresivas. Contorno limpio y uniforme de 4 px en
-color #1C2333. Color en planos sólidos, sin degradados complejos, sin texturas fotográficas,
-sin sombreado realista: como máximo una sombra plana de un solo tono. Sin efectos de brillo
-volumétrico ni destellos intensos. Iluminación diurna suave y pareja, procedente de arriba,
-sin sol visible en el encuadre y sin sombras largas. Tono amable, acogedor y no amenazante,
-apropiado para niños de 9 a 11 años. Ambientación prehistórica estilizada, no realista. Sin
-violencia, sin sangre, sin armas, sin texto de ningún tipo dentro de la imagen, sin marcas de
-agua, sin logotipos. Composición centrada y legible a tamaño pequeño, pensada para proyector y
-pantallas de baja calidad: siluetas distinguibles y alto contraste entre figura y fondo.
+CONTEXTO DEL ENCARGO
+Soy diseñador de un videojuego educativo 2D hecho en Unity para estudiantes de grado cuarto de
+primaria, de 9 a 11 años. El juego acompaña a una familia prehistórica en tres descubrimientos:
+el fuego, la rueda y el cruce de un río. Este encargo pertenece al Nivel 3, «El Río», que
+transcurre a primera hora de la mañana, con niebla baja, en la orilla de un río rodeada de
+bosque húmedo.
+
+ESTE NIVEL SE VE DESDE ARRIBA. Salvo que te diga lo contrario en un asset concreto, todo se
+dibuja en VISTA CENITAL PURA, a 90 grados, como si la cámara colgara del cielo mirando al suelo.
+No es una vista isométrica, no es tres cuartos y no es lateral.
+
+Lo que necesito NO es una ilustración de escena, ni una lámina de presentación, ni un concept
+art. Es un ASSET DE PRODUCCIÓN: un archivo que voy a recortar e importar a Unity como sprite,
+que se verá en movimiento, superpuesto a otros elementos, a un tamaño mucho menor que el de
+generación, y proyectado en pantallas de aula de baja calidad.
+
+Tres condiciones mandan sobre cualquier consideración estética:
+1. PÚBLICO INFANTIL. El agua NUNCA se representa como amenazante: no hay rápidos violentos, no
+   hay espuma turbulenta, no hay oscuridad bajo la superficie, no hay peligro. Si algo sale mal
+   en el juego, el tono es de contratiempo, no de catástrofe.
+2. BAJO CONSUMO DE RECURSOS. Los equipos del colegio no tienen tarjeta gráfica dedicada. El arte
+   es plano y simple por diseño.
+3. LEGIBILIDAD ANTES QUE DETALLE. Desde arriba y a tamaño pequeño, la silueta es lo único que se
+   lee. Si un detalle compite con ella, sobra.
+
+INSTRUCCIÓN SOBRE LO QUE NO TE DIGA: sigue las secciones de abajo al pie de la letra. Donde no
+te dé un dato, NO lo inventes ni lo rellenes con tu criterio: elige la opción más simple
+compatible con las reglas y deja el resto vacío. No añadas objetos, personajes, adornos, texto,
+fondo, marcos ni elementos decorativos que no haya pedido explícitamente. Si crees que falta
+algo, omítelo: prefiero un asset incompleto a uno inventado.
 ```
 
-## Bloque de paleta fija — copiar al inicio de cada prompt
-
-Las dos familias anteriores **se conservan íntegras** —los personajes y la UI ya generados tienen
-que seguir encajando— y se añade la del agua. Copiar las tres partes.
+## Bloque 3 · PALETA DEL NIVEL 3 — usar solo estos colores
 
 ```
-PALETA (fija, usar solo estos colores):
+PALETA (fija, no usar ningún color fuera de esta lista)
 
-  — Heredada del Nivel 1 —
-  Oscuridad de cueva      #0B0E14
-  Piedra en sombra        #1C2333
-  Piedra iluminada        #2E3A4F
-  Roca cálida             #4A3B32
-  Tierra                  #6B5344
-  Piel cálida clara       #E8B48C
-  Piel cálida media       #C98B62
-  Piel cálida oscura      #8E5A3B
-  Pieles / ropa ocre      #A9713F
-  Pieles / ropa terracota #8C4A2F
-  Hoja seca               #B08541
-  Fuego amarillo          #FFC94A
-  Fuego naranja           #FF8A3D
-  Fuego rojo              #E4572E
-  Hueso (texto y UI)      #F2E8D5
+PERSONAJES (idéntica en los tres niveles, no se tiñe con la luz del entorno):
+  Piel base #F2D3BC        Piel sombra #D9AF95
+  Cabello base #5C2B22     Cabello sombra #3D1A14
+  Piel de leopardo (adultos) #E8C07A   su sombra #C49A55   manchas #2B1A12
+  Túnica del niño (oliva) #C4C24E      su sombra #9BA03A   manchas #3F6B2E
+  Conjunto de la niña (ocre) #D9B23A   su sombra #B08A25   manchas #7A5418
+  Rubor infantil #F0A5A0
+  Contorno de personaje #3A1E18
 
-  — Exteriores del Nivel 2 —
-  Cielo de día            #A8C8D8
-  Follaje claro           #7FA05A
-  Follaje medio           #5A7A3F
-  Follaje oscuro          #3C5429
-  Planta baja             #6E9B4E
-  Corteza clara           #8A6B4A
-  Corteza oscura          #5C4530
-  Madera trabajada        #C79A5E
-  Piedra fría             #7A8290
-  Piedra fría oscura      #4E5561
-  Metal de herramienta    #9AA3AE
+RÍO Y BOSQUE HÚMEDO DEL NIVEL 3:
+  Follaje #4E8C3F              Follaje en sombra #37662B
+  Follaje claro #6FA84E        Follaje claro en sombra #54803A
+  Juncos #8CA84E               Musgo #4A5C42
+  Agua #3E8FA8                 Agua en sombra (centro del cauce) #2B6B80
+  Banda de corriente #5AA8BF   Espuma y niebla #D6F0F5
+  Roca húmeda #6B7A72          Roca húmeda en sombra #4C5850
+  Suelo de tierra #8A6B4A      Suelo en sombra #6B5344
+  Flores frías #B87FC4 y #7FA8E0   (NUNCA en ámbar, por la regla de acento)
 
-  — Agua del Nivel 3 —
-  Agua de orilla          #5E90AC
-  Agua del río            #3E6E8E
-  Agua profunda           #2A4E68
-  Espuma y reflejo        #C9DCE6
-  Arena de la orilla      #C2A878
-  Tela de la vela         #E4D8BC
-  Fibra de soga           #A98C5F
+ACENTO DEL NIVEL — SOLO PARA LOS MATERIALES Y LO INTERACTIVO:
+  Ámbar #E8A33D               Ámbar claro #F2C46B
+
+NEUTROS DE INTERFAZ (comunes a todo el juego):
+  Marfil #F7EFE2   Marfil sombra #E0D4C0   Borde de panel #C4A882
+  Carbón #3A1E18 (texto y contorno)        Carbón suave #6B5248
+  Éxito #5FA842    Atención #E8A33D
+
+REGLA DE ACENTO (crítica): el ámbar pertenece EXCLUSIVAMENTE a los materiales recolectables y a
+lo interactivo —troncos utilizables, sogas, tela, mástil, zona de construcción—. Ningún helecho,
+junco, roca, flor ni elemento de decorado puede llevarlo. Si el elemento que te pido no es
+recolectable ni interactivo, no lleva ni una pincelada de ámbar.
 ```
-
-*Para RNF-19 el agua ayuda: lo que **flota y sirve** es cálido y de madera (`#8A6B4A`, `#C79A5E`);
-el río es frío (`#3E6E8E`, `#2A4E68`). Aun así, la forma tiene que bastar por sí sola.*
-
-*Para RNF-20: el escenario es claro y en vista superior. **Ningún texto va directo sobre el
-fondo** — la lista de tareas, el inventario y los mensajes van siempre sobre marco de interior
-`#0B0E14` con texto `#F2E8D5`, como en los slices anteriores.*
 
 ---
 
 ## C1 · Escenario del río — vista superior
 
 **Traza:** RF-35, RF-39, guion §8 y §8.2 (orilla del río y bosque circundante, vista superior).
-**Chroma:** **no** — es el fondo completo de la escena.
-**Entregar:** una lámina 16:9.
+**Chroma:** **no** — es el fondo completo de la escena. **Archivo:** `env_n3_rio.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N3] [2 ESTILO] [3 PALETA N3] [5 PROHIBICIONES]
 
-ASSET: Fondo de escena — orilla de un río y bosque circundante, VISTA CENITAL pura (90 grados,
-desde arriba). Sin personajes, sin objetos recolectables y sin interfaz.
+ELEMENTO: fondo completo de escena. Orilla de un río y bosque circundante en VISTA CENITAL pura
+de 90 grados. Sin personajes, sin objetos recolectables y sin interfaz.
 
-COMPOSICIÓN FIJA: el río cruza el encuadre en HORIZONTAL, ocupando la franja superior: agua de
-orilla #5E90AC en los bordes, agua del río #3E6E8E en el cuerpo, agua profunda #2A4E68 en el
-centro del cauce, en planos sólidos sin degradado, con tres o cuatro líneas curvas de espuma
-#C9DCE6 que sugieren corriente hacia la derecha. Una franja de arena #C2A878 separa el agua de
-la tierra a todo lo ancho.
+FORMATO: rectangular 16:9 horizontal, sin croma: la imagen entera es el escenario.
 
-Los dos tercios inferiores son terreno transitable: tierra #6B5344 despejada, con manchas de
-hierba #6E9B4E dispersas y planas. Alrededor del terreno, en los bordes izquierdo, derecho e
-inferior, una masa de copas de árbol vistas desde arriba en #3C5429 y #5A7A3F que cierra el
-escenario: fuera de ahí no se puede ir, y debe verse así.
+COMPOSICIÓN FIJA:
+- El RÍO cruza el encuadre en HORIZONTAL, ocupando la franja superior. Se construye en tres
+  planos de color sólido, sin degradado: agua #3E8FA8 en el cuerpo, centro del cauce más oscuro
+  #2B6B80, y dos o tres bandas de corriente #5AA8BF de anchura irregular recorriéndolo a lo
+  largo. Sobre ellas, tres o cuatro arcos de espuma #D6F0F5 de trazo grueso cerca de las
+  orillas. El agua está en calma: sin remolinos, sin rápidos, sin oscuridad amenazante.
+- Una franja de ROCA HÚMEDA #6B7A72 con sombra #4C5850 separa el agua de la tierra a todo lo
+  ancho: es la orilla.
+- Los dos tercios inferiores son TERRENO TRANSITABLE: tierra #8A6B4A con sombra #6B5344,
+  despejada, con manchas planas de musgo #4A5C42 dispersas.
+- En los bordes izquierdo, derecho e inferior, una masa de copas de árbol vistas desde arriba,
+  construida con círculos superpuestos en #4E8C3F y #6FA84E, que cierra el escenario. Fuera de
+  ahí no se puede ir, y debe verse así de claro. El follaje del borde va sin contorno.
+- Decorado escaso y pegado a los bordes: helechos como abanicos de tres hojas planas, juncos
+  #8CA84E como líneas gruesas de punta redondeada junto al agua, y cuatro o cinco flores
+  pequeñas de cinco pétalos en #B87FC4 y #7FA8E0.
+- AL OTRO LADO DEL RÍO, en el borde superior: la orilla opuesta en tierra #8A6B4A y DOS COLUMNAS
+  DE HUMO delgadas #D6F0F5 elevándose. Son las fogatas de la civilización, el destino. Pequeñas,
+  al fondo, sin fuego visible.
+- NIEBLA: una franja horizontal de #D6F0F5 al 30 por ciento de opacidad sobre el agua, de borde
+  superior ondulado. Es una forma plana, no un degradado ni un difuminado.
 
-Al otro lado del río, en el borde superior del encuadre, la orilla opuesta con tierra #6B5344 y
-DOS COLUMNAS DE HUMO delgadas y grises #7A8290 elevándose: son las fogatas de la civilización,
-el destino. Pequeñas y al fondo, sin fuego visible.
+ZONAS LIBRES OBLIGATORIAS: dejar CINCO claros despejados y sin ningún detalle —cuatro repartidos
+por el terreno, uno en cada cuadrante, para los materiales recolectables, y uno más junto a la
+orilla, en el centro, para la zona de construcción—. No pongas nada en esos cinco sitios.
 
-ZONAS LIBRES OBLIGATORIAS: dejar cuatro claros despejados y sin detalle repartidos por el
-terreno —uno en cada cuadrante— para los materiales recolectables, y un claro más junto a la
-arena, en el centro, para la zona de construcción. No poner nada en esos cinco sitios.
-
-Relación de aspecto 16:9. Sin animales, sin puente, sin balsa, sin sendero marcado.
+Sin animales, sin puente, sin balsa, sin sendero marcado, sin ámbar en ninguna parte.
 ```
+
+**Verificación (§17):** vista cenital pura, sin isométrica · cinco claros vacíos · ningún ámbar
+en el decorado · el agua no resulta amenazante (§8.3) · el follaje del borde lee como límite.
 
 ---
 
 ## C2 · Mamá en vista superior — cuatro direcciones
 
-**Traza:** RF-35, guion §1.1 y §8.2, CU-09, HU-11. **Personaje original, PG-07, CT-09, RNF-23.**
-**Chroma:** sí (verde).
-**Entregar:** cuatro versiones del mismo personaje, una por dirección.
+**Traza:** RF-35, guion §1.1 y §8.2, CU-09, HU-11, CN-02. Obra derivada con autorización
+concedida (PG-07, CT-09, RNF-23). **Chroma:** **magenta `#FF00FF`**.
+**Archivo:** `char_mama_cenital_norte.png`, `_este`, `_sur`, `_oeste`.
 
-> **Antes de generar:** abrir el prompt `A3` del Slice 1 y copiar su bloque **RASGOS FÍSICOS
-> FIJOS** palabra por palabra dentro de este prompt, en el lugar indicado. Mamá ya existe; esto es
-> su vista cenital, no un personaje nuevo. Si los rasgos no coinciden con `A3`, el asset está mal.
+> **Antes de generar:** abrir el prompt `A3` del Slice 1 y copiar su descripción de cabeza,
+> vestuario y color **palabra por palabra** dentro de este prompt, en el lugar indicado. Mamá ya
+> existe: esto es su vista cenital, no un personaje nuevo. Si los rasgos no coinciden con `A3`,
+> el asset está mal y se descarta.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N3] [2 ESTILO] [3 PALETA N3] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Mamá, personaje jugable del Nivel 3, en VISTA CENITAL pura (90 grados, desde arriba),
-para desplazarse por un escenario visto desde arriba. Personaje ORIGINAL, no basado en ninguna
-franquicia ni personaje existente.
+ELEMENTO: Mamá, personaje jugable del Nivel 3, en VISTA CENITAL pura de 90 grados, para
+desplazarse por un escenario visto desde arriba.
 
-RASGOS FÍSICOS FIJOS: [PEGAR AQUÍ, LITERALMENTE, EL BLOQUE «RASGOS FÍSICOS FIJOS» DEL PROMPT A3
-DEL SLICE 1 — mismo peinado, misma piel, misma túnica, mismos accesorios. No variar nada.]
+FONDO: MAGENTA croma puro #FF00FF, plano y uniforme.
 
-CARÁCTER QUE DEBE LEERSE: serena y metódica, alguien que observa antes de decidir.
+RASGOS FÍSICOS FIJOS: [PEGAR AQUÍ, LITERALMENTE, LA DESCRIPCIÓN DE CABEZA, VESTUARIO Y COLOR DEL
+PROMPT A3 DEL SLICE 1 — mismo peinado recogido, misma piel #F2D3BC, misma túnica de piel de
+leopardo #E8C07A con manchas #2B1A12, misma cuerda #5C2B22. No variar nada.]
 
-COMPOSICIÓN: cuerpo entero visto DESDE ARRIBA. Desde este ángulo se ven sobre todo la cabeza y
-los hombros, el peinado, la túnica y la punta de los pies. La silueta debe ser reconocible como
-una persona a tamaño pequeño, sin depender del rostro.
+QUÉ SE VE DESDE ARRIBA: sobre todo la coronilla y los hombros, el volumen del recogido del pelo,
+la túnica vista en planta y la punta de los pies asomando. Los brazos salen a los lados del
+torso y se ven escorzados. La silueta tiene que reconocerse como una persona a 64 px de alto,
+sin depender del rostro.
 
-Generar CUATRO versiones del MISMO personaje, idénticas salvo por la dirección en que camina:
-  (1) hacia ARRIBA (se le ve la espalda y la coronilla);
-  (2) hacia la DERECHA (perfil desde arriba);
-  (3) hacia ABAJO (se le ve la cara desde arriba);
-  (4) hacia la IZQUIERDA (perfil desde arriba, espejo de (2)).
+Generar CUATRO versiones del MISMO personaje, idénticas en color, tamaño y vestuario, cambiando
+solo la dirección en que camina:
+  (1) hacia ARRIBA: se le ve la espalda y la coronilla; el recogido del pelo queda hacia el
+      espectador.
+  (2) hacia la DERECHA: perfil visto desde arriba, un hombro más adelantado.
+  (3) hacia ABAJO: se le ve la cara escorzada desde arriba, con la frente ocupando la mayor parte
+      del rostro.
+  (4) hacia la IZQUIERDA: espejo exacto de (2).
 
-En las cuatro, una pierna adelantada para que se lea como paso, no como figura estática.
+En las CUATRO, una pierna adelantada para que se lea como paso y no como figura estática.
 
-FONDO: verde chroma key plano #00FF00, sin sombra proyectada sobre el fondo.
+Las cuatro deben ocupar el mismo espacio y compartir la misma línea de centro, para que al
+cambiar de dirección en el juego el personaje no salte de posición.
 ```
+
+**Verificación (§17):** los rasgos coinciden con `A3` · vista cenital pura · las cuatro comparten
+tamaño y centro · legible como persona a 64 px · sin ámbar en el personaje.
 
 ---
 
@@ -1026,38 +1055,42 @@ FONDO: verde chroma key plano #00FF00, sin sombra proyectada sobre el fondo.
 
 **Traza:** **RF-35**, RF-37, RNF-02, RNF-19, RNF-20, CT-06, **INC-01**, guion §2.1 y §8.2.
 **Es el asset que materializa INC-01: el control es UI en pantalla, no teclado.**
-**Chroma:** sí (verde).
-**Entregar:** los cuatro botones de dirección en dos estados, más el botón «Recoger» en dos estados.
+**Chroma:** verde `#00FF00`. **Archivo:** `ui_n3_dir_arriba_reposo.png` …
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N3] [2 ESTILO] [3 PALETA N3] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Controles en pantalla del Nivel 3. Sin texto de ningún tipo dentro de la imagen.
+ELEMENTO: los controles en pantalla del Nivel 3. Elementos de INTERFAZ: planos, frontales, sin
+perspectiva y sin volumen. SIN TEXTO de ningún tipo.
 
-BOTONES DE DIRECCIÓN: cuatro botones circulares del mismo tamaño, de cuero #8C4A2F con contorno
-#1C2333 y un reborde interior de puntadas #A98C5F. Dentro de cada uno, una flecha maciza
-#F2E8D5 de punta ancha y roma:
+Estos botones son el único modo de mover al personaje: no hay teclado. Tienen que ser grandes,
+evidentes y fáciles de acertar con el ratón por un niño de nueve años.
+
+BOTONES DE DIRECCIÓN: cuatro botones CIRCULARES del mismo tamaño, de piedra clara #C4A882 con
+contorno #3A1E18 y un reborde interior de puntadas de cuero #6B5248. Dentro de cada uno, una
+flecha maciza #3A1E18 de punta ANCHA y ROMA:
   (1) apuntando ARRIBA;  (2) apuntando ABAJO;  (3) apuntando IZQUIERDA;  (4) apuntando DERECHA.
 
-Generar cada uno en DOS estados:
-  REPOSO: cuerpo #8C4A2F, flecha #F2E8D5.
-  PRESIONADO: el MISMO botón con el cuerpo #A9713F, la flecha #1C2333 y un anillo exterior
-  grueso y continuo #FFC94A. El cambio debe leerse también SIN color, por el anillo.
+Generar cada uno en DOS estados, en filas:
+  REPOSO: cuerpo #C4A882, flecha #3A1E18, con una sombra plana inferior de 6 px en #6B5248.
+  PRESIONADO: el MISMO botón desplazado hacia abajo lo que medía su sombra, SIN la sombra, con
+      el cuerpo en #E8A33D y un anillo exterior continuo #3A1E18. El cambio se lee por el
+      desplazamiento y el anillo, no solo por el color.
 
-BOTÓN «RECOGER»: botón redondeado ancho, de cuero #8C4A2F con contorno #1C2333, y dentro una
-mano abierta estilizada #F2E8D5 en silueta simple, con una flecha corta #FFC94A que entra hacia
-la palma. Generarlo en dos estados:
+BOTÓN «RECOGER»: botón redondeado más ancho que los de dirección, en #E8A33D con contorno
+#3A1E18 y, grabado dentro en #3A1E18, un icono de MANO ABIERTA vista desde arriba, con cuatro
+dedos, tomando un objeto. Dos estados:
   DISPONIBLE: como se describe.
-  NO DISPONIBLE: el mismo botón atenuado, en #6B5344 con la mano en #4E5561, y además con el
-  contorno DISCONTINUO a trazos. La diferencia no puede ser solo el color (RNF-19).
+  NO DISPONIBLE: el mismo botón en #C4A882 apagado, con el icono en #6B5248 y una línea
+      diagonal corta cruzando la esquina inferior derecha. La diferencia se lee sin color.
 
-REQUISITO: los cuatro botones de dirección deben ser grandes y de área generosa, pensados para
-que un niño de nueve años los acierte en una pantalla de sala de sistemas. Legibles a tamaño
-pequeño y en escala de grises.
-
-FONDO: verde chroma key plano #00FF00.
+REQUISITO: área táctil generosa, mínimo equivalente a 88 por 88 px a resolución de diseño.
+Legibles en escala de grises y a tamaño pequeño.
 ```
+
+**Verificación (§17):** los cuatro botones son idénticos salvo la flecha · reposo y presionado se
+distinguen sin color (RNF-19) · «Recoger» disponible y no disponible también · área táctil
+generosa (§10.1) · sin texto.
 
 ---
 
@@ -1065,266 +1098,286 @@ FONDO: verde chroma key plano #00FF00.
 
 **Traza:** RF-37, RF-38, RNF-19, HU-11, CU-09, guion §8.2. Son **exactamente cuatro**: los que
 exige RF-38, sin objetos sobrantes.
-**Chroma:** sí (verde).
-**Entregar:** los cuatro objetos sueltos, más su versión de icono para el inventario.
+**Chroma:** verde `#00FF00`. **Archivo:** `prop_n3_troncos.png`, `_sogas`, `_tela`, `_mastil`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N3] [2 ESTILO] [3 PALETA N3] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Los cuatro materiales recolectables del Nivel 3, vistos DESDE ARRIBA para el escenario, y
-sus cuatro iconos para el inventario. Sin texto de ningún tipo dentro de la imagen.
+ELEMENTO: los cuatro materiales recolectables del Nivel 3, vistos DESDE ARRIBA para el
+escenario, y sus cuatro iconos para el inventario. Sin texto de ningún tipo.
+
+Son objetos INTERACTIVOS: contorno de 7 a 9 px en #3A1E18 y color de acento ámbar presente en
+todos, que es lo que le dice al estudiante que se pueden recoger.
 
 FILA 1 — OBJETOS EN EL ESCENARIO (vista cenital, cada uno suelto y separado):
-  (1) TRONCOS: un haz de tres troncos rectos y largos, paralelos y juntos, corteza #8A6B4A con
-      vetas #5C4530 y los extremos circulares #C79A5E visibles. Silueta rectangular alargada.
-  (2) SOGAS: dos cuerdas gruesas de fibra trenzada #A98C5F enrolladas en sendos rollos
-      circulares planos, con el trenzado insinuado por líneas cortas #6B5344. Silueta redonda.
-  (3) TELA: una pieza de tela clara #E4D8BC doblada en un montón bajo, con pliegues marcados por
-      líneas simples #C2A878 y una esquina levantada. Silueta blanda e irregular.
-  (4) MÁSTIL: un palo recto, largo y delgado #8A6B4A, más fino que los troncos, con una punta
-      redondeada y una muesca tallada #5C4530 cerca del extremo superior. Silueta de barra fina.
+  (1) TRONCOS: un haz de TRES troncos rectos y largos, paralelos y juntos. Corteza #8A6B4A con
+      vetas #6B5344 y los extremos circulares cortados en ámbar claro #F2C46B, que es la marca
+      de que son madera utilizable. Silueta RECTANGULAR ALARGADA.
+  (2) SOGAS: DOS cuerdas gruesas enrolladas en sendos rollos circulares planos, en fibra
+      #E8A33D con el trenzado insinuado por líneas cortas #C4A882. Silueta REDONDA.
+  (3) TELA: una pieza de tela clara #E0D4C0 doblada en un montón bajo, con pliegues marcados por
+      líneas simples #C4A882, una esquina levantada y un ribete ámbar #E8A33D en un borde.
+      Silueta BLANDA E IRREGULAR.
+  (4) MÁSTIL: un palo recto, largo y delgado —claramente más fino que los troncos—, en #8A6B4A
+      con una punta redondeada y una muesca tallada #F2C46B cerca del extremo superior. Silueta
+      de BARRA FINA.
 
 FILA 2 — ICONOS DE INVENTARIO: los mismos cuatro objetos, simplificados a silueta plana y
-centrados dentro de una casilla cuadrada de esquinas redondeadas en #0B0E14 con borde #A98C5F.
+centrados dentro de una casilla cuadrada de esquinas redondeadas en marfil #F7EFE2 con borde
+#C4A882. Deben reconocerse a 32 px.
 
 REQUISITO DE ACCESIBILIDAD: los cuatro deben distinguirse por SILUETA en escala de grises y a
-tamaño pequeño: haz rectangular, rollos redondos, montón blando, barra fina. Es el criterio de
-RNF-19 y también lo que permite que el inventario se lea de un vistazo.
-
-FONDO: verde chroma key plano #00FF00.
+tamaño pequeño —haz rectangular, rollos redondos, montón blando, barra fina—. Es el criterio de
+RNF-19 y lo que permite leer el inventario de un vistazo.
 ```
+
+**Verificación (§17):** cuatro siluetas separables en negro sólido · los cuatro llevan ámbar y
+nada del decorado lo lleva · los iconos se leen a 32 px · exactamente cuatro materiales.
 
 ---
 
 ## C5 · Lista de tareas e inventario
 
 **Traza:** RF-36, RF-38, RNF-03, RNF-19, RNF-20, INC-30, INC-41, HU-11, guion §8.1.
-**Chroma:** sí (verde).
-**Entregar:** el marco de la lista con cuatro filas vacías, los dos estados de marca, y la tira de
-inventario de cuatro casillas.
+**Chroma:** verde `#00FF00`. **Archivo:** `ui_n3_lista_marco.png`, `ui_n3_casilla_*`,
+`ui_n3_inventario.png`.
+
+> **Es la única lista permanente del juego.** Los niveles 1 y 2 no llevan indicador de progreso
+> en pantalla: RNF-03 restringe la tarea **activa**, no cuántas se muestran, y añadir un marcador
+> que ningún RF pide sería una mecánica nueva (INC-41, `Direccion_de_Arte.md` §10.1).
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N3] [2 ESTILO] [3 PALETA N3] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Marcos de la lista de tareas y del inventario del Nivel 3. SIN texto dentro: las cuatro
-tareas las escribe el juego.
+ELEMENTO: los marcos de la lista de tareas y del inventario. Elementos de INTERFAZ, planos y
+frontales. SIN TEXTO dentro: las cuatro tareas las escribe el motor.
 
-  (1) MARCO DE LA LISTA: panel vertical de esquinas redondeadas, borde de cuero cosido #8C4A2F
-      con puntadas #F2E8D5, fondo interior liso #0B0E14 de opacidad alta para sostener el
-      contraste de lectura. Dentro, CUATRO filas iguales separadas por una línea fina #6B5344.
-      Al inicio de cada fila, una casilla cuadrada vacía de borde #A98C5F. El resto de cada fila
-      queda VACÍO.
+  (1) MARCO DE LA LISTA: panel VERTICAL de esquinas muy redondeadas, interior liso en marfil
+      #F7EFE2, borde de cuero cosido #C4A882 con puntadas #6B5248. Dentro, CUATRO filas iguales
+      separadas por una línea fina #E0D4C0. Al inicio de cada fila, una casilla cuadrada vacía
+      de borde #6B5248. El resto de cada fila queda COMPLETAMENTE VACÍO: ni líneas, ni renglones,
+      ni texto.
 
-  (2) MARCA DE TAREA PENDIENTE: la casilla cuadrada vacía, borde #A98C5F continuo, interior
-      #0B0E14.
+  (2) CASILLA DE TAREA PENDIENTE: la casilla cuadrada vacía, borde #6B5248 continuo y fino,
+      interior marfil.
 
-  (3) MARCA DE TAREA COMPLETADA: la MISMA casilla, ahora rellena en #7FA05A, con una marca de
-      verificación #F2E8D5 de trazo grueso dentro, y el borde engrosado. La diferencia entre (2)
-      y (3) tiene que leerse en escala de grises: casilla vacía frente a casilla llena con marca.
+  (3) CASILLA DE TAREA COMPLETADA: la MISMA casilla, ahora rellena en #5FA842, con una marca de
+      verificación #F7EFE2 de trazo grueso dentro y el borde ENGROSADO. La diferencia entre (2)
+      y (3) tiene que leerse en escala de grises: casilla vacía de borde fino frente a casilla
+      llena de borde grueso con marca.
 
   (4) TIRA DE INVENTARIO: banda horizontal con CUATRO casillas cuadradas iguales de esquinas
-      redondeadas, borde #A98C5F, interior #0B0E14, separadas por un espacio uniforme. Vacías.
-      Exactamente cuatro, ni una más: es la capacidad del nivel.
+      redondeadas, borde #C4A882, interior marfil #F7EFE2, separadas por un espacio uniforme.
+      Vacías. Exactamente cuatro, ni una más: es la capacidad del nivel.
 
-REQUISITO: los dos marcos deben poder convivir en pantalla con los botones de dirección sin
-competir visualmente. Sobrios, de borde delgado.
-
-FONDO: verde chroma key plano #00FF00.
+REQUISITO: los dos marcos tienen que convivir en pantalla con los botones de dirección sin
+competir visualmente. Sobrios, de borde delgado, sin adornos.
 ```
+
+**Verificación (§17):** filas y casillas completamente vacías · pendiente y completada se
+distinguen en escala de grises · exactamente cuatro casillas de inventario · texto oscuro sobre
+fondo claro (§10.3) · contraste ≥ 4.5:1 (RNF-20).
 
 ---
 
 ## C6 · Zona de construcción señalizada
 
 **Traza:** RF-39, RF-11, HU-11, CU-09 (FA-6a), guion §8.2.
-**Chroma:** sí (verde).
-**Entregar:** la zona en dos estados.
+**Chroma:** verde `#00FF00`. **Archivo:** `env_n3_zona_inactiva.png`, `_disponible.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N3] [2 ESTILO] [3 PALETA N3] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Zona de construcción del Nivel 3, vista CENITAL, para colocar sobre la arena junto al río.
-Sin personajes y sin texto dentro de la imagen.
+ELEMENTO: la zona de construcción del Nivel 3, VISTA CENITAL, para colocar sobre la orilla junto
+al río. Sin personajes y sin texto.
 
-FORMA FIJA: área rectangular de suelo despejado en arena #C2A878, delimitada por un borde de
-piedras planas #7A8290 dispuestas a intervalos regulares. En el centro, la SILUETA HUECA de una
-balsa dibujada en el suelo con línea discontinua #6B5344: marca dónde se construirá, y debe
-leerse como un plano, no como un objeto. En una esquina, dos estacas cortas de madera #8A6B4A
-clavadas en diagonal.
+FORMA FIJA: área RECTANGULAR de suelo despejado en roca húmeda clara #6B7A72, delimitada por un
+borde de piedras planas y redondeadas #4C5850 dispuestas a intervalos regulares. En el centro, la
+SILUETA HUECA de una balsa dibujada en el suelo con línea DISCONTINUA #6B5248: marca dónde se
+construirá y debe leerse como un plano dibujado, nunca como un objeto real. En una esquina, dos
+estacas cortas #8A6B4A clavadas en diagonal.
 
-Generar DOS estados de la MISMA zona:
-  (1) INACTIVA: como se describe, en tonos apagados, sin resalte.
-  (2) DISPONIBLE: la misma zona con un contorno exterior continuo y grueso en #FFC94A alrededor
-      de todo el rectángulo, y las piedras del borde en #C79A5E. El cambio debe leerse también
-      sin color, por el grosor y la continuidad del contorno.
+Generar DOS estados de la MISMA zona, idénticos en forma y posición:
+  (1) INACTIVA: como se describe, en tonos apagados, sin ningún resalte.
+  (2) DISPONIBLE: la misma zona con un contorno exterior CONTINUO y GRUESO en ámbar #E8A33D
+      rodeando todo el rectángulo, y las piedras del borde en #F2C46B. El cambio debe leerse
+      también sin color, por el grosor y la continuidad del contorno.
 
-FONDO: verde chroma key plano #00FF00.
+Sin halos, sin brillos, sin partículas: el resalte es un contorno, no una luz.
 ```
+
+**Verificación (§17):** los dos estados comparten forma exacta · el cambio se lee en escala de
+grises · la silueta de la balsa se lee como plano dibujado · sin halos ni glows.
 
 ---
 
 ## C7 · La balsa en sus tres estados de avance
 
 **Traza:** RF-40, RF-41, HU-12, CU-10, guion §8.3. **Es el asset que hace visible la
-descomposición:** el estudiante ve el progreso sin leer nada.
-**Chroma:** sí (verde).
-**Entregar:** tres estados encadenados, en el orden exacto de las tres fases.
+descomposición:** el estudiante ve su progreso sin leer nada.
+**Chroma:** verde `#00FF00`. **Archivo:** `prop_n3_balsa_base.png`, `_amarre`, `_vela`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N3] [2 ESTILO] [3 PALETA N3] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Los tres estados de avance de la balsa del Nivel 3, vista CENITAL desde arriba. Sin
-personajes, sin agua alrededor y sin texto dentro de la imagen.
+ELEMENTO: los tres estados de avance de la balsa, VISTA CENITAL desde arriba. Sin personajes,
+sin agua alrededor y sin texto.
 
-Generar TRES estados en secuencia, cada uno construido literalmente sobre el anterior sin
-cambiar ni mover nada de lo ya presente:
+REGLA QUE MANDA SOBRE TODO: cada estado se construye LITERALMENTE sobre el anterior. Lo que ya
+está no cambia de forma, de color, de tamaño ni de posición. Los tres tienen que leerse como la
+MISMA balsa creciendo, no como tres balsas distintas. Misma escala, mismo ángulo y misma línea
+de centro en los tres.
 
-  (1) BASE — al confirmar la fase 1: CINCO troncos rectos, iguales y paralelos, dispuestos en
-      horizontal y juntos formando una plataforma rectangular. Corteza #8A6B4A con vetas
-      #5C4530, extremos circulares #C79A5E. Nada más. Debe leerse sólida pero incompleta: no hay
-      nada que la mantenga unida.
+  (1) BASE — al confirmar la primera fase: CINCO troncos rectos, iguales y paralelos, dispuestos
+      en horizontal y juntos, formando una plataforma rectangular. Corteza #8A6B4A con vetas
+      #6B5344 y extremos circulares #F2C46B. Nada más. Debe leerse sólida pero incompleta: no
+      hay nada que la mantenga unida.
 
-  (2) CON AMARRE — al confirmar la fase 2: la MISMA plataforma de cinco troncos, ahora con DOS
-      sogas de fibra trenzada #A98C5F cruzándola en perpendicular a los troncos, una cerca de
-      cada extremo, pasando por encima y por debajo de cada tronco de forma alterna, con un nudo
-      visible en los cuatro extremos. Los troncos no cambian de posición.
+  (2) CON AMARRE — al confirmar la segunda fase: la MISMA plataforma de cinco troncos, ahora con
+      DOS sogas #E8A33D cruzándola en perpendicular a los troncos, una cerca de cada extremo,
+      pasando por encima y por debajo de cada tronco de forma alterna, con un nudo visible en
+      los cuatro extremos. Los troncos no se mueven ni cambian.
 
-  (3) CON MÁSTIL Y VELA — al confirmar la fase 3: la MISMA balsa amarrada, ahora con un mástil
-      #8A6B4A clavado verticalmente en el centro —visto desde arriba, como un círculo con su
-      sombra plana corta— y una vela de tela #E4D8BC extendida desde él en forma triangular,
-      con tres pliegues marcados por líneas #C2A878 y una soga #A98C5F tensándola hacia la proa.
+  (3) CON MÁSTIL Y VELA — al confirmar la tercera fase: la MISMA balsa amarrada, ahora con un
+      mástil #8A6B4A clavado verticalmente en el centro —visto desde arriba, como un círculo con
+      su sombra plana corta— y una vela de tela #E0D4C0 extendida desde él en forma triangular,
+      con tres pliegues marcados por líneas #C4A882 y una soga #E8A33D tensándola hacia la proa.
 
-REQUISITO: los tres estados deben leerse como la MISMA balsa creciendo, no como tres balsas
-distintas. Mantener escala, ángulo y posición constantes entre los tres. El avance tiene que
-notarse de un vistazo y sin color: cinco líneas paralelas, luego cruzadas, luego con un
-triángulo encima.
-
-FONDO: verde chroma key plano #00FF00.
+El avance tiene que notarse de un vistazo y sin color: cinco líneas paralelas, luego cruzadas,
+luego con un triángulo encima.
 ```
+
+**Verificación (§17):** los tres comparten escala, ángulo y centro · el avance se lee en negro
+sólido · (2) no mueve ningún tronco de (1) · sin agua ni personajes en la lámina.
 
 ---
 
 ## C8 · Panel de ensamblaje — espacios y estados
 
 **Traza:** RF-40, RF-42, RNF-19, HU-12, HU-13, guion §8.3 y §8.4.
-**Chroma:** sí (verde).
-**Entregar:** el marco del panel y los tres estados de un espacio.
+**Chroma:** verde `#00FF00`. **Archivo:** `ui_n3_panel_marco.png`, `ui_n3_espacio_*`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N3] [2 ESTILO] [3 PALETA N3] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: Panel de ensamblaje del Nivel 3 y los estados de sus espacios. Sin texto dentro de la
-imagen.
+ELEMENTO: el panel de ensamblaje y los estados de sus espacios. Elementos de INTERFAZ, planos y
+frontales. Sin texto.
 
-  (1) MARCO DEL PANEL: recuadro amplio de esquinas redondeadas, borde de cuero cosido #8C4A2F
-      con puntadas #F2E8D5, fondo interior #0B0E14 de opacidad alta. Interior completamente
-      vacío. En el borde inferior derecho, un botón redondeado ancho de cuero #A9713F con
-      contorno #1C2333 y, dentro, una marca de verificación #F2E8D5: es «Listo».
+  (1) MARCO DEL PANEL: recuadro amplio de esquinas muy redondeadas, interior liso en marfil
+      #F7EFE2, borde de cuero cosido #C4A882 con puntadas #6B5248. Interior COMPLETAMENTE VACÍO.
+      En el borde inferior derecho, un botón redondeado ancho en #E8A33D con contorno #3A1E18 y
+      dentro una marca de verificación #3A1E18: es «Listo».
 
-  (2) ESPACIO VACÍO: contorno de silueta DISCONTINUO a trazos en #A98C5F sobre el fondo del
-      panel, con el interior vacío. Es donde va una pieza.
+  (2) ESPACIO VACÍO: contorno de silueta DISCONTINUO, a trazos, en #6B5248 sobre el interior del
+      panel, con el centro vacío. Es donde va una pieza.
 
-  (3) ESPACIO CORRECTO: el mismo contorno, ahora CONTINUO y grueso en #7FA05A, con un círculo
-      pequeño #7FA05A y una marca de verificación #F2E8D5 en la esquina superior derecha.
+  (3) ESPACIO CORRECTO: el mismo contorno, ahora CONTINUO y GRUESO en #5FA842, con un CÍRCULO
+      pequeño #5FA842 y una marca de verificación #F7EFE2 en la esquina superior derecha.
 
-  (4) ESPACIO INCORRECTO: el mismo contorno, ahora CONTINUO y grueso en #E4572E, con un ROMBO
-      #E4572E y un signo de admiración #F2E8D5 en la esquina superior derecha. NO usar una equis:
-      la pieza no está mal, está en el sitio equivocado y vuelve al inventario.
+  (4) ESPACIO INCORRECTO: el mismo contorno, ahora CONTINUO y GRUESO en ámbar #E8A33D, con un
+      ROMBO #E8A33D y un signo de admiración #3A1E18 en la esquina superior derecha. NO uses una
+      equis, NO uses una cruz y NO uses rojo: la pieza no está mal, está en el sitio equivocado
+      y vuelve al inventario. Es una decisión pedagógica del proyecto, no una preferencia
+      estética.
 
 REQUISITO DE ACCESIBILIDAD: (2), (3) y (4) deben distinguirse en escala de grises por el trazo
 —discontinuo, continuo con círculo, continuo con rombo— y no por el color. Es el criterio de
 verificación literal de RNF-19 y lo que exige HU-13.
-
-FONDO: verde chroma key plano #00FF00.
 ```
+
+**Verificación (§17):** interior del marco vacío · los tres estados se separan en escala de
+grises · ningún rojo de error (§12.3) · sin equis ni cruces.
 
 ---
 
 ## C9 · La balsa en el agua — hundimiento y cruce
 
 **Traza:** RF-42, RF-44, RNF-21, HU-13, guion §8.4 y §8.5.
-**Chroma:** sí (verde).
-**Entregar:** dos estados de la balsa terminada, sobre agua.
+**Chroma:** verde `#00FF00`. **Archivo:** `prop_n3_balsa_hundida.png`, `_cruzando.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N3] [2 ESTILO] [3 PALETA N3] [4 ENTREGA] [5 PROHIBICIONES]
 
-ASSET: La balsa terminada del Nivel 3 en el agua, en sus dos desenlaces. Vista CENITAL desde
-arriba, con una franja de agua bajo ella. Sin personajes y sin texto dentro de la imagen.
+ELEMENTO: la balsa terminada en el agua, en sus dos desenlaces. VISTA CENITAL desde arriba, con
+una franja de agua bajo ella. Sin personajes y sin texto.
 
-Partir del estado (3) del asset C7 —balsa con mástil y vela— sin variar su forma.
+Partir del estado (3) del asset C7 —balsa con mástil y vela— sin variar su forma ni su color.
 
 Generar DOS versiones:
 
-  (1) HUNDIÉNDOSE: la balsa INCLINADA, girada unos 20 grados y con un costado sumergido: ese
-      costado se ve a través del agua en #2A4E68, más oscuro, con el contorno difuminado a
-      planos. La vela #E4D8BC caída y arrugada hacia el lado hundido. Alrededor del costado
-      sumergido, tres o cuatro anillos concéntricos de espuma #C9DCE6 de trazo fino. El tono
-      debe ser de contratiempo, NO de catástrofe: sin remolino, sin espuma violenta, sin
-      oscuridad. Es una escena que un niño de nueve años debe poder mirar sin alarmarse.
+  (1) SIN ÉXITO: la balsa INCLINADA, girada unos 20 grados, con un costado sumergido. Ese
+      costado se ve a través del agua en #2B6B80, un plano más oscuro y con el contorno
+      interrumpido, nunca difuminado. La vela #E0D4C0 caída y arrugada hacia el lado hundido.
+      Alrededor del costado sumergido, tres o cuatro arcos de espuma #D6F0F5 de trazo fino.
+      EL TONO ES DE CONTRATIEMPO, NO DE CATÁSTROFE: sin remolino, sin espuma violenta, sin
+      oscuridad bajo la superficie, sin sensación de peligro. Es una imagen que un niño de nueve
+      años debe poder mirar sin alarmarse.
 
-  (2) CRUZANDO: la MISMA balsa perfectamente horizontal y estable sobre el agua #3E6E8E, con la
-      vela #E4D8BC extendida y tensa, curvada por el viento. Detrás, una estela de tres líneas
-      curvas #C9DCE6 que se abren en V. Ninguna inclinación, ningún costado sumergido.
+  (2) CRUZANDO: la MISMA balsa perfectamente horizontal y estable sobre el agua #3E8FA8, con la
+      vela #E0D4C0 extendida y tensa, curvada por el viento. Detrás, una estela de tres líneas
+      curvas #D6F0F5 que se abren en V. Ninguna inclinación, ningún costado sumergido.
 
-RESTRICCIÓN: sin destellos, sin partículas brillantes, sin líneas de velocidad rápidas. La
+RESTRICCIÓN: sin destellos, sin partículas brillantes y sin líneas de velocidad rápidas. La
 animación que se monte con estos dos estados no puede tener parpadeos de alta frecuencia
 (RNF-21).
-
-FONDO: verde chroma key plano #00FF00.
 ```
+
+**Verificación (§17):** las dos parten de la misma balsa de `C7` · el hundimiento no resulta
+alarmante (§8.3) · sin destellos ni parpadeos (RNF-21) · agua en planos sólidos, sin degradado.
 
 ---
 
 ## C10 · Escenario de la escena final — las fogatas
 
-**Traza:** RF-44, RF-12, CP-10, guion §9.
-**Chroma:** **no** — es la ilustración fija de la escena narrativa final.
-**Entregar:** una lámina 16:9.
+**Traza:** RF-44, RF-12, CP-10, guion §9. **Chroma:** **no** — es la ilustración fija de la
+escena narrativa final. **Archivo:** `env_final_fogatas.png`.
 
 ```
-[BLOQUE DE ESTILO]
-[BLOQUE DE PALETA]
+[1 CONTEXTO N3] [2 ESTILO] [3 PALETA N3] [5 PROHIBICIONES]
 
-ASSET: Ilustración fija de la escena final del videojuego. VISTA LATERAL, como las demás escenas
-narrativas —no cenital—, sin personajes y sin texto dentro de la imagen.
+ELEMENTO: ilustración fija de la escena final del videojuego. VISTA LATERAL, como las demás
+escenas narrativas —NO cenital, es la excepción de este slice—, sin personajes y sin texto.
 
-COMPOSICIÓN FIJA: un camino de tierra #6B5344 que entra por el borde inferior izquierdo y se
-aleja hacia el centro derecho del encuadre, estrechándose con la distancia. A media distancia, a
-la derecha, un asentamiento pequeño: tres o cuatro refugios de ramas y pieles #A9713F y #5C4530,
-con DOS COLUMNAS DE HUMO cálido #FF8A3D y #7A8290 elevándose desde fogatas que no se ven. Es el
-destino, y debe leerse acogedor.
+FORMATO: rectangular 16:9 horizontal, sin croma.
 
-A la izquierda y muy al fondo, empequeñecidos por la distancia, los tres escenarios que quedaron
-atrás, apenas insinuados en silueta plana: la boca oscura de una cueva #1C2333, una masa de
-bosque #3C5429, y una franja de río #3E6E8E. Deben reconocerse sin robar protagonismo.
+COMPOSICIÓN FIJA:
+- Un camino de tierra #8A6B4A con sombra #6B5344 que entra por el borde inferior izquierdo y se
+  aleja hacia el centro derecho, estrechándose con la distancia.
+- A media distancia, a la DERECHA, un asentamiento pequeño: tres o cuatro refugios de ramas
+  #5C2B22 y pieles #E8C07A, con DOS COLUMNAS DE HUMO elevándose desde fogatas que no se ven —el
+  humo en #D6F0F5, con una base cálida #F5A62E muy pequeña—. Es el destino y debe leerse
+  acogedor.
+- A la IZQUIERDA y muy al fondo, empequeñecidos por la distancia, los tres escenarios que
+  quedaron atrás, apenas insinuados en silueta plana y SIN contorno: la boca oscura de una cueva
+  #2A2438, una masa de bosque #37662B y una franja de río #3E8FA8. Deben reconocerse sin robar
+  protagonismo.
+- Cielo #D6F0F5 ocupando el tercio superior, sereno, sin nubes marcadas y sin sol visible.
 
-Cielo #A8C8D8 ocupando el tercio superior, sereno, sin nubes marcadas y sin sol visible.
+ZONA LIBRE OBLIGATORIA: el tercio inferior del encuadre queda despejado. Ahí va el cuadro de
+diálogo del guía, que es el asset `A10` del Slice 1.
 
-ZONA LIBRE OBLIGATORIA: el tercio inferior del encuadre queda despejado: ahí va el cuadro de
-diálogo del guía (asset A10 del Slice 1).
-
-Relación de aspecto 16:9. Tono de llegada y de calma, no de despedida triste.
+Tono de llegada y de calma, nunca de despedida triste.
 ```
+
+**Verificación (§17):** vista lateral, no cenital · tercio inferior despejado para `A10` · los
+tres escenarios del pasado se reconocen sin competir · tono cálido de llegada.
 
 ---
 
 ## Postproceso de los assets con chroma
 
-1. Recortar el verde `#00FF00` y exportar PNG con alfa.
-2. Revisar el halo verde en los bordes; si queda, encogerlo un píxel.
-3. Importar como Sprite en `Assets/Game/Art/`, con el **mismo `Pixels Per Unit` que los Slices 1
-   y 2** — si difiere, Mamá y la balsa no comparten escala con el resto del juego.
-4. Verificar RNF-19 sobre el arte final: desaturar `C3`, `C4`, `C5` y `C8` y comprobar que los
-   estados y las categorías se siguen distinguiendo. Si no, la corrección es de forma, no de color.
-5. Verificar RNF-20 sobre el arte final: el escenario del río es claro y en vista superior, el
-   caso más expuesto del juego. La lista de tareas y el inventario van siempre sobre marco
-   `#0B0E14`, nunca directos al fondo.
-6. Verificar RNF-21 sobre las animaciones montadas con `C7` y `C9`, no sobre las láminas sueltas.
-7. Registrar cada asset en `CreditsContent.asset` (Slice 1, T08) — CT-09, RNF-23.
+1. **Verificar** contra la checklist de `Direccion_de_Arte.md` §17 y contra la línea
+   «Verificación» de cada asset. Si falla una, se vuelve a generar.
+2. **Recortar** el fondo —`#00FF00` o `#FF00FF` según lo marcado— y exportar PNG con alfa.
+   Revisar el halo; si queda, encogerlo un píxel. `C2` va en magenta por el follaje del entorno.
+3. **Nombrar** según §15.4 e **importar** con los ajustes de §15.2. **Pixels Per Unit `100`**, el
+   mismo de los Slices 1 y 2: si difiere, Mamá y la balsa no comparten escala con el resto.
+4. **Verificar RNF-19 sobre el arte final**: desaturar `C3`, `C4`, `C5`, `C6` y `C8` y comprobar
+   que los estados y las categorías se siguen distinguiendo. Si no, la corrección es de forma, no
+   de color.
+5. **Verificar RNF-20 sobre el arte final**: el escenario del río es claro y en vista superior, el
+   caso más expuesto del juego. La lista y el inventario van siempre sobre marco marfil, nunca
+   directos sobre el fondo.
+6. **Verificar RNF-21 sobre las animaciones** montadas con `C7` y `C9`, no sobre las láminas
+   sueltas.
+7. **Registrar** cada asset en `CreditsContent.asset` (Slice 1, T08) — CT-09, RNF-23.

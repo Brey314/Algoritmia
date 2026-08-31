@@ -139,8 +139,19 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ## Assets visuales — `plan.md` §Assets visuales del Slice 2
 
-Escenarios y objetos **originales** (CT-09, RNF-23). **Los personajes no se regeneran**: se
-reutilizan `A1`..`A5` del Slice 1. Cada asset se registra en `CreditsContent.asset` (Slice 1, T08).
+Escenarios, props e interfaz **originales del proyecto**. **Los personajes no se regeneran**: se
+reutilizan `A1`..`A5` del Slice 1, que son **obra derivada** de los diseños Anonaky con
+autorización concedida y mención obligatoria en créditos (CT-09, RNF-23). Cada asset se registra
+en `CreditsContent.asset` (Slice 1, T08).
+
+**Cinco bloques fijos por prompt**, copiados palabra por palabra antes de la descripción:
+`[1 CONTEXTO] [2 ESTILO] [3 PALETA] [4 ENTREGA] [5 PROHIBICIONES]`. Un asset generado sin los
+cinco se descarta y se vuelve a pedir. La paleta y las especificaciones salen de
+`claudeDocs/Direccion_de_Arte.md`.
+
+**El Nivel 2 es un BOSQUE**, no un cañón desértico (guion §6.1.1). El acento del nivel es la
+**madera clara trabajada `#C79A5E`**, exclusiva de lo interactivo: ningún árbol ni suelo del
+decorado la lleva (`Direccion_de_Arte.md` §8.2).
 
 **Chroma:** verde `#00FF00` por defecto; **magenta `#FF00FF`** donde hay verde en el propio asset
 (R5). Los fondos de escena no llevan chroma.
@@ -156,7 +167,8 @@ reutilizan `A1`..`A5` del Slice 1. Cada asset se registra en `CreditsContent.ass
 - [ ] **B9 · Bloques Avanzar/Retroceder/Girar y botón Ejecutar** — chroma verde — RF-31, RF-32, **RNF-19**, PG-04
 - [ ] **B10 · Contador de acopio e iconos de resultado** — chroma verde — RF-24, RF-11, RNF-19, RNF-20
 - [ ] Postproceso: recorte del chroma, alfa, halo, **mismo `Pixels Per Unit` que el Slice 1**
-- [ ] Desaturar B2, B9 y B10 y verificar que se siguen distinguiendo (RNF-19)
+- [ ] Cada asset pasa la **checklist de `Direccion_de_Arte.md` §17** y su línea «Verificación»
+- [ ] Desaturar B2, B7, B8, B9 y B10 y verificar que se siguen distinguiendo (RNF-19)
 - [ ] Verificar RNF-20 sobre el arte final: el bosque es claro, el texto va siempre sobre marco
 
 ---

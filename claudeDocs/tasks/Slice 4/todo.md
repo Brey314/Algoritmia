@@ -140,6 +140,10 @@ Números, no adjetivos. Rellenar en el equipo de referencia.
 - [ ] Golden Path del juego entero, dos veces, sin incidencias (RNF-13)
 - [ ] **PG-01** (título) y **PG-02** (nombre del guía) cerrados y en pantalla
 - [ ] **RNF-12**: formato de consentimiento informado en los anexos del proyecto
+- [ ] **RNF-22**: inspección integral del contenido — sin violencia explícita, publicidad,
+      compras integradas ni enlaces externos, en los tres niveles y en los créditos
+- [ ] **CT-02**: el ejecutable corre en un equipo **sin tarjeta gráfica dedicada**, dentro de
+      los presupuestos de RNF-04 y RNF-05
 - [ ] Revisado con el usuario. **Fin del prototipo.**
 
 ---
@@ -147,8 +151,17 @@ Números, no adjetivos. Rellenar en el equipo de referencia.
 ## Assets visuales — `plan.md` §Assets visuales del Slice 4
 
 **Tres assets, todos de interfaz.** Sin personajes, sin escenarios y **sin chroma key**: se
-generan sobre el fondo de panel `#0B0E14` y se usan tal cual. Registrar en `CreditsContent.asset`
+generan sobre marfil plano `#F7EFE2` y se usan tal cual. Registrar en `CreditsContent.asset`
 (Slice 1, T08) — CT-09, RNF-23.
+
+**Cinco bloques fijos por prompt**, copiados palabra por palabra antes de la descripción:
+`[1 CONTEXTO] [2 ESTILO] [3 PALETA] [4 ENTREGA] [5 PROHIBICIONES]`. Un asset generado sin los
+cinco se descarta y se vuelve a pedir. La paleta y las especificaciones salen de
+`claudeDocs/Direccion_de_Arte.md`.
+
+**El informe docente es CLARO, no oscuro.** Carbón `#3A1E18` sobre marfil `#F7EFE2`: texto oscuro
+sobre fondo claro, nunca al revés (`Direccion_de_Arte.md` §10.3 y §17). **No hay rojo de error**
+en ninguna parte de la interfaz: la alerta es ámbar `#E8A33D` más una forma (§12.3).
 
 **El resumen de fin de nivel no genera arte**: reutiliza el marco de diálogo `A10` del Slice 1.
 Es lo que hace que se lea como andamiaje y no como pantalla de puntaje.
@@ -160,7 +173,8 @@ Es lo que hace que se lea como andamiaje y no como pantalla de puntaje.
       La maqueta debe mostrar filas por fase, no solo por nivel
 - [ ] **D3 · Diálogo de confirmación de eliminación** — RF-47, RNF-11, RNF-19, CU-12
       «Cancelar» es el botón prominente; «Eliminar» se distingue **también en escala de grises**
-- [ ] Exportar PNG con alfa (los iconos van sobre cualquier fila, no solo sobre `#0B0E14`)
+- [ ] Cada asset pasa la **checklist de `Direccion_de_Arte.md` §17** y su línea «Verificación»
+- [ ] Exportar PNG con alfa (los iconos van sobre cualquier fila, incluida la alterna `#E0D4C0`)
 - [ ] Mismo `Pixels Per Unit` que los tres slices anteriores
 - [ ] **`D2` y `D3` son maquetas, no arte final**: se usan para construir la jerarquía de UI, no
       se importan como imagen de fondo

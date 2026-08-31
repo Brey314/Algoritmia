@@ -24,7 +24,7 @@ comunicación con el usuario en español.
 | Archivo | Qué contiene |
 |---|---|
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
-| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 30/08/2026, rev. 5 — los 42 hallazgos (`INC-01`..`INC-42`) están cerrados en los documentos; quedan solo residuos cosméticos y los puntos abiertos del guion. |
+| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 30/08/2026, rev. 6 — los hallazgos `INC-01`..`INC-42` están cerrados en los documentos; queda abierto `INC-43` (el guion §12 aún declara `PG-07` pendiente pese a estar concedida la autorización), más residuos cosméticos y los puntos abiertos del guion. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. Los cuatro slices están planeados y entre ellos cubren los 47 RF: `Slice 1` Golden Path y nivel fuego · `Slice 2` La Rueda · `Slice 3` El Río y cierre del juego · `Slice 4` progreso, informe docente y borrado de datos. **Se ejecutan en orden**: cada uno supone terminado el anterior. Ninguno rediscute `SPEC.md`. |
 | `docs/*.docx` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. **Nunca editarlos desde código.** |
 
@@ -52,7 +52,7 @@ explícitamente.
 **Orden de precedencia entre los `.docx`** cuando se contradicen: trabajo de grado → OE1 →
 guion → OE2 → historias de usuario → arquitectura. Gana el de mayor prioridad y se corrige el
 otro. Las contradicciones internas a un mismo documento no las resuelve la precedencia: están
-resueltas y registradas en `claudeDocs/INCONSISTENCIAS.md` (rev. 5, 30/08/2026).
+resueltas y registradas en `claudeDocs/INCONSISTENCIAS.md` (rev. 6, 30/08/2026).
 
 Los nombres en disco no coinciden con cómo se citan los documentos — vienen con sufijos de
 descarga. El mapa, en orden de precedencia:
