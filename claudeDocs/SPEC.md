@@ -282,9 +282,11 @@ Assets/
     EditMode/            → lógica pura, una carpeta por módulo
     PlayMode/            → escenas, UI, integración
 docs/                    → documentos fuente del trabajo de grado (no editar desde código)
-claudeDocs/              → SPEC.md (este contrato) e INCONSISTENCIAS.md (hallazgos abiertos)
-tasks/plan.md            → plan técnico del slice en curso
-tasks/todo.md            → tablero de tareas
+claudeDocs/              → SPEC.md (este contrato) e INCONSISTENCIAS.md (hallazgos)
+  tasks/
+    Slice 1/  Slice 2/  Slice 3/  Slice 4/
+      plan.md            → plan técnico del slice
+      todo.md            → tablero de tareas del slice
 ```
 
 Los namespaces siguen la ruta relativa a `Scripts`, elidiendo `Runtime`:
@@ -526,8 +528,8 @@ Corregir cualquiera de estos ahora sale más barato que después.
 2. **Guardado automático** al completar cada fase, no en cada acción (RF-04), que es lo que hace
    verificable la recuperación tras cierre forzado (RNF-14). Los cuatro indicadores de OE1 §3.6.1
    se persisten en ese mismo punto.
-3. **Personajes originales** por defecto. Los de la Familia Anonaky solo si llega la autorización
-   escrita (PG-07, CT-09, RNF-23), como establecen el trabajo de grado §3.3.2 y §5.2.
+3. **Personajes originales** por defecto. Los de la Familia Anonaky autorización para trabajar en esos diseños ya ha sido aprobada por
+   escrito (PG-07, CT-09, RNF-23), como establecen el trabajo de grado §3.3.2 y §5.2.
 4. **Raíz de assets** `Assets/Game/` y namespace `Game.*`: el título aún no está definido (PG-01)
    y no conviene atar la estructura de carpetas a una decisión pendiente.
 5. **El guía se llama Chispa** provisionalmente, siguiendo el guion, que es el único documento con
@@ -575,7 +577,7 @@ Ya no hay preguntas de diseño ni de redacción con efecto en el código: los 42
 **PG-01** título del producto · **PG-02** nombre definitivo del guía (Chispa, provisional) ·
 **PG-05** verificar en pruebas que el cambio de esquema de control entre el Nivel 1 y el 2 no
 confunde · **PG-06** validar jugando los valores del Nivel 1 (`FireLevelConfig`) · **PG-07**
-autorización de los personajes de la Familia Anonaky (por defecto, personajes originales).
+autorización de los personajes de la Familia Anonaky (Ya aprobado).
 
 **Residuo cosmético en `docs/`:** HU-17 y HU-18 no llevan el encabezado «Página 17/18 de 18».
 
