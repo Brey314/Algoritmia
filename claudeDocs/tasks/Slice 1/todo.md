@@ -1,32 +1,46 @@
 # Tablero — Slice 1: Golden Path temprano
 
 Plan técnico: [`plan.md`](plan.md). Contrato: `claudeDocs/SPEC.md`.
+Resultados de la Fase 0: [`Fase-0-Resultados.md`](Fase-0-Resultados.md).
 Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 **Leyenda:** `EM` = EditMode (lógica pura, sin escena) · `PM` = PlayMode (integración) ·
 `VV` = VisualVerification.
 
-> ⚠️ **R1 abierto — no hay corredor de pruebas MCP.** `run_unity_tests` no está conectado.
-> Toda casilla de prueba marcada abajo exige haberla corrido **a mano** en la ventana Test
-> Runner del Editor y **declarar el resultado**. No dar por hecho que la suite pasó.
+> ⚠️ **R1 mitigado, no cerrado.** `mcp__rider__run_unity_tests` sigue sin responder: el puente
+> Rider↔Unity no conecta (falta `Library/ProtocolInstance.json`, o sea el editor externo de Unity
+> no es Rider). Mientras tanto las pruebas se corren por línea de comandos —
+> `Unity.exe -runTests -batchmode -projectPath "…" -testPlatform {EditMode|PlayMode} -testResults …`
+> — que sí funciona y deja XML de NUnit, pero exige el Editor cerrado. Toda casilla de prueba
+> marcada abajo exige **declarar el resultado**. No dar por hecho que la suite pasó.
 
 ---
 
 ## Fase 0 — Cimientos
 
-- [ ] **T01 · Estructura de carpetas y assemblies** — `S` · `EM`
+- [x] **T01 · Estructura de carpetas y assemblies** — `S` · `EM`
       RNF-15, RNF-16, INC-40 · depende de: —
-- [ ] **T02 · `PlayerProfile` y `SaveStore` (JSON en `Datos/`)** — `M` · `EM`
+      Compila y `AssemblyDependencyTest` pasa: **4/4**.
+- [x] **T02 · `PlayerProfile` y `SaveStore` (JSON en `Datos/`)** — `M` · `EM`
       RF-02, RF-04, RNF-07, RNF-09, RNF-11, RNF-14, HU-01, CU-01, INC-27, INC-34 · depende de: T01
-- [ ] **T03 · `GameFlow`, la FSM en C# plano** — `M` · `EM`
+      **12/12** en EditMode. `LevelId` se adelantó aquí (T02 lo necesita) en vez de en T03.
+- [x] **T03 · `GameFlow`, la FSM en C# plano** — `M` · `EM`
       RF-01, RF-03, RF-05, RF-07, RF-08, RF-09, CP-02 · depende de: T01, T02
-- [ ] **T04 · `SceneLoader`, `GameFlowRunner` y escena `Boot`** — `S` · `PM`
+      **7/7** en EditMode. `Narrative` se parametriza con el **id** de la secuencia, no con el
+      `NarrativeSequence`: ese SO vive en `Game.Scaffolding`, que depende de `Game.Core`.
+- [x] **T04 · `SceneLoader`, `GameFlowRunner` y escena `Boot`** — `S` · `PM`
       RNF-04, RNF-16 · depende de: T03
+      **3/3** en PlayMode (03/09/2026). La primera corrida falló: las pruebas esperaban el estado
+      de la FSM y afirmaban la escena activa, pero `LoadScene` se aplica al final del frame. Se
+      corrigió la espera y se añadió un `[TearDown]` — sin él, `GameFlowRunner` y `SceneLoader`
+      sobrevivían entre pruebas y dos pasaban sin probar nada. Solo cambió código de prueba.
+      Falta la **medición de RNF-04** del tiempo de carga: batch mode no sirve como medición.
 
 ### ✅ Checkpoint A — Cimientos
-- [ ] Compila sin errores ni warnings nuevos (`check_compile_errors`)
-- [ ] Pruebas EditMode de Core corridas a mano y **declaradas**
-- [ ] Arranca en `Boot` y llega a `MainMenu`
+- [x] Compila sin errores ni warnings nuevos — **0 errores, 0 warnings** en la corrida final
+- [x] Pruebas EditMode de Core corridas y **declaradas** — **23/23**
+- [x] Arranca en `Boot` y llega a `MainMenu` — `BootFlow_RF01_…` pasa
+- [ ] Medición de RNF-04 (`Boot` y `MainMenu`) anotada — pendiente, ver `Fase-0-Resultados.md` §4
 - [ ] Revisado con el usuario
 
 ---

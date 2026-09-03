@@ -283,8 +283,8 @@ Slices 2 y 3 sin volver a generarse. Esta sección cubre lo que esos prompts no 
 expresión, lenguaje corporal y coherencia entre miembros.
 
 **Reparto por nivel, cerrado en el guion §1.2 (CN-02):** Papá es jugable en el Nivel 1,
-la Niña en el Nivel 2 y Mamá en el Nivel 3; el Niño acompaña. Chispa, el guía, está en
-los tres (CN-03).
+la Niña en el Nivel 2 y Mamá en el Nivel 3; el Niño acompaña. Algoritm, el guía, está en
+los tres (CN-03), con una forma distinta en cada uno (§7.6).
 
 ### 7.1 Escala relativa
 
@@ -347,6 +347,68 @@ rigging sin tener que inventar dónde terminan.
 
 Las poses expresivas para el documento de trabajo de grado y las capturas de
 sustentación se generan aparte, usando el sprite base aprobado como referencia.
+
+---
+
+### 7.6 Algoritm — una forma por nivel
+
+El guía se llama **Algoritm** (`PG-02` cerrado el 02/09/2026, INC-44) y **cambia de forma
+en cada nivel**: fuego, rueda y agua, en ese orden (INC-45). Es el mismo personaje en los
+tres —lo exige CN-03—, y lo que garantiza que se reconozca no es el contorno de su cuerpo
+sino el núcleo de identidad que sigue abajo.
+
+El guion ya lo empujaba: en §4.4 el guía aparece «en el corazón de las llamas […] hecho de
+fuego esta vez». Su cuerpo es el material del descubrimiento que el nivel acaba de nombrar.
+
+#### Núcleo de identidad — invariable en los tres niveles
+
+Si uno solo de estos rasgos cambia, deja de leerse como el mismo personaje:
+
+| Rasgo | Especificación |
+| --- | --- |
+| Tamaño | El de una palma de mano adulta; anchura total de poco más de una cabeza humana |
+| Ojos | Dos óvalos negros grandes, muy separados, en el tercio superior, cada uno con un punto de luz blanco en su esquina superior izquierda |
+| Boca | Una sola línea curva hacia arriba, sonrisa cerrada. Sin nariz, sin cejas |
+| Extremidades | **Ninguna.** Sin brazos, sin piernas, sin manos, sin accesorios |
+| Núcleo interior | Área clara que repite la forma del cuerpo en pequeño, a borde duro, sin degradado |
+| Contorno | 8 px en `#E2571F`. **Cálido en los tres niveles**, aunque el cuerpo sea de madera o de agua: es la firma de que emite luz propia y su rastro de origen |
+| Estela | Cinco a siete puntos sueltos `#FFE9A8`, circulares, de tamaño decreciente, en curva. Nunca una nube difuminada |
+| Cuenta de cinco | La silueta siempre se cuenta hasta cinco: cinco puntas, cinco radios, cinco lóbulos |
+
+#### Las tres formas
+
+| Nivel | Forma | Cuerpo | Núcleo | Detalle |
+| --- | --- | --- | --- | --- |
+| 1 · La Oscuridad | **Estrella de cinco puntas**, todas de extremo redondeado, la superior en vertical | `#F5A62E` | `#FFE9A8` | La forma de origen. Es la que aparece en la fogata y se queda como brasa viva |
+| 2 · La Rueda | **Rueda**: disco de canto redondeado con cinco radios romos y un buje central | `#C79A5E` con radios y buje `#A67C4A` | `#FFE9A8` en el buje | El disco gira sobre su eje al flotar, en vez de inclinarse |
+| 3 · El Río | **Gota**: cuerpo redondeado de cinco lóbulos suaves, como una gota vista de frente | `#5AA8BF` | `#D6F0F5` | Su estela son gotas pequeñas, no puntos de luz |
+
+**Cuándo muta.** En las dos transiciones entre niveles, que ya son suyas: el barrido de
+Algoritm de `TR-05` y `TR-09`. Entra con la forma del nivel que termina y sale con la del
+que empieza. En ningún otro momento cambia de cuerpo, y **nunca a la vista dentro de una
+escena jugable**.
+
+**El riesgo del nivel 2, y cómo se contiene.** El cuerpo de la rueda usa `#C79A5E`, que es
+el acento del nivel y por tanto la señal de «esto es interactivo». La regla de §4.2 prohíbe
+ese tono en el **decorado**, y el guía no es decorado, así que no la infringe — pero sí
+puede confundir. Tres condiciones lo separan de un prop, y son obligatorias:
+
+1. **Nunca se posa.** Flota siempre por encima de la línea de los objetos del reto, y no
+   entra en la zona de ensamblaje.
+2. **Tiene cara.** Ningún prop del juego tiene ojos ni boca.
+3. **Pulsa.** El pulso de escala de la pista (§10.2) es suyo y de nada más.
+
+#### Nomenclatura
+
+```
+char_algoritm_n1_estrella.png
+char_algoritm_n2_rueda.png
+char_algoritm_n3_gota.png
+```
+
+Sustituyen a `char_chispa_*`. La palabra `chispa` queda libre para lo que siempre fue en
+este juego: el destello del Nivel 1 (`fx_n1_chispa_*`), que no tiene nada que ver con el
+guía y **no se renombra**.
 
 ---
 
@@ -661,7 +723,7 @@ adulto.
 | Botón primario | Piedra redondeada | `#E8A33D`, borde `#3A1E18` | Sombra plana inferior de 6 px |
 | Botón secundario | Piedra clara | `#E0D4C0`, borde `#6B5248` | |
 | Lista de tareas (**solo Nivel 3**) | Cuerda con nudos | Cuerda `#C4A882`, nudo cerrado `#5FA842` | Un nudo por tarea de RF-36. Tarea cumplida = nudo cerrado **más** marca de forma, nunca solo color (RNF-19). Sin cifras |
-| Icono de pista | Chispa en pequeño | `#E8A33D` | Pulso lento de escala cuando hay pista disponible. Es el guía quien ofrece la pista (CP-06), así que el icono es él |
+| Icono de pista | Algoritm en pequeño | `#E8A33D` | Pulso lento de escala cuando hay pista disponible. Es el guía quien ofrece la pista (CP-06), así que el icono es él |
 | Marco de inventario | Cuerda trenzada | `#C4A882` | Casillas circulares |
 
 ### 10.3 Globos de diálogo
@@ -797,10 +859,10 @@ existe salto en ningún nivel (CT-06, RNF-02).
 | Animación | Personaje | Duración | Prioridad |
 | --- | --- | --- | --- |
 | Idle (respiración de 2 px) | Todos | Ciclo 3 s | Crítica |
-| Flotación y giro del guía | Chispa | Ciclo 2 s | Crítica |
+| Flotación y giro del guía | Algoritm | Ciclo 2 s | Crítica |
 | Golpear las piedras | Papá (N1) | 0.6 s | Crítica |
 | Soplar | Papá (N1) | 0.9 s | Crítica |
-| Señalar / observar | Niña (N2), Chispa | 0.6 s | Alta |
+| Señalar / observar | Niña (N2), Algoritm | 0.6 s | Alta |
 | Caminar en vista superior, 4 direcciones | Mamá (N3) | Ciclo 0.8 s | Crítica |
 | Recoger material | Mamá (N3) | 0.5 s | Alta |
 | Celebrar cierre de fase | El que corresponda | 1.2 s | Media |
@@ -829,7 +891,7 @@ información crítica del juego se transmite únicamente por color:
 | --- | --- | --- |
 | Objeto interactivo | Color de acento del nivel | Contorno más grueso + flotación |
 | Reto resuelto | Verde `#5FA842` | Icono de nudo cerrado en la cuerda de progreso |
-| Pista disponible | Ámbar `#E8A33D` | Pulso de escala del icono de Chispa |
+| Pista disponible | Ámbar `#E8A33D` | Pulso de escala del icono de Algoritm |
 | Casilla o espacio de ensamblaje válido | Contraste de valor | Borde más claro **y** marca de forma en la casilla |
 
 **Validación:** revisar cada nivel con un simulador de deuteranopía y protanopía. Si
@@ -1061,7 +1123,7 @@ producción de assets.
 | Pendiente | Impacto en arte | Estado |
 | --- | --- | --- |
 | **Título del videojuego** (`PG-01`) | Pantalla de título, logotipo, tipografía de marca | **Abierto.** Se cierra en el Slice 4 |
-| **Nombre definitivo del guía** (`PG-02`) | Solo el nombre: la **forma** ya está fijada por el guion §1.1 | **Abierto**, sin bloquear el arte |
+| **Nombre definitivo del guía** (`PG-02`) | Nombre y **forma**: se llama **Algoritm** y cambia de forma en cada nivel (§7.6) | **Cerrado (02/09/2026).** Ver INC-44 e INC-45 |
 | **Valores del Nivel 1** (`PG-06`) | Número de muescas del control deslizante en `A9` | **Abierto** hasta validarlo jugando |
 
 **Ya no bloquean, y conviene no reabrirlos:**
@@ -1070,9 +1132,14 @@ producción de assets.
   personajes son obra derivada de los diseños de la Familia Anonaky —se rediseñaron, pero
   partieron de ellos—, y por eso el permiso hacía falta. Su reconocimiento expreso en la
   pantalla de créditos es **obligatorio** (CT-09, RNF-23). Ver §19.
-- **Forma del guía:** el guion §1.1 la fija — figura luminosa con forma de estrella de cinco
-  puntas, del tamaño de una palma, que flota y deja estela. No es humano ni animal. Lo único
-  abierto es cómo se llama (`PG-02`, «Chispa» provisional), y el nombre no toca el diseño.
+- **Forma del guía:** ya **no** es una sola. El guion §1.1 fijaba una estrella constante; la
+  decisión del 02/09/2026 la sustituye por **tres formas, una por nivel** —fuego, rueda, agua—
+  con un núcleo de identidad invariable. Se especifica en §7.6 y se registra en INC-45. El
+  nombre, antes provisional, queda cerrado: **Algoritm** (INC-44).
+
+  El guion ya empujaba en esa dirección: en §4.4 el guía aparece «en el corazón de las llamas
+  […] hecho de fuego esta vez» y se recoge en la fogata «como una brasa que sigue viva».
+  La forma del guía siempre fue el material del descubrimiento que el nivel acaba de nombrar.
 - **Personaje jugable por nivel:** cerrado en el guion §1.2 y en `CN-02` — Papá en el Nivel 1,
   la Niña en el Nivel 2, Mamá en el Nivel 3. El set de animaciones se produce en ese orden,
   que es el de los slices.

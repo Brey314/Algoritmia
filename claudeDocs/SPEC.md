@@ -553,7 +553,7 @@ Corregir cualquiera de estos ahora sale más barato que después.
    entornos, props, interfaz, tipografía, efectos y animación (`Direccion_de_Arte.md` §19).
 4. **Raíz de assets** `Assets/Game/` y namespace `Game.*`: el título aún no está definido (PG-01)
    y no conviene atar la estructura de carpetas a una decisión pendiente.
-5. **El guía se llama Chispa** provisionalmente, siguiendo el guion, que es el único documento con
+5. **El guía se llama Algoritm** (decisión del 02/09/2026, `PG-02` cerrado; INC-44), siguiendo el guion, que es el único documento con
    escena de origen y caracterización visual (PG-02). Al vivir en ScriptableObjects, el nombre se
    cambia sin tocar código.
 6. **Nivel 3 usa botones de dirección en pantalla**, accionados con clic — no el teclado. Letra
@@ -596,7 +596,7 @@ Ya no hay preguntas de diseño ni de redacción con efecto en el código: de los
 efecto en el código— y este documento sigue su resolución.
 
 **Del guion (§12), sin resolver** — son del guion, no conflictos entre documentos:
-**PG-01** título del producto · **PG-02** nombre definitivo del guía (Chispa, provisional) ·
+**PG-01** título del producto · ~~**PG-02** nombre definitivo del guía~~ **cerrado 02/09/2026: Algoritm** (INC-44, INC-45) ·
 **PG-05** verificar en pruebas que el cambio de esquema de control entre el Nivel 1 y el 2 no
 confunde · **PG-06** validar jugando los valores del Nivel 1 (`FireLevelConfig`).
 

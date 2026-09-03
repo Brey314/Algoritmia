@@ -4,10 +4,19 @@ Registro de los conflictos detectados entre los seis `.docx` de `docs/`, con la 
 aplicada a cada uno. Documento hermano de `SPEC.md`: aquí está **qué estaba mal en los
 documentos y cómo quedó**; allí está **qué implementa el código**.
 
-**Verificación vigente: 30/08/2026, rev. 6.** Los seis documentos se releyeron de principio a
-fin y se editaron directamente. **Los hallazgos INC-01 … INC-42 están cerrados**; queda
-**INC-43 abierto** (el guion aún declara `PG-07` pendiente después de obtenerse la autorización),
-más dos residuos menores, listados al final.
+**Verificación vigente: 02/09/2026, rev. 7.** Los seis documentos se releyeron de principio a
+fin y se editaron directamente en la rev. 5. **Los hallazgos INC-01 … INC-42 están cerrados**;
+quedan **cuatro abiertos**: **INC-43** (el guion aún declara `PG-07` pendiente después de
+obtenerse la autorización), **INC-44** (el guía pasa a llamarse **Algoritm**), **INC-45** (el guía
+cambia de forma en cada nivel) e **INC-46** (la lista de tareas del Nivel 3 está descrita como dos
+objetos distintos). Los tres primeros se cierran editando los `.docx` a mano, cosa que el código
+nunca hace; **INC-46 se cierra dentro de `claudeDocs/`, pero exige una decisión**. Más dos
+residuos menores, listados al final.
+
+> **Los hallazgos 44 y 45 no nacen de un conflicto entre documentos, sino de una decisión del
+> autor tomada el 02/09/2026.** Se registran aquí igual, porque el efecto es el mismo: los
+> `.docx` radicados dicen una cosa y el proyecto hace otra, y eso hay que dejarlo escrito antes
+> de que alguien lo descubra leyendo el guion.
 
 > **Nota sobre esta revisión.** La rev. 4 dejaba veintitrés hallazgos abiertos. Entre esa
 > revisión y esta se corrigieron en los `.docx`: los nueve que la rev. 4 mantenía abiertos
@@ -64,6 +73,9 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-41 | HU-02 generalizaba la lista de tareas a todos los niveles | HU, OE1 | **Cerrado** |
 | INC-42 | Norma de citación declarada distinta de la usada | Trabajo de grado | **Cerrado** |
 | INC-43 | `PG-07` sigue «Abierto» tras aprobarse la autorización | Guion | **Abierto** |
+| INC-44 | El guía se llama Algoritm; los documentos dicen «Chispa» | Guion, HU, OE1, OE2 | **Abierto** |
+| INC-45 | El guía cambia de forma por nivel; el guion fija una sola | Guion | **Abierto** |
+| INC-46 | La lista de tareas del Nivel 3: cuerda con nudos contra panel de casillas | Dirección de arte, Slice 3 | **Abierto** |
 
 ---
 
@@ -246,6 +258,129 @@ Mientras el `.docx` no se edite, gana lo que dice aquí: `PG-07` está cerrado. 
 expreso de los personajes en la pantalla de créditos sigue siendo **obligatorio** (CT-09,
 RNF-23), y la constancia escrita se archiva con los anexos del trabajo de grado.
 
+### INC-44 · El guía se llama **Algoritm**, no «Chispa» — abierto
+
+**Decisión del 02/09/2026.** El nombre del guía era el punto abierto `PG-02` del guion §12
+—«Nombre provisional»—, de modo que fijarlo no contradice nada: lo cierra. El guía se llama
+**Algoritm**, y `PG-02` queda **cerrado**.
+
+**Qué dicen hoy los documentos.** «Chispa» aparece 48 veces en el guion —25 de ellas como
+acotación de diálogo `CHISPA:`—, 6 en las historias de usuario, 4 en OE2 y 1 en OE1. El trabajo
+de grado y el documento de arquitectura no lo nombran.
+
+**El nombre no sale de la nada.** Los documentos fuente por nivel ya barajaban otros: el del
+Nivel 2 llamaba al guía **«Algorim»** y el del Nivel 3 lo alternaba entre «Bubo» y «Sabio»
+(anotado en `tasks/Slice 2/plan.md` §Preguntas y en `tasks/Slice 3/plan.md` §Preguntas). El guion
+unificó en «Chispa» y dejó abierto `PG-02`. **Algoritm** cierra ese punto y recupera la raíz que
+ya estaba en el material del Nivel 2, ahora coherente con lo que el guía hace en los tres niveles:
+descomponer un problema en pasos.
+
+**Corrección a aplicar en los `.docx`** —manual, el código nunca edita `docs/`—:
+
+| Documento | Dónde | Qué |
+| --- | --- | --- |
+| Guion | §1.1, tabla de personajes | «Chispa (guía)» → «Algoritm (guía)»; retirar «Nombre provisional — ver punto abierto PG-02» |
+| Guion | 25 líneas de diálogo | `CHISPA:` → `ALGORITM:` |
+| Guion | §12, tabla de puntos abiertos | `PG-02` → **Cerrado (02/09/2026): Algoritm** |
+| HU · OE1 · OE2 | 11 menciones en total | «Chispa» → «Algoritm» |
+
+> **Trampa que hay que evitar.** En el Nivel 1, *chispa* en minúscula es **el destello que
+> sueltan las piedras** (guion §4.3.3, `RF-16`, `RF-18`), y no tiene nada que ver con el guía.
+> Una sustitución global rompe el nivel del fuego. Se distingue por contexto: mayúscula inicial
+> y sujeto animado = el guía; minúscula = el destello. Los archivos `fx_n1_chispa_*` **no se
+> renombran**.
+
+**Ya aplicado en `claudeDocs/`** (que sí edita el código): `SPEC.md` supuesto 5 y la lista de
+puntos abiertos · `Direccion_de_Arte.md` §7, §7.6, §10.2, §13.3, §14.2 y §18 ·
+`tasks/Sprites/`. Los prompts `A1` del Slice 1 y las menciones de los Slices 2 y 3 se actualizan
+junto con el rediseño de INC-45, no antes: son el mismo trabajo.
+
+**Nomenclatura:** `char_chispa_*` → `char_algoritm_n1_estrella.png`, `_n2_rueda`, `_n3_gota`.
+
+---
+
+### INC-45 · El guía cambia de forma en cada nivel — abierto
+
+**Decisión del 02/09/2026.** Algoritm deja de tener una forma única: es **fuego en el Nivel 1,
+rueda en el Nivel 2 y agua en el Nivel 3**. Su cuerpo es el material del descubrimiento que el
+nivel acaba de nombrar.
+
+**Qué dice hoy el guion.** §1.1 lo describe como «pequeña figura luminosa con forma de estrella,
+del tamaño de una palma», y §4.4 repite «una silueta pequeña con forma de estrella». Leídas
+juntas, fijan **una sola forma para los tres niveles**. Ahí está el conflicto.
+
+**Pero el guion ya empujaba en esta dirección**, y conviene no perderlo: en §4.4 el guía aparece
+«en el corazón de las llamas […] hecho de fuego **esta vez**», y se recoge en la fogata «como una
+brasa que sigue viva». El propio texto ata su cuerpo al descubrimiento del nivel.
+
+**Cómo se sostiene CN-03** —«un guía constante en los tres niveles»—: lo constante no es el
+contorno del cuerpo, sino el **núcleo de identidad** que fija `Direccion_de_Arte.md` §7.6 —
+tamaño, ojos, boca, ausencia de extremidades, núcleo claro de borde duro, contorno cálido
+`#E2571F`, estela de puntos y silueta que siempre se cuenta hasta cinco—. Con eso, las tres
+formas se leen como el mismo personaje, y CN-03 se cumple.
+
+**Corrección a aplicar en el `.docx`** —manual—:
+
+| Documento | Dónde | Qué |
+| --- | --- | --- |
+| Guion | §1.1, caracterización del guía | Sustituir «con forma de estrella» por la forma cambiante: estrella de fuego en el Nivel 1, rueda en el 2 y gota de agua en el 3, con los rasgos invariables |
+| Guion | §5 y §7 (escenas puente) | Añadir la acotación de la muta: el guía cruza la escena con la forma del nivel que termina y aparece con la del que empieza |
+| Guion | §4.4 | **No se toca.** En el Nivel 1 el guía **es** una estrella de fuego; la acotación es correcta tal como está |
+
+**Impacto en la producción.** El asset `A1` del Slice 1 deja de ser uno y pasa a ser tres, y los
+Slices 2 y 3 dejan de poder reutilizarlo «tal cual» como declaran hoy sus secciones de assets. El
+trabajo está planeado en `claudeDocs/tasks/Sprites/plan.md`, tarea `S15`.
+
+**Riesgo detectado, y contenido.** El cuerpo de la rueda usa `#C79A5E`, el acento del Nivel 2,
+que es la señal de «esto es interactivo». No infringe §4.2 —la prohibición recae sobre el
+decorado, y el guía no lo es—, pero puede confundir. Las tres condiciones que lo separan de un
+prop están en `Direccion_de_Arte.md` §7.6 y son obligatorias: no se posa nunca, tiene cara, y el
+pulso de la pista es suyo y de nada más.
+
+---
+
+### INC-46 · La lista de tareas del Nivel 3 está especificada dos veces, y distinto — abierto
+
+**El conflicto.** `RF-36` obliga a mostrar de forma permanente la descomposición del objetivo en
+cuatro tareas y a marcar cada una al cumplirse. Ningún `.docx` dice **cómo se ve** esa lista: el
+guion §8.1 solo dice «en pantalla aparece la lista de tareas». Los dos documentos del proyecto que
+sí lo describen no coinciden:
+
+| Documento | Qué dice | Tarea cumplida |
+| --- | --- | --- |
+| `Direccion_de_Arte.md` §10.2 | **Cuerda con nudos.** Cuerda `#C4A882`, un nudo por tarea | Nudo cerrado `#5FA842` **más** marca de forma |
+| `tasks/Slice 3/plan.md` `C5` | **Panel vertical de marfil** `#F7EFE2` con borde de cuero cosido y cuatro filas, cada una con una casilla cuadrada | Casilla rellena `#5FA842`, borde engrosado y marca de verificación |
+
+No son dos redacciones del mismo objeto: son dos objetos. Se detectó al enumerar los props del
+Nivel 3 uno a uno (`tasks/Sprites/plan.md` §4.3).
+
+**Qué manda.** La precedencia del proyecto es `SPEC.md` → `Direccion_de_Arte.md` → planes de
+slice, así que **por regla gana la cuerda con nudos y lo que hay que corregir es `C5`**. Se
+registra aquí en vez de aplicarlo de una porque los dos lados tienen argumento:
+
+- **A favor de la cuerda (§10.2):** es la opción diegética que pide §10.1 —la interfaz imita
+  materiales del mundo—, y el nudo es un objeto prehistórico creíble. Además, la balsa del nivel
+  ya usa sogas: la lista y el reto hablarían el mismo idioma.
+- **A favor del panel de casillas (`C5`):** el Nivel 3 es el escenario más claro y en vista
+  superior, el caso más expuesto del juego para el contraste (RNF-20), y el resto de su interfaz
+  —inventario, panel de ensamblaje— ya son marcos de marfil. Una cuerda suelta sobre el follaje
+  es más difícil de leer que una placa, y `C5` la resuelve con casilla llena **más** borde
+  engrosado **más** marca, que cumple RNF-19 igual de bien.
+
+**Cualquiera de las dos salidas cierra el hallazgo**, y las dos son de una sola edición:
+
+1. **Corregir `C5`** para que la lista sea una cuerda con cuatro nudos, manteniendo el inventario
+   y el panel de ensamblaje como están. Es lo que dicta la precedencia.
+2. **Corregir `Direccion_de_Arte.md` §10.2** para que la lista sea el panel de casillas, dejando
+   constancia de por qué se abandona la vía diegética en este componente.
+
+**Lo que no cambia, se decida lo que se decida:** la marca de tarea cumplida lleva **color y
+forma**, nunca solo color (RNF-19), y la lista **no muestra cifras** (CP-03, RF-17).
+
+**Bloquea:** la generación del asset `C5` y la tarea `S11b` de `tasks/Sprites/`.
+
+---
+
 ### INC-42 · Norma de citación — cerrado
 El trabajo de grado §6 declara «elaborado conforme a la norma NTC 1486 y con citación bajo la
 norma **IEEE**», que es la que usa el documento (citas numéricas entre corchetes, nota de la
@@ -261,9 +396,10 @@ bibliografía) y la que dice el nombre del archivo (`…ICONTEC_IEEE.docx`).
    insertando la fila de encabezado en el `.docx`.
 
 **Puntos abiertos del guion (§12)** — son del guion, no conflictos entre documentos:
-`PG-01` (título del producto), `PG-02` (nombre definitivo del guía), `PG-05` (verificar en
-pruebas que el cambio de esquema de control entre niveles no confunde), `PG-06` (validar jugando
-los valores del Nivel 1). `PG-03` y `PG-04` están cerrados (redacción de `RF-16` y `RF-32`), y
+`PG-01` (título del producto), `PG-05` (verificar en pruebas que el cambio de esquema de control
+entre niveles no confunde), `PG-06` (validar jugando los valores del Nivel 1). **`PG-02` (nombre
+del guía) está cerrado desde el 02/09/2026: se llama Algoritm** — el guion aún no lo refleja, ver
+INC-44. `PG-03` y `PG-04` están cerrados (redacción de `RF-16` y `RF-32`), y
 `PG-07` (autorización de los personajes) está **cerrado desde el 30/08/2026**: la autorización se
 concedió por escrito. El guion aún no lo refleja — ver INC-43.
 
@@ -271,6 +407,12 @@ concedió por escrito. El guion aún no lo refleja — ver INC-43.
 
 ## Historial de revisiones
 
+- **rev. 7 (02/09/2026)** — Decisión del autor sobre el guía: se llama **Algoritm** (`PG-02`
+  cerrado) y **cambia de forma en cada nivel** —fuego, rueda, agua—. Se abren **INC-44** e
+  **INC-45**; ambos se cierran editando los `.docx` a mano. `claudeDocs/` ya está alineado.
+  Al enumerar los props del Nivel 2 y del Nivel 3 uno a uno se detectó además **INC-46**: la
+  lista de tareas del Nivel 3 está descrita como dos objetos distintos en la dirección de arte y
+  en el Slice 3. Queda abierto, a la espera de decisión.
 - **rev. 6 (30/08/2026)** — Confirmada la autorización escrita de los personajes de la Familia
   Anonaky: `PG-07` se cierra y se abre **INC-43**, porque el guion §12 todavía lo declara
   pendiente.
