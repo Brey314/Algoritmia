@@ -48,5 +48,37 @@ namespace Game.Core.Tests
 
             Assert.That(_fileSystem.Files.Keys, Has.Exactly(1).Contains("Ana"));
         }
+
+        [Test]
+        public void ProfileSession_RF02_ListaLosNombresDeLosPerfilesGuardados()
+        {
+            var sut = CreateSession();
+            sut.Save(PlayerProfile.Create("Ana", Array.Empty<string>()).Profile);
+            sut.Save(PlayerProfile.Create("Beto", Array.Empty<string>()).Profile);
+
+            Assert.That(sut.ExistingProfileNames(), Is.EquivalentTo(new[] { "Ana", "Beto" }));
+        }
+
+        [Test]
+        public void ProfileSession_RF02_CreateRechazaUnNombreYaGuardado()
+        {
+            var sut = CreateSession();
+            sut.Save(PlayerProfile.Create("Ana", Array.Empty<string>()).Profile);
+
+            var result = sut.Create("Ana");
+
+            Assert.That(result.Result, Is.EqualTo(ProfileCreationResult.Status.DuplicateName));
+        }
+
+        [Test]
+        public void ProfileSession_RF03_LoadDevuelveElPerfilConSuProgreso()
+        {
+            var sut = CreateSession();
+            var saved = PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
+            saved.Reach(LevelId.Wheel);
+            sut.Save(saved);
+
+            Assert.That(sut.Load("Ana").ReachedLevel, Is.EqualTo(LevelId.Wheel));
+        }
     }
 }

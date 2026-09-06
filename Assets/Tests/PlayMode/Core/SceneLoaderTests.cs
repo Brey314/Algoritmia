@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Game.Core.Tests
 {
@@ -29,7 +28,10 @@ namespace Game.Core.Tests
 
             var startedAt = Time.realtimeSinceStartupAsDouble;
             sut.Load("MainMenu");
-            await WaitUntil(() => SceneManager.GetActiveScene().name == "MainMenu");
+            // Se espera a que el cronómetro quede anotado —el efecto de `completed`—, no a que
+            // «MainMenu» esté activa: si ya lo estaba (otra prueba la dejó cargada) esa condición
+            // se cumple durante toda la recarga y la aserción correría con el dato aún en cero.
+            await WaitUntil(() => sut.LastLoadSeconds > 0f);
             var observedSeconds = Time.realtimeSinceStartupAsDouble - startedAt;
 
             Assert.That(sut.LastLoadSeconds,

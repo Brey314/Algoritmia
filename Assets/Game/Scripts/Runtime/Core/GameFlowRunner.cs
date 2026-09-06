@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Game.Core
 {
@@ -15,15 +16,16 @@ namespace Game.Core
     public class GameFlowRunner : MonoBehaviour
     {
         /// <summary>
-        /// Escena de cada estado. Solo están los estados que ya tienen escena; cada tarea añade
-        /// la suya. <see cref="GameState.ProfileSelect"/> no lleva escena propia: es un panel
-        /// dentro de <c>MainMenu</c>.
+        /// Escena que aloja cada estado. Cada tarea añade la suya. <see cref="GameState.ProfileSelect"/>
+        /// no tiene escena propia: es un panel dentro de <c>MainMenu</c>, así que apunta a esa misma
+        /// escena y la transición se resuelve intercambiando paneles, no recargando.
         /// </summary>
         private static readonly Dictionary<GameState, string> Scenes =
             new Dictionary<GameState, string>
             {
                 [GameState.Boot] = "Boot",
-                [GameState.MainMenu] = "MainMenu"
+                [GameState.MainMenu] = "MainMenu",
+                [GameState.ProfileSelect] = "MainMenu"
             };
 
         public static GameFlowRunner Instance { get; private set; }
@@ -80,6 +82,8 @@ namespace Game.Core
 
         public bool GoTo(GameState next) => Apply(Flow.TryGoTo(next));
 
+        public bool SelectProfile(PlayerProfile profile) => Apply(Flow.TrySelectProfile(profile));
+
         public bool StartNarrative(string sequenceId) => Apply(Flow.TryStartNarrative(sequenceId));
 
         public bool StartPlaying(LevelId level, int phase) => Apply(Flow.TryStartPlaying(level, phase));
@@ -93,7 +97,14 @@ namespace Game.Core
 
             if (Scenes.TryGetValue(Flow.Current, out var sceneName))
             {
-                SceneLoader.Instance.Load(sceneName);
+                // Si la escena ya está activa, el cambio de estado es un intercambio de paneles
+                // dentro de ella —lo hace la UI— y no una recarga. Sin `SceneLoader` (una prueba
+                // que solo ejercita el flujo, sin la escena Boot) la transición actualiza la FSM
+                // pero no toca escenas.
+                if (sceneName != SceneManager.GetActiveScene().name && SceneLoader.Instance != null)
+                {
+                    SceneLoader.Instance.Load(sceneName);
+                }
             }
             else
             {

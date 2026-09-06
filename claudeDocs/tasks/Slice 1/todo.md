@@ -65,10 +65,26 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       RNF-20 contraste — captura analizada: texto #3A1E18 sobre #F7EFE2 / #E8A33D / #E0D4C0,
       todos ≥ 4,5:1). Tipografía: fuente del sistema; Baloo 2 / Nunito (Dir. Arte §11.2) es tarea
       de assets. `/[Dd]atos/` al `.gitignore`.
-- [ ] **T06 · Perfil de un solo nombre** — `M` · `EM` + `PM`
+- [x] **T06 · Perfil de un solo nombre** — `M` · `EM` + `PM` (06/09/2026)
       RF-02, RF-03, RNF-09, HU-01 (FA-01..FA-03), CU-01, CU-02 · depende de: T05
-- [ ] **T07 · Menú de niveles con desbloqueo progresivo** — `M` · `EM` + `PM`
+      **Panel dentro de `MainMenu`, no escena** (SPEC §Estructura no lista `ProfileSelect`; el
+      plan sí — gana SPEC). `MainMenu` se parte en `MainPanel` / `ProfilePanel`; «Jugar» los
+      intercambia sin recargar (`GameFlowRunner.Apply` no recarga la escena ya activa).
+      `ProfileSelectController`: lista de perfiles guardados + campo único de nombre. Validación
+      (FA-01 vacío, FA-02 duplicado) reutiliza `PlayerProfile.Create` de T02. Perfil nuevo →
+      `SelectProfile` + `StartNarrative("N1_Apertura")` (FA-03; la escena Narrative es T10).
+      `ProfileSession` pasó a ser la fachada de perfiles (listar/cargar/crear/guardar).
+      **EditMode 30/30** (ProfileSession 5) · **PlayMode 16/16** (GameFlowRunner 2, ProfileSelect 5,
+      MainMenu 5 sin regresión, BootFlow/SceneLoader 4). Se arregló una fragilidad de orden en el
+      test RNF-04 de `SceneLoader` (T04b): esperaba la escena activa, ahora espera el dato del
+      cronómetro.
+- [~] **T07 · Menú de niveles con desbloqueo progresivo** — `M` · `EM` + `PM` — EN CURSO
       RF-03, RNF-19, RNF-20, HU-01, CU-02 · depende de: T06
+      Hecho: `LevelUnlockPolicy` (C# plano — completar un nivel habilita solo el siguiente,
+      nunca re-bloquea) + **4/4 EditMode**. `GameFlowRunner.Apply` tolera no tener `SceneLoader`
+      (pruebas solo-flujo). Falta: escena `LevelSelect` + añadirla a Build Settings, mapearla en
+      `GameFlowRunner.Scenes`, `LevelSelectController` (candado + texto además de color, RNF-19),
+      pruebas PlayMode + VisualVerification.
 - [ ] **T08 · Pantalla de créditos mínima** — `XS` · `PM`
       RF-08, CT-09, RNF-18, RNF-23 · depende de: T05
 

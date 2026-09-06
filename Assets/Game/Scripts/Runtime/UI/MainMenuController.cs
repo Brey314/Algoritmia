@@ -18,6 +18,10 @@ namespace Game.UI
         [SerializeField] private Button creditsButton;
         [SerializeField] private Button exitButton;
 
+        [Header("Paneles de la pantalla de inicio")]
+        [SerializeField] private GameObject mainPanel;
+        [SerializeField] private GameObject profilePanel;
+
         /// <summary>
         /// Guarda el perfil activo al salir. Producción: la sesión de <see cref="GameFlowRunner"/>,
         /// que se resuelve solo cuando se pulsa «Salir» — así una prueba que no lo pulsa no acaba
@@ -42,9 +46,18 @@ namespace Game.UI
                 titleLabel.text = titleConfig.Title;
             }
 
-            playButton.onClick.AddListener(() => GameFlowRunner.Instance.GoTo(GameState.ProfileSelect));
+            playButton.onClick.AddListener(OpenProfilePanel);
             creditsButton.onClick.AddListener(() => GameFlowRunner.Instance.GoTo(GameState.Credits));
             exitButton.onClick.AddListener(Exit);
+        }
+
+        private void OpenProfilePanel()
+        {
+            // ProfileSelect es un panel de esta misma escena (SPEC §Estructura): el cambio de
+            // estado no recarga MainMenu, solo intercambia paneles.
+            GameFlowRunner.Instance.GoTo(GameState.ProfileSelect);
+            mainPanel.SetActive(false);
+            profilePanel.SetActive(true);
         }
 
         private void Exit()
