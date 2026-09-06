@@ -17,8 +17,14 @@ runtime; `Game.Core` ya tiene `GameFlow`, `GameState`, `PlayerProfile`, `SaveSto
 `IFileSystem`, `SceneLoader` y `GameFlowRunner`, más las escenas `Boot` y `MainMenu` y las
 pruebas EditMode de Core y de arquitectura. `Game.Scaffolding`, `Game.Levels.Fire`, `Game.UI` y
 `Game.Audio` son `.asmdef` todavía sin código. **Fase 0 verificada el 03/09/2026: 23/23 EditMode,
-3/3 PlayMode, 0 warnings** — resultados en `claudeDocs/tasks/Slice 1/Fase-0-Resultados.md`. Del
-Checkpoint A solo faltan la medición de RNF-04 y la revisión con el usuario.
+3/3 PlayMode, 0 warnings** — resultados en `claudeDocs/tasks/Slice 1/Fase-0-Resultados.md`.
+Re-verificado el 06/09/2026 con `unity test`: **23/23 EditMode**. Del Checkpoint A siguen abiertos
+la medición de RNF-04 y la revisión con el usuario.
+
+**Rider instalado el 06/09/2026** (2026.2.0.2, vía winget). Falta terminar su configuración:
+editor externo de Unity, `Enable MCP Server` + `Auto-Configure`, y el plugin «MCP Server Extension
+for Unity» (id 30357). Hasta entonces `mcp__rider__*` no está disponible y las pruebas van por
+`unity test` (ver §Comandos).
 
 **Idioma:** identificadores y código en inglés; documentación, textos del jugador y
 comunicación con el usuario en español.
@@ -56,9 +62,10 @@ sin `PYTHONIOENCODING=utf-8` los acentos salen como mojibake. El shell por defec
 proyecto es PowerShell, donde ese prefijo no es sintaxis válida: correrlo con la herramienta
 Bash, o `$env:PYTHONIOENCODING='utf-8'` antes de invocar markitdown.
 
-**Rutas siempre entre comillas.** La raíz del proyecto es `C:\Users\benab\My project` —con
-espacio— y los `.docx` traen espacios y paréntesis en el nombre. Sin comillas, cualquier comando
-de shell falla o toca el archivo equivocado.
+**Rutas siempre entre comillas.** La raíz del proyecto es `C:\Users\Usuario\Algoritmia` (sin
+espacios). El *nombre* del proyecto Unity sigue siendo `My project` (`productName`), por eso el
+XML de pruebas rotula la suite raíz como `My project`. Los `.docx` traen espacios y paréntesis en
+el nombre: sin comillas, cualquier comando de shell falla o toca el archivo equivocado.
 
 `SPEC.md` es la fuente de verdad para cualquier duda de alcance o diseño; este archivo no la
 repite. Si algo del código contradice a `SPEC.md`, gana `SPEC.md` o se corrige el documento
@@ -94,28 +101,37 @@ y parecen correctos.
 
 ## Comandos
 
-No hay CLI de build, lint ni pruebas: todo pasa por el Editor de Unity y sus MCP
-(`mcp__rider__*` para compilar y probar, `mcp__coplay-mcp__*` para escenas y assets). **La tabla completa está en `claudeDocs/SPEC.md` §Comandos**
-— no se duplica aquí. Lo que hay que saber antes de empezar:
+Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y assets;
+`mcp__rider__*` para compilar y probar cuando Rider esté configurado) y la CLI `unity`. **La tabla
+completa está en `claudeDocs/SPEC.md` §Comandos** — no se duplica aquí. Lo que hay que saber antes
+de empezar:
 
-- **Hay dos MCP: `coplay-mcp` y `rider`.** El de Rider trae el corredor de pruebas
-  (`mcp__rider__run_unity_tests`, `mcp__rider__get_unity_compilation_result`) pero **a 03/09/2026
-  no conecta**: falta `Library/ProtocolInstance.json`, o sea el editor externo configurado en
-  Unity no es Rider. Arreglarlo es Edit -> Preferences -> External Tools en el Editor; es cosa
-  del usuario, no se toca desde aquí.
-- **La ruta que sí funciona hoy son las pruebas por línea de comandos**, que dejan XML de NUnit:
-  `Unity.exe -runTests -batchmode -projectPath "<raíz>" -testPlatform {EditMode|PlayMode}
-  -testResults <salida>.xml -logFile <log>`. Exige el **Editor cerrado** (bloquea el proyecto), y
-  en PowerShell hay que pasar las rutas con comillas dentro del `-ArgumentList` o «My project» se
-  parte por el espacio. Sale 0 si todo pasa, 2 si algo falla. `Unity.exe` no es una app de
-  consola: `&` no espera a que termine — usar `Start-Process -Wait`.
-- Si el MCP no responde, el Editor está cerrado o el puente caído: eso **no** es que la suite
-  pase, y hay que decirlo.
+- **Pruebas → la CLI `unity`** (`C:\Users\Usuario\AppData\Local\Unity\bin\unity`, v1.0.0-beta.5,
+  ya en el PATH). Reemplaza al `Unity.exe -runTests -batchmode` crudo: maneja comillas, exit codes,
+  `--filter`, `--timeout`, `--coverage`.
+  ```
+  unity test --mode EditMode --output test-results.xml --timeout 900 --no-banner --non-interactive
+  unity status    # editores conectados: puerto, PID, estado
+  ```
+  Abre su **propia** instancia batchmode → exige el **Editor cerrado** (si no: `another Unity
+  instance is running`, exit 6). Exit 0 = todo pasa, 2 = fallos o error de invocación.
+  `--report-format` acepta `nunit` **o** `junit`, uno a la vez (`both` lo rechaza pese al `--help`).
+  Flujo: Editor abierto para desarrollo con coplay-mcp → cerrarlo → `unity test` → reabrir.
+- **Cuando Rider esté configurado**, `mcp__rider__run_unity_tests` /
+  `mcp__rider__get_unity_compilation_result` corren contra el Editor **abierto** (sin cerrar/reabrir)
+  y habilitan el flujo test-first del plugin `unity-coding-skills`. `unity test` queda como
+  respaldo para corridas limpias y CI.
+- **`coplay-mcp` solo responde con el Editor abierto Y ya inactivo.** Mientras compila o hace
+  domain-reload devuelve `timed out` o `A task was canceled` — esperar a que quede inactivo y
+  reintentar (regla de 10 s del skill `run-tests`). `list_unity_project_roots` responde aunque
+  esté cargando; `get_unity_editor_state` es la sonda real de «¿el puente está vivo?».
+- Si un MCP no responde, el Editor está cerrado, cargando, o el puente caído: eso **no** es que la
+  suite pase, y hay que decirlo.
 - Play Mode a mano: `mcp__coplay-mcp__play_game` / `stop_game`.
 - Errores de compilación y consola: `mcp__coplay-mcp__check_compile_errors` /
   `mcp__coplay-mcp__get_unity_logs`, en vez de adivinar.
-- Si el puente Coplay no conecta, no hay forma de tocar escenas: reiniciar el Editor y el
-  puente antes de empezar.
+- El MCP nativo de Unity (`com.unity.ai.assistant`, relay en `~/.unity/relay/relay_win.exe`)
+  arranca solo pero Unity lo marca **deprecado** y **no trae runner de tests** — no conectarlo.
 
 ## Workflow: plugin unity-coding-skills
 

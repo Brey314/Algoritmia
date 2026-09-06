@@ -749,9 +749,9 @@ sin comprometer el Golden Path; va último por eso.
 
 | # | Riesgo | Impacto | Mitigación |
 |---|---|---|---|
-| **R1** | **No hay corredor de pruebas MCP.** `run_unity_tests`, `get_unity_compilation_result` y `unity_play_control` no están conectados; solo existe `coplay-mcp`. Todo el flujo test-first de este plan depende de poder ver una prueba fallar. | **Alto — abierto** | Mientras no se instale: correr cada suite **a mano** en la ventana Test Runner y **declarar el resultado explícitamente**, nunca darlo por hecho. Instalar el servidor MCP de Unity es la acción que desbloquea el plan; conviene hacerla antes de T02. |
+| **R1** | **Corredor de pruebas MCP.** `run_unity_tests` / `get_unity_compilation_result` no estaban conectados. | **Bajo — casi cerrado (06/09/2026)** | Rider 2026.2 + plugin «MCP Server Extension for Unity» (id 30357) instalados; MCP `rider` registrado. Falta reiniciar Claude Code para que la sesión los vea. Entretanto, `unity test` (CLI oficial, Editor cerrado) cubre el flujo test-first —deja XML de NUnit— y queda como respaldo/CI. Toda casilla de prueba exige **declarar el resultado**. |
 | R2 | PG-06: los valores del Nivel 1 (`Muy cerca`, 3, 3) no se han validado jugando | Medio | Viven en `FireLevelConfig`; ajustarlos no cuesta recompilación (RNF-18). Validar en el checkpoint D. |
-| R3 | PG-01: el título del producto sigue sin definirse y RF-01 lo exige en pantalla | Medio | Título en `GameTitleConfig` (SO), con marcador provisional. Cambiarlo es editar un asset. |
+| R3 | PG-01: el título del producto sigue sin definirse y RF-01 lo exige en pantalla | Bajo — mitigado | Marcador provisional **«Algoritm»** en `GameTitleConfig` (SO), confirmado por el usuario el 06/09/2026. Cambiarlo es editar un asset. |
 | R4 | ~~PG-07: sin autorización escrita de la Familia Anonaky~~ | **Cerrado (30/08/2026)** | La autorización se concedió por escrito. Los personajes son **obra derivada** de los diseños Anonaky —rediseñados, pero partiendo de ellos—, así que su **reconocimiento en créditos es obligatorio** (T08, supuesto 3, CT-09, RNF-23). |
 | R5 | `Datos/` no escribible en los equipos de la institución | Medio | Caída a `Application.persistentDataPath` con advertencia; T02 lo prueba en los dos escenarios (INC-34). |
 | R6 | Deriva visual entre generaciones de arte | Medio | Bloque de estilo y paleta fijos, copiados literalmente al inicio de cada prompt. |
@@ -759,12 +759,12 @@ sin comprometer el Golden Path; va último por eso.
 
 ## Preguntas abiertas
 
-1. **PG-01 — título provisional.** ¿Qué cadena ponemos en `GameTitleConfig` hasta que se defina?
-   Propuesta: «Chispa» como marcador, coherente con el guía.
+1. ~~**PG-01 — título provisional.**~~ Resuelto el 06/09/2026: marcador **«Algoritm»** en
+   `GameTitleConfig`, confirmado por el usuario.
 2. **Créditos en el Slice 1 (T08).** Se incluyen porque RF-01 pone el botón en la pantalla de
    inicio. Si se prefiere diferir, hay que quitar el botón, y eso incumple RF-01. Confirmar.
-3. **Instalación del servidor MCP de Unity (R1).** ¿Se hace antes de T02, o el slice avanza con
-   pruebas corridas a mano y declaradas?
+3. ~~**Instalación del servidor MCP de Unity (R1).**~~ Resuelto el 06/09/2026: Rider 2026.2 +
+   plugin id 30357 instalados; `unity test` (CLI) cubrió Fase 0. Falta reiniciar Claude Code.
 
 ---
 

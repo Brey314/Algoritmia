@@ -7,12 +7,12 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 **Leyenda:** `EM` = EditMode (lógica pura, sin escena) · `PM` = PlayMode (integración) ·
 `VV` = VisualVerification.
 
-> ⚠️ **R1 mitigado, no cerrado.** `mcp__rider__run_unity_tests` sigue sin responder: el puente
-> Rider↔Unity no conecta (falta `Library/ProtocolInstance.json`, o sea el editor externo de Unity
-> no es Rider). Mientras tanto las pruebas se corren por línea de comandos —
-> `Unity.exe -runTests -batchmode -projectPath "…" -testPlatform {EditMode|PlayMode} -testResults …`
-> — que sí funciona y deja XML de NUnit, pero exige el Editor cerrado. Toda casilla de prueba
-> marcada abajo exige **declarar el resultado**. No dar por hecho que la suite pasó.
+> ⚠️ **R1 casi cerrado (06/09/2026).** Rider 2026.2 instalado; el MCP `rider` quedó registrado.
+> Falta el plugin «MCP Server Extension for Unity» (id 30357) para tener `mcp__rider__run_unity_tests`,
+> y reiniciar Claude Code para que la sesión lo vea. Mientras tanto las pruebas van por
+> `unity test --mode {EditMode|PlayMode} --output <x>.xml` (CLI oficial, reemplaza al
+> `Unity.exe -runTests` crudo) — deja XML de NUnit pero exige el Editor cerrado. Toda casilla de
+> prueba marcada abajo exige **declarar el resultado**. No dar por hecho que la suite pasó.
 
 ---
 
@@ -34,14 +34,22 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       de la FSM y afirmaban la escena activa, pero `LoadScene` se aplica al final del frame. Se
       corrigió la espera y se añadió un `[TearDown]` — sin él, `GameFlowRunner` y `SceneLoader`
       sobrevivían entre pruebas y dos pasaban sin probar nada. Solo cambió código de prueba.
-      Falta la **medición de RNF-04** del tiempo de carga: batch mode no sirve como medición.
+- [x] **T04b · Arreglo de la medición de RNF-04 en `SceneLoader`** — `XS` · `PM` (06/09/2026)
+      RNF-04 · depende de: T04 · fix-bug test-first
+      `LastLoadSeconds` cronometraba `SceneManager.LoadScene` (solo encola) → reportaba ≈ 0 s.
+      RED (`Expected > 0.001 ... But was 0.00034530001f`) → fix con `LoadSceneAsync` + `completed`
+      → GREEN **PlayMode 4/4, EditMode 23/23**. Detalle en `Fase-0-Resultados.md` §3.4.
 
 ### ✅ Checkpoint A — Cimientos
-- [x] Compila sin errores ni warnings nuevos — **0 errores, 0 warnings** en la corrida final
-- [x] Pruebas EditMode de Core corridas y **declaradas** — **23/23**
+- [x] Compila sin errores ni warnings nuevos — **0 errores, 0 warnings** (re-verificado 06/09)
+- [x] Pruebas EditMode de Core corridas y **declaradas** — **23/23** (re-verificado 06/09)
+- [x] Pruebas PlayMode corridas y **declaradas** — **4/4** (06/09)
 - [x] Arranca en `Boot` y llega a `MainMenu` — `BootFlow_RF01_…` pasa
-- [ ] Medición de RNF-04 (`Boot` y `MainMenu`) anotada — pendiente, ver `Fase-0-Resultados.md` §4
-- [ ] Revisado con el usuario
+- [x] Mecanismo de medición de RNF-04 correcto — corregido y verificado 06/09 (T04b, §3.4)
+- [x] Cifra de RNF-04 sobre config vinculante — trasladada al Checkpoint D (build portable, equipo de referencia)
+- [x] Revisado con el usuario — **06/09/2026**, Checkpoint A cerrado; se abre la Fase 1
+
+**✅ Checkpoint A cerrado el 06/09/2026.**
 
 ---
 
@@ -145,8 +153,11 @@ poses del mismo personaje devuelve tres personajes distintos.
 
 ## Bloqueantes y decisiones pendientes
 
-- [ ] **R1 · Instalar el servidor MCP de Unity** (`run_unity_tests`). Sin él no hay flujo
-      test-first automatizado. Conviene resolverlo **antes de T02**.
-- [ ] **PG-01** · cadena provisional del título para `GameTitleConfig` (T05). Propuesta: «Chispa».
+- [~] **R1 · Servidor MCP para pruebas.** Rider 2026.2 + plugin «MCP Server Extension for Unity»
+      (id 30357) instalados el 06/09; MCP `rider` registrado. Falta **reiniciar Claude Code** para
+      que la sesión vea `mcp__rider__run_unity_tests` (correr contra el Editor abierto). Entretanto,
+      `unity test` (CLI, Editor cerrado) cubre el flujo test-first — usado en T04b sin fricción.
+- [x] **PG-01** · título provisional para `GameTitleConfig` (T05) = **«Algoritm»** (confirmado por
+      el usuario el 06/09/2026). Marcador; se cambia editando el asset sin recompilar.
 - [ ] **T08** · confirmar que los créditos entran en el Slice 1 (RF-01 pone el botón en el inicio).
 - [ ] **PG-06** · validar jugando los valores de `FireLevelConfig` en el Checkpoint D.

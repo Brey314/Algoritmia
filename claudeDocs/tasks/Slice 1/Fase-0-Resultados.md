@@ -89,7 +89,9 @@ Quien resuelve el id a asset es el adaptador, en T09/T10.
 - **`Boot`** no es una pantalla: un único GameObject `Persistent` con los dos componentes, y un
   `Start` que pasa el control a `MainMenu` (RF-01). `MainMenu` está vacía a propósito — la llena T05.
 - `SceneLoader.LastLoadSeconds` deja anotado cuánto tardó la última carga y registra un aviso por
-  encima de los diez segundos de RNF-04.
+  encima de los diez segundos de RNF-04. **Corregido el 06/09/2026** (ver §3.4): la primera versión
+  cronometraba `SceneManager.LoadScene`, que solo encola la carga, así que el campo reportaba ≈ 0 s
+  y no era una medición. Ahora usa `LoadSceneAsync` y cierra el cronómetro en `completed`.
 
 ---
 
@@ -181,27 +183,51 @@ Ningún cambio tocó código de producción: los tres defectos estaban en
 
 Corrida final: **0 errores, 0 warnings** de compilador en ambos modos.
 
+### 3.4 Corrección de `SceneLoader` — RNF-04 (06/09/2026)
+
+Al revisar el Checkpoint A se encontró que `SceneLoader.LastLoadSeconds` **no medía nada**. El
+método cronometraba con un `Stopwatch` la llamada a `SceneManager.LoadScene(sceneName)`, pero esa
+llamada solo **encola** la carga —se aplica al final del frame—, así que el cronómetro medía el
+encolado y no la carga. RNF-04 exige una medición, no una estimación (T04, §4.1 abajo).
+
+Flujo test-first (`unity test`, Editor cerrado):
+
+| Paso | Resultado |
+|---|---|
+| Test de reproducción `SceneLoader_RNF04_LastLoadSecondsMideElTiempoRealDeCargaDeLaEscena` en `Assets/Tests/PlayMode/Core/SceneLoaderTests.cs` | RED — `Expected: greater than 0.001 ... But was: 0.00034530001f` (la carga real de `MainMenu` tardó 0,76 s; el campo reportó 0,0003 s) |
+| Fix en `SceneLoader.Load`: `SceneManager.LoadSceneAsync` + cerrar el cronómetro en `operation.completed`, con comentario «por qué no» | — |
+| Re-corrida | GREEN — **PlayMode 4/4, EditMode 23/23**, 0 warnings |
+
+`GameFlowRunner` no cambia: sigue llamando a `Load` y devolviendo; la escena se activa unos frames
+después, como ya ocurría. Los `BootFlowTests` esperan la escena por condición, no por conteo de
+frames, así que absorben el cambio sin tocarse.
+
 ---
 
 ## 4. Checkpoint A — estado
 
 | Criterio | Estado |
 |---|---|
-| Compila sin errores ni warnings nuevos | ✅ 0 / 0 en la corrida final |
-| Pruebas EditMode de Core corridas y declaradas | ✅ 23/23 |
+| Compila sin errores ni warnings nuevos | ✅ 0 / 0 (re-verificado 06/09 con `unity test`) |
+| Pruebas EditMode de Core corridas y declaradas | ✅ 23/23 (re-verificado 06/09) |
+| Pruebas PlayMode corridas y declaradas | ✅ 4/4 (06/09, incluye el test nuevo de RNF-04) |
 | Arranca en `Boot` y llega a `MainMenu` | ✅ `BootFlow_RF01_…` pasa |
-| Revisado con el usuario | ⏳ pendiente |
+| Mecanismo de medición de RNF-04 correcto | ✅ corregido y verificado 06/09 (§3.4) |
+| Cifra de RNF-04 sobre config vinculante anotada | ✅ trasladada al Checkpoint D (build portable, equipo de referencia) |
+| Revisado con el usuario | ✅ 06/09/2026 |
 
-### Lo que queda pendiente de esta fase
+**Checkpoint A cerrado el 06/09/2026. Se abre la Fase 1.**
 
-1. **Medición de RNF-04.** T04 pide anotar —no estimar— el tiempo de carga de `Boot` y `MainMenu`.
-   La corrida en batch mode **no sirve** como medición: va sin ventana de juego y en el equipo de
-   desarrollo, no en el de referencia. `SceneLoader.LastLoadSeconds` ya deja el dato listo; falta
-   tomarlo con el Editor abierto o sobre el ejecutable portable, y escribirlo aquí.
-2. **Revisión con el usuario** antes de abrir la Fase 1.
-3. **El puente Rider↔Unity sigue caído.** Mientras el editor externo de Unity no sea Rider, ni
-   `mcp__rider__run_unity_tests` ni `mcp__rider__get_unity_compilation_result` responden. La ruta por
-   línea de comandos funciona y queda documentada arriba, pero cierra el Editor mientras corre.
+### Notas que se llevan a fases posteriores
+
+1. **Cifra de RNF-04.** El mecanismo ya mide de verdad (§3.4). La única cifra de hoy es de batch
+   mode: `MainMenu` cargó en **≈ 0,76 s**, 13× bajo el presupuesto de 10 s. La medición
+   **vinculante** —ejecutable portable en el equipo de referencia— es del Checkpoint D
+   (`plan.md` §Checkpoint D, RNF-04 + RNF-05).
+2. **Herramienta de pruebas.** Rider 2026.2 instalado el 06/09/2026; plugin «MCP Server Extension
+   for Unity» (id 30357) instalado. Falta reiniciar Claude Code para que la sesión vea
+   `mcp__rider__run_unity_tests` y correr contra el Editor abierto; `unity test` (CLI, Editor
+   cerrado) queda como respaldo y para CI.
 
 ---
 
@@ -210,7 +236,10 @@ Corrida final: **0 errores, 0 warnings** de compilador en ambos modos.
 Requisitos con al menos una prueba que los nombra al cerrar la Fase 0 (CT-10):
 
 RF-01, RF-02, RF-03, RF-04, RF-05, RF-07, RF-08, RF-41 · CP-02, CP-03 ·
-RNF-07, RNF-09, RNF-11, RNF-13, RNF-15, RNF-16 · HU-01 · INC-34.
+RNF-04, RNF-07, RNF-09, RNF-11, RNF-13, RNF-15, RNF-16 · HU-01 · INC-34.
 
-Declarados por el plan de Fase 0 pero **sin prueba todavía**: RNF-04 (pendiente de medición, §4)
-y RNF-14 (la ida y vuelta está probada en EditMode; el cierre y reapertura reales son de Checkpoint B).
+RNF-04 lo nombra `SceneLoader_RNF04_LastLoadSecondsMideElTiempoRealDeCargaDeLaEscena` (06/09, §3.4);
+la cifra sobre la config vinculante sigue siendo del Checkpoint D.
+
+Declarado por el plan de Fase 0 pero **sin prueba todavía**: RNF-14 (la ida y vuelta está probada
+en EditMode; el cierre y reapertura reales son de Checkpoint B).
