@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace Game.Core
@@ -28,6 +29,26 @@ namespace Game.Core
         public static GameFlowRunner Instance { get; private set; }
 
         public GameFlow Flow { get; } = new GameFlow();
+
+        private ProfileSession _session;
+
+        /// <summary>
+        /// La sesión que persiste el progreso del perfil activo (RF-04, RF-09). Vive aquí porque
+        /// este es uno de los tres objetos que sobreviven al cambio de escena. Se construye al
+        /// primer uso: así una prueba que no la toca no acaba escribiendo la sonda en disco.
+        /// </summary>
+        public ProfileSession Session => _session ??= BuildSession();
+
+        private ProfileSession BuildSession()
+        {
+            // La carpeta portable «Datos/» va junto al ejecutable (RNF-07, RNF-11); en el Editor,
+            // eso es la raíz del proyecto. Si no es escribible, SaveStore cae a la ruta del
+            // sistema y lo expone (INC-34).
+            var portableRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Datos"))
+                .Replace('\\', '/');
+            return new ProfileSession(Flow,
+                new SaveStore(new DiskFileSystem(), portableRoot, Application.persistentDataPath));
+        }
 
         private void Awake()
         {

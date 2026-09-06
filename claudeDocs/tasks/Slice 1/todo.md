@@ -55,8 +55,16 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ## Fase 1 — Navegación mínima (`sistema-navegacion`)
 
-- [ ] **T05 · Pantalla de inicio** — `S` · `PM` + `VV`
+- [x] **T05 · Pantalla de inicio** — `S`→`M` · `PM` + `VV` (06/09/2026)
       RF-01, RF-09, RNF-01, RNF-20, HU-01, CU-01, PG-01 · depende de: T04
+      Escena `MainMenu` con título (SO `GameTitleConfig` = «Algoritm»), Jugar / Créditos / Salir.
+      Salir → `ProfileSession.SaveActive()` antes de `Application.Quit()` (RF-09). Persistencia real
+      cableada: `DiskFileSystem`, `SaveStore` y `ProfileSession` en `GameFlowRunner` (lazy).
+      **EditMode 27/27** (4 nuevas: ProfileSession ×2, DiskFileSystem ×2) · **PlayMode UI 5/5**
+      (RF-01 presencia+raycast, RF-01 layout, RF-09 orden guardar→cerrar, RNF-18 título del SO,
+      RNF-20 contraste — captura analizada: texto #3A1E18 sobre #F7EFE2 / #E8A33D / #E0D4C0,
+      todos ≥ 4,5:1). Tipografía: fuente del sistema; Baloo 2 / Nunito (Dir. Arte §11.2) es tarea
+      de assets. `/[Dd]atos/` al `.gitignore`.
 - [ ] **T06 · Perfil de un solo nombre** — `M` · `EM` + `PM`
       RF-02, RF-03, RNF-09, HU-01 (FA-01..FA-03), CU-01, CU-02 · depende de: T05
 - [ ] **T07 · Menú de niveles con desbloqueo progresivo** — `M` · `EM` + `PM`
