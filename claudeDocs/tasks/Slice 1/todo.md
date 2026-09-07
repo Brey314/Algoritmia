@@ -78,21 +78,28 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       MainMenu 5 sin regresión, BootFlow/SceneLoader 4). Se arregló una fragilidad de orden en el
       test RNF-04 de `SceneLoader` (T04b): esperaba la escena activa, ahora espera el dato del
       cronómetro.
-- [~] **T07 · Menú de niveles con desbloqueo progresivo** — `M` · `EM` + `PM` — EN CURSO
+- [x] **T07 · Menú de niveles con desbloqueo progresivo** — `M` · `EM` + `PM` + `VV` (07/09/2026)
       RF-03, RNF-19, RNF-20, HU-01, CU-02 · depende de: T06
-      Hecho: `LevelUnlockPolicy` (C# plano — completar un nivel habilita solo el siguiente,
-      nunca re-bloquea) + **4/4 EditMode**. `GameFlowRunner.Apply` tolera no tener `SceneLoader`
-      (pruebas solo-flujo). Falta: escena `LevelSelect` + añadirla a Build Settings, mapearla en
-      `GameFlowRunner.Scenes`, `LevelSelectController` (candado + texto además de color, RNF-19),
-      pruebas PlayMode + VisualVerification.
-- [ ] **T08 · Pantalla de créditos mínima** — `XS` · `PM`
+      `LevelUnlockPolicy` (C# plano — completar un nivel habilita solo el siguiente, nunca
+      re-bloquea) **4/4 EditMode**. Escena `LevelSelect` (Build Settings + `GameFlowRunner.Scenes`)
+      con los 3 niveles siempre visibles. `LevelSelectController`: `Refresh()` pinta bloqueado/
+      desbloqueado según el perfil activo. **RNF-19: candado (`ui_lock.png`, sprite generado a
+      mano) + «Bloqueado» + atenuado**, y el botón no responde al clic. **PlayMode 5/5** (incl.
+      captura RNF-19 analizada). `GameFlowRunner.Apply` tolera no tener `SceneLoader`.
+- [x] **T08 · Pantalla de créditos mínima** — `XS` · `PM` (07/09/2026)
       RF-08, CT-09, RNF-18, RNF-23 · depende de: T05
+      Escena `Credits` + `CreditsController` + SO `CreditsContent` (texto editable sin recompilar,
+      con la **atribución a la Familia Anonaky** — obra derivada con autorización, PG-07 cerrado).
+      «Volver» → `MainMenu`. **PlayMode 2/2** (contenido de autoría + navegación).
 
 ### ✅ Checkpoint B — Navegación
-- [ ] Perfil nuevo → Nivel 1 habilitado, Niveles 2 y 3 bloqueados **con icono además de color**
-- [ ] Cerrar y reabrir conserva el perfil y su progreso (RNF-14, manual)
-- [ ] `Datos/` aparece junto al ejecutable, sin residuos fuera de ella (RNF-07)
+- [x] Perfil nuevo → Nivel 1 habilitado, Niveles 2 y 3 bloqueados **con icono además de color** — `LevelSelect_RF03_*` + RNF-19
+- [ ] Cerrar y reabrir conserva el perfil y su progreso (RNF-14, manual sobre el ejecutable)
+- [ ] `Datos/` aparece junto al ejecutable, sin residuos fuera de ella (RNF-07, manual)
 - [ ] Revisado con el usuario
+
+**Código de Fase 1 completo (T05–T08), 57/57 pruebas verde. Falta cerrar el Checkpoint B: las dos
+comprobaciones manuales sobre el ejecutable + la revisión con el usuario.**
 
 ---
 

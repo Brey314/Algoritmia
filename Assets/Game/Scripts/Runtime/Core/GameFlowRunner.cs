@@ -25,7 +25,9 @@ namespace Game.Core
             {
                 [GameState.Boot] = "Boot",
                 [GameState.MainMenu] = "MainMenu",
-                [GameState.ProfileSelect] = "MainMenu"
+                [GameState.ProfileSelect] = "MainMenu",
+                [GameState.LevelSelect] = "LevelSelect",
+                [GameState.Credits] = "Credits"
             };
 
         public static GameFlowRunner Instance { get; private set; }
