@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Game.Core
 {
@@ -14,20 +16,43 @@ namespace Game.Core
     public class GameFlowRunner : MonoBehaviour
     {
         /// <summary>
-        /// Escena de cada estado. Solo están los estados que ya tienen escena; cada tarea añade
-        /// la suya. <see cref="GameState.ProfileSelect"/> no lleva escena propia: es un panel
-        /// dentro de <c>MainMenu</c>.
+        /// Escena que aloja cada estado. Cada tarea añade la suya. <see cref="GameState.ProfileSelect"/>
+        /// no tiene escena propia: es un panel dentro de <c>MainMenu</c>, así que apunta a esa misma
+        /// escena y la transición se resuelve intercambiando paneles, no recargando.
         /// </summary>
         private static readonly Dictionary<GameState, string> Scenes =
             new Dictionary<GameState, string>
             {
                 [GameState.Boot] = "Boot",
-                [GameState.MainMenu] = "MainMenu"
+                [GameState.MainMenu] = "MainMenu",
+                [GameState.ProfileSelect] = "MainMenu",
+                [GameState.LevelSelect] = "LevelSelect",
+                [GameState.Credits] = "Credits"
             };
 
         public static GameFlowRunner Instance { get; private set; }
 
         public GameFlow Flow { get; } = new GameFlow();
+
+        private ProfileSession _session;
+
+        /// <summary>
+        /// La sesión que persiste el progreso del perfil activo (RF-04, RF-09). Vive aquí porque
+        /// este es uno de los tres objetos que sobreviven al cambio de escena. Se construye al
+        /// primer uso: así una prueba que no la toca no acaba escribiendo la sonda en disco.
+        /// </summary>
+        public ProfileSession Session => _session ??= BuildSession();
+
+        private ProfileSession BuildSession()
+        {
+            // La carpeta portable «Datos/» va junto al ejecutable (RNF-07, RNF-11); en el Editor,
+            // eso es la raíz del proyecto. Si no es escribible, SaveStore cae a la ruta del
+            // sistema y lo expone (INC-34).
+            var portableRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Datos"))
+                .Replace('\\', '/');
+            return new ProfileSession(Flow,
+                new SaveStore(new DiskFileSystem(), portableRoot, Application.persistentDataPath));
+        }
 
         private void Awake()
         {
@@ -59,6 +84,8 @@ namespace Game.Core
 
         public bool GoTo(GameState next) => Apply(Flow.TryGoTo(next));
 
+        public bool SelectProfile(PlayerProfile profile) => Apply(Flow.TrySelectProfile(profile));
+
         public bool StartNarrative(string sequenceId) => Apply(Flow.TryStartNarrative(sequenceId));
 
         public bool StartPlaying(LevelId level, int phase) => Apply(Flow.TryStartPlaying(level, phase));
@@ -72,7 +99,14 @@ namespace Game.Core
 
             if (Scenes.TryGetValue(Flow.Current, out var sceneName))
             {
-                SceneLoader.Instance.Load(sceneName);
+                // Si la escena ya está activa, el cambio de estado es un intercambio de paneles
+                // dentro de ella —lo hace la UI— y no una recarga. Sin `SceneLoader` (una prueba
+                // que solo ejercita el flujo, sin la escena Boot) la transición actualiza la FSM
+                // pero no toca escenas.
+                if (sceneName != SceneManager.GetActiveScene().name && SceneLoader.Instance != null)
+                {
+                    SceneLoader.Instance.Load(sceneName);
+                }
             }
             else
             {

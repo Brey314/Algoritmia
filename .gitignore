@@ -41,6 +41,8 @@
 /[Aa]ssets/Plugins/Editor/JetBrains*
 # Jetbrains Rider personal-layer settings
 *.DotSettings.user
+# Jetbrains Rider / IntelliJ IDE project directory
+.idea/
 
 # Visual Studio cache directory
 .vs/
@@ -117,3 +119,6 @@ InitTestScene*.unity*
 docs/actas
 docs/md
 claudeDocs/tasks/Sprites
+
+# Carpeta portable de datos de jugador — se genera en tiempo de ejecución (RNF-07, RNF-11)
+/[Dd]atos/

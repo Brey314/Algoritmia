@@ -1,18 +1,18 @@
 # Tablero — Slice 1: Golden Path temprano
 
 Plan técnico: [`plan.md`](plan.md). Contrato: `claudeDocs/SPEC.md`.
-Resultados de la Fase 0: [`Fase-0-Resultados.md`](Fase-0-Resultados.md).
+Resultados: [`Fase-0-Resultados.md`](Fase-0-Resultados.md) · [`Fase-1-Resultados.md`](Fase-1-Resultados.md) (en curso).
 Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 **Leyenda:** `EM` = EditMode (lógica pura, sin escena) · `PM` = PlayMode (integración) ·
 `VV` = VisualVerification.
 
-> ⚠️ **R1 mitigado, no cerrado.** `mcp__rider__run_unity_tests` sigue sin responder: el puente
-> Rider↔Unity no conecta (falta `Library/ProtocolInstance.json`, o sea el editor externo de Unity
-> no es Rider). Mientras tanto las pruebas se corren por línea de comandos —
-> `Unity.exe -runTests -batchmode -projectPath "…" -testPlatform {EditMode|PlayMode} -testResults …`
-> — que sí funciona y deja XML de NUnit, pero exige el Editor cerrado. Toda casilla de prueba
-> marcada abajo exige **declarar el resultado**. No dar por hecho que la suite pasó.
+> ⚠️ **R1 casi cerrado (06/09/2026).** Rider 2026.2 instalado; el MCP `rider` quedó registrado.
+> Falta el plugin «MCP Server Extension for Unity» (id 30357) para tener `mcp__rider__run_unity_tests`,
+> y reiniciar Claude Code para que la sesión lo vea. Mientras tanto las pruebas van por
+> `unity test --mode {EditMode|PlayMode} --output <x>.xml` (CLI oficial, reemplaza al
+> `Unity.exe -runTests` crudo) — deja XML de NUnit pero exige el Editor cerrado. Toda casilla de
+> prueba marcada abajo exige **declarar el resultado**. No dar por hecho que la suite pasó.
 
 ---
 
@@ -34,33 +34,72 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       de la FSM y afirmaban la escena activa, pero `LoadScene` se aplica al final del frame. Se
       corrigió la espera y se añadió un `[TearDown]` — sin él, `GameFlowRunner` y `SceneLoader`
       sobrevivían entre pruebas y dos pasaban sin probar nada. Solo cambió código de prueba.
-      Falta la **medición de RNF-04** del tiempo de carga: batch mode no sirve como medición.
+- [x] **T04b · Arreglo de la medición de RNF-04 en `SceneLoader`** — `XS` · `PM` (06/09/2026)
+      RNF-04 · depende de: T04 · fix-bug test-first
+      `LastLoadSeconds` cronometraba `SceneManager.LoadScene` (solo encola) → reportaba ≈ 0 s.
+      RED (`Expected > 0.001 ... But was 0.00034530001f`) → fix con `LoadSceneAsync` + `completed`
+      → GREEN **PlayMode 4/4, EditMode 23/23**. Detalle en `Fase-0-Resultados.md` §3.4.
 
 ### ✅ Checkpoint A — Cimientos
-- [x] Compila sin errores ni warnings nuevos — **0 errores, 0 warnings** en la corrida final
-- [x] Pruebas EditMode de Core corridas y **declaradas** — **23/23**
+- [x] Compila sin errores ni warnings nuevos — **0 errores, 0 warnings** (re-verificado 06/09)
+- [x] Pruebas EditMode de Core corridas y **declaradas** — **23/23** (re-verificado 06/09)
+- [x] Pruebas PlayMode corridas y **declaradas** — **4/4** (06/09)
 - [x] Arranca en `Boot` y llega a `MainMenu` — `BootFlow_RF01_…` pasa
-- [ ] Medición de RNF-04 (`Boot` y `MainMenu`) anotada — pendiente, ver `Fase-0-Resultados.md` §4
-- [ ] Revisado con el usuario
+- [x] Mecanismo de medición de RNF-04 correcto — corregido y verificado 06/09 (T04b, §3.4)
+- [x] Cifra de RNF-04 sobre config vinculante — trasladada al Checkpoint D (build portable, equipo de referencia)
+- [x] Revisado con el usuario — **06/09/2026**, Checkpoint A cerrado; se abre la Fase 1
+
+**✅ Checkpoint A cerrado el 06/09/2026.**
 
 ---
 
 ## Fase 1 — Navegación mínima (`sistema-navegacion`)
 
-- [ ] **T05 · Pantalla de inicio** — `S` · `PM` + `VV`
+- [x] **T05 · Pantalla de inicio** — `S`→`M` · `PM` + `VV` (06/09/2026)
       RF-01, RF-09, RNF-01, RNF-20, HU-01, CU-01, PG-01 · depende de: T04
-- [ ] **T06 · Perfil de un solo nombre** — `M` · `EM` + `PM`
+      Escena `MainMenu` con título (SO `GameTitleConfig` = «Algoritm»), Jugar / Créditos / Salir.
+      Salir → `ProfileSession.SaveActive()` antes de `Application.Quit()` (RF-09). Persistencia real
+      cableada: `DiskFileSystem`, `SaveStore` y `ProfileSession` en `GameFlowRunner` (lazy).
+      **EditMode 27/27** (4 nuevas: ProfileSession ×2, DiskFileSystem ×2) · **PlayMode UI 5/5**
+      (RF-01 presencia+raycast, RF-01 layout, RF-09 orden guardar→cerrar, RNF-18 título del SO,
+      RNF-20 contraste — captura analizada: texto #3A1E18 sobre #F7EFE2 / #E8A33D / #E0D4C0,
+      todos ≥ 4,5:1). Tipografía: fuente del sistema; Baloo 2 / Nunito (Dir. Arte §11.2) es tarea
+      de assets. `/[Dd]atos/` al `.gitignore`.
+- [x] **T06 · Perfil de un solo nombre** — `M` · `EM` + `PM` (06/09/2026)
       RF-02, RF-03, RNF-09, HU-01 (FA-01..FA-03), CU-01, CU-02 · depende de: T05
-- [ ] **T07 · Menú de niveles con desbloqueo progresivo** — `M` · `EM` + `PM`
+      **Panel dentro de `MainMenu`, no escena** (SPEC §Estructura no lista `ProfileSelect`; el
+      plan sí — gana SPEC). `MainMenu` se parte en `MainPanel` / `ProfilePanel`; «Jugar» los
+      intercambia sin recargar (`GameFlowRunner.Apply` no recarga la escena ya activa).
+      `ProfileSelectController`: lista de perfiles guardados + campo único de nombre. Validación
+      (FA-01 vacío, FA-02 duplicado) reutiliza `PlayerProfile.Create` de T02. Perfil nuevo →
+      `SelectProfile` + `StartNarrative("N1_Apertura")` (FA-03; la escena Narrative es T10).
+      `ProfileSession` pasó a ser la fachada de perfiles (listar/cargar/crear/guardar).
+      **EditMode 30/30** (ProfileSession 5) · **PlayMode 16/16** (GameFlowRunner 2, ProfileSelect 5,
+      MainMenu 5 sin regresión, BootFlow/SceneLoader 4). Se arregló una fragilidad de orden en el
+      test RNF-04 de `SceneLoader` (T04b): esperaba la escena activa, ahora espera el dato del
+      cronómetro.
+- [x] **T07 · Menú de niveles con desbloqueo progresivo** — `M` · `EM` + `PM` + `VV` (07/09/2026)
       RF-03, RNF-19, RNF-20, HU-01, CU-02 · depende de: T06
-- [ ] **T08 · Pantalla de créditos mínima** — `XS` · `PM`
+      `LevelUnlockPolicy` (C# plano — completar un nivel habilita solo el siguiente, nunca
+      re-bloquea) **4/4 EditMode**. Escena `LevelSelect` (Build Settings + `GameFlowRunner.Scenes`)
+      con los 3 niveles siempre visibles. `LevelSelectController`: `Refresh()` pinta bloqueado/
+      desbloqueado según el perfil activo. **RNF-19: candado (`ui_lock.png`, sprite generado a
+      mano) + «Bloqueado» + atenuado**, y el botón no responde al clic. **PlayMode 5/5** (incl.
+      captura RNF-19 analizada). `GameFlowRunner.Apply` tolera no tener `SceneLoader`.
+- [x] **T08 · Pantalla de créditos mínima** — `XS` · `PM` (07/09/2026)
       RF-08, CT-09, RNF-18, RNF-23 · depende de: T05
+      Escena `Credits` + `CreditsController` + SO `CreditsContent` (texto editable sin recompilar,
+      con la **atribución a la Familia Anonaky** — obra derivada con autorización, PG-07 cerrado).
+      «Volver» → `MainMenu`. **PlayMode 2/2** (contenido de autoría + navegación).
 
 ### ✅ Checkpoint B — Navegación
-- [ ] Perfil nuevo → Nivel 1 habilitado, Niveles 2 y 3 bloqueados **con icono además de color**
-- [ ] Cerrar y reabrir conserva el perfil y su progreso (RNF-14, manual)
-- [ ] `Datos/` aparece junto al ejecutable, sin residuos fuera de ella (RNF-07)
+- [x] Perfil nuevo → Nivel 1 habilitado, Niveles 2 y 3 bloqueados **con icono además de color** — `LevelSelect_RF03_*` + RNF-19
+- [ ] Cerrar y reabrir conserva el perfil y su progreso (RNF-14, manual sobre el ejecutable)
+- [ ] `Datos/` aparece junto al ejecutable, sin residuos fuera de ella (RNF-07, manual)
 - [ ] Revisado con el usuario
+
+**Código de Fase 1 completo (T05–T08), 57/57 pruebas verde. Falta cerrar el Checkpoint B: las dos
+comprobaciones manuales sobre el ejecutable + la revisión con el usuario.**
 
 ---
 
@@ -145,8 +184,11 @@ poses del mismo personaje devuelve tres personajes distintos.
 
 ## Bloqueantes y decisiones pendientes
 
-- [ ] **R1 · Instalar el servidor MCP de Unity** (`run_unity_tests`). Sin él no hay flujo
-      test-first automatizado. Conviene resolverlo **antes de T02**.
-- [ ] **PG-01** · cadena provisional del título para `GameTitleConfig` (T05). Propuesta: «Chispa».
+- [~] **R1 · Servidor MCP para pruebas.** Rider 2026.2 + plugin «MCP Server Extension for Unity»
+      (id 30357) instalados el 06/09; MCP `rider` registrado. Falta **reiniciar Claude Code** para
+      que la sesión vea `mcp__rider__run_unity_tests` (correr contra el Editor abierto). Entretanto,
+      `unity test` (CLI, Editor cerrado) cubre el flujo test-first — usado en T04b sin fricción.
+- [x] **PG-01** · título provisional para `GameTitleConfig` (T05) = **«Algoritm»** (confirmado por
+      el usuario el 06/09/2026). Marcador; se cambia editando el asset sin recompilar.
 - [ ] **T08** · confirmar que los créditos entran en el Slice 1 (RF-01 pone el botón en el inicio).
 - [ ] **PG-06** · validar jugando los valores de `FireLevelConfig` en el Checkpoint D.

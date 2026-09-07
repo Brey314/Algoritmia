@@ -1,7 +1,5 @@
-using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Debug = UnityEngine.Debug;
 
 namespace Game.Core
 {
@@ -42,14 +40,23 @@ namespace Game.Core
 
         public void Load(string sceneName)
         {
-            var stopwatch = Stopwatch.StartNew();
-            SceneManager.LoadScene(sceneName);
-            LastLoadSeconds = (float)stopwatch.Elapsed.TotalSeconds;
+            var startedAt = Time.realtimeSinceStartupAsDouble;
 
-            if (LastLoadSeconds > 10f)
+            // «Por qué no» un Stopwatch alrededor de SceneManager.LoadScene: esa llamada solo
+            // encola la carga —se aplica al final del frame—, así que el cronómetro medía el
+            // encolado (~0 s) y nunca la carga. RNF-04 exige medir el tiempo real: se usa la
+            // versión asíncrona y se cierra el cronómetro en `completed`, cuando la escena ya
+            // está cargada y activa.
+            var operation = SceneManager.LoadSceneAsync(sceneName);
+            operation.completed += _ =>
             {
-                Debug.LogWarning($"RNF-04: «{sceneName}» tardó {LastLoadSeconds:0.0} s en cargar.");
-            }
+                LastLoadSeconds = (float)(Time.realtimeSinceStartupAsDouble - startedAt);
+
+                if (LastLoadSeconds > 10f)
+                {
+                    Debug.LogWarning($"RNF-04: «{sceneName}» tardó {LastLoadSeconds:0.0} s en cargar.");
+                }
+            };
         }
     }
 }
