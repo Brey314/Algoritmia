@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: 954a3b00c6f568c419a97ea01734e53a
+guid: 2b4e81306d758394cac6b7a82b591622
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2261127600663651299
-    second: ui_lock_0
+      213: -8496752036519203572
+    second: ui_papelera_0
   - first:
-      213: -7663016714705143843
-    second: ui_lock_1
+      213: 8648079244109917184
+    second: ui_papelera_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -116,13 +116,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: ui_lock_0
+      name: ui_papelera_0
       rect:
         serializedVersion: 2
-        x: 35
-        y: 78
-        width: 59
-        height: 34
+        x: 16
+        y: 65
+        width: 64
+        height: 20
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -131,20 +131,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: d1c9c9a5d6cde90e0800000000000000
-      internalID: -2261127600663651299
+      spriteID: c0d22be5a09751a80800000000000000
+      internalID: -8496752036519203572
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ui_lock_1
+      name: ui_papelera_1
       rect:
         serializedVersion: 2
-        x: 25
-        y: 11
-        width: 79
-        height: 65
+        x: 19
+        y: 9
+        width: 59
+        height: 57
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -153,8 +153,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: dd77e1cf5ee77a590800000000000000
-      internalID: -7663016714705143843
+      spriteID: 00ca996c046240870800000000000000
+      internalID: 8648079244109917184
       vertices: []
       indices: 
       edges: []
@@ -173,8 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      ui_lock_0: -2261127600663651299
-      ui_lock_1: -7663016714705143843
+      ui_papelera_0: -8496752036519203572
+      ui_papelera_1: 8648079244109917184
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -17,10 +17,12 @@ memoria < 2 GB, paquete < 500 MB.
 cifras de pruebas y checkpoints se leen ahí y no se duplican en este archivo — una copia se queda
 vieja en dos commits. Empezar leyéndolo.
 
-**Rider 2026.2.0.2 instalado el 06/09/2026** (vía winget) con el plugin «MCP Server Extension for
-Unity» (id 30357); el MCP `rider` está registrado pero **rechaza la conexión** en las sesiones
-recientes. Mientras `mcp__rider__*` no responda, las pruebas van por la CLI `unity` (ver
-§Comandos). Que el MCP no conteste no es que la suite pase.
+**Rider 2026.2.0.2 con el plugin «MCP Server Extension for Unity» (id 30357)**, instalados el
+06/09/2026 (vía winget). `mcp__rider__*` habla con el **Rider abierto** y con el proyecto cargado:
+con Rider cerrado la sesión arranca con `ConnectionRefused`, que significa «no hay a quién
+preguntar», no «no existe» — abrir Rider y reiniciar la sesión de Claude Code. Mientras tanto las
+pruebas van por la CLI `unity` (ver §Comandos). Ni el silencio de un MCP ni un `ConnectionRefused`
+son que la suite pase.
 
 **Idioma:** identificadores y código en inglés; documentación, textos del jugador y
 comunicación con el usuario en español.
@@ -34,6 +36,7 @@ comunicación con el usuario en español.
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
 | `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 30/08/2026, rev. 6 — los hallazgos `INC-01`..`INC-42` están cerrados en los documentos; queda abierto `INC-43` (el guion §12 aún declara `PG-07` pendiente pese a estar concedida la autorización), más residuos cosméticos y los puntos abiertos del guion. |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
+| `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las diecisiete superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. Los cuatro slices están planeados y entre ellos cubren los 47 RF: `Slice 1` Golden Path y nivel fuego · `Slice 2` La Rueda · `Slice 3` El Río y cierre del juego · `Slice 4` progreso, informe docente y borrado de datos. **Se ejecutan en orden**: cada uno supone terminado el anterior. Ninguno rediscute `SPEC.md`. |
 | `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión ya hecha con markitdown. **Nunca editar ninguno de los dos desde código.** |
 | `docs/actas/*.md` | Actas de seguimiento semanales: qué se decidió, cuándo y por qué. Raíz = fase de conceptualización (abr–jun 2026), `requerimientos/` = OE1 (jun–ago), `objetivo2/` = OE2 (ago–sep). Son la trazabilidad de las decisiones; consultarlas cuando haga falta el *porqué* de un RF, no reabrirlas. |
@@ -119,7 +122,16 @@ de empezar:
   instance is running`, exit 6). Exit 0 = todo pasa, 2 = fallos o error de invocación.
   `--report-format` acepta `nunit` **o** `junit`, uno a la vez (`both` lo rechaza pese al `--help`).
   Flujo: Editor abierto para desarrollo con coplay-mcp → cerrarlo → `unity test` → reabrir.
-- **Cuando Rider esté configurado**, `mcp__rider__run_unity_tests` /
+- **Build de entrega → `unity build`**, el mismo binario de CLI y la misma exigencia de Editor
+  cerrado. No hay Build Profile en `Assets/Settings/`, así que el destino se da con `--target`:
+  ```
+  unity build --target StandaloneWindows64 -o "Build/Algoritmia/Algoritmia.exe" --log-file build.log --no-banner --non-interactive
+  ```
+  La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04 (carga < 10 s),
+  RNF-05 (memoria < 2 GB) y RNF-06 (paquete < 500 MB), y junto al `.exe` nace `Datos/` en la
+  primera ejecución (RNF-07, RNF-11). Entran las cinco escenas de `EditorBuildSettings`, con
+  `Boot` de primera. `/[Bb]uild[s]?/` está en `.gitignore`: el ejecutable no se versiona.
+- **Con Rider abierto**, `mcp__rider__run_unity_tests` /
   `mcp__rider__get_unity_compilation_result` corren contra el Editor **abierto** (sin cerrar/reabrir)
   y habilitan el flujo test-first del plugin `unity-coding-skills`. `unity test` queda como
   respaldo para corridas limpias y CI.

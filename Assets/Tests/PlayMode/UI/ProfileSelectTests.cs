@@ -133,7 +133,63 @@ namespace Game.UI.Tests
             LogAssert.NoUnexpectedReceived();
         }
 
+        [Test]
+        [Timeout(20000)]
+        public async Task ProfileSelect_RF47_BorrarPideConfirmacionAntesDeEliminarElPerfil()
+        {
+            _store.Save(PlayerProfile.Create("Ana", Array.Empty<string>()).Profile);
+            _store.Save(PlayerProfile.Create("Beto", Array.Empty<string>()).Profile);
+            await OpenProfilePanel();
+
+            ClickDeleteOn("Ana");
+
+            // El borrado es irreversible: el primer clic solo pregunta, nunca elimina (RF-47).
+            Assert.That(_store.Exists("Ana"), Is.True, "no puede borrar antes de confirmar");
+            Assert.That(DeletePanel().activeInHierarchy, Is.True, "tiene que pedir confirmación");
+
+            Click(FindButtonByLabel("Borrar"));
+
+            Assert.That(_store.Exists("Ana"), Is.False, "confirmado, el perfil se va");
+            Assert.That(_store.Exists("Beto"), Is.True, "y no se lleva a los demás");
+            Assert.That(DeletePanel().activeInHierarchy, Is.False, "la confirmación se cierra");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task ProfileSelect_RF47_ConservarDejaElPerfilIntacto()
+        {
+            _store.Save(PlayerProfile.Create("Ana", Array.Empty<string>()).Profile);
+            await OpenProfilePanel();
+
+            ClickDeleteOn("Ana");
+            Click(FindButtonByLabel("Conservar"));
+
+            Assert.That(_store.Exists("Ana"), Is.True);
+            Assert.That(DeletePanel().activeInHierarchy, Is.False);
+        }
+
         // --- helpers -----------------------------------------------------------------------
+
+        private static GameObject DeletePanel() =>
+            Object.FindAnyObjectByType<ProfileSelectController>(FindObjectsInactive.Include)
+                .transform.Find("DeletePanel").gameObject;
+
+        private static void ClickDeleteOn(string profileName)
+        {
+            var entry = Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude)
+                .First(button => button.name == $"ProfileEntry({profileName})");
+            Click(entry.transform.Find("DeleteButton").GetComponent<Button>());
+        }
+
+        private static Button FindButtonByLabel(string label) => Object
+            .FindObjectsByType<Button>(FindObjectsInactive.Exclude)
+            .First(button => button.GetComponentInChildren<Text>() is { } text
+                             && text.text.Trim() == label);
+
+        private static void Click(Button button) =>
+            ExecuteEvents.Execute(button.gameObject, new PointerEventData(EventSystem.current),
+                ExecuteEvents.pointerClickHandler);
+
 
         private static async Task LoadMainMenu()
         {

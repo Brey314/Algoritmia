@@ -14,6 +14,10 @@ namespace Game.UI
         [SerializeField] private Text bodyLabel;
         [SerializeField] private Button backButton;
 
+        [Header("Rejilla de dos columnas")]
+        [SerializeField] private Transform entryList;
+        [SerializeField] private GameObject entryPrototype;
+
         internal GameFlowRunner Runner { get; set; }
 
 #if UNITY_INCLUDE_TESTS
@@ -29,7 +33,32 @@ namespace Game.UI
                 bodyLabel.text = content.Body;
             }
 
+            PaintEntries();
+
             backButton.onClick.AddListener(BackToMainMenu);
+        }
+
+        /// <summary>
+        /// Pinta los pares papel/persona clonando el prototipo. El prototipo se queda apagado y
+        /// en la escena: es la plantilla, no una fila más.
+        /// </summary>
+        private void PaintEntries()
+        {
+            if (content == null || entryList == null || entryPrototype == null)
+            {
+                return;
+            }
+
+            entryPrototype.SetActive(false);
+
+            foreach (var entry in content.Entries)
+            {
+                var row = Instantiate(entryPrototype, entryList);
+                row.name = $"Entry({entry.Role})";
+                row.SetActive(true);
+                row.transform.Find("Rol").GetComponent<Text>().text = entry.Role;
+                row.transform.Find("Nombre").GetComponent<Text>().text = entry.Name;
+            }
         }
 
         private void BackToMainMenu()

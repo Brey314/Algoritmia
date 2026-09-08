@@ -22,6 +22,15 @@ namespace Game.UI
         [SerializeField] private Text messageLabel;
         [SerializeField] private GameObject mainPanel;
 
+        [Header("Confirmación de borrado (RF-47, RNF-11)")]
+        [SerializeField] private GameObject deletePanel;
+        [SerializeField] private Text deletePrompt;
+        [SerializeField] private Button deleteConfirmButton;
+        [SerializeField] private Button deleteCancelButton;
+
+        /// <summary>Perfil que el estudiante pidió borrar y aún no ha confirmado.</summary>
+        private string _pendingDeletion;
+
         internal ProfileSession Session { get; set; }
         internal GameFlowRunner Runner { get; set; }
 
@@ -36,12 +45,16 @@ namespace Game.UI
             profileEntryPrototype.gameObject.SetActive(false);
             confirmButton.onClick.AddListener(CreateNew);
             backButton.onClick.AddListener(Back);
+            deleteConfirmButton.onClick.AddListener(ConfirmDeletion);
+            deleteCancelButton.onClick.AddListener(CancelDeletion);
+            deletePanel.SetActive(false);
         }
 
         private void OnEnable()
         {
             messageLabel.text = string.Empty;
             nameField.text = string.Empty;
+            CancelDeletion();
 
             if (ScreenFlow.Ready(Session, this))
             {
@@ -68,6 +81,9 @@ namespace Game.UI
                 entry.GetComponentInChildren<Text>().text = profileName;
                 var captured = profileName;
                 entry.onClick.AddListener(() => SelectExisting(captured));
+
+                var delete = entry.transform.Find("DeleteButton").GetComponent<Button>();
+                delete.onClick.AddListener(() => AskDeletion(captured));
             }
         }
 
@@ -105,6 +121,41 @@ namespace Game.UI
             Session.Save(result.Profile);
             Runner.SelectProfile(result.Profile);
             Runner.StartNarrative(IntroNarrativeId);
+        }
+
+        /// <summary>
+        /// Pide confirmación antes de borrar. El borrado es irreversible (RF-47) y por eso nunca
+        /// ocurre en el clic que lo pide: siempre media una segunda pantalla que lo nombra.
+        /// </summary>
+        private void AskDeletion(string profileName)
+        {
+            _pendingDeletion = profileName;
+            deletePrompt.text = $"¿Borras el perfil de {profileName}?";
+            deletePanel.SetActive(true);
+        }
+
+        private void ConfirmDeletion()
+        {
+            if (_pendingDeletion == null || !ScreenFlow.Ready(Session, this))
+            {
+                CancelDeletion();
+                return;
+            }
+
+            if (!Session.Delete(_pendingDeletion))
+            {
+                // RNF-11 no admite «casi borrado»: si quedó rastro hay que decirlo, no callarlo.
+                messageLabel.text = "No se pudo borrar del todo ese perfil. Avisa a tu profe.";
+            }
+
+            CancelDeletion();
+            Populate();
+        }
+
+        private void CancelDeletion()
+        {
+            _pendingDeletion = null;
+            deletePanel.SetActive(false);
         }
 
         private void Back()

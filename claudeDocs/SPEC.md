@@ -143,27 +143,33 @@ midiendo en un equipo sin GPU discreta, junto con los tres presupuestos de arrib
 
 ## Comandos
 
-No hay CLI de build, lint ni pruebas en este repositorio. Todo pasa por el Editor de Unity
-y las herramientas MCP de Coplay (`mcp__coplay-mcp__*`).
+La CLI oficial `unity` (`C:\Users\benab\AppData\Local\Unity\bin\unity`, v1.0.0-beta.5, ya en el
+PATH) cubre **pruebas y build sin Editor**; el trabajo sobre escenas y assets sigue pasando por el
+Editor abierto y sus MCP (`mcp__coplay-mcp__*` para escenas y assets, `mcp__rider__*` para compilar
+y probar contra el Editor vivo).
 
 | Tarea | Cómo |
 |---|---|
-| Ejecutar pruebas | Skill `unity-coding-skills:run-tests` → `run_unity_tests`. Nunca invocarla ad hoc. **Hoy esa herramienta no está conectada — ver la nota de abajo.** |
-| Una sola prueba / assembly | `run_unity_tests` acepta filtro por assembly y por nombre de prueba; filtrar antes que ejecutar la suite completa. |
+| Ejecutar pruebas | `unity test --mode {EditMode\|PlayMode} --output <x>.xml --timeout 900 --no-banner --non-interactive`. Con Rider abierto, `mcp__rider__run_unity_tests` (skill `unity-coding-skills:run-tests`) corre contra el Editor sin cerrarlo. |
+| Una sola prueba / assembly | `--filter`, que es una **expresión regular** contra `namespace.Clase.Método` y no un glob: `--filter "Game\.Core\.Tests"`, `--filter "LevelSelect_RF03"`. Un patrón que empiece por `*` aborta la corrida entera (`Quantifier {x,y} following nothing`, exit 2). Filtrar antes que correr la suite completa. |
+| Build de entrega | `unity build --target StandaloneWindows64 -o "Build/Algoritmia/Algoritmia.exe" --log-file build.log --no-banner --non-interactive`. No hay Build Profile en `Assets/Settings/`, así que el destino lo fija `--target`. La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04, RNF-05 y RNF-06, y junto al `.exe` nace `Datos/` en la primera ejecución. Entran las escenas de `EditorBuildSettings`, con `Boot` de primera. |
 | Leer errores de compilación | `mcp__coplay-mcp__check_compile_errors` / `mcp__coplay-mcp__get_unity_logs`, no abrir el Editor a ciegas. |
 | Editar escenas y prefabs | Skill `unity-coding-skills:edit-scene` (nunca editar `.unity`/`.prefab` a mano sin ella). |
-| Build de entrega | Editor → Build Profiles → Windows x64, salida a carpeta portable. |
+| Estado del puente | `unity status` lista los editores conectados —puerto, PID, estado—; `mcp__coplay-mcp__get_unity_editor_state` es la sonda real de si el puente está vivo. |
 
-> Si el puente Coplay no conecta, no hay forma de manipular escenas: reiniciar el Editor y el
-> puente antes de empezar cualquier slice.
+**`unity test` y `unity build` abren su propia instancia en batchmode: exigen el Editor cerrado**
+(si no, `another Unity instance is running`, exit 6). Exit 0 = todo pasa, 2 = fallos o error de
+invocación; `--report-format` acepta `nunit` **o** `junit`, uno a la vez. El flujo de una sesión
+es: Editor abierto para trabajar escenas con coplay-mcp → cerrarlo → `unity test` → reabrir.
 
-**El único servidor MCP configurado es `coplay-mcp`, y no trae corredor de pruebas.** Las
-herramientas que la skill `run-tests` da por sentadas —`run_unity_tests`,
-`get_unity_compilation_result`, `unity_play_control`— vienen de un servidor MCP de Unity aparte
-que aún no está instalado. Mientras no lo esté, las pruebas se corren a mano desde la ventana
-Test Runner del Editor y hay que **decirlo**, nunca dar por hecho que la suite pasó. Instalar ese
-servidor es lo que desbloquea el flujo test-first del que depende toda la estrategia de pruebas
-de más abajo.
+**Que un MCP no conteste no es que la suite pase.** `coplay-mcp` solo responde con el Editor
+abierto y ya inactivo —mientras compila o hace domain-reload devuelve `timed out`—; `mcp__rider__*`
+solo con Rider abierto y el proyecto cargado, y con Rider cerrado la sesión arranca con
+`ConnectionRefused`. En cualquiera de esos casos las pruebas van por la CLI y el resultado se
+**declara**, nunca se supone.
+
+> Sin el puente Coplay no hay forma de manipular escenas: reiniciar el Editor y el puente antes de
+> empezar cualquier slice.
 
 ---
 

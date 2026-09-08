@@ -96,5 +96,67 @@ namespace Game.Core.Tests
 
             Assert.That(sut.ProfileNames(), Is.EquivalentTo(new[] { "Ana", "Bruno" }));
         }
+
+        [Test]
+        public void SaveStore_RF47_BorraElPerfilDeLasDosRutas()
+        {
+            // Un perfil puede haber quedado en las dos carpetas: escrito en «Datos/» un día y en
+            // la de respaldo otro, cuando «Datos/» no era escribible (INC-34). Borrar solo la
+            // activa dejaría media copia viva, que es exactamente el residuo que RNF-11 prohíbe.
+            var sut = CreateStore();
+            sut.Save(ProfileWithProgress());
+            _fileSystem.WriteAllText($"{FallbackRoot}/Ana.json", "{}");
+
+            var deleted = sut.Delete("Ana");
+
+            Assert.That(deleted, Is.True);
+            Assert.That(_fileSystem.Files.Keys, Has.None.Contains("Ana"));
+        }
+
+        [Test]
+        public void SaveStore_RF47_NoAfectaAOtrosPerfiles()
+        {
+            var sut = CreateStore();
+            foreach (var name in new[] { "Ana", "Beto", "Caro" })
+            {
+                sut.Save(PlayerProfile.Create(name, Array.Empty<string>()).Profile);
+            }
+
+            sut.Delete("Beto");
+
+            Assert.That(sut.ProfileNames(), Is.EquivalentTo(new[] { "Ana", "Caro" }));
+            Assert.That(sut.Load("Ana").Name, Is.EqualTo("Ana"));
+            Assert.That(sut.Load("Caro").Name, Is.EqualTo("Caro"));
+        }
+
+        [Test]
+        public void SaveStore_INC34_BorraDesdeLaRutaDeRespaldoAunqueDatosNoSeaEscribible()
+        {
+            _fileSystem.ReadOnlyDirectories.Add(PortableRoot);
+            var sut = CreateStore();
+            sut.Save(ProfileWithProgress());
+
+            var deleted = sut.Delete("Ana");
+
+            Assert.That(deleted, Is.True);
+            Assert.That(_fileSystem.Files, Is.Empty);
+        }
+
+        [Test]
+        public void SaveStore_RNF11_UnBorradoParcialNoSeReportaComoExito()
+        {
+            // «Sin residuos» no admite mejor esfuerzo: si queda una copia en la ruta que no se
+            // pudo tocar, el borrado no fue un borrado y quien llama tiene que enterarse.
+            _fileSystem.WriteAllText($"{PortableRoot}/Ana.json", "{}");
+            _fileSystem.ReadOnlyDirectories.Add(PortableRoot);
+            var sut = CreateStore();
+            sut.Save(ProfileWithProgress());
+
+            var deleted = sut.Delete("Ana");
+
+            Assert.That(deleted, Is.False);
+            Assert.That(_fileSystem.Files.Keys, Is.EqualTo(new[] { $"{PortableRoot}/Ana.json" }));
+        }
+
     }
 }

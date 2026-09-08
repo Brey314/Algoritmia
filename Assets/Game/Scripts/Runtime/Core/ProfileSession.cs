@@ -34,6 +34,23 @@ namespace Game.Core
         public ProfileCreationResult Create(string profileName) =>
             PlayerProfile.Create(profileName, _store.ProfileNames());
 
+        /// <summary>
+        /// Elimina un perfil y todo su progreso, sin vuelta atrás (RF-47, RNF-11). Si el que se
+        /// borra era el activo, deja de serlo: si no, «Salir» lo persistiría otra vez (RF-09) y
+        /// el archivo recién borrado reaparecería.
+        /// </summary>
+        public bool Delete(string profileName)
+        {
+            var deleted = _store.Delete(profileName);
+
+            if (_flow.ActiveProfile != null && _flow.ActiveProfile.Name == profileName)
+            {
+                _flow.ClearActiveProfile();
+            }
+
+            return deleted;
+        }
+
         /// <summary>Guarda un perfil en disco (RF-04).</summary>
         public void Save(PlayerProfile profile) => _store.Save(profile);
 

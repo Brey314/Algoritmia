@@ -12,7 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58001489f411abb49a98f3bf8d1b8f70, type: 3}
   m_Name: CreditsContent
   m_EditorClassIdentifier: Game.UI::Game.UI.CreditsContent
-  <Body>k__BackingField: "Algoritm\n\nUn proyecto de grado de\nSantiago Benavides
-    Rey\nSantiago Valdiri Garc\xEDa\nUniversidad Cat\xF3lica de Colombia \xB7 2026\n\nPersonajes
-    basados en dise\xF1os de la Familia Anonaky,\nusados con autorizaci\xF3n escrita.\n\nEntornos,
-    objetos e interfaz: originales del proyecto."
+  <Entries>k__BackingField:
+  - <Role>k__BackingField: Proyecto de grado
+    <Name>k__BackingField: Santiago Benavides Rey
+  - <Role>k__BackingField: Proyecto de grado
+    <Name>k__BackingField: "Santiago Valdiri Garc\xEDa"
+  - <Role>k__BackingField: "Instituci\xF3n"
+    <Name>k__BackingField: "Universidad Cat\xF3lica de Colombia \xB7 2026"
+  - <Role>k__BackingField: "Direcci\xF3n de arte"
+    <Name>k__BackingField: Por definir
+  - <Role>k__BackingField: "Programaci\xF3n en Unity"
+    <Name>k__BackingField: Por definir
+  - <Role>k__BackingField: "M\xFAsica y sonido"
+    <Name>k__BackingField: Por definir
+  <Body>k__BackingField: "Personajes basados en dise\xF1os de la Familia Anonaky,
+    usados con autorizaci\xF3n escrita.\nEntornos, objetos e interfaz: originales
+    del proyecto."
