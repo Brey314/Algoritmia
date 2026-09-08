@@ -1,12 +1,14 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -109,9 +111,31 @@ namespace Game.UI.Tests
             Assert.That(panel.GetComponentsInChildren<InputField>(true), Has.Length.EqualTo(1));
         }
 
+        [Test]
+        [Timeout(20000)]
+        public async Task ProfileSelect_RNF13_ElPanelNoLanzaSiSeAbreSinPasarPorBoot()
+        {
+            await LoadMainMenu();
+            var panel = Object.FindAnyObjectByType<ProfileSelectController>(FindObjectsInactive.Include);
+
+            // Mostrar el panel a mano —lo que se hace al iterar la interfaz en el Editor— lo
+            // deja sin ProfileSession ni GameFlowRunner: los inyecta Boot. Avisa dos veces: al
+            // listar los perfiles y al confirmar el nombre.
+            LogAssert.Expect(LogType.Warning, new Regex("sin pasar por"));
+            LogAssert.Expect(LogType.Warning, new Regex("sin pasar por"));
+
+            panel.gameObject.SetActive(true);
+            await Awaitable.NextFrameAsync();
+            TypeNameAndConfirm("Beto");
+
+            // Lo que no puede pasar es que lance: cualquier excepción registrada aquí sería un
+            // mensaje no esperado y esta llamada la delata.
+            LogAssert.NoUnexpectedReceived();
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
-        private async Task<GameFlowRunner> OpenProfilePanel()
+        private static async Task LoadMainMenu()
         {
             var load = SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
             while (load is { isDone: false })
@@ -120,6 +144,11 @@ namespace Game.UI.Tests
             }
 
             await Awaitable.NextFrameAsync();
+        }
+
+        private async Task<GameFlowRunner> OpenProfilePanel()
+        {
+            await LoadMainMenu();
 
             // El panel usa su propia Session (contra el almacén temporal); la del runner nunca se
             // construye porque en estas pruebas nadie pulsa «Salir».

@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -18,6 +20,9 @@ namespace Game.UI.Tests
     {
         private const string SceneName = "MainMenu";
         private static readonly string[] Options = { "Jugar", "Créditos", "Salir" };
+
+        /// <summary>Aviso de <c>ScreenFlow</c> cuando la pantalla no tiene con qué navegar.</summary>
+        private static readonly Regex MissingFlow = new Regex("sin pasar por");
 
         [TearDown]
         public void DestruirLosObjetosPersistentes()
@@ -80,6 +85,29 @@ namespace Game.UI.Tests
             Assert.That(rects, Has.All.Matches<Rect>(rect =>
                 screen.Contains(rect.min) && screen.Contains(rect.max)
                 && rects.Count(other => other.Overlaps(rect)) == 1));
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_RNF13_SusBotonesNoLanzanSiLaEscenaSeAbreSinPasarPorBoot()
+        {
+            await LoadMainMenu();
+            var sut = Object.FindAnyObjectByType<MainMenuController>();
+            // «Salir» no puede cerrar el reproductor a mitad de la suite.
+            sut.Quit = () => { };
+            // Sin GameFlowRunner —la escena se cargó sin pasar por Boot— «Jugar» y «Créditos»
+            // avisan y no navegan; «Salir» sigue cerrando, que no necesita flujo.
+            LogAssert.Expect(LogType.Warning, MissingFlow);
+            LogAssert.Expect(LogType.Warning, MissingFlow);
+
+            foreach (var label in Options)
+            {
+                Click(FindOption(label));
+            }
+
+            // Lo que no puede pasar es que el clic lance: cualquier excepción registrada aquí
+            // sería un mensaje no esperado y esta llamada la delata.
+            LogAssert.NoUnexpectedReceived();
         }
 
         [Test]

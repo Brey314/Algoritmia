@@ -1,7 +1,8 @@
 # Tablero — Slice 1: Golden Path temprano
 
 Plan técnico: [`plan.md`](plan.md). Contrato: `claudeDocs/SPEC.md`.
-Resultados: [`Fase-0-Resultados.md`](Fase-0-Resultados.md) · [`Fase-1-Resultados.md`](Fase-1-Resultados.md) (en curso).
+Resultados: [`Fase-0-Resultados.md`](Fase-0-Resultados.md) · [`Fase-1-Resultados.md`](Fase-1-Resultados.md) ·
+[`Fase-2-Resultados.md`](Fase-2-Resultados.md) (en curso).
 Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 **Leyenda:** `EM` = EditMode (lógica pura, sin escena) · `PM` = PlayMode (integración) ·
@@ -92,6 +93,19 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       con la **atribución a la Familia Anonaky** — obra derivada con autorización, PG-07 cerrado).
       «Volver» → `MainMenu`. **PlayMode 2/2** (contenido de autoría + navegación).
 
+- [x] **T08b · Los botones lanzaban `NullReferenceException` fuera del arranque por `Boot`** — `XS` ·
+      `PM` (07/09/2026)
+      RNF-13 · depende de: T05–T08 · fix-bug test-first
+      Al pulsar Play sobre una escena suelta, `GameFlowRunner.Instance` es `null` y **cada clic
+      lanzaba**: `MainMenuController:50` (Créditos) y `:58` (Jugar), `LevelSelectController:47`
+      (Volver), `CreditsController:32` (Volver) — las cuatro en `Logs/Editor.log`. Una sola causa:
+      los adaptadores desreferencian el singleton que solo crea `Boot`. RED **4/4** con la misma
+      excepción → nuevo `ScreenFlow` (punto único de comprobación, sostiene un nivel más arriba la
+      promesa de `GameFlow` de no lanzar ante una transición imposible) → GREEN **PlayMode 25/27,
+      EditMode 34/34**. `MainMenuController` pasó a `Runner` inyectable como los otros tres.
+      Los 2 fallos restantes son los de `VisualVerification`: `ScreenCapture` no encuentra la vista
+      de juego en batchmode — **preexistentes**, medidos 0/2 también sobre el código sin el arreglo.
+
 ### ✅ Checkpoint B — Navegación
 - [x] Perfil nuevo → Nivel 1 habilitado, Niveles 2 y 3 bloqueados **con icono además de color** — `LevelSelect_RF03_*` + RNF-19
 - [ ] Cerrar y reabrir conserva el perfil y su progreso (RNF-14, manual sobre el ejecutable)
@@ -105,18 +119,48 @@ comprobaciones manuales sobre el ejecutable + la revisión con el usuario.**
 
 ## Fase 2 — Andamiaje mínimo (`andamiaje`)
 
-- [ ] **T09 · `NarrativeSequence` y `DialogueRunner`** — `M` · `EM`
+- [x] **T09 · `NarrativeSequence` y `DialogueRunner`** — `M` · `EM` (07/09/2026)
       RF-05, RF-06, RF-10, RNF-01, RNF-18, HU-02, INC-28 · depende de: T07
-- [ ] **T10 · Escena `Narrative` parametrizada + tres secuencias del N1** — `M` · `PM`
+      `DialogueLine`, `NarrativeSequence` (SO con `Id`, `Level`, ilustración y líneas),
+      `DialogueRunner` en C# plano y `NarrativeVisitPolicy`. **EditMode 44/44** (10 nuevas: 7 del
+      runner, 3 sobre el contenido de los assets). **Cambio de diseño frente al plan:** «escena ya
+      vista» (INC-28) **no** es un campo nuevo del perfil — RNF-09/INC-27 cierran lo persistido en
+      «nombre, nivel alcanzado, fases confirmadas y los cuatro indicadores, nada más», así que se
+      **deriva del progreso**: si el perfil confirmó alguna fase del nivel, ya pasó por sus escenas.
+- [x] **T10 · Escena `Narrative` parametrizada + tres secuencias del N1** — `M` · `PM` (07/09/2026)
       RF-05, RF-06, RNF-06, guion §3.1/§4.1/§4.2 · depende de: T09
+      `NarrativeSceneController` **sin un solo `if` por secuencia**: resuelve por id contra la lista
+      de assets. Escena `Narrative.unity` en Build Settings (5 escenas) y los tres assets del N1 con
+      el texto del guion reescrito para cumplir RNF-01. `GameState.Narrative` mapeado en
+      `GameFlowRunner.Scenes`; `Game.UI` pasa a referenciar `Game.Scaffolding` (el test de
+      arquitectura solo veta Core→UI y nivel→nivel). Recorrido conducido a mano en el juego real:
+      perfil nuevo → `Narrative` → 7 líneas → `LevelSelect` → nivel → `Narrative`.
+      **PlayMode 31/33** (6 nuevas): los 2 fallos son los `VisualVerification` de la Fase 1, que no
+      corren en batchmode y están medidos en 0/2 sobre el código sin cambios.
+- [x] **T10b · Play arranca siempre en `Boot`** — `XS` · sin prueba automática (07/09/2026)
+      RNF-13 · depende de: T10
+      `Assets/Game/Scripts/Editor/PlayFromBoot.cs` fija `playModeStartScene`, función nativa de
+      Unity: **solo afecta al Editor**, nunca al ejecutable. Verificado a mano — con `Narrative`
+      abierta, Play aterrizó en `MainMenu` pasando por `Boot`. Cierra la confusión que originó T08b.
+      **Colgó la suite PlayMode entera** (1500 s sin informe): secuestraba también la entrada a Play
+      del Test Framework, que esperaba su `InitTestScene`. Arreglado con dos guardas —batchmode y
+      callbacks de `TestRunnerApi`—; nuevo assembly `Game.EditorTools`. Detalle en
+      `Fase-2-Resultados.md` §4.3.
 - [ ] **T11 · `HintPolicy`: ayuda a demanda + pista tras tres fallos** — `M` · `EM`
       RF-13, RNF-03, CP-06, HU-03, HU-04, guion §4.3.6 · depende de: T09
 
 ### ✅ Checkpoint C — Andamiaje
-- [ ] Las tres escenas narrativas se recorren completas
-- [ ] El botón de omitir aparece **solo** en la segunda visita (INC-28)
-- [ ] Ninguna pista resuelve la tarea ni nombra «Muy cerca» (CP-06)
+- [x] Las tres escenas narrativas se recorren completas — `NarrativeScene_RF05_*` verde en
+      **PlayMode 31/33**: las tres resuelven en la misma escena y avanzar hasta el final sale a
+      otra pantalla. `N1_Apertura` recorrida además a mano (7 líneas → `LevelSelect`)
+- [~] El botón de omitir aparece **solo** en la segunda visita (INC-28) — la regla está probada en
+      EditMode (`DialogueRunner_RF06_*`, `_INC28_*`) y la escena la respeta; falta verla en la
+      segunda visita real, que exige una fase confirmada y por tanto **T17**
+- [ ] Ninguna pista resuelve la tarea ni nombra «Muy cerca» (CP-06) — **T11, sin empezar**
 - [ ] Revisado con el usuario
+
+**Fase 2 a medias: T09 y T10 cerradas, T11 sin empezar.** El Checkpoint C no se puede cerrar sin
+T11.
 
 ---
 

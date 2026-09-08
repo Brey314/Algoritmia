@@ -29,7 +29,17 @@ namespace Game.UI
                 bodyLabel.text = content.Body;
             }
 
-            backButton.onClick.AddListener(() => Runner.GoTo(GameState.MainMenu));
+            backButton.onClick.AddListener(BackToMainMenu);
+        }
+
+        private void BackToMainMenu()
+        {
+            if (!ScreenFlow.Ready(Runner, this))
+            {
+                return;
+            }
+
+            Runner.GoTo(GameState.MainMenu);
         }
     }
 }

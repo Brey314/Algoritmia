@@ -1,11 +1,13 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -88,13 +90,30 @@ namespace Game.UI.Tests
             CaptureScreenshot("LevelSelect_RNF19_NivelBloqueado");
         }
 
+        [Test]
+        [Timeout(20000)]
+        public async Task LevelSelect_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot()
+        {
+            // Sin perfil activo los tres niveles quedan bloqueados y no responden al clic
+            // (RF-03), así que «Volver» es el único botón alcanzable de esta escena.
+            await LoadLevelSelect();
+            // Sin GameFlowRunner —esta escena se cargó sin pasar por Boot— «Volver» avisa y no
+            // navega.
+            LogAssert.Expect(LogType.Warning, new Regex("sin pasar por"));
+
+            Click(FindButtonByLabel("Volver"));
+
+            // Lo que no puede pasar es que el clic lance: cualquier excepción registrada aquí
+            // sería un mensaje no esperado y esta llamada la delata.
+            LogAssert.NoUnexpectedReceived();
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
         private static PlayerProfile NewProfile() =>
             PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
 
-        private static async Task<(LevelSelectController controller, GameFlowRunner runner)>
-            OpenLevelSelect(PlayerProfile profile)
+        private static async Task LoadLevelSelect()
         {
             var load = SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
             while (load is { isDone: false })
@@ -103,6 +122,16 @@ namespace Game.UI.Tests
             }
 
             await Awaitable.NextFrameAsync();
+        }
+
+        private static Button FindButtonByLabel(string label) => Array.Find(
+            Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude),
+            button => button.GetComponentInChildren<Text>() is { } text && text.text.Trim() == label);
+
+        private static async Task<(LevelSelectController controller, GameFlowRunner runner)>
+            OpenLevelSelect(PlayerProfile profile)
+        {
+            await LoadLevelSelect();
 
             var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
             await Awaitable.NextFrameAsync(); // GameFlowRunner.Start() navega solo a MainMenu

@@ -42,7 +42,11 @@ namespace Game.UI
         {
             messageLabel.text = string.Empty;
             nameField.text = string.Empty;
-            Populate();
+
+            if (ScreenFlow.Ready(Session, this))
+            {
+                Populate();
+            }
         }
 
         private void Populate()
@@ -63,12 +67,27 @@ namespace Game.UI
                 entry.gameObject.SetActive(true);
                 entry.GetComponentInChildren<Text>().text = profileName;
                 var captured = profileName;
-                entry.onClick.AddListener(() => Runner.SelectProfile(Session.Load(captured)));
+                entry.onClick.AddListener(() => SelectExisting(captured));
             }
+        }
+
+        private void SelectExisting(string profileName)
+        {
+            if (!ScreenFlow.Ready(Session, this) || !ScreenFlow.Ready(Runner, this))
+            {
+                return;
+            }
+
+            Runner.SelectProfile(Session.Load(profileName));
         }
 
         private void CreateNew()
         {
+            if (!ScreenFlow.Ready(Session, this) || !ScreenFlow.Ready(Runner, this))
+            {
+                return;
+            }
+
             var result = Session.Create(nameField.text);
             switch (result.Result)
             {
@@ -90,9 +109,15 @@ namespace Game.UI
 
         private void Back()
         {
+            // El intercambio de paneles es local a la escena: se hace aunque no haya flujo, para
+            // que volver nunca deje al estudiante encerrado en el panel.
             mainPanel.SetActive(true);
             gameObject.SetActive(false);
-            Runner.GoTo(GameState.MainMenu);
+
+            if (ScreenFlow.Ready(Runner, this))
+            {
+                Runner.GoTo(GameState.MainMenu);
+            }
         }
     }
 }

@@ -32,12 +32,18 @@ namespace Game.UI
         /// <summary>Cierra la aplicación. Producción: <see cref="Application.Quit()"/>.</summary>
         internal Action Quit { get; set; }
 
+        internal GameFlowRunner Runner { get; set; }
+
 #if UNITY_INCLUDE_TESTS
         internal GameTitleConfig TitleConfig => titleConfig;
         internal Text TitleLabel => titleLabel;
 #endif
 
-        private void Awake() => Quit ??= Application.Quit;
+        private void Awake()
+        {
+            Runner ??= GameFlowRunner.Instance;
+            Quit ??= Application.Quit;
+        }
 
         private void Start()
         {
@@ -47,25 +53,41 @@ namespace Game.UI
             }
 
             playButton.onClick.AddListener(OpenProfilePanel);
-            creditsButton.onClick.AddListener(() => GameFlowRunner.Instance.GoTo(GameState.Credits));
+            creditsButton.onClick.AddListener(OpenCredits);
             exitButton.onClick.AddListener(Exit);
         }
 
         private void OpenProfilePanel()
         {
+            if (!ScreenFlow.Ready(Runner, this))
+            {
+                return;
+            }
+
             // ProfileSelect es un panel de esta misma escena (SPEC §Estructura): el cambio de
             // estado no recarga MainMenu, solo intercambia paneles.
-            GameFlowRunner.Instance.GoTo(GameState.ProfileSelect);
+            Runner.GoTo(GameState.ProfileSelect);
             mainPanel.SetActive(false);
             profilePanel.SetActive(true);
+        }
+
+        private void OpenCredits()
+        {
+            if (!ScreenFlow.Ready(Runner, this))
+            {
+                return;
+            }
+
+            Runner.GoTo(GameState.Credits);
         }
 
         private void Exit()
         {
             // RF-09: el orden importa — primero se persiste el progreso del perfil activo, y solo
             // después se cierra. Al revés se perdería lo que el estudiante acababa de lograr.
-            (Saver ?? (GameFlowRunner.Instance != null ? GameFlowRunner.Instance.Session : null))
-                ?.SaveActive();
+            // Sin flujo no hay perfil activo que perder, pero salir tiene que seguir funcionando:
+            // este es el único botón que no necesita navegar.
+            (Saver ?? (Runner != null ? Runner.Session : null))?.SaveActive();
             Quit();
         }
     }

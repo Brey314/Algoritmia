@@ -27,6 +27,9 @@ namespace Game.Core
                 [GameState.MainMenu] = "MainMenu",
                 [GameState.ProfileSelect] = "MainMenu",
                 [GameState.LevelSelect] = "LevelSelect",
+                // Una sola escena para las quince escenas narrativas del guion: el estado lleva
+                // el id de la secuencia y la escena la resuelve (RF-05, RNF-06).
+                [GameState.Narrative] = "Narrative",
                 [GameState.Credits] = "Credits"
             };
 
