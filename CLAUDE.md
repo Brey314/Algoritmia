@@ -169,10 +169,12 @@ antes de escribir la primera línea:
 - **Un assembly (`.asmdef`) por módulo**, dependencias en un solo sentido: `Game.Core` →
   `Game.Scaffolding` → `Game.Levels.{Fire,Wheel,River}` → `Game.Reporting`. **Ningún nivel
   referencia a otro nivel** — eso es lo que hace ejecutable la prueba de exclusión de RNF-16.
-  Fuera de esa cadena cuelgan tres assemblies más, y ahí va la mayor parte del código de hoy:
-  `Game.UI` (→ `Game.Core`, `Game.Scaffolding`, `UnityEngine.UI`) con los controladores de
-  pantalla; `Game.Audio` (→ `Game.Core`); y `Game.EditorTools`, **solo Editor**, que no referencia
-  ningún `Game.*`. `Game.Reporting` todavía no existe en disco (llega en el Slice 4).
+  Fuera de esa cadena cuelgan tres assemblies más: `Game.UI` (→ `Game.Core`, `Game.Scaffolding`,
+  `UnityEngine.UI`) con los controladores de pantalla, donde va la mayor parte del código de hoy;
+  `Game.Audio` (→ `Game.Core`); y `Game.EditorTools`, **solo Editor**, que no referencia ningún
+  `Game.*`. Hoy solo tienen código `Game.Core`, `Game.Scaffolding`, `Game.UI` y `Game.EditorTools`:
+  `Game.Audio` y `Game.Levels.Fire` son `.asmdef` vacíos a la espera de su fase, y
+  `Game.Reporting` todavía no existe en disco (llega en el Slice 4).
 - **La lógica es C# plano; el MonoBehaviour es un adaptador delgado.** `GameFlow` (la FSM) no
   es MonoBehaviour: se prueba en EditMode sin escena ni frames. Igual para validadores,
   contadores y máquinas de estado de cada nivel.
@@ -186,7 +188,11 @@ antes de escribir la primera línea:
   vive en ScriptableObjects con `[field: SerializeField]` + `[Tooltip]`.
 - **Persistencia**: JSON por perfil en una carpeta `Datos/` junto al ejecutable — no
   `Application.persistentDataPath`, porque «portable» y «sin residuos» (RNF-07, RNF-11) deben
-  significar lo mismo.
+  significar lo mismo. Corriendo en el Editor esa carpeta cae en la raíz del proyecto
+  (`My project/Datos/`), con perfiles reales de las pruebas manuales; está en `.gitignore`.
+- **Probar sin ampliar la superficie pública**: un `AssemblyInfo.cs` en la raíz del módulo con
+  `[assembly: InternalsVisibleTo("<Módulo>.Tests")]` — como el de `Game.UI`. No subir un miembro
+  a `public` solo para que lo alcance una prueba.
 - Raíz de código y assets: `Assets/Game/`, namespaces `Game.*` siguiendo la ruta bajo
   `Scripts/` y elidiendo `Runtime`. Tests en `Assets/Tests/{EditMode,PlayMode}/<Módulo>/`.
 - **El nombre de la prueba es la trazabilidad.** Patrón `<Sujeto>_<Requisito>_<QuéHace>` en

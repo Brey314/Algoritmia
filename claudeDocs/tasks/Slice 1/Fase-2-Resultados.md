@@ -1,15 +1,15 @@
 # Fase 2 — Andamiaje mínimo: lo construido y sus resultados
 
-**Slice 1 · Golden Path temprano** · Estado: **T09 y T10 implementadas y verdes, T11 sin empezar** —
-corte de este documento: 7 de septiembre de 2026
-Verificación vigente: **EditMode 44/44 · PlayMode 31/33** (los 2 fallos son las pruebas de
+**Slice 1 · Golden Path temprano** · Estado: **T09, T10 y T11 implementadas y verdes** —
+corte de este documento: 8 de septiembre de 2026
+Verificación vigente: **EditMode 57/57 · PlayMode 33/33 + 2 omitidas** (las omitidas son las de
 verificación visual, que no corren en batchmode — §4.2)
 Plan técnico: [`plan.md`](plan.md) · Tablero: [`todo.md`](todo.md) · Contrato: `claudeDocs/SPEC.md`
 Fase anterior: [`Fase-1-Resultados.md`](Fase-1-Resultados.md)
 
 Este documento registra qué se implementó en la Fase 2, con qué pruebas se verificó y qué resultado
-dieron. **El Checkpoint C sigue abierto**: falta T11 entera. No reabre decisiones de `SPEC.md`: las
-cita.
+dieron. **El código de la fase está completo**; del Checkpoint C quedan dos casillas que no son de
+código (§6). No reabre decisiones de `SPEC.md`: las cita.
 
 ---
 
@@ -24,7 +24,7 @@ todavía no hay nada que jugar.
 | T09 | `NarrativeSequence`, `DialogueRunner` y la política de «ya vista» | EditMode | ✅ terminada |
 | T10 | Escena `Narrative` parametrizada y los tres assets del Nivel 1 | PlayMode | ✅ terminada |
 | T10b | `playModeStartScene`: pulsar Play arranca siempre en `Boot` | manual | ✅ terminada |
-| T11 | `HintPolicy`: ayuda a demanda y pista tras tres fallos | EditMode | ⬜ sin empezar |
+| T11 | `HintPolicy`: ayuda a demanda y pista tras tres fallos | EditMode | ✅ terminada |
 
 **T08b** (los botones de la Fase 1 lanzaban `NullReferenceException` fuera de `Boot`) se hizo justo
 antes de abrir esta fase y está registrado en el `todo.md`; aquí se menciona porque su causa y la de
@@ -81,6 +81,28 @@ en Project Settings.
 
 ---
 
+### 2.4 La ayuda son dos mecanismos distintos, no uno (T11)
+
+RF-13 pide **dos cosas separadas** y el andamiaje las mantiene separadas:
+
+- **`GuideStep`** — una tarea vista desde el guía: `Id`, `Instruction` y `Hint`. Dos campos y no
+  uno, porque confundirlos convertiría la ayuda en la respuesta (CP-06).
+- **`GuideContent`** — un ScriptableObject por nivel con sus tareas. Igual que una escena narrativa
+  es un asset, **añadir una tarea del guía es editar contenido** (CT-05, RNF-18).
+- **`HintPolicy`** — C# plano, sin Unity. `RequestHelp()` devuelve la instrucción vigente y **no
+  toca ningún contador**: si pedir ayuda contara como intento, usarla adelantaría la pista y el
+  andamiaje pasaría a resolver (HU-03 FA-02). `RegisterFailedAttempt()` devuelve la pista al
+  tercer fallo consecutivo y reinicia la cuenta (guion §4.3.5 E5); `RegisterSuccessfulAttempt()`
+  también la reinicia, y `Activate()` igual —los tres fallos son «en una misma tarea» (RF-13), y
+  solo hay una activa a la vez (RNF-03)—.
+- **`Assets/Game/Data/Guide/N1_Guia.asset`** — las dos tareas del Nivel 1 (`Golpear`, `Soplar`). La
+  pista de `Golpear` es la formulación del guion §4.3.6, palabra por palabra: «Las chispas caen
+  hacia abajo y se apagan rápido. ¿Cuánto camino tienen que recorrer antes de tocar las hojas?»
+  Orienta hacia la distancia sin nombrar la posición efectiva.
+
+El umbral vive en `HintPolicy.DefaultAttemptsForHint = 3` (`intentosParaPista` del guion §4.3.2) y
+el constructor admite otro valor, que es lo que usará `FireLevelConfig` en T12 sin tocar esta clase.
+
 ## 3. La decisión de diseño que cambió el plan
 
 El plan pedía que `CanSkip` fuera falso «la primera vez que el perfil ve la escena» (INC-28, RF-06).
@@ -105,8 +127,8 @@ en pantalla queda anotada en el Checkpoint C.
 
 ### 4.1 EditMode — declarado
 
-**44/44, 0 fallos** (`unity test --mode EditMode`, 07/09/2026). Eran 34 al cerrar la Fase 1; las
-diez nuevas son de esta fase:
+**57/57, 0 fallos** (`unity test --mode EditMode`, 08/09/2026). Eran 34 al cerrar la Fase 1, 44 tras
+T09 y **50** tras el RF-47 del commit `145a63e`; las diecisiete nuevas son de esta fase:
 
 | Prueba | Requisito |
 |---|---|
@@ -120,16 +142,25 @@ diez nuevas son de esta fase:
 | `NarrativeSequence_RNF01_NingunaOracionSupera20Palabras` | RNF-01 |
 | `NarrativeSequence_RNF18_CadaSecuenciaTieneIdYLineas` | RNF-18 |
 | `NarrativeSequence_RF05_LosIdentificadoresNoSeRepiten` | RF-05 |
+| `HintPolicy_RF13_AyudaADemandaNoAlteraElEstado` | RF-13, HU-03 |
+| `HintPolicy_RF13_PistaSeOfreceAlTercerFalloConsecutivo` | RF-13 |
+| `HintPolicy_RF13_UnAciertoReiniciaLosFallosConsecutivos` | RF-13, HU-04 |
+| `HintPolicy_RNF03_CambiarDeTareaReiniciaLosFallosYLaInstruccion` | RNF-03 |
+| `HintPolicy_CP06_LaPistaNuncaNombraLaPosicionEfectiva` | CP-06, guion §4.3.6 |
+| `HintPolicy_RNF18_CadaTareaTieneInstruccionYPista` | RNF-18 |
+| `HintPolicy_RNF01_NingunaOracionDelGuiaSupera20Palabras` | RNF-01 |
 
-Las tres últimas no prueban una clase sino **el contenido de los assets**: los textos viven fuera
+Las tres últimas de `HintPolicy` y las tres de `NarrativeSequence` no prueban una clase sino **el
+contenido de los assets**: los textos viven fuera
 del código (CT-05, RNF-18), así que el límite de legibilidad de RNF-01 hay que verificarlo sobre el
 asset. Por eso el guion se reescribió al pasarlo a los assets: varias frases de §3.1 y §4.1 pasaban
 de 20 palabras y se partieron conservando el sentido y el diálogo literal.
 
 ### 4.2 PlayMode — declarado
 
-**31/33, 2 fallos, 0 inconclusive** (`unity test --mode PlayMode`, 07/09/2026, 26 s). Eran 27
-pruebas al cerrar la Fase 1; las seis nuevas son de esta fase:
+**33/35, 0 fallos, 2 omitidas, 0 inconclusive** (`unity test --mode PlayMode`, 08/09/2026, 24 s).
+Eran 27 pruebas al cerrar la Fase 1; las seis nuevas son de esta fase (T11 no toca PlayMode, así
+que la corrida del 08/09 solo comprueba que no hay regresión):
 
 | Prueba | Requisito |
 |---|---|
@@ -140,10 +171,11 @@ pruebas al cerrar la Fase 1; las seis nuevas son de esta fase:
 | `NarrativeScene_HU17_NoHayBotonDePausaEnUnaEscenaNarrativa` | HU-17 FA-04 |
 | `NarrativeScene_RNF01_LaLineaMasLargaCabeEnSuCuadroDeDialogo` | RNF-01 |
 
-**Los 2 fallos son los conocidos de la Fase 1**, no regresiones: las pruebas
-`[Category("VisualVerification")]` (`MainMenu_RNF20_*`, `LevelSelect_RNF19_*`) fallan en batchmode
-porque `ScreenCapture` no encuentra la vista de juego. Está medido: **0/2 también sobre el código
-sin cambios**. Pasan desde el Test Runner del Editor con la vista de juego abierta.
+**Las 2 omitidas son las de verificación visual** (`MainMenu_RNF20_*`, `LevelSelect_RNF19_*`):
+`ScreenCapture` no encuentra la vista de juego en batchmode. En el corte del 07/09 **fallaban**;
+desde el commit `145a63e` se saltan solas cuando no hay vista de juego, que es lo correcto — un
+fallo ahí no distinguía «la captura no cumple RNF-20» de «no hay dónde capturar». Siguen
+verificándose desde el Test Runner del Editor con la vista de juego abierta.
 
 ### 4.3 Dos defectos encontrados al verificar — y corregidos
 
@@ -214,9 +246,13 @@ salida natural es entrar a jugar, y pasa a `StartPlaying` cuando **T14** traiga 
 
 ## 6. Lo que queda abierto
 
-- **T11 · `HintPolicy`** — sin empezar. Sin ella no se cierra el Checkpoint C.
+- **Ver el botón de omitir en la segunda visita** — la regla está probada en EditMode y la escena la
+  respeta, pero verla en pantalla exige una fase confirmada, es decir **T17** (§3). Es la única
+  casilla del Checkpoint C que no depende de esta fase.
+- **Cablear `HintPolicy` a una pantalla** — T11 entrega la regla y su contenido, no un botón: la
+  escena jugable donde vive el botón de ayuda es **T14**, y quien cuenta los fallos que la alimentan
+  es **T12**. Hasta entonces la política está probada pero no se ve.
 - **Ilustraciones** — las tres secuencias tienen el campo `Illustration` vacío y la escena oculta la
   imagen si no hay sprite. Son los assets A1–A6 del tablero, todavía sin generar.
 - **Tipografía** — fuente del sistema, igual que en la Fase 1. Baloo 2 / Nunito
   (`Direccion_de_Arte.md` §11.2) sigue siendo tarea de assets.
-- **Ver el botón de omitir en pantalla** — exige una fase confirmada, es decir **T17** (§3).
