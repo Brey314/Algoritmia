@@ -2,6 +2,7 @@
     "name": "Game.Scaffolding.Tests",
     "rootNamespace": "",
     "references": [
+        "Game.Core",
         "Game.Scaffolding",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"

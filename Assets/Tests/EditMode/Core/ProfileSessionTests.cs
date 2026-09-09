@@ -80,5 +80,32 @@ namespace Game.Core.Tests
 
             Assert.That(sut.Load("Ana").ReachedLevel, Is.EqualTo(LevelId.Wheel));
         }
+
+        [Test]
+        public void ProfileSession_RF47_BorraElPerfilYDejaDeListarlo()
+        {
+            var sut = CreateSession();
+            sut.Save(PlayerProfile.Create("Ana", Array.Empty<string>()).Profile);
+            sut.Save(PlayerProfile.Create("Beto", Array.Empty<string>()).Profile);
+
+            Assert.That(sut.Delete("Ana"), Is.True);
+            Assert.That(sut.ExistingProfileNames(), Is.EquivalentTo(new[] { "Beto" }));
+        }
+
+        [Test]
+        public void ProfileSession_RNF11_BorrarElPerfilActivoImpideQueSalirLoVuelvaAEscribir()
+        {
+            // Sin esto el borrado se deshace solo: «Salir» persiste el perfil activo (RF-09) y
+            // volvería a crear el archivo que se acaba de eliminar. El residuo no es tolerable.
+            SelectProfile("Ana");
+            var sut = CreateSession();
+            sut.Save(_flow.ActiveProfile);
+
+            sut.Delete("Ana");
+            sut.SaveActive();
+
+            Assert.That(_fileSystem.Files, Is.Empty);
+        }
+
     }
 }

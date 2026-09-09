@@ -1,11 +1,13 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -88,13 +90,30 @@ namespace Game.UI.Tests
             CaptureScreenshot("LevelSelect_RNF19_NivelBloqueado");
         }
 
+        [Test]
+        [Timeout(20000)]
+        public async Task LevelSelect_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot()
+        {
+            // Sin perfil activo los tres niveles quedan bloqueados y no responden al clic
+            // (RF-03), así que «Volver» es el único botón alcanzable de esta escena.
+            await LoadLevelSelect();
+            // Sin GameFlowRunner —esta escena se cargó sin pasar por Boot— «Volver» avisa y no
+            // navega.
+            LogAssert.Expect(LogType.Warning, new Regex("sin pasar por"));
+
+            Click(FindButtonByLabel("Volver"));
+
+            // Lo que no puede pasar es que el clic lance: cualquier excepción registrada aquí
+            // sería un mensaje no esperado y esta llamada la delata.
+            LogAssert.NoUnexpectedReceived();
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
         private static PlayerProfile NewProfile() =>
             PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
 
-        private static async Task<(LevelSelectController controller, GameFlowRunner runner)>
-            OpenLevelSelect(PlayerProfile profile)
+        private static async Task LoadLevelSelect()
         {
             var load = SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
             while (load is { isDone: false })
@@ -103,6 +122,16 @@ namespace Game.UI.Tests
             }
 
             await Awaitable.NextFrameAsync();
+        }
+
+        private static Button FindButtonByLabel(string label) => Array.Find(
+            Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude),
+            button => button.GetComponentInChildren<Text>() is { } text && text.text.Trim() == label);
+
+        private static async Task<(LevelSelectController controller, GameFlowRunner runner)>
+            OpenLevelSelect(PlayerProfile profile)
+        {
+            await LoadLevelSelect();
 
             var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
             await Awaitable.NextFrameAsync(); // GameFlowRunner.Start() navega solo a MainMenu
@@ -122,13 +151,40 @@ namespace Game.UI.Tests
             ExecuteEvents.Execute(button.gameObject, new PointerEventData(EventSystem.current),
                 ExecuteEvents.pointerClickHandler);
 
+        /// <summary>
+        /// Guarda la captura que la prueba deja para revisar a mano, y **afirma que existe**.
+        /// </summary>
+        /// <remarks>
+        /// Una prueba de verificación visual no lleva más asertos: su veredicto lo pone una
+        /// persona mirando la imagen. Por eso esta comprobación no es adorno — sin ella
+        /// «Passed» solo significa «no lanzó», y el 08/09/2026 las dos pruebas de esta suite
+        /// pasaron durante tres corridas seguidas sin escribir un solo archivo. Una prueba que
+        /// no puede fallar no verifica nada.
+        ///
+        /// En batchmode se ignora en vez de fallar: `ScreenCapture` necesita la render texture
+        /// de la Game View, que ahí no existe, así que el fallo no diría nada del producto —
+        /// solo que no hay pantalla. `Ignored` lo deja visible sin fingir que se verificó.
+        /// </remarks>
         private static void CaptureScreenshot(string name)
         {
+            if (Application.isBatchMode)
+            {
+                Assert.Ignore("La captura exige una Game View: correr desde el Editor.");
+            }
+
             var directory = $"{Application.persistentDataPath}/TestScreenshots";
             Directory.CreateDirectory(directory);
+            var path = $"{directory}/{name}.png";
+
+            // Una captura de una corrida anterior no puede hacerse pasar por la de esta.
+            File.Delete(path);
+
             var texture = ScreenCapture.CaptureScreenshotAsTexture();
-            File.WriteAllBytes($"{directory}/{name}.png", texture.EncodeToPNG());
+            File.WriteAllBytes(path, texture.EncodeToPNG());
             Object.Destroy(texture);
+
+            Assert.That(File.Exists(path), Is.True, $"no se escribió la captura en «{path}»");
+            TestContext.WriteLine($"Captura: {path}");
         }
     }
 }

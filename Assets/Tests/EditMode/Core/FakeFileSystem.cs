@@ -35,6 +35,21 @@ namespace Game.Core.Tests
 
         public bool FileExists(string path) => _files.ContainsKey(path);
 
+        /// <summary>
+        /// Borrar dentro de una carpeta no escribible falla y deja el archivo donde estaba: es el
+        /// escenario que hace posible probar el borrado parcial de RNF-11.
+        /// </summary>
+        public bool DeleteFile(string path)
+        {
+            if (ReadOnlyDirectories.Any(directory => path.StartsWith(directory + "/")))
+            {
+                return false;
+            }
+
+            _files.Remove(path);
+            return true;
+        }
+
         public string[] GetFiles(string directory, string extension) => _files.Keys
             .Where(path => path.StartsWith(directory + "/") && path.EndsWith(extension))
             .OrderBy(path => path)

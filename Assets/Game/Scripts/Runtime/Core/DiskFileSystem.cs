@@ -35,6 +35,21 @@ namespace Game.Core
 
         public bool FileExists(string path) => File.Exists(path);
 
+        public bool DeleteFile(string path)
+        {
+            try
+            {
+                File.Delete(path);
+                return !File.Exists(path);
+            }
+            catch (Exception)
+            {
+                // Carpeta de solo lectura, archivo abierto por otro proceso, permisos: el borrado
+                // no ocurrió y hay que decirlo. RNF-11 no admite «casi borrado» (INC-34).
+                return false;
+            }
+        }
+
         public string[] GetFiles(string directory, string extension)
         {
             if (!Directory.Exists(directory))

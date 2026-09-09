@@ -1,15 +1,17 @@
 # Tablero — Slice 1: Golden Path temprano
 
 Plan técnico: [`plan.md`](plan.md). Contrato: `claudeDocs/SPEC.md`.
-Resultados: [`Fase-0-Resultados.md`](Fase-0-Resultados.md) · [`Fase-1-Resultados.md`](Fase-1-Resultados.md) (en curso).
+Resultados: [`Fase-0-Resultados.md`](Fase-0-Resultados.md) · [`Fase-1-Resultados.md`](Fase-1-Resultados.md) ·
+[`Fase-2-Resultados.md`](Fase-2-Resultados.md) (en curso).
 Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 **Leyenda:** `EM` = EditMode (lógica pura, sin escena) · `PM` = PlayMode (integración) ·
 `VV` = VisualVerification.
 
-> ⚠️ **R1 casi cerrado (06/09/2026).** Rider 2026.2 instalado; el MCP `rider` quedó registrado.
-> Falta el plugin «MCP Server Extension for Unity» (id 30357) para tener `mcp__rider__run_unity_tests`,
-> y reiniciar Claude Code para que la sesión lo vea. Mientras tanto las pruebas van por
+> ⚠️ **R1 cerrado (06/09/2026).** Rider 2026.2 y el plugin «MCP Server Extension for Unity»
+> (id 30357) instalados; el MCP `rider` quedó registrado. `mcp__rider__*` solo responde con
+> **Rider abierto**: con Rider cerrado la sesión arranca con `ConnectionRefused` — eso no es que
+> falte el plugin, es que no hay a quién preguntar. En ese caso las pruebas van por
 > `unity test --mode {EditMode|PlayMode} --output <x>.xml` (CLI oficial, reemplaza al
 > `Unity.exe -runTests` crudo) — deja XML de NUnit pero exige el Editor cerrado. Toda casilla de
 > prueba marcada abajo exige **declarar el resultado**. No dar por hecho que la suite pasó.
@@ -92,31 +94,103 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       con la **atribución a la Familia Anonaky** — obra derivada con autorización, PG-07 cerrado).
       «Volver» → `MainMenu`. **PlayMode 2/2** (contenido de autoría + navegación).
 
+- [x] **T08b · Los botones lanzaban `NullReferenceException` fuera del arranque por `Boot`** — `XS` ·
+      `PM` (07/09/2026)
+      RNF-13 · depende de: T05–T08 · fix-bug test-first
+      Al pulsar Play sobre una escena suelta, `GameFlowRunner.Instance` es `null` y **cada clic
+      lanzaba**: `MainMenuController:50` (Créditos) y `:58` (Jugar), `LevelSelectController:47`
+      (Volver), `CreditsController:32` (Volver) — las cuatro en `Logs/Editor.log`. Una sola causa:
+      los adaptadores desreferencian el singleton que solo crea `Boot`. RED **4/4** con la misma
+      excepción → nuevo `ScreenFlow` (punto único de comprobación, sostiene un nivel más arriba la
+      promesa de `GameFlow` de no lanzar ante una transición imposible) → GREEN **PlayMode 25/27,
+      EditMode 34/34**. `MainMenuController` pasó a `Runner` inyectable como los otros tres.
+      Los 2 fallos restantes son los de `VisualVerification`: `ScreenCapture` no encuentra la vista
+      de juego en batchmode — **preexistentes**, medidos 0/2 también sobre el código sin el arreglo.
+
 ### ✅ Checkpoint B — Navegación
 - [x] Perfil nuevo → Nivel 1 habilitado, Niveles 2 y 3 bloqueados **con icono además de color** — `LevelSelect_RF03_*` + RNF-19
-- [ ] Cerrar y reabrir conserva el perfil y su progreso (RNF-14, manual sobre el ejecutable)
-- [ ] `Datos/` aparece junto al ejecutable, sin residuos fuera de ella (RNF-07, manual)
+- [~] Cerrar y reabrir conserva el perfil y su progreso (RNF-14, manual sobre el ejecutable) —
+      **build portable hecho el 08/09** (`unity build`, 137 MB, 5 escenas). Se creó un perfil
+      jugando y quedó en `Build/Algoritmia/Datos/yo.json`; el archivo sobrevive al cierre. Falta
+      **ver el perfil listado al reabrir**, que es un clic en «Jugar» y lo hace el usuario.
+- [~] `Datos/` aparece junto al ejecutable, sin residuos fuera de ella (RNF-07, manual) —
+      **`Datos/` sí nace junto al `.exe` en la primera ejecución** (RNF-07 ✅). **Pero hay residuo
+      fuera** (RNF-11 ❌): el reproductor escribe en
+      `%AppData%\LocalLow\DefaultCompany\My project\` un `Player.log` (PlayerSettings
+      `usePlayerLog: 1`) y archivos de **Unity Analytics / Insights**, que el módulo
+      `com.unity.modules.unityanalytics` sigue escribiendo **aunque `UnityConnectSettings` esté en
+      `m_Enabled: 0`**. Ningún dato del jugador vive ahí —el perfil solo está en `Datos/`—, pero
+      son residuos fuera de la carpeta portable y, en el caso de la telemetría, algo que RNF-08
+      prohíbe. **Dos decisiones pendientes del usuario:** quitar
+      `com.unity.modules.unityanalytics` de `Packages/manifest.json` y poner `usePlayerLog` en 0.
+      Aparte: `UnityConnectSettings.asset` apareció con `m_Enabled: 0 → 1` (analítica
+      **encendida**); se revirtió a 0 y **al reabrir el Editor volvió a 1** — revertir el archivo
+      no arregla nada mientras el módulo siga en el manifiesto.
 - [ ] Revisado con el usuario
 
-**Código de Fase 1 completo (T05–T08), 57/57 pruebas verde. Falta cerrar el Checkpoint B: las dos
-comprobaciones manuales sobre el ejecutable + la revisión con el usuario.**
+**Código de Fase 1 completo (T05–T08). Del Checkpoint B queda: el clic que confirma RNF-14 al
+reabrir, la decisión sobre los dos residuos de `LocalLow` (RNF-11/RNF-08) y la revisión con el
+usuario.**
 
 ---
 
 ## Fase 2 — Andamiaje mínimo (`andamiaje`)
 
-- [ ] **T09 · `NarrativeSequence` y `DialogueRunner`** — `M` · `EM`
+- [x] **T09 · `NarrativeSequence` y `DialogueRunner`** — `M` · `EM` (07/09/2026)
       RF-05, RF-06, RF-10, RNF-01, RNF-18, HU-02, INC-28 · depende de: T07
-- [ ] **T10 · Escena `Narrative` parametrizada + tres secuencias del N1** — `M` · `PM`
+      `DialogueLine`, `NarrativeSequence` (SO con `Id`, `Level`, ilustración y líneas),
+      `DialogueRunner` en C# plano y `NarrativeVisitPolicy`. **EditMode 44/44** (10 nuevas: 7 del
+      runner, 3 sobre el contenido de los assets). **Cambio de diseño frente al plan:** «escena ya
+      vista» (INC-28) **no** es un campo nuevo del perfil — RNF-09/INC-27 cierran lo persistido en
+      «nombre, nivel alcanzado, fases confirmadas y los cuatro indicadores, nada más», así que se
+      **deriva del progreso**: si el perfil confirmó alguna fase del nivel, ya pasó por sus escenas.
+- [x] **T10 · Escena `Narrative` parametrizada + tres secuencias del N1** — `M` · `PM` (07/09/2026)
       RF-05, RF-06, RNF-06, guion §3.1/§4.1/§4.2 · depende de: T09
-- [ ] **T11 · `HintPolicy`: ayuda a demanda + pista tras tres fallos** — `M` · `EM`
+      `NarrativeSceneController` **sin un solo `if` por secuencia**: resuelve por id contra la lista
+      de assets. Escena `Narrative.unity` en Build Settings (5 escenas) y los tres assets del N1 con
+      el texto del guion reescrito para cumplir RNF-01. `GameState.Narrative` mapeado en
+      `GameFlowRunner.Scenes`; `Game.UI` pasa a referenciar `Game.Scaffolding` (el test de
+      arquitectura solo veta Core→UI y nivel→nivel). Recorrido conducido a mano en el juego real:
+      perfil nuevo → `Narrative` → 7 líneas → `LevelSelect` → nivel → `Narrative`.
+      **PlayMode 31/33** (6 nuevas): los 2 fallos son los `VisualVerification` de la Fase 1, que no
+      corren en batchmode y están medidos en 0/2 sobre el código sin cambios.
+- [x] **T10b · Play arranca siempre en `Boot`** — `XS` · sin prueba automática (07/09/2026)
+      RNF-13 · depende de: T10
+      `Assets/Game/Scripts/Editor/PlayFromBoot.cs` fija `playModeStartScene`, función nativa de
+      Unity: **solo afecta al Editor**, nunca al ejecutable. Verificado a mano — con `Narrative`
+      abierta, Play aterrizó en `MainMenu` pasando por `Boot`. Cierra la confusión que originó T08b.
+      **Colgó la suite PlayMode entera** (1500 s sin informe): secuestraba también la entrada a Play
+      del Test Framework, que esperaba su `InitTestScene`. Arreglado con dos guardas —batchmode y
+      callbacks de `TestRunnerApi`—; nuevo assembly `Game.EditorTools`. Detalle en
+      `Fase-2-Resultados.md` §4.3.
+- [x] **T11 · `HintPolicy`: ayuda a demanda + pista tras tres fallos** — `M` · `EM` (08/09/2026)
       RF-13, RNF-03, CP-06, HU-03, HU-04, guion §4.3.6 · depende de: T09
+      `GuideStep` + `GuideContent` (un SO por nivel) + `HintPolicy` en C# plano. **Los dos
+      mecanismos de RF-13 son distintos a propósito**: `RequestHelp()` repite la instrucción
+      vigente y **no toca ningún contador** (CP-06, HU-03 FA-02) — si contara como intento, usar la
+      ayuda adelantaría la pista; `RegisterFailedAttempt()` devuelve la pista al tercer fallo
+      consecutivo y reinicia la cuenta (guion §4.3.5 E5). Un acierto la reinicia, y cambiar de tarea
+      también: los tres fallos son «en una misma tarea», y solo hay una activa a la vez (RNF-03).
+      Asset `Assets/Game/Data/Guide/N1_Guia.asset` con las dos tareas del N1 (Golpear, Soplar);
+      la pista es la del guion §4.3.6 y **no nombra «Muy cerca»**, verificado sobre el asset y no
+      sobre el código. **EditMode 57/57** (7 nuevas; la base eran 50, no las 44 del corte de la
+      Fase 2 — el commit `145a63e` añadió las de RF-47). **PlayMode 33/33 + 2 omitidas**, sin
+      regresión.
 
 ### ✅ Checkpoint C — Andamiaje
-- [ ] Las tres escenas narrativas se recorren completas
-- [ ] El botón de omitir aparece **solo** en la segunda visita (INC-28)
-- [ ] Ninguna pista resuelve la tarea ni nombra «Muy cerca» (CP-06)
+- [x] Las tres escenas narrativas se recorren completas — `NarrativeScene_RF05_*` verde en
+      **PlayMode 31/33**: las tres resuelven en la misma escena y avanzar hasta el final sale a
+      otra pantalla. `N1_Apertura` recorrida además a mano (7 líneas → `LevelSelect`)
+- [~] El botón de omitir aparece **solo** en la segunda visita (INC-28) — la regla está probada en
+      EditMode (`DialogueRunner_RF06_*`, `_INC28_*`) y la escena la respeta; falta verla en la
+      segunda visita real, que exige una fase confirmada y por tanto **T17**
+- [x] Ninguna pista resuelve la tarea ni nombra «Muy cerca» (CP-06) —
+      `HintPolicy_CP06_LaPistaNuncaNombraLaPosicionEfectiva` verde sobre el asset del N1 (08/09/2026)
 - [ ] Revisado con el usuario
+
+**Código de Fase 2 completo (T09–T11), EditMode 57/57 · PlayMode 33/33 + 2 omitidas.** Del
+Checkpoint C quedan dos casillas y ninguna es de código: ver el botón de omitir en la segunda visita
+exige una fase confirmada (**T17**) y la revisión con el usuario.
 
 ---
 
@@ -185,9 +259,11 @@ poses del mismo personaje devuelve tres personajes distintos.
 ## Bloqueantes y decisiones pendientes
 
 - [~] **R1 · Servidor MCP para pruebas.** Rider 2026.2 + plugin «MCP Server Extension for Unity»
-      (id 30357) instalados el 06/09; MCP `rider` registrado. Falta **reiniciar Claude Code** para
-      que la sesión vea `mcp__rider__run_unity_tests` (correr contra el Editor abierto). Entretanto,
-      `unity test` (CLI, Editor cerrado) cubre el flujo test-first — usado en T04b sin fricción.
+      (id 30357) instalados el 06/09; MCP `rider` registrado. **Sigue abierto:** en la sesión del
+      08/09 el MCP `rider` arrancó con `ConnectionRefused` pese a tener el Editor de Unity abierto
+      — el puente lo sirve **Rider**, no Unity, así que con Rider cerrado no hay a quién preguntar.
+      Entretanto `unity test` (CLI, Editor cerrado) cubre el flujo test-first: es lo que se usó en
+      T04b y en T11.
 - [x] **PG-01** · título provisional para `GameTitleConfig` (T05) = **«Algoritm»** (confirmado por
       el usuario el 06/09/2026). Marcador; se cambia editando el asset sin recompilar.
 - [ ] **T08** · confirmar que los créditos entran en el Slice 1 (RF-01 pone el botón en el inicio).

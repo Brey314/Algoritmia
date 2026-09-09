@@ -1,12 +1,14 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -109,9 +111,87 @@ namespace Game.UI.Tests
             Assert.That(panel.GetComponentsInChildren<InputField>(true), Has.Length.EqualTo(1));
         }
 
+        [Test]
+        [Timeout(20000)]
+        public async Task ProfileSelect_RNF13_ElPanelNoLanzaSiSeAbreSinPasarPorBoot()
+        {
+            await LoadMainMenu();
+            var panel = Object.FindAnyObjectByType<ProfileSelectController>(FindObjectsInactive.Include);
+
+            // Mostrar el panel a mano —lo que se hace al iterar la interfaz en el Editor— lo
+            // deja sin ProfileSession ni GameFlowRunner: los inyecta Boot. Avisa dos veces: al
+            // listar los perfiles y al confirmar el nombre.
+            LogAssert.Expect(LogType.Warning, new Regex("sin pasar por"));
+            LogAssert.Expect(LogType.Warning, new Regex("sin pasar por"));
+
+            panel.gameObject.SetActive(true);
+            await Awaitable.NextFrameAsync();
+            TypeNameAndConfirm("Beto");
+
+            // Lo que no puede pasar es que lance: cualquier excepción registrada aquí sería un
+            // mensaje no esperado y esta llamada la delata.
+            LogAssert.NoUnexpectedReceived();
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task ProfileSelect_RF47_BorrarPideConfirmacionAntesDeEliminarElPerfil()
+        {
+            _store.Save(PlayerProfile.Create("Ana", Array.Empty<string>()).Profile);
+            _store.Save(PlayerProfile.Create("Beto", Array.Empty<string>()).Profile);
+            await OpenProfilePanel();
+
+            ClickDeleteOn("Ana");
+
+            // El borrado es irreversible: el primer clic solo pregunta, nunca elimina (RF-47).
+            Assert.That(_store.Exists("Ana"), Is.True, "no puede borrar antes de confirmar");
+            Assert.That(DeletePanel().activeInHierarchy, Is.True, "tiene que pedir confirmación");
+
+            Click(FindButtonByLabel("Borrar"));
+
+            Assert.That(_store.Exists("Ana"), Is.False, "confirmado, el perfil se va");
+            Assert.That(_store.Exists("Beto"), Is.True, "y no se lleva a los demás");
+            Assert.That(DeletePanel().activeInHierarchy, Is.False, "la confirmación se cierra");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task ProfileSelect_RF47_ConservarDejaElPerfilIntacto()
+        {
+            _store.Save(PlayerProfile.Create("Ana", Array.Empty<string>()).Profile);
+            await OpenProfilePanel();
+
+            ClickDeleteOn("Ana");
+            Click(FindButtonByLabel("Conservar"));
+
+            Assert.That(_store.Exists("Ana"), Is.True);
+            Assert.That(DeletePanel().activeInHierarchy, Is.False);
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
-        private async Task<GameFlowRunner> OpenProfilePanel()
+        private static GameObject DeletePanel() =>
+            Object.FindAnyObjectByType<ProfileSelectController>(FindObjectsInactive.Include)
+                .transform.Find("DeletePanel").gameObject;
+
+        private static void ClickDeleteOn(string profileName)
+        {
+            var entry = Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude)
+                .First(button => button.name == $"ProfileEntry({profileName})");
+            Click(entry.transform.Find("DeleteButton").GetComponent<Button>());
+        }
+
+        private static Button FindButtonByLabel(string label) => Object
+            .FindObjectsByType<Button>(FindObjectsInactive.Exclude)
+            .First(button => button.GetComponentInChildren<Text>() is { } text
+                             && text.text.Trim() == label);
+
+        private static void Click(Button button) =>
+            ExecuteEvents.Execute(button.gameObject, new PointerEventData(EventSystem.current),
+                ExecuteEvents.pointerClickHandler);
+
+
+        private static async Task LoadMainMenu()
         {
             var load = SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
             while (load is { isDone: false })
@@ -120,6 +200,11 @@ namespace Game.UI.Tests
             }
 
             await Awaitable.NextFrameAsync();
+        }
+
+        private async Task<GameFlowRunner> OpenProfilePanel()
+        {
+            await LoadMainMenu();
 
             // El panel usa su propia Session (contra el almacén temporal); la del runner nunca se
             // construye porque en estas pruebas nadie pulsa «Salir».

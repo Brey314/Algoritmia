@@ -16,6 +16,12 @@ namespace Game.Core
 
         bool FileExists(string path);
 
+        /// <summary>
+        /// Borra el archivo. Devuelve si tras el intento ya no está: una carpeta de solo lectura
+        /// no lanza, contesta que no (INC-34), y quien llama decide qué hacer con esa negativa.
+        /// </summary>
+        bool DeleteFile(string path);
+
         /// <summary>Rutas de los archivos de la carpeta con esa extensión, sin recorrer subcarpetas.</summary>
         string[] GetFiles(string directory, string extension);
     }

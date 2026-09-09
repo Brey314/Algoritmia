@@ -119,6 +119,11 @@ InitTestScene*.unity*
 docs/actas
 docs/md
 claudeDocs/tasks/Sprites
+graphify-out/
+
+# Informes de las corridas de pruebas (`unity test --output`) — se regeneran en cada corrida
+/test-results.xml
+/play-results.xml
 
 # Carpeta portable de datos de jugador — se genera en tiempo de ejecución (RNF-07, RNF-11)
 /[Dd]atos/

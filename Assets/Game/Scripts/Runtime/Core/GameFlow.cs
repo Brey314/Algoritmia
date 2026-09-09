@@ -91,6 +91,13 @@ namespace Game.Core
             return true;
         }
 
+        /// <summary>
+        /// Deja el flujo sin perfil activo. Lo usa el borrado (RF-47): un perfil eliminado no
+        /// puede seguir siendo el activo, porque «Salir» lo volvería a escribir (RF-09) y el
+        /// borrado se desharía solo. No cambia de estado — quién navega lo decide la pantalla.
+        /// </summary>
+        public void ClearActiveProfile() => ActiveProfile = null;
+
         /// <summary>Entra a una escena narrativa parametrizada por su secuencia (RF-05).</summary>
         public bool TryStartNarrative(string sequenceId)
         {

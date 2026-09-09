@@ -1,10 +1,12 @@
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -49,9 +51,25 @@ namespace Game.UI.Tests
             Assert.That(runner.Flow.Current, Is.EqualTo(GameState.MainMenu));
         }
 
+        [Test]
+        [Timeout(20000)]
+        public async Task Credits_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot()
+        {
+            await LoadCredits();
+            // Sin GameFlowRunner —esta escena se cargó sin pasar por Boot— «Volver» avisa y no
+            // navega.
+            LogAssert.Expect(LogType.Warning, new Regex("sin pasar por"));
+
+            Click(FindButtonByLabel("Volver"));
+
+            // Lo que no puede pasar es que el clic lance: cualquier excepción registrada aquí
+            // sería un mensaje no esperado y esta llamada la delata.
+            LogAssert.NoUnexpectedReceived();
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
-        private static async Task<(CreditsController controller, GameFlowRunner runner)> OpenCredits()
+        private static async Task LoadCredits()
         {
             var load = SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
             while (load is { isDone: false })
@@ -60,6 +78,11 @@ namespace Game.UI.Tests
             }
 
             await Awaitable.NextFrameAsync();
+        }
+
+        private static async Task<(CreditsController controller, GameFlowRunner runner)> OpenCredits()
+        {
+            await LoadCredits();
 
             var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
             await Awaitable.NextFrameAsync(); // GameFlowRunner.Start() navega solo a MainMenu

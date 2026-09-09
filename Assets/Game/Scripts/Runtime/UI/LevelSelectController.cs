@@ -41,10 +41,30 @@ namespace Game.UI
             foreach (var entry in entries)
             {
                 var level = entry.level;
-                entry.button.onClick.AddListener(() => Runner.StartNarrative($"N{(int)level}_Apertura"));
+                entry.button.onClick.AddListener(() => StartLevel(level));
             }
 
-            backButton.onClick.AddListener(() => Runner.GoTo(GameState.MainMenu));
+            backButton.onClick.AddListener(BackToMainMenu);
+        }
+
+        private void StartLevel(LevelId level)
+        {
+            if (!ScreenFlow.Ready(Runner, this))
+            {
+                return;
+            }
+
+            Runner.StartNarrative($"N{(int)level}_Apertura");
+        }
+
+        private void BackToMainMenu()
+        {
+            if (!ScreenFlow.Ready(Runner, this))
+            {
+                return;
+            }
+
+            Runner.GoTo(GameState.MainMenu);
         }
 
         private void OnEnable() => Refresh();

@@ -22,6 +22,15 @@ namespace Game.UI
         [SerializeField] private Text messageLabel;
         [SerializeField] private GameObject mainPanel;
 
+        [Header("Confirmación de borrado (RF-47, RNF-11)")]
+        [SerializeField] private GameObject deletePanel;
+        [SerializeField] private Text deletePrompt;
+        [SerializeField] private Button deleteConfirmButton;
+        [SerializeField] private Button deleteCancelButton;
+
+        /// <summary>Perfil que el estudiante pidió borrar y aún no ha confirmado.</summary>
+        private string _pendingDeletion;
+
         internal ProfileSession Session { get; set; }
         internal GameFlowRunner Runner { get; set; }
 
@@ -36,13 +45,21 @@ namespace Game.UI
             profileEntryPrototype.gameObject.SetActive(false);
             confirmButton.onClick.AddListener(CreateNew);
             backButton.onClick.AddListener(Back);
+            deleteConfirmButton.onClick.AddListener(ConfirmDeletion);
+            deleteCancelButton.onClick.AddListener(CancelDeletion);
+            deletePanel.SetActive(false);
         }
 
         private void OnEnable()
         {
             messageLabel.text = string.Empty;
             nameField.text = string.Empty;
-            Populate();
+            CancelDeletion();
+
+            if (ScreenFlow.Ready(Session, this))
+            {
+                Populate();
+            }
         }
 
         private void Populate()
@@ -63,12 +80,30 @@ namespace Game.UI
                 entry.gameObject.SetActive(true);
                 entry.GetComponentInChildren<Text>().text = profileName;
                 var captured = profileName;
-                entry.onClick.AddListener(() => Runner.SelectProfile(Session.Load(captured)));
+                entry.onClick.AddListener(() => SelectExisting(captured));
+
+                var delete = entry.transform.Find("DeleteButton").GetComponent<Button>();
+                delete.onClick.AddListener(() => AskDeletion(captured));
             }
+        }
+
+        private void SelectExisting(string profileName)
+        {
+            if (!ScreenFlow.Ready(Session, this) || !ScreenFlow.Ready(Runner, this))
+            {
+                return;
+            }
+
+            Runner.SelectProfile(Session.Load(profileName));
         }
 
         private void CreateNew()
         {
+            if (!ScreenFlow.Ready(Session, this) || !ScreenFlow.Ready(Runner, this))
+            {
+                return;
+            }
+
             var result = Session.Create(nameField.text);
             switch (result.Result)
             {
@@ -88,11 +123,52 @@ namespace Game.UI
             Runner.StartNarrative(IntroNarrativeId);
         }
 
+        /// <summary>
+        /// Pide confirmación antes de borrar. El borrado es irreversible (RF-47) y por eso nunca
+        /// ocurre en el clic que lo pide: siempre media una segunda pantalla que lo nombra.
+        /// </summary>
+        private void AskDeletion(string profileName)
+        {
+            _pendingDeletion = profileName;
+            deletePrompt.text = $"¿Borras el perfil de {profileName}?";
+            deletePanel.SetActive(true);
+        }
+
+        private void ConfirmDeletion()
+        {
+            if (_pendingDeletion == null || !ScreenFlow.Ready(Session, this))
+            {
+                CancelDeletion();
+                return;
+            }
+
+            if (!Session.Delete(_pendingDeletion))
+            {
+                // RNF-11 no admite «casi borrado»: si quedó rastro hay que decirlo, no callarlo.
+                messageLabel.text = "No se pudo borrar del todo ese perfil. Avisa a tu profe.";
+            }
+
+            CancelDeletion();
+            Populate();
+        }
+
+        private void CancelDeletion()
+        {
+            _pendingDeletion = null;
+            deletePanel.SetActive(false);
+        }
+
         private void Back()
         {
+            // El intercambio de paneles es local a la escena: se hace aunque no haya flujo, para
+            // que volver nunca deje al estudiante encerrado en el panel.
             mainPanel.SetActive(true);
             gameObject.SetActive(false);
-            Runner.GoTo(GameState.MainMenu);
+
+            if (ScreenFlow.Ready(Runner, this))
+            {
+                Runner.GoTo(GameState.MainMenu);
+            }
         }
     }
 }

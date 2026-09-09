@@ -6,8 +6,8 @@ Fase anterior: [`Fase-0-Resultados.md`](Fase-0-Resultados.md)
 
 Este documento registra qué se implementó en la Fase 1, con qué pruebas se verificó y qué
 resultado dieron. **Las cuatro tareas (T05–T08) están terminadas y verdes; el Checkpoint B sigue
-abierto** —faltan las comprobaciones manuales (RNF-07/RNF-14 sobre el ejecutable) y la revisión
-con el usuario—. No reabre decisiones de `SPEC.md`: las cita.
+abierto**: el build portable del 08/09 confirmó RNF-07 y dejó a medias RNF-14, y encontró un
+residuo que incumple RNF-11 (§4). No reabre decisiones de `SPEC.md`: las cita.
 
 ---
 
@@ -235,15 +235,47 @@ son los preexistentes de los `.asmdef` de módulos aún sin código (`Game.Scaff
 
 ## 4. Checkpoint B — estado
 
-Las cuatro tareas de código (T05–T08) están terminadas y verdes. Quedan las **comprobaciones
-manuales sobre el ejecutable** y la **revisión con el usuario**.
+Las cuatro tareas de código (T05–T08) están terminadas y verdes. El **08/09/2026 se hizo el build
+portable** y con él las comprobaciones manuales: una pasa, la otra encontró un residuo.
 
 | Criterio | Estado |
 |---|---|
 | Perfil nuevo → Nivel 1 habilitado, Niveles 2 y 3 bloqueados **con icono además de color** | ✅ probado (`LevelSelect_RF03_*`, RNF-19 §3.4) |
-| Cerrar y reabrir conserva el perfil y su progreso (RNF-14, manual) | ⏳ manual, sobre el ejecutable |
-| `Datos/` aparece junto al ejecutable, sin residuos fuera de ella (RNF-07) | ⏳ manual, sobre el ejecutable |
+| Cerrar y reabrir conserva el perfil y su progreso (RNF-14, manual) | 🟡 el perfil creado jugando sobrevive en disco; falta verlo listado al reabrir (§4.1) |
+| `Datos/` aparece junto al ejecutable (RNF-07) | ✅ nace en la primera ejecución, junto al `.exe` (§4.1) |
+| Sin residuos fuera de `Datos/` (RNF-11) | ❌ hallazgo: `Player.log` y Analytics/Insights en `LocalLow` (§4.1) |
 | Revisado con el usuario | ⏳ |
+
+### 4.1 El build portable y lo que enseñó
+
+`unity build --target StandaloneWindows64 -o "Build/Algoritmia/Algoritmia.exe"` (08/09/2026):
+**137 MB, cinco escenas, `Boot` la primera**. La cifra de RNF-06 (< 500 MB) sobra con margen, pero
+la medición vinculante sigue siendo la del Checkpoint D, sobre el equipo de referencia.
+
+**Lo que salió bien.** La primera ejecución crea `Build/Algoritmia/Datos/` junto al `.exe`, sin
+instalación y sin tocar el registro. Un perfil creado jugando quedó ahí como
+`Datos/yo.json` = `{"name":"yo","reachedLevel":1,"phases":[]}` — la lista cerrada de RNF-09/INC-27,
+sin un solo campo de más, escrita por el juego real y no por una prueba. RNF-07 se da por bueno.
+
+**Lo que salió mal.** El reproductor escribe además en
+`%AppData%\LocalLow\DefaultCompany\My project\`:
+
+- `Player.log`, porque `PlayerSettings.usePlayerLog` está en 1;
+- `Unity/<id>/Analytics/{config,values}` e `Insights/ArchivedEvents/Session/session_end_event`,
+  que el módulo `com.unity.modules.unityanalytics` sigue escribiendo **aunque
+  `UnityConnectSettings` esté en `m_Enabled: 0`** — se rehízo el build con la analítica apagada y
+  los archivos volvieron a aparecer.
+
+Ningún dato del jugador vive ahí: el perfil está solo en `Datos/`. Pero RNF-11 no pide «ningún dato
+sensible fuera», pide **ausencia**, y RNF-08 prohíbe la telemetría. Son **dos decisiones del
+usuario**, no del código: quitar `com.unity.modules.unityanalytics` de `Packages/manifest.json`
+(tocar el manifiesto es «preguntar primero») y poner `usePlayerLog` en 0.
+
+**Y no basta con revertirlo.** `ProjectSettings/UnityConnectSettings.asset` apareció modificado con
+`m_Enabled: 0 → 1` —la analítica **encendida** sin que nadie lo pidiera—; se revirtió a 0 y **al
+volver a abrir el Editor volvió a 1**, comprobado el mismo día. Mientras
+`com.unity.modules.unityanalytics` siga en el manifiesto, el interruptor se vuelve a encender solo:
+quitar el módulo es el arreglo, revertir el archivo es solo limpiar el síntoma.
 
 **Lo verificable hoy:** la persistencia funciona (RF-04/RF-09 probados con dobles y con disco
 temporal real); el perfil nuevo solo alcanza el Nivel 1 (`LevelUnlockPolicy` + `PlayerProfile.Create`);

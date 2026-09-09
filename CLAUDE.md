@@ -12,19 +12,17 @@ Unity 6000.5.10f1, plantilla 2D + URP 17.6.0, Input System 1.20.0, Unity Test Fr
 Presupuestos duros que se verifican, no se estiman (RNF-04..RNF-06): carga de escena < 10 s,
 memoria < 2 GB, paquete < 500 MB.
 
-Estado del código: **Fase 0 del Slice 1 cerrada (T01–T04).** Existen los cinco assemblies de
-runtime; `Game.Core` ya tiene `GameFlow`, `GameState`, `PlayerProfile`, `SaveStore`,
-`IFileSystem`, `SceneLoader` y `GameFlowRunner`, más las escenas `Boot` y `MainMenu` y las
-pruebas EditMode de Core y de arquitectura. `Game.Scaffolding`, `Game.Levels.Fire`, `Game.UI` y
-`Game.Audio` son `.asmdef` todavía sin código. **Fase 0 verificada el 03/09/2026: 23/23 EditMode,
-3/3 PlayMode, 0 warnings** — resultados en `claudeDocs/tasks/Slice 1/Fase-0-Resultados.md`.
-Re-verificado el 06/09/2026 con `unity test`: **23/23 EditMode**. Del Checkpoint A siguen abiertos
-la medición de RNF-04 y la revisión con el usuario.
+**Estado del código: no se transcribe aquí.** La única fuente es el `todo.md` del slice abierto
+(hoy `claudeDocs/tasks/Slice 1/todo.md`) más los `Fase-N-Resultados.md` de al lado: casillas,
+cifras de pruebas y checkpoints se leen ahí y no se duplican en este archivo — una copia se queda
+vieja en dos commits. Empezar leyéndolo.
 
-**Rider instalado el 06/09/2026** (2026.2.0.2, vía winget). Falta terminar su configuración:
-editor externo de Unity, `Enable MCP Server` + `Auto-Configure`, y el plugin «MCP Server Extension
-for Unity» (id 30357). Hasta entonces `mcp__rider__*` no está disponible y las pruebas van por
-`unity test` (ver §Comandos).
+**Rider 2026.2.0.2 con el plugin «MCP Server Extension for Unity» (id 30357)**, instalados el
+06/09/2026 (vía winget). `mcp__rider__*` habla con el **Rider abierto** y con el proyecto cargado:
+con Rider cerrado la sesión arranca con `ConnectionRefused`, que significa «no hay a quién
+preguntar», no «no existe» — abrir Rider y reiniciar la sesión de Claude Code. Mientras tanto las
+pruebas van por la CLI `unity` (ver §Comandos). Ni el silencio de un MCP ni un `ConnectionRefused`
+son que la suite pase.
 
 **Idioma:** identificadores y código en inglés; documentación, textos del jugador y
 comunicación con el usuario en español.
@@ -38,6 +36,7 @@ comunicación con el usuario en español.
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
 | `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 30/08/2026, rev. 6 — los hallazgos `INC-01`..`INC-42` están cerrados en los documentos; queda abierto `INC-43` (el guion §12 aún declara `PG-07` pendiente pese a estar concedida la autorización), más residuos cosméticos y los puntos abiertos del guion. |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
+| `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las diecisiete superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. Los cuatro slices están planeados y entre ellos cubren los 47 RF: `Slice 1` Golden Path y nivel fuego · `Slice 2` La Rueda · `Slice 3` El Río y cierre del juego · `Slice 4` progreso, informe docente y borrado de datos. **Se ejecutan en orden**: cada uno supone terminado el anterior. Ninguno rediscute `SPEC.md`. |
 | `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión ya hecha con markitdown. **Nunca editar ninguno de los dos desde código.** |
 | `docs/actas/*.md` | Actas de seguimiento semanales: qué se decidió, cuándo y por qué. Raíz = fase de conceptualización (abr–jun 2026), `requerimientos/` = OE1 (jun–ago), `objetivo2/` = OE2 (ago–sep). Son la trazabilidad de las decisiones; consultarlas cuando haga falta el *porqué* de un RF, no reabrirlas. |
@@ -62,9 +61,9 @@ sin `PYTHONIOENCODING=utf-8` los acentos salen como mojibake. El shell por defec
 proyecto es PowerShell, donde ese prefijo no es sintaxis válida: correrlo con la herramienta
 Bash, o `$env:PYTHONIOENCODING='utf-8'` antes de invocar markitdown.
 
-**Rutas siempre entre comillas.** La raíz del proyecto es `C:\Users\Usuario\Algoritmia` (sin
-espacios). El *nombre* del proyecto Unity sigue siendo `My project` (`productName`), por eso el
-XML de pruebas rotula la suite raíz como `My project`. Los `.docx` traen espacios y paréntesis en
+**Rutas siempre entre comillas.** La raíz del proyecto en este equipo es
+`C:\Users\benab\My project` — **con espacio**, igual que el `productName` de Unity, por eso el XML
+de pruebas rotula la suite raíz como `My project`. Ninguna ruta absoluta va sin comillas. Los `.docx` traen espacios y paréntesis en
 el nombre: sin comillas, cualquier comando de shell falla o toca el archivo equivocado.
 
 `SPEC.md` es la fuente de verdad para cualquier duda de alcance o diseño; este archivo no la
@@ -106,18 +105,33 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
 completa está en `claudeDocs/SPEC.md` §Comandos** — no se duplica aquí. Lo que hay que saber antes
 de empezar:
 
-- **Pruebas → la CLI `unity`** (`C:\Users\Usuario\AppData\Local\Unity\bin\unity`, v1.0.0-beta.5,
+- **Pruebas → la CLI `unity`** (`C:\Users\benab\AppData\Local\Unity\bin\unity`, v1.0.0-beta.5,
   ya en el PATH). Reemplaza al `Unity.exe -runTests -batchmode` crudo: maneja comillas, exit codes,
   `--filter`, `--timeout`, `--coverage`.
   ```
   unity test --mode EditMode --output test-results.xml --timeout 900 --no-banner --non-interactive
+  unity test --mode PlayMode --output play-results.xml --timeout 900 --no-banner --non-interactive
+  unity test --mode EditMode --filter "Game\.Core\.Tests"   # un assembly
+  unity test --mode PlayMode --filter "LevelSelect_RF03"    # una prueba
   unity status    # editores conectados: puerto, PID, estado
   ```
+  `--filter` es una **expresión regular** contra el nombre completo (`namespace.Clase.Método`),
+  no un glob: un patrón que empiece por `*` aborta la corrida entera con
+  `ArgumentException: Quantifier {x,y} following nothing` y exit 2.
   Abre su **propia** instancia batchmode → exige el **Editor cerrado** (si no: `another Unity
   instance is running`, exit 6). Exit 0 = todo pasa, 2 = fallos o error de invocación.
   `--report-format` acepta `nunit` **o** `junit`, uno a la vez (`both` lo rechaza pese al `--help`).
   Flujo: Editor abierto para desarrollo con coplay-mcp → cerrarlo → `unity test` → reabrir.
-- **Cuando Rider esté configurado**, `mcp__rider__run_unity_tests` /
+- **Build de entrega → `unity build`**, el mismo binario de CLI y la misma exigencia de Editor
+  cerrado. No hay Build Profile en `Assets/Settings/`, así que el destino se da con `--target`:
+  ```
+  unity build --target StandaloneWindows64 -o "Build/Algoritmia/Algoritmia.exe" --log-file build.log --no-banner --non-interactive
+  ```
+  La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04 (carga < 10 s),
+  RNF-05 (memoria < 2 GB) y RNF-06 (paquete < 500 MB), y junto al `.exe` nace `Datos/` en la
+  primera ejecución (RNF-07, RNF-11). Entran las cinco escenas de `EditorBuildSettings`, con
+  `Boot` de primera. `/[Bb]uild[s]?/` está en `.gitignore`: el ejecutable no se versiona.
+- **Con Rider abierto**, `mcp__rider__run_unity_tests` /
   `mcp__rider__get_unity_compilation_result` corren contra el Editor **abierto** (sin cerrar/reabrir)
   y habilitan el flujo test-first del plugin `unity-coding-skills`. `unity test` queda como
   respaldo para corridas limpias y CI.
@@ -127,7 +141,10 @@ de empezar:
   esté cargando; `get_unity_editor_state` es la sonda real de «¿el puente está vivo?».
 - Si un MCP no responde, el Editor está cerrado, cargando, o el puente caído: eso **no** es que la
   suite pase, y hay que decirlo.
-- Play Mode a mano: `mcp__coplay-mcp__play_game` / `stop_game`.
+- Play Mode a mano: `mcp__coplay-mcp__play_game` / `stop_game`. Pulsar Play siempre arranca en
+  `Boot`: lo fuerza `PlayFromBoot` (`Game.EditorTools`) vía `playModeStartScene`. Se **suspende
+  solo** en batchmode y durante las corridas del Test Runner — si no, la suite PlayMode se cuelga
+  entera porque el corredor espera su `InitTestScene`. No quitar esas guardas.
 - Errores de compilación y consola: `mcp__coplay-mcp__check_compile_errors` /
   `mcp__coplay-mcp__get_unity_logs`, en vez de adivinar.
 - El MCP nativo de Unity (`com.unity.ai.assistant`, relay en `~/.unity/relay/relay_win.exe`)
@@ -152,6 +169,12 @@ antes de escribir la primera línea:
 - **Un assembly (`.asmdef`) por módulo**, dependencias en un solo sentido: `Game.Core` →
   `Game.Scaffolding` → `Game.Levels.{Fire,Wheel,River}` → `Game.Reporting`. **Ningún nivel
   referencia a otro nivel** — eso es lo que hace ejecutable la prueba de exclusión de RNF-16.
+  Fuera de esa cadena cuelgan tres assemblies más: `Game.UI` (→ `Game.Core`, `Game.Scaffolding`,
+  `UnityEngine.UI`) con los controladores de pantalla, donde va la mayor parte del código de hoy;
+  `Game.Audio` (→ `Game.Core`); y `Game.EditorTools`, **solo Editor**, que no referencia ningún
+  `Game.*`. Hoy solo tienen código `Game.Core`, `Game.Scaffolding`, `Game.UI` y `Game.EditorTools`:
+  `Game.Audio` y `Game.Levels.Fire` son `.asmdef` vacíos a la espera de su fase, y
+  `Game.Reporting` todavía no existe en disco (llega en el Slice 4).
 - **La lógica es C# plano; el MonoBehaviour es un adaptador delgado.** `GameFlow` (la FSM) no
   es MonoBehaviour: se prueba en EditMode sin escena ni frames. Igual para validadores,
   contadores y máquinas de estado de cada nivel.
@@ -165,7 +188,11 @@ antes de escribir la primera línea:
   vive en ScriptableObjects con `[field: SerializeField]` + `[Tooltip]`.
 - **Persistencia**: JSON por perfil en una carpeta `Datos/` junto al ejecutable — no
   `Application.persistentDataPath`, porque «portable» y «sin residuos» (RNF-07, RNF-11) deben
-  significar lo mismo.
+  significar lo mismo. Corriendo en el Editor esa carpeta cae en la raíz del proyecto
+  (`My project/Datos/`), con perfiles reales de las pruebas manuales; está en `.gitignore`.
+- **Probar sin ampliar la superficie pública**: un `AssemblyInfo.cs` en la raíz del módulo con
+  `[assembly: InternalsVisibleTo("<Módulo>.Tests")]` — como el de `Game.UI`. No subir un miembro
+  a `public` solo para que lo alcance una prueba.
 - Raíz de código y assets: `Assets/Game/`, namespaces `Game.*` siguiendo la ruta bajo
   `Scripts/` y elidiendo `Runtime`. Tests en `Assets/Tests/{EditMode,PlayMode}/<Módulo>/`.
 - **El nombre de la prueba es la trazabilidad.** Patrón `<Sujeto>_<Requisito>_<QuéHace>` en

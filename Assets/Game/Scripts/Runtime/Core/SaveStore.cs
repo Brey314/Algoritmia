@@ -21,9 +21,17 @@ namespace Game.Core
 
         private readonly IFileSystem _fileSystem;
 
+        /// <summary>
+        /// Las dos carpetas donde puede haber quedado un perfil, no solo la activa: un mismo
+        /// perfil pudo escribirse en «Datos/» un día y en la de respaldo otro (INC-34), y borrar
+        /// una sola dejaría media copia viva.
+        /// </summary>
+        private readonly string[] _roots;
+
         public SaveStore(IFileSystem fileSystem, string portableRoot, string fallbackRoot)
         {
             _fileSystem = fileSystem;
+            _roots = new[] { portableRoot, fallbackRoot };
 
             if (fileSystem.TryPrepareDirectory(portableRoot))
             {
@@ -56,6 +64,25 @@ namespace Game.Core
             .Select(path => path.Substring(path.LastIndexOf('/') + 1))
             .Select(file => file.Substring(0, file.Length - Extension.Length))
             .ToArray();
+
+        /// <summary>
+        /// Borra el perfil de las dos rutas. Devuelve si no quedó rastro de él en ninguna: un
+        /// borrado a medias es un residuo, y RNF-11 exige ausencia, no mejor esfuerzo (RF-47).
+        /// Es irreversible por diseño — no hay papelera ni copia de seguridad.
+        /// </summary>
+        public bool Delete(string profileName)
+        {
+            foreach (var path in _roots.Select(root => $"{root}/{profileName}{Extension}"))
+            {
+                if (_fileSystem.FileExists(path))
+                {
+                    _fileSystem.DeleteFile(path);
+                }
+            }
+
+            return !_roots.Any(root =>
+                _fileSystem.FileExists($"{root}/{profileName}{Extension}"));
+        }
 
         private string PathOf(string profileName) => $"{ActiveDirectory}/{profileName}{Extension}";
     }
