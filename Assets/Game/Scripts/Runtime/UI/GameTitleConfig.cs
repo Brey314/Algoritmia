@@ -10,6 +10,6 @@ namespace Game.UI
     public class GameTitleConfig : ScriptableObject
     {
         [field: SerializeField, Tooltip("Título que se muestra en la pantalla de inicio.")]
-        public string Title { get; private set; } = "Algoritm";
+        public string Title { get; private set; } = "Algoritmia";
     }
 }

@@ -239,7 +239,7 @@ namespace Game.UI.Tests
 
             var confirm = panel.GetComponentsInChildren<Button>(true)
                 .First(button => button.GetComponentInChildren<Text>() is { } text
-                                 && text.text.Trim() is "Crear" or "Empezar" or "Confirmar");
+                                 && text.text.Trim() is "Crear" or "Continuar" or "Empezar" or "Confirmar");
             ExecuteEvents.Execute(confirm.gameObject, new PointerEventData(EventSystem.current),
                 ExecuteEvents.pointerClickHandler);
         }

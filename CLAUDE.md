@@ -53,8 +53,28 @@ documento entero. Regenerarla solo si el `.docx` cambió:
 PYTHONIOENCODING=utf-8 markitdown "docs/<archivo>.docx" > "docs/md/<archivo>.md"
 ```
 
-`docs/md/`, `docs/actas/` y `claudeDocs/tasks/Sprites/` están en `.gitignore`: existen en este
-equipo pero no en un clon limpio. Las conversiones se rehacen con markitdown; las actas no.
+**`graphify-out/` es el grafo de conocimiento del proyecto entero — el atajo para saber dónde
+está cada cosa.** Lo construye `/graphify` sobre las 80 fuentes del repo (código, `claudeDocs/`,
+`docs/md/`, `Packages/`) y las resuelve en 1744 nodos y 3501 aristas agrupados en comunidades con
+nombre: «GameFlow, la FSM», «Persistencia de perfiles», «Andamiaje de pistas (HintPolicy)»,
+«Assemblies y prueba de arquitectura», «Nivel 1 · encendido del fuego». **Antes de rastrear a mano
+con Grep** cualquier pregunta de ubicación o de relación —dónde vive un comportamiento, qué toca un
+cambio, por dónde pasa un RF, qué depende de qué— preguntárselo al grafo:
+
+```
+graphify query "¿quién decide cuándo se muestra una pista?"
+graphify path "SaveStore" "GameFlow"       # camino más corto entre dos conceptos
+graphify explain "HintPolicy"
+```
+
+`GRAPH_REPORT.md` es el índice legible —empezar por su sección «Community Hubs»—; `graph.json` es
+el grafo para consumo de agente y `graph.html` la vista interactiva. Es una **foto**, fechada el
+08/09/2026: refrescarla con `/graphify . --update` tras un bloque de trabajo, y confirmar en el
+código lo que el grafo señale antes de citarlo — ubica, no sustituye a leer el archivo.
+
+`docs/md/`, `docs/actas/`, `claudeDocs/tasks/Sprites/` y `graphify-out/` están en `.gitignore`:
+existen en este equipo pero no en un clon limpio. Las conversiones se rehacen con markitdown, el
+grafo con `/graphify`; las actas no se rehacen.
 
 **Nunca** abrir un `.docx` con Read ni descomprimiendo el zip. markitdown ya está en el `PATH`;
 sin `PYTHONIOENCODING=utf-8` los acentos salen como mojibake. El shell por defecto de este
