@@ -224,8 +224,23 @@ exige una fase confirmada (**T17**) y la revisión con el usuario.
       pruebas Editor sobre el asset nacen verdes como en T12). **EditMode total 83/83, sin
       regresión.** Desviación anotada: prueba de no-repetición nombrada con RF-18, no RF-17.
       Detalle en `Fase-3-Resultados.md`.
-- [ ] **T14 · Panel de encendido y escena `Level1_Cave`** — `M` · `PM`
-      RF-14, RF-15, RF-17, RNF-02, RNF-03, RNF-19, CT-06, HU-06, CU-04, INC-41 · depende de: T13
+- [x] **T14 · Panel de encendido y escena `Level1_Cave`** — `M` · `PM` (10/09/2026)
+      RF-14, RF-15, RF-17, RNF-02, RNF-03, RNF-19, RNF-20, CT-06, HU-06, CU-04, INC-41 · depende de: T13
+      **Primera escena jugable del proyecto.** `Level1_Cave.unity` (Build Settings → 6 escenas):
+      deslizante de 3 posiciones (`Navigation.None`), «Golpear», «Soplar» atenuado con badge
+      **candado + «Aún no»** (RNF-19, verificado en captura VV), área de registro con `ScrollRect`,
+      montón de hojas (placeholder). `FirePanelController` (`Game.Levels.Fire`, +`UnityEngine.UI`
+      al asmdef) es adaptador puro: clic → `FireAttempt`/`FireFeedbackLog` de T12/T13, cero reglas.
+      `FeedbackLogView` renderiza `Entries` (desviación del plan: va en `Game.Levels.Fire`, no
+      `Game.UI`). **RNF-02:** asset propio `ControlesJugables.inputactions` con mapa **solo
+      puntero** (sin teclado ni gamepad); el test barre `actionsAsset.bindings`. `GameFlowRunner`
+      mapea `Playing → Level1_Cave`; `NarrativeSceneController.Leave()` entra al nivel de la
+      secuencia (cierra el «PROVISIONAL (T14)»). **PlayMode: FirePanelTests 9/9; regresión EditMode
+      83/83, PlayMode 44/44.** `N1_Config.asset` creado.
+      **T14b (incluido):** `PlayFromBoot.cs` — la suite PlayMode se colgaba al lanzarla desde el
+      MCP de Rider (`playModeStartScene` cargaba Boot, el juego arrancaba solo). El Test Framework
+      `@1405238725ab` no gestiona `playModeStartScene`; nueva guarda por reflexión sobre
+      `PlaymodeLauncher.IsRunning` en `ExitingEditMode`. Detalle en `Fase-3-Resultados.md`.
 - [ ] **T15 · Convergencia: «Soplar» → nacimiento del fuego** — `S` · `PM` + `VV`
       RF-19, RF-20, RF-04, RF-03, RNF-21, HU-07, CU-04 · depende de: T14
 - [ ] **T16 · Menú de pausa** — `M` · `EM` + `PM`

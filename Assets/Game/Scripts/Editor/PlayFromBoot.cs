@@ -1,3 +1,5 @@
+using System;
+using System.Reflection;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEditor.TestTools.TestRunner.Api;
@@ -16,13 +18,16 @@ namespace Game.EditorTools
     /// afecta al Editor**, nunca al ejecutable, donde <c>Boot</c> ya es la primera escena de Build
     /// Settings.
     ///
-    /// **Se suspende mientras corren las pruebas, y no es opcional.** El Test Framework entra a
-    /// Play con una escena propia (<c>InitTestScene&lt;guid&gt;.unity</c>); si
-    /// <c>playModeStartScene</c> se la cambia por <c>Boot</c>, el corredor se queda esperando una
-    /// escena que nunca llega y **la suite PlayMode se cuelga entera** — medido el 07/09/2026:
-    /// 1500 s sin producir informe, con `Loaded scene Boot.unity` justo después de importar la
-    /// InitTestScene en el log. De ahí las dos guardas: batchmode (por donde entra `unity test`) y
-    /// los callbacks del corredor (por donde entra la ventana Test Runner del Editor).
+    /// **Se suspende mientras corren las pruebas, y no es opcional.** El Test Framework de este
+    /// proyecto (<c>@1405238725ab</c>) **no gestiona <c>playModeStartScene</c>** —no lo menciona en
+    /// ningún archivo del paquete—, así que si no lo despejamos una corrida PlayMode entra a Play,
+    /// <c>playModeStartScene</c> carga <c>Boot</c>, el juego arranca solo y el corredor nunca recibe
+    /// el control: **la suite PlayMode se cuelga entera** (medido el 07/09/2026: 1500 s sin informe;
+    /// y de nuevo el 10/09 al lanzar la suite desde el MCP de Rider). El callback
+    /// <see cref="ICallbacks.RunStarted"/> no siempre llega antes de <c>ExitingEditMode</c> —depende
+    /// de quién lance la corrida—, así que la guarda principal es el flag interno del corredor,
+    /// consultado por reflexión en <see cref="OnPlayModeStateChanged"/>. Batchmode (por donde entra
+    /// <c>unity test</c>) se despeja aparte, en el constructor.
     ///
     /// Para depurar una escena aislada, basta con vaciar el campo en Project Settings.
     /// </remarks>
@@ -42,10 +47,55 @@ namespace Game.EditorTools
                 return;
             }
 
-            Apply();
+            EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
 
             var api = ScriptableObject.CreateInstance<TestRunnerApi>();
             api.RegisterCallbacks(new SuspendWhileTestsRun());
+
+            RefreshStartScene();
+        }
+
+        private static void OnPlayModeStateChanged(PlayModeStateChange change)
+        {
+            switch (change)
+            {
+                // Antes de que Unity consulte playModeStartScene: si el corredor de pruebas está
+                // arrancando esta entrada a Play, la escena de arranque tiene que ser la suya.
+                case PlayModeStateChange.ExitingEditMode when PlaymodeTestsRunning():
+                    Suspend();
+                    break;
+                // De vuelta en el Editor tras una corrida: restablece el arranque por Boot.
+                case PlayModeStateChange.EnteredEditMode:
+                    RefreshStartScene();
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// <c>UnityEditor.TestTools.TestRunner.PlaymodeLauncher.IsRunning</c>: flag interno estable
+        /// —lo usa también el graphics test framework para distinguir EditMode de PlayMode— sin
+        /// visibilidad pública, de ahí la reflexión. Si la API desapareciera, el peor caso es
+        /// volver al comportamiento anterior (la guarda de <see cref="ICallbacks.RunStarted"/>
+        /// sigue puesta).
+        /// </summary>
+        private static bool PlaymodeTestsRunning()
+        {
+            var type = Type.GetType(
+                "UnityEditor.TestTools.TestRunner.PlaymodeLauncher, UnityEditor.TestRunner");
+            var field = type?.GetField("IsRunning", BindingFlags.Public | BindingFlags.Static);
+            return field?.GetValue(null) is true;
+        }
+
+        private static void RefreshStartScene()
+        {
+            if (PlaymodeTestsRunning())
+            {
+                Suspend();
+            }
+            else
+            {
+                Apply();
+            }
         }
 
         private static void Apply()
@@ -64,7 +114,7 @@ namespace Game.EditorTools
         {
             public void RunStarted(ITestAdaptor testsToRun) => Suspend();
 
-            public void RunFinished(ITestResultAdaptor result) => Apply();
+            public void RunFinished(ITestResultAdaptor result) => RefreshStartScene();
 
             public void TestStarted(ITestAdaptor test)
             {

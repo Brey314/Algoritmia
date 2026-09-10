@@ -30,6 +30,9 @@ namespace Game.Core
                 // Una sola escena para las quince escenas narrativas del guion: el estado lleva
                 // el id de la secuencia y la escena la resuelve (RF-05, RNF-06).
                 [GameState.Narrative] = "Narrative",
+                // Hoy solo existe el Nivel 1. Cuando lleguen Rueda y Río (Slice 2/3), el mapeo de
+                // Playing será por LevelId, no una sola entrada.
+                [GameState.Playing] = "Level1_Cave",
                 [GameState.Credits] = "Credits"
             };
 
