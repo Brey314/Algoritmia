@@ -37,13 +37,49 @@ comunicación con el usuario en español.
 | `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 30/08/2026, rev. 6 — los hallazgos `INC-01`..`INC-42` están cerrados en los documentos; queda abierto `INC-43` (el guion §12 aún declara `PG-07` pendiente pese a estar concedida la autorización), más residuos cosméticos y los puntos abiertos del guion. |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las diecisiete superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
-| `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. Los cuatro slices están planeados y entre ellos cubren los 47 RF: `Slice 1` Golden Path y nivel fuego · `Slice 2` La Rueda · `Slice 3` El Río y cierre del juego · `Slice 4` progreso, informe docente y borrado de datos. **Se ejecutan en orden**: cada uno supone terminado el anterior. Ninguno rediscute `SPEC.md`. |
+| `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. Los cuatro slices están planeados y entre ellos cubren los 47 RF: `Slice 1` Golden Path y nivel fuego · `Slice 2` La Rueda · `Slice 3` El Río y cierre del juego · `Slice 4` progreso, informe docente y borrado de datos. **Se planean en orden y cada uno supone terminado el anterior**, pero desde el 10/09/2026 el Slice 1 y el Slice 2 corren en paralelo — ver «Dos slices a la vez» abajo. Ninguno rediscute `SPEC.md`. |
 | `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión ya hecha con markitdown. **Nunca editar ninguno de los dos desde código.** |
-| `docs/actas/*.md` | Actas de seguimiento semanales: qué se decidió, cuándo y por qué. Raíz = fase de conceptualización (abr–jun 2026), `requerimientos/` = OE1 (jun–ago), `objetivo2/` = OE2 (ago–sep). Son la trazabilidad de las decisiones; consultarlas cuando haga falta el *porqué* de un RF, no reabrirlas. |
-| `docs/actas/tablero_kanban.md` + `.csv` | El tablero Kanban reconstruido desde la sección «Compromisos y tablero Kanban» de cada acta: tarjeta, responsable, fecha límite, acta de apertura y acta de cierre. Refleja el estado **a una fecha de corte** (hoy por omisión); las actas posteriores se ignoran. **Generado, no editable a mano** — `python docs/actas/tablero.py` lo rehace tras añadir un acta; `tablero.py --hasta AAAA-MM-DD` mueve la fecha de corte. `subir_tablero.py --dry-run` previsualiza y sin la bandera publica cada tarjeta como issue en GitHub Projects — requiere `gh` autenticado con `gh auth refresh -s project,read:project`; es idempotente, se puede recorrer tras cada acta nueva. |
+| `docs/actas/OE*/Acta_*.md` | Actas de seguimiento: qué se decidió, cuándo y por qué. Una carpeta por objetivo específico —`OE2/` serie `O01..O03` (ago 2026), `OE3/` serie `D01..D04` (sep 2026, la abierta)— y dentro `Acta_<serie><NN>_AAAA-MM-DD.md` junto a su `.docx`. Son la trazabilidad de las decisiones; consultarlas cuando haga falta el *porqué* de un RF, no reabrirlas. **No hay tablero Kanban aparte**: el tablero vive en la §6 de cada acta («Compromisos y tablero Kanban»), con los compromisos nuevos y los movimientos al cierre. Ojo al leerlo hacia atrás: **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` en los movimientos posteriores—, así que una tarjeta se rastrea por su texto, no por su id. |
 
 **Dónde empezar una sesión de código:** en la primera casilla sin marcar del `todo.md` del
-slice abierto más bajo. No abrir un slice sin haber cerrado el anterior.
+slice abierto más bajo, salvo que la sesión trabaje el carril paralelo del Slice 2.
+
+**Dos slices a la vez (decisión del 10/09/2026).** El Slice 1 va por la Fase 3 (nivel fuego,
+T12–T19) mientras el Slice 2 arranca por su carril propio. **El reparto es por assembly, no por
+slice** — es lo único que evita que los dos carriles se pisen:
+
+| Carril | Tareas | Toca |
+|---|---|---|
+| **Slice 1 · Fase 3** | T12–T19 | `Game.Levels.Fire`, `Game.Core`, escenas del N1 |
+| **Slice 2 · adelantado** | **W01 → W10 → W11 → W12**, y luego W03/W04 | `Game.Levels.Wheel` (nuevo), `Game.Scaffolding` |
+
+Se adelanta W10–W12 y no el orden narrativo porque INC-33 —«Avanzar» leído como absoluto en vez
+de relativo a la orientación de la carretilla— es el mayor riesgo del slice y se prueba entero en
+EditMode sin escena (`plan.md` §Riesgos R3, pregunta abierta 4).
+
+**Lo que el carril del Slice 2 no puede tomar todavía**, porque escribe los mismos archivos que la
+Fase 3 o depende de lo que produce:
+
+- **W02** (`PhaseId`) — toca `PlayerProfile.cs` y `SaveStore.cs`, igual que T17. Sus dependencias
+  formales (T02, T07) ya están cerradas, así que el freno es la colisión, no el grafo: va después
+  de que T17 esté mergeado, o lo hace quien haga T17.
+- **W15** necesita `ILevelReporter`, que crea **T17** · **W17** necesita **T16** · **W16** cuelga
+  de ambas.
+
+Todo lo demás del Slice 2 (W01, W03–W14, W18) es independiente de la Fase 3.
+
+Los `todo.md` mandan sobre esta tabla si se contradicen. El **R2 del `todo.md` del Slice 2**
+(«no abrir W02 antes del Checkpoint D»; «solo W01 y W10 son independientes») se escribió con el
+Slice 1 en cero y **está desactualizado** en la segunda mitad: hoy también son independientes W03,
+W04 y W11–W12. Su freno sobre W02 sigue vigente por la razón de arriba.
+
+**Del Slice 1 quedan además dos casillas `[~]` que no son de la Fase 3** y bloquean el
+Checkpoint D: los residuos en `%AppData%\LocalLow\` (RNF-11/RNF-08 — decisiones pendientes sobre
+`com.unity.modules.unityanalytics` y `usePlayerLog`) y el clic que confirma RNF-14 al reabrir el
+ejecutable.
+
+**`unity test` abre su propia instancia batchmode y exige el Editor cerrado**: dos carriles en la
+misma máquina no pueden correr pruebas a la vez.
 
 **Leer un documento fuente:** usar la conversión ya hecha en `docs/md/<mismo nombre>.md` —
 se lee con Read y se busca con Grep, que es lo que hace viable citar un RF sin releer el
@@ -198,8 +234,10 @@ antes de escribir la primera línea:
 - **La lógica es C# plano; el MonoBehaviour es un adaptador delgado.** `GameFlow` (la FSM) no
   es MonoBehaviour: se prueba en EditMode sin escena ni frames. Igual para validadores,
   contadores y máquinas de estado de cada nivel.
-- **Estados parametrizados, no uno por escena.** `Narrative` recibe un `NarrativeSequence`
-  (ScriptableObject) y se resuelve en una única escena reutilizable; `Playing` recibe
+- **Estados parametrizados, no uno por escena.** `Narrative` lleva el **id** de la secuencia
+  (`GameFlow.NarrativeSequenceId`, un `string`), no el `NarrativeSequence` en sí: ese SO vive en
+  `Game.Scaffolding`, que depende de `Game.Core` y no al revés. Quien resuelve id → asset es la
+  capa de arriba, y todo se reproduce en una única escena reutilizable; `Playing` recibe
   `LevelId` + fase. Añadir una escena narrativa = crear un asset, no un estado y una rama.
 - **Interfaz inyectada donde hay un consumidor conocido; evento solo con varios oyentes.**
   No hay `EventBus` global.
