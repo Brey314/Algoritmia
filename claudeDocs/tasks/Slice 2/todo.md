@@ -158,9 +158,36 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ## Fase 2 — Bosque: selección por patrón (`nivel-rueda`, fase 1)
 
-- [ ] **W05 · `WheelLevelConfig`, `ForestObject`, `PatternSelection`** — `M` · `EM`
+- [x] **W05 · `WheelLevelConfig`, `ForestObject`, `PatternSelection`** — `M` · `EM` (10/09/2026)
       RF-23, RF-24, RF-11, RF-17, RF-18, CT-05, RNF-18, RNF-01, CP-02, HU-08, CU-06,
       guion §6.1.2 · depende de: W04
+      Los tres tipos que pedía el plan más `Assets/Game/Data/Wheel/N2_WheelLevelConfig.asset`:
+      cinco troncos redondos entre nueve distractores (tres piedras, tres plantas, tres
+      herramientas) y los cuatro mensajes del guion §6.1.2, uno por categoría.
+      **El patrón se quedó en el código a propósito.** Qué se pide acopiar —lo redondo— es la
+      mecánica del nivel, no un parámetro que se ajuste jugando: moverlo al asset no lo haría
+      configurable, lo haría rompible. Al asset fue todo lo que sí es parámetro: cuántos, cuáles,
+      qué dice cada categoría y **el formato del contador**, que es lo que hace verificable RNF-18
+      sin leer el código —`WheelLevelConfig_RNF18_…` corre la misma lógica contra dos
+      configuraciones distintas y comprueba que sigue a la que le den.
+      **El contador de RF-24 lleva una cifra y no contradice CP-03**: dice cuánto falta de la
+      tarea, no qué tan bien lo hizo el estudiante. Queda escrito en el `<remarks>` de
+      `CounterText` para que nadie lo «limpie», y el barrido de CP-03 excluye ese formato a
+      propósito y solo mira los mensajes de retroalimentación.
+      **Un tercer resultado que no estaba en el plan**: un objeto ya acopiado no devuelve
+      `Accepted` ni mensaje —cadena vacía—, porque no hubo intento que describir. Era la única
+      forma de cumplir «no se cuenta dos veces» sin inventar una frase de rechazo para algo que
+      el estudiante hizo bien.
+      **Deviación de nombre**: el plan pedía `PatternSelection_RF23_CadaCategoriaDeDistractor…` y
+      así quedó, pero se añadieron cinco pruebas que los criterios de aceptación exigían y la
+      lista de verificación no nombraba: el doble conteo (RF-24), el fin de fase (RF-23), el
+      inventario del asset (RF-24), la pregunta del acierto (RF-11) y RNF-01 sobre los mensajes.
+      `WheelLevelConfig.Create` es costura de prueba: `internal` tras
+      `[assembly: InternalsVisibleTo]` y sellada con `#if UNITY_INCLUDE_TESTS`.
+      RED **5/11** —las cinco que leen el asset, con el asset todavía sin crear; las seis de
+      lógica pura ya pasaban— → GREEN **EditMode 88/88**, 0 errores, 0 warnings.
+      **PlayMode no se corrió**: W05 no toca escena ni MonoBehaviour y `Game.Levels.Wheel` no lo
+      referencia nadie todavía. Se declara así, no como suite verde.
 - [ ] **W06 · Escena `Level2_Forest` y panel de selección** — `M` · `PM` `MCP`
       RF-22, RF-23, RF-24, RF-10, RF-13, RNF-02, RNF-03, RNF-19, CT-06, HU-08, CU-06 · depende de: W05
 - [ ] **W07 · Colocación de la carga y demostración del rodado** — `M` · `PM` + `VV` `MCP`
