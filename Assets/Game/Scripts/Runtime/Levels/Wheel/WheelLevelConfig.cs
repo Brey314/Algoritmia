@@ -79,6 +79,10 @@ namespace Game.Levels.Wheel
         [field: Tooltip("Un mensaje por categoría, incluida la del acierto (guion §6.1.2).")]
         public CategoryFeedback[] Feedback { get; private set; } = Array.Empty<CategoryFeedback>();
 
+        [field: SerializeField]
+        [field: Tooltip("Cómo reacciona cada categoría al paso del cursor. Uno por categoría; es tacto y se ajusta jugando.")]
+        public NudgeSettings[] Nudges { get; private set; } = Array.Empty<NudgeSettings>();
+
         /// <summary>
         /// El mensaje de una categoría, o cadena vacía si el asset todavía no lo tiene. Vacío y no
         /// excepción: un contenido incompleto deja al estudiante sin frase, nunca sin partida
@@ -86,6 +90,14 @@ namespace Game.Levels.Wheel
         /// </summary>
         public string MessageFor(ForestObjectCategory category) =>
             Feedback.FirstOrDefault(entry => entry.Category == category)?.Message ?? string.Empty;
+
+        /// <summary>
+        /// Cómo se aparta esa categoría al paso del cursor, o <c>null</c> si el asset todavía no lo
+        /// dice. Nulo y no excepción, y quien lo consuma se limita a no animar: el movimiento es
+        /// adorno, y un adorno que falta nunca puede dejar sin partida a nadie (CP-02).
+        /// </summary>
+        public NudgeSettings NudgeFor(ForestObjectCategory category) =>
+            Nudges.FirstOrDefault(entry => entry.Category == category);
 
 #if UNITY_INCLUDE_TESTS
         /// <summary>

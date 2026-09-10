@@ -207,6 +207,46 @@ namespace Game.Levels.Wheel.Tests
                 "hay un mensaje por categoría y ninguno repetido (guion §6.1.2)");
         }
 
+        [Test]
+        public void WheelLevelConfig_RF23_CadaCategoriaDelBosqueSeDibujaConUnSoloSprite()
+        {
+            // Un sprite por categoría y no uno por objeto. Con arte generado, cinco troncos
+            // «parecidos pero no iguales» son cinco oportunidades de que uno deje de leerse como
+            // redondo; uno solo, repetido, no puede desmentir el patrón que RF-23 pide encontrar.
+            var porCategoria = ConfiguracionDelNivel2().ForestObjects
+                .GroupBy(objeto => objeto.Category)
+                .ToDictionary(grupo => grupo.Key,
+                    grupo => grupo.Select(objeto => objeto.Art).Distinct().ToArray());
+
+            var conVariasIlustraciones = porCategoria
+                .Where(par => par.Value.Length != 1)
+                .Select(par => $"{par.Key} usa {par.Value.Length} sprites")
+                .ToArray();
+
+            Assert.That(conVariasIlustraciones, Is.Empty, string.Join(" · ", conVariasIlustraciones));
+
+            var sprites = porCategoria.Values.SelectMany(unos => unos).ToArray();
+            Assert.That(sprites.Distinct().Count(), Is.EqualTo(sprites.Length),
+                "ninguna categoría comparte sprite con otra: el patrón se busca mirando (RF-23)");
+        }
+
+        [Test]
+        public void WheelLevelConfig_RF22_DosObjetosDelMismoSpriteNoAparecenEnLaMismaPostura()
+        {
+            // Compartir sprite solo funciona si la postura cambia: catorce copias idénticas serían
+            // papel pintado, no un bosque, y el ojo dejaría de recorrerlo.
+            var repetidas = ConfiguracionDelNivel2().ForestObjects
+                .GroupBy(objeto => objeto.Art)
+                .SelectMany(porSprite => porSprite
+                    .GroupBy(objeto => (objeto.RotationDegrees, objeto.Mirrored))
+                    .Where(postura => postura.Count() > 1)
+                    .Select(postura => string.Join(" y ", postura.Select(objeto => objeto.Id))))
+                .ToArray();
+
+            Assert.That(repetidas, Is.Empty,
+                $"aparecen calcados: {string.Join(" · ", repetidas)}");
+        }
+
         // --- helpers ---------------------------------------------------------------------------
 
         private static WheelLevelConfig ConfiguracionDePrueba() => WheelLevelConfig.Create(

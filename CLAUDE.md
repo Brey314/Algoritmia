@@ -45,33 +45,21 @@ comunicación con el usuario en español.
 slice abierto más bajo, salvo que la sesión trabaje el carril paralelo del Slice 2.
 
 **Dos slices a la vez (decisión del 10/09/2026).** El Slice 1 va por la Fase 3 (nivel fuego,
-T12–T19) mientras el Slice 2 arranca por su carril propio. **El reparto es por assembly, no por
-slice** — es lo único que evita que los dos carriles se pisen:
+T12–T19) mientras el Slice 2 corre por su carril. **El reparto es por assembly, no por slice** —
+es lo único que evita que los dos carriles se pisen:
 
-| Carril | Tareas | Toca |
-|---|---|---|
-| **Slice 1 · Fase 3** | T12–T19 | `Game.Levels.Fire`, `Game.Core`, escenas del N1 |
-| **Slice 2 · adelantado** | **W01 → W10 → W11 → W12**, y luego W03/W04 | `Game.Levels.Wheel` (nuevo), `Game.Scaffolding` |
+| Carril | Toca |
+|---|---|
+| **Slice 1 · Fase 3** (T12–T19) | `Game.Levels.Fire`, `Game.Core`, escenas del N1 |
+| **Slice 2** | `Game.Levels.Wheel`, `Game.Scaffolding` |
 
-Se adelanta W10–W12 y no el orden narrativo porque INC-33 —«Avanzar» leído como absoluto en vez
-de relativo a la orientación de la carretilla— es el mayor riesgo del slice y se prueba entero en
-EditMode sin escena (`plan.md` §Riesgos R3, pregunta abierta 4).
+**El orden de las tarjetas y qué está abierto se lee en los dos `todo.md`, no aquí** — una copia
+de ese estado en este archivo se queda vieja en dos commits. Los cruces entre carriles que siguen
+vivos: **W15** necesita `ILevelReporter`, que crea **T17** · **W17** necesita **T16** · **W16**
+cuelga de ambas.
 
-**Lo que el carril del Slice 2 no puede tomar todavía**, porque escribe los mismos archivos que la
-Fase 3 o depende de lo que produce:
-
-- **W02** (`PhaseId`) — toca `PlayerProfile.cs` y `SaveStore.cs`, igual que T17. Sus dependencias
-  formales (T02, T07) ya están cerradas, así que el freno es la colisión, no el grafo: va después
-  de que T17 esté mergeado, o lo hace quien haga T17.
-- **W15** necesita `ILevelReporter`, que crea **T17** · **W17** necesita **T16** · **W16** cuelga
-  de ambas.
-
-Todo lo demás del Slice 2 (W01, W03–W14, W18) es independiente de la Fase 3.
-
-Los `todo.md` mandan sobre esta tabla si se contradicen. El **R2 del `todo.md` del Slice 2**
-(«no abrir W02 antes del Checkpoint D»; «solo W01 y W10 son independientes») se escribió con el
-Slice 1 en cero y **está desactualizado** en la segunda mitad: hoy también son independientes W03,
-W04 y W11–W12. Su freno sobre W02 sigue vigente por la razón de arriba.
+**Aviso a quien haga T17:** W02 ya reescribió `PlayerProfile`. `ConfirmPhase(LevelId, int, …)` no
+existe; se pasa un `PhaseId` (`Game.Core`). El formato del JSON no cambió.
 
 **Del Slice 1 quedan además dos casillas `[~]` que no son de la Fase 3** y bloquean el
 Checkpoint D: los residuos en `%AppData%\LocalLow\` (RNF-11/RNF-08 — decisiones pendientes sobre
@@ -108,9 +96,9 @@ el grafo para consumo de agente y `graph.html` la vista interactiva. Es una **fo
 08/09/2026: refrescarla con `/graphify . --update` tras un bloque de trabajo, y confirmar en el
 código lo que el grafo señale antes de citarlo — ubica, no sustituye a leer el archivo.
 
-`docs/md/`, `docs/actas/`, `claudeDocs/tasks/Sprites/` y `graphify-out/` están en `.gitignore`:
-existen en este equipo pero no en un clon limpio. Las conversiones se rehacen con markitdown, el
-grafo con `/graphify`; las actas no se rehacen.
+`docs/md/`, `docs/actas/` y `graphify-out/` están en `.gitignore`: existen en este equipo pero no
+en un clon limpio. Las conversiones se rehacen con markitdown, el grafo con `/graphify`; las
+actas no se rehacen.
 
 **Nunca** abrir un `.docx` con Read ni descomprimiendo el zip. markitdown ya está en el `PATH`;
 sin `PYTHONIOENCODING=utf-8` los acentos salen como mojibake. El shell por defecto de este
@@ -228,9 +216,10 @@ antes de escribir la primera línea:
   Fuera de esa cadena cuelgan tres assemblies más: `Game.UI` (→ `Game.Core`, `Game.Scaffolding`,
   `UnityEngine.UI`) con los controladores de pantalla, donde va la mayor parte del código de hoy;
   `Game.Audio` (→ `Game.Core`); y `Game.EditorTools`, **solo Editor**, que no referencia ningún
-  `Game.*`. Hoy solo tienen código `Game.Core`, `Game.Scaffolding`, `Game.UI` y `Game.EditorTools`:
-  `Game.Audio` y `Game.Levels.Fire` son `.asmdef` vacíos a la espera de su fase, y
-  `Game.Reporting` todavía no existe en disco (llega en el Slice 4).
+  `Game.*`. Hoy tienen código `Game.Core`, `Game.Scaffolding`, `Game.UI`, `Game.Levels.Wheel` y
+  `Game.EditorTools`: `Game.Audio` y `Game.Levels.Fire` son `.asmdef` vacíos a la espera de su
+  fase —igual que sus dos `.asmdef` de prueba—, y `Game.Reporting` todavía no existe en disco
+  (llega en el Slice 4).
 - **La lógica es C# plano; el MonoBehaviour es un adaptador delgado.** `GameFlow` (la FSM) no
   es MonoBehaviour: se prueba en EditMode sin escena ni frames. Igual para validadores,
   contadores y máquinas de estado de cada nivel.

@@ -21,9 +21,16 @@ namespace Game.Levels.Wheel
     }
 
     /// <summary>
-    /// Un objeto tirado por el bosque: su identidad y la categoría que decide si comparte el
-    /// patrón (RF-23, guion §6.1.2).
+    /// Un objeto tirado por el bosque: su identidad, la categoría que decide si comparte el
+    /// patrón (RF-23, guion §6.1.2) y cómo aparece puesto en el suelo.
     /// </summary>
+    /// <remarks>
+    /// **Una ilustración por categoría, no una por objeto.** Los cinco troncos apuntan al mismo
+    /// sprite y se distinguen por <see cref="RotationDegrees"/> y <see cref="Mirrored"/>. Con arte
+    /// generado, cinco troncos «parecidos pero no iguales» son cinco oportunidades de que uno deje
+    /// de leerse como redondo, que es justo lo que RF-23 pide encontrar; uno solo, girado, no
+    /// puede desmentir el patrón. De paso el arte del nivel baja de quince piezas a cuatro.
+    /// </remarks>
     [Serializable]
     public class ForestObject
     {
@@ -47,14 +54,26 @@ namespace Game.Levels.Wheel
         [field: Tooltip("Dónde cae en el suelo, en fracción del área jugable: (0,0) abajo a la izquierda, (1,1) arriba a la derecha.")]
         public Vector2 FloorPosition { get; private set; } = new Vector2(0.5f, 0.5f);
 
+        [field: SerializeField]
+        [field: Range(-180f, 180f)]
+        [field: Tooltip("Cuántos grados aparece girado sobre el suelo. Es lo que da variedad al bosque sin pedir más arte.")]
+        public float RotationDegrees { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("Si aparece volteado en horizontal. El espejo lo hace Unity con la escala: no hace falta un segundo sprite.")]
+        public bool Mirrored { get; private set; }
+
         public ForestObject(string id, ForestObjectCategory category, string displayName = null,
-            Sprite art = null, Vector2 floorPosition = default)
+            Sprite art = null, Vector2 floorPosition = default,
+            float rotationDegrees = 0f, bool mirrored = false)
         {
             Id = id;
             Category = category;
             DisplayName = displayName ?? id;
             Art = art;
             FloorPosition = floorPosition == default ? new Vector2(0.5f, 0.5f) : floorPosition;
+            RotationDegrees = rotationDegrees;
+            Mirrored = mirrored;
         }
 
         /// <summary>Requerido por la serialización de Unity.</summary>

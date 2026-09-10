@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Linq;
 using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace Game.Levels.Wheel
@@ -91,16 +93,17 @@ namespace Game.Levels.Wheel
         [SerializeField] private Color rejectedColor = new Color(0.60f, 0.36f, 0.10f);
         [SerializeField] private Color helpColor = new Color(0.24f, 0.30f, 0.44f);
 
-        private readonly List<(ForestObject Object, Button Button)> _spawned =
-            new List<(ForestObject, Button)>();
+        private readonly List<(ForestObject Object, Button Button, ForestObjectNudge Nudge)> _spawned =
+            new List<(ForestObject, Button, ForestObjectNudge)>();
 
         private readonly List<Image> _slots = new List<Image>();
 
         private PatternSelection _selection;
         private HintPolicy _hints;
+        private Canvas _canvas;
 
 #if UNITY_INCLUDE_TESTS
-        internal IReadOnlyList<(ForestObject Object, Button Button)> Spawned => _spawned;
+        internal IReadOnlyList<(ForestObject Object, Button Button, ForestObjectNudge Nudge)> Spawned => _spawned;
         internal IReadOnlyList<Image> Slots => _slots;
         internal PatternSelection Selection => _selection;
         internal Text CounterLabel => counterLabel;
@@ -114,6 +117,7 @@ namespace Game.Levels.Wheel
         {
             _selection = new PatternSelection(config);
             _hints = new HintPolicy(StepForPhase1());
+            _canvas = floorArea.GetComponentInParent<Canvas>();
 
             objectTemplate.gameObject.SetActive(false);
             inventorySlotTemplate.gameObject.SetActive(false);
@@ -162,6 +166,13 @@ namespace Game.Levels.Wheel
             rect.anchorMax = forestObject.FloorPosition;
             rect.anchoredPosition = Vector2.zero;
 
+            // Giro y espejo vienen del asset porque **una categoría entera comparte un solo
+            // sprite**: la variedad del bosque la pone la postura, no quince ilustraciones. El
+            // espejo va por escala negativa en X y no por un segundo sprite volteado, que sería
+            // arte duplicado para lo que el motor hace gratis.
+            rect.localRotation = Quaternion.Euler(0f, 0f, forestObject.RotationDegrees);
+            rect.localScale = new Vector3(forestObject.Mirrored ? -1f : 1f, 1f, 1f);
+
             // El objeto **es** su ilustración: no lleva tarjeta ni rótulo debajo, está tirado en el
             // suelo del bosque. Cambiar el arte es repuntar `Art` en el asset (RNF-23, RNF-18).
             var image = button.image;
@@ -172,7 +183,11 @@ namespace Game.Levels.Wheel
             button.gameObject.SetActive(true);
             button.onClick.AddListener(() => Choose(forestObject, button));
 
-            _spawned.Add((forestObject, button));
+            // Sin ajuste en el asset el objeto simplemente no se anima. Nulo y no excepción: el
+            // movimiento es adorno, y un adorno que falta no puede dejar a nadie sin partida.
+            var nudge = config.NudgeFor(forestObject.Category);
+            _spawned.Add((forestObject, button,
+                nudge != null ? new ForestObjectNudge(nudge, forestObject.FloorPosition, SueloUnitario) : null));
         }
 
         /// <summary>
@@ -198,7 +213,7 @@ namespace Game.Levels.Wheel
             }
 
             Canvas.ForceUpdateCanvases();
-            foreach (var (_, button) in _spawned)
+            foreach (var (_, button, _) in _spawned)
             {
                 Apartar((RectTransform)button.transform);
             }
@@ -220,24 +235,123 @@ namespace Game.Levels.Wheel
                 }
 
                 var tablilla = EnPantalla(estorbo);
-                var margen = 8f * objeto.lossyScale.x;
+
+                // La conversión de píxeles a `anchoredPosition` va con la escala **del suelo**, no
+                // con la del objeto: `anchoredPosition` se mide en el espacio del padre, y desde
+                // que un objeto puede aparecer en espejo su propia `lossyScale.x` es negativa —
+                // usarla mandaba el objeto hacia el lado contrario, más adentro de la tablilla.
+                var escala = objeto.parent != null ? Mathf.Abs(objeto.parent.lossyScale.x) : 1f;
+                if (Mathf.Approximately(escala, 0f))
+                {
+                    return;
+                }
+
+                var margen = 8f * escala;
                 var destino = tablilla.center.x < Screen.width / 2f
                     ? tablilla.xMax + caja.width / 2f + margen
                     : tablilla.xMin - caja.width / 2f - margen;
 
-                objeto.anchoredPosition += new Vector2(
-                    (destino - caja.center.x) / objeto.lossyScale.x, 0f);
+                objeto.anchoredPosition += new Vector2((destino - caja.center.x) / escala, 0f);
                 Canvas.ForceUpdateCanvases();
             }
         }
 
+        /// <summary>El suelo en fracciones, que es el espacio en que se mueven los objetos.</summary>
+        private static Rect SueloUnitario => new Rect(0f, 0f, 1f, 1f);
+
+        /// <summary>
+        /// Aparta los objetos por los que pasa el cursor.
+        /// </summary>
+        /// <remarks>
+        /// **`Mouse.current` del Input System nuevo, nunca la clase `Input` legada** (CT-06). Sin
+        /// ratón conectado —o en batchmode— no hay nada que animar y se sale: el nivel se juega
+        /// igual, porque esto no es un control sino un adorno.
+        /// </remarks>
+        private void Update()
+        {
+            var mouse = Mouse.current;
+            if (mouse == null)
+            {
+                return;
+            }
+
+            Nudge(mouse.position.ReadValue(), Time.deltaTime);
+        }
+
+        /// <summary>
+        /// Un fotograma de movimiento con el cursor donde diga, en píxeles de pantalla.
+        /// </summary>
+        /// <remarks>
+        /// Separado de <see cref="Update"/> para poder empujar los objetos desde una prueba sin
+        /// fabricar eventos de ratón: lo que hay que verificar es que se apartan y que no tocan
+        /// nada más, no que el Input System entrega la posición.
+        /// </remarks>
+        internal void Nudge(Vector2 screenCursor, float deltaTime)
+        {
+            if (!TryFloorPoint(screenCursor, out var cursor))
+            {
+                return;
+            }
+
+            foreach (var (_, button, nudge) in _spawned.Where(entrada => entrada.Nudge != null))
+            {
+                nudge.Step(cursor, deltaTime);
+
+                var rect = (RectTransform)button.transform;
+                rect.anchorMin = nudge.Position;
+                rect.anchorMax = nudge.Position;
+            }
+        }
+
+        /// <summary>El cursor en fracción del suelo, el mismo espacio que <c>FloorPosition</c>.</summary>
+        /// <remarks>
+        /// **Sin recortar a 0..1 a propósito.** Recortarlo haría que un cursor fuera del suelo se
+        /// leyera como pegado al borde, y los objetos de la orilla se apartarían de un ratón que
+        /// está en la barra del contador. La distancia tiene que poder ser mayor que uno.
+        /// </remarks>
+        private bool TryFloorPoint(Vector2 screenCursor, out Vector2 fraction)
+        {
+            fraction = default;
+            var camera = _canvas != null && _canvas.renderMode != RenderMode.ScreenSpaceOverlay
+                ? _canvas.worldCamera
+                : null;
+
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                    floorArea, screenCursor, camera, out var local))
+            {
+                return false;
+            }
+
+            var suelo = floorArea.rect;
+            if (suelo.width <= 0f || suelo.height <= 0f)
+            {
+                return false;
+            }
+
+            fraction = new Vector2(
+                (local.x - suelo.xMin) / suelo.width,
+                (local.y - suelo.yMin) / suelo.height);
+            return true;
+        }
+
         /// <summary>La caja del elemento en píxeles de pantalla, que es donde se pulsa.</summary>
+        /// <remarks>
+        /// Se envuelve por mínimos y máximos de las cuatro esquinas, y **no** con
+        /// <c>esquinas[0]</c>..<c>esquinas[2]</c> como esquinas opuestas: eso solo vale con el
+        /// objeto sin girar. En cuanto uno aparece a 45° la resta sale negativa, el <c>Rect</c>
+        /// queda de tamaño negativo y <c>Overlaps</c> deja de detectar nada — el reparto creería
+        /// que ningún objeto estorba y la comprobación pasaría sola.
+        /// </remarks>
         private static Rect EnPantalla(RectTransform rect)
         {
             var esquinas = new Vector3[4];
             rect.GetWorldCorners(esquinas);
-            return new Rect(esquinas[0].x, esquinas[0].y,
-                esquinas[2].x - esquinas[0].x, esquinas[2].y - esquinas[0].y);
+
+            var minX = Mathf.Min(esquinas[0].x, esquinas[1].x, esquinas[2].x, esquinas[3].x);
+            var minY = Mathf.Min(esquinas[0].y, esquinas[1].y, esquinas[2].y, esquinas[3].y);
+            var maxX = Mathf.Max(esquinas[0].x, esquinas[1].x, esquinas[2].x, esquinas[3].x);
+            var maxY = Mathf.Max(esquinas[0].y, esquinas[1].y, esquinas[2].y, esquinas[3].y);
+            return new Rect(minX, minY, maxX - minX, maxY - minY);
         }
 
         /// <summary>Una casilla vacía por tronco requerido; se llenan en orden de acopio.</summary>

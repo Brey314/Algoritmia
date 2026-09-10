@@ -2,7 +2,9 @@
     "name": "Game.EditorTools",
     "rootNamespace": "Game.EditorTools",
     "references": [
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "Unity.InputSystem",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [
         "Editor"

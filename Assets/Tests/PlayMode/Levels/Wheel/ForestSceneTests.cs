@@ -42,7 +42,7 @@ namespace Game.Levels.Wheel.Tests
         {
             var forest = await OpenForest();
 
-            foreach (var (objeto, boton) in forest.Spawned)
+            foreach (var (objeto, boton, _) in forest.Spawned)
             {
                 // El objeto es su ilustración: sin tarjeta ni rótulo, tirado en el suelo.
                 Assert.That(boton.image.sprite, Is.SameAs(objeto.Art),
@@ -53,9 +53,22 @@ namespace Game.Levels.Wheel.Tests
             }
 
             // Distintas categorías traen ilustraciones distintas: el patrón se busca mirando, así
-            // que si todos compartieran sprite la fase no se podría jugar (RF-23).
-            Assert.That(forest.Spawned.Select(entrada => entrada.Object.Art).Distinct().Count(),
-                Is.EqualTo(forest.Spawned.Count), "cada objeto tiene su propia ilustración");
+            // que si todas compartieran sprite la fase no se podría jugar (RF-23).
+            //
+            // **Se exige por categoría y no por objeto.** Antes se pedía un sprite distinto para
+            // cada uno de los catorce; con arte generado eso son cinco troncos «parecidos pero no
+            // iguales» y cinco oportunidades de que uno deje de leerse como redondo. Lo que RF-23
+            // necesita es que las categorías no se confundan entre sí, y eso es lo que se afirma
+            // aquí; que dentro de una categoría no salgan calcados lo cubre la postura, abajo.
+            var spritesPorCategoria = forest.Spawned
+                .GroupBy(entrada => entrada.Object.Category)
+                .ToDictionary(grupo => grupo.Key,
+                    grupo => grupo.Select(entrada => entrada.Object.Art).Distinct().ToArray());
+
+            Assert.That(spritesPorCategoria.Values.Where(sprites => sprites.Length != 1), Is.Empty,
+                "cada categoría se dibuja con un solo sprite");
+            Assert.That(spritesPorCategoria.Values.SelectMany(sprites => sprites).Distinct().Count(),
+                Is.EqualTo(spritesPorCategoria.Count), "y ninguna lo comparte con otra");
         }
 
         [Test]
@@ -330,13 +343,136 @@ namespace Game.Levels.Wheel.Tests
             }
         }
 
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF22_CadaObjetoApareceConLaOrientacionDeSuAsset()
+        {
+            var forest = await OpenForest();
+
+            foreach (var (objeto, boton, _) in forest.Spawned)
+            {
+                var rect = (RectTransform)boton.transform;
+
+                Assert.That(rect.localEulerAngles.z,
+                    Is.EqualTo(Mathf.Repeat(objeto.RotationDegrees, 360f)).Within(0.01f),
+                    $"{boton.name} aparece girado lo que dice su asset");
+                Assert.That(Mathf.Sign(rect.localScale.x), Is.EqualTo(objeto.Mirrored ? -1f : 1f),
+                    $"{boton.name} usa el espejo del asset, no un segundo sprite");
+
+                // El espejo invierte, no estira: si las dos escalas dejan de medir lo mismo el
+                // objeto sale deformado y el patrón de RF-23 se lee mal.
+                Assert.That(Mathf.Abs(rect.localScale.x),
+                    Is.EqualTo(Mathf.Abs(rect.localScale.y)).Within(0.001f),
+                    $"{boton.name} no queda deformado por el espejo");
+            }
+
+            var posturas = forest.Spawned
+                .Select(entrada => (entrada.Object.RotationDegrees, entrada.Object.Mirrored))
+                .Distinct()
+                .Count();
+
+            Assert.That(posturas, Is.GreaterThan(1),
+                "el bosque no es papel pintado: la misma ilustración aparece en posturas distintas");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF22_ElObjetoSeApartaAlAcercarseElCursor()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            var tronco = forest.Spawned.First(
+                entrada => entrada.Object.Category == ForestObjectCategory.RoundLog);
+            var rect = (RectTransform)tronco.Button.transform;
+            var sitio = rect.anchorMin;
+
+            // El cursor se pega al objeto por su izquierda y se queda ahí.
+            var cursor = EnPantalla(rect).center + Vector2.left * 24f;
+            for (var frame = 0; frame < 90; frame++)
+            {
+                forest.Nudge(cursor, 1f / 60f);
+            }
+
+            Assert.That(rect.anchorMin, Is.Not.EqualTo(sitio), "el tronco acusa el paso del cursor");
+            Assert.That(rect.anchorMin.x, Is.GreaterThan(sitio.x),
+                "y se aparta de él, no hacia él");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_CP02_ApartarLosObjetosNoTocaElAcopioNiLaFrase()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            var contador = forest.CounterLabel.text;
+            var frase = forest.MessageLabel.text;
+            var acopiados = forest.Selection.Collected;
+
+            await BarrerElSuelo(forest);
+
+            // **Lo que sostiene que esto es adorno y no mecánica.** Pasear el cursor por todo el
+            // bosque mueve objetos y no toca nada más: ni el contador, ni la frase del guía, ni el
+            // acopio. Sin esta prueba, el efecto sería una segunda forma de interactuar y RNF-02
+            // dejaría de ser cierto (CT-06, CP-02).
+            Assert.That(forest.CounterLabel.text, Is.EqualTo(contador), "el contador no se mueve");
+            Assert.That(forest.MessageLabel.text, Is.EqualTo(frase), "el guía no dice nada nuevo");
+            Assert.That(forest.Selection.Collected, Is.EqualTo(acopiados), "no se acopió nada");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RNF03_NingunObjetoSeVaDelSueloPorMuchoQueSeEmpuje()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            await BarrerElSuelo(forest);
+            await BarrerElSuelo(forest);
+
+            var fugados = forest.Spawned
+                .Select(entrada => (entrada.Button.name, Ancla: ((RectTransform)entrada.Button.transform).anchorMin))
+                .Where(objeto => objeto.Ancla.x < 0f || objeto.Ancla.x > 1f ||
+                                 objeto.Ancla.y < 0f || objeto.Ancla.y > 1f)
+                .Select(objeto => $"{objeto.name} en {objeto.Ancla}")
+                .ToArray();
+
+            Assert.That(fugados, Is.Empty, string.Join(" · ", fugados));
+        }
+
+        /// <summary>Pasea el cursor por todo el suelo, que es lo que más empuja a los objetos.</summary>
+        private static async Task BarrerElSuelo(ForestSceneController forest)
+        {
+            for (var paso = 0; paso <= 40; paso++)
+            {
+                var cursor = new Vector2(Screen.width * paso / 40f, Screen.height * (paso % 2) * 0.5f);
+                for (var frame = 0; frame < 12; frame++)
+                {
+                    forest.Nudge(cursor, 1f / 60f);
+                }
+            }
+
+            await Awaitable.NextFrameAsync();
+        }
+
         /// <summary>La caja del elemento en píxeles de pantalla, que es donde se ve.</summary>
         private static Rect EnPantalla(RectTransform rect)
         {
             var esquinas = new Vector3[4];
             rect.GetWorldCorners(esquinas);
-            return new Rect(esquinas[0].x, esquinas[0].y,
-                esquinas[2].x - esquinas[0].x, esquinas[2].y - esquinas[0].y);
+
+            // Envolvente por mínimos y máximos y no `esquinas[0]`..`esquinas[2]`: en cuanto un
+            // objeto aparece girado esas dos dejan de ser las esquinas opuestas de la caja y la
+            // diagonal sale negativa, con lo que `Overlaps` no detecta nada y la prueba pasa sola.
+            var minX = Mathf.Min(esquinas[0].x, esquinas[1].x, esquinas[2].x, esquinas[3].x);
+            var minY = Mathf.Min(esquinas[0].y, esquinas[1].y, esquinas[2].y, esquinas[3].y);
+            var maxX = Mathf.Max(esquinas[0].x, esquinas[1].x, esquinas[2].x, esquinas[3].x);
+            var maxY = Mathf.Max(esquinas[0].y, esquinas[1].y, esquinas[2].y, esquinas[3].y);
+            return new Rect(minX, minY, maxX - minX, maxY - minY);
         }
     }
 }
