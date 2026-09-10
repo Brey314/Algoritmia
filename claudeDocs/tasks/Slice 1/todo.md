@@ -2,7 +2,7 @@
 
 Plan técnico: [`plan.md`](plan.md). Contrato: `claudeDocs/SPEC.md`.
 Resultados: [`Fase-0-Resultados.md`](Fase-0-Resultados.md) · [`Fase-1-Resultados.md`](Fase-1-Resultados.md) ·
-[`Fase-2-Resultados.md`](Fase-2-Resultados.md) (en curso).
+[`Fase-2-Resultados.md`](Fase-2-Resultados.md) · [`Fase-3-Resultados.md`](Fase-3-Resultados.md) (en curso).
 Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 **Leyenda:** `EM` = EditMode (lógica pura, sin escena) · `PM` = PlayMode (integración) ·
@@ -196,8 +196,20 @@ exige una fase confirmada (**T17**) y la revisión con el usuario.
 
 ## Fase 3 — Nivel fuego (`nivel-fuego`)
 
-- [ ] **T12 · `FireLevelConfig`, `StrikePosition`, `FireAttempt`** — `M` · `EM`
+- [x] **T12 · `FireLevelConfig`, `StrikePosition`, `FireAttempt`** — `M` · `EM` (10/09/2026)
       RF-15, RF-16, RF-18, RF-19, CP-02, CT-05, RNF-18, HU-06, HU-07, CU-04, INC-32 · depende de: T11
+      Lógica pura del Nivel 1 en C# plano, sin escena (assembly `Game.Levels.Fire`, antes vacío).
+      `StrikePosition` (Lejos/Cerca/Muy cerca), `FireLevelConfig` (SO con los 4 parámetros del guion
+      §4.3.2, valores por defecto 3 / Muy cerca / 3 / 3), `StrikeOutcome` (struct, `SparksDied` /
+      `SparkLanded` del SPEC §Estilo) y `FireAttempt` (código del SPEC §Estilo tal cual, más
+      `ConsecutiveFailures` público). `Strike` es la única vía de mutación: el deslizante es estado
+      de UI (RF-15). `CanBlow` deriva solo de golpes efectivos → nunca vuelve a falso (INC-32,
+      comentario «por qué no»); sin tope de intentos ni derrota (RF-18, CP-02). **EditMode 9/9** de
+      la suite Fire (flujo test-first: RED 8 fail / 2 pass — las 2 verdes son un SO de datos y un
+      invariante de estado inicial, sin lógica de Step 3 — → GREEN 9/9 tras fusionar una prueba de
+      RF-19 con la de RNF-18). **EditMode total 72/72, sin regresión.** MCP de Rider operativo esta
+      sesión: pruebas contra el Editor abierto. Sin `.asmdef` ni `.asset` nuevos (el
+      `FireLevelConfig.asset` real es de T14). Detalle en `Fase-3-Resultados.md`.
 - [ ] **T13 · `FireFeedbackLog`, mensajes sin repetición** — `M` · `EM`
       RF-11, RF-17, RF-18, CP-03, HU-05, HU-06, guion §4.3.4 · depende de: T12
 - [ ] **T14 · Panel de encendido y escena `Level1_Cave`** — `M` · `PM`
