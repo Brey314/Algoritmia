@@ -51,6 +51,23 @@ namespace Game.Scaffolding.Tests
             Assert.That(repetidos, Is.Empty);
         }
 
+        [Test]
+        public void NarrativeSequence_RF05_ElNivel2TieneSusSeisSecuencias()
+        {
+            var esperadas = new[]
+            {
+                "N2_PuenteI", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
+                "N2_Escena23_Construccion", "N2_Escena24_Regreso", "N2_Escena25_Cierre"
+            };
+
+            var delNivel2 = TodasLasSecuencias()
+                .Where(sequence => sequence.Level == Game.Core.LevelId.Wheel)
+                .Select(sequence => sequence.Id)
+                .ToArray();
+
+            Assert.That(delNivel2, Is.EquivalentTo(esperadas));
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
         private static IEnumerable<NarrativeSequence> TodasLasSecuencias() =>

@@ -60,6 +60,35 @@ namespace Game.UI.Tests
         }
 
         [Test]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF05_ResuelveLasSeisSecuenciasDelNivel2SinRamas()
+        {
+            var ids = new[]
+            {
+                "N2_PuenteI", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
+                "N2_Escena23_Construccion", "N2_Escena24_Regreso", "N2_Escena25_Cierre"
+            };
+            var primeras = new string[ids.Length];
+
+            for (var i = 0; i < ids.Length; i++)
+            {
+                var (controller, _) = await OpenNarrative(ids[i]);
+                primeras[i] = controller.BodyLabel.text;
+
+                foreach (var _ in SequenceNamed(controller, ids[i]).Lines)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                Assert.That(controller.Dialogue.IsFinished, Is.True, $"{ids[i]} se recorre entera");
+            }
+
+            // Seis escenas más, cero ramas: el Nivel 2 no añadió ni un `if` al controlador.
+            Assert.That(primeras, Has.All.Not.Empty);
+            Assert.That(primeras.Distinct().Count(), Is.EqualTo(ids.Length));
+        }
+
+        [Test]
         [Timeout(30000)]
         public async Task NarrativeScene_RF05_LaPrimeraLineaEsLaDelAssetPedido()
         {

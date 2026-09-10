@@ -28,6 +28,10 @@ namespace Game.Scaffolding
         public Sprite Illustration { get; private set; }
 
         [field: SerializeField]
+        [field: Tooltip("Marca el cierre reflexivo del nivel: no se puede omitir la primera vez (CP-07).")]
+        public bool IsReflectiveClosing { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Las líneas, en el orden en que se leen.")]
         public DialogueLine[] Lines { get; private set; } = new DialogueLine[0];
     }

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe39808d68b138e4fb74e8e86cb55219, type: 3}
+  m_Name: N2_Escena24_Regreso
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
+  <Id>k__BackingField: N2_Escena24_Regreso
+  <Level>k__BackingField: 2
+  <Illustration>k__BackingField: {fileID: 0}
+  <IsReflectiveClosing>k__BackingField: 0
+  <Lines>k__BackingField:
+  - <Speaker>k__BackingField: CHISPA
+    <Text>k__BackingField: Ahora tienen la carretilla. Pero tenerla no basta.
+  - <Speaker>k__BackingField: CHISPA
+    <Text>k__BackingField: "Hay que pensar qu\xE9 hacer primero y qu\xE9 despu\xE9s."
+  - <Speaker>k__BackingField: "PAP\xC1"
+    <Text>k__BackingField: Empujar...
+  - <Speaker>k__BackingField: "NI\xD1O"
+    <Text>k__BackingField: Girar...
+  - <Speaker>k__BackingField: "MAM\xC1"
+    <Text>k__BackingField: Evitar la piedra...
+  - <Speaker>k__BackingField: "NI\xD1A"
+    <Text>k__BackingField: "Si ordenamos bien los pasos... funcionar\xE1 mejor."
+  - <Speaker>k__BackingField: CHISPA
+    <Text>k__BackingField: "Lleva la carretilla hasta el refugio. Pero no la vas a empujar t\xFA."
+  - <Speaker>k__BackingField: CHISPA
+    <Text>k__BackingField: Vas a escribir antes todos los pasos, y luego los ejecutas de una sola vez.

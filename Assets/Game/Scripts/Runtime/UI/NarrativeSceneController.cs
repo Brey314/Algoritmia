@@ -78,7 +78,7 @@ namespace Game.UI
             }
 
             Dialogue = new DialogueRunner(sequence.Lines,
-                NarrativeVisitPolicy.AlreadySeen(Runner.Flow.ActiveProfile, sequence.Level));
+                NarrativeVisitPolicy.AlreadySeen(Runner.Flow.ActiveProfile, sequence));
 
             illustration.sprite = sequence.Illustration;
             illustration.enabled = sequence.Illustration != null;

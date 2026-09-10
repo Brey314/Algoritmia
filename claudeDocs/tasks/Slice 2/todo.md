@@ -90,14 +90,68 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 - [x] **W03 · `HintPolicy` por fase, no por nivel** — `M` · `EM` (10/09/2026)
       RF-13, RF-10, RF-11, RNF-03, CP-06, HU-03, HU-04, CU-06..CU-08, INC-41 · depende de: W02
-- [ ] **W04 · Las seis secuencias narrativas del Nivel 2** — `S` · `EM` + `PM`
+      **`HintPolicy` no necesitó una sola línea nueva**, y ese es el resultado: T11 ya la escribió
+      por tarea y no por nivel —`ActiveStep` más `Activate`, que reinicia el contador—, así que
+      «por fase» era pedirle lo que ya hacía. Lo que faltaba era el contenido y la prueba de que
+      la generalización aguanta tres fases. Se añade `Assets/Game/Data/Guide/N2_Guia.asset` con
+      **una tarea por fase**: `Seleccionar` (§6.1.1), `Construir` (§6.2.1) y `Programar` (§6.3.1),
+      con la instrucción textual del guion y una pista que orienta sin resolver.
+      Las instrucciones de `Construir` y `Programar` van **partidas en oraciones** respecto del
+      guion, con las mismas palabras y en el mismo orden: la de §6.2.1 es una sola oración de 26
+      palabras y RNF-01 corta en 20.
+      **Deviación de nombre**: el plan pedía `WheelLevel_RNF03_UnaSolaTareaActivaPorFase`, pero
+      `WheelLevel` no existe hasta W05; va como `WheelGuide_RNF03_…` sobre el asset y la política.
+      **No se añadió un `StepFor(fase)`** a `GuideContent`: el mapeo tarea↔fase no es 1:1 en
+      general —el Nivel 1 tiene dos tareas en una sola fase— así que quien lo resuelve es el
+      nivel, en W05, y no el andamiaje.
+      RED **2/4** (`HintPolicy_CP06_NingunaPistaDelNivel2NombraLaRespuesta` y
+      `WheelGuide_RNF03_UnaSolaTareaActivaPorFase`, sin asset del N2; las dos de contador ya
+      pasaban en verde, que es la prueba de que T11 estaba bien parametrizada) → GREEN
+      **Scaffolding 21/21**.
+- [x] **W04 · Las seis secuencias narrativas del Nivel 2** — `S` · `EM` + `PM` (10/09/2026)
       RF-05, RF-06, RF-10, RF-12, RNF-01, RNF-18, HU-02, CP-07, INC-28, guion §5, §6.1.1, §6.1.3,
       §6.2.1, §6.3.1, §6.4 · depende de: W03
+      Los seis assets en `Assets/Game/Data/Narrative/N2_*.asset`, añadidos a la lista del
+      `NarrativeSceneController` de la escena `Narrative`. **El controlador no cambió**: las seis
+      recorren el mismo código que las tres del Nivel 1, sin una rama nueva.
+      **El plan decía «ni una línea de código nuevo» y hubo que escribir dos.** El hallazgo es el
+      que el plan anticipaba, y no estaba en `DialogueRunner` —que no se tocó— sino en
+      `NarrativeVisitPolicy`: derivar «ya la vio» de «confirmó alguna fase del nivel» **falla
+      justo en el cierre reflexivo**, porque se llega a él la primera vez inmediatamente después
+      de confirmar la última fase, y el botón de omitir aparecería precisamente donde CP-07 y
+      RF-12 lo prohíben. `NarrativeSequence` gana la marca `IsReflectiveClosing` (contenido, no
+      rama) y para esa escena la señal pasa a ser que el **nivel siguiente ya esté desbloqueado**,
+      que solo ocurre habiendo terminado el nivel antes (HU-14 FA-01/FA-02) y sigue derivándose de
+      la lista cerrada sin ampliarla (RNF-09). Esto **le impone un orden a W16 y a T18**: primero
+      el cierre reflexivo, después el desbloqueo. Al revés, el botón vuelve a aparecer.
+      **Pendiente para el Slice 3**: `LevelId.River` no desbloquea ningún nivel siguiente, así que
+      con esta señal el cierre del Nivel 3 nunca ofrecería omitir ni en la segunda vuelta.
+      **Dos correcciones que salieron de las pruebas, no de la revisión a ojo**:
+      1. Un texto ASCII con «: » en un escalar YAML sin comillas hace que Unity lea la línea como
+         otra clave: `N2_Escena21_Bosque` cargaba con la primera línea **vacía**. Lo cazó
+         `NarrativeScene_RF05_…SinRamas`.
+      2. El parlamento de Chispa de §6.2.1 **desbordaba el cuadro de diálogo** (296 px en una caja
+         de 176). Lo cazó `NarrativeScene_RNF01_LaLineaMasLargaCabeEnSuCuadroDeDialogo`, que ya
+         barría todas las secuencias del proyecto. Los parlamentos largos del guion quedan
+         **repartidos en cuadros sucesivos** —mismas palabras, mismo orden— que es como funciona
+         el medio: ilustración fija y cuadros de texto secuenciales, no video.
+      **Deviación de nombre**: `NarrativeVisitPolicy_RF06_…` en vez de `NarrativeSequence_RF06_…`
+      (el sujeto es la política). Las dos pruebas que el plan pedía nuevas —RNF-01 sobre los seis
+      assets y la aserción de layout— **ya existían y barren todo el proyecto**, así que cubren
+      los seis sin tocarlas; sí se añadió `NarrativeSequence_RF05_ElNivel2TieneSusSeisSecuencias`.
+      RED: no compilaba (`CS1503`, `AlreadySeen` esperaba `LevelId`) → GREEN **EditMode 77/77** y
+      **PlayMode 34/36**, 0 fallos, las 2 omitidas son las `VisualVerification` de siempre.
 
 ### ✅ Checkpoint W-B — Andamiaje generalizado
-- [ ] Las seis escenas narrativas se recorren completas
-- [ ] Ninguna pista del Nivel 2 resuelve la tarea (CP-06)
-- [ ] `DialogueRunner` no necesitó cambios — si los necesitó, anotar por qué
+- [x] Las seis escenas narrativas se recorren completas —
+      `NarrativeScene_RF05_ResuelveLasSeisSecuenciasDelNivel2SinRamas` abre cada una, avanza hasta
+      la última línea y comprueba que termina (**PlayMode 34/36**, 10/09/2026)
+- [x] Ninguna pista del Nivel 2 resuelve la tarea (CP-06) —
+      `HintPolicy_CP06_NingunaPistaDelNivel2NombraLaRespuesta` verde sobre `N2_Guia.asset`, con
+      términos prohibidos por fase
+- [x] `DialogueRunner` no necesitó cambios — **confirmado, no los necesitó**. Quien sí estaba mal
+      parametrizado era `NarrativeVisitPolicy`: ver W04. Se corrigió también el comentario de
+      `DialogueRunner` que afirmaba que el cierre reflexivo no necesita regla propia
 - [ ] Revisado con el usuario
 
 ---

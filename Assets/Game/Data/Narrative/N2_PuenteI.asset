@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe39808d68b138e4fb74e8e86cb55219, type: 3}
+  m_Name: N2_PuenteI
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
+  <Id>k__BackingField: N2_PuenteI
+  <Level>k__BackingField: 2
+  <Illustration>k__BackingField: {fileID: 0}
+  <IsReflectiveClosing>k__BackingField: 0
+  <Lines>k__BackingField:
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: "Amanece. La familia sale de la cueva. Chispa flota sobre las brasas que a\xFAn humean."
+  - <Speaker>k__BackingField: CHISPA
+    <Text>k__BackingField: "Ahora que tienen fuego, pueden cocinar. Pero para cocinar hace falta algo m\xE1s."
+  - <Speaker>k__BackingField: "MAM\xC1"
+    <Text>k__BackingField: Comida.
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: La familia sale a recolectar.
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: "Pap\xE1 carga grandes troncos para mantener avivado el fuego; mam\xE1, la ni\xF1a y el ni\xF1o recogen alimentos."
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: Al momento de regresar aparece un problema nuevo.
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: Han recolectado mucho, pero no pueden transportarlo hasta el refugio.
+  - <Speaker>k__BackingField: "PAP\xC1"
+    <Text>k__BackingField: Esto pesa demasiado... no puedo llevarlo todo.
+  - <Speaker>k__BackingField: "NI\xD1O"
+    <Text>k__BackingField: "\xA1Yo puedo arrastrarlo!"
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: Lo intenta. Las cosas se atascan en la tierra.
+  - <Speaker>k__BackingField: "MAM\xC1"
+    <Text>k__BackingField: "Algo no est\xE1 funcionando... debemos mirar mejor."
+  - <Speaker>k__BackingField: "NI\xD1A"
+    <Text>k__BackingField: "\xBFY si el problema no es la fuerza... sino la forma?"
