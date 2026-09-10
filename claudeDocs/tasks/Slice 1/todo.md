@@ -210,8 +210,20 @@ exige una fase confirmada (**T17**) y la revisión con el usuario.
       RF-19 con la de RNF-18). **EditMode total 72/72, sin regresión.** MCP de Rider operativo esta
       sesión: pruebas contra el Editor abierto. Sin `.asmdef` ni `.asset` nuevos (el
       `FireLevelConfig.asset` real es de T14). Detalle en `Fase-3-Resultados.md`.
-- [ ] **T13 · `FireFeedbackLog`, mensajes sin repetición** — `M` · `EM`
+- [x] **T13 · `FireFeedbackLog`, mensajes sin repetición** — `M` · `EM` (10/09/2026)
       RF-11, RF-17, RF-18, CP-03, HU-05, HU-06, guion §4.3.4 · depende de: T12
+      El área de registro del Nivel 1, C# plano. `FireMessages` (SO) con los **ocho mensajes del
+      guion §4.3.4 literales**, `[field: SerializeField, TextArea]` + `[Tooltip]`; asset real
+      `Assets/Game/Data/Fire/N1_Mensajes.asset` (YAML a mano, convención `N1_*`). `FireFeedbackLog`
+      traduce un `StrikeOutcome` a mensaje: por ordinal de golpe efectivo (primero/segundo/final al
+      alcanzar el mínimo) o por distancia + racha (variante «tras dos intentos» desde el segundo
+      fallo seguido). **No repite el mismo mensaje dos veces seguidas** cuando hay alternativa
+      aplicable (RF-18): los golpes seguidos en la misma distancia alternan. `Entries` acumula todo
+      el historial en orden (HU-06); sin tope (RF-18) — el scroll es de T14. `RecordBlowSuccess()`
+      para T15. **EditMode suite Fire 20/20** (11 nuevas; flujo test-first: 9 rojas → verdes, las 2
+      pruebas Editor sobre el asset nacen verdes como en T12). **EditMode total 83/83, sin
+      regresión.** Desviación anotada: prueba de no-repetición nombrada con RF-18, no RF-17.
+      Detalle en `Fase-3-Resultados.md`.
 - [ ] **T14 · Panel de encendido y escena `Level1_Cave`** — `M` · `PM`
       RF-14, RF-15, RF-17, RNF-02, RNF-03, RNF-19, CT-06, HU-06, CU-04, INC-41 · depende de: T13
 - [ ] **T15 · Convergencia: «Soplar» → nacimiento del fuego** — `S` · `PM` + `VV`

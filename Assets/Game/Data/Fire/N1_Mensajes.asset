@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f43f52470c9eeb41aa844178ee32790, type: 3}
+  m_Name: N1_Mensajes
+  m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.FireMessages
+  <FarSparksFade>k__BackingField: "Las piedras suenan, pero las chispas se apagan en
+    el aire."
+  <FarNeverReach>k__BackingField: "Las chispas nacen y mueren antes de llegar abajo.
+    Nunca alcanzan las hojas."
+  <NearColdStone>k__BackingField: "Una chispa cae junto al mont\xF3n, sobre la piedra
+    fr\xEDa. Se apaga enseguida."
+  <NearBesideLeaves>k__BackingField: "Las chispas llegan m\xE1s abajo, pero caen al
+    lado de las hojas, no encima."
+  <FirstEffectiveStrike>k__BackingField: "Una chispa cae dentro de las hojas. Brilla
+    un instante y se apaga."
+  <SecondEffectiveStrike>k__BackingField: "Otra chispa cae dentro. Esta vez el brillo
+    dura un poco m\xE1s."
+  <FinalEffectiveStrike>k__BackingField: "Un hilo de humo sube despacio, como si la
+    cueva estuviera suspirando."
+  <BlowSuccess>k__BackingField: "El humo se abre. Algo naranja tiembla entre las hojas."
