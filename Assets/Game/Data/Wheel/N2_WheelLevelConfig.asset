@@ -15,35 +15,81 @@ MonoBehaviour:
   <RequiredLogs>k__BackingField: 5
   <MinimumDistractors>k__BackingField: 8
   <CounterFormat>k__BackingField: "Troncos redondos: {0} de {1}"
+  <PendingLogsFormat>k__BackingField: "Todavía faltan {0} troncos para mover la caja."
+  <CargoPlacedMessage>k__BackingField: "La caja quedó sobre los troncos. Ahora empújala."
+  <CargoMissedMessage>k__BackingField: "Ahí la caja no toca los troncos. Déjala encima de ellos."
+  <RollSeconds>k__BackingField: 2.5
   <ForestObjects>k__BackingField:
   - <Id>k__BackingField: tronco_1
     <Category>k__BackingField: 0
+    <DisplayName>k__BackingField: Tronco redondo
+    <Art>k__BackingField: {fileID: 2076456876981602082, guid: 07e9eeb115364f740919f4b90b69013e, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.05, y: 0.9}
   - <Id>k__BackingField: tronco_2
     <Category>k__BackingField: 0
+    <DisplayName>k__BackingField: Tronco redondo
+    <Art>k__BackingField: {fileID: -5133885886887407156, guid: d8c04e0eb2e6b8e468f7a6a1a78dd626, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.62, y: 0.52}
   - <Id>k__BackingField: tronco_3
     <Category>k__BackingField: 0
+    <DisplayName>k__BackingField: Tronco redondo
+    <Art>k__BackingField: {fileID: 2813922130077667989, guid: 8fa9b3be720b0fe448aae04dd9099182, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.66, y: 0.14}
   - <Id>k__BackingField: tronco_4
     <Category>k__BackingField: 0
+    <DisplayName>k__BackingField: Tronco redondo
+    <Art>k__BackingField: {fileID: 7880052985964257323, guid: ec8fe91178867d24fb6b66d7f734fcaf, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.41, y: 0.9}
   - <Id>k__BackingField: tronco_5
     <Category>k__BackingField: 0
+    <DisplayName>k__BackingField: Tronco redondo
+    <Art>k__BackingField: {fileID: 7527358495505054446, guid: c40270748eb199e4d8c060aaffb467eb, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.95, y: 0.52}
   - <Id>k__BackingField: piedra_1
     <Category>k__BackingField: 1
+    <DisplayName>k__BackingField: Piedra
+    <Art>k__BackingField: {fileID: -5143368477329178737, guid: de76e98f2e2ca8a4fa94f21fdffd0297, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.23, y: 0.9}
   - <Id>k__BackingField: piedra_2
     <Category>k__BackingField: 1
+    <DisplayName>k__BackingField: Piedra
+    <Art>k__BackingField: {fileID: 5325336097783433484, guid: 22b4898b57658b64a8cdbbdae24d3008, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.45, y: 0.52}
   - <Id>k__BackingField: piedra_3
     <Category>k__BackingField: 1
+    <DisplayName>k__BackingField: Piedra
+    <Art>k__BackingField: {fileID: -3005077542948987392, guid: cc0d47d664f6f754f8ebb50593673829, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.77, y: 0.14}
   - <Id>k__BackingField: planta_1
     <Category>k__BackingField: 2
+    <DisplayName>k__BackingField: Planta
+    <Art>k__BackingField: {fileID: 2262806618755955747, guid: 976c850ed5c57334583064850f84f672, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.59, y: 0.9}
   - <Id>k__BackingField: planta_2
     <Category>k__BackingField: 2
+    <DisplayName>k__BackingField: Planta
+    <Art>k__BackingField: {fileID: 195652039903426866, guid: 85db00077e28b7343bf08d24653687de, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.79, y: 0.52}
   - <Id>k__BackingField: planta_3
     <Category>k__BackingField: 2
+    <DisplayName>k__BackingField: Planta
+    <Art>k__BackingField: {fileID: 5256001766513851773, guid: 562fd383ac8a81f45a42204393184548, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.44, y: 0.14}
   - <Id>k__BackingField: herramienta_1
     <Category>k__BackingField: 3
+    <DisplayName>k__BackingField: Herramienta
+    <Art>k__BackingField: {fileID: -4098710883630630236, guid: 6835cf547ffc9d941b04d49a69404944, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.77, y: 0.9}
   - <Id>k__BackingField: herramienta_2
     <Category>k__BackingField: 3
+    <DisplayName>k__BackingField: Herramienta
+    <Art>k__BackingField: {fileID: -4909834896886065096, guid: 4d02455ee58aa034387ccb7ae7c47d3f, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.95, y: 0.9}
   - <Id>k__BackingField: herramienta_3
     <Category>k__BackingField: 3
+    <DisplayName>k__BackingField: Herramienta
+    <Art>k__BackingField: {fileID: -9009615251398758779, guid: baddee88dd011be40bf10a47d9f0419f, type: 3}
+    <FloorPosition>k__BackingField: {x: 0.55, y: 0.14}
   <Feedback>k__BackingField:
   - <Category>k__BackingField: 0
     <Message>k__BackingField: "Este rueda. \xBFQu\xE9 tiene que los otros no tienen?"

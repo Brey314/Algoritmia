@@ -161,13 +161,49 @@ namespace Game.UI.Tests
                 $"«{masLarga.Text}» desborda su cuadro: {alto:0} px en una caja de {caja.height:0} px");
         }
 
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF10_TerminarLaEscena21EntraAJugarLaFase1DelBosque()
+        {
+            var (controller, runner) = await OpenNarrative("N2_Escena21_Bosque", LevelId.Wheel);
+            var lineas = SequenceNamed(controller, "N2_Escena21_Bosque").Lines.Length;
+
+            for (var i = 0; i < lineas; i++)
+            {
+                Click(controller.AdvanceButton);
+            }
+
+            // La escena de apertura de una fase desemboca en la fase, no en el menú: con la
+            // salida provisional a `LevelSelect` el bosque era inalcanzable jugando.
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Playing), "sale a jugar");
+            Assert.That(runner.Flow.PlayingLevel, Is.EqualTo(LevelId.Wheel), "el nivel de la secuencia");
+            Assert.That(runner.Flow.PlayingPhase, Is.EqualTo(1), "la fase que declara el asset");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF05_LaSecuenciaSinFaseSiguienteVuelveAlMenuDeNiveles()
+        {
+            var (controller, runner) = await OpenNarrative("N1_Apertura");
+            var lineas = SequenceNamed(controller, "N1_Apertura").Lines.Length;
+
+            for (var i = 0; i < lineas; i++)
+            {
+                Click(controller.AdvanceButton);
+            }
+
+            // Las escenas del Nivel 1 no declaran fase siguiente mientras `Level1_Cave` no exista
+            // (T14): la salida sigue siendo el menú, y eso deja el recorrido cerrado (RNF-13).
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.LevelSelect));
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
         private static NarrativeSequence SequenceNamed(NarrativeSceneController controller, string id) =>
             controller.Sequences.First(sequence => sequence.Id == id);
 
         private static async Task<(NarrativeSceneController controller, GameFlowRunner runner)>
-            OpenNarrative(string sequenceId)
+            OpenNarrative(string sequenceId, LevelId reached = LevelId.Fire)
         {
             LimpiarObjetosPersistentes();
 
@@ -183,7 +219,11 @@ namespace Game.UI.Tests
             await Awaitable.NextFrameAsync(); // GameFlowRunner.Start() navega solo a MainMenu
 
             runner.GoTo(GameState.ProfileSelect);
-            runner.SelectProfile(PlayerProfile.Create("Ana", Array.Empty<string>()).Profile);
+            var profile = PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
+            // Una secuencia que desemboca en su fase necesita el nivel desbloqueado: entrar a
+            // jugar sigue pasando por RF-03 y no lo esquiva la narrativa.
+            profile.Reach(reached);
+            runner.SelectProfile(profile);
             runner.StartNarrative(sequenceId);
             // Assert y no Assume: un arreglo roto tiene que fallar fuerte. Con `Assume` esta
             // misma comprobación dejó la prueba en «inconclusive» —pasando sin probar nada—

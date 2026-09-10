@@ -109,6 +109,24 @@ namespace Game.UI.Tests
             LogAssert.NoUnexpectedReceived();
         }
 
+        [Test]
+        [Timeout(20000)]
+        public async Task LevelSelect_RF05_CadaNivelAbreLaSecuenciaDeAperturaDeSuFicha()
+        {
+            var profile = NewProfile();
+            profile.Reach(LevelId.Wheel);
+            var (controller, runner) = await OpenLevelSelect(profile);
+
+            Click(controller.ButtonFor(LevelId.Wheel));
+
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Narrative), "entra a la narrativa");
+            // El id se componía con la fórmula «N{nivel}_Apertura», que solo existe para el
+            // Nivel 1: el Nivel 2 pedía «N2_Apertura», ninguna secuencia respondía y la escena
+            // narrativa se quedaba en blanco. Qué secuencia abre cada nivel es contenido.
+            Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N2_Escena21_Bosque"),
+                "el Nivel 2 abre por la escena 2.1 del guion, que es la que existe");
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
         private static PlayerProfile NewProfile() =>

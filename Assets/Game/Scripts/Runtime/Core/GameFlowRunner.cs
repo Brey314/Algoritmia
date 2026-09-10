@@ -33,6 +33,17 @@ namespace Game.Core
                 [GameState.Credits] = "Credits"
             };
 
+        /// <summary>
+        /// Escena de cada fase jugable. Va aparte de <see cref="Scenes"/> porque
+        /// <see cref="GameState.Playing"/> no tiene una escena sino una por fase (RF-04): el
+        /// estado lleva nivel y fase, y son ellos los que eligen.
+        /// </summary>
+        private static readonly Dictionary<PhaseId, string> PlayingScenes =
+            new Dictionary<PhaseId, string>
+            {
+                [new PhaseId(LevelId.Wheel, 1)] = "Level2_Forest"
+            };
+
         public static GameFlowRunner Instance { get; private set; }
 
         public GameFlow Flow { get; } = new GameFlow();
@@ -100,7 +111,7 @@ namespace Game.Core
                 return false;
             }
 
-            if (Scenes.TryGetValue(Flow.Current, out var sceneName))
+            if (TryResolveScene(out var sceneName))
             {
                 // Si la escena ya está activa, el cambio de estado es un intercambio de paneles
                 // dentro de ella —lo hace la UI— y no una recarga. Sin `SceneLoader` (una prueba
@@ -113,10 +124,24 @@ namespace Game.Core
             }
             else
             {
-                Debug.LogWarning($"El estado {Flow.Current} todavía no tiene escena asociada.");
+                Debug.LogWarning($"El estado {Flow.Current} todavía no tiene escena asociada.", this);
             }
 
             return true;
+        }
+
+        /// <summary>La escena que aloja el estado actual, si ya existe alguna.</summary>
+        private bool TryResolveScene(out string sceneName)
+        {
+            if (Flow.Current != GameState.Playing)
+            {
+                return Scenes.TryGetValue(Flow.Current, out sceneName);
+            }
+
+            sceneName = null;
+            return Flow.PlayingLevel.HasValue
+                   && PlayingScenes.TryGetValue(
+                       new PhaseId(Flow.PlayingLevel.Value, Flow.PlayingPhase), out sceneName);
         }
     }
 }

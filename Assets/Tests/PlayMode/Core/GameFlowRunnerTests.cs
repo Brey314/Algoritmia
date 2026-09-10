@@ -57,6 +57,24 @@ namespace Game.Core.Tests
             Assert.That((bool)probe, Is.True);
         }
 
+        [Test]
+        [Timeout(20000)]
+        public async Task GameFlowRunner_RF22_JugarLaFase1DelNivel2CargaLaEscenaDelBosque()
+        {
+            var runner = await BootToMainMenu();
+            runner.GoTo(GameState.ProfileSelect);
+            var profile = PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
+            profile.Reach(LevelId.Wheel);
+            runner.SelectProfile(profile);
+
+            var started = runner.StartPlaying(LevelId.Wheel, 1);
+
+            Assert.That(started, Is.True, "el perfil llega al Nivel 2, así que la fase 1 se puede jugar");
+            // Sin esta correspondencia `Playing` no tenía escena y el aviso de GameFlowRunner era
+            // todo lo que ocurría: el estudiante se quedaba en la escena narrativa (RNF-13).
+            await WaitUntil(() => SceneManager.GetActiveScene().name == "Level2_Forest");
+        }
+
         private static async Task<GameFlowRunner> BootToMainMenu()
         {
             SceneManager.LoadScene("Boot");

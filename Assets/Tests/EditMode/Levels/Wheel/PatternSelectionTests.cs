@@ -154,6 +154,19 @@ namespace Game.Levels.Wheel.Tests
         }
 
         [Test]
+        public void WheelLevelConfig_RNF23_CadaObjetoDelBosqueTraeSuIlustracion()
+        {
+            // El arte se cambia repuntando este campo en el asset: si alguien añade un objeto y se
+            // olvida del sprite, sale aquí y no en pantalla como un hueco vacío.
+            var sinArte = ConfiguracionDelNivel2().ForestObjects
+                .Where(objeto => objeto.Art == null)
+                .Select(objeto => objeto.Id)
+                .ToArray();
+
+            Assert.That(sinArte, Is.Empty);
+        }
+
+        [Test]
         public void WheelLevelConfig_RF11_ElAciertoDevuelveLaPreguntaQueAbreElPatron()
         {
             var acierto = ConfiguracionDelNivel2().MessageFor(ForestObjectCategory.RoundLog);

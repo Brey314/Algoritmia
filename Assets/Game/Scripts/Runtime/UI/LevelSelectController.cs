@@ -21,6 +21,9 @@ namespace Game.UI
 
             [Tooltip("Grupo con el candado y el texto «Bloqueado». Se muestra solo si el nivel está bloqueado.")]
             public GameObject lockedBadge;
+
+            [Tooltip("Secuencia narrativa con la que abre el nivel, p. ej. «N1_Apertura».")]
+            public string openingSequenceId;
         }
 
         [SerializeField] private LevelEntry[] entries;
@@ -31,8 +34,9 @@ namespace Game.UI
 #if UNITY_INCLUDE_TESTS
         internal Button ButtonFor(LevelId level) => Find(level).button;
         internal bool LockBadgeShownFor(LevelId level) => Find(level).lockedBadge.activeSelf;
-        private LevelEntry Find(LevelId level) => Array.Find(entries, entry => entry.level == level);
 #endif
+
+        private LevelEntry Find(LevelId level) => Array.Find(entries, entry => entry.level == level);
 
         private void Awake() => Runner ??= GameFlowRunner.Instance;
 
@@ -54,7 +58,11 @@ namespace Game.UI
                 return;
             }
 
-            Runner.StartNarrative($"N{(int)level}_Apertura");
+            // Qué secuencia abre cada nivel es contenido de la ficha, no una fórmula sobre el
+            // número del nivel: «N{n}_Apertura» solo acierta en el Nivel 1 —el 2 abre por la
+            // escena 2.1 del guion— y pedía un id inexistente, con lo que la escena narrativa
+            // se abría en blanco y el nivel quedaba inalcanzable.
+            Runner.StartNarrative(Find(level).openingSequenceId);
         }
 
         private void BackToMainMenu()

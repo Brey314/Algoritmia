@@ -35,10 +35,26 @@ namespace Game.Levels.Wheel
         [field: Tooltip("Categoría a la que pertenece. Solo «RoundLog» comparte el patrón.")]
         public ForestObjectCategory Category { get; private set; }
 
-        public ForestObject(string id, ForestObjectCategory category)
+        [field: SerializeField]
+        [field: Tooltip("Cómo se nombra en pantalla. Varios objetos pueden compartirlo: es lo que hay que mirar, no leer.")]
+        public string DisplayName { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("La ilustración del objeto. Cambiar el arte es repuntar este campo: no se toca código.")]
+        public Sprite Art { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("Dónde cae en el suelo, en fracción del área jugable: (0,0) abajo a la izquierda, (1,1) arriba a la derecha.")]
+        public Vector2 FloorPosition { get; private set; } = new Vector2(0.5f, 0.5f);
+
+        public ForestObject(string id, ForestObjectCategory category, string displayName = null,
+            Sprite art = null, Vector2 floorPosition = default)
         {
             Id = id;
             Category = category;
+            DisplayName = displayName ?? id;
+            Art = art;
+            FloorPosition = floorPosition == default ? new Vector2(0.5f, 0.5f) : floorPosition;
         }
 
         /// <summary>Requerido por la serialización de Unity.</summary>

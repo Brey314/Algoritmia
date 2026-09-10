@@ -2827,12 +2827,15 @@ MonoBehaviour:
   - level: 1
     button: {fileID: 684573888}
     lockedBadge: {fileID: 1182233655}
+    openingSequenceId: N1_Apertura
   - level: 2
     button: {fileID: 2014400679}
     lockedBadge: {fileID: 632233253}
+    openingSequenceId: N2_Escena21_Bosque
   - level: 3
     button: {fileID: 42648274}
     lockedBadge: {fileID: 2102341445}
+    openingSequenceId: 
   backButton: {fileID: 764904935}
 --- !u!4 &1361772683
 Transform:

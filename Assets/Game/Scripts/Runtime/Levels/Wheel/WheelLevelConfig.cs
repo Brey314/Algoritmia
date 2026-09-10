@@ -55,6 +55,22 @@ namespace Game.Levels.Wheel
         [field: Tooltip("Texto del contador permanente. {0} son los acopiados y {1} los requeridos (RF-24).")]
         public string CounterFormat { get; private set; } = "Troncos redondos: {0} de {1}";
 
+        [field: SerializeField, TextArea(2, 3)]
+        [field: Tooltip("Lo que se dice al intentar mover la caja antes de tiempo. {0} son los troncos que faltan (CU-06 FA-4a).")]
+        public string PendingLogsFormat { get; private set; } = "Todavía faltan {0} troncos para mover la caja.";
+
+        [field: SerializeField, TextArea(2, 3)]
+        [field: Tooltip("Lo que se dice al dejar la caja sobre los troncos alineados (RF-25).")]
+        public string CargoPlacedMessage { get; private set; } = "La caja quedó sobre los troncos. Ahora empújala.";
+
+        [field: SerializeField, TextArea(2, 3)]
+        [field: Tooltip("Lo que se dice al soltar la caja fuera de los troncos. Describe, no regaña (CP-02).")]
+        public string CargoMissedMessage { get; private set; } = "Ahí la caja no toca los troncos. Déjala encima de ellos.";
+
+        [field: SerializeField]
+        [field: Tooltip("Cuánto dura la demostración del rodado, en segundos (RF-26).")]
+        public float RollSeconds { get; private set; } = 2.5f;
+
         [field: SerializeField]
         [field: Tooltip("Los objetos que se reparten por el bosque, válidos y distractores.")]
         public ForestObject[] ForestObjects { get; private set; } = Array.Empty<ForestObject>();
@@ -82,7 +98,11 @@ namespace Game.Levels.Wheel
             int minimumDistractors,
             string counterFormat,
             ForestObject[] forestObjects,
-            CategoryFeedback[] feedback)
+            CategoryFeedback[] feedback,
+            string pendingLogsFormat = "faltan {0}",
+            string cargoPlacedMessage = "colocada",
+            string cargoMissedMessage = "fuera",
+            float rollSeconds = 0.1f)
         {
             var config = CreateInstance<WheelLevelConfig>();
             config.RequiredLogs = requiredLogs;
@@ -90,6 +110,10 @@ namespace Game.Levels.Wheel
             config.CounterFormat = counterFormat;
             config.ForestObjects = forestObjects;
             config.Feedback = feedback;
+            config.PendingLogsFormat = pendingLogsFormat;
+            config.CargoPlacedMessage = cargoPlacedMessage;
+            config.CargoMissedMessage = cargoMissedMessage;
+            config.RollSeconds = rollSeconds;
             return config;
         }
 #endif

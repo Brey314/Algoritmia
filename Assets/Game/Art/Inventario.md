@@ -187,8 +187,8 @@ el color de acento del nivel está prohibido en el decorado (§9.2, §4.2).
 
 | Archivo | Origen |
 |---|---|
-| ○ `prop_n2_tronco_a.png` … `_e` (5, los válidos) | `B2` (Slice 2) |
-| ○ `prop_n2_piedra_a.png` … `_d` · `prop_n2_planta_a.png` … `_c` · `prop_n2_herramienta_a.png` … `_c` | `B2` — distractores |
+| ✓ `prop_n2_tronco_a.png` … `_e` (5, los válidos) | `B2` (Slice 2) — **provisional** |
+| ✓ `prop_n2_piedra_a.png` … `_d` · `prop_n2_planta_a.png` … `_c` · `prop_n2_herramienta_a.png` … `_c` | `B2` — distractores, **provisionales** |
 | ○ `prop_n2_caja_suelo.png`, `_sobre_troncos`, `_rodando` | `B3` |
 | ○ `prop_n2_pieza_1.png` … `_6` | `B5` |
 | ○ `prop_n2_carretilla_e1.png` … `_e5` | `B6` |
@@ -197,6 +197,16 @@ el color de acento del nivel está prohibido en el decorado (§9.2, §4.2).
 
 Solo los troncos llevan la madera trabajada `#C79A5E`: es lo que separa lo fabricado de lo
 natural y a la vez lo válido del distractor (§8.2).
+
+> ⚠️ **Los quince `.png` de arriba están en disco pero son marcadores de posición y su contenido
+> no corresponde al nombre** (10/09/2026): `prop_n2_planta_*` dibuja piedras y
+> `prop_n2_herramienta_*` dibuja madera. Solo hay **dos ilustraciones distintas** repartidas entre
+> las cuatro categorías, así que la fase 1 del Nivel 2 se puede recorrer pero **no se puede jugar
+> de verdad**: el patrón se busca mirando, y hoy un distractor puede verse igual que un válido.
+> `Level2_Forest` ya está cableada contra ellos a través del campo `Art` de cada objeto en
+> `Assets/Game/Data/Wheel/N2_WheelLevelConfig.asset`, de modo que **sustituir el `.png` conservando
+> el nombre basta**: el `guid` no cambia y no hay que tocar ni código ni escena. Al reemplazarlos,
+> quitar esta nota y el `provisional` de la tabla.
 
 **`Props/Wheel/Animations/`**
 

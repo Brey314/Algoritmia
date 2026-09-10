@@ -188,8 +188,150 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       lógica pura ya pasaban— → GREEN **EditMode 88/88**, 0 errores, 0 warnings.
       **PlayMode no se corrió**: W05 no toca escena ni MonoBehaviour y `Game.Levels.Wheel` no lo
       referencia nadie todavía. Se declara así, no como suite verde.
-- [ ] **W06 · Escena `Level2_Forest` y panel de selección** — `M` · `PM` `MCP`
+- [x] **W06 · Escena `Level2_Forest` y panel de selección** — `M` · `PM` `MCP` (10/09/2026)
       RF-22, RF-23, RF-24, RF-10, RF-13, RNF-02, RNF-03, RNF-19, CT-06, HU-08, CU-06 · depende de: W05
+      `Assets/Game/Scenes/Level2_Forest.unity` (sexta escena de `EditorBuildSettings`) más
+      `ForestSceneController`, adaptador delgado sin una sola regla. **Los catorce objetos no
+      están puestos a mano**: se instancian del catálogo del asset, así que añadir un distractor
+      es editar `N2_WheelLevelConfig` y no la escena — si estuvieran cableados uno a uno, RNF-18
+      sería decorativo.
+      **El segundo canal de RNF-19 son dos sprites de forma distinta**, `ui_circulo` para lo
+      acopiado y `ui_alerta` para lo devuelto: se distinguen por forma y no solo por color, que es
+      el criterio literal del requisito. Son provisionales y se cambian desde el Inspector.
+      `ForestObject` gana `DisplayName` y `Art` —contenido, al asset—: **cambiar el arte de un
+      objeto es repuntar su campo, sin tocar código ni escena**, que es lo que pedía dejar el
+      archivo listo para sustituir.
+      **Deviación de nombre**: el plan pedía `ForestScene_RNF02_ElMapaDeControlesSoloTieneClic`,
+      pero `Assets/Settings/InputSystem_Actions.inputactions` es la plantilla de fábrica de Unity
+      y no es lo que usa esta escena; afirmar RNF-02 contra ella sería falso en las dos
+      direcciones. Va como `ForestScene_RNF02_LaEscenaSoloRespondeAClicSimple`, que sí es
+      verificable: todo lo interactivo es `Button` y no hay ni un `IDragHandler` en la escena.
+      Se añadieron tres pruebas que el plan no nombraba y los criterios sí exigían: RNF-19,
+      RF-13 y la aserción de layout.
+      RED: los 7 fallaron por `StandaloneInputModule` —el `EventSystem` que crea coplay-mcp trae
+      el Input **legado**, prohibido por CT-06— y luego 6/7 al caer la aserción de layout →
+      GREEN **PlayMode 43/43** y **EditMode 88/88**, 0 fallos, 0 omitidas.
+      **Tres hallazgos de herramienta que no son del código y conviene no volver a pagar:**
+      1. **`mcp__rider__run_unity_tests` no suspende `PlayFromBoot`.** El corredor entra a Play
+         con `playModeStartScene` todavía en `Boot`, el Test Framework espera su `InitTestScene` y
+         la corrida se cuelga entera — el mismo cuelgue de 1500 s del 07/09/2026, que la guarda
+         `SuspendWhileTestsRun` solo evita por la ventana del Editor y por batchmode. Mientras no
+         se arregle, hay que poner `playModeStartScene = null` antes de cada corrida por Rider.
+      2. **`set_rect_transform` pierde el punto decimal**: `0.02` se guarda como `2` y `0.18`
+         como `18`, mientras que los enteros pasan intactos —`1` sigue siendo `1`—, así que no es
+         un factor de cien sino el separador decimal leído con otra configuración regional. El
+         panel de retroalimentación quedó de 184320 px de ancho. Lo cazó la aserción de layout, no
+         la vista. La escena **no usa ni una ancla fraccionaria**: todo va con anclas de
+         estiramiento y desplazamientos enteros, que además es más legible.
+      3. **`save_scene` guarda en `Assets/`**, no en la carpeta de la escena, dejando un duplicado.
+      **Lo que no se verificó**: que el texto no desborde su cuadro. La aserción cubre que los
+      tres elementos permanentes caben en pantalla y no se solapan; el desbordamiento de texto
+      necesita el helper de layout que este proyecto no tiene instalado.
+
+      **Acabado según los mockups (10/09/2026).** La escena se llevó al sistema de
+      `claudeDocs/Mockups de interfaz Algoritmia (1).html`, pantalla **8 · Nivel 2 · recoger**:
+      tablillas marfil `#F7EFE2` sobre `ui_panel` en 9-slice, botón de ayuda en atención `#E8A33D`
+      sobre `ui_boton`, tipografía Baloo2-Bold, texto en carbón `#3A1E18`, margen de escena de
+      64 px y alto de 96 px en el botón, por encima del mínimo táctil de 88. Los catorce objetos
+      son tarjetas marfil con la ilustración arriba y el nombre debajo.
+      **Un fallo de contraste que solo se vio mirando la pantalla**: teñir la tablilla entera con
+      el color del estado dejaba el texto carbón sobre azul, ilegible. El color pasó a viajar
+      **solo en el icono**; la tablilla es marfil siempre y la frase no cambia de color (RNF-20).
+      Lo cubre ahora una aserción, pero lo encontró la captura, no la suite.
+      **Los sprites son marcadores de posición y no coinciden con su nombre**: los archivos
+      `prop_n2_planta_*` contienen piedras y `prop_n2_herramienta_*` contienen madera. Con solo
+      dos ilustraciones distintas, **la fase no se puede jugar de verdad todavía** —el patrón se
+      busca mirando—, pero el cableado es el definitivo: llega el arte, se sustituye el `.png` y
+      no se toca nada más.
+      **No verificado**: el color de fondo de escena. Se puso `m_ClearFlags: 2` y carbón en la
+      cámara, pero la captura es del lienzo y no del render completo, así que el fondo de la
+      captura sigue saliendo negro y no puedo afirmar que se vea el carbón.
+
+      **Composición corregida contra el mockup (10/09/2026, segunda vuelta).** La primera versión
+      puso los objetos en una rejilla de tarjetas con rótulo; el mockup no es eso.
+      - **Los objetos están tirados por el suelo, sin tarjeta ni rótulo**: cada uno *es* su
+        ilustración. El suelo es la mitad inferior de la pantalla menos la franja de la tablilla
+        de diálogo, para que ningún objeto quede debajo de ella y sin poder pulsarse. La posición
+        de cada uno es una **fracción del área jugable** guardada en `FloorPosition` dentro del
+        asset, no píxeles en el código: sobrevive a cualquier resolución y sigue siendo contenido
+        editable (CT-05, RNF-18).
+      - **El acopio se llena conforme se recoge.** Cinco casillas circulares (`ui_circulo`) en una
+        tablilla arriba: el tronco recogido deja el suelo y aparece en la casilla siguiente. Es lo
+        que hace visible el avance **sin una sola cifra de desempeño** (CP-03) — el contador
+        textual de RF-24 sigue ahí porque el guion §6.1.2 lo pide literalmente, y es estado de
+        tarea, no puntaje.
+      - **El botón de ayuda desaparece; la ayuda es una burbuja al señalar.** Pasar el ratón sobre
+        un objeto asoma una burbuja con la instrucción vigente, y salir la retira. Esto **mantiene
+        RF-13 en pie sin el botón que el mockup no tiene**: el mecanismo «instrucción a demanda»
+        sigue existiendo, y la pista automática tras tres fallos no cambió.
+        **Nota sobre RNF-02** («la interacción debe limitarse a clic y clic sostenido»): señalar
+        **no es una acción del juego** —no selecciona, no cuenta como intento y no acerca la
+        pista—, solo asoma una ayuda, y no añade ninguna entrada al mapa de controles, que es
+        justamente lo que RNF-02 manda inspeccionar. Aun así queda anotado por si en la revisión
+        se prefiere un acceso pulsable equivalente.
+      Se usa `EventTrigger`, que ya trae uGUI, en vez de escribir un componente propio.
+      Pruebas nuevas: `ForestScene_RF22_LosObjetosCaenEnLaMitadInferiorDeLaPantalla` y
+      `ForestScene_RF24_ElAcopioSeLlenaConformeSeRecogenLosTroncos`;
+      `ForestScene_RF13_…` pasa a comprobar la burbuja y `ForestScene_RNF23_…` que el objeto no
+      lleva rótulo.
+      **Las suites de esta segunda vuelta NO se corrieron**: el MCP de Rider está caído
+      (`ConnectionRefused`) y `unity test` exige el Editor cerrado —«Multiple Unity instances
+      cannot open the same project»—. Compila sin errores y la escena se verificó en Play con una
+      captura, pero **eso no es que la suite pase**.
+      **Los sprites de piedra traen el tablero de ajedrez pintado en el PNG** en vez de alfa: se
+      ve un recuadro claro bajo cada piedra. Es del arte provisional, no del cableado.
+      **Tercera vuelta (10/09/2026): el nivel no se podía jugar, y no era por el arte.** Al entrar
+      al Nivel 2 la escena narrativa salía en blanco y el bosque era inalcanzable. Tres defectos
+      encadenados, ninguno en `Game.Levels.Wheel`:
+      1. `LevelSelectController` pedía la secuencia con la **fórmula** `N{nivel}_Apertura`, que
+         solo acierta en el Nivel 1: el 2 pedía `N2_Apertura`, ninguna secuencia respondía y
+         `Begin()` se iba por su aviso sin pintar una línea. Qué escena abre cada nivel pasa a ser
+         **contenido de la ficha** (`openingSequenceId`), no una fórmula sobre el número.
+      2. `NarrativeSceneController.Leave()` salía **siempre** a `LevelSelect` —lo provisional de
+         T14—, así que ni terminando la escena 2.1 se llegaba a jugar. `NarrativeSequence` gana
+         `NextPhase`: **a dónde sale la escena también es contenido**, y el controlador sigue sin
+         un `if` por secuencia. `N2_Escena21_Bosque` declara la fase 1; las del Nivel 1 declaran
+         0 y siguen saliendo al menú mientras `Level1_Cave` no exista.
+      3. `GameState.Playing` **no tenía escena**: `GameFlowRunner` avisaba y no cargaba nada.
+         Ahora hay una tabla aparte por `PhaseId` —una fase, una escena (RF-04)— con su única
+         entrada de hoy, `(Rueda, 1) → Level2_Forest`.
+
+      **La escena estaba escrita en números de 1920×1080 y montada en `ConstantPixelSize` sobre
+      800×600** — la única de las seis así; las otras cinco van con `ScaleWithScreenSize` 1920×1080
+      match 0.5. De ahí el aspecto «a medias»: márgenes de 64 y botones de 96 sin escalar.
+      Corregido y clavado por `ForestScene_RNF03_LaInterfazEscalaConLaResolucionComoElRestoDelJuego`.
+
+      **Los catorce sprites son ahora marcadores de posición propios, no arte ajeno mal rotulado.**
+      Se generan por código —círculo (tronco), polígono anguloso (piedra), hoja apuntada (planta),
+      hacha (herramienta)— con el contorno carbón de la Dirección de Arte, en los **mismos
+      archivos y con los mismos GUID**: llega el arte, se sustituye el `.png` y no se toca nada.
+      Se distinguen **por forma**, que es lo que hace jugable buscar «lo redondo» (RF-23, RNF-19).
+      Hubo que ajustar los `.meta`: traían el rect del recorte de la lámina anterior y con una
+      textura de 256 px el sprite «no se generaba porque el rect queda fuera».
+
+      **Composición según la pantalla 8, esta vez entera**: suelo en la mitad inferior con los
+      objetos tirados por él, tablilla del guía arriba a la izquierda, **acopio abajo a la
+      izquierda** y **botón de ayuda abajo a la derecha, en el sitio donde el mockup pone «Esa sí
+      sirve»**. La retroalimentación ya no tiene tablilla propia: comparte la del guía, que es la
+      que dice lo que toca ahora —instrucción, respuesta o pista— con su icono (RNF-19).
+      **Se fue la burbuja al señalar** y con ella la nota abierta sobre RNF-02: la ayuda es un
+      botón, así que toda la escena vuelve a ser clic y nada más.
+
+      **Un defecto que la vista del Editor no podía enseñar.** Repartir los objetos solo con las
+      fracciones del asset **no es cierto en todas las resoluciones**: el suelo escala con la
+      ventana y las tablillas miden lo mismo siempre, así que en batchmode tres objetos —entre
+      ellos un tronco— quedaban debajo del acopio, del contador y de la ayuda, y **un objeto
+      tapado no recibe el clic**. Lo cazó `ForestScene_RF22_NingunObjetoQuedaTapadoPorLaInterfaz`,
+      no la captura. El adaptador reserva ahora esas tres tablillas y aparta lo que caiga debajo
+      **en horizontal, hacia el centro** — subirlo lo sacaría de la mitad inferior (RF-22).
+
+      **Lo que no se hizo, a propósito**: el botón de pausa que la pantalla 8 lleva arriba a la
+      derecha. Es T16 del Slice 1 y ponerlo aquí sería una pausa muerta.
+
+      Verificación: **EditMode 96/96** y **PlayMode 50/52** con `unity test` y el Editor cerrado
+      (`test-results.xml`, `play-results.xml`, 10/09/2026); las 2 omitidas son las `VisualVerification`
+      de siempre, que exigen Game View. 0 fallos.
+
 - [ ] **W07 · Colocación de la carga y demostración del rodado** — `M` · `PM` + `VV` `MCP`
       RF-25, RF-26, RF-04, RNF-02, RNF-21, CT-06, CP-02, HU-08, CU-06 (FA-4a) · depende de: W06
 
