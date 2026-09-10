@@ -88,7 +88,7 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ## Fase 1 — Andamiaje generalizado (`andamiaje`)
 
-- [ ] **W03 · `HintPolicy` por fase, no por nivel** — `M` · `EM`
+- [x] **W03 · `HintPolicy` por fase, no por nivel** — `M` · `EM` (10/09/2026)
       RF-13, RF-10, RF-11, RNF-03, CP-06, HU-03, HU-04, CU-06..CU-08, INC-41 · depende de: W02
 - [ ] **W04 · Las seis secuencias narrativas del Nivel 2** — `S` · `EM` + `PM`
       RF-05, RF-06, RF-10, RF-12, RNF-01, RNF-18, HU-02, CP-07, INC-28, guion §5, §6.1.1, §6.1.3,
