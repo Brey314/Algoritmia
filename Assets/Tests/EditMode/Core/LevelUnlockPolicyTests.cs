@@ -13,6 +13,7 @@ namespace Game.Core.Tests
         public void LevelUnlockPolicy_RF03_CompletarUnNivelSoloHabilitaElSiguiente()
         {
             var profile = NewProfile();
+            profile.ConfirmPhase(new PhaseId(LevelId.Fire, 1), new PerformanceIndicators(1, 0, 1, 10f));
 
             LevelUnlockPolicy.UnlockAfterCompleting(profile, LevelId.Fire);
 
@@ -35,7 +36,10 @@ namespace Game.Core.Tests
         {
             var profile = NewProfile();
             profile.Reach(LevelId.River);
+            profile.ConfirmPhase(new PhaseId(LevelId.Fire, 1), new PerformanceIndicators(1, 0, 1, 10f));
 
+            // El Nivel 1 sí está completo, así que el desbloqueo corre de verdad: aun así no
+            // devuelve el perfil al Nivel 2.
             LevelUnlockPolicy.UnlockAfterCompleting(profile, LevelId.Fire);
 
             Assert.That(profile.ReachedLevel, Is.EqualTo(LevelId.River));

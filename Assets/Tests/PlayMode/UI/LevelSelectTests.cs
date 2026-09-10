@@ -71,6 +71,7 @@ namespace Game.UI.Tests
             var profile = NewProfile();
             var (controller, _) = await OpenLevelSelect(profile);
 
+            profile.ConfirmPhase(new PhaseId(LevelId.Fire, 1), new PerformanceIndicators(1, 0, 1, 10f));
             LevelUnlockPolicy.UnlockAfterCompleting(profile, LevelId.Fire);
             controller.Refresh();
 

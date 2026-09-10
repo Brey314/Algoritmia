@@ -7,8 +7,11 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 `VV` = VisualVerification · `MCP` = la verificación **exige** el corredor de pruebas conectado.
 
 > ⚠️ **R2 — el Slice 1 no está hecho.** Este slice generaliza ocho piezas del Slice 1 que aún no
-> existen. No abrir W02 antes del Checkpoint D del Slice 1. Solo **W01** y **W10** son
-> independientes y pueden adelantarse.
+> existen. **Actualizado el 10/09/2026:** el reparto entre carriles es **por assembly**, no por
+> slice. Independientes de la Fase 3 del Slice 1: **W01, W03, W04, W10, W11, W12**. **W02 ya se
+> hizo** —el freno era su colisión con T17, que aún no había tocado `PlayerProfile.cs`—. Siguen
+> esperando código del Slice 1: **W15** (necesita `ILevelReporter`, de T17), **W17** (T16) y
+> **W16** (ambas).
 
 > ⚠️ **R1 abierto — no hay corredor de pruebas MCP.** `run_unity_tests` sigue sin conectar.
 > Toda casilla marcada `MCP` exige haberla corrido **a mano** en la ventana Test Runner del
@@ -32,15 +35,53 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       lo que convierte la exclusión de RNF-16 en real —antes solo había un nivel que comparar—.
       RED **3/4** (`Expected: collection containing "Game.Levels.Wheel"` y dos
       `KeyNotFoundException`) → GREEN **EditMode 63/63**, 0 fallos, 0 omitidas.
-- [ ] **W02 · `PhaseId` y desbloqueo secuencial del Nivel 2** — `M` · `EM`
+- [~] **W02 · `PhaseId` y desbloqueo secuencial del Nivel 2** — `M` · `EM` (10/09/2026)
       RF-03, RF-04, RNF-09, RNF-14, HU-14, CU-06, INC-27, CP-02 · depende de: W01, Slice 1 T02/T07
+      **La lógica está cerrada; falta el consumidor en juego, que no es de este slice** — ver
+      «lo que queda pendiente» abajo.
+      `PhaseId` (`Game.Core`, `readonly struct` `LevelId` + fase en base 1) con la tabla de fases
+      por nivel —**1 / 3 / 3**, Nivel 3 según RF-40 e INC-30— y `AllOf`. `PlayerProfile` pasa a
+      hablar `PhaseId` en `ConfirmPhase`/`IsPhaseConfirmed`/`IndicatorsFor`/`ConfirmedPhases` y
+      gana `IsLevelComplete` y `NextPendingPhase` (la fase de retoma de RNF-14, `null` si el
+      nivel está completo). `LevelUnlockPolicy.UnlockAfterCompleting` **deja de creerle al
+      llamante**: solo habilita el nivel siguiente si están confirmadas todas las fases del que
+      se completó — con un nivel de una fase daba igual, con las tres del Nivel 2 abriría el
+      Nivel 3 a media rueda.
+      **`SaveStore` no necesitó cambios**, y es el punto: `PhaseId` es un tipo de tiempo de
+      ejecución, no la forma del archivo. El JSON sigue escribiendo `level` y `phase` sueltos, así
+      que la lista cerrada de RNF-09 queda intacta y los perfiles ya guardados se releen igual.
+      **Deviación de nombre**: el plan pedía `LevelSelect_RF03_Nivel2BloqueadoHastaCompletarNivel1`
+      en EditMode, pero el sujeto ahí no es la pantalla sino la regla; va como
+      `LevelUnlockPolicy_RF03_…`. `LevelSelect` sigue cubierto por la prueba PlayMode que ya
+      existía, ampliada para confirmar la fase antes de desbloquear.
+      RED: la suite EditMode **no compilaba** (`CS0246: PhaseId`, `CS1061: NextPendingPhase`,
+      `IsLevelComplete`) → GREEN **EditMode 70/70** (63 + 7 nuevas), 0 fallos, 0 omitidas, y
+      **PlayMode 33/35**, 0 fallos, las 2 omitidas son las `VisualVerification` de siempre, que
+      batchmode no ejecuta. 0 errores y 0 warnings de compilación (`unity test`, Editor cerrado).
+      **Lo que queda pendiente y por qué**
+      - `[ ]` **Nadie confirma una fase jugando todavía.** No hay una sola llamada a
+        `ConfirmPhase` en runtime: la del Nivel 1 la trae **T17/T18** del Slice 1 y la del Nivel 2,
+        **W05..W14**. Hasta entonces el desbloqueo real solo se puede verificar en pruebas, no
+        jugando, y `NextPendingPhase` no tiene consumidor.
+      - `[ ]` El «cierre y reapertura» de RNF-14 verificado **sobre el ejecutable** — está probado
+        contra el guardado (`SaveStore_RF04_ConfirmarFase1DelNivel2SobreviveAlCierre`), no sobre
+        el `.exe`. Cae en el Checkpoint D del Slice 1, donde ya está la casilla de RNF-14.
+      **Aviso a quien haga T17**: `PlayerProfile` cambió de firma. `ConfirmPhase(LevelId, int, …)`
+      ya no existe; se pasa un `PhaseId`. Es el cruce que la tabla de carriles anunciaba, y hoy se
+      resuelve a favor de W02 porque T17 no había empezado a escribir el archivo.
 
 ### ✅ Checkpoint W-A — Cimientos
-- [ ] Compila sin errores ni warnings nuevos (`check_compile_errors`)
+- [x] Compila sin errores ni warnings nuevos — **0 errores, 0 warnings** (10/09/2026; declarado
+      desde `unity test` con el Editor cerrado, no desde `check_compile_errors`: el puente de
+      coplay-mcp exige el Editor abierto y la CLI compila las dos suites igual)
 - [x] Prueba de exclusión RNF-16 con **dos niveles reales**, corrida y **declarada** —
       `Architecture_RNF16_NingunAssemblyDeNivelReferenciaAOtroNivel` verde con `Fire` y
       `Wheel` en la tabla (10/09/2026, `unity test --mode EditMode`, **63/63**)
-- [ ] El menú habilita el Nivel 2 solo tras completar el Nivel 1
+- [~] El menú habilita el Nivel 2 solo tras completar el Nivel 1 — la **regla** está cerrada y
+      probada (`LevelUnlockPolicy_RF03_Nivel2BloqueadoHastaCompletarNivel1` en EditMode y
+      `LevelSelect_RF03_CompletarElNivel1HabilitaElNivel2` en PlayMode, ambas verdes el
+      10/09/2026). Falta verlo **jugando**, y eso no depende de este slice: nadie confirma una
+      fase en runtime hasta T17/T18 del Slice 1
 - [ ] Revisado con el usuario
 
 ---
@@ -189,7 +230,11 @@ decorado la lleva (`Direccion_de_Arte.md` §8.2).
 
 ## Bloqueantes y decisiones pendientes
 
-- [ ] **R2 · Cerrar el Slice 1** hasta su Checkpoint D antes de abrir W02. Bloqueante duro.
+- [~] **R2 · Cerrar el Slice 1** hasta su Checkpoint D. **Dejó de ser bloqueante duro para W02**
+      (decisión del 10/09/2026): el freno real era la colisión con T17 sobre `PlayerProfile.cs` y
+      `SaveStore.cs`, y T17 no había empezado, así que W02 escribió primero y T17 se apoya en su
+      API. Lo que sigue dependiendo del Slice 1 es el **consumidor en juego** del modelo de fase
+      (T17/T18) y la verificación de RNF-14 sobre el ejecutable, ambos en el Checkpoint D.
 - [ ] **R1 · Instalar el servidor MCP de Unity** (`run_unity_tests`). Este slice tiene ocho
       tareas `MCP` contra las seis del Slice 1: el costo de no tenerlo crece.
 - [ ] **Pregunta abierta 1 · `Pasos utilizados` de la fase 1** sin definir en OE1 §3.6.1.

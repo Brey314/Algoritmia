@@ -207,6 +207,10 @@ exige una fase confirmada (**T17**) y la revisión con el usuario.
 - [ ] **T16 · Menú de pausa** — `M` · `EM` + `PM`
       RF-07, RF-03, RF-04, CP-02, HU-17 (FA-01..FA-05), INC-25 · depende de: T15
 - [ ] **T17 · Emisión de los cuatro indicadores del N1** — `M` · `EM`
+      ⚠️ **`PlayerProfile` cambió de firma el 10/09/2026 (Slice 2, W02).** El guardado de fase es
+      `ConfirmPhase(PhaseId, PerformanceIndicators)`; ya no existe la sobrecarga
+      `(LevelId, int, …)`. El Nivel 1 confirma `new PhaseId(LevelId.Fire, 1)` y, al hacerlo, es
+      quien por fin dispara de verdad `LevelUnlockPolicy.UnlockAfterCompleting` (T18).
       RF-45, RF-04, RNF-14, CP-03, CP-09, OE1 §3.6.1, INC-29 · depende de: T15, T16
 - [ ] **T18 · Resumen de fin de nivel y cierre reflexivo** — `M` · `EM` + `PM`
       RF-45, RF-12, RF-17, RF-03, CP-03, CP-07, HU-14, INC-26 · depende de: T17

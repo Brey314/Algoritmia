@@ -20,7 +20,7 @@ namespace Game.Core.Tests
         private static PlayerProfile ProfileWithProgress()
         {
             var profile = PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
-            profile.ConfirmPhase(LevelId.Fire, 1, new PerformanceIndicators(4, 2, 3, 91.5f));
+            profile.ConfirmPhase(new PhaseId(LevelId.Fire, 1), new PerformanceIndicators(4, 2, 3, 91.5f));
             profile.Reach(LevelId.Wheel);
             return profile;
         }
@@ -36,8 +36,8 @@ namespace Game.Core.Tests
 
             Assert.That(actual.Name, Is.EqualTo(expected.Name));
             Assert.That(actual.ReachedLevel, Is.EqualTo(LevelId.Wheel));
-            Assert.That(actual.IsPhaseConfirmed(LevelId.Fire, 1), Is.True);
-            Assert.That(actual.IndicatorsFor(LevelId.Fire, 1),
+            Assert.That(actual.IsPhaseConfirmed(new PhaseId(LevelId.Fire, 1)), Is.True);
+            Assert.That(actual.IndicatorsFor(new PhaseId(LevelId.Fire, 1)),
                 Is.EqualTo(new PerformanceIndicators(4, 2, 3, 91.5f)));
         }
 
@@ -48,7 +48,14 @@ namespace Game.Core.Tests
             // confirmadas— y los cuatro indicadores. Nada más: sin puntaje (CP-03), sin fecha,
             // sin identificador de equipo, sin datos de contacto.
             var sut = CreateStore();
-            sut.Save(ProfileWithProgress());
+            var profile = ProfileWithProgress();
+
+            // Con las tres fases del Nivel 2 en el mismo archivo: el guardado por fase se repite,
+            // la lista de claves no crece (W02).
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 1), new PerformanceIndicators(2, 1, 4, 40f));
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 2), new PerformanceIndicators(1, 0, 6, 55f));
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 3), new PerformanceIndicators(3, 2, 9, 88f));
+            sut.Save(profile);
 
             var keys = Regex.Matches(_fileSystem.Files.Values.Single(), "\"([A-Za-z]+)\":")
                 .Cast<Match>()
