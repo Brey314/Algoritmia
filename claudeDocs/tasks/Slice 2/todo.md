@@ -18,14 +18,28 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ## Fase 0 — Cimientos del slice
 
-- [ ] **W01 · Assembly `Game.Levels.Wheel` y prueba de exclusión real** — `XS` · `EM`
+- [x] **W01 · Assembly `Game.Levels.Wheel` y prueba de exclusión real** — `XS` · `EM` (10/09/2026)
       RNF-15, RNF-16, INC-40 · depende de: Slice 1 T01
+      `Game.Levels.Wheel.asmdef` (→ `Game.Core`, `Game.Scaffolding`) y
+      `Game.Levels.Wheel.Tests.asmdef`, **copiados del par de `Fire`** y sin `.cs` todavía. Los
+      cuatro `.meta` los generó Unity al importar; ninguno se escribió a mano.
+      **El plan decía «referencia única: `Game.Core`»; se siguió la cadena de `SPEC.md`**
+      (`Core` → `Scaffolding` → `Levels/*`) y la forma del `Fire` que ya está en disco: el nivel
+      consume `DialogueRunner` y `HintPolicy`, que viven en `Game.Scaffolding`. Los criterios de
+      aceptación de W01 solo vetan nivel→nivel y `Core`→nivel, y ambos siguen verdes.
+      **No hizo falta una prueba nueva**: registrar el módulo en la tabla `RuntimeModules` de
+      `AssemblyDependencyTest` hace que los cuatro casos existentes cubran el assembly nuevo, y es
+      lo que convierte la exclusión de RNF-16 en real —antes solo había un nivel que comparar—.
+      RED **3/4** (`Expected: collection containing "Game.Levels.Wheel"` y dos
+      `KeyNotFoundException`) → GREEN **EditMode 63/63**, 0 fallos, 0 omitidas.
 - [ ] **W02 · `PhaseId` y desbloqueo secuencial del Nivel 2** — `M` · `EM`
       RF-03, RF-04, RNF-09, RNF-14, HU-14, CU-06, INC-27, CP-02 · depende de: W01, Slice 1 T02/T07
 
 ### ✅ Checkpoint W-A — Cimientos
 - [ ] Compila sin errores ni warnings nuevos (`check_compile_errors`)
-- [ ] Prueba de exclusión RNF-16 con **dos niveles reales**, corrida y **declarada**
+- [x] Prueba de exclusión RNF-16 con **dos niveles reales**, corrida y **declarada** —
+      `Architecture_RNF16_NingunAssemblyDeNivelReferenciaAOtroNivel` verde con `Fire` y
+      `Wheel` en la tabla (10/09/2026, `unity test --mode EditMode`, **63/63**)
 - [ ] El menú habilita el Nivel 2 solo tras completar el Nivel 1
 - [ ] Revisado con el usuario
 
