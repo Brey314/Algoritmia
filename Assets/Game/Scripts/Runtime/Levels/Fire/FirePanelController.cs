@@ -1,4 +1,5 @@
 using System;
+using Game.Core;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,8 +13,9 @@ namespace Game.Levels.Fire
     /// <remarks>
     /// Adaptador delgado: **no contiene ninguna regla del juego**. El deslizante representa la
     /// hipótesis y no produce efecto hasta «Golpear» (RF-15); el resultado de cada golpe lo decide
-    /// <see cref="FireAttempt"/> (T12) y el mensaje <see cref="FireFeedbackLog"/> (T13). El salto a
-    /// la escena de cierre y el guardado son T15.
+    /// <see cref="FireAttempt"/> (T12) y el mensaje <see cref="FireFeedbackLog"/> (T13). Al converger
+    /// y accionar «Soplar», anima el nacimiento del fuego y encadena a la confirmación de fase, el
+    /// desbloqueo del Nivel 2 y la escena narrativa de cierre (T15, RF-03, RF-04, RF-20).
     /// </remarks>
     public class FirePanelController : MonoBehaviour
     {
@@ -37,6 +39,12 @@ namespace Game.Levels.Fire
         private FireAttempt _attempt;
         private FireFeedbackLog _log;
 
+        /// <summary>El flujo del juego. Sin él (escena abierta sin pasar por Boot) no se navega.</summary>
+        internal GameFlowRunner Runner { get; set; }
+
+        /// <summary>Override de prueba para el guardado (T15), patrón de <c>MainMenuController</c>.</summary>
+        internal IProfileSaver Saver { get; set; }
+
         /// <summary>La distancia que marca el deslizante. Solo <see cref="Strike"/> la lee (RF-15).</summary>
         internal StrikePosition Selected =>
             (StrikePosition)Mathf.Clamp(Mathf.RoundToInt(positionSlider.value), 0, 2);
@@ -50,6 +58,8 @@ namespace Game.Levels.Fire
         internal FireAttempt Attempt => _attempt;
         internal FireFeedbackLog Log => _log;
 #endif
+
+        private void Awake() => Runner ??= GameFlowRunner.Instance;
 
         private void Start()
         {
@@ -83,10 +93,72 @@ namespace Game.Levels.Fire
                 return;
             }
 
-            // T15: aquí van la animación del nacimiento del fuego, el guardado de fase (RF-04) y el
-            // salto a la escena narrativa de cierre. Hoy solo deja constancia en el registro.
             _log.RecordBlowSuccess();
             logView.Show(_log.Entries);
+            _ = ResolveAsync();
+        }
+
+        /// <summary>Anima la convergencia y, al terminar, marca el nivel completado (RF-20).</summary>
+        private async Awaitable ResolveAsync()
+        {
+            try
+            {
+                await PlayIgnitionAsync();
+            }
+            catch (OperationCanceledException)
+            {
+                return; // el panel se destruyó (cambio de escena) a mitad de la animación.
+            }
+
+            CompleteLevel();
+        }
+
+        /// <summary>Nacimiento del fuego: un barrido de color, guion §4.3.5 E7.</summary>
+        private async Awaitable PlayIgnitionAsync()
+        {
+            if (leavesImage == null)
+            {
+                return;
+            }
+
+            // Un único barrido, en una sola dirección: RNF-21 prohíbe destellos de alta
+            // frecuencia, y un `Mathf.PingPong` o cualquier oscilación los produciría. La
+            // iluminación progresiva del resto del escenario es T19; el sprite de fuego real es
+            // arte pendiente.
+            const float duration = 0.6f;
+            var start = leavesImage.color;
+            var fire = new Color(0.91f, 0.40f, 0.10f);
+            for (var elapsed = 0f; elapsed < duration; elapsed += Time.deltaTime)
+            {
+                leavesImage.color = Color.Lerp(start, fire, elapsed / duration);
+                await Awaitable.NextFrameAsync(destroyCancellationToken);
+            }
+
+            leavesImage.color = fire;
+        }
+
+        /// <summary>Confirma la fase, desbloquea el Nivel 2, guarda y encadena al cierre (RF-03, RF-04).</summary>
+        private void CompleteLevel()
+        {
+            var profile = Runner != null ? Runner.Flow.ActiveProfile : null;
+            if (profile == null)
+            {
+                // Mismo criterio que ScreenFlow (Game.UI), sin depender de ese assembly: la
+                // escena se abrió sin pasar por Boot, no hay a quién guardarle ni a dónde navegar.
+                Debug.LogWarning(
+                    "«Level1_Cave» se abrió sin pasar por «Boot»: no hay perfil activo, no se " +
+                    "guarda ni se avanza a la escena de cierre.", this);
+                return;
+            }
+
+            // T17: aquí van los cuatro indicadores reales (FireIndicatorCollector). De momento se
+            // confirma la fase sin ellos, igual que T11 dejó el umbral de pista para que T12 lo
+            // completara sin tocar HintPolicy.
+            profile.ConfirmPhase(LevelId.Fire, 1, default);
+            LevelUnlockPolicy.UnlockAfterCompleting(profile, LevelId.Fire);
+            (Saver ?? Runner.Session).SaveActive();
+
+            Runner.StartNarrative("N1_NacimientoDelFuego");
         }
 
         private void RefreshBlow()

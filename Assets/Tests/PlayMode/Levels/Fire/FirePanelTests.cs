@@ -195,6 +195,69 @@ namespace Game.Levels.Fire.Tests
             CaptureScreenshot("FirePanel_RNF19_SoplarAtenuado");
         }
 
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RF20_SoplarEncadenaAnimacionYEscenaDeCierre()
+        {
+            var (controller, runner) = await LoadPanelWithProfile(NewProfile());
+
+            ConvergeAndBlow(controller);
+            var llego = await WaitUntilAsync(() => runner.Flow.Current == GameState.Narrative, 5f);
+
+            Assert.That(llego, Is.True, "el flujo no llegó a Narrative tras soplar");
+            Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N1_NacimientoDelFuego"));
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RF04_GuardaAlCompletarLaFase()
+        {
+            var (controller, _) = await LoadPanelWithProfile(NewProfile());
+            var guardo = false;
+            controller.Saver = new SpyProfileSaver(() => guardo = true);
+
+            ConvergeAndBlow(controller);
+            var termino = await WaitUntilAsync(() => guardo, 5f);
+
+            Assert.That(termino, Is.True, "el guardado del perfil activo no se invocó tras soplar");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RF03_DesbloqueaElNivel2()
+        {
+            var profile = NewProfile();
+            var (controller, _) = await LoadPanelWithProfile(profile);
+
+            ConvergeAndBlow(controller);
+            var desbloqueo = await WaitUntilAsync(() => profile.IsUnlocked(LevelId.Wheel), 5f);
+
+            Assert.That(desbloqueo, Is.True, "el Nivel 2 (Rueda) no quedó desbloqueado tras soplar");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("VisualVerification")]
+        [Category("Acceptance")]
+        [Description("Tras ejecutar esta prueba, revisar la captura: la transición de color del " +
+                     "nacimiento del fuego es una única transición gradual, sin parpadeo ni " +
+                     "oscilación (RNF-21).")]
+        public async Task FireLevel_RNF21_SinDestellosDeAltaFrecuencia()
+        {
+            var (controller, _) = await LoadPanelWithProfile(NewProfile());
+
+            ConvergeAndBlow(controller);
+            for (var i = 0; i < 10; i++)
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            CaptureScreenshot("FireLevel_RNF21_ConvergenciaAMitad");
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
         private static async Task<FirePanelController> LoadPanel()
@@ -206,10 +269,75 @@ namespace Game.Levels.Fire.Tests
             }
 
             await Awaitable.NextFrameAsync(); // deja correr FirePanelController.Start()
+            // Los objetos de la escena anterior se destruyen al final de fotograma, no en el
+            // mismo en que `isDone` se vuelve verdadero: sin este fotograma extra,
+            // `FindAnyObjectByType` puede devolver el controlador de la prueba anterior en vez
+            // del recién cargado, y una prueba se queda comparando contra el registro de otra
+            // (medido el 11/09/2026: mensajes de `FirePanel_RF16_…` colándose en otras pruebas).
+            await Awaitable.NextFrameAsync();
 
-            var controller = Object.FindAnyObjectByType<FirePanelController>(FindObjectsInactive.Include);
-            Assert.That(controller, Is.Not.Null, "la escena Level1_Cave no tiene FirePanelController");
-            return controller;
+            // Assert y no un simple FindAnyObjectByType: si alguna vez vuelve a haber dos
+            // controladores vivos a la vez, esto tiene que fallar fuerte y decir por qué, no
+            // devolver uno cualquiera en silencio.
+            var controllers = Object.FindObjectsByType<FirePanelController>(FindObjectsInactive.Include);
+            Assert.That(controllers.Length, Is.EqualTo(1),
+                $"se esperaba un único FirePanelController vivo, había {controllers.Length}");
+            return controllers[0];
+        }
+
+        private static PlayerProfile NewProfile() =>
+            PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
+
+        /// <summary>
+        /// Variante de <see cref="LoadPanel"/> con un <see cref="GameFlowRunner"/> real y un perfil
+        /// activo (T15): las tres pruebas de convergencia necesitan `Flow` para observar a dónde
+        /// salta «Soplar» y a quién guarda/desbloquea.
+        /// </summary>
+        private static async Task<(FirePanelController controller, GameFlowRunner runner)>
+            LoadPanelWithProfile(PlayerProfile profile)
+        {
+            var controller = await LoadPanel();
+
+            var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
+            await Awaitable.NextFrameAsync(); // GameFlowRunner.Start() navega solo a MainMenu
+
+            runner.GoTo(GameState.ProfileSelect);
+            runner.SelectProfile(profile);
+            runner.StartPlaying(LevelId.Fire, 1);
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Playing),
+                "el flujo no llegó a Playing: el arreglo de la prueba está roto");
+
+            controller.Runner = runner;
+            return (controller, runner);
+        }
+
+        /// <summary>Marca «Muy cerca», converge con el mínimo de golpes efectivos y pulsa «Soplar».</summary>
+        private static void ConvergeAndBlow(FirePanelController controller)
+        {
+            controller.PositionSlider.value = (int)StrikePosition.VeryClose;
+            ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes);
+            Click(controller.BlowButton);
+        }
+
+        /// <summary>
+        /// Sondea <paramref name="condition"/> cuadro a cuadro hasta que se cumpla o venza el
+        /// tiempo real: la animación de convergencia (~0.6 s) corre en tiempo real, así que un
+        /// ajuste futuro de su duración no puede romper estas pruebas (Testability, plan T15).
+        /// </summary>
+        private static async Task<bool> WaitUntilAsync(Func<bool> condition, float timeoutSeconds)
+        {
+            var deadline = Time.realtimeSinceStartup + timeoutSeconds;
+            while (!condition())
+            {
+                if (Time.realtimeSinceStartup >= deadline)
+                {
+                    return false;
+                }
+
+                await Awaitable.NextFrameAsync();
+            }
+
+            return true;
         }
 
         private static void Click(Button button) =>
@@ -298,6 +426,14 @@ namespace Game.Levels.Fire.Tests
 
             Assert.That(File.Exists(path), Is.True, $"no se escribió la captura en «{path}»");
             TestContext.WriteLine($"Captura: {path}");
+        }
+
+        /// <summary>Espía de <see cref="IProfileSaver"/>, mismo patrón que <c>MainMenuTests</c>.</summary>
+        private sealed class SpyProfileSaver : IProfileSaver
+        {
+            private readonly Action _onSaveActive;
+            public SpyProfileSaver(Action onSaveActive) => _onSaveActive = onSaveActive;
+            public void SaveActive() => _onSaveActive();
         }
     }
 }

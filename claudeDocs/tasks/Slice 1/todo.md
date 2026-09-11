@@ -241,8 +241,22 @@ exige una fase confirmada (**T17**) y la revisión con el usuario.
       MCP de Rider (`playModeStartScene` cargaba Boot, el juego arrancaba solo). El Test Framework
       `@1405238725ab` no gestiona `playModeStartScene`; nueva guarda por reflexión sobre
       `PlaymodeLauncher.IsRunning` en `ExitingEditMode`. Detalle en `Fase-3-Resultados.md`.
-- [ ] **T15 · Convergencia: «Soplar» → nacimiento del fuego** — `S` · `PM` + `VV`
+- [x] **T15 · Convergencia: «Soplar» → nacimiento del fuego** — `S` · `PM` + `VV` (11/09/2026)
       RF-19, RF-20, RF-04, RF-03, RNF-21, HU-07, CU-04 · depende de: T14
+      «Soplar» encadena la convergencia: un barrido de color monótono (~0,6 s, sin oscilación —
+      RNF-21) y al terminar `FirePanelController.CompleteLevel()` confirma la fase 1 del Nivel 1
+      (`ConfirmPhase`, indicadores en `default` — los reales son T17), desbloquea el Nivel 2
+      (`LevelUnlockPolicy`), guarda (`IProfileSaver`, override de prueba como en
+      `MainMenuController`) y entra a `N1_NacimientoDelFuego` (guion §4.4, 19 líneas, cierre
+      reflexivo con «se llama iterar» incluido). **Desviación:** sin `FireResolutionController`
+      nuevo — la lógica se sumó a `FirePanelController` para no arriesgar otra pasada de
+      `edit-scene`; T15 no toca `Level1_Cave.unity`. Nuevo `NarrativeOutcome`
+      (`EntersLevel`/`ReturnsToLevelSelect`) en `NarrativeSequence`: `NarrativeSceneController.Leave()`
+      ya no asume que toda narrativa entra al nivel — decide por el propósito declarado en el
+      asset, sin un `if` por secuencia. **`FirePanelTests` 13/13** (4 nuevas) · **EditMode 83/83 ·
+      PlayMode 48/48** (3 corridas limpias). De paso, arreglado un defecto real de aislamiento en
+      el helper `LoadPanel()` de T14 (`FindAnyObjectByType` podía devolver el controlador de la
+      prueba anterior en corridas de suite completa). Detalle en `Fase-3-Resultados.md`.
 - [ ] **T16 · Menú de pausa** — `M` · `EM` + `PM`
       RF-07, RF-03, RF-04, CP-02, HU-17 (FA-01..FA-05), INC-25 · depende de: T15
 - [ ] **T17 · Emisión de los cuatro indicadores del N1** — `M` · `EM`

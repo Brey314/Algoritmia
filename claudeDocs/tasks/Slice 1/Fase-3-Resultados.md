@@ -1,8 +1,8 @@
 # Fase 3 — Nivel fuego: lo construido y sus resultados
 
-**Slice 1 · Golden Path temprano** · Estado: **T12, T13 y T14 implementadas y verdes** — corte de
-este documento: 10 de septiembre de 2026.
-Verificación vigente: **EditMode 83/83 · PlayMode 44/44** (`FirePanelTests` 9/9), 0 fallos.
+**Slice 1 · Golden Path temprano** · Estado: **T12–T15 implementadas y verdes** — corte de este
+documento: 11 de septiembre de 2026.
+Verificación vigente: **EditMode 83/83 · PlayMode 48/48** (`FirePanelTests` 13/13), 0 fallos.
 Plan técnico: [`plan.md`](plan.md) · Tablero: [`todo.md`](todo.md) · Contrato: `claudeDocs/SPEC.md`
 Fase anterior: [`Fase-2-Resultados.md`](Fase-2-Resultados.md)
 
@@ -15,7 +15,7 @@ el código de la fase **no está completo**.
 | T12 | `StrikePosition`, `FireLevelConfig`, `StrikeOutcome`, `FireAttempt` — lógica pura del nivel | EditMode | ✅ terminada |
 | T13 | `FireFeedbackLog` y los ocho mensajes del guion §4.3.4 | EditMode | ✅ terminada |
 | T14 | Panel de encendido y escena `Level1_Cave` | PlayMode | ✅ terminada |
-| T15 | Convergencia: «Soplar» → nacimiento del fuego | PlayMode + VV | pendiente |
+| T15 | Convergencia: «Soplar» → nacimiento del fuego | PlayMode + VV | ✅ terminada |
 | T16 | Menú de pausa | EditMode + PlayMode | pendiente |
 | T17 | Emisión de los cuatro indicadores del N1 | EditMode | pendiente |
 | T18 | Resumen de fin de nivel y cierre reflexivo | EditMode + PlayMode | pendiente |
@@ -128,6 +128,54 @@ un rato o reiniciando el Editor. No es de `PlayFromBoot`.)*
 
 ---
 
+## 2c. T15 — la convergencia: «Soplar» completa el nivel
+
+**Sin escena nueva ni tocar `Level1_Cave.unity`.** «Soplar» ya se habilitaba en `CanBlow` desde
+T14; T15 completa lo que faltaba al accionarlo en condiciones válidas (guion §4.3.5 E7, §4.4):
+
+- **`FirePanelController.Blow()`** ahora encadena `ResolveAsync()`: anima la convergencia y, al
+  terminar, marca la fase completada. **Desviación del plan:** no se creó
+  `FireResolutionController.cs` — la lógica se sumó al controlador de T14 (mismo criterio que
+  `NarrativeSceneController.Leave()` o `LevelSelectController.StartLevel()`: un adaptador puede
+  orquestar guardar+desbloquear+navegar sin que eso sea «una regla del juego»). Evita una tercera
+  pasada de `edit-scene` sobre un Editor que se había colgado varias veces en la fase.
+- **`PlayIgnitionAsync`** — un único `Color.Lerp` del `leavesImage` hacia un naranja de fuego en
+  ~0,6 s, monótono y en una sola dirección: RNF-21 prohíbe destellos de alta frecuencia y un
+  `PingPong` o cualquier oscilación los produciría. Placeholder — el sprite de fuego real y la
+  iluminación del resto del escenario son arte pendiente / T19.
+- **`CompleteLevel`** — sin perfil activo, avisa y no hace nada (mismo criterio que `ScreenFlow`,
+  sin acoplar `Game.Levels.Fire` a `Game.UI`). Con perfil: `PlayerProfile.ConfirmPhase(Fire, 1,
+  default)` (**los cuatro indicadores reales son T17** — de momento se confirma la fase sin
+  ellos, mismo patrón que T11 dejó el umbral de pista para T12), `LevelUnlockPolicy.UnlockAfterCompleting`
+  (Nivel 2, RF-03), `(Saver ?? Runner.Session).SaveActive()` (RF-04, con el mismo patrón de
+  `IProfileSaver` inyectable que `MainMenuController.Saver`, para que las pruebas usen un espía y
+  no toquen disco), y `Runner.StartNarrative("N1_NacimientoDelFuego")` (RF-20).
+- **`NarrativeOutcome`** (nuevo, `Game.Scaffolding`): `EntersLevel` / `ReturnsToLevelSelect`.
+  `NarrativeSceneController.Leave()` (T14) asumía que **toda** narrativa entra a jugar; con la de
+  cierre del N1 eso ya no vale. La secuencia declara su propósito en el asset —sin `if` por
+  secuencia, la regla del proyecto se mantiene— y `Leave()` decide por ese campo. Valor por
+  defecto (`EntersLevel = 0`) igual al comportamiento anterior: **los tres assets existentes no
+  se tocaron**.
+- **`N1_NacimientoDelFuego.asset`** (nuevo) — las 19 líneas del guion §4.4 (el nacimiento del
+  fuego y el cierre reflexivo de Chispa, «se llama iterar»), añadido como cuarta entrada al
+  arreglo `sequences` de `Narrative.unity` — un cambio de una sola línea en la escena, exactamente
+  la promesa de T09/T10: «añadir una escena narrativa es crear un asset».
+
+### Un defecto real encontrado al verificar: `LoadPanel()` podía devolver el controlador equivocado
+
+Verificando T15 contra la suite completa, `FirePanel_RF15_…`, `FirePanel_RF17_…` y
+`FirePanel_RF19_…` (las tres de T14, sin tocar) fallaron en 2 de 3 corridas con mensajes de
+**otra** prueba coladas en su registro. No era ruido del Editor: `LoadPanel()` (helper compartido
+por las 13 pruebas desde T14) usaba `FindAnyObjectByType<FirePanelController>`, que en una corrida
+de suite completa podía devolver el controlador de la prueba **anterior** —destruido por el
+cambio de escena pero aún no purgado al final del fotograma— en vez del recién cargado. Arreglado
+en el único sitio que lo causaba: un fotograma extra de margen tras el `Start()` de la escena, y
+`FindObjectsByType` con `Assert.That(count == 1)` en vez de un `FindAnyObjectByType` silencioso
+que podía acertar por casualidad. Confirmado con **3 corridas limpias seguidas (48/48)** tras el
+arreglo.
+
+---
+
 ## 3. Verificación — declarada
 
 ### 3.1 EditMode — T12
@@ -190,7 +238,26 @@ badge sobre el pergamino suficiente; los glifos con tilde («montón», «golpé
 (RNF-20 ✅). La primera captura **falló** —el badge no se veía, «Soplar» solo se distinguía por
 color— y se corrigió reparentando el badge fuera del botón (§2b).
 
-### 3.4 Flujo test-first
+### 3.4 PlayMode — T15
+
+**`FirePanelTests` 13/13, 0 fallos** (4 nuevas). **PlayMode total: 48/48, 0 fallos** — 3 corridas
+limpias consecutivas tras el arreglo de `LoadPanel()` (§2c). **EditMode 83/83** sin cambios.
+
+| Prueba | Requisito |
+|---|---|
+| `FireLevel_RF20_SoplarEncadenaAnimacionYEscenaDeCierre` | RF-20 |
+| `FireLevel_RF04_GuardaAlCompletarLaFase` | RF-04 |
+| `FireLevel_RF03_DesbloqueaElNivel2` | RF-03 |
+| `FireLevel_RNF21_SinDestellosDeAltaFrecuencia` | RNF-21 (VV) |
+
+**Verificación visual (RNF-21).** La captura `TestScreenshots/FireLevel_RNF21_ConvergenciaAMitad.png`
+muestra el panel a mitad de la animación de convergencia. El criterio en sí —sin parpadeo ni
+oscilación— se verifica leyendo `PlayIgnitionAsync`: un único `Color.Lerp` monótono, sin
+`PingPong` ni reinicio; una captura estática no puede mostrar parpadeo a lo largo del tiempo, así
+que documenta el estado para quien la revise a mano y el código es la fuente de verdad del
+criterio. RNF-19/RNF-20 (el badge de «Soplar», el contraste) siguen como en T14, sin cambios.
+
+### 3.5 Flujo test-first
 
 Esqueleto compilable → pruebas en rojo → implementación → refactor.
 
@@ -208,18 +275,24 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   inercia, comprobación de escena/config, VV) —la escena ya existe y nada de producción tiene que
   correr para que se cumplan—. Las tres rojas (`RF16`, `RF17`, `RF19 habilita`) fallan en su
   aserción de comportamiento. **GREEN: 9/9.**
+- **T15 RED: 3 fail / 10 pass** (de 13: las 9 de T14 sin tocar + las 4 nuevas). Las 3 rojas
+  (`RF20`, `RF04`, `RF03`) son el comportamiento aún sin cablear; la VV nace verde (solo escribe
+  el archivo de la captura). Una de las 9 de T14 falló de forma intermitente en esta fase por el
+  defecto de `LoadPanel()` (§2c), no por el rojo esperado. **GREEN: 13/13** tras cablear `Blow()`
+  y arreglar `LoadPanel()`.
 
-### 3.5 Notas
+### 3.6 Notas
 
 - **El MCP de Rider respondió la mayor parte de la sesión** (`get_unity_compilation_result` y
   `run_unity_tests` contra el Editor abierto). R1 deja de bloquear el flujo test-first mientras
-  Rider siga abierto; `unity test` (CLI) queda de respaldo. **T14 costó varias corridas** por el
-  cuelgue intermitente del Test Runner (§2b).
-- **PlayMode no se re-corrió** en T12 ni T13: lógica pura en un assembly aislado. T14 sí es
-  PlayMode y de ahí la regresión completa **44/44**.
+  Rider siga abierto; `unity test` (CLI) queda de respaldo. **T14 y T15 costaron varias corridas**
+  por el cuelgue intermitente del Test Runner (§2b) — en T15 el Editor llegó a cerrarse solo y se
+  reabrió con `execute_run_configuration("Start Unity")` de Rider.
+- **PlayMode no se re-corrió** en T12 ni T13: lógica pura en un assembly aislado. T14 y T15 sí son
+  PlayMode y de ahí la regresión completa.
 - **Compilación sin warnings nuevos** (solo los preexistentes de `Game.Audio` vacío). Rider no
   incluye los archivos nuevos en la solución, así que `/resolve-diagnostics` no corrió en ninguna
-  de las tres tareas; la comprobación vinculante de «0 warnings» es la de Unity.
+  de las cuatro tareas; la comprobación vinculante de «0 warnings» es la de Unity.
 
 ---
 
@@ -227,17 +300,24 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
 
 - **PG-06 / R2** — los valores de `FireLevelConfig` (Muy cerca, 3, 3) y el texto de los ocho
   mensajes son los propuestos por el guion §4.3.2/§4.3.4 y se validan jugando en el Checkpoint D.
-- **Botón de ayuda (`HintPolicy`) sin cablear** — T14 trajo el panel y el registro (`FeedbackLogView`),
-  pero **no** el botón de ayuda: `FireAttempt.ShouldOfferHint` y `HintPolicy` cuentan lo mismo por
-  caminos distintos y hay que decidir cuál lo alimenta. Queda para cuando el andamiaje se cablee a
-  la escena (T15/T18 según se distribuya).
-- **Arte del Nivel 1 (A7–A9)** — la escena `Level1_Cave` va con placeholders. Montón de hojas =
-  elipse blanca; badge y registro con formas planas. Los cuatro estados reales del montón y el
-  humo/fuego son T15/T19.
+- **Botón de ayuda (`HintPolicy`) sin cablear** — el panel y el registro existen desde T14, pero
+  **no** el botón de ayuda: `FireAttempt.ShouldOfferHint` y `HintPolicy` cuentan lo mismo por
+  caminos distintos y hay que decidir cuál lo alimenta. Sigue sin resolverse tras T15; queda para
+  cuando el andamiaje se cablee a la escena (T16/T18 según se distribuya).
+- **Arte del Nivel 1 (A7–A9)** — la escena `Level1_Cave` va con placeholders: montón de hojas =
+  elipse blanca, badge y registro con formas planas, el «fuego» de T15 es un barrido de color sin
+  sprite propio. Los cuatro estados reales del montón, el fuego y la iluminación del resto del
+  escenario son T19 / arte pendiente.
+- **Los cuatro indicadores de T15 son `default`** — `CompleteLevel` confirma la fase 1 del Nivel 1
+  sin los indicadores reales (T17, `FireIndicatorCollector`); cuando T17 llegue, reemplaza ese
+  `default` sin tocar el resto de `CompleteLevel`.
+- **El encadenado de las tres secuencias narrativas del N1 (§4.1/§4.2) antes del panel** sigue sin
+  resolverse — `NarrativeSceneController.Leave()` entra al nivel tras **cualquier** secuencia de
+  apertura del N1 (`Outcome = EntersLevel`), no específicamente tras `N1_Hallazgo`.
 - **Cuelgue intermitente del Test Runner** — el plugin Coplay reañade su botón de toolbar durante
-  `TestJobRunner.ExecuteCallback` y ahí el corredor se traba a veces; se recupera solo o
-  reiniciando el Editor. No lo arregla el parche de `PlayFromBoot`.
-- **`ProjectSettings.asset` autoañade `SENTIS_ANALYTICS_ENABLED`** en cada reimport (revertido 3
-  veces en T14). Toca a RNF-08 «sin telemetría» — decisión del usuario.
-- **`StrikeOutcome` sin `Position` en golpes efectivos** — T13/T14 no la necesitaron; si T15 la pide
-  en el resultado hay que ampliar la firma y anotarlo en el SPEC.
+  `TestJobRunner.ExecuteCallback` y ahí el corredor se traba a veces; en T15 llegó a cerrar el
+  Editor por completo. Se recupera reiniciando (`execute_run_configuration("Start Unity")` de
+  Rider) o esperando. No lo arregla el parche de `PlayFromBoot`, que resuelve un problema distinto
+  (`playModeStartScene` secuestrando la entrada a Play).
+- **`ProjectSettings.asset` autoañade `SENTIS_ANALYTICS_ENABLED`** en cada reimport (revertido
+  varias veces en T14 y T15). Toca a RNF-08 «sin telemetría» — decisión del usuario.
