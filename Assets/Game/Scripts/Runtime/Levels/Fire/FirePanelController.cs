@@ -36,6 +36,11 @@ namespace Game.Levels.Fire
         [Tooltip("Sprites del montón de hojas por número de golpes efectivos (placeholder T14).")]
         private Sprite[] leavesStates = Array.Empty<Sprite>();
 
+        [SerializeField]
+        [Tooltip("Iluminación progresiva del escenario (RF-21, prioridad Baja). Puede quedar sin " +
+            "asignar: el resto del nivel sigue jugable sin ella.")]
+        private CaveLightingController lighting;
+
         private FireAttempt _attempt;
         private FireFeedbackLog _log;
         private FireIndicatorCollector _indicators;
@@ -56,6 +61,7 @@ namespace Game.Levels.Fire
         internal FireAttempt Attempt => _attempt;
         internal FireFeedbackLog Log => _log;
         internal FireIndicatorCollector Indicators => _indicators;
+        internal CaveLightingController Lighting => lighting;
 #endif
 
         private void Awake() => Runner ??= GameFlowRunner.Instance;
@@ -75,6 +81,7 @@ namespace Game.Levels.Fire
 
             RefreshBlow();
             RefreshLeaves();
+            RefreshLighting();
         }
 
         /// <summary>Ejecuta un golpe desde la distancia marcada y refresca la UI (RF-16).</summary>
@@ -86,6 +93,7 @@ namespace Game.Levels.Fire
             logView.Show(_log.Entries);
             RefreshLeaves();
             RefreshBlow();
+            RefreshLighting();
         }
 
         /// <summary>Acciona «Soplar». Atenuado antes de la convergencia: no responde (RF-19).</summary>
@@ -133,13 +141,18 @@ namespace Game.Levels.Fire
             const float duration = 0.6f;
             var start = leavesImage.color;
             var fire = new Color(0.91f, 0.40f, 0.10f);
+            var startLighting = lighting != null ? lighting.Progress : 1f;
             for (var elapsed = 0f; elapsed < duration; elapsed += Time.deltaTime)
             {
                 leavesImage.color = Color.Lerp(start, fire, elapsed / duration);
+                // Un solo barrido combinado con el fuego: la iluminación completa llega en la
+                // resolución (guion E7), no antes (E4 solo sube un escalón por golpe efectivo).
+                lighting?.SetProgress(Mathf.Lerp(startLighting, 1f, elapsed / duration));
                 await Awaitable.NextFrameAsync(destroyCancellationToken);
             }
 
             leavesImage.color = fire;
+            lighting?.SetProgress(1f);
         }
 
         /// <summary>
@@ -176,6 +189,12 @@ namespace Game.Levels.Fire
                 blowLockedBadge.SetActive(!_attempt.CanBlow);
             }
         }
+
+        /// <summary>Sube un escalón por golpe efectivo, sin llegar al máximo (RF-21, guion E4) —
+        /// el último tramo hasta la iluminación completa lo da <see cref="PlayIgnitionAsync"/> en
+        /// la resolución (E7).</summary>
+        private void RefreshLighting() =>
+            lighting?.SetProgress((float)_attempt.EffectiveStrikes / (config.MinimumEffectiveStrikes + 1));
 
         private void RefreshLeaves()
         {

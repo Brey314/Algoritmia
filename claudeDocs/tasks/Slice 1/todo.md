@@ -299,8 +299,23 @@ exige una fase confirmada (**T17**) y la revisión con el usuario.
       **LevelSummaryComposerTests 4/4 · LevelSummaryTests 2/2** (incluye
       `LevelSummary_CP07_ElCierreReflexivoNoEsOmitibleLaPrimeraVez`, la prueba de regresión directa
       del bug) · **EditMode 94/94 · PlayMode 52/52** (2 corridas limpias consecutivas).
-- [ ] **T19 · Iluminación progresiva del escenario** — `S` · `VV`
-      **RF-21 (prioridad Baja)**, RNF-20, RNF-21, HU-07 · depende de: T15
+- [x] **T19 · Iluminación progresiva del escenario** — `S` · `VV`
+      **RF-21 (prioridad Baja)**, RNF-20, RNF-21, HU-07 · depende de: T15 (11/09/2026).
+      `CaveLightingController` (nuevo, sobre `Panel/Fondo`) interpola el color de fondo entre un
+      tono oscuro y el original según `golpesEfectivos / (mínimo + 1)` — un escalón por golpe
+      efectivo (guion E4), reservando el último escalón para la ignición (`PlayIgnitionAsync`,
+      E7), que ahora también anima la iluminación en el mismo barrido que el color del fuego.
+      **Desviación deliberada del documento de arte**: el `#0F1526` al 65 % que sugiere
+      `Direccion_de_Arte.md` §8.1 da ~1.2:1 de contraste contra el texto del panel — muy por
+      debajo del 4.5:1 de RNF-20. Se ajustó a `#8A97AB` (≈5.14:1, verificado por la propia
+      prueba, no de confianza). **`CaveLightingTests` 2/2** (incluye
+      `FirePanel_RNF20_ContrasteSuficienteEnElEstadoMasOscuro`, cálculo real de contraste WCAG) ·
+      **EditMode 94/94 · PlayMode 54/54** (2 corridas limpias; la flakiness ya conocida de
+      `FirePanelTests`, §2c de `Fase-3-Resultados.md`, apareció con más frecuencia esta vez,
+      siempre en pruebas preexistentes ajenas a T19 — anotado como pendiente de revisar).
+
+**Código de Fase 3 completo (T12–T19).** Del Checkpoint D no queda ninguna casilla de código —
+todas las que siguen son verificación manual y revisión con el usuario.
 
 ### ✅ Checkpoint D — Slice 1 completo
 - [ ] **Dos recorridos completos** del Golden Path sin incidencias (RNF-13)

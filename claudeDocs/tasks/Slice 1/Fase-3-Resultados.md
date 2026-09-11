@@ -317,6 +317,34 @@ parámetro** (`PerformanceIndicators` — consumirlo para producir texto sin cif
 CP-03 permite; lo que prohíbe es que un dígito llegue a pantalla, garantía que cubre
 `LevelSummary_RF45_NoContieneNingunDigito`).
 
+## 2g. T19 — iluminación progresiva del escenario
+
+**`CaveLightingController` (nuevo, sobre el `Fondo` del panel ya existente, sin GameObjects
+nuevos).** Interpola el color entre un tono oscuro y el original del `Fondo` según
+`golpesEfectivos / (mínimo + 1)`: un escalón por golpe efectivo (guion E4), sin llegar nunca al
+máximo hasta la resolución (E7) — el `+1` reserva ese último escalón para la ignición, que ahora
+anima la iluminación en el mismo barrido de color que ya animaba el nacimiento del fuego
+(`PlayIgnitionAsync`, T15), sin temporizador ni animación nueva.
+
+### El ajuste de RNF-20: el color más oscuro no es el del documento de arte
+
+`Direccion_de_Arte.md` §8.1 prescribe una máscara `#0F1526` al 65 % de opacidad sobre el fondo del
+panel. Aplicado sobre `Fondo` (`#F7EFE2`, el mismo par que certifica RNF-20 con el texto
+`#3A1E18`), ese valor da un contraste texto/fondo de **~1.2:1** — muy por debajo del 4.5:1 que
+RNF-20 exige «en el estado más oscuro», uno de los cuatro criterios de aceptación de la tarea.
+Documento de arte es «subordinado a SPEC.md, no introduce mecánicas»; RNF-20 es un requisito duro
+con su propia prueba. Se ajustó el color más oscuro a `#8A97AB` (contraste calculado ≈5.14:1) —
+tratamiento igual al que ya reciben los valores de `FireLevelConfig`/`FireMessages` (PG-06,
+pendientes de revisión de contenido, no de código). La prueba de RNF-20 calcula el contraste real
+contra el color efectivamente aplicado (fórmula WCAG de luminancia relativa) en vez de confiar en
+un valor fijado de antemano: verificado mediante mutación deliberada durante Test First que el
+`#0F1526` literal sí hace fallar la prueba (≈1.2:1 calculado).
+
+La tabla de opacidad de cuatro anclas del documento (65/45/25/0 %) tampoco encaja con
+`MinimumEffectiveStrikes = 3` del `N1_Config` actual — es ilustrativa, no literal. Se siguió el
+mecanismo que describe (un color de fondo interpolado) con la fracción propia del plan en vez de
+sus anclas numéricas.
+
 ---
 
 ## 3. Verificación — declarada
@@ -443,7 +471,18 @@ T17) — 2 corridas limpias consecutivas de cada suite.
 | `LevelSummary_RF03_DevuelveAlMenuConNivel2Desbloqueado` (PlayMode) | RF-03, RF-04, HU-14 |
 | `LevelSummary_CP07_ElCierreReflexivoNoEsOmitibleLaPrimeraVez` (PlayMode) | CP-07 — regresión directa del bug de §2f |
 
-### 3.8 Flujo test-first
+### 3.8 PlayMode — T19
+
+**`CaveLightingTests` 2/2, 0 fallos.** **EditMode total: 94/94 (sin cambios, T19 no toca EditMode) ·
+PlayMode total: 54/54** — 2 corridas limpias de 4 (la flakiness preexistente de `FirePanelTests`,
+§2c/§3.9, se disparó en las otras 2, siempre en pruebas ajenas a T19).
+
+| Prueba | Requisito |
+|---|---|
+| `FireLevel_RF21_IluminacionSubeUnEscalonPorGolpeEfectivo` | RF-21, RNF-21 |
+| `FirePanel_RNF20_ContrasteSuficienteEnElEstadoMasOscuro` | RNF-20 |
+
+### 3.9 Flujo test-first
 
 Esqueleto compilable → pruebas en rojo → implementación → refactor.
 
@@ -486,8 +525,19 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   `LevelSummary_CP07_...` es, además, la prueba de regresión directa del bug de §2f: conduce el
   flujo real de `CompleteLevel()` → escena narrativa y comprueba el botón de omitir, así que un
   reordenamiento futuro que reintroduzca el bug la haría fallar.
+- **T19 GREEN desde la primera corrida, sin rojo previo** — mismo precedente que T16/T17/T18:
+  `CaveLightingController` se implementó completo en el skeleton. A diferencia de tareas
+  anteriores, aquí la verificación de que cada aserción es sensible a una implementación
+  incorrecta se hizo con **mutación deliberada**, no solo trazado a mano: se cambió temporalmente
+  el divisor de `RefreshLighting()` de `mínimo + 1` a `mínimo` (simulando que converger ya
+  ilumina al máximo) y se quitaron las dos líneas de `lighting?.SetProgress(...)` de
+  `PlayIgnitionAsync` (simulando que la ignición nunca ilumina) — ambos mutantes hicieron fallar
+  `FireLevel_RF21_...` exactamente donde se esperaba, revertidos después y confirmados limpios de
+  nuevo. Para RNF-20, se verificó a mano (no en el motor) que sustituir `darkest` por el `#0F1526`
+  literal del documento de arte da ≈1.2:1 calculado, muy por debajo del umbral — confirma que la
+  prueba depende del color real, no de un valor de confianza.
 
-### 3.9 Notas
+### 3.10 Notas
 
 - **El MCP de Rider respondió la mayor parte de la sesión** (`get_unity_compilation_result` y
   `run_unity_tests` contra el Editor abierto). R1 deja de bloquear el flujo test-first mientras
@@ -504,37 +554,40 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   haber corrido nada. Esta vez un reinicio del Editor sí lo resolvió, pero el reinicio mismo
   tardó ~9 minutos en volver a «ready» (vs. ~3 min en T17), con el proceso aparentemente
   atascado un rato en «Opening project…» antes de arrancar de verdad — sigue sin causa raíz
-  confirmada.
+  confirmada. **T19 no tuvo cuelgues del Editor.**
 - **PlayMode no se re-corrió** en T12 ni T13: lógica pura en un assembly aislado. T14, T15, T16,
-  T17 y T18 sí son PlayMode y de ahí la regresión completa.
+  T17, T18 y T19 sí son PlayMode y de ahí la regresión completa.
 - **Compilación sin warnings nuevos** (solo los preexistentes de `Game.Audio` vacío y el falso
   positivo de «namespace no corresponde a la ubicación» en archivos de `Game.Core`, ya presente
   antes de T17). Rider no incluye los archivos nuevos en la solución, así que `/resolve-diagnostics`
-  no corrió en ninguna de las siete tareas; la comprobación vinculante de «0 warnings» es la de
+  no corrió en ninguna de las ocho tareas; la comprobación vinculante de «0 warnings» es la de
   Unity.
-- **PlayMode tuvo 1 fallo intermitente en T17**, ajeno al cambio: `FirePanel_RF19_
-  SoplarAtenuadoNoRespondeNiRegistraError` falló una vez en tres corridas con un mensaje de golpe
-  fallido inesperado en el log, limpio en la repetición inmediata. Coincide con la flakiness de
-  «controlador de una prueba anterior reutilizado por `FindAnyObjectByType` en una corrida de
-  suite completa» que T15 ya había mitigado parcialmente (§2c); `Strike()`'s nueva llamada a
-  `_indicators.RecordStrike` no toca `FireFeedbackLog`, así que no es una regresión de T17. **No
-  reapareció en T18** (2 corridas PlayMode limpias consecutivas).
+- **La flakiness de `FirePanelTests` (§2c) subió de frecuencia en T19**: 1 fallo en tres corridas
+  en T17, ninguno en T18, pero **2 de 4 corridas completas con 2-3 fallos** en T19 — siempre las
+  mismas tres pruebas preexistentes de T15 (`FirePanel_RF16_...`, `FirePanel_RF19_...`,
+  `FirePanel_RF17_...`), nunca las dos nuevas de T19. Mismo síntoma de siempre (contenido de una
+  prueba anterior colándose antes de que termine de limpiarse la escena); ninguno de los cambios
+  de T19 toca `FireFeedbackLog` ni el registro, así que no parece causal. Las corridas limpias
+  (54/54, dos veces) bastan para dar T19 por bueno, pero la frecuencia más alta queda anotada para
+  revisar antes de Slice 2 en vez de seguir postergándola tarea tras tarea.
 
 ---
 
 ## 4. Lo que queda abierto
 
 - **PG-06 / R2** — los valores de `FireLevelConfig` (Muy cerca, 3, 3), el texto de los ocho
-  mensajes y el resumen de `LevelSummaryMessages` (T18, primer borrador sin revisar) son los
-  propuestos por el guion/contenido de primer borrador y se validan jugando en el Checkpoint D.
+  mensajes, el resumen de `LevelSummaryMessages` (T18) y el color más oscuro de
+  `CaveLightingController` (T19, `#8A97AB` — ajustado por RNF-20, no el `#0F1526` del documento de
+  arte) son primer borrador y se validan jugando en el Checkpoint D.
 - **Botón de ayuda (`HintPolicy`) sin cablear** — el panel y el registro existen desde T14, pero
   **no** el botón de ayuda: `FireAttempt.ShouldOfferHint` y `HintPolicy` cuentan lo mismo por
-  caminos distintos y hay que decidir cuál lo alimenta. Sigue sin resolverse tras T18 (fuera de su
-  alcance: RF-45/RF-12, no RF-13); queda para una tarea aparte.
+  caminos distintos y hay que decidir cuál lo alimenta. Sigue sin resolverse tras T19 (fuera del
+  alcance de todas las tareas de esta fase: RF-13, ninguna de ellas lo traza); queda para una
+  tarea aparte.
 - **Arte del Nivel 1 (A7–A9)** — la escena `Level1_Cave` va con placeholders: montón de hojas =
   elipse blanca, badge y registro con formas planas, el «fuego» de T15 es un barrido de color sin
-  sprite propio. Los cuatro estados reales del montón, el fuego y la iluminación del resto del
-  escenario son T19 / arte pendiente.
+  sprite propio. El *mecanismo* de iluminación progresiva ya existe (T19); los cuatro estados
+  reales del montón, el sprite del fuego y el arte real de la cueva siguen pendientes.
 - **El encadenado de las tres secuencias narrativas del N1 (§4.1/§4.2) antes del panel** sigue sin
   resolverse — `NarrativeSceneController.Leave()` entra al nivel tras **cualquier** secuencia de
   apertura del N1 (`Outcome = EntersLevel`), no específicamente tras `N1_Hallazgo`.
@@ -544,8 +597,16 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   Rider) o esperando. No lo arregla el parche de `PlayFromBoot`, que resuelve un problema distinto
   (`playModeStartScene` secuestrando la entrada a Play).
 - **`ProjectSettings.asset` autoañade `SENTIS_ANALYTICS_ENABLED`** en cada reimport (revertido
-  varias veces en T14, T15, T17 y T18; no reapareció en T16). Toca a RNF-08 «sin telemetría» —
-  decisión del usuario.
+  varias veces en T14, T15, T17, T18 y T19; no reapareció en T16). Toca a RNF-08 «sin
+  telemetría» — decisión del usuario.
+- **Flakiness de `FirePanelTests` por reutilización de controlador entre pruebas** —
+  `FindAnyObjectByType` puede devolver el `FirePanelController` de la prueba anterior si la
+  escena previa no ha terminado de destruirse; el fotograma extra en `LoadPanel()` (T15, §2c) lo
+  mitiga pero no lo elimina. Frecuencia observada: 1/3 corridas en T17, 0/2 en T18, **2/4 en
+  T19** — sube y baja sin patrón claro entre tareas que no tocan ese código, señal de que es un
+  problema de temporización del Editor/Test Runner y no de la lógica de la prueba. Nunca afectó a
+  una prueba de la tarea en curso, siempre a pruebas preexistentes de T15. Vale la pena
+  investigarlo a fondo antes de Slice 2 si sigue subiendo.
 - **`PauseMenuPolicy` depende de `GameFlowRunner`** (un `MonoBehaviour`), a diferencia de
   `LevelUnlockPolicy` (puro sobre `PlayerProfile`) — asimetría deliberada, «Reiniciar» necesita el
   efecto secundario real de recarga de escena. `FireIndicatorCollector` (T17) es igual de puro que
