@@ -38,6 +38,7 @@ namespace Game.Levels.Fire
 
         private FireAttempt _attempt;
         private FireFeedbackLog _log;
+        private FireIndicatorCollector _indicators;
 
         /// <summary>El flujo del juego. Sin él (escena abierta sin pasar por Boot) no se navega.</summary>
         internal GameFlowRunner Runner { get; set; }
@@ -57,6 +58,7 @@ namespace Game.Levels.Fire
         internal FeedbackLogView LogView => logView;
         internal FireAttempt Attempt => _attempt;
         internal FireFeedbackLog Log => _log;
+        internal FireIndicatorCollector Indicators => _indicators;
 #endif
 
         private void Awake() => Runner ??= GameFlowRunner.Instance;
@@ -65,6 +67,11 @@ namespace Game.Levels.Fire
         {
             _attempt = new FireAttempt(config);
             _log = new FireFeedbackLog(messages, config.MinimumEffectiveStrikes);
+            _indicators = new FireIndicatorCollector(config, () => Time.realtimeSinceStartup);
+            if (Runner != null)
+            {
+                Runner.ActiveReporter = _indicators;
+            }
 
             strikeButton.onClick.AddListener(Strike);
             blowButton.onClick.AddListener(Blow);
@@ -77,6 +84,7 @@ namespace Game.Levels.Fire
         internal void Strike()
         {
             var outcome = _attempt.Strike(Selected);
+            _indicators.RecordStrike(outcome);
             _log.Record(outcome, _attempt.ConsecutiveFailures);
             logView.Show(_log.Entries);
             RefreshLeaves();
@@ -151,10 +159,7 @@ namespace Game.Levels.Fire
                 return;
             }
 
-            // T17: aquí van los cuatro indicadores reales (FireIndicatorCollector). De momento se
-            // confirma la fase sin ellos, igual que T11 dejó el umbral de pista para que T12 lo
-            // completara sin tocar HintPolicy.
-            profile.ConfirmPhase(LevelId.Fire, 1, default);
+            profile.ConfirmPhase(LevelId.Fire, 1, _indicators.Complete());
             LevelUnlockPolicy.UnlockAfterCompleting(profile, LevelId.Fire);
             (Saver ?? Runner.Session).SaveActive();
 

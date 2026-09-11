@@ -57,13 +57,21 @@ namespace Game.UI
 
         private void OpenPause()
         {
+            Runner?.ActiveReporter?.PauseOpened(); // RF-07: desde aquí no cuenta el tiempo de resolución.
             overlay.SetActive(true);
             baseButtons.SetActive(true);
             confirmPanel.SetActive(false);
         }
 
-        /// <summary>«Continuar»: no toca nada más que la visibilidad del overlay (HU-17).</summary>
-        private void ClosePause() => overlay.SetActive(false);
+        /// <summary>
+        /// «Continuar» y «Volver al menú» (RF-07, HU-17): además de ocultar el overlay, cierra la
+        /// ventana de pausa abierta por <see cref="OpenPause"/> para el indicador de resolución.
+        /// </summary>
+        private void ClosePause()
+        {
+            overlay.SetActive(false);
+            Runner?.ActiveReporter?.PauseClosed();
+        }
 
         private void RequestRestart()
         {

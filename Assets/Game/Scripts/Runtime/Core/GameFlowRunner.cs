@@ -40,6 +40,10 @@ namespace Game.Core
 
         public GameFlow Flow { get; } = new GameFlow();
 
+        /// <summary>El recolector de indicadores de la fase en curso, si la hay (RF-45). Quien
+        /// pausa (Game.UI) se lo notifica sin conocer Game.Levels.Fire: la mediación vive aquí.</summary>
+        public ILevelReporter ActiveReporter { get; set; }
+
         private ProfileSession _session;
 
         /// <summary>

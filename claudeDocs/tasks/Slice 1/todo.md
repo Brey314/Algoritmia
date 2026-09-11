@@ -273,8 +273,17 @@ exige una fase confirmada (**T17**) y la revisión con el usuario.
       arrancaba inactivo (Awake/Start nunca corrían), y `PauseMenuPolicy` llamando a `GameFlow`
       directo en vez de por `GameFlowRunner` (saltaba la recarga). **PauseMenuTests 4/4,
       PauseMenuPolicyTests 1/1** · **EditMode 84/84 · PlayMode 52/52** (2 corridas limpias).
-- [ ] **T17 · Emisión de los cuatro indicadores del N1** — `M` · `EM`
-      RF-45, RF-04, RNF-14, CP-03, CP-09, OE1 §3.6.1, INC-29 · depende de: T15, T16
+- [x] **T17 · Emisión de los cuatro indicadores del N1** — `M` · `EM`
+      RF-45, RF-04, RNF-14, CP-03, CP-09, OE1 §3.6.1, INC-29 · depende de: T15, T16 (11/09/2026).
+      `ILevelReporter` (Core, dos métodos: `PauseOpened`/`PauseClosed`) + `FireIndicatorCollector`
+      (Fire, implementa la interfaz): Intentos = golpes no efectivos, Errores corregidos = acierto
+      justo tras un fallo, Pasos utilizados = golpes efectivos al cruzar el mínimo (se congela),
+      Tiempo de resolución = reloj inyectado menos la ventana de pausa. Mediación por
+      `GameFlowRunner.ActiveReporter` para que `Game.UI` (quien pausa) y `Game.Levels.Fire` (quien
+      mide) no se referencien entre sí. `FirePanelController.CompleteLevel()` ya no usa `default`.
+      **FireIndicatorTests 6/6** (incluye barrido de reflexión CP-03 sobre `Game.UI` cargado en
+      dominio, sin referencia de compilación nueva) · **EditMode 90/90 · PlayMode 52/52** (una
+      corrida PlayMode completa tuvo 1 fallo intermitente ajeno a T17, limpio en la repetición).
 - [ ] **T18 · Resumen de fin de nivel y cierre reflexivo** — `M` · `EM` + `PM`
       RF-45, RF-12, RF-17, RF-03, CP-03, CP-07, HU-14, INC-26 · depende de: T17
 - [ ] **T19 · Iluminación progresiva del escenario** — `S` · `VV`

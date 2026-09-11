@@ -219,6 +219,42 @@ escena, sin `SceneLoader`, sin fotogramas) — la primera prueba EditMode del pr
 `MonoBehaviour`, justificada porque «Reiniciar» es intrínsecamente una recarga real, no solo un
 cambio de estado puro.
 
+## 2e. T17 — los cuatro indicadores del N1
+
+**`CompleteLevel()` ya no confirma con `default`.** `ILevelReporter` (`Game.Core`, dos métodos:
+`PauseOpened`/`PauseClosed`) + `FireIndicatorCollector` (`Game.Levels.Fire`, la implementa):
+
+- **Intentos** = golpes ejecutados desde una posición no efectiva, uno por uno.
+- **Errores corregidos** = un golpe efectivo que llega justo después de uno que no lo fue. No hace
+  falta comparar `StrikePosition` aparte: la posición efectiva es única, así que cualquier golpe
+  fallido está, por construcción, en una posición distinta a la del acierto que lo corrige.
+- **Pasos utilizados** = golpes efectivos acumulados al cruzar `MinimumEffectiveStrikes`; se
+  congela ahí, golpes efectivos posteriores no lo mueven.
+- **Tiempo de resolución** = un reloj inyectado (`Func<float>`, `Time.realtimeSinceStartup` en
+  producción) menos la ventana con la pausa abierta — determinista en prueba sin `Thread.Sleep`.
+
+**La mediación de la pausa pasa por `Game.Core`, no por una referencia nueva entre assemblies.**
+Solo `PauseMenuController` (`Game.UI`) sabe cuándo se abre/cierra la pausa, y solo
+`Game.Levels.Fire` puede medir el tiempo del nivel — pero ninguna de las dos direcciones de
+dependencia entre esos dos assemblies está permitida. `GameFlowRunner.ActiveReporter`
+(`ILevelReporter`, en Core) es el punto de acceso ya compartido: `FirePanelController.Start()` lo
+asigna a su `FireIndicatorCollector`, y `PauseMenuController.OpenPause()`/`ClosePause()` lo
+notifican — mismo patrón que `IProfileSaver`, aplicado aquí a una interfaz de notificación en vez
+de una de guardado.
+
+Sin bugs de producción esta vez (a diferencia de T16): el diseño salió correcto en el skeleton, y
+las seis pruebas de `FireIndicatorTests` pasaron en verde desde la primera corrida — deviación
+deliberada del rojo-primero, documentada y verificada a mano línea por línea contra la aritmética
+esperada (ver plan, sección Implementation Notes) para no aceptar un verde vacío.
+
+**Bloqueo de entorno, no de código**: el puente MCP de Rider (`get_unity_compilation_result`,
+`unity_play_control`) estuvo en timeout total ~13 minutos con el patrón ya documentado (bucle de
+`[Licensing::Client] Error: Code 404` en `Editor.log`, sin línea de finalización en `idea.log` para
+`calling Rd model.getCompilationResult.startSuspending`). A diferencia de la vez anterior (memoria
+de sesión, 07/09/2026), **dos reinicios completos del Editor no lo arreglaron** — el Editor mismo
+reportaba `ready` por `unity status` (CLI) ambas veces, así que el problema está del lado del
+puente RD de Rider, no de Unity. Se resolvió solo tras esperar; no se reinició Rider.
+
 ---
 
 ## 3. Verificación — declarada
@@ -315,7 +351,22 @@ total: 52/52** — 2 corridas limpias consecutivas.
 | `PauseMenu_HU17_ConfirmarReiniciarReinicioElIntentoSinTocarElProgreso` | RF-03, RF-04, RF-07 |
 | `PauseMenu_HU17_NoSeMuestraEnEscenasNarrativas` | HU-17 FA-04 |
 
-### 3.6 Flujo test-first
+### 3.6 EditMode — T17
+
+**`FireIndicatorTests` 6/6, 0 fallos.** **EditMode total: 90/90 · PlayMode total: 52/52** — 2
+corridas EditMode limpias; PlayMode tuvo 1 fallo intermitente ajeno a T17 en una de tres corridas
+(§3.8).
+
+| Prueba | Requisito |
+|---|---|
+| `FireIndicators_RF45_IntentosCuentaSoloGolpesNoEfectivos` | RF-45 |
+| `FireIndicators_RF45_ErrorCorregidoExigeCambioDePosicionSeguidoDeAcierto` | RF-45 |
+| `FireIndicators_RF07_LaPausaNoSumaTiempoDeResolucion` | RF-07, RF-45 |
+| `FireIndicators_CP03_NingunIndicadorLlegaALaUIDelEstudiante` | CP-03 |
+| `FireIndicators_RF45_PasosUtilizadosSeCongelaAlCruzarElMinimo` | RF-45 |
+| `FireIndicators_RF45_PerformanceIndicatorsExponeExactamenteLosCuatroCampos` | RNF-09 |
+
+### 3.7 Flujo test-first
 
 Esqueleto compilable → pruebas en rojo → implementación → refactor.
 
@@ -346,20 +397,38 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   seguía en rojo porque el componente vivía en un GameObject inactivo (bug #1) y, tras moverlo,
   una tercera prueba seguía en rojo porque `PauseMenuPolicy` no pasaba por `GameFlowRunner.Apply`
   (bug #2). Dos rondas de diagnóstico y arreglo antes del verde real.
+- **T17 GREEN desde la primera corrida, sin rojo previo** — `FireIndicatorCollector` se implementó
+  completo en el skeleton (Step 1), mismo precedente que `PauseMenuPolicy` en T16: el cálculo
+  queda fijado por el diseño del plan y stubearlo solo habría significado reescribirlo en Step 3.
+  Se verificó a mano que cada aserción de `FireIndicatorTests` es sensible a una implementación
+  incorrecta (p. ej. RF-07: `_startedAt=0, _pausedAt=10, _pausedSeconds=5` tras cerrar, `Complete()`
+  en `t=20` → `20-0-5=15`, el valor exacto que afirma la prueba) para no aceptar un verde vacío.
 
-### 3.7 Notas
+### 3.8 Notas
 
 - **El MCP de Rider respondió la mayor parte de la sesión** (`get_unity_compilation_result` y
   `run_unity_tests` contra el Editor abierto). R1 deja de bloquear el flujo test-first mientras
   Rider siga abierto; `unity test` (CLI) queda de respaldo. **T14 y T15 costaron varias corridas**
   por el cuelgue intermitente del Test Runner (§2b) — en T15 el Editor llegó a cerrarse solo y se
   reabrió con `execute_run_configuration("Start Unity")` de Rider. **T16 no tuvo cuelgues del
-  Editor**, pero sí dos rondas de diagnóstico de bugs reales de producción (§2d).
-- **PlayMode no se re-corrió** en T12 ni T13: lógica pura en un assembly aislado. T14, T15 y T16
-  sí son PlayMode y de ahí la regresión completa.
-- **Compilación sin warnings nuevos** (solo los preexistentes de `Game.Audio` vacío). Rider no
-  incluye los archivos nuevos en la solución, así que `/resolve-diagnostics` no corrió en ninguna
-  de las cinco tareas; la comprobación vinculante de «0 warnings» es la de Unity.
+  Editor**, pero sí dos rondas de diagnóstico de bugs reales de producción (§2d). **T17 tuvo el
+  peor cuelgue de la fase**: el puente MCP de Rider estuvo ~13 minutos en timeout total pese a dos
+  reinicios completos del Editor (que sí levantó limpio cada vez, confirmado por `unity status`) —
+  se resolvió solo, esperando, sin tocar Rider. Ver §2e y la memoria de sesión.
+- **PlayMode no se re-corrió** en T12 ni T13: lógica pura en un assembly aislado. T14, T15, T16 y
+  T17 sí son PlayMode (T17 por el wiring compartido en `GameFlowRunner`/`PauseMenuController`) y
+  de ahí la regresión completa.
+- **Compilación sin warnings nuevos** (solo los preexistentes de `Game.Audio` vacío y el falso
+  positivo de «namespace no corresponde a la ubicación» en archivos de `Game.Core`, ya presente
+  antes de T17). Rider no incluye los archivos nuevos en la solución, así que `/resolve-diagnostics`
+  no corrió en ninguna de las seis tareas; la comprobación vinculante de «0 warnings» es la de
+  Unity.
+- **PlayMode tuvo 1 fallo intermitente en T17**, ajeno al cambio: `FirePanel_RF19_
+  SoplarAtenuadoNoRespondeNiRegistraError` falló una vez en tres corridas con un mensaje de golpe
+  fallido inesperado en el log, limpio en la repetición inmediata. Coincide con la flakiness de
+  «controlador de una prueba anterior reutilizado por `FindAnyObjectByType` en una corrida de
+  suite completa» que T15 ya había mitigado parcialmente (§2c); `Strike()`'s nueva llamada a
+  `_indicators.RecordStrike` no toca `FireFeedbackLog`, así que no es una regresión de T17.
 
 ---
 
@@ -369,15 +438,12 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   mensajes son los propuestos por el guion §4.3.2/§4.3.4 y se validan jugando en el Checkpoint D.
 - **Botón de ayuda (`HintPolicy`) sin cablear** — el panel y el registro existen desde T14, pero
   **no** el botón de ayuda: `FireAttempt.ShouldOfferHint` y `HintPolicy` cuentan lo mismo por
-  caminos distintos y hay que decidir cuál lo alimenta. Sigue sin resolverse tras T16; queda para
+  caminos distintos y hay que decidir cuál lo alimenta. Sigue sin resolverse tras T17; queda para
   T18 o una tarea aparte.
 - **Arte del Nivel 1 (A7–A9)** — la escena `Level1_Cave` va con placeholders: montón de hojas =
   elipse blanca, badge y registro con formas planas, el «fuego» de T15 es un barrido de color sin
   sprite propio. Los cuatro estados reales del montón, el fuego y la iluminación del resto del
   escenario son T19 / arte pendiente.
-- **Los cuatro indicadores de T15 son `default`** — `CompleteLevel` confirma la fase 1 del Nivel 1
-  sin los indicadores reales (T17, `FireIndicatorCollector`); cuando T17 llegue, reemplaza ese
-  `default` sin tocar el resto de `CompleteLevel`.
 - **El encadenado de las tres secuencias narrativas del N1 (§4.1/§4.2) antes del panel** sigue sin
   resolverse — `NarrativeSceneController.Leave()` entra al nivel tras **cualquier** secuencia de
   apertura del N1 (`Outcome = EntersLevel`), no específicamente tras `N1_Hallazgo`.
@@ -387,9 +453,11 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   Rider) o esperando. No lo arregla el parche de `PlayFromBoot`, que resuelve un problema distinto
   (`playModeStartScene` secuestrando la entrada a Play).
 - **`ProjectSettings.asset` autoañade `SENTIS_ANALYTICS_ENABLED`** en cada reimport (revertido
-  varias veces en T14 y T15; no reapareció en T16). Toca a RNF-08 «sin telemetría» — decisión del
-  usuario.
+  varias veces en T14, T15 y T17; no reapareció en T16). Toca a RNF-08 «sin telemetría» —
+  decisión del usuario.
 - **`PauseMenuPolicy` depende de `GameFlowRunner`** (un `MonoBehaviour`), a diferencia de
   `LevelUnlockPolicy` (puro sobre `PlayerProfile`) — asimetría deliberada, «Reiniciar» necesita el
-  efecto secundario real de recarga de escena. Anotado para T17/T18: no dar por hecho que toda
-  política de `Game.Core` es 100 % pura sin Unity.
+  efecto secundario real de recarga de escena. `FireIndicatorCollector` (T17) es igual de puro que
+  `LevelUnlockPolicy` a pesar de implementar `ILevelReporter`: la única pieza con estado de Unity
+  es el `Func<float>` que le inyecta `FirePanelController`, no la clase misma. No dar por hecho
+  que toda política de `Game.Core`/`Game.Levels.*` es 100 % pura sin Unity — revisar caso por caso.
