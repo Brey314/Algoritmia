@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Game.Scaffolding;
 using UnityEngine;
 
 namespace Game.Levels.Wheel
@@ -72,6 +73,38 @@ namespace Game.Levels.Wheel
         public float RollSeconds { get; private set; } = 2.5f;
 
         [field: SerializeField]
+        [field: Tooltip("Cuánto tarda la caja en caer al suelo al pasar el último tronco, en segundos.")]
+        public float FallSeconds { get; private set; } = 0.45f;
+
+        [field: SerializeField]
+        [field: Tooltip("Secuencia narrativa a la que sale el bosque tras el rodado (guion §6.1.3). A dónde sale una fase es contenido, no código (RF-05).")]
+        public string ClosingSequenceId { get; private set; } = "N2_Escena22_ElPatron";
+
+        [field: SerializeField]
+        [field: Tooltip("Escala de un objeto en el borde alto del suelo, el más lejano. El borde bajo es 1: cuanto más arriba, más pequeño.")]
+        public float FarScale { get; private set; } = 0.6f;
+
+        [field: SerializeField]
+        [field: Tooltip("Cuánto crece un objeto con el cursor encima (1.15 = un 15 %). Es realce, no selección: el clic sigue siendo el único control.")]
+        public float HoverScale { get; private set; } = 1.15f;
+
+        [field: SerializeField]
+        [field: Tooltip("A qué distancia del cursor empieza a crecer, en fracción del suelo. Cero lo apaga.")]
+        public float HoverRadius { get; private set; } = 0.15f;
+
+        [field: SerializeField]
+        [field: Tooltip("Cuánto dura la transición al completar el acopio: los troncos vuelan a la caja y la cámara se acerca, en segundos.")]
+        public float TransitionSeconds { get; private set; } = 1.2f;
+
+        [field: SerializeField]
+        [field: Tooltip("Plano general fijo de toda la recolección. Igual al último encuadre de la escena 2.1: de la narrativa al juego no hay salto.")]
+        public CameraFraming PlayFraming { get; private set; } = new CameraFraming();
+
+        [field: SerializeField]
+        [field: Tooltip("Encuadre en el que termina el acercamiento al completar el acopio. Igual al primero de la escena 2.2, que lo hereda sin moverse.")]
+        public CameraFraming CompletionFraming { get; private set; } = new CameraFraming();
+
+        [field: SerializeField]
         [field: Tooltip("Los objetos que se reparten por el bosque, válidos y distractores.")]
         public ForestObject[] ForestObjects { get; private set; } = Array.Empty<ForestObject>();
 
@@ -114,7 +147,8 @@ namespace Game.Levels.Wheel
             string pendingLogsFormat = "faltan {0}",
             string cargoPlacedMessage = "colocada",
             string cargoMissedMessage = "fuera",
-            float rollSeconds = 0.1f)
+            float rollSeconds = 0.1f,
+            string closingSequenceId = "cierre")
         {
             var config = CreateInstance<WheelLevelConfig>();
             config.RequiredLogs = requiredLogs;
@@ -126,7 +160,22 @@ namespace Game.Levels.Wheel
             config.CargoPlacedMessage = cargoPlacedMessage;
             config.CargoMissedMessage = cargoMissedMessage;
             config.RollSeconds = rollSeconds;
+            config.ClosingSequenceId = closingSequenceId;
             return config;
+        }
+#endif
+
+#if UNITY_EDITOR
+        /// <summary>Los dos encuadres del bosque pasan las mismas reglas que las paradas narrativas.</summary>
+        private void OnValidate()
+        {
+            foreach (var (stop, framing, previous) in new[] { ("juego", PlayFraming, (CameraFraming)null), ("cierre", CompletionFraming, PlayFraming) })
+            {
+                foreach (var warning in IllustrationFraming.Warnings(framing, previous, mirroredForest: true))
+                {
+                    Debug.LogWarning($"{name} · {stop}: {warning}", this);
+                }
+            }
         }
 #endif
     }

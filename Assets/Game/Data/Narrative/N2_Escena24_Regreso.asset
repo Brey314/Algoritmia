@@ -14,8 +14,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
   <Id>k__BackingField: N2_Escena24_Regreso
   <Level>k__BackingField: 2
-  <Illustration>k__BackingField: {fileID: 0}
+  <Illustration>k__BackingField: {fileID: 21300000, guid: bbed55b5b972c6c44ac36e4f02bc21c2, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.665, y: 0.445}
+    <Zoom>k__BackingField: 1.6
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.755, y: 0.5}
+    <Zoom>k__BackingField: 1.19
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 2
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.7, y: 0.44}
+      <Zoom>k__BackingField: 1.68
+  - <Line>k__BackingField: 3
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.733, y: 0.44}
+      <Zoom>k__BackingField: 1.68
+  - <Line>k__BackingField: 4
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.766, y: 0.44}
+      <Zoom>k__BackingField: 1.68
+  - <Line>k__BackingField: 5
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.74, y: 0.47}
+      <Zoom>k__BackingField: 1.36
+  - <Line>k__BackingField: 6
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.755, y: 0.5}
+      <Zoom>k__BackingField: 1.19
+  <CameraSmoothingSeconds>k__BackingField: 0.7
+  <Props>k__BackingField: []
   <IsReflectiveClosing>k__BackingField: 0
+  <NextPhase>k__BackingField: 0
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: ALGORITM
     <Text>k__BackingField: Ahora tienen la carretilla. Pero tenerla no basta.
@@ -30,6 +60,8 @@ MonoBehaviour:
   - <Speaker>k__BackingField: "NI\xD1A"
     <Text>k__BackingField: "Si ordenamos bien los pasos... funcionar\xE1 mejor."
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "Lleva la carretilla hasta el refugio. Pero no la vas a empujar t\xFA."
+    <Text>k__BackingField: "Lleva la carretilla hasta el refugio. Pero no la vas
+      a empujar t\xFA."
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: Vas a escribir antes todos los pasos, y luego los ejecutas de una sola vez.
+    <Text>k__BackingField: Vas a escribir antes todos los pasos, y luego los ejecutas
+      de una sola vez.

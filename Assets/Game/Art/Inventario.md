@@ -128,7 +128,7 @@ no programa ningún clip suyo. Ver «Puntos abiertos».
 
 | Archivo | Origen |
 |---|---|
-| ○ `env_n2_bosque_claro.png` | `B1` (Slice 2) |
+| ✓ `env_n2_bosque_claro.png` — 1599×899, **provisional** (11/09/2026). Importado `Single`, `maxTextureSize` 8192: el definitivo se sustituye por nombre y cubre la pantalla sin tocar nada (`IllustrationFraming`) | `B1` (Slice 2) |
 | ○ `env_n2_taller.png` | `B4` |
 | ○ `env_n2_tablero.png` | `B8` |
 | ○ `env_n2_refugio_noche.png` | `S16b` — refugio con fuego encendido, 21:9 |
@@ -189,7 +189,7 @@ el color de acento del nivel está prohibido en el decorado (§9.2, §4.2).
 |---|---|
 | ✓ `prop_n2_tronco_a.png` … `_e` (5, los válidos) | `B2` (Slice 2) — **provisional** |
 | ✓ `prop_n2_piedra_a.png` … `_d` · `prop_n2_planta_a.png` … `_c` · `prop_n2_herramienta_a.png` … `_c` | `B2` — distractores, **provisionales** |
-| ○ `prop_n2_caja_suelo.png`, `_sobre_troncos`, `_rodando` | `B3` |
+| ✓ `prop_n2_caja_suelo.png` — **provisional** (generado por código, W07, 11/09/2026); ○ `_sobre_troncos`, `_rodando` — hoy los tres estados usan el mismo sprite | `B3` |
 | ○ `prop_n2_pieza_1.png` … `_6` | `B5` |
 | ○ `prop_n2_carretilla_e1.png` … `_e5` | `B6` |
 | ○ `prop_n2_carretilla_cenital_norte.png`, `_este`, `_sur`, `_oeste` | `B7` |

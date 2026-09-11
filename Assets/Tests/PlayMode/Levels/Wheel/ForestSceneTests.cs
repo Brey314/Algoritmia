@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -170,14 +171,23 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(interactivos.Where(elemento => !(elemento is Button)).Select(elemento => elemento.name),
                 Is.Empty, "todo lo interactivo es un botón: sin deslizadores, barras ni campos");
 
-            // Clic sostenido y arrastre son de W07 y del Nivel 3; en el bosque no hay ninguno
-            // (RNF-02, CT-06). Se comprueba por la interfaz que Unity usa para enrutarlos.
-            var arrastrables = Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include)
+            // La caja se agarra con el clic sostenido y se suelta al soltar el clic (RF-25): eso
+            // es pulsar y soltar, exactamente el esquema de RNF-02, y no el arrastre de uGUI, que
+            // nadie implementa. Se comprueba por la interfaz que Unity usa para enrutar cada cosa
+            // (CT-06). `Selectable` también atiende el pulsar, pero solo para pintarse: se aparta.
+            var comportamientos = Object.FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include);
+            var arrastrables = comportamientos
                 .Where(comportamiento => comportamiento is IDragHandler || comportamiento is IBeginDragHandler)
                 .Select(comportamiento => comportamiento.name)
                 .ToArray();
+            var sostenidos = comportamientos
+                .Where(comportamiento => comportamiento is IPointerDownHandler && !(comportamiento is Selectable))
+                .Select(comportamiento => comportamiento.name)
+                .ToArray();
 
-            Assert.That(arrastrables, Is.Empty, "ningún elemento del bosque se arrastra");
+            Assert.That(arrastrables, Is.Empty, "ningún elemento del bosque usa el arrastre de uGUI");
+            Assert.That(sostenidos, Is.EqualTo(new[] { "Objeto_Caja" }),
+                "lo único que responde al clic sostenido es la caja");
         }
 
         [Test]
@@ -194,6 +204,8 @@ namespace Game.Levels.Wheel.Tests
                 ("contador", (RectTransform)forest.CounterLabel.transform),
                 ("acopio", (RectTransform)forest.Slots[0].transform.parent),
                 ("ayuda", (RectTransform)forest.HelpButton.transform),
+                ("empujar", (RectTransform)forest.PushButton.transform),
+                ("caja", forest.CargoRect),
                 ("tablilla del guía", (RectTransform)forest.MessageLabel.transform.parent)
             };
 
@@ -216,20 +228,23 @@ namespace Game.Levels.Wheel.Tests
 
         [Test]
         [Timeout(30000)]
-        public async Task ForestScene_RF22_LosObjetosCaenEnLaMitadInferiorDeLaPantalla()
+        public async Task ForestScene_RF22_LosObjetosCaenEntreElCincoYElSesentaPorCientoDeLaPantalla()
         {
             var forest = await OpenForest();
             Canvas.ForceUpdateCanvases();
             await Awaitable.NextFrameAsync();
 
-            var mitad = Screen.height / 2f;
-            var arriba = forest.Spawned
+            // El suelo del claro va del 5 % al 60 % de la altura de la pantalla, medido desde
+            // abajo: por debajo queda el borde y por encima los troncos del fondo, que no se pisan.
+            var techo = Screen.height * 0.60f;
+            var piso = Screen.height * 0.05f;
+            var fuera = forest.Spawned
                 .Select(entrada => (entrada.Button.name, Caja: EnPantalla((RectTransform)entrada.Button.transform)))
-                .Where(x => x.Caja.yMax > mitad)
-                .Select(x => $"{x.name} llega a y={x.Caja.yMax:0} y el suelo acaba en {mitad:0}")
+                .Where(x => x.Caja.yMax > techo + 0.5f || x.Caja.yMin < piso - 0.5f)
+                .Select(x => $"{x.name} ocupa y={x.Caja.yMin:0}..{x.Caja.yMax:0} y el suelo va de {piso:0} a {techo:0}")
                 .ToArray();
 
-            Assert.That(arriba, Is.Empty, "el suelo es la mitad inferior de la pantalla");
+            Assert.That(fuera, Is.Empty, string.Join(" · ", fuera));
             Assert.That(forest.Spawned.Select(entrada => entrada.Object.FloorPosition).Distinct().Count(),
                 Is.EqualTo(forest.Spawned.Count), "están repartidos, no apilados en el mismo punto");
         }
@@ -279,6 +294,7 @@ namespace Game.Levels.Wheel.Tests
             {
                 ("el acopio", EnPantalla((RectTransform)forest.Slots[0].transform.parent)),
                 ("la ayuda", EnPantalla((RectTransform)forest.HelpButton.transform)),
+                ("la caja", EnPantalla(forest.CargoRect)),
                 ("el contador", EnPantalla((RectTransform)forest.CounterLabel.transform)),
                 ("la tablilla del guía", EnPantalla((RectTransform)forest.MessageLabel.transform.parent))
             };
@@ -442,6 +458,495 @@ namespace Game.Levels.Wheel.Tests
                 .ToArray();
 
             Assert.That(fugados, Is.Empty, string.Join(" · ", fugados));
+        }
+
+        // --- W07: la caja y el rodado ------------------------------------------------------------
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF25_LaCajaNoSeArrastraSinLosCincoTroncos()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            Pulsar(forest, ForestObjectCategory.RoundLog, 1);
+            var sitio = forest.CargoRect.anchoredPosition;
+
+            forest.TakeCargo();
+            forest.DragCargoTo(Centro((RectTransform)forest.Slots[0].transform.parent));
+
+            Assert.That(forest.Cargo.IsHeld, Is.False, "sin los cinco troncos la caja no se agarra");
+            Assert.That(forest.CargoRect.anchoredPosition, Is.EqualTo(sitio), "y no se mueve del sitio");
+            Assert.That(forest.MessageLabel.text,
+                Is.EqualTo(string.Format(forest.Config.PendingLogsFormat, forest.Config.RequiredLogs - 1)),
+                "el guía dice cuántos faltan, con el texto del asset (CU-06 FA-4a, RNF-18)");
+            Assert.That(forest.Cargo.IsPlaced, Is.False);
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF25_ConLosCincoTroncosLaCajaSigueAlClicSostenidoYSeColocaAlSoltar()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            await Acopiar(forest);
+            var fila = forest.LogRow;
+
+            forest.TakeCargo();
+            Assert.That(forest.Cargo.IsHeld, Is.True, "con el acopio completo el clic sostenido agarra la caja");
+
+            forest.DragCargoTo(Centro(fila));
+            Canvas.ForceUpdateCanvases();
+            Assert.That(Vector2.Distance(Centro(forest.CargoRect), Centro(fila)), Is.LessThan(2f),
+                "mientras se sostiene, la caja va donde está el cursor");
+
+            forest.ReleaseCargo();
+            Canvas.ForceUpdateCanvases();
+
+            Assert.That(forest.Cargo.IsHeld, Is.False, "soltar el clic suelta la caja");
+            Assert.That(forest.Cargo.IsPlaced, Is.True, "cayó sobre los troncos alineados");
+            Assert.That(EnPantalla(forest.CargoRect).Overlaps(EnPantalla(fila)), Is.True,
+                "y se ve encima de ellos");
+            Assert.That(forest.MessageLabel.text, Is.EqualTo(forest.Config.CargoPlacedMessage),
+                "el guía lo dice con el texto del asset");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF26_EmpujarSeHabilitaSoloConLaCajaColocada()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            var fila = forest.LogRow;
+            var fuera = Centro((RectTransform)forest.HelpButton.transform);
+
+            Assert.That(forest.PushButton.gameObject.activeSelf, Is.False,
+                "«Empujar» no aparece durante el acopio: todavía no tiene tarea");
+
+            await Acopiar(forest);
+            Assert.That(forest.PushButton.isActiveAndEnabled, Is.True, "aparece con la fila de troncos");
+            Assert.That(forest.PushButton.interactable, Is.False, "pero no se puede accionar sin la caja colocada");
+
+            forest.TakeCargo();
+            forest.DragCargoTo(fuera);
+            forest.ReleaseCargo();
+
+            Assert.That(forest.PushButton.interactable, Is.False, "suelta fuera de los troncos, sigue sin habilitarse");
+            Assert.That(forest.MessageLabel.text, Is.EqualTo(forest.Config.CargoMissedMessage),
+                "y se dice dónde quedó, sin regañar (CP-02)");
+
+            forest.TakeCargo();
+            forest.DragCargoTo(Centro(fila));
+            forest.ReleaseCargo();
+
+            Assert.That(forest.PushButton.interactable, Is.True, "colocada, «Empujar» se habilita (RF-26)");
+
+            // Se vuelve a levantar y se deja en cualquier otro sitio: lo ganado permanece y el
+            // botón no vuelve a deshabilitarse (CP-02, RF-41, mismo criterio que INC-32).
+            forest.TakeCargo();
+            forest.DragCargoTo(fuera);
+            forest.ReleaseCargo();
+
+            Assert.That(forest.PushButton.interactable, Is.True,
+                "«Empujar», una vez habilitado, no se vuelve a deshabilitar");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        [Category("VisualVerification")]
+        [Description("Tras ejecutar esta prueba, revisar la captura de mitad del rodado: la caja va " +
+                     "sobre la fila de troncos y ninguno parpadea ni cambia de color; el movimiento " +
+                     "se lee como un rodado continuo, sin saltos ni destellos.")]
+        public async Task ForestScene_RNF21_LaAnimacionDelRodadoNoTieneDestellos()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            await Colocar(forest);
+
+            var graficos = Object.FindObjectsByType<Graphic>(FindObjectsInactive.Exclude);
+            var antes = graficos.ToDictionary(grafico => grafico, grafico => (grafico.enabled, grafico.color));
+            var xPrevia = forest.CargoRect.anchoredPosition.x;
+            var frames = 0;
+            var capturada = false;
+
+            forest.PushButton.onClick.Invoke();
+            Assert.That(forest.IsRolling, Is.True, "accionar «Empujar» arranca el rodado");
+
+            while (forest.IsRolling)
+            {
+                await Awaitable.NextFrameAsync();
+                frames++;
+
+                // Un destello es un gráfico que se apaga y enciende o cambia de color entre dos
+                // cuadros. Durante el rodado nada de eso ocurre: solo se mueven la caja y los
+                // troncos (RNF-21).
+                foreach (var grafico in graficos.Where(grafico => grafico != null))
+                {
+                    Assert.That((grafico.enabled, grafico.color), Is.EqualTo(antes[grafico]),
+                        $"{grafico.name} no parpadea ni cambia de color durante el rodado");
+                }
+
+                // Con tolerancia de una centésima de píxel: el ruido de convertir pantalla ↔
+                // lienzo no es un salto, y un salto de verdad son píxeles enteros.
+                Assert.That(forest.CargoRect.anchoredPosition.x, Is.GreaterThanOrEqualTo(xPrevia - 0.01f),
+                    "la caja avanza siempre en el mismo sentido: no salta hacia atrás");
+                xPrevia = forest.CargoRect.anchoredPosition.x;
+
+                if (!capturada && frames > 5)
+                {
+                    capturada = Capturar("ForestScene_RNF21_Rodado");
+                }
+            }
+
+            Assert.That(frames, Is.GreaterThan(1), "el rodado dura varios cuadros: no es un salto");
+            Assert.That(forest.Cargo.IsPushed, Is.True);
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF26_AlPasarElUltimoTroncoLaCajaCaeAlSueloPorLaDerecha()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            await Colocar(forest);
+            var fila = EnPantalla(forest.LogRow);
+
+            forest.PushButton.onClick.Invoke();
+            while (forest.IsRolling)
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            // La caja cae ladeada, así que su envolvente crece: se mide por el centro y por su
+            // alto sin girar, no por las esquinas de la envolvente.
+            var caja = EnPantalla(forest.CargoRect);
+            var alto = forest.CargoRect.rect.height * Mathf.Abs(forest.CargoRect.lossyScale.y);
+            Assert.That(caja.center.x, Is.GreaterThan(fila.xMax), "la caja queda a la derecha del último tronco");
+            Assert.That(caja.center.y - alto / 2f, Is.EqualTo(fila.yMin).Within(2f),
+                "y en el suelo, a la altura de la base de los troncos");
+            Assert.That(forest.CargoRect.localEulerAngles.z, Is.Not.EqualTo(0f).Within(0.5f), "ladeada, como cae lo que pesa");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF26_ElRodadoSeReproduceUnaSolaVezYNoDeshaceLaColocacion()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            await Colocar(forest);
+
+            forest.PushButton.onClick.Invoke();
+            while (forest.IsRolling)
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            var final = forest.CargoRect.anchoredPosition;
+            forest.PushButton.onClick.Invoke();
+
+            Assert.That(forest.IsRolling, Is.False, "la segunda pulsación no relanza el rodado");
+            Assert.That(forest.CargoRect.anchoredPosition, Is.EqualTo(final), "ni mueve la caja de donde acabó");
+            Assert.That(forest.PushButton.interactable, Is.True, "y el botón sigue habilitado (CP-02)");
+        }
+
+        [Test]
+        [Timeout(60000)]
+        public async Task ForestScene_RF04_ConfirmarLaFase1GuardaElProgreso()
+        {
+            const string nombre = "W07_Prueba";
+            GameFlowRunner runner = null;
+
+            try
+            {
+                SceneManager.LoadScene("Boot");
+                await Esperar(() => GameFlowRunner.Instance != null
+                                    && SceneManager.GetActiveScene().name == "MainMenu");
+                runner = GameFlowRunner.Instance;
+                runner.Session.Delete(nombre);
+
+                runner.GoTo(GameState.ProfileSelect);
+                var perfil = PlayerProfile.Create(nombre, System.Array.Empty<string>()).Profile;
+                perfil.Reach(LevelId.Wheel);
+                runner.SelectProfile(perfil);
+                runner.StartPlaying(LevelId.Wheel, 1);
+                await Esperar(() => SceneManager.GetActiveScene().name == SceneName);
+                await Esperar(() => Object.FindAnyObjectByType<ForestSceneController>()?.Spawned.Count > 0);
+                var forest = Object.FindAnyObjectByType<ForestSceneController>();
+                Canvas.ForceUpdateCanvases();
+                await Awaitable.NextFrameAsync();
+                var fase1 = new PhaseId(LevelId.Wheel, 1);
+                Assume.That(perfil.IsPhaseConfirmed(fase1), Is.False);
+
+                await Colocar(forest);
+                forest.PushButton.onClick.Invoke();
+                await Esperar(() => runner.Flow.Current != GameState.Playing);
+
+                Assert.That(perfil.IsPhaseConfirmed(fase1), Is.True, "el rodado confirma la fase 1 (RF-04)");
+                Assert.That(runner.Session.Load(nombre).IsPhaseConfirmed(fase1), Is.True,
+                    "y queda en disco: un cierre forzado retoma en la fase 2 (RNF-14)");
+                Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Narrative),
+                    "el bosque sale a la escena narrativa que declara el asset");
+                Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo(forest.Config.ClosingSequenceId));
+            }
+            finally
+            {
+                runner?.Session.Delete(nombre);
+                foreach (var persistente in Object.FindObjectsByType<GameFlowRunner>(FindObjectsInactive.Include))
+                {
+                    Object.DestroyImmediate(persistente.gameObject);
+                }
+
+                foreach (var loader in Object.FindObjectsByType<SceneLoader>(FindObjectsInactive.Include))
+                {
+                    Object.DestroyImmediate(loader.gameObject);
+                }
+            }
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF23_AlCompletarElAcopioQuedanLaCajaALaIzquierdaYLosTroncosASuDerecha()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            var acopio = forest.Slots[0].transform.parent.gameObject;
+            Assert.That(forest.LogRow.gameObject.activeSelf, Is.False, "durante el acopio no hay fila de troncos");
+            Assert.That(forest.World.localScale, Is.EqualTo(Vector3.one), "y la cámara está en el plano general");
+
+            await Acopiar(forest);
+
+            // Ya no queda nada que elegir: lo que no es la tarea se va y la pantalla se lee de un
+            // vistazo — una caja, cinco troncos en fila a su derecha y un botón.
+            Assert.That(forest.Spawned.Where(entrada => entrada.Button.gameObject.activeSelf), Is.Empty,
+                "los distractores desaparecen del suelo");
+            Assert.That(acopio.activeSelf, Is.False, "y la tablilla del acopio también");
+            Assert.That(forest.World.localScale.x, Is.GreaterThan(1f), "la cámara se acercó a la caja");
+            // Acercarse es llegar **exactamente** al encuadre con el que abre la 2.2, que lo hereda
+            // sin moverse (Camara_Narrativa_N2.md §5.3): el punto de la ilustración que queda en el
+            // centro de la pantalla es el foco de cierre del asset.
+            var entorno = EnPantalla(forest.Environment.rectTransform);
+            var enElCentro = new Vector2(
+                (Screen.width / 2f - entorno.xMin) / entorno.width,
+                (Screen.height / 2f - entorno.yMin) / entorno.height);
+            Assert.That(enElCentro.x, Is.EqualTo(forest.Config.CompletionFraming.Focus.x).Within(0.005f),
+                "la vista termina en el foco de cierre");
+            Assert.That(enElCentro.y, Is.EqualTo(forest.Config.CompletionFraming.Focus.y).Within(0.005f));
+            Assert.That(forest.World.localScale.x,
+                Is.EqualTo(forest.Config.CompletionFraming.Zoom / forest.Config.PlayFraming.Zoom).Within(0.005f),
+                "y con su acercamiento");
+            Assert.That(forest.PushButton.isActiveAndEnabled, Is.True, "y aparece «Empujar»");
+            Assert.That(forest.CounterLabel.isActiveAndEnabled, Is.True, "el contador se queda (RF-24)");
+            Assert.That(forest.LogRow.gameObject.activeSelf, Is.True, "aparece la fila de troncos");
+            Assert.That(forest.Row.Select(tronco => tronco.sprite),
+                Is.EqualTo(forest.Spawned.Where(e => e.Object.Category == ForestObjectCategory.RoundLog)
+                    .Select(e => e.Object.Art)), "con los cinco troncos acopiados, en su orden");
+
+            var caja = EnPantalla(forest.CargoRect);
+            var fila = EnPantalla(forest.LogRow);
+            Assert.That(fila.xMin, Is.GreaterThan(caja.xMax), "los troncos quedan a la derecha de la caja");
+            Assert.That(Mathf.Abs(fila.yMin - caja.yMin), Is.LessThan(caja.height),
+                "y a su misma altura, no en otra parte de la pantalla");
+
+            var visibles = new[]
+            {
+                ("la fila", fila), ("«Empujar»", EnPantalla((RectTransform)forest.PushButton.transform)),
+                ("la ayuda", EnPantalla((RectTransform)forest.HelpButton.transform))
+            };
+            Assert.That(visibles.Where(x => x.Item2.xMin < caja.xMin).Select(x => x.Item1), Is.Empty,
+                "la caja es lo que está más a la izquierda del todo");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF25_LaCajaEsperaAlCuarentaPorCientoDeLaAlturaYNingunObjetoSeLeMonta()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            var caja = EnPantalla(forest.CargoRect);
+            Assert.That(caja.center.y / Screen.height, Is.EqualTo(0.40f).Within(0.02f),
+                "la caja espera a un 40 % de la altura de la pantalla");
+
+            var montados = forest.Spawned
+                .Where(e => EnPantalla((RectTransform)e.Button.transform).Overlaps(caja))
+                .Select(e => e.Button.name)
+                .ToArray();
+            Assert.That(montados, Is.Empty, "ningún objeto del suelo se monta sobre la caja");
+
+            // Y ningún objeto se monta sobre otro: apilados, solo el de encima recibe el clic.
+            var rects = forest.Spawned.Select(e => (e.Button.name, Caja: EnPantalla((RectTransform)e.Button.transform))).ToArray();
+            var apilados = new List<string>();
+            for (var i = 0; i < rects.Length; i++)
+            {
+                for (var j = i + 1; j < rects.Length; j++)
+                {
+                    if (rects[i].Caja.Overlaps(rects[j].Caja))
+                    {
+                        apilados.Add($"{rects[i].name} {rects[i].Caja} sobre {rects[j].name} {rects[j].Caja}");
+                    }
+                }
+            }
+
+            Assert.That(apilados, Is.Empty,
+                $"pantalla {Screen.width}x{Screen.height}, suelo {EnPantalla(forest.FloorArea)}: " + string.Join(" · ", apilados));
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF22_LosObjetosMasAltosSeVenMasPequenos()
+        {
+            var forest = await OpenForest();
+
+            // El suelo sube hacia el fondo del claro: cuanto más arriba, más lejos y más pequeño.
+            var porAltura = forest.Spawned
+                .OrderBy(entrada => entrada.Object.FloorPosition.y)
+                .Select(entrada => (entrada.Button.name, Altura: entrada.Object.FloorPosition.y,
+                    Escala: Mathf.Abs(entrada.Button.transform.localScale.y)))
+                .ToArray();
+
+            for (var i = 1; i < porAltura.Length; i++)
+            {
+                Assert.That(porAltura[i].Escala, Is.LessThanOrEqualTo(porAltura[i - 1].Escala + 0.001f),
+                    $"{porAltura[i].name} (y={porAltura[i].Altura}) no puede verse más grande que {porAltura[i - 1].name} (y={porAltura[i - 1].Altura})");
+            }
+
+            Assert.That(porAltura.Last().Escala, Is.LessThan(porAltura.First().Escala),
+                "el objeto más alto es visiblemente más pequeño que el más bajo");
+            Assert.That(porAltura.First().Escala, Is.LessThanOrEqualTo(1f), "nada se dibuja más grande que su tamaño");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF22_ElObjetoCreceAlAcercarseElCursorYVuelveAlAlejarse()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            // Un tronco y no una piedra: la piedra vuelca a saltos aunque no pase tiempo, y aquí
+            // lo que se mide es el tamaño, no el movimiento. Con deltaTime cero nada se desplaza.
+            var tronco = forest.Spawned.First(e => e.Object.Category == ForestObjectCategory.RoundLog);
+            var rect = (RectTransform)tronco.Button.transform;
+            var lejos = new Vector2(-1000f, -1000f);
+            forest.Nudge(lejos, 0f);
+            var enReposo = Mathf.Abs(rect.localScale.y);
+
+            forest.Nudge(EnPantalla(rect).center, 0f);
+            var conElCursor = Mathf.Abs(rect.localScale.y);
+
+            forest.Nudge(lejos, 0f);
+
+            Assert.That(conElCursor, Is.GreaterThan(enReposo), "con el cursor encima crece");
+            Assert.That(Mathf.Abs(rect.localScale.y), Is.EqualTo(enReposo).Within(0.001f), "y al alejarse vuelve");
+            Assert.That(forest.Selection.Collected, Is.EqualTo(0), "crecer no es seleccionar (RNF-02)");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RNF23_ElEntornoCubreLaPantallaSinDeformarse()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(forest.Environment.sprite, Is.Not.Null, "el bosque ya tiene entorno");
+            Assert.That(forest.Environment.enabled, Is.True, "y se ve");
+
+            var caja = EnPantalla(forest.Environment.rectTransform);
+            var pantalla = new Rect(0f, 0f, Screen.width, Screen.height);
+            var sprite = forest.Environment.sprite;
+
+            // Plano general: el entorno cubre la pantalla entera sin deformarse, a la resolución
+            // que traiga el archivo de hoy o el definitivo (RNF-23).
+            Assert.That(caja.xMin <= pantalla.xMin + 0.5f && caja.xMax >= pantalla.xMax - 0.5f
+                        && caja.yMin <= pantalla.yMin + 0.5f && caja.yMax >= pantalla.yMax - 0.5f, Is.True,
+                $"cubre la pantalla: {caja} sobre {pantalla}");
+            Assert.That(caja.width / caja.height, Is.EqualTo(sprite.rect.width / sprite.rect.height).Within(0.01f),
+                "sin deformar");
+            Assert.That(forest.Environment.raycastTarget, Is.False, "y no se traga los clics del suelo");
+        }
+
+        /// <summary>Acopia los cinco troncos y deja la caja colocada sobre ellos.</summary>
+        private static async Task Colocar(ForestSceneController forest)
+        {
+            await Acopiar(forest);
+            forest.TakeCargo();
+            forest.DragCargoTo(Centro(forest.LogRow));
+            forest.ReleaseCargo();
+            Assume.That(forest.Cargo.IsPlaced, Is.True, "la caja quedó sobre los troncos");
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+        }
+
+        /// <summary>Acopia los cinco troncos y espera a que vuelen a la fila y la cámara se acerque.</summary>
+        private static async Task Acopiar(ForestSceneController forest)
+        {
+            foreach (var entrada in forest.Spawned.Where(e => e.Object.Category == ForestObjectCategory.RoundLog))
+            {
+                entrada.Button.onClick.Invoke();
+            }
+
+            Assume.That(forest.Selection.IsComplete, Is.True, "el acopio está completo");
+            while (forest.IsTransitioning)
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+        }
+
+        private static Vector2 Centro(RectTransform rect) => EnPantalla(rect).center;
+
+        /// <summary>
+        /// Espera con presupuesto en **segundos y no en cuadros**: en batchmode los cuadros corren
+        /// sin vsync y 900 de ellos pasan antes de que el rodado —que dura los segundos que dice el
+        /// asset— termine. Lo cazó la primera corrida de RF-04, no la vista del Editor.
+        /// </summary>
+        private static async Task Esperar(System.Func<bool> condicion, float segundos = 20f)
+        {
+            var inicio = Time.realtimeSinceStartup;
+            while (Time.realtimeSinceStartup - inicio < segundos)
+            {
+                if (condicion())
+                {
+                    return;
+                }
+
+                await Awaitable.NextFrameAsync();
+            }
+
+            Assert.Fail($"La condición no se cumplió en {segundos} s.");
+        }
+
+        /// <summary>
+        /// Guarda una captura si hay Game View. En batchmode no la hay y se sigue sin ella: las
+        /// aserciones de esta prueba valen igual, así que no se omite la prueba entera.
+        /// </summary>
+        private static bool Capturar(string nombre)
+        {
+            if (Application.isBatchMode)
+            {
+                return true;
+            }
+
+            var carpeta = $"{Application.persistentDataPath}/TestScreenshots";
+            System.IO.Directory.CreateDirectory(carpeta);
+            var ruta = $"{carpeta}/{nombre}.png";
+            System.IO.File.Delete(ruta);
+
+            var textura = ScreenCapture.CaptureScreenshotAsTexture();
+            System.IO.File.WriteAllBytes(ruta, textura.EncodeToPNG());
+            Object.Destroy(textura);
+            TestContext.WriteLine($"Captura: {ruta}");
+            return true;
         }
 
         /// <summary>Pasea el cursor por todo el suelo, que es lo que más empuja a los objetos.</summary>

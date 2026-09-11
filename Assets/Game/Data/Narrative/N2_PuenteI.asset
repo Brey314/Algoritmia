@@ -14,23 +14,69 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
   <Id>k__BackingField: N2_PuenteI
   <Level>k__BackingField: 2
-  <Illustration>k__BackingField: {fileID: 0}
+  <Illustration>k__BackingField: {fileID: 21300000, guid: bbed55b5b972c6c44ac36e4f02bc21c2, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.845, y: 0.6}
+    <Zoom>k__BackingField: 1.7
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.714, y: 0.49}
+    <Zoom>k__BackingField: 1.22
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 1
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.824, y: 0.545}
+      <Zoom>k__BackingField: 1.55
+  - <Line>k__BackingField: 2
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.812, y: 0.51}
+      <Zoom>k__BackingField: 1.45
+  - <Line>k__BackingField: 3
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.76, y: 0.49}
+      <Zoom>k__BackingField: 1.28
+  - <Line>k__BackingField: 7
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.735, y: 0.455}
+      <Zoom>k__BackingField: 1.5
+  - <Line>k__BackingField: 8
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.718, y: 0.44}
+      <Zoom>k__BackingField: 1.7
+  - <Line>k__BackingField: 9
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.712, y: 0.43}
+      <Zoom>k__BackingField: 1.8
+  - <Line>k__BackingField: 10
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.742, y: 0.455}
+      <Zoom>k__BackingField: 1.42
+  - <Line>k__BackingField: 11
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.714, y: 0.49}
+      <Zoom>k__BackingField: 1.22
+  <CameraSmoothingSeconds>k__BackingField: 1.3
+  <Props>k__BackingField: []
   <IsReflectiveClosing>k__BackingField: 0
+  <NextPhase>k__BackingField: 0
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "Amanece. La familia sale de la cueva. ALGORITM flota sobre las brasas que a\xFAn humean."
+    <Text>k__BackingField: "Amanece. La familia sale de la cueva. ALGORITM flota
+      sobre las brasas que a\xFAn humean."
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "Ahora que tienen fuego, pueden cocinar. Pero para cocinar hace falta algo m\xE1s."
+    <Text>k__BackingField: "Ahora que tienen fuego, pueden cocinar. Pero para cocinar
+      hace falta algo m\xE1s."
   - <Speaker>k__BackingField: "MAM\xC1"
     <Text>k__BackingField: Comida.
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: La familia sale a recolectar.
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "Pap\xE1 carga grandes troncos para mantener avivado el fuego; mam\xE1, la ni\xF1a y el ni\xF1o recogen alimentos."
+    <Text>k__BackingField: "Pap\xE1 carga grandes troncos para mantener avivado el
+      fuego; mam\xE1, la ni\xF1a y el ni\xF1o recogen alimentos."
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: Al momento de regresar aparece un problema nuevo.
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: Han recolectado mucho, pero no pueden transportarlo hasta el refugio.
+    <Text>k__BackingField: Han recolectado mucho, pero no pueden transportarlo hasta
+      el refugio.
   - <Speaker>k__BackingField: "PAP\xC1"
     <Text>k__BackingField: Esto pesa demasiado... no puedo llevarlo todo.
   - <Speaker>k__BackingField: "NI\xD1O"

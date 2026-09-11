@@ -14,18 +14,48 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
   <Id>k__BackingField: N2_Escena25_Cierre
   <Level>k__BackingField: 2
-  <Illustration>k__BackingField: {fileID: 0}
+  <Illustration>k__BackingField: {fileID: 21300000, guid: bbed55b5b972c6c44ac36e4f02bc21c2, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.852, y: 0.455}
+    <Zoom>k__BackingField: 1.95
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.772, y: 0.5}
+    <Zoom>k__BackingField: 1.16
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 2
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.84, y: 0.465}
+      <Zoom>k__BackingField: 1.75
+  - <Line>k__BackingField: 3
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.808, y: 0.485}
+      <Zoom>k__BackingField: 1.4
+  - <Line>k__BackingField: 4
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.798, y: 0.492}
+      <Zoom>k__BackingField: 1.3
+  - <Line>k__BackingField: 5
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.772, y: 0.5}
+      <Zoom>k__BackingField: 1.16
+  <CameraSmoothingSeconds>k__BackingField: 2.5
+  <Props>k__BackingField: []
   <IsReflectiveClosing>k__BackingField: 1
+  <NextPhase>k__BackingField: 0
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "La familia est\xE1 en su refugio alrededor del fuego, preparando alimentos."
+    <Text>k__BackingField: "La familia est\xE1 en su refugio alrededor del fuego,
+      preparando alimentos."
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: Cerca de ellos se observa la carretilla cargada.
   - <Speaker>k__BackingField: ALGORITM
     <Text>k__BackingField: Las grandes ideas nacen cuando observas, comparas y organizas.
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "Hoy hicieron girar algo m\xE1s que una rueda: hicieron girar su pensamiento."
+    <Text>k__BackingField: "Hoy hicieron girar algo m\xE1s que una rueda: hicieron
+      girar su pensamiento."
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: Miraron muchas cosas y se quedaron solo con lo que importaba. Eso se llama abstraer.
+    <Text>k__BackingField: Miraron muchas cosas y se quedaron solo con lo que importaba.
+      Eso se llama abstraer.
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "Y despu\xE9s ordenaron los pasos antes de dar el primero: eso es pensar como un algoritmo."
+    <Text>k__BackingField: "Y despu\xE9s ordenaron los pasos antes de dar el primero:
+      eso es pensar como un algoritmo."

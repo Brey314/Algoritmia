@@ -3,10 +3,13 @@
     "rootNamespace": "",
     "references": [
         "Game.Levels.Wheel",
+        "Game.Scaffolding",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
-    "includePlatforms": ["Editor"],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,

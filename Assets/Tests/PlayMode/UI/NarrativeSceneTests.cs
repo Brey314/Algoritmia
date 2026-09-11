@@ -197,7 +197,236 @@ namespace Game.UI.Tests
             Assert.That(runner.Flow.Current, Is.EqualTo(GameState.LevelSelect));
         }
 
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RNF23_LaIlustracionCubreLaPantallaSinDeformarse()
+        {
+            var (controller, _) = await OpenNarrative("N2_Escena21_Bosque", LevelId.Wheel);
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            var sprite = SequenceNamed(controller, "N2_Escena21_Bosque").Illustration;
+            Assert.That(sprite, Is.Not.Null, "el Nivel 2 ya tiene entorno: la secuencia lo declara");
+
+            var caja = EnPantalla(controller.IllustrationRect);
+            var pantalla = new Rect(0f, 0f, Screen.width, Screen.height);
+
+            // Cubre —ningún borde de la ventana queda sin pintar— y no encaja: recorta lo que
+            // sobre por un eje en vez de deformar el dibujo. Vale a la resolución del arte de hoy
+            // y a la definitiva: solo cambia el archivo (RNF-23).
+            Assert.That(caja.xMin, Is.LessThanOrEqualTo(pantalla.xMin + 0.5f), "cubre por la izquierda");
+            Assert.That(caja.yMin, Is.LessThanOrEqualTo(pantalla.yMin + 0.5f), "cubre por abajo");
+            Assert.That(caja.xMax, Is.GreaterThanOrEqualTo(pantalla.xMax - 0.5f), "cubre por la derecha");
+            Assert.That(caja.yMax, Is.GreaterThanOrEqualTo(pantalla.yMax - 0.5f), "cubre por arriba");
+            Assert.That(caja.width / caja.height, Is.EqualTo(sprite.rect.width / sprite.rect.height).Within(0.01f),
+                "y conserva la proporción del dibujo");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF05_LaCamaraSeMuevePorElEntornoAlRitmoDeLaNarrativa()
+        {
+            var (controller, _) = await OpenNarrative("N2_Escena22_ElPatron", LevelId.Wheel);
+            var secuencia = SequenceNamed(controller, "N2_Escena22_ElPatron");
+            Assume.That(secuencia.CameraStart.Focus, Is.Not.EqualTo(secuencia.CameraEnd.Focus),
+                "la escena declara un recorrido de cámara");
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            var alAbrir = controller.IllustrationRect.anchoredPosition;
+            var objetivoInicial = controller.CameraTarget.Focus;
+
+            // Sin avanzar, la cámara descansa: es la narrativa la que la mueve, no el reloj.
+            await EsperarSegundos(0.4f);
+            Assert.That(controller.IllustrationRect.anchoredPosition, Is.EqualTo(alAbrir),
+                "sin leer no hay recorrido");
+
+            for (var i = 0; i < secuencia.Lines.Length / 2; i++)
+            {
+                Click(controller.AdvanceButton);
+            }
+
+            Assert.That(controller.CameraTarget.Focus, Is.Not.EqualTo(objetivoInicial),
+                "a mitad de la lectura el encuadre pedido ya es otro");
+            await EsperarSegundos(0.6f);
+            var aMitad = controller.IllustrationRect.anchoredPosition;
+
+            Assert.That(aMitad, Is.Not.EqualTo(alAbrir), "y la ilustración se ha movido hacia él");
+            var pantalla = new Rect(0f, 0f, Screen.width, Screen.height);
+            var caja = EnPantalla(controller.IllustrationRect);
+            Assert.That(caja.xMin <= pantalla.xMin + 0.5f && caja.xMax >= pantalla.xMax - 0.5f
+                        && caja.yMin <= pantalla.yMin + 0.5f && caja.yMax >= pantalla.yMax - 0.5f, Is.True,
+                "en pleno movimiento sigue cubriendo la pantalla: no se descubre ningún borde");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RNF03_ElCuadroDeDialogoNoSuperaElCuartoDeLaPantalla()
+        {
+            var (controller, _) = await OpenNarrative("N1_Apertura");
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            // Cuerpo → Fondo → CuadroDialogo: el cuadro entero, con su marco.
+            var cuadro = (RectTransform)controller.BodyLabel.transform.parent.parent;
+            var caja = EnPantalla(cuadro);
+
+            // El texto acompaña a la imagen, no la tapa: como mucho el cuarto inferior de la pantalla.
+            Assert.That(caja.yMax, Is.LessThanOrEqualTo(Screen.height * 0.25f + 0.5f),
+                $"el cuadro llega a y={caja.yMax:0} y el cuarto de pantalla acaba en {Screen.height * 0.25f:0}");
+            Assert.That(caja.yMin, Is.GreaterThanOrEqualTo(-0.5f), "y no se sale por abajo");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF05_LaEscena21MuestraLosObjetosRepartidosPorElSuelo()
+        {
+            var (controller, _) = await OpenNarrative("N2_Escena21_Bosque", LevelId.Wheel);
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            var secuencia = SequenceNamed(controller, "N2_Escena21_Bosque");
+
+            // Lo que dice el texto se ve: «objetos dispersos por el suelo... a un lado, la caja».
+            Assert.That(secuencia.Props.Length, Is.GreaterThanOrEqualTo(15),
+                "la escena declara los catorce objetos del bosque y la caja");
+
+            var pintados = Enumerable.Range(0, controller.IllustrationRect.childCount)
+                .Select(i => controller.IllustrationRect.GetChild(i).GetComponent<Image>())
+                .ToArray();
+            Assert.That(pintados.Select(p => p.sprite), Is.EqualTo(secuencia.Props.Select(p => p.Art)),
+                "cada objeto declarado se pinta con su ilustración, en orden");
+
+            var entorno = EnPantalla(controller.IllustrationRect);
+            var fuera = pintados
+                .Where(p => !entorno.Overlaps(EnPantalla(p.rectTransform)))
+                .Select(p => p.name)
+                .ToArray();
+            Assert.That(fuera, Is.Empty, "y todos caen sobre el entorno, no fuera de él");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF05_LaEscena22NoMueveLaVistaHastaQueElNinoHablaYLuegoPaneaAPapa()
+        {
+            var (controller, _) = await OpenNarrative("N2_Escena22_ElPatron", LevelId.Wheel);
+            var secuencia = SequenceNamed(controller, "N2_Escena22_ElPatron");
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            var alAbrir = controller.IllustrationRect.anchoredPosition;
+
+            // Línea 0: la vista con la que terminó el bosque, y quieta.
+            Assert.That(controller.CameraTarget.Focus, Is.EqualTo(secuencia.CameraStart.Focus));
+            Assert.That(controller.CameraTarget.Zoom, Is.EqualTo(secuencia.CameraStart.Zoom));
+            await EsperarSegundos(0.4f);
+            Assert.That(controller.IllustrationRect.anchoredPosition, Is.EqualTo(alAbrir), "no se mueve sola");
+
+            // Línea 1, «¡Este tronco rueda!»: la cámara va al niño.
+            Click(controller.AdvanceButton);
+            var alNino = controller.CameraTarget;
+            Assert.That(alNino.Focus, Is.Not.EqualTo(secuencia.CameraStart.Focus), "al hablar el niño la vista cambia");
+            Assert.That(alNino.Zoom, Is.GreaterThan(secuencia.CameraStart.Zoom), "acercándose a él");
+            await EsperarSegundos(0.6f);
+            var conElNino = controller.IllustrationRect.anchoredPosition;
+
+            // Línea 2, «Pero esa piedra no…»: paneo a la derecha, hacia papá, a la misma escala.
+            Click(controller.AdvanceButton);
+            var aPapa = controller.CameraTarget;
+            Assert.That(aPapa.Focus.x, Is.GreaterThan(alNino.Focus.x), "papá está a la derecha del niño");
+            await EsperarSegundos(0.6f);
+            Assert.That(controller.IllustrationRect.anchoredPosition.x, Is.LessThan(conElNino.x),
+                "y la ilustración se corre a la izquierda: la cámara paneó a la derecha");
+
+            // Línea 3, «¿Qué diferencia hay?»: sigue al este y abre, entra la familia.
+            Click(controller.AdvanceButton);
+            var aLaFamilia = controller.CameraTarget;
+            Assert.That(aLaFamilia.Focus.x, Is.GreaterThan(aPapa.Focus.x), "la familia está a la derecha de papá");
+            Assert.That(aLaFamilia.Zoom, Is.LessThan(aPapa.Zoom), "y el plano abre");
+
+            // Línea 4, «Los que ruedan... son redondos»: micro empuje sobre la niña, que nombra el patrón.
+            Click(controller.AdvanceButton);
+            var aLaNina = controller.CameraTarget;
+            Assert.That(aLaNina.Zoom, Is.GreaterThan(aLaFamilia.Zoom), "se acerca a la niña");
+
+            // Línea 5 en adelante, «Acabas de encontrar un patrón»: abre y sube, y ahí se queda.
+            Click(controller.AdvanceButton);
+            var elPatron = controller.CameraTarget;
+            Assert.That(elPatron.Zoom, Is.LessThan(aLaNina.Zoom), "el patrón es el cuadro entero");
+            for (var i = 5; i < secuencia.Lines.Length - 1; i++)
+            {
+                Click(controller.AdvanceButton);
+                Assert.That(controller.CameraTarget.Focus, Is.EqualTo(elPatron.Focus),
+                    "y la vista se queda mientras el guía cierra");
+            }
+        }
+
+        [Test]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF23_LaEscena22AnimaLoQueCadaLineaCuenta()
+        {
+            var (controller, _) = await OpenNarrative("N2_Escena22_ElPatron", LevelId.Wheel);
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            (NarrativeProp Prop, RectTransform Rect) Animado(int linea, PropMotion motion) =>
+                controller.Props.First(p => p.Prop.MotionLine == linea && p.Prop.Motion == motion);
+
+            // Línea 0: la caja vuelve a rodar sola —es narrativa, no hay botón— y los troncos
+            // giran bajo ella.
+            // La caja es lo único que rueda con recorrido en la línea 0; los troncos giran en el sitio.
+            var caja = controller.Props.First(p => p.Prop.MotionLine == 0 && p.Prop.Motion == PropMotion.Roll && p.Prop.MotionDistance > 0f);
+            var troncosBajoLaCaja = controller.Props.Where(p => p.Prop.MotionLine == 0 && p.Prop.Motion == PropMotion.Roll && p.Prop.MotionDistance == 0f).ToArray();
+            var cajaAlEmpezar = caja.Rect.anchoredPosition;
+            var giroAlEmpezar = troncosBajoLaCaja.First().Rect.localEulerAngles.z;
+            await EsperarSegundos(caja.Prop.MotionSeconds + 0.2f);
+
+            Assert.That(caja.Rect.anchoredPosition.x, Is.GreaterThan(cajaAlEmpezar.x), "la caja rodó a la derecha");
+            Assert.That(caja.Rect.anchoredPosition.y, Is.LessThan(cajaAlEmpezar.y), "y al pasar el último tronco cayó al suelo");
+            Assert.That(caja.Rect.localEulerAngles.z, Is.Not.EqualTo(0f).Within(0.5f), "ladeada, como en el bosque");
+            Assert.That(troncosBajoLaCaja, Is.Not.Empty, "hay troncos bajo la caja");
+            Assert.That(troncosBajoLaCaja.First().Rect.localEulerAngles.z, Is.Not.EqualTo(giroAlEmpezar).Within(0.5f),
+                "y giraron bajo ella");
+
+            // Línea 1: el niño levanta un tronco, lo suelta y rueda.
+            var tronco = Animado(1, PropMotion.LiftAndRoll);
+            var troncoAlEmpezar = tronco.Rect.anchoredPosition;
+            Click(controller.AdvanceButton);
+            await EsperarSegundos(tronco.Prop.MotionSeconds * 0.25f);
+            Assert.That(tronco.Rect.anchoredPosition.y, Is.GreaterThan(troncoAlEmpezar.y), "primero lo levantan");
+            await EsperarSegundos(tronco.Prop.MotionSeconds * 0.75f + 0.2f);
+            Assert.That(tronco.Rect.anchoredPosition.x, Is.GreaterThan(troncoAlEmpezar.x), "y al soltarlo rueda");
+            Assert.That(tronco.Rect.anchoredPosition.y, Is.EqualTo(troncoAlEmpezar.y).Within(0.5f), "por el suelo");
+
+            // Línea 2: lo mismo con una piedra, que no rueda: cae donde la sueltan.
+            var piedra = Animado(2, PropMotion.LiftAndStay);
+            var piedraAlEmpezar = piedra.Rect.anchoredPosition;
+            Click(controller.AdvanceButton);
+            await EsperarSegundos(piedra.Prop.MotionSeconds * 0.25f);
+            Assert.That(piedra.Rect.anchoredPosition.y, Is.GreaterThan(piedraAlEmpezar.y), "también la levantan");
+            await EsperarSegundos(piedra.Prop.MotionSeconds * 0.75f + 0.2f);
+            Assert.That(piedra.Rect.anchoredPosition, Is.EqualTo(piedraAlEmpezar).Using<Vector2>((a, b) => Vector2.Distance(a, b) < 0.5f ? 0 : 1),
+                "pero cae donde estaba: lo anguloso no rueda (RF-23)");
+        }
+
         // --- helpers -----------------------------------------------------------------------
+
+        private static async Task EsperarSegundos(float segundos)
+        {
+            var inicio = Time.realtimeSinceStartup;
+            while (Time.realtimeSinceStartup - inicio < segundos)
+            {
+                await Awaitable.NextFrameAsync();
+            }
+        }
+
+        private static Rect EnPantalla(RectTransform rect)
+        {
+            var esquinas = new Vector3[4];
+            rect.GetWorldCorners(esquinas);
+            var minX = Mathf.Min(esquinas[0].x, esquinas[1].x, esquinas[2].x, esquinas[3].x);
+            var minY = Mathf.Min(esquinas[0].y, esquinas[1].y, esquinas[2].y, esquinas[3].y);
+            var maxX = Mathf.Max(esquinas[0].x, esquinas[1].x, esquinas[2].x, esquinas[3].x);
+            var maxY = Mathf.Max(esquinas[0].y, esquinas[1].y, esquinas[2].y, esquinas[3].y);
+            return new Rect(minX, minY, maxX - minX, maxY - minY);
+        }
 
         private static NarrativeSequence SequenceNamed(NarrativeSceneController controller, string id) =>
             controller.Sequences.First(sequence => sequence.Id == id);

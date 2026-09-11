@@ -14,8 +14,46 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
   <Id>k__BackingField: N2_Escena23_Construccion
   <Level>k__BackingField: 2
-  <Illustration>k__BackingField: {fileID: 0}
+  <Illustration>k__BackingField: {fileID: 21300000, guid: bbed55b5b972c6c44ac36e4f02bc21c2, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.7, y: 0.45}
+    <Zoom>k__BackingField: 1.62
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.772, y: 0.47}
+    <Zoom>k__BackingField: 1.32
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 1
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.745, y: 0.455}
+      <Zoom>k__BackingField: 1.52
+  - <Line>k__BackingField: 2
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.762, y: 0.435}
+      <Zoom>k__BackingField: 1.78
+  - <Line>k__BackingField: 3
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.775, y: 0.47}
+      <Zoom>k__BackingField: 1.35
+  - <Line>k__BackingField: 4
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.694, y: 0.42}
+      <Zoom>k__BackingField: 1.95
+  - <Line>k__BackingField: 5
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.748, y: 0.42}
+      <Zoom>k__BackingField: 1.95
+  - <Line>k__BackingField: 6
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.8, y: 0.43}
+      <Zoom>k__BackingField: 1.88
+  - <Line>k__BackingField: 7
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.772, y: 0.47}
+      <Zoom>k__BackingField: 1.32
+  <CameraSmoothingSeconds>k__BackingField: 1.3
+  <Props>k__BackingField: []
   <IsReflectiveClosing>k__BackingField: 0
+  <NextPhase>k__BackingField: 0
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: "NI\xD1A"
     <Text>k__BackingField: Si hacemos algo redondo... podemos usarlo.
@@ -26,8 +64,10 @@ MonoBehaviour:
   - <Speaker>k__BackingField: "MAM\xC1"
     <Text>k__BackingField: Paso a paso... podemos lograrlo.
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "Abre agujeros en el centro de los troncos cortos, luego \xFAnelos con el tronco largo."
+    <Text>k__BackingField: Abre agujeros en el centro de los troncos cortos.
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: Coloca encima la tabla y sobre ella la caja de alimentos.
+    <Text>k__BackingField: "Luego \xFAnelos con el tronco largo."
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "En ese orden: cada paso necesita que el anterior est\xE9 hecho."
+    <Text>k__BackingField: Coloca encima la tabla.
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "Y sobre ella, la caja de alimentos. En ese orden: cada paso necesita que el anterior est\xE9 hecho."

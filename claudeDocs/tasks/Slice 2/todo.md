@@ -332,14 +332,206 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       (`test-results.xml`, `play-results.xml`, 10/09/2026); las 2 omitidas son las `VisualVerification`
       de siempre, que exigen Game View. 0 fallos.
 
-- [ ] **W07 · Colocación de la carga y demostración del rodado** — `M` · `PM` + `VV` `MCP`
+- [x] **W07 · Colocación de la carga y demostración del rodado** — `M` · `PM` + `VV` `MCP` (11/09/2026)
       RF-25, RF-26, RF-04, RNF-02, RNF-21, CT-06, CP-02, HU-08, CU-06 (FA-4a) · depende de: W06
+      **La lógica pura ya existía**: `CargoPlacement` y sus siete pruebas EditMode entraron con el
+      commit de W06 (`faaaa13`). Lo de hoy es el cableado: `Objeto_Caja` (Image + `CargoHandle`) y
+      `Button_Push` en `Level2_Forest`, `ForestSceneController` ampliado y el sprite provisional
+      `prop_n2_caja_suelo.png`, generado por código como los otros catorce (§11: `#C4743E`,
+      contorno carbón 8 px). Se sustituye el `.png` y no se toca nada más.
+      **Pulsar y soltar, no arrastrar.** `CargoHandle` implementa solo `IPointerDownHandler` e
+      `IPointerUpHandler`: el clic sostenido agarra, soltar el clic suelta, y mientras se sostiene
+      la caja sigue al ratón leído por `Mouse.current` (CT-06). `EventTrigger`, que ya venía con
+      uGUI, se descartó a propósito porque implementa el arrastre entero y habría hecho falsa la
+      prueba RNF-02 — que ahora afirma las dos cosas: nadie implementa `IDragHandler` y lo único
+      que responde al clic sostenido es la caja.
+      **Los troncos alineados son la fila del acopio.** No hay una segunda fila de troncos en el
+      suelo: la caja se suelta sobre la tablilla del acopio —que ya es los cinco troncos en línea—,
+      se asienta en su arranque y el rodado la lleva hasta el otro extremo mientras las cinco
+      casillas giran dos vueltas. Es una sola interpolación de posición y giro y **ningún gráfico
+      se apaga, enciende ni cambia de color** durante el recorrido: así se cumple RNF-21 y así lo
+      muestrea cada cuadro `ForestScene_RNF21_…`, que además guarda una captura a mitad del rodado
+      cuando hay Game View (en batchmode sigue sin ella; no se omite la prueba entera).
+      **A dónde sale el bosque es contenido**: `WheelLevelConfig.ClosingSequenceId`
+      (`N2_Escena22_ElPatron`), y `WheelLevelConfig_RNF13_…` comprueba en EditMode que esa
+      secuencia existe entre las narrativas del proyecto — un id sin asset detrás dejaría al
+      estudiante en el bosque con la caja ya rodada y sin nada que pulsar. Como la escena 2.2 no
+      declara `NextPhase` hasta que exista `Level2_Workshop` (W09), hoy sale al menú de niveles.
+      **La fase se confirma con indicadores en cero**: `PerformanceIndicators` reales son de W15.
+      Ojo: `ConfirmPhase` no sobreescribe una fase ya confirmada (OE1 §3.6.1 nota 4), así que los
+      perfiles de desarrollo que pasen el bosque antes de W15 se quedan con ceros.
+      **Deviación de nombre**: el plan ponía las pruebas de `CargoPlacement` en PlayMode; están en
+      EditMode porque es C# plano (ver `CargoPlacementTests`). RF-25 se cubre con dos pruebas de
+      escena en vez de una: la de «sin los cinco troncos» y la de «sigue al clic y se coloca».
+      **Un fallo de la primera corrida que no era del código**: `ForestScene_RF04_…` esperaba con
+      presupuesto de 900 cuadros y en batchmode, sin vsync, esos cuadros pasan antes de que el
+      rodado de 2,5 s termine. El helper espera ahora por segundos.
+      RED: 7 nuevas de escena fallaron por `cargo`/`pushButton` sin cablear (la escena aún no los
+      tenía) y `WheelLevelConfig_RNF13_…` no compilaba (el asmdef EditMode de Wheel no referenciaba
+      `Game.Scaffolding`; se añadió) → GREEN **EditMode 114/114** y **PlayMode 60/62** con
+      `unity test` y el Editor cerrado (`test-results.xml`, `play-results.xml`, 11/09/2026); las 2
+      omitidas son las `VisualVerification` de siempre. 0 fallos. `Datos/` quedó sin el perfil de
+      prueba (`W07_Prueba` se borra en el `finally`).
+      **No verificado**: la captura de RNF-21 (exige Game View; la suite corrió en batchmode) y el
+      aspecto del rodado a ojo. El botón «Empujar» deshabilitado se distingue solo por atenuación:
+      no es un estado de error y RNF-19 no lo cubre, pero queda anotado por si en la revisión se
+      prefiere ocultarlo hasta colocar la caja.
+
+      **W07-R · Revisión con el entorno del Nivel 2 (11/09/2026).** Llegó
+      `env_n2_bosque_claro.png` (1599×899, provisional) y con él seis ajustes pedidos en revisión:
+      1. **El entorno cubre la pantalla sin deformarse, a cualquier resolución del arte.**
+         `IllustrationFraming` (`Game.Scaffolding`, C# plano): escala «cover» —cubrir, no
+         encajar— calculada con el tamaño real del sprite y de la ventana en cada arranque, así
+         que **sustituir el archivo por el definitivo basta**. El importador quedó en `Single` y
+         `maxTextureSize` 8192 para que el arte grande no se reduzca al entrar. Lo usan el bosque
+         (plano general, `Image_Environment`) y la escena narrativa.
+      2. **La cámara narrativa se mueve por el entorno al ritmo de la narrativa, no del reloj.**
+         Cada `NarrativeSequence` declara `CameraStart`/`CameraEnd` (foco en fracciones de la
+         imagen + zoom ≥ 1: nunca se descubre un borde); el objetivo es la interpolación por
+         `DialogueRunner.Progress` (línea en curso / última) y la ilustración se acerca a él con
+         suavizado de 1,5 s. Sin avanzar, no se mueve —lo afirma
+         `NarrativeScene_RF05_LaCamaraSeMuevePorElEntornoAlRitmoDeLaNarrativa`—. Las seis
+         secuencias del N2 llevan el mismo entorno con encuadres distintos (contenido, se afinan
+         en el Inspector); las tres del N1 siguen sin ilustración.
+      3. **Suelo entre el 5 % y el 60 % de la pantalla** (`Panel_Floor`), y **perspectiva por
+         altura**: escala de 1 abajo a `FarScale` (0.6) arriba, más un realce al acercar el cursor
+         (`HoverScale` 1.15 dentro de `HoverRadius` 0.12). Los tres son parámetros del asset
+         (CT-05). Crecer no selecciona: lo afirma la prueba (RNF-02).
+      4. **Nudges**: la piedra vuelca menos (`StepSize` 0.01 → 0.004, radio 0.08) y la hoja
+         describe un arco más visible (`Push` 0.35, `Lift` 1.6, `Drag` 1.8). Es tacto: se afina
+         jugando en `N2_WheelLevelConfig`.
+      5. **Al completar el acopio el bosque se despeja**: distractores y tablilla del acopio se
+         apagan; los cinco troncos aparecen en `Panel_LogRow`, **a la derecha de la caja**, y la
+         caja está **en el extremo izquierdo** desde el principio. La fila es ahora el destino
+         del arrastre y del rodado (deja de serlo el acopio). El contador se queda (RF-24).
+         Para dejar libre la esquina izquierda, **el acopio y su contador pasaron al centro
+         inferior** — no estaba en la petición pero la caja y el acopio no cabían en la misma
+         esquina; se cambia en la escena si se prefiere otro sitio.
+      6. Pruebas nuevas: EditMode `IllustrationFramingTests` (6) y
+         `DialogueRunner_RF05_ElProgresoVaDeCeroAUno…`; PlayMode
+         `ForestScene_RF23_AlCompletarElAcopioQuedanLaCajaALaIzquierdaYLosTroncosASuDerecha`,
+         `ForestScene_RF22_LosObjetosMasAltosSeVenMasPequenos`,
+         `ForestScene_RF22_ElObjetoCreceAlAcercarseElCursorYVuelveAlAlejarse`,
+         `ForestScene_RNF23_ElEntornoCubreLaPantallaSinDeformarse`,
+         `NarrativeScene_RNF23_LaIlustracionCubreLaPantallaSinDeformarse` y la de cámara de arriba;
+         `ForestScene_RF22_LosObjetosCaenEnLaMitadInferior…` pasa a
+         `…EntreElCincoYElSesentaPorCientoDeLaPantalla`.
+      Verificación con `unity test` y el Editor cerrado (11/09/2026): **PlayMode 66/68**, 0 fallos
+      (las 2 omitidas, las `VisualVerification` de siempre); **EditMode 122/123** en la corrida
+      completa — la que falló era una aserción mal planteada de la prueba nueva (la ventana de
+      prueba no tenía exactamente la proporción del arte), corregida y **8/8** en la corrida
+      filtrada de `IllustrationFramingTests`. La escena se editó por script con el Editor abierto
+      (`N2Layout`, borrado) — **ojo**: `EditorSceneManager.OpenScene` falla si el Editor está en
+      Play; hubo que detenerlo y relanzar.
+      **No verificado a ojo**: el movimiento de cámara y la perspectiva en Play; los encuadres
+      son una primera propuesta.
+
+      **W07-R2 · Segunda revisión (11/09/2026).** Siete ajustes más:
+      1. **La caja espera al 40 % de la altura**, pegada a la izquierda, y la fila de troncos a su
+         altura. Anclada **por fracción y no por píxeles**: con el escalador a mitad ancho/alto,
+         432 px no son el 40 % en una ventana 4:3 — lo cazó la prueba en batchmode (640×480).
+      2. **El acopio y su contador vuelven a la esquina inferior izquierda.**
+      3. **Los objetos apilados a la izquierda del acopio** eran el reparto: tres objetos bajo la
+         misma tablilla salían al mismo punto, y en una ventana estrecha los empujones «hacia el
+         centro» del acopio y de una piedra ya colocada se anulaban. `Apartar` prueba ahora tres
+         sitios por estorbo —derecha, izquierda, encima— contra **todos** los estorbos a la vez,
+         tablillas y objetos ya colocados, y toma el primero libre dentro del suelo. Lo afirma
+         `ForestScene_RF25_LaCajaEsperaAlCuarentaPorCientoDeLaAlturaYNingunObjetoSeLeMonta`, que
+         también exige que ningún objeto se monte sobre otro.
+      4. **Transición al completar el acopio**: un cuadro después del quinto tronco los
+         distractores se van, las casillas se vacían y los troncos **vuelan del acopio a la fila**
+         mientras la cámara —`Panel_World`: entorno, suelo, caja y fila; las tablillas quedan
+         fuera— se acerca a la caja con el pivote puesto en ella (`CompletionZoom` 1.6,
+         `TransitionSeconds` 1.2, en el asset). La caja no se mueve de donde estaba. Mientras dura,
+         la caja no se agarra. **«Empujar» no existe durante el acopio**: aparece al terminar la
+         transición, deshabilitado hasta colocar la caja.
+      5. **Hover más cartoon**: `HoverScale` 1.15 → 1.4, `HoverRadius` 0.12 → 0.15.
+      6. **El cuadro de diálogo de la narrativa** cabe en el cuarto inferior: 1400×240 a 24 px del
+         borde (antes 1040×400 a 64: llegaba al 43 %). Cuerpo a 28 pt en 620×150; la línea más
+         larga sigue cabiendo (`NarrativeScene_RNF01_…`). Nueva
+         `NarrativeScene_RNF03_ElCuadroDeDialogoNoSuperaElCuartoDeLaPantalla`.
+      7. **Lo que dice el texto se ve**: `NarrativeSequence.Props` —sprite, posición en fracciones
+         de la ilustración, tamaño en fracción de su alto, giro y espejo— se pintan como hijos de
+         la ilustración y acompañan el paneo y el zoom sin cálculo propio. Para eso la ilustración
+         conserva su tamaño nativo y se escala con `localScale`. La escena 2.1 lleva los catorce
+         objetos del bosque **sacados del mismo catálogo que la fase jugable** más la caja, y abre
+         con la cámara sobre el suelo; la 2.2 lleva la caja sobre los cinco troncos. Nueva
+         `NarrativeScene_RF05_LaEscena21MuestraLosObjetosRepartidosPorElSuelo`.
+      Verificación con `unity test` y el Editor cerrado (11/09/2026): **EditMode 123/123**;
+      **PlayMode 69/71**, 0 fallos, las 2 omitidas de siempre. Hubo dos vueltas: la primera cayó
+      por la caja anclada en píxeles (punto 1) y la segunda por el apilamiento (punto 3), que
+      se diagnosticó con una traza temporal del reparto, ya retirada. La escena se editó una vez
+      con el Editor abierto (coplay) y otra en batchmode con
+      `Unity.exe -batchmode -executeMethod`, que funciona con el Editor cerrado.
+      **No verificado a ojo**: la transición y los objetos pintados en la 2.1; posiciones y
+      tamaños de esos objetos son una primera propuesta en el asset.
+
+      **W07-R3 · Tercera revisión (11/09/2026).**
+      1. **Al pasar el último tronco la caja cae al suelo por la derecha** (`FallSeconds` 0.45 en
+         el asset): baja acelerando hasta la base de la fila, un poco ladeada. El rodado ya no
+         termina con la caja flotando sobre el borde de la fila. `IsRolling` cubre también la
+         caída, así que la fase se confirma cuando la caja ya está en el piso.
+      2. **La narrativa anima lo que cuenta cada línea.** `NarrativeProp` gana `Motion`
+         (`Roll` · `LiftAndRoll` · `LiftAndStay`), `MotionLine`, `MotionDistance` y
+         `MotionSeconds`; `DialogueRunner.Index` dispara los movimientos al pintar la línea. En la
+         2.2: línea 0, la caja **rueda sola** sobre cinco troncos que giran en el sitio —es
+         narrativa, no hay botón—; línea 1, «¡Este tronco rueda!»: un tronco sube (el niño lo
+         levanta; no hay sprite del niño todavía), cae y rueda; línea 2, «Pero esa piedra no…»: la
+         piedra sube, cae y se queda con un bamboleo. Es RF-23 contado con movimiento. Todo es
+         interpolación de posición y giro: nada cambia de color (RNF-21).
+      3. Pruebas nuevas: `ForestScene_RF26_AlPasarElUltimoTroncoLaCajaCaeAlSueloPorLaDerecha` y
+         `NarrativeScene_RF23_LaEscena22AnimaLoQueCadaLineaCuenta` (mide subir, rodar y quedarse
+         línea a línea, esperando por segundos).
+      Verificación con `unity test` y el Editor cerrado (11/09/2026): **EditMode 123/123**;
+      **PlayMode 69/73** en la corrida completa con las 2 nuevas fallando por sus propias
+      aserciones —la envolvente de la caja ladeada es más ancha, y `First(Roll)` cogía un tronco y
+      no la caja—, corregidas y **2/2** en la corrida filtrada; las otras 69 ya estaban verdes y no
+      se tocó código después. Las 2 omitidas, las `VisualVerification` de siempre.
+      **No verificado a ojo**: la caída de la caja y las tres animaciones de la 2.2; posiciones,
+      distancias y duraciones son una primera propuesta en `N2_Escena22_ElPatron.asset`.
+
+      **W07-R4 · Cuarta revisión (11/09/2026).**
+      1. **Un solo rodado para el bosque y la narrativa**: `RollMotion` (`Game.Scaffolding`, C#
+         plano) devuelve avance suavizado, giro, caída acelerada y ladeo por instante; cada
+         escena lo traduce a su espacio. La caja **gira sobre sí misma** mientras avanza (1,5
+         vueltas, como en la narrativa) y al pasar el último tronco cae ladeada. Lo que se veía
+         antes en Play era código sin recompilar (el Editor estaba en Play). `RowPoint` mide el
+         ancho de la caja **sin girar**: con la envolvente girando, el avance temblaba y la prueba
+         RNF-21 lo cazó (una regresión de 0,002 px; la aserción admite ahora una centésima).
+      2. **Continuidad del bosque a la 2.2**: la escena abre con la vista final del bosque
+         —zoom `CompletionZoom` con el pivote en la caja, foco calculado de la geometría de
+         `Level2_Forest` a 1920×1080 (0.34, 0.46)—, los cinco troncos donde estaban (fila de
+         112 px con 12 de hueco desde x=240 al 40 % de alto, girados 180° como acaban el rodado)
+         y la caja al arranque de la fila, que rueda y cae en la línea 0 con la misma duración
+         (`RollSeconds + FallSeconds`). `NarrativeSequence.CameraKeys`: paradas por línea; con
+         paradas, la cámara se queda quieta hasta la siguiente. En la 2.2: línea 1 al niño
+         (izquierda, zoom 2), línea 2 paneo a papá con la piedra (derecha), línea 3 en adelante a
+         la familia hablando (más a la derecha, zoom 1.5). Sin paradas, las demás secuencias
+         siguen con inicio → final por progreso.
+      3. Pruebas: EditMode `RollMotionTests` (2) y
+         `WheelLevelConfig_RF05_LaEscenaDeCierreAbreConLaMismaVistaConLaQueTerminaElBosque`;
+         PlayMode `NarrativeScene_RF05_LaEscena22NoMueveLaVistaHastaQueElNinoHablaYLuegoPaneaAPapa`
+         (y a la familia), y la de animaciones comprueba ahora la caída y el ladeo de la caja.
+      Verificación con `unity test` y el Editor cerrado (11/09/2026): **EditMode 126/126**;
+      **PlayMode 71/74** en la corrida completa, con `ForestScene_RNF21_…` cayendo por el
+      temblor del punto 1 → corregido y **28/28** en la corrida filtrada de `Game.Levels.Wheel`;
+      las otras 43 no se tocaron. 2 omitidas, las `VisualVerification` de siempre.
+      **No verificado a ojo**: que la vista del bosque y la de la 2.2 coincidan de verdad al
+      cambiar de escena (la equivalencia es geométrica, a 1920×1080) y los tres encuadres de la
+      2.2.
 
 ### ✅ Checkpoint W-C — Fase 1 completa
-- [ ] El bosque se juega entero: seleccionar → acopiar cinco → colocar la caja → empujar
-- [ ] Ningún rechazo penaliza, bloquea ni muestra cifra de desempeño (CP-02, CP-03)
-- [ ] El estado de error se distingue **sin depender del color** (RNF-19)
-- [ ] Cierre forzado tras confirmar la fase 1 → retoma en la fase 2 (RNF-14)
+- [x] El bosque se juega entero: seleccionar → acopiar cinco → colocar la caja → empujar —
+      `ForestScene_RF04_…` lo recorre desde `Boot` con perfil real hasta salir a la narrativa
+- [x] Ningún rechazo penaliza, bloquea ni muestra cifra de desempeño (CP-02, CP-03) —
+      `CargoPlacement_CP02_…` ×2, `ForestScene_RF26_EmpujarSeHabilitaSoloConLaCajaColocada`
+      (una vez habilitado no se deshabilita) y el barrido de dígitos de W05
+- [x] El estado de error se distingue **sin depender del color** (RNF-19) — la caja habla por la
+      misma tablilla del guía con icono: `ForestScene_RNF19_…`
+- [~] Cierre forzado tras confirmar la fase 1 → retoma en la fase 2 (RNF-14) — **la mitad que
+      existe está probada**: la fase 1 queda en disco (`ForestScene_RF04_…` la relee con
+      `Session.Load`). Retomar **en la fase 2** no se puede afirmar hasta que `Level2_Workshop`
+      exista (W09) y `GameFlowRunner` la tenga en su tabla.
 - [ ] Revisado con el usuario
 
 ---
@@ -416,6 +608,17 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 ---
 
 ## Assets visuales — `plan.md` §Assets visuales del Slice 2
+
+- [ ] **TODO · Personajes de la familia y Chispa sobre el entorno del Nivel 2** — sin sprite
+      todavía; cuando existan, van como `NarrativeProp` en estas coordenadas de la ilustración
+      (`Camara_Narrativa_N2.md` §7; `y` es la **base**, los personajes miden ~0.22 de alto):
+      **Puente I** familia x 0.700–0.780 · y 0.30 · **2.2** niño con el tronco 0.168, papá con la
+      piedra 0.276, mamá 0.305 y niña 0.325 (y 0.30), Chispa 0.296 · y 0.60 · **2.4** carretilla
+      0.672 · y 0.30 y la piedra que hay que evitar 0.870 · y 0.29 · **2.5** fuego 0.852 · y 0.30,
+      carretilla cargada 0.790 · y 0.31, familia alrededor del fuego x 0.800–0.900 · y 0.30.
+      Las seis piezas del taller de la 2.3 (troncos cortos 0.690 · 0.706 · y 0.28, tronco largo
+      0.748 · y 0.29, herramienta 0.772 · y 0.27, tabla 0.800 · y 0.30, caja 0.828 · y 0.31)
+      tampoco existen como props: la tabla y el tronco largo no tienen sprite.
 
 Escenarios, props e interfaz **originales del proyecto**. **Los personajes no se regeneran**: se
 reutilizan `A1`..`A5` del Slice 1, que son **obra derivada** de los diseños Anonaky con

@@ -14,21 +14,129 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
   <Id>k__BackingField: N2_Escena21_Bosque
   <Level>k__BackingField: 2
-  <Illustration>k__BackingField: {fileID: 0}
+  <Illustration>k__BackingField: {fileID: 21300000, guid: bbed55b5b972c6c44ac36e4f02bc21c2, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.33, y: 0.4}
+    <Zoom>k__BackingField: 1.62
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.27, y: 0.5}
+    <Zoom>k__BackingField: 1.18
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 2
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.298, y: 0.43}
+      <Zoom>k__BackingField: 1.52
+  - <Line>k__BackingField: 3
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.258, y: 0.405}
+      <Zoom>k__BackingField: 1.6
+  - <Line>k__BackingField: 4
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.228, y: 0.395}
+      <Zoom>k__BackingField: 1.68
+  - <Line>k__BackingField: 5
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.19, y: 0.425}
+      <Zoom>k__BackingField: 1.45
+  - <Line>k__BackingField: 6
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.27, y: 0.5}
+      <Zoom>k__BackingField: 1.18
+  <CameraSmoothingSeconds>k__BackingField: 1.3
+  <Props>k__BackingField:
+  - <Art>k__BackingField: {fileID: 21300000, guid: 55ca788eb08d23345b9f57fc38312cf0, type: 3}
+    <Position>k__BackingField: {x: 0.115, y: 0.41}
+    <Size>k__BackingField: 0.16
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 2076456876981602082, guid: 07e9eeb115364f740919f4b90b69013e, type: 3}
+    <Position>k__BackingField: {x: 0.155, y: 0.3433}
+    <Size>k__BackingField: 0.0866
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 2076456876981602082, guid: 07e9eeb115364f740919f4b90b69013e, type: 3}
+    <Position>k__BackingField: {x: 0.205, y: 0.3119}
+    <Size>k__BackingField: 0.1037
+    <RotationDegrees>k__BackingField: 45
+    <Mirrored>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 2076456876981602082, guid: 07e9eeb115364f740919f4b90b69013e, type: 3}
+    <Position>k__BackingField: {x: 0.248, y: 0.3748}
+    <Size>k__BackingField: 0.0695
+    <RotationDegrees>k__BackingField: 90
+    <Mirrored>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 2076456876981602082, guid: 07e9eeb115364f740919f4b90b69013e, type: 3}
+    <Position>k__BackingField: {x: 0.292, y: 0.3219}
+    <Size>k__BackingField: 0.1037
+    <RotationDegrees>k__BackingField: 15
+    <Mirrored>k__BackingField: 1
+  - <Art>k__BackingField: {fileID: 2076456876981602082, guid: 07e9eeb115364f740919f4b90b69013e, type: 3}
+    <Position>k__BackingField: {x: 0.335, y: 0.3733}
+    <Size>k__BackingField: 0.0866
+    <RotationDegrees>k__BackingField: -60
+    <Mirrored>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: -5143368477329178737, guid: de76e98f2e2ca8a4fa94f21fdffd0297, type: 3}
+    <Position>k__BackingField: {x: 0.175, y: 0.4248}
+    <Size>k__BackingField: 0.0695
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: -5143368477329178737, guid: de76e98f2e2ca8a4fa94f21fdffd0297, type: 3}
+    <Position>k__BackingField: {x: 0.225, y: 0.3533}
+    <Size>k__BackingField: 0.0866
+    <RotationDegrees>k__BackingField: 120
+    <Mirrored>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: -5143368477329178737, guid: de76e98f2e2ca8a4fa94f21fdffd0297, type: 3}
+    <Position>k__BackingField: {x: 0.268, y: 0.3019}
+    <Size>k__BackingField: 0.1037
+    <RotationDegrees>k__BackingField: -35
+    <Mirrored>k__BackingField: 1
+  - <Art>k__BackingField: {fileID: 2262806618755955747, guid: 976c850ed5c57334583064850f84f672, type: 3}
+    <Position>k__BackingField: {x: 0.14, y: 0.3319}
+    <Size>k__BackingField: 0.1037
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 2262806618755955747, guid: 976c850ed5c57334583064850f84f672, type: 3}
+    <Position>k__BackingField: {x: 0.19, y: 0.3748}
+    <Size>k__BackingField: 0.0695
+    <RotationDegrees>k__BackingField: 12
+    <Mirrored>k__BackingField: 1
+  - <Art>k__BackingField: {fileID: 2262806618755955747, guid: 976c850ed5c57334583064850f84f672, type: 3}
+    <Position>k__BackingField: {x: 0.3, y: 0.4047}
+    <Size>k__BackingField: 0.0695
+    <RotationDegrees>k__BackingField: -18
+    <Mirrored>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: -4098710883630630236, guid: 6835cf547ffc9d941b04d49a69404944, type: 3}
+    <Position>k__BackingField: {x: 0.23, y: 0.3947}
+    <Size>k__BackingField: 0.0695
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: -4098710883630630236, guid: 6835cf547ffc9d941b04d49a69404944, type: 3}
+    <Position>k__BackingField: {x: 0.345, y: 0.3533}
+    <Size>k__BackingField: 0.0866
+    <RotationDegrees>k__BackingField: 90
+    <Mirrored>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: -4098710883630630236, guid: 6835cf547ffc9d941b04d49a69404944, type: 3}
+    <Position>k__BackingField: {x: 0.315, y: 0.4348}
+    <Size>k__BackingField: 0.0695
+    <RotationDegrees>k__BackingField: -25
+    <Mirrored>k__BackingField: 1
   <IsReflectiveClosing>k__BackingField: 0
   <NextPhase>k__BackingField: 1
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "Bosque. Objetos dispersos por el suelo: piedras irregulares, troncos redondos, plantas, herramientas."
+    <Text>k__BackingField: 'Bosque. Objetos dispersos por el suelo: piedras irregulares,
+      troncos redondos, plantas, herramientas.'
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: A un lado, la caja de alimentos que la familia no logra mover.
+    <Text>k__BackingField: A un lado, la caja de alimentos que la familia no logra
+      mover.
   - <Speaker>k__BackingField: ALGORITM
     <Text>k__BackingField: Observen bien. No todo lo que ven es importante.
   - <Speaker>k__BackingField: "MAM\xC1"
-    <Text>k__BackingField: "Miren... algunas cosas se mueven m\xE1s f\xE1cil que otras."
+    <Text>k__BackingField: "Miren... algunas cosas se mueven m\xE1s f\xE1cil que
+      otras."
   - <Speaker>k__BackingField: "NI\xD1O"
     <Text>k__BackingField: Voy a probar todas.
   - <Speaker>k__BackingField: "NI\xD1A"
     <Text>k__BackingField: Solo debemos fijarnos en lo que realmente funciona.
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "Selecciona los objetos que se muevan con facilidad y \xFAnelos. Cuando tengas cinco, veremos qu\xE9 pasa."
+    <Text>k__BackingField: "Selecciona los objetos que se muevan con facilidad y
+      \xFAnelos. Cuando tengas cinco, veremos qu\xE9 pasa."

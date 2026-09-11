@@ -173,8 +173,8 @@ de empezar:
   ```
   La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04 (carga < 10 s),
   RNF-05 (memoria < 2 GB) y RNF-06 (paquete < 500 MB), y junto al `.exe` nace `Datos/` en la
-  primera ejecución (RNF-07, RNF-11). Entran las cinco escenas de `EditorBuildSettings`, con
-  `Boot` de primera. `/[Bb]uild[s]?/` está en `.gitignore`: el ejecutable no se versiona.
+  primera ejecución (RNF-07, RNF-11). Entran las escenas listadas en `EditorBuildSettings` —la
+  lista crece con cada nivel; `Level2_Forest` entró con W06—, con `Boot` de primera. `/[Bb]uild[s]?/` está en `.gitignore`: el ejecutable no se versiona.
 - **Con Rider abierto**, `mcp__rider__run_unity_tests` /
   `mcp__rider__get_unity_compilation_result` corren contra el Editor **abierto** (sin cerrar/reabrir)
   y habilitan el flujo test-first del plugin `unity-coding-skills`. `unity test` queda como
@@ -239,7 +239,9 @@ antes de escribir la primera línea:
   (`My project/Datos/`), con perfiles reales de las pruebas manuales; está en `.gitignore`.
 - **Probar sin ampliar la superficie pública**: un `AssemblyInfo.cs` en la raíz del módulo con
   `[assembly: InternalsVisibleTo("<Módulo>.Tests")]` — como el de `Game.UI`. No subir un miembro
-  a `public` solo para que lo alcance una prueba.
+  a `public` solo para que lo alcance una prueba. **El assembly de PlayMode se llama
+  `<Módulo>.PlayMode.Tests` y necesita su propia línea**: sin ella el `internal` no se ve desde
+  PlayMode aunque la de EditMode esté puesta (`Game.Levels.Wheel` tiene las dos).
 - Raíz de código y assets: `Assets/Game/`, namespaces `Game.*` siguiendo la ruta bajo
   `Scripts/` y elidiendo `Runtime`. Tests en `Assets/Tests/{EditMode,PlayMode}/<Módulo>/`.
 - **El nombre de la prueba es la trazabilidad.** Patrón `<Sujeto>_<Requisito>_<QuéHace>` en

@@ -19,6 +19,18 @@ MonoBehaviour:
   <CargoPlacedMessage>k__BackingField: "La caja quedó sobre los troncos. Ahora empújala."
   <CargoMissedMessage>k__BackingField: "Ahí la caja no toca los troncos. Déjala encima de ellos."
   <RollSeconds>k__BackingField: 2.5
+  <FallSeconds>k__BackingField: 0.45
+  <ClosingSequenceId>k__BackingField: N2_Escena22_ElPatron
+  <FarScale>k__BackingField: 0.6
+  <HoverScale>k__BackingField: 1.4
+  <HoverRadius>k__BackingField: 0.15
+  <TransitionSeconds>k__BackingField: 1.2
+  <PlayFraming>k__BackingField:
+    <Focus>k__BackingField: {x: 0.27, y: 0.5}
+    <Zoom>k__BackingField: 1.18
+  <CompletionFraming>k__BackingField:
+    <Focus>k__BackingField: {x: 0.232, y: 0.42}
+    <Zoom>k__BackingField: 1.58
   <ForestObjects>k__BackingField:
   - <Id>k__BackingField: tronco_1
     <Category>k__BackingField: 0
@@ -137,20 +149,20 @@ MonoBehaviour:
     <Drag>k__BackingField: 1.4
     <StepSize>k__BackingField: 0
   - <Category>k__BackingField: 1
-    <Radius>k__BackingField: 0.1
+    <Radius>k__BackingField: 0.08
     <Push>k__BackingField: 0
     <Lift>k__BackingField: 0
     <Gravity>k__BackingField: 0
     <Spring>k__BackingField: 0
     <Drag>k__BackingField: 0
-    <StepSize>k__BackingField: 0.01
+    <StepSize>k__BackingField: 0.004
   - <Category>k__BackingField: 2
-    <Radius>k__BackingField: 0.1
-    <Push>k__BackingField: 0.1
-    <Lift>k__BackingField: 1
+    <Radius>k__BackingField: 0.12
+    <Push>k__BackingField: 0.35
+    <Lift>k__BackingField: 1.6
     <Gravity>k__BackingField: 0.3
     <Spring>k__BackingField: 0
-    <Drag>k__BackingField: 2.5
+    <Drag>k__BackingField: 1.8
     <StepSize>k__BackingField: 0
   - <Category>k__BackingField: 3
     <Radius>k__BackingField: 0.09
