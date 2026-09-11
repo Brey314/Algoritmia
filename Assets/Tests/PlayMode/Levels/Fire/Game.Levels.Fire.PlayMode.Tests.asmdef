@@ -1,17 +1,16 @@
 {
-    "name": "Game.UI.Tests",
+    "name": "Game.Levels.Fire.PlayMode.Tests",
     "rootNamespace": "",
     "references": [
-        "Game.UI",
+        "Game.Levels.Fire",
         "Game.Core",
         "Game.Scaffolding",
         "UnityEngine.UI",
+        "Unity.InputSystem",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,

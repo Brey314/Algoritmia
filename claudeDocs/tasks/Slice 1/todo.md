@@ -2,7 +2,7 @@
 
 Plan técnico: [`plan.md`](plan.md). Contrato: `claudeDocs/SPEC.md`.
 Resultados: [`Fase-0-Resultados.md`](Fase-0-Resultados.md) · [`Fase-1-Resultados.md`](Fase-1-Resultados.md) ·
-[`Fase-2-Resultados.md`](Fase-2-Resultados.md) (en curso).
+[`Fase-2-Resultados.md`](Fase-2-Resultados.md) · [`Fase-3-Resultados.md`](Fase-3-Resultados.md) (en curso).
 Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 **Leyenda:** `EM` = EditMode (lógica pura, sin escena) · `PM` = PlayMode (integración) ·
@@ -196,22 +196,126 @@ exige una fase confirmada (**T17**) y la revisión con el usuario.
 
 ## Fase 3 — Nivel fuego (`nivel-fuego`)
 
-- [ ] **T12 · `FireLevelConfig`, `StrikePosition`, `FireAttempt`** — `M` · `EM`
+- [x] **T12 · `FireLevelConfig`, `StrikePosition`, `FireAttempt`** — `M` · `EM` (10/09/2026)
       RF-15, RF-16, RF-18, RF-19, CP-02, CT-05, RNF-18, HU-06, HU-07, CU-04, INC-32 · depende de: T11
-- [ ] **T13 · `FireFeedbackLog`, mensajes sin repetición** — `M` · `EM`
+      Lógica pura del Nivel 1 en C# plano, sin escena (assembly `Game.Levels.Fire`, antes vacío).
+      `StrikePosition` (Lejos/Cerca/Muy cerca), `FireLevelConfig` (SO con los 4 parámetros del guion
+      §4.3.2, valores por defecto 3 / Muy cerca / 3 / 3), `StrikeOutcome` (struct, `SparksDied` /
+      `SparkLanded` del SPEC §Estilo) y `FireAttempt` (código del SPEC §Estilo tal cual, más
+      `ConsecutiveFailures` público). `Strike` es la única vía de mutación: el deslizante es estado
+      de UI (RF-15). `CanBlow` deriva solo de golpes efectivos → nunca vuelve a falso (INC-32,
+      comentario «por qué no»); sin tope de intentos ni derrota (RF-18, CP-02). **EditMode 9/9** de
+      la suite Fire (flujo test-first: RED 8 fail / 2 pass — las 2 verdes son un SO de datos y un
+      invariante de estado inicial, sin lógica de Step 3 — → GREEN 9/9 tras fusionar una prueba de
+      RF-19 con la de RNF-18). **EditMode total 72/72, sin regresión.** MCP de Rider operativo esta
+      sesión: pruebas contra el Editor abierto. Sin `.asmdef` ni `.asset` nuevos (el
+      `FireLevelConfig.asset` real es de T14). Detalle en `Fase-3-Resultados.md`.
+- [x] **T13 · `FireFeedbackLog`, mensajes sin repetición** — `M` · `EM` (10/09/2026)
       RF-11, RF-17, RF-18, CP-03, HU-05, HU-06, guion §4.3.4 · depende de: T12
-- [ ] **T14 · Panel de encendido y escena `Level1_Cave`** — `M` · `PM`
-      RF-14, RF-15, RF-17, RNF-02, RNF-03, RNF-19, CT-06, HU-06, CU-04, INC-41 · depende de: T13
-- [ ] **T15 · Convergencia: «Soplar» → nacimiento del fuego** — `S` · `PM` + `VV`
+      El área de registro del Nivel 1, C# plano. `FireMessages` (SO) con los **ocho mensajes del
+      guion §4.3.4 literales**, `[field: SerializeField, TextArea]` + `[Tooltip]`; asset real
+      `Assets/Game/Data/Fire/N1_Mensajes.asset` (YAML a mano, convención `N1_*`). `FireFeedbackLog`
+      traduce un `StrikeOutcome` a mensaje: por ordinal de golpe efectivo (primero/segundo/final al
+      alcanzar el mínimo) o por distancia + racha (variante «tras dos intentos» desde el segundo
+      fallo seguido). **No repite el mismo mensaje dos veces seguidas** cuando hay alternativa
+      aplicable (RF-18): los golpes seguidos en la misma distancia alternan. `Entries` acumula todo
+      el historial en orden (HU-06); sin tope (RF-18) — el scroll es de T14. `RecordBlowSuccess()`
+      para T15. **EditMode suite Fire 20/20** (11 nuevas; flujo test-first: 9 rojas → verdes, las 2
+      pruebas Editor sobre el asset nacen verdes como en T12). **EditMode total 83/83, sin
+      regresión.** Desviación anotada: prueba de no-repetición nombrada con RF-18, no RF-17.
+      Detalle en `Fase-3-Resultados.md`.
+- [x] **T14 · Panel de encendido y escena `Level1_Cave`** — `M` · `PM` (10/09/2026)
+      RF-14, RF-15, RF-17, RNF-02, RNF-03, RNF-19, RNF-20, CT-06, HU-06, CU-04, INC-41 · depende de: T13
+      **Primera escena jugable del proyecto.** `Level1_Cave.unity` (Build Settings → 6 escenas):
+      deslizante de 3 posiciones (`Navigation.None`), «Golpear», «Soplar» atenuado con badge
+      **candado + «Aún no»** (RNF-19, verificado en captura VV), área de registro con `ScrollRect`,
+      montón de hojas (placeholder). `FirePanelController` (`Game.Levels.Fire`, +`UnityEngine.UI`
+      al asmdef) es adaptador puro: clic → `FireAttempt`/`FireFeedbackLog` de T12/T13, cero reglas.
+      `FeedbackLogView` renderiza `Entries` (desviación del plan: va en `Game.Levels.Fire`, no
+      `Game.UI`). **RNF-02:** asset propio `ControlesJugables.inputactions` con mapa **solo
+      puntero** (sin teclado ni gamepad); el test barre `actionsAsset.bindings`. `GameFlowRunner`
+      mapea `Playing → Level1_Cave`; `NarrativeSceneController.Leave()` entra al nivel de la
+      secuencia (cierra el «PROVISIONAL (T14)»). **PlayMode: FirePanelTests 9/9; regresión EditMode
+      83/83, PlayMode 44/44.** `N1_Config.asset` creado.
+      **T14b (incluido):** `PlayFromBoot.cs` — la suite PlayMode se colgaba al lanzarla desde el
+      MCP de Rider (`playModeStartScene` cargaba Boot, el juego arrancaba solo). El Test Framework
+      `@1405238725ab` no gestiona `playModeStartScene`; nueva guarda por reflexión sobre
+      `PlaymodeLauncher.IsRunning` en `ExitingEditMode`. Detalle en `Fase-3-Resultados.md`.
+- [x] **T15 · Convergencia: «Soplar» → nacimiento del fuego** — `S` · `PM` + `VV` (11/09/2026)
       RF-19, RF-20, RF-04, RF-03, RNF-21, HU-07, CU-04 · depende de: T14
-- [ ] **T16 · Menú de pausa** — `M` · `EM` + `PM`
+      «Soplar» encadena la convergencia: un barrido de color monótono (~0,6 s, sin oscilación —
+      RNF-21) y al terminar `FirePanelController.CompleteLevel()` confirma la fase 1 del Nivel 1
+      (`ConfirmPhase`, indicadores en `default` — los reales son T17), desbloquea el Nivel 2
+      (`LevelUnlockPolicy`), guarda (`IProfileSaver`, override de prueba como en
+      `MainMenuController`) y entra a `N1_NacimientoDelFuego` (guion §4.4, 19 líneas, cierre
+      reflexivo con «se llama iterar» incluido). **Desviación:** sin `FireResolutionController`
+      nuevo — la lógica se sumó a `FirePanelController` para no arriesgar otra pasada de
+      `edit-scene`; T15 no toca `Level1_Cave.unity`. Nuevo `NarrativeOutcome`
+      (`EntersLevel`/`ReturnsToLevelSelect`) en `NarrativeSequence`: `NarrativeSceneController.Leave()`
+      ya no asume que toda narrativa entra al nivel — decide por el propósito declarado en el
+      asset, sin un `if` por secuencia. **`FirePanelTests` 13/13** (4 nuevas) · **EditMode 83/83 ·
+      PlayMode 48/48** (3 corridas limpias). De paso, arreglado un defecto real de aislamiento en
+      el helper `LoadPanel()` de T14 (`FindAnyObjectByType` podía devolver el controlador de la
+      prueba anterior en corridas de suite completa). Detalle en `Fase-3-Resultados.md`.
+- [x] **T16 · Menú de pausa** — `M` · `EM` + `PM` (11/09/2026)
       RF-07, RF-03, RF-04, CP-02, HU-17 (FA-01..FA-05), INC-25 · depende de: T15
-- [ ] **T17 · Emisión de los cuatro indicadores del N1** — `M` · `EM`
-      RF-45, RF-04, RNF-14, CP-03, CP-09, OE1 §3.6.1, INC-29 · depende de: T15, T16
-- [ ] **T18 · Resumen de fin de nivel y cierre reflexivo** — `M` · `EM` + `PM`
-      RF-45, RF-12, RF-17, RF-03, CP-03, CP-07, HU-14, INC-26 · depende de: T17
-- [ ] **T19 · Iluminación progresiva del escenario** — `S` · `VV`
-      **RF-21 (prioridad Baja)**, RNF-20, RNF-21, HU-07 · depende de: T15
+      Capa de UI sobre `Playing`, no un estado nuevo: «Pausa» abre un overlay con Continuar
+      (restituye el estado exacto, no toca nada), Reiniciar (confirmación de una frase, Cancelar
+      no cambia nada) y Volver al menú. **Hallazgo de diseño:** `GameFlowRunner.Apply` solo
+      recargaba la escena si el nombre cambiaba — reentrar a `Playing` (RF-07, ya legal en
+      `GameFlow` desde T03) no recargaba nunca. Arreglado: reentrar a `Playing` siempre recarga.
+      `PauseMenuPolicy.Restart(GameFlowRunner)` (`Game.Core`) repite `StartPlaying` con el mismo
+      nivel/fase — nunca re-bloquea ni borra indicadores (`Reach`/`ConfirmPhase` no se llaman).
+      `PauseMenuController` (`Game.UI`, no `Game.Levels.Fire`: navegación general, sin dependencia
+      nueva para el nivel) vive en `Level1_Cave.unity` sobre el panel de T14, sin tocarlo — un
+      overlay bloquea el raycast hacia «Golpear»/«Soplar». **Dos bugs reales encontrados en
+      verificación** (detalle en `Fase-3-Resultados.md`): el componente en un GameObject que
+      arrancaba inactivo (Awake/Start nunca corrían), y `PauseMenuPolicy` llamando a `GameFlow`
+      directo en vez de por `GameFlowRunner` (saltaba la recarga). **PauseMenuTests 4/4,
+      PauseMenuPolicyTests 1/1** · **EditMode 84/84 · PlayMode 52/52** (2 corridas limpias).
+- [x] **T17 · Emisión de los cuatro indicadores del N1** — `M` · `EM`
+      RF-45, RF-04, RNF-14, CP-03, CP-09, OE1 §3.6.1, INC-29 · depende de: T15, T16 (11/09/2026).
+      `ILevelReporter` (Core, dos métodos: `PauseOpened`/`PauseClosed`) + `FireIndicatorCollector`
+      (Fire, implementa la interfaz): Intentos = golpes no efectivos, Errores corregidos = acierto
+      justo tras un fallo, Pasos utilizados = golpes efectivos al cruzar el mínimo (se congela),
+      Tiempo de resolución = reloj inyectado menos la ventana de pausa. Mediación por
+      `GameFlowRunner.ActiveReporter` para que `Game.UI` (quien pausa) y `Game.Levels.Fire` (quien
+      mide) no se referencien entre sí. `FirePanelController.CompleteLevel()` ya no usa `default`.
+      **FireIndicatorTests 6/6** (incluye barrido de reflexión CP-03 sobre `Game.UI` cargado en
+      dominio, sin referencia de compilación nueva) · **EditMode 90/90 · PlayMode 52/52** (una
+      corrida PlayMode completa tuvo 1 fallo intermitente ajeno a T17, limpio en la repetición).
+- [x] **T18 · Resumen de fin de nivel y cierre reflexivo** — `M` · `EM` + `PM`
+      RF-45, RF-12, RF-17, RF-03, CP-03, CP-07, HU-14, INC-26 · depende de: T17 (11/09/2026).
+      `GameState.LevelSummary` (ya declarado desde T03) por fin tiene escena y controlador. HU-14
+      gobernó el diseño sobre el plan: el guía nombra la habilidad en `N1_NacimientoDelFuego`
+      (contenido ya escrito desde antes de T15, sin tocar) y **después** el resumen sin cifras
+      confirma la fase, desbloquea el Nivel 2 y guarda — no `FirePanelController.CompleteLevel()`
+      como antes. **Bug real encontrado**: confirmar la fase antes de la narrativa de cierre hacía
+      que `NarrativeVisitPolicy.AlreadySeen` diera verdadero desde la primerísima vez, así que el
+      botón de omitir aparecía siempre, violando CP-07. Arreglado moviendo el efecto secundario al
+      punto donde HU-14 ya lo sitúa (paso 6-7), mediado por `GameFlowRunner.PendingIndicators`
+      (mismo patrón que `ActiveReporter`, T17). `FireLevel_RF04_.../FireLevel_RF03_...` (T15) se
+      trasladaron a `LevelSummaryTests`, donde el efecto ahora vive de verdad.
+      **LevelSummaryComposerTests 4/4 · LevelSummaryTests 2/2** (incluye
+      `LevelSummary_CP07_ElCierreReflexivoNoEsOmitibleLaPrimeraVez`, la prueba de regresión directa
+      del bug) · **EditMode 94/94 · PlayMode 52/52** (2 corridas limpias consecutivas).
+- [x] **T19 · Iluminación progresiva del escenario** — `S` · `VV`
+      **RF-21 (prioridad Baja)**, RNF-20, RNF-21, HU-07 · depende de: T15 (11/09/2026).
+      `CaveLightingController` (nuevo, sobre `Panel/Fondo`) interpola el color de fondo entre un
+      tono oscuro y el original según `golpesEfectivos / (mínimo + 1)` — un escalón por golpe
+      efectivo (guion E4), reservando el último escalón para la ignición (`PlayIgnitionAsync`,
+      E7), que ahora también anima la iluminación en el mismo barrido que el color del fuego.
+      **Desviación deliberada del documento de arte**: el `#0F1526` al 65 % que sugiere
+      `Direccion_de_Arte.md` §8.1 da ~1.2:1 de contraste contra el texto del panel — muy por
+      debajo del 4.5:1 de RNF-20. Se ajustó a `#8A97AB` (≈5.14:1, verificado por la propia
+      prueba, no de confianza). **`CaveLightingTests` 2/2** (incluye
+      `FirePanel_RNF20_ContrasteSuficienteEnElEstadoMasOscuro`, cálculo real de contraste WCAG) ·
+      **EditMode 94/94 · PlayMode 54/54** (2 corridas limpias; la flakiness ya conocida de
+      `FirePanelTests`, §2c de `Fase-3-Resultados.md`, apareció con más frecuencia esta vez,
+      siempre en pruebas preexistentes ajenas a T19 — anotado como pendiente de revisar).
+
+**Código de Fase 3 completo (T12–T19).** Del Checkpoint D no queda ninguna casilla de código —
+todas las que siguen son verificación manual y revisión con el usuario.
 
 ### ✅ Checkpoint D — Slice 1 completo
 - [ ] **Dos recorridos completos** del Golden Path sin incidencias (RNF-13)

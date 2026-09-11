@@ -39,6 +39,9 @@ namespace Game.UI
         /// <summary>El avance de la escena en curso. <c>null</c> si no se pudo resolver.</summary>
         internal DialogueRunner Dialogue { get; private set; }
 
+        /// <summary>La secuencia que se está reproduciendo. Fija a qué nivel se entra al terminar.</summary>
+        private NarrativeSequence _sequence;
+
 #if UNITY_INCLUDE_TESTS
         internal Text BodyLabel => bodyLabel;
         internal Text SpeakerLabel => speakerLabel;
@@ -68,20 +71,20 @@ namespace Game.UI
             }
 
             var wanted = Runner.Flow.NarrativeSequenceId;
-            var sequence = Array.Find(sequences,
+            _sequence = Array.Find(sequences,
                 candidate => candidate != null && candidate.Id == wanted);
 
-            if (sequence == null)
+            if (_sequence == null)
             {
                 Debug.LogWarning($"No hay ninguna secuencia narrativa con el id «{wanted}».", this);
                 return;
             }
 
-            Dialogue = new DialogueRunner(sequence.Lines,
-                NarrativeVisitPolicy.AlreadySeen(Runner.Flow.ActiveProfile, sequence.Level));
+            Dialogue = new DialogueRunner(_sequence.Lines,
+                NarrativeVisitPolicy.AlreadySeen(Runner.Flow.ActiveProfile, _sequence.Level));
 
-            illustration.sprite = sequence.Illustration;
-            illustration.enabled = sequence.Illustration != null;
+            illustration.sprite = _sequence.Illustration;
+            illustration.enabled = _sequence.Illustration != null;
             // RF-06 e INC-28: el botón de omitir no existe en la primera visita, no basta con
             // deshabilitarlo — la escena de cierre es donde el guía nombra lo aprendido.
             skipButton.gameObject.SetActive(Dialogue.CanSkip);
@@ -128,11 +131,23 @@ namespace Game.UI
 
         private void Leave()
         {
-            // PROVISIONAL (T14): la salida natural de una escena narrativa del Nivel 1 es entrar
-            // a jugar, pero la escena del nivel todavía no existe. `LevelSelect` es la otra
-            // salida legal desde `Narrative` y deja el recorrido cerrado en vez de plantar al
-            // estudiante en una pantalla sin salida (RNF-13). Cuando T14 traiga `Level1_Cave`,
-            // esto pasa a `StartPlaying`.
+            // La rama depende del propósito que declara el asset (T15), no de cuál secuencia es:
+            // las de apertura entran a jugar el nivel; las de cierre van al resumen de fin de
+            // nivel (T18, HU-14 paso 6). Si `StartPlaying`/`GoTo` rechazara la transición (nivel
+            // bloqueado, o abierta sin pasar por Boot), se cae a `LevelSelect` — nunca deja al
+            // estudiante sin salida (RNF-13).
+            if (_sequence != null && _sequence.Outcome == NarrativeOutcome.EntersLevel
+                && Runner.StartPlaying(_sequence.Level, 1))
+            {
+                return;
+            }
+
+            if (_sequence != null && _sequence.Outcome == NarrativeOutcome.ReturnsToLevelSelect
+                && Runner.GoTo(GameState.LevelSummary))
+            {
+                return;
+            }
+
             Runner.GoTo(GameState.LevelSelect);
         }
     }

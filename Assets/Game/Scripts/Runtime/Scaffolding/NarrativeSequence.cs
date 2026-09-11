@@ -30,5 +30,9 @@ namespace Game.Scaffolding
         [field: SerializeField]
         [field: Tooltip("Las líneas, en el orden en que se leen.")]
         public DialogueLine[] Lines { get; private set; } = new DialogueLine[0];
+
+        [field: SerializeField]
+        [field: Tooltip("Qué pantalla sigue al terminar: entrar a jugar el nivel, o volver al menú.")]
+        public NarrativeOutcome Outcome { get; private set; } = NarrativeOutcome.EntersLevel;
     }
 }
