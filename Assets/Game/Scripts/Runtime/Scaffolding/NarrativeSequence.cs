@@ -96,5 +96,9 @@ namespace Game.Scaffolding
             }
         }
 #endif
+
+        [field: SerializeField]
+        [field: Tooltip("Qué pantalla sigue al terminar: entrar a jugar el nivel, o volver al menú.")]
+        public NarrativeOutcome Outcome { get; private set; } = NarrativeOutcome.EntersLevel;
     }
 }

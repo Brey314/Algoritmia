@@ -30,6 +30,10 @@ namespace Game.Core
                 // Una sola escena para las quince escenas narrativas del guion: el estado lleva
                 // el id de la secuencia y la escena la resuelve (RF-05, RNF-06).
                 [GameState.Narrative] = "Narrative",
+                // Hoy solo existe el Nivel 1. Cuando lleguen Rueda y Río (Slice 2/3), el mapeo de
+                // Playing será por LevelId, no una sola entrada.
+                [GameState.Playing] = "Level1_Cave",
+                [GameState.LevelSummary] = "LevelSummary",
                 [GameState.Credits] = "Credits"
             };
 
@@ -47,6 +51,16 @@ namespace Game.Core
         public static GameFlowRunner Instance { get; private set; }
 
         public GameFlow Flow { get; } = new GameFlow();
+
+        /// <summary>El recolector de indicadores de la fase en curso, si la hay (RF-45). Quien
+        /// pausa (Game.UI) se lo notifica sin conocer Game.Levels.Fire: la mediación vive aquí.</summary>
+        public ILevelReporter ActiveReporter { get; set; }
+
+        /// <summary>Los indicadores de la fase recién resuelta, a la espera de que
+        /// <c>LevelSummary</c> los confirme (RF-45, HU-14 paso 6). <see cref="GameFlow.PlayingLevel"/>/
+        /// <see cref="GameFlow.PlayingPhase"/> siguen fijos mientras tanto: nada los limpia entre
+        /// <see cref="GameState.Playing"/> y <see cref="GameState.LevelSummary"/>.</summary>
+        public PerformanceIndicators PendingIndicators { get; set; }
 
         private ProfileSession _session;
 
@@ -117,7 +131,14 @@ namespace Game.Core
                 // dentro de ella —lo hace la UI— y no una recarga. Sin `SceneLoader` (una prueba
                 // que solo ejercita el flujo, sin la escena Boot) la transición actualiza la FSM
                 // pero no toca escenas.
-                if (sceneName != SceneManager.GetActiveScene().name && SceneLoader.Instance != null)
+                //
+                // Excepción: reentrar a `Playing` siempre recarga, aunque el nombre de escena no
+                // cambie (T16, RF-07) — es «Reiniciar» desde el menú de pausa, y sin esto la FSM
+                // aceptaba la transición sin que pasara nada. `Playing` es el único estado que se
+                // tiene a sí mismo como destino legal, así que esto no afecta a ningún otro caso.
+                var mustReload = Flow.Current == GameState.Playing;
+                if ((sceneName != SceneManager.GetActiveScene().name || mustReload)
+                    && SceneLoader.Instance != null)
                 {
                     SceneLoader.Instance.Load(sceneName);
                 }

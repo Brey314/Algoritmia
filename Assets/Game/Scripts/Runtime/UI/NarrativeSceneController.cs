@@ -40,15 +40,8 @@ namespace Game.UI
         /// <summary>El avance de la escena en curso. <c>null</c> si no se pudo resolver.</summary>
         internal DialogueRunner Dialogue { get; private set; }
 
-        /// <summary>La secuencia en curso. Es quien dice a dónde sale la escena.</summary>
+        /// <summary>La secuencia que se está reproduciendo. Fija a qué nivel se entra al terminar.</summary>
         private NarrativeSequence _sequence;
-
-        /// <summary>Dónde está la cámara ahora mismo, de camino al encuadre de la línea en curso.</summary>
-        private CameraFraming _camera;
-
-        /// <summary>Los objetos pintados sobre el entorno, con su declaración: son lo que se anima por línea.</summary>
-        private readonly List<(NarrativeProp Prop, RectTransform Rect)> _props =
-            new List<(NarrativeProp, RectTransform)>();
 
 #if UNITY_INCLUDE_TESTS
         internal Text BodyLabel => bodyLabel;
@@ -82,24 +75,20 @@ namespace Game.UI
             }
 
             var wanted = Runner.Flow.NarrativeSequenceId;
-            var sequence = _sequence = Array.Find(sequences,
+            _sequence = Array.Find(sequences,
                 candidate => candidate != null && candidate.Id == wanted);
 
-            if (sequence == null)
+            if (_sequence == null)
             {
                 Debug.LogWarning($"No hay ninguna secuencia narrativa con el id «{wanted}».", this);
                 return;
             }
 
-            Dialogue = new DialogueRunner(sequence.Lines,
-                NarrativeVisitPolicy.AlreadySeen(Runner.Flow.ActiveProfile, sequence));
+            Dialogue = new DialogueRunner(_sequence.Lines,
+                NarrativeVisitPolicy.AlreadySeen(Runner.Flow.ActiveProfile, _sequence.Level));
 
-            illustration.sprite = sequence.Illustration;
-            illustration.enabled = sequence.Illustration != null;
-            illustration.preserveAspect = false; // el tamaño lo fija el encuadre, ya sin deformar
-            _camera = sequence.CameraStart;
-            Frame();
-            PlaceProps(sequence);
+            illustration.sprite = _sequence.Illustration;
+            illustration.enabled = _sequence.Illustration != null;
             // RF-06 e INC-28: el botón de omitir no existe en la primera visita, no basta con
             // deshabilitarlo — la escena de cierre es donde el guía nombra lo aprendido.
             skipButton.gameObject.SetActive(Dialogue.CanSkip);
@@ -327,8 +316,19 @@ namespace Game.UI
         /// </remarks>
         private void Leave()
         {
-            if (_sequence != null && _sequence.NextPhase > 0
-                && Runner.StartPlaying(_sequence.Level, _sequence.NextPhase))
+            // La rama depende del propósito que declara el asset (T15), no de cuál secuencia es:
+            // las de apertura entran a jugar el nivel; las de cierre van al resumen de fin de
+            // nivel (T18, HU-14 paso 6). Si `StartPlaying`/`GoTo` rechazara la transición (nivel
+            // bloqueado, o abierta sin pasar por Boot), se cae a `LevelSelect` — nunca deja al
+            // estudiante sin salida (RNF-13).
+            if (_sequence != null && _sequence.Outcome == NarrativeOutcome.EntersLevel
+                && Runner.StartPlaying(_sequence.Level, 1))
+            {
+                return;
+            }
+
+            if (_sequence != null && _sequence.Outcome == NarrativeOutcome.ReturnsToLevelSelect
+                && Runner.GoTo(GameState.LevelSummary))
             {
                 return;
             }
