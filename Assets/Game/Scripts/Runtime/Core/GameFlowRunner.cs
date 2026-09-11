@@ -33,6 +33,7 @@ namespace Game.Core
                 // Hoy solo existe el Nivel 1. Cuando lleguen Rueda y Río (Slice 2/3), el mapeo de
                 // Playing será por LevelId, no una sola entrada.
                 [GameState.Playing] = "Level1_Cave",
+                [GameState.LevelSummary] = "LevelSummary",
                 [GameState.Credits] = "Credits"
             };
 
@@ -43,6 +44,12 @@ namespace Game.Core
         /// <summary>El recolector de indicadores de la fase en curso, si la hay (RF-45). Quien
         /// pausa (Game.UI) se lo notifica sin conocer Game.Levels.Fire: la mediación vive aquí.</summary>
         public ILevelReporter ActiveReporter { get; set; }
+
+        /// <summary>Los indicadores de la fase recién resuelta, a la espera de que
+        /// <c>LevelSummary</c> los confirme (RF-45, HU-14 paso 6). <see cref="GameFlow.PlayingLevel"/>/
+        /// <see cref="GameFlow.PlayingPhase"/> siguen fijos mientras tanto: nada los limpia entre
+        /// <see cref="GameState.Playing"/> y <see cref="GameState.LevelSummary"/>.</summary>
+        public PerformanceIndicators PendingIndicators { get; set; }
 
         private ProfileSession _session;
 

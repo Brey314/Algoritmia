@@ -132,11 +132,18 @@ namespace Game.UI
         private void Leave()
         {
             // La rama depende del propósito que declara el asset (T15), no de cuál secuencia es:
-            // las de apertura entran a jugar el nivel; las de cierre vuelven al menú. Si
-            // `StartPlaying` rechazara la transición (nivel bloqueado), o la secuencia no fuera de
-            // apertura, se cae a `LevelSelect` — nunca deja al estudiante sin salida (RNF-13).
+            // las de apertura entran a jugar el nivel; las de cierre van al resumen de fin de
+            // nivel (T18, HU-14 paso 6). Si `StartPlaying`/`GoTo` rechazara la transición (nivel
+            // bloqueado, o abierta sin pasar por Boot), se cae a `LevelSelect` — nunca deja al
+            // estudiante sin salida (RNF-13).
             if (_sequence != null && _sequence.Outcome == NarrativeOutcome.EntersLevel
                 && Runner.StartPlaying(_sequence.Level, 1))
+            {
+                return;
+            }
+
+            if (_sequence != null && _sequence.Outcome == NarrativeOutcome.ReturnsToLevelSelect
+                && Runner.GoTo(GameState.LevelSummary))
             {
                 return;
             }

@@ -255,6 +255,68 @@ de sesión, 07/09/2026), **dos reinicios completos del Editor no lo arreglaron**
 reportaba `ready` por `unity status` (CLI) ambas veces, así que el problema está del lado del
 puente RD de Rider, no de Unity. Se resolvió solo tras esperar; no se reinició Rider.
 
+## 2f. T18 — el resumen de fin de nivel y el cierre reflexivo
+
+**`GameState.LevelSummary` (declarado desde T03) por fin tiene escena y controlador.** HU-14
+(líneas 590-612 de `Historias_de_Usuario_HU01_HU18_v2 (1).md`) resultó más específica que el plan
+de fase y lo gobernó: el flujo básico ordena completar el reto → animación → **escena narrativa de
+cierre** (el guía nombra la habilidad, la liga a lo hecho) → **resumen narrativo sin cifras** →
+vuelve al menú con el siguiente nivel desbloqueado. `N1_NacimientoDelFuego.asset` ya traía el
+cierre reflexivo escrito desde antes de T15 («Eso tiene nombre: se llama iterar. Probar, mirar el
+resultado y ajustar.», ligado a «Cambiaste de lugar, volviste a probar…») — RF-12 quedó
+satisfecho por contenido ya existente, sin código nuevo.
+
+**`LevelSummaryComposer`** (`Game.UI`, C# plano) compone el resumen a partir de
+`PerformanceIndicators`: dos de los cuatro indicadores (Intentos, Errores corregidos) se traducen
+a una de dos variantes de texto cada uno desde `LevelSummaryMessages` (SO); Pasos utilizados y
+Tiempo de resolución no tienen una forma narrativa natural sin sonar a cifra disfrazada. Ninguna
+rama formatea un número — «cero cifras» es estructural, no un cuidado en tiempo de ejecución.
+`LevelSummaryController` pinta ese texto y, al continuar, confirma la fase, desbloquea el Nivel 2
+y guarda.
+
+### El bug real: el cierre reflexivo nunca era «la primera vez»
+
+`FirePanelController.CompleteLevel()` (T15) confirmaba la fase **antes** de entrar a la narrativa
+de cierre. Como el Nivel 1 tiene una sola fase, y `NarrativeVisitPolicy.AlreadySeen` decide si
+ofrecer «Omitir» mirando si el perfil **ya tiene alguna fase del nivel confirmada**, esa
+confirmación —que acababa de pasar un par de líneas antes— hacía que `AlreadySeen` diera
+verdadero **desde la primerísima vez** que se completaba el nivel: el botón de omitir aparecía
+siempre, violando CP-07 y el flujo alterno FA-02 de HU-14. Ninguna prueba existente lo atrapaba:
+`FirePanelTests` no llegaba a mirar la escena narrativa, y `NarrativeSceneTests` arrancaba
+`StartNarrative` directo con un perfil sin tocar, sin pasar por `CompleteLevel`. Un defecto real de
+T15, dormido hasta que T18 miró el flujo completo.
+
+**Arreglo, siguiendo HU-14 al pie de la letra**: `ConfirmPhase`/`LevelUnlockPolicy`/`SaveActive` se
+movieron del paso 2 (donde estaban) al paso 6 (`LevelSummaryController.Show()`), justo donde el
+flujo básico los sitúa. La mediación es `GameFlowRunner.PendingIndicators` (mismo patrón que
+`ActiveReporter`, T17): `FirePanelController.CompleteLevel()` ahora solo calcula los indicadores y
+los deja listos, sin confirmar nada. `NarrativeSceneController.Leave()` ganó una rama: las
+secuencias de cierre (`Outcome == ReturnsToLevelSelect`) van a `LevelSummary`, no directo a
+`LevelSelect` — sigue sin un `if` por secuencia, la rama depende del dato del asset.
+
+Reordenar solo las *líneas* dentro de `CompleteLevel()` no habría alcanzado: la carga de escena es
+asíncrona, así que el resto del método habría terminado de correr antes de que la narrativa
+llegara a leer el perfil. Una bandera «esta es la primera vez, créeme» en `NarrativeVisitPolicy`
+habría reintroducido el registro de «escenas vistas» que su propio comentario dice que no puede
+existir (RNF-09, lista cerrada). Mover el efecto secundario al punto del flujo donde HU-14 ya lo
+sitúa fue el cambio más chico que arregló la causa, no el síntoma.
+
+**Costo del arreglo**: dos pruebas PlayMode de T15 (`FireLevel_RF04_GuardaAlCompletarLaFase`,
+`FireLevel_RF03_DesbloqueaElNivel2`) verificaban ese efecto justo en `CompleteLevel()`; se
+trasladaron a `LevelSummaryTests`, donde el efecto ahora vive de verdad.
+
+### Un segundo hallazgo, en la regresión: la prueba de exclusión de T17 era demasiado estricta
+
+`FireIndicators_CP03_NingunIndicadorLlegaALaUIDelEstudiante` (T17) prohibía `PerformanceIndicators`
+en cualquier forma dentro de `Game.UI` — correcto cuando se escribió, porque entonces `Game.UI` no
+tenía ningún motivo legítimo para tocarlo. `LevelSummaryComposer.Compose(messages, indicators)`
+(T18) sí lo necesita, a propósito, como parámetro de entrada para componer el resumen sin cifras.
+Arreglo: la prueba ahora distingue lo prohibido **en cualquier forma** (`ILevelReporter`,
+`FireIndicatorCollector` — `Game.UI` no tiene motivo para conocerlos) de lo prohibido **salvo como
+parámetro** (`PerformanceIndicators` — consumirlo para producir texto sin cifras es justo lo que
+CP-03 permite; lo que prohíbe es que un dígito llegue a pantalla, garantía que cubre
+`LevelSummary_RF45_NoContieneNingunDigito`).
+
 ---
 
 ## 3. Verificación — declarada
@@ -366,7 +428,22 @@ corridas EditMode limpias; PlayMode tuvo 1 fallo intermitente ajeno a T17 en una
 | `FireIndicators_RF45_PasosUtilizadosSeCongelaAlCruzarElMinimo` | RF-45 |
 | `FireIndicators_RF45_PerformanceIndicatorsExponeExactamenteLosCuatroCampos` | RNF-09 |
 
-### 3.7 Flujo test-first
+### 3.7 EditMode + PlayMode — T18
+
+**`LevelSummaryComposerTests` 4/4, `LevelSummaryTests` 2/2, 0 fallos.** **EditMode total: 94/94 ·
+PlayMode total: 52/52** (Fire −2 por el traslado, UI +2 por `LevelSummaryTests`: mismo total que
+T17) — 2 corridas limpias consecutivas de cada suite.
+
+| Prueba | Requisito |
+|---|---|
+| `LevelSummary_RF45_NoContieneNingunDigito` (EditMode) | RF-45, CP-03 |
+| `LevelSummary_RF12_NombraLaHabilidadEjercitada` (EditMode) | RF-12 |
+| `LevelSummaryComposer_RF45_SinErroresCorregidosNoUsaLaVarianteDeCambioDeEstrategia` (EditMode) | RF-45 |
+| `LevelSummaryComposer_RF45_SinIntentosFallidosNoUsaLaVarianteDeVariasPosiciones` (EditMode) | RF-45 |
+| `LevelSummary_RF03_DevuelveAlMenuConNivel2Desbloqueado` (PlayMode) | RF-03, RF-04, HU-14 |
+| `LevelSummary_CP07_ElCierreReflexivoNoEsOmitibleLaPrimeraVez` (PlayMode) | CP-07 — regresión directa del bug de §2f |
+
+### 3.8 Flujo test-first
 
 Esqueleto compilable → pruebas en rojo → implementación → refactor.
 
@@ -403,8 +480,14 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   Se verificó a mano que cada aserción de `FireIndicatorTests` es sensible a una implementación
   incorrecta (p. ej. RF-07: `_startedAt=0, _pausedAt=10, _pausedSeconds=5` tras cerrar, `Complete()`
   en `t=20` → `20-0-5=15`, el valor exacto que afirma la prueba) para no aceptar un verde vacío.
+- **T18**: `LevelSummaryComposer`/`LevelSummaryController` también se implementaron completos en
+  el skeleton (mismo precedente que T16/T17), así que `LevelSummaryComposerTests` nació verde. Las
+  dos pruebas de `LevelSummaryTests` (PlayMode) ejercitan el flujo real recién cableado —
+  `LevelSummary_CP07_...` es, además, la prueba de regresión directa del bug de §2f: conduce el
+  flujo real de `CompleteLevel()` → escena narrativa y comprueba el botón de omitir, así que un
+  reordenamiento futuro que reintroduzca el bug la haría fallar.
 
-### 3.8 Notas
+### 3.9 Notas
 
 - **El MCP de Rider respondió la mayor parte de la sesión** (`get_unity_compilation_result` y
   `run_unity_tests` contra el Editor abierto). R1 deja de bloquear el flujo test-first mientras
@@ -414,32 +497,40 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   Editor**, pero sí dos rondas de diagnóstico de bugs reales de producción (§2d). **T17 tuvo el
   peor cuelgue de la fase**: el puente MCP de Rider estuvo ~13 minutos en timeout total pese a dos
   reinicios completos del Editor (que sí levantó limpio cada vez, confirmado por `unity status`) —
-  se resolvió solo, esperando, sin tocar Rider. Ver §2e y la memoria de sesión.
-- **PlayMode no se re-corrió** en T12 ni T13: lógica pura en un assembly aislado. T14, T15, T16 y
-  T17 sí son PlayMode (T17 por el wiring compartido en `GameFlowRunner`/`PauseMenuController`) y
-  de ahí la regresión completa.
+  se resolvió solo, esperando, sin tocar Rider. Ver §2e y la memoria de sesión. **T18 lo repitió
+  una segunda vez** durante el Step 3: el subagente `failing-test-writer` quedó bloqueado sin
+  poder correr ninguna prueba (mismo bucle de `Error: Code 404`) y lo reportó como `STATUS:
+  BLOCKED` en vez de forzar un resultado — correcto, en vez de fingir un verde o un rojo sin
+  haber corrido nada. Esta vez un reinicio del Editor sí lo resolvió, pero el reinicio mismo
+  tardó ~9 minutos en volver a «ready» (vs. ~3 min en T17), con el proceso aparentemente
+  atascado un rato en «Opening project…» antes de arrancar de verdad — sigue sin causa raíz
+  confirmada.
+- **PlayMode no se re-corrió** en T12 ni T13: lógica pura en un assembly aislado. T14, T15, T16,
+  T17 y T18 sí son PlayMode y de ahí la regresión completa.
 - **Compilación sin warnings nuevos** (solo los preexistentes de `Game.Audio` vacío y el falso
   positivo de «namespace no corresponde a la ubicación» en archivos de `Game.Core`, ya presente
   antes de T17). Rider no incluye los archivos nuevos en la solución, así que `/resolve-diagnostics`
-  no corrió en ninguna de las seis tareas; la comprobación vinculante de «0 warnings» es la de
+  no corrió en ninguna de las siete tareas; la comprobación vinculante de «0 warnings» es la de
   Unity.
 - **PlayMode tuvo 1 fallo intermitente en T17**, ajeno al cambio: `FirePanel_RF19_
   SoplarAtenuadoNoRespondeNiRegistraError` falló una vez en tres corridas con un mensaje de golpe
   fallido inesperado en el log, limpio en la repetición inmediata. Coincide con la flakiness de
   «controlador de una prueba anterior reutilizado por `FindAnyObjectByType` en una corrida de
   suite completa» que T15 ya había mitigado parcialmente (§2c); `Strike()`'s nueva llamada a
-  `_indicators.RecordStrike` no toca `FireFeedbackLog`, así que no es una regresión de T17.
+  `_indicators.RecordStrike` no toca `FireFeedbackLog`, así que no es una regresión de T17. **No
+  reapareció en T18** (2 corridas PlayMode limpias consecutivas).
 
 ---
 
 ## 4. Lo que queda abierto
 
-- **PG-06 / R2** — los valores de `FireLevelConfig` (Muy cerca, 3, 3) y el texto de los ocho
-  mensajes son los propuestos por el guion §4.3.2/§4.3.4 y se validan jugando en el Checkpoint D.
+- **PG-06 / R2** — los valores de `FireLevelConfig` (Muy cerca, 3, 3), el texto de los ocho
+  mensajes y el resumen de `LevelSummaryMessages` (T18, primer borrador sin revisar) son los
+  propuestos por el guion/contenido de primer borrador y se validan jugando en el Checkpoint D.
 - **Botón de ayuda (`HintPolicy`) sin cablear** — el panel y el registro existen desde T14, pero
   **no** el botón de ayuda: `FireAttempt.ShouldOfferHint` y `HintPolicy` cuentan lo mismo por
-  caminos distintos y hay que decidir cuál lo alimenta. Sigue sin resolverse tras T17; queda para
-  T18 o una tarea aparte.
+  caminos distintos y hay que decidir cuál lo alimenta. Sigue sin resolverse tras T18 (fuera de su
+  alcance: RF-45/RF-12, no RF-13); queda para una tarea aparte.
 - **Arte del Nivel 1 (A7–A9)** — la escena `Level1_Cave` va con placeholders: montón de hojas =
   elipse blanca, badge y registro con formas planas, el «fuego» de T15 es un barrido de color sin
   sprite propio. Los cuatro estados reales del montón, el fuego y la iluminación del resto del
@@ -453,7 +544,7 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   Rider) o esperando. No lo arregla el parche de `PlayFromBoot`, que resuelve un problema distinto
   (`playModeStartScene` secuestrando la entrada a Play).
 - **`ProjectSettings.asset` autoañade `SENTIS_ANALYTICS_ENABLED`** en cada reimport (revertido
-  varias veces en T14, T15 y T17; no reapareció en T16). Toca a RNF-08 «sin telemetría» —
+  varias veces en T14, T15, T17 y T18; no reapareció en T16). Toca a RNF-08 «sin telemetría» —
   decisión del usuario.
 - **`PauseMenuPolicy` depende de `GameFlowRunner`** (un `MonoBehaviour`), a diferencia de
   `LevelUnlockPolicy` (puro sobre `PlayerProfile`) — asimetría deliberada, «Reiniciar» necesita el

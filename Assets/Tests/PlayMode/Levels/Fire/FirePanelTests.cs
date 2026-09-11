@@ -207,36 +207,15 @@ namespace Game.Levels.Fire.Tests
 
             Assert.That(llego, Is.True, "el flujo no llegó a Narrative tras soplar");
             Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N1_NacimientoDelFuego"));
+            Assert.That(runner.PendingIndicators.StepsUsed, Is.EqualTo(MinimumEffectiveStrikes),
+                "FirePanelController ya no confirma ni guarda, pero sigue calculando los " +
+                "indicadores y dejándolos listos para LevelSummary (T18)");
         }
 
-        [Test]
-        [Timeout(20000)]
-        [Category("Acceptance")]
-        public async Task FireLevel_RF04_GuardaAlCompletarLaFase()
-        {
-            var (controller, _) = await LoadPanelWithProfile(NewProfile());
-            var guardo = false;
-            controller.Saver = new SpyProfileSaver(() => guardo = true);
-
-            ConvergeAndBlow(controller);
-            var termino = await WaitUntilAsync(() => guardo, 5f);
-
-            Assert.That(termino, Is.True, "el guardado del perfil activo no se invocó tras soplar");
-        }
-
-        [Test]
-        [Timeout(20000)]
-        [Category("Acceptance")]
-        public async Task FireLevel_RF03_DesbloqueaElNivel2()
-        {
-            var profile = NewProfile();
-            var (controller, _) = await LoadPanelWithProfile(profile);
-
-            ConvergeAndBlow(controller);
-            var desbloqueo = await WaitUntilAsync(() => profile.IsUnlocked(LevelId.Wheel), 5f);
-
-            Assert.That(desbloqueo, Is.True, "el Nivel 2 (Rueda) no quedó desbloqueado tras soplar");
-        }
+        // FireLevel_RF04_GuardaAlCompletarLaFase y FireLevel_RF03_DesbloqueaElNivel2 se trasladaron
+        // a LevelSummaryTests (T18): CompleteLevel ya no confirma/desbloquea/guarda, solo calcula
+        // los indicadores y los deja en Runner.PendingIndicators — ese efecto ahora ocurre en
+        // LevelSummaryController, después de la escena narrativa de cierre (CP-07).
 
         [Test]
         [Timeout(20000)]
@@ -426,14 +405,6 @@ namespace Game.Levels.Fire.Tests
 
             Assert.That(File.Exists(path), Is.True, $"no se escribió la captura en «{path}»");
             TestContext.WriteLine($"Captura: {path}");
-        }
-
-        /// <summary>Espía de <see cref="IProfileSaver"/>, mismo patrón que <c>MainMenuTests</c>.</summary>
-        private sealed class SpyProfileSaver : IProfileSaver
-        {
-            private readonly Action _onSaveActive;
-            public SpyProfileSaver(Action onSaveActive) => _onSaveActive = onSaveActive;
-            public void SaveActive() => _onSaveActive();
         }
     }
 }

@@ -284,8 +284,21 @@ exige una fase confirmada (**T17**) y la revisión con el usuario.
       **FireIndicatorTests 6/6** (incluye barrido de reflexión CP-03 sobre `Game.UI` cargado en
       dominio, sin referencia de compilación nueva) · **EditMode 90/90 · PlayMode 52/52** (una
       corrida PlayMode completa tuvo 1 fallo intermitente ajeno a T17, limpio en la repetición).
-- [ ] **T18 · Resumen de fin de nivel y cierre reflexivo** — `M` · `EM` + `PM`
-      RF-45, RF-12, RF-17, RF-03, CP-03, CP-07, HU-14, INC-26 · depende de: T17
+- [x] **T18 · Resumen de fin de nivel y cierre reflexivo** — `M` · `EM` + `PM`
+      RF-45, RF-12, RF-17, RF-03, CP-03, CP-07, HU-14, INC-26 · depende de: T17 (11/09/2026).
+      `GameState.LevelSummary` (ya declarado desde T03) por fin tiene escena y controlador. HU-14
+      gobernó el diseño sobre el plan: el guía nombra la habilidad en `N1_NacimientoDelFuego`
+      (contenido ya escrito desde antes de T15, sin tocar) y **después** el resumen sin cifras
+      confirma la fase, desbloquea el Nivel 2 y guarda — no `FirePanelController.CompleteLevel()`
+      como antes. **Bug real encontrado**: confirmar la fase antes de la narrativa de cierre hacía
+      que `NarrativeVisitPolicy.AlreadySeen` diera verdadero desde la primerísima vez, así que el
+      botón de omitir aparecía siempre, violando CP-07. Arreglado moviendo el efecto secundario al
+      punto donde HU-14 ya lo sitúa (paso 6-7), mediado por `GameFlowRunner.PendingIndicators`
+      (mismo patrón que `ActiveReporter`, T17). `FireLevel_RF04_.../FireLevel_RF03_...` (T15) se
+      trasladaron a `LevelSummaryTests`, donde el efecto ahora vive de verdad.
+      **LevelSummaryComposerTests 4/4 · LevelSummaryTests 2/2** (incluye
+      `LevelSummary_CP07_ElCierreReflexivoNoEsOmitibleLaPrimeraVez`, la prueba de regresión directa
+      del bug) · **EditMode 94/94 · PlayMode 52/52** (2 corridas limpias consecutivas).
 - [ ] **T19 · Iluminación progresiva del escenario** — `S` · `VV`
       **RF-21 (prioridad Baja)**, RNF-20, RNF-21, HU-07 · depende de: T15
 

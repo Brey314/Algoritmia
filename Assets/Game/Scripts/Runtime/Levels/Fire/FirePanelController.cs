@@ -43,9 +43,6 @@ namespace Game.Levels.Fire
         /// <summary>El flujo del juego. Sin él (escena abierta sin pasar por Boot) no se navega.</summary>
         internal GameFlowRunner Runner { get; set; }
 
-        /// <summary>Override de prueba para el guardado (T15), patrón de <c>MainMenuController</c>.</summary>
-        internal IProfileSaver Saver { get; set; }
-
         /// <summary>La distancia que marca el deslizante. Solo <see cref="Strike"/> la lee (RF-15).</summary>
         internal StrikePosition Selected =>
             (StrikePosition)Mathf.Clamp(Mathf.RoundToInt(positionSlider.value), 0, 2);
@@ -145,24 +142,26 @@ namespace Game.Levels.Fire
             leavesImage.color = fire;
         }
 
-        /// <summary>Confirma la fase, desbloquea el Nivel 2, guarda y encadena al cierre (RF-03, RF-04).</summary>
+        /// <summary>
+        /// Deja los indicadores listos y encadena a la escena de cierre (RF-20). No confirma la
+        /// fase ni desbloquea ni guarda aquí: eso pasa en <c>LevelSummaryController</c>, después
+        /// de la escena narrativa (HU-14 paso 6-7) — confirmarlo antes haría que «ya vista»
+        /// (<see cref="Game.Scaffolding.NarrativeVisitPolicy"/>) diera verdadero desde la
+        /// primerísima vez y el guía se saltara el nombre de la habilidad practicada (CP-07).
+        /// </summary>
         private void CompleteLevel()
         {
-            var profile = Runner != null ? Runner.Flow.ActiveProfile : null;
-            if (profile == null)
+            if (Runner == null || Runner.Flow.ActiveProfile == null)
             {
                 // Mismo criterio que ScreenFlow (Game.UI), sin depender de ese assembly: la
-                // escena se abrió sin pasar por Boot, no hay a quién guardarle ni a dónde navegar.
+                // escena se abrió sin pasar por Boot, no hay a dónde navegar.
                 Debug.LogWarning(
                     "«Level1_Cave» se abrió sin pasar por «Boot»: no hay perfil activo, no se " +
-                    "guarda ni se avanza a la escena de cierre.", this);
+                    "avanza a la escena de cierre.", this);
                 return;
             }
 
-            profile.ConfirmPhase(LevelId.Fire, 1, _indicators.Complete());
-            LevelUnlockPolicy.UnlockAfterCompleting(profile, LevelId.Fire);
-            (Saver ?? Runner.Session).SaveActive();
-
+            Runner.PendingIndicators = _indicators.Complete();
             Runner.StartNarrative("N1_NacimientoDelFuego");
         }
 

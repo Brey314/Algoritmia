@@ -131,12 +131,17 @@ namespace Game.Levels.Fire.Tests
         [Category("Acceptance")]
         public void FireIndicators_CP03_NingunIndicadorLlegaALaUIDelEstudiante()
         {
-            var forbidden = new[]
-            {
-                typeof(PerformanceIndicators),
-                typeof(ILevelReporter),
-                typeof(FireIndicatorCollector)
-            };
+            // ILevelReporter/FireIndicatorCollector: prohibidos en cualquier forma — Game.UI no
+            // tiene ningún motivo legítimo para conocer el recolector de Fire (T17).
+            var forbiddenEverywhere = new[] { typeof(ILevelReporter), typeof(FireIndicatorCollector) };
+
+            // PerformanceIndicators: prohibido como campo, propiedad o retorno —eso dejaría leer
+            // el struct crudo desde fuera—, pero no como parámetro de entrada.
+            // LevelSummaryComposer.Compose(messages, indicators) (T18) lo recibe a propósito para
+            // componer el resumen sin cifras; lo que CP-03 prohíbe es que un dígito llegue a
+            // pantalla, no que Game.UI toque el tipo — eso ya lo prueba
+            // LevelSummary_RF45_NoContieneNingunDigito, dueño de esa garantía.
+            var forbiddenExceptAsParameter = new[] { typeof(PerformanceIndicators) };
 
             var uiAssembly = AppDomain.CurrentDomain.GetAssemblies()
                 .Single(assembly => assembly.GetName().Name == "Game.UI");
@@ -144,12 +149,14 @@ namespace Game.Levels.Fire.Tests
             const BindingFlags members = BindingFlags.Public | BindingFlags.NonPublic
                 | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
 
+            var forbiddenAsData = forbiddenEverywhere.Concat(forbiddenExceptAsParameter).ToArray();
+
             var offenders = new List<string>();
             foreach (var type in uiAssembly.GetTypes())
             {
                 foreach (var field in type.GetFields(members).Where(IsVisible))
                 {
-                    if (forbidden.Contains(field.FieldType))
+                    if (forbiddenAsData.Contains(field.FieldType))
                     {
                         offenders.Add($"{type.FullName}.{field.Name} (campo)");
                     }
@@ -158,7 +165,7 @@ namespace Game.Levels.Fire.Tests
                 foreach (var property in type.GetProperties(members))
                 {
                     var accessor = property.GetMethod ?? property.SetMethod;
-                    if (accessor != null && IsVisible(accessor) && forbidden.Contains(property.PropertyType))
+                    if (accessor != null && IsVisible(accessor) && forbiddenAsData.Contains(property.PropertyType))
                     {
                         offenders.Add($"{type.FullName}.{property.Name} (propiedad)");
                     }
@@ -166,14 +173,14 @@ namespace Game.Levels.Fire.Tests
 
                 foreach (var method in type.GetMethods(members).Where(IsVisible))
                 {
-                    if (forbidden.Contains(method.ReturnType))
+                    if (forbiddenAsData.Contains(method.ReturnType))
                     {
                         offenders.Add($"{type.FullName}.{method.Name} (retorno)");
                     }
 
                     foreach (var parameter in method.GetParameters())
                     {
-                        if (forbidden.Contains(parameter.ParameterType))
+                        if (forbiddenEverywhere.Contains(parameter.ParameterType))
                         {
                             offenders.Add($"{type.FullName}.{method.Name}({parameter.Name}) (parámetro)");
                         }
