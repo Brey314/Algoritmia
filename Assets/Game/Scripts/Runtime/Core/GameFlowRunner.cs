@@ -30,9 +30,7 @@ namespace Game.Core
                 // Una sola escena para las quince escenas narrativas del guion: el estado lleva
                 // el id de la secuencia y la escena la resuelve (RF-05, RNF-06).
                 [GameState.Narrative] = "Narrative",
-                // Hoy solo existe el Nivel 1. Cuando lleguen Rueda y Río (Slice 2/3), el mapeo de
-                // Playing será por LevelId, no una sola entrada.
-                [GameState.Playing] = "Level1_Cave",
+                // Playing no está aquí: su escena la elige la fase (véase PlayingScenes).
                 [GameState.LevelSummary] = "LevelSummary",
                 [GameState.Credits] = "Credits"
             };
@@ -45,6 +43,7 @@ namespace Game.Core
         private static readonly Dictionary<PhaseId, string> PlayingScenes =
             new Dictionary<PhaseId, string>
             {
+                [new PhaseId(LevelId.Fire, 1)] = "Level1_Cave",
                 [new PhaseId(LevelId.Wheel, 1)] = "Level2_Forest"
             };
 

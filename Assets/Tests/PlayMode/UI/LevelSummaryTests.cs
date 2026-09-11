@@ -78,7 +78,7 @@ namespace Game.UI.Tests
                 "«Continuar» no volvió al menú de niveles");
 
             Assert.That(profile.IsUnlocked(LevelId.Wheel), Is.True, "el Nivel 2 queda desbloqueado (RF-03)");
-            Assert.That(profile.IsPhaseConfirmed(LevelId.Fire, 1), Is.True, "la fase queda confirmada (RF-04)");
+            Assert.That(profile.IsPhaseConfirmed(new PhaseId(LevelId.Fire, 1)), Is.True, "la fase queda confirmada (RF-04)");
             Assert.That(guardados, Contains.Item("guardar"), "el guardado se invoca al llegar al resumen (RF-04)");
         }
 

@@ -53,7 +53,7 @@ namespace Game.Scaffolding
         public NarrativeProp[] Props { get; private set; } = new NarrativeProp[0];
 
         [field: SerializeField]
-        [field: Tooltip("Marca el cierre reflexivo del nivel: no se puede omitir la primera vez (CP-07).")]
+        [field: Tooltip("Marca el cierre reflexivo del nivel: no se puede omitir la primera vez (CP-07) y al terminar va al resumen de fin de nivel, no al menú.")]
         public bool IsReflectiveClosing { get; private set; }
 
         [field: SerializeField]
@@ -96,9 +96,5 @@ namespace Game.Scaffolding
             }
         }
 #endif
-
-        [field: SerializeField]
-        [field: Tooltip("Qué pantalla sigue al terminar: entrar a jugar el nivel, o volver al menú.")]
-        public NarrativeOutcome Outcome { get; private set; } = NarrativeOutcome.EntersLevel;
     }
 }

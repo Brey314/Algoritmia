@@ -184,16 +184,16 @@ namespace Game.UI.Tests
         [Timeout(30000)]
         public async Task NarrativeScene_RF05_LaSecuenciaSinFaseSiguienteVuelveAlMenuDeNiveles()
         {
-            var (controller, runner) = await OpenNarrative("N1_Apertura");
-            var lineas = SequenceNamed(controller, "N1_Apertura").Lines.Length;
+            // `N2_PuenteI` no declara fase siguiente ni es cierre: su salida es el menú, y eso
+            // deja el recorrido cerrado (RNF-13). Las de apertura del N1 ya entran a jugar (T14).
+            var (controller, runner) = await OpenNarrative("N2_PuenteI", LevelId.Wheel);
+            var lineas = SequenceNamed(controller, "N2_PuenteI").Lines.Length;
 
             for (var i = 0; i < lineas; i++)
             {
                 Click(controller.AdvanceButton);
             }
 
-            // Las escenas del Nivel 1 no declaran fase siguiente mientras `Level1_Cave` no exista
-            // (T14): la salida sigue siendo el menú, y eso deja el recorrido cerrado (RNF-13).
             Assert.That(runner.Flow.Current, Is.EqualTo(GameState.LevelSelect));
         }
 

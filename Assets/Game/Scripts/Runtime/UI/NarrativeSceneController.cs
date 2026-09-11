@@ -40,8 +40,15 @@ namespace Game.UI
         /// <summary>El avance de la escena en curso. <c>null</c> si no se pudo resolver.</summary>
         internal DialogueRunner Dialogue { get; private set; }
 
-        /// <summary>La secuencia que se está reproduciendo. Fija a qué nivel se entra al terminar.</summary>
+        /// <summary>La secuencia en curso. Es quien dice a dónde sale la escena.</summary>
         private NarrativeSequence _sequence;
+
+        /// <summary>Dónde está la cámara ahora mismo, de camino al encuadre de la línea en curso.</summary>
+        private CameraFraming _camera;
+
+        /// <summary>Los objetos pintados sobre el entorno, con su declaración: son lo que se anima por línea.</summary>
+        private readonly List<(NarrativeProp Prop, RectTransform Rect)> _props =
+            new List<(NarrativeProp, RectTransform)>();
 
 #if UNITY_INCLUDE_TESTS
         internal Text BodyLabel => bodyLabel;
@@ -85,10 +92,14 @@ namespace Game.UI
             }
 
             Dialogue = new DialogueRunner(_sequence.Lines,
-                NarrativeVisitPolicy.AlreadySeen(Runner.Flow.ActiveProfile, _sequence.Level));
+                NarrativeVisitPolicy.AlreadySeen(Runner.Flow.ActiveProfile, _sequence));
 
             illustration.sprite = _sequence.Illustration;
             illustration.enabled = _sequence.Illustration != null;
+            illustration.preserveAspect = false; // el tamaño lo fija el encuadre, ya sin deformar
+            _camera = _sequence.CameraStart;
+            Frame();
+            PlaceProps(_sequence);
             // RF-06 e INC-28: el botón de omitir no existe en la primera visita, no basta con
             // deshabilitarlo — la escena de cierre es donde el guía nombra lo aprendido.
             skipButton.gameObject.SetActive(Dialogue.CanSkip);
@@ -301,33 +312,29 @@ namespace Game.UI
         }
 
         /// <summary>
-        /// Sale de la escena por donde diga la secuencia: a jugar la fase que declara, o al menú
-        /// de niveles si no declara ninguna.
+        /// Sale de la escena por donde diga la secuencia: a jugar la fase que declara
+        /// (<see cref="NarrativeSequence.NextPhase"/>), al resumen de fin de nivel si es el cierre
+        /// reflexivo (<see cref="NarrativeSequence.IsReflectiveClosing"/>, T18, HU-14 paso 6), o al
+        /// menú de niveles en cualquier otro caso.
         /// </summary>
         /// <remarks>
         /// **La rama es una y sirve para las quince escenas**, porque quien decide es el asset y
-        /// no el controlador (RF-05). El menú sigue siendo la salida de las escenas del Nivel 1
-        /// mientras `Level1_Cave` no exista (T14): es la otra salida legal desde
-        /// <c>Narrative</c> y deja el recorrido cerrado en vez de plantar al estudiante en una
-        /// pantalla sin salida (RNF-13).
+        /// no el controlador (RF-05): las de apertura declaran fase, la de cierre se declara
+        /// cierre, y las intermedias no declaran nada.
         ///
-        /// Si entrar a jugar se rechaza —el nivel no está desbloqueado (RF-03)— se cae al menú
-        /// en vez de quedarse: un clic no puede dejar la escena sin salida.
+        /// Si `StartPlaying`/`GoTo` rechaza la transición —nivel bloqueado (RF-03), o escena
+        /// abierta sin pasar por Boot— se cae al menú en vez de quedarse: un clic no puede dejar
+        /// al estudiante sin salida (RNF-13).
         /// </remarks>
         private void Leave()
         {
-            // La rama depende del propósito que declara el asset (T15), no de cuál secuencia es:
-            // las de apertura entran a jugar el nivel; las de cierre van al resumen de fin de
-            // nivel (T18, HU-14 paso 6). Si `StartPlaying`/`GoTo` rechazara la transición (nivel
-            // bloqueado, o abierta sin pasar por Boot), se cae a `LevelSelect` — nunca deja al
-            // estudiante sin salida (RNF-13).
-            if (_sequence != null && _sequence.Outcome == NarrativeOutcome.EntersLevel
-                && Runner.StartPlaying(_sequence.Level, 1))
+            if (_sequence != null && _sequence.NextPhase > 0
+                && Runner.StartPlaying(_sequence.Level, _sequence.NextPhase))
             {
                 return;
             }
 
-            if (_sequence != null && _sequence.Outcome == NarrativeOutcome.ReturnsToLevelSelect
+            if (_sequence != null && _sequence.IsReflectiveClosing
                 && Runner.GoTo(GameState.LevelSummary))
             {
                 return;

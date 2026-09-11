@@ -57,7 +57,7 @@ namespace Game.UI
             }
 
             var indicators = Runner.PendingIndicators;
-            flow.ActiveProfile.ConfirmPhase(level, flow.PlayingPhase, indicators);
+            flow.ActiveProfile.ConfirmPhase(new PhaseId(level, flow.PlayingPhase), indicators);
             LevelUnlockPolicy.UnlockAfterCompleting(flow.ActiveProfile, level);
             (Saver ?? Runner.Session).SaveActive();
 
