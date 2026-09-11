@@ -109,7 +109,14 @@ namespace Game.Core
                 // dentro de ella —lo hace la UI— y no una recarga. Sin `SceneLoader` (una prueba
                 // que solo ejercita el flujo, sin la escena Boot) la transición actualiza la FSM
                 // pero no toca escenas.
-                if (sceneName != SceneManager.GetActiveScene().name && SceneLoader.Instance != null)
+                //
+                // Excepción: reentrar a `Playing` siempre recarga, aunque el nombre de escena no
+                // cambie (T16, RF-07) — es «Reiniciar» desde el menú de pausa, y sin esto la FSM
+                // aceptaba la transición sin que pasara nada. `Playing` es el único estado que se
+                // tiene a sí mismo como destino legal, así que esto no afecta a ningún otro caso.
+                var mustReload = Flow.Current == GameState.Playing;
+                if ((sceneName != SceneManager.GetActiveScene().name || mustReload)
+                    && SceneLoader.Instance != null)
                 {
                     SceneLoader.Instance.Load(sceneName);
                 }

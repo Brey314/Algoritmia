@@ -257,8 +257,22 @@ exige una fase confirmada (**T17**) y la revisión con el usuario.
       PlayMode 48/48** (3 corridas limpias). De paso, arreglado un defecto real de aislamiento en
       el helper `LoadPanel()` de T14 (`FindAnyObjectByType` podía devolver el controlador de la
       prueba anterior en corridas de suite completa). Detalle en `Fase-3-Resultados.md`.
-- [ ] **T16 · Menú de pausa** — `M` · `EM` + `PM`
+- [x] **T16 · Menú de pausa** — `M` · `EM` + `PM` (11/09/2026)
       RF-07, RF-03, RF-04, CP-02, HU-17 (FA-01..FA-05), INC-25 · depende de: T15
+      Capa de UI sobre `Playing`, no un estado nuevo: «Pausa» abre un overlay con Continuar
+      (restituye el estado exacto, no toca nada), Reiniciar (confirmación de una frase, Cancelar
+      no cambia nada) y Volver al menú. **Hallazgo de diseño:** `GameFlowRunner.Apply` solo
+      recargaba la escena si el nombre cambiaba — reentrar a `Playing` (RF-07, ya legal en
+      `GameFlow` desde T03) no recargaba nunca. Arreglado: reentrar a `Playing` siempre recarga.
+      `PauseMenuPolicy.Restart(GameFlowRunner)` (`Game.Core`) repite `StartPlaying` con el mismo
+      nivel/fase — nunca re-bloquea ni borra indicadores (`Reach`/`ConfirmPhase` no se llaman).
+      `PauseMenuController` (`Game.UI`, no `Game.Levels.Fire`: navegación general, sin dependencia
+      nueva para el nivel) vive en `Level1_Cave.unity` sobre el panel de T14, sin tocarlo — un
+      overlay bloquea el raycast hacia «Golpear»/«Soplar». **Dos bugs reales encontrados en
+      verificación** (detalle en `Fase-3-Resultados.md`): el componente en un GameObject que
+      arrancaba inactivo (Awake/Start nunca corrían), y `PauseMenuPolicy` llamando a `GameFlow`
+      directo en vez de por `GameFlowRunner` (saltaba la recarga). **PauseMenuTests 4/4,
+      PauseMenuPolicyTests 1/1** · **EditMode 84/84 · PlayMode 52/52** (2 corridas limpias).
 - [ ] **T17 · Emisión de los cuatro indicadores del N1** — `M` · `EM`
       RF-45, RF-04, RNF-14, CP-03, CP-09, OE1 §3.6.1, INC-29 · depende de: T15, T16
 - [ ] **T18 · Resumen de fin de nivel y cierre reflexivo** — `M` · `EM` + `PM`

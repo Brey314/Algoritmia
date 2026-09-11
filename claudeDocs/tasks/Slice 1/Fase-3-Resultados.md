@@ -1,8 +1,9 @@
 # Fase 3 — Nivel fuego: lo construido y sus resultados
 
-**Slice 1 · Golden Path temprano** · Estado: **T12–T15 implementadas y verdes** — corte de este
+**Slice 1 · Golden Path temprano** · Estado: **T12–T16 implementadas y verdes** — corte de este
 documento: 11 de septiembre de 2026.
-Verificación vigente: **EditMode 83/83 · PlayMode 48/48** (`FirePanelTests` 13/13), 0 fallos.
+Verificación vigente: **EditMode 84/84 · PlayMode 52/52** (`FirePanelTests` 13/13,
+`PauseMenuTests` 4/4, `PauseMenuPolicyTests` 1/1), 0 fallos.
 Plan técnico: [`plan.md`](plan.md) · Tablero: [`todo.md`](todo.md) · Contrato: `claudeDocs/SPEC.md`
 Fase anterior: [`Fase-2-Resultados.md`](Fase-2-Resultados.md)
 
@@ -16,7 +17,7 @@ el código de la fase **no está completo**.
 | T13 | `FireFeedbackLog` y los ocho mensajes del guion §4.3.4 | EditMode | ✅ terminada |
 | T14 | Panel de encendido y escena `Level1_Cave` | PlayMode | ✅ terminada |
 | T15 | Convergencia: «Soplar» → nacimiento del fuego | PlayMode + VV | ✅ terminada |
-| T16 | Menú de pausa | EditMode + PlayMode | pendiente |
+| T16 | Menú de pausa | EditMode + PlayMode | ✅ terminada |
 | T17 | Emisión de los cuatro indicadores del N1 | EditMode | pendiente |
 | T18 | Resumen de fin de nivel y cierre reflexivo | EditMode + PlayMode | pendiente |
 | T19 | Iluminación progresiva del escenario (RF-21, Baja) | VV | pendiente |
@@ -176,6 +177,50 @@ arreglo.
 
 ---
 
+## 2d. T16 — el menú de pausa
+
+**Sin tocar `Panel`/`FirePanelController`.** «Pausa» abre un overlay sobre `Playing` —no un estado
+nuevo (HU-17)— con Continuar, Reiniciar (con confirmación de una frase) y Volver al menú:
+
+- **Hallazgo de diseño previo a cualquier código**: `GameFlowRunner.Apply` solo recargaba una
+  escena cuando su nombre **cambiaba**. `GameFlow.Allowed[Playing]` ya incluía `Playing` como
+  destino legal desde T03, con el comentario «Playing → Playing es reiniciar el nivel o entrar a
+  la fase siguiente (RF-07)» — pero como el nombre de escena no cambia al reentrar, la recarga
+  real nunca ocurría: la FSM aceptaba la transición y no pasaba nada. Arreglado para que reentrar
+  a `Playing` **siempre** recargue, sea cual sea el nombre; sin efecto sobre ningún otro estado
+  (`Playing` es el único que se tiene a sí mismo como destino legal).
+- **`PauseMenuPolicy.Restart(GameFlowRunner)`** (`Game.Core`) repite `runner.StartPlaying` con el
+  mismo nivel y fase — nunca re-bloquea un nivel ni borra un indicador confirmado (RF-41, CP-02):
+  esos solo cambian con `Reach`/`ConfirmPhase`, que ni esto ni `TryStartPlaying` llaman.
+- **`PauseMenuController`** (`Game.UI`, no `Game.Levels.Fire`: navegación general como
+  `LevelSelectController`/`NarrativeSceneController`, sin dependencia nueva para el nivel) vive en
+  `Level1_Cave.unity` como una capa sobre el panel de T14. Un `Image` a pantalla completa
+  (`raycastTarget = true`, último hermano del `Canvas`) bloquea el clic hacia «Golpear»/«Soplar»
+  mientras está pausado — el panel de T14 no se toca en absoluto.
+
+### Dos bugs reales encontrados al verificar (no ruido del Editor)
+
+**#1 — el componente vivía en un GameObject que arrancaba inactivo.** `PauseMenuController` se
+puso primero en `PanelPausa` (el overlay, oculto hasta que se abre la pausa). Unity **nunca llama
+`Awake()`/`Start()`** en un componente de un GameObject inactivo al cargar la escena, así que el
+listener de `pauseButton.onClick` nunca se registraba y el botón «Pausa» no hacía nada — 3
+pruebas de comportamiento fallaron con el mismo síntoma en 2 corridas idénticas de código ya
+compilado (descartado como *staleness* del Editor: los `Domain Reload Profiling` del log
+confirman que sí recompiló entre corridas). Arreglo: mover el componente al botón «Pausa»
+(siempre activo), sin tocar sus 9 referencias serializadas.
+
+**#2 — `PauseMenuPolicy` llamaba a `GameFlow` directo, saltándose la recarga.** La primera versión
+tomaba un `GameFlow` y llamaba `flow.TryStartPlaying(...)` sin pasar por
+`GameFlowRunner.Apply()` — el único sitio que traduce una transición a una recarga de escena.
+Ningún otro controlador del proyecto llama a métodos de `GameFlow` directamente; todos pasan por
+los wrappers de `GameFlowRunner`. Arreglo: `PauseMenuPolicy.Restart` pasa a tomar `GameFlowRunner`
+y llama `runner.StartPlaying(...)`. Su prueba EditMode instancia un `GameFlowRunner` desnudo (sin
+escena, sin `SceneLoader`, sin fotogramas) — la primera prueba EditMode del proyecto que toca un
+`MonoBehaviour`, justificada porque «Reiniciar» es intrínsecamente una recarga real, no solo un
+cambio de estado puro.
+
+---
+
 ## 3. Verificación — declarada
 
 ### 3.1 EditMode — T12
@@ -257,7 +302,20 @@ oscilación— se verifica leyendo `PlayIgnitionAsync`: un único `Color.Lerp` m
 que documenta el estado para quien la revise a mano y el código es la fuente de verdad del
 criterio. RNF-19/RNF-20 (el badge de «Soplar», el contraste) siguen como en T14, sin cambios.
 
-### 3.5 Flujo test-first
+### 3.5 EditMode + PlayMode — T16
+
+**`PauseMenuPolicyTests` 1/1, `PauseMenuTests` 4/4, 0 fallos.** **EditMode total: 84/84 · PlayMode
+total: 52/52** — 2 corridas limpias consecutivas.
+
+| Prueba | Requisito |
+|---|---|
+| `PauseMenuPolicy_RF07_ReiniciarNoRebloqueaNiBorraIndicadores` (EditMode) | RF-07, RF-41, CP-02 |
+| `PauseMenu_HU17_ContinuarRestituyeElEstadoExacto` | HU-17 |
+| `PauseMenu_HU17_ReiniciarPideConfirmacionYCancelarNoCambiaNada` | HU-17 FA-01, FA-02 |
+| `PauseMenu_HU17_ConfirmarReiniciarReinicioElIntentoSinTocarElProgreso` | RF-03, RF-04, RF-07 |
+| `PauseMenu_HU17_NoSeMuestraEnEscenasNarrativas` | HU-17 FA-04 |
+
+### 3.6 Flujo test-first
 
 Esqueleto compilable → pruebas en rojo → implementación → refactor.
 
@@ -280,19 +338,28 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   el archivo de la captura). Una de las 9 de T14 falló de forma intermitente en esta fase por el
   defecto de `LoadPanel()` (§2c), no por el rojo esperado. **GREEN: 13/13** tras cablear `Blow()`
   y arreglar `LoadPanel()`.
+- **T16 RED: 3 fail / 1 pass** (de 4 PlayMode: la de ausencia en `Narrative` nace verde, sin
+  código de producción que la condicione). `PauseMenuPolicyTests` nace verde también —
+  `PauseMenuPolicy.Restart` no era un esqueleto vacío, era la implementación real desde el
+  principio (una sola expresión). **GREEN: 4/4 PlayMode + 1/1 EditMode**, pero solo tras dos
+  vueltas de arreglo (§2d): la primera implementación de los 6 métodos de `PauseMenuController`
+  seguía en rojo porque el componente vivía en un GameObject inactivo (bug #1) y, tras moverlo,
+  una tercera prueba seguía en rojo porque `PauseMenuPolicy` no pasaba por `GameFlowRunner.Apply`
+  (bug #2). Dos rondas de diagnóstico y arreglo antes del verde real.
 
-### 3.6 Notas
+### 3.7 Notas
 
 - **El MCP de Rider respondió la mayor parte de la sesión** (`get_unity_compilation_result` y
   `run_unity_tests` contra el Editor abierto). R1 deja de bloquear el flujo test-first mientras
   Rider siga abierto; `unity test` (CLI) queda de respaldo. **T14 y T15 costaron varias corridas**
   por el cuelgue intermitente del Test Runner (§2b) — en T15 el Editor llegó a cerrarse solo y se
-  reabrió con `execute_run_configuration("Start Unity")` de Rider.
-- **PlayMode no se re-corrió** en T12 ni T13: lógica pura en un assembly aislado. T14 y T15 sí son
-  PlayMode y de ahí la regresión completa.
+  reabrió con `execute_run_configuration("Start Unity")` de Rider. **T16 no tuvo cuelgues del
+  Editor**, pero sí dos rondas de diagnóstico de bugs reales de producción (§2d).
+- **PlayMode no se re-corrió** en T12 ni T13: lógica pura en un assembly aislado. T14, T15 y T16
+  sí son PlayMode y de ahí la regresión completa.
 - **Compilación sin warnings nuevos** (solo los preexistentes de `Game.Audio` vacío). Rider no
   incluye los archivos nuevos en la solución, así que `/resolve-diagnostics` no corrió en ninguna
-  de las cuatro tareas; la comprobación vinculante de «0 warnings» es la de Unity.
+  de las cinco tareas; la comprobación vinculante de «0 warnings» es la de Unity.
 
 ---
 
@@ -302,8 +369,8 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   mensajes son los propuestos por el guion §4.3.2/§4.3.4 y se validan jugando en el Checkpoint D.
 - **Botón de ayuda (`HintPolicy`) sin cablear** — el panel y el registro existen desde T14, pero
   **no** el botón de ayuda: `FireAttempt.ShouldOfferHint` y `HintPolicy` cuentan lo mismo por
-  caminos distintos y hay que decidir cuál lo alimenta. Sigue sin resolverse tras T15; queda para
-  cuando el andamiaje se cablee a la escena (T16/T18 según se distribuya).
+  caminos distintos y hay que decidir cuál lo alimenta. Sigue sin resolverse tras T16; queda para
+  T18 o una tarea aparte.
 - **Arte del Nivel 1 (A7–A9)** — la escena `Level1_Cave` va con placeholders: montón de hojas =
   elipse blanca, badge y registro con formas planas, el «fuego» de T15 es un barrido de color sin
   sprite propio. Los cuatro estados reales del montón, el fuego y la iluminación del resto del
@@ -320,4 +387,9 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   Rider) o esperando. No lo arregla el parche de `PlayFromBoot`, que resuelve un problema distinto
   (`playModeStartScene` secuestrando la entrada a Play).
 - **`ProjectSettings.asset` autoañade `SENTIS_ANALYTICS_ENABLED`** en cada reimport (revertido
-  varias veces en T14 y T15). Toca a RNF-08 «sin telemetría» — decisión del usuario.
+  varias veces en T14 y T15; no reapareció en T16). Toca a RNF-08 «sin telemetría» — decisión del
+  usuario.
+- **`PauseMenuPolicy` depende de `GameFlowRunner`** (un `MonoBehaviour`), a diferencia de
+  `LevelUnlockPolicy` (puro sobre `PlayerProfile`) — asimetría deliberada, «Reiniciar» necesita el
+  efecto secundario real de recarga de escena. Anotado para T17/T18: no dar por hecho que toda
+  política de `Game.Core` es 100 % pura sin Unity.
