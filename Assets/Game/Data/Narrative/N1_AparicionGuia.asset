@@ -14,38 +14,110 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
   <Id>k__BackingField: N1_AparicionGuia
   <Level>k__BackingField: 1
-  <Illustration>k__BackingField: {fileID: 0}
+  <Illustration>k__BackingField: {fileID: 21300000, guid: 13d0c3738f9d71047b289efb92c892c4, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.26, y: 0.43}
+    <Zoom>k__BackingField: 1.55
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.26, y: 0.43}
+    <Zoom>k__BackingField: 1.55
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 0
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.26, y: 0.43}
+      <Zoom>k__BackingField: 1.55
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.255, y: 0.46}
+      <Radius>k__BackingField: 0.18
+      <Ambient>k__BackingField: 0.02
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 3
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.272, y: 0.44}
+      <Zoom>k__BackingField: 1.42
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.258, y: 0.46}
+      <Radius>k__BackingField: 0.22
+      <Ambient>k__BackingField: 0.03
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 4
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.3, y: 0.43}
+      <Zoom>k__BackingField: 1.58
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.285, y: 0.45}
+      <Radius>k__BackingField: 0.24
+      <Ambient>k__BackingField: 0.03
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 6
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.215, y: 0.445}
+      <Zoom>k__BackingField: 1.72
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.2, y: 0.47}
+      <Radius>k__BackingField: 0.2
+      <Ambient>k__BackingField: 0.03
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 8
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.208, y: 0.39}
+      <Zoom>k__BackingField: 1.78
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.205, y: 0.26}
+      <Radius>k__BackingField: 0.3
+      <Ambient>k__BackingField: 0.03
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 10
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.208, y: 0.39}
+      <Zoom>k__BackingField: 1.78
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.205, y: 0.26}
+      <Radius>k__BackingField: 0.06
+      <Ambient>k__BackingField: 0.01
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  <LightStart>k__BackingField:
+    <Center>k__BackingField: {x: 0.255, y: 0.46}
+    <Radius>k__BackingField: 0
+    <Ambient>k__BackingField: 0.02
+    <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+    <FlashSeconds>k__BackingField: 0.0
+  <CameraSmoothingSeconds>k__BackingField: 1.2
+  <Props>k__BackingField: []
   <IsReflectiveClosing>k__BackingField: 0
   <NextPhase>k__BackingField: 1
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "En la oscuridad total, un peque\xF1o destello amarillo
-      parpadea en el aire. Luego otro. Y otro m\xE1s."
+    <Text>k__BackingField: "En la oscuridad total, un pequeño destello amarillo parpadea en el aire. Luego otro. Y otro más."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "Frente a la familia flota una figura brillante con forma
-      de estrella. Es del tama\xF1o de una palma."
+    <Text>k__BackingField: "Flotando frente a la familia aparece una figura brillante con forma de estrella, del tamaño de una palma."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: Brilla suavemente, como una vela movida por el viento.
-  - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "\xA1Hola, familia! No tengan miedo. Me llamo ALGORITM,
-      y vine a acompa\xF1arlos."
+    <Text>k__BackingField: "Brilla suavemente, como una vela movida por el viento."
+  - <Speaker>k__BackingField: "ALGORITM"
+    <Text>k__BackingField: "¡Hola, familia! No tengan miedo. Me llamo Algoritm, y vine a acompañarlos."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "La ni\xF1a abre mucho los ojos. El ni\xF1o suelta un
-      \xAB\xA1Oh!\xBB que rebota en las paredes."
+    <Text>k__BackingField: "La niña abre mucho los ojos. El niño suelta un «¡Oh!» que rebota en las paredes."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "Mam\xE1 y pap\xE1 se miran sin poder creerlo."
+    <Text>k__BackingField: "Mamá y papá se miran sin poder creerlo."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: ALGORITM gira en el aire como un trompo feliz, dejando una
-      estela de puntos luminosos.
+    <Text>k__BackingField: "Algoritm gira en el aire como un trompo feliz, dejando una estela de puntos luminosos."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "Avanza despacio hacia el fondo de la cueva. Mira atr\xE1s
-      para asegurarse de que la familia lo sigue."
-  - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "\xBFVen esa piedra gris? Eso es s\xEDlex. Y esa de all\xE1,
-      redonda y caf\xE9, es pedernal."
-  - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "Son piedras muy especiales... \xA1pero ya van a descubrir
-      por qu\xE9!"
+    <Text>k__BackingField: "Avanza despacio hacia el fondo de la cueva, mirando atrás para asegurarse de que la familia lo sigue."
+  - <Speaker>k__BackingField: "ALGORITM"
+    <Text>k__BackingField: "¿Ven esa piedra gris? Eso es sílex. Y esa de allá, redonda y café, es pedernal."
+  - <Speaker>k__BackingField: "ALGORITM"
+    <Text>k__BackingField: "Son piedras muy especiales... ¡pero ya van a descubrir por qué!"
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: ALGORITM parpadea una vez, dos veces, y se apaga. La oscuridad
-      vuelve de golpe.
+    <Text>k__BackingField: "Antes de que alguien pueda responder, Algoritm parpadea una vez, dos veces, y se apaga. La oscuridad vuelve de golpe."

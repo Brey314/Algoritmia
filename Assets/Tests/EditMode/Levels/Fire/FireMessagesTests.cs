@@ -15,10 +15,13 @@ namespace Game.Levels.Fire.Tests
 
         private static string[] TodosLosMensajes(FireMessages messages) => new[]
         {
-            messages.FarSparksFade,
-            messages.FarNeverReach,
-            messages.NearColdStone,
-            messages.NearBesideLeaves,
+            messages.SoftNoSpark,
+            messages.SoftStonesGraze,
+            messages.HardSparksScatter,
+            messages.HardSparksFly,
+            messages.StonesFar,
+            messages.StonesFarAgain,
+            messages.BlowNoPile,
             messages.FirstEffectiveStrike,
             messages.SecondEffectiveStrike,
             messages.FinalEffectiveStrike,
@@ -27,7 +30,7 @@ namespace Game.Levels.Fire.Tests
 
         [Test]
         [Category("Acceptance")]
-        public void FireMessages_RNF18_LosOchoMensajesDelGuionEstanDefinidos()
+        public void FireMessages_RNF18_LosOnceMensajesDelNivelEstanDefinidos()
         {
             var sut = CargarAssetDeMensajes();
 

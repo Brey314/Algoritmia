@@ -19,10 +19,8 @@ namespace Game.UI.Tests
         private const string SceneName = "Level1_Cave";
         private const string NarrativeSceneName = "Narrative";
 
-        // N1_Config: única posición efectiva «Muy cerca» (StrikePosition.VeryClose = 2, la más
-        // alta del deslizante); mínimo de golpes efectivos = 3 (mismo umbral que FirePanelTests,
-        // T14/T15).
-        private const float VeryClosePosition = 2f;
+        // N1_Config (Fase 5): el deslizante mide fuerza, 7 cae en la franja efectiva.
+        private const float VeryClosePosition = 7f; // fuerza efectiva (N1_Config, Fase 5)
         private const int MinimumEffectiveStrikes = 3;
 
         [TearDown]
@@ -47,6 +45,7 @@ namespace Game.UI.Tests
             var (pauseMenu, _) = await LoadPauseMenuWithProfile(NewProfile());
             var slider = Object.FindAnyObjectByType<Slider>(FindObjectsInactive.Include);
             slider.value = VeryClosePosition;
+            ArrangeFire();
             ClickTimes(ButtonWithLabel("Golpear"), 2);
             await Awaitable.NextFrameAsync();
 
@@ -79,6 +78,7 @@ namespace Game.UI.Tests
             var (pauseMenu, _) = await LoadPauseMenuWithProfile(NewProfile());
             var slider = Object.FindAnyObjectByType<Slider>(FindObjectsInactive.Include);
             slider.value = VeryClosePosition;
+            ArrangeFire();
             ClickTimes(ButtonWithLabel("Golpear"), 2);
             await Awaitable.NextFrameAsync();
 
@@ -124,9 +124,12 @@ namespace Game.UI.Tests
             // mitad de la prueba. Solo hace falta para la recarga real de «Confirmar reiniciar».
             new GameObject("TestSceneLoader").AddComponent<SceneLoader>();
             var slider = Object.FindAnyObjectByType<Slider>(FindObjectsInactive.Include);
+            var instruccionInicial = LogLines().text;
             slider.value = VeryClosePosition;
+            ArrangeFire();
             ClickTimes(ButtonWithLabel("Golpear"), MinimumEffectiveStrikes);
             await Awaitable.NextFrameAsync();
+            Assume.That(LogLines().text, Is.Not.EqualTo(instruccionInicial), "los golpes escribieron en la tablilla");
             Assume.That(ButtonWithLabel("Soplar").interactable, Is.True,
                 "el arreglo de la prueba no convergió");
 
@@ -146,7 +149,8 @@ namespace Game.UI.Tests
 
             var registroTrasReiniciar = LogLines();
             Assert.That(registroTrasReiniciar, Is.Not.Null);
-            Assert.That(registroTrasReiniciar.text, Is.Empty, "el registro no quedó vacío tras reiniciar");
+            // La tablilla vuelve a la instrucción: no queda ningún mensaje del intento anterior.
+            Assert.That(registroTrasReiniciar.text, Is.EqualTo(instruccionInicial), "la tablilla no volvió a la instrucción tras reiniciar");
             Assert.That(ButtonWithLabel("Soplar").interactable, Is.False,
                 "quedó un golpe efectivo contabilizado tras reiniciar");
             Assert.That(profile.IsUnlocked(LevelId.Wheel), Is.True,
@@ -235,7 +239,8 @@ namespace Game.UI.Tests
         private static Text TextNamed(string name) => Array.Find(
             Object.FindObjectsByType<Text>(FindObjectsInactive.Include), t => t.name == name);
 
-        private static Text LogLines() => TextNamed("Lineas");
+        // La tablilla superior muestra el último mensaje del registro (Fase 5, T23).
+        private static Text LogLines() => TextNamed("InstruccionLabel");
 
         /// <summary>
         /// Sondea <paramref name="condition"/> cuadro a cuadro hasta que se cumpla o venza el
@@ -256,6 +261,20 @@ namespace Game.UI.Tests
             }
 
             return true;
+        }
+
+        /// <summary>Hojas y piedras al punto del fuego: sin eso ningún golpe prende (T22).</summary>
+        private static void ArrangeFire()
+        {
+            var suelo = GameObject.Find("Suelo").transform;
+            var punto = ((RectTransform)suelo.Find("PuntoDeFuego")).anchoredPosition;
+            foreach (RectTransform pieza in suelo)
+            {
+                if (pieza.name != "PuntoDeFuego")
+                {
+                    pieza.anchoredPosition = punto;
+                }
+            }
         }
     }
 }

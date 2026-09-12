@@ -12,14 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f43f52470c9eeb41aa844178ee32790, type: 3}
   m_Name: N1_Mensajes
   m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.FireMessages
-  <FarSparksFade>k__BackingField: "Las piedras suenan, pero las chispas se apagan en
-    el aire."
-  <FarNeverReach>k__BackingField: "Las chispas nacen y mueren antes de llegar abajo.
-    Nunca alcanzan las hojas."
-  <NearColdStone>k__BackingField: "Una chispa cae junto al mont\xF3n, sobre la piedra
-    fr\xEDa. Se apaga enseguida."
-  <NearBesideLeaves>k__BackingField: "Las chispas llegan m\xE1s abajo, pero caen al
-    lado de las hojas, no encima."
+  <SoftNoSpark>k__BackingField: Las piedras apenas se rozan. No sale ninguna chispa.
+  <SoftStonesGraze>k__BackingField: "Los golpes suaves solo hacen ruido: las chispas no llegan
+    a nacer."
+  <HardSparksScatter>k__BackingField: "Las piedras chocan con fuerza y las chispas saltan por
+    todas partes, lejos de las hojas."
+  <HardSparksFly>k__BackingField: "Las chispas vuelan tan rápido que se apagan en el aire
+    antes de caer."
+  <StonesFar>k__BackingField: "Las chispas caen donde no hay nada que prender: el sílex
+    y el pedernal están lejos de las hojas."
+  <StonesFarAgain>k__BackingField: "Otra vez las chispas mueren sobre la piedra desnuda,
+    lejos del montón."
+  <BlowNoPile>k__BackingField: "El aire se lleva el humo: las hojas están regadas y no hay
+    montón que avivar."
   <FirstEffectiveStrike>k__BackingField: "Una chispa cae dentro de las hojas. Brilla
     un instante y se apaga."
   <SecondEffectiveStrike>k__BackingField: "Otra chispa cae dentro. Esta vez el brillo

@@ -76,6 +76,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-44 | El guía se llama Algoritm; los documentos dicen «Chispa» | Guion, HU, OE1, OE2 | **Abierto** |
 | INC-45 | El guía cambia de forma por nivel; el guion fija una sola | Guion | **Abierto** |
 | INC-46 | La lista de tareas del Nivel 3: cuerda con nudos contra panel de casillas | Dirección de arte, Slice 3 | **Abierto** |
+| INC-47 | La mecánica del Nivel 1 mide fuerza y exige acomodar hojas y piedras; el guion y RF-15 fijan un deslizante de posición | Guion, OE1, HU | **Abierto** |
 
 ---
 
@@ -387,6 +388,25 @@ norma **IEEE**», que es la que usa el documento (citas numéricas entre corchet
 bibliografía) y la que dice el nombre del archivo (`…ICONTEC_IEEE.docx`).
 
 ---
+
+### INC-47 · La mecánica del Nivel 1 es de fuerza y disposición, no de posición — abierto
+
+**Decisión de Santiago, 12/09/2026** (tablero del Slice 1, Fase 5, T21–T23): el deslizante del
+panel de encendido **mide la fuerza del golpe** en diez muescas —efectivas la siete y la ocho,
+`N1_Config.asset`— y no la distancia en tres; las hojas, el sílex y el pedernal aparecen regados
+por la cueva y **se arrastran** hasta el punto del fuego. Un golpe solo es efectivo con fuerza
+correcta y las dos piedras cerca; «Soplar» se habilita al converger, pero el fuego solo nace si las
+hojas están amontonadas y cerca. Sin montón, el soplo se describe y no se penaliza (CP-02).
+
+**Qué dicen hoy los documentos.** Guion §4.3.1–§4.3.5 (deslizante de posición: Lejos / Cerca / Muy
+cerca; mensajes por distancia; E1 «deslizante en Lejos»), OE1 RF-15 («control deslizante de
+posición… tres distancias») y RF-16, HU-06.
+
+**Corrección pendiente.** Guion §4.3 (elementos, parámetros, comportamiento, mensajes, flujo y
+pista) y §4.4 («cambiaste de lugar» → «cambiaste la fuerza»), OE1 RF-15/RF-16, HU-06. El registro
+con historial (HU-06) pasa a una tablilla con **el último mensaje**; el historial completo sigue en
+`FireFeedbackLog.Entries` para el informe docente. En código ya está aplicado: los nombres de las
+pruebas conservan RF-15/RF-16 porque el requisito (hipótesis → experimento → resultado) es el mismo.
 
 ## Residuos y puntos abiertos
 

@@ -260,6 +260,52 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task NarrativeScene_RF05_LaParadaDeCorteSecoSaltaSinSuavizado()
+        {
+            var (controller, _) = await OpenNarrative("N1_Apertura");
+            var secuencia = SequenceNamed(controller, "N1_Apertura");
+            var corte = secuencia.CameraKeys.First(k => k.HardCut);
+            Assume.That(corte.Framing.Focus, Is.Not.EqualTo(secuencia.CameraStart.Focus),
+                "el corte seco de la apertura salta a otro sitio del lienzo");
+
+            for (var i = 0; i < corte.Line; i++)
+            {
+                Click(controller.AdvanceButton);
+            }
+
+            await Awaitable.NextFrameAsync();
+
+            // Un solo cuadro después ya está en el encuadre: el salto ocurre a oscuras y nadie
+            // debe ver la cámara recorrer el lienzo (docs/Camara_Narrativa_N1.md §10).
+            Assert.That(controller.CameraCurrent.Focus, Is.EqualTo(corte.Framing.Focus), "la cámara saltó");
+            Assert.That(controller.LightCurrent.Ambient, Is.EqualTo(corte.Light.Ambient), "y la luz también");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF05_ElDestelloDuraSusSegundosYVuelveALaLuzAnterior()
+        {
+            var (controller, _) = await OpenNarrative("N1_Hallazgo");
+            var secuencia = SequenceNamed(controller, "N1_Hallazgo");
+            var destello = secuencia.CameraKeys.First(k => k.Light.FlashSeconds > 0f);
+            var anterior = secuencia.CameraKeys.Last(k => k.Line < destello.Line);
+
+            for (var i = 0; i < destello.Line; i++)
+            {
+                Click(controller.AdvanceButton);
+            }
+
+            await Awaitable.NextFrameAsync();
+            Assert.That(controller.LightCurrent.Ambient, Is.EqualTo(destello.Light.Ambient),
+                "el ¡CLIC! se aplica de golpe, sin suavizado");
+
+            await EsperarSegundos(destello.Light.FlashSeconds + 0.1f);
+            Assert.That(controller.LightCurrent.Ambient, Is.EqualTo(anterior.Light.Ambient).Within(0.001f),
+                "y pasado su tiempo vuelve de golpe a la luz de la parada anterior");
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task NarrativeScene_RNF03_ElCuadroDeDialogoNoSuperaElCuartoDeLaPantalla()
         {
             var (controller, _) = await OpenNarrative("N1_Apertura");

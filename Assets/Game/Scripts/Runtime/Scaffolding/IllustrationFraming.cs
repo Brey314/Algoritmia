@@ -52,14 +52,24 @@ namespace Game.Scaffolding
         [field: SerializeField]
         public CameraFraming Framing { get; private set; } = new CameraFraming();
 
+        [field: SerializeField]
+        [field: Tooltip("Estado de la capa de oscuridad en esta parada. Por defecto, plena luz: no cambia nada.")]
+        public NarrativeLight Light { get; private set; } = new NarrativeLight();
+
+        [field: SerializeField]
+        [field: Tooltip("Corte seco: al llegar a la línea, cámara y luz saltan al encuadre sin suavizado. Para saltos que ocurren a oscuras.")]
+        public bool HardCut { get; private set; }
+
         public CameraKey()
         {
         }
 
-        public CameraKey(int line, CameraFraming framing)
+        public CameraKey(int line, CameraFraming framing, NarrativeLight light = null, bool hardCut = false)
         {
             Line = line;
             Framing = framing;
+            Light = light ?? new NarrativeLight();
+            HardCut = hardCut;
         }
     }
 

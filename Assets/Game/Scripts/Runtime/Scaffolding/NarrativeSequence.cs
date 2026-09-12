@@ -45,7 +45,11 @@ namespace Game.Scaffolding
         public CameraKey[] CameraKeys { get; private set; } = new CameraKey[0];
 
         [field: SerializeField]
-        [field: Tooltip("Segundos que tarda la cámara en recorrer dos tercios del camino hasta su encuadre. Corto, los pasos se leen sueltos; largo, un solo gesto continuo.")]
+        [field: Tooltip("Luz al abrir la escena, antes de la primera parada. Por defecto plena luz (el Nivel 2 no usa la capa). Con una parada en la línea 0, la luz nace de este estado hacia el de la parada.")]
+        public NarrativeLight LightStart { get; private set; } = new NarrativeLight();
+
+        [field: SerializeField]
+        [field: Tooltip("Segundos que tarda la cámara —y la luz— en recorrer dos tercios del camino hasta su encuadre. Corto, los pasos se leen sueltos; largo, un solo gesto continuo.")]
         public float CameraSmoothingSeconds { get; private set; } = 1.3f;
 
         [field: SerializeField]

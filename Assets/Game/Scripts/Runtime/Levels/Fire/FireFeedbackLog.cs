@@ -34,9 +34,9 @@ namespace Game.Levels.Fire
         /// <summary>Registra el resultado de un golpe y devuelve el mensaje elegido (RF-11, RF-17).</summary>
         public string Record(StrikeOutcome outcome, int consecutiveFailures)
         {
-            var message = outcome.Effective
-                ? EffectiveMessage(outcome.EffectiveStrikes)
-                : FailureMessage(outcome.Position, consecutiveFailures);
+            var message = outcome.Effective ? EffectiveMessage(outcome.EffectiveStrikes)
+                : !outcome.StonesNear ? StonesFarMessage(consecutiveFailures)
+                : FailureMessage(outcome.Band, consecutiveFailures);
             _entries.Add(message);
             return message;
         }
@@ -46,6 +46,38 @@ namespace Game.Levels.Fire
         {
             _entries.Add(_messages.BlowSuccess);
             return _messages.BlowSuccess;
+        }
+
+        /// <summary>Soplo con las hojas regadas o las piedras lejos: se describe, no se penaliza (T23, CP-02).</summary>
+        public string RecordBlowFailed()
+        {
+            _entries.Add(_messages.BlowNoPile);
+            return _messages.BlowNoPile;
+        }
+
+        private string StonesFarMessage(int consecutiveFailures)
+        {
+            // Mismo criterio que los fallos de fuerza: la variante «tras dos intentos» solo desde
+            // el segundo fallo seguido, y sin repetir dos veces seguidas cuando hay alternativa.
+            if (consecutiveFailures < 2)
+            {
+                return _messages.StonesFar;
+            }
+
+            return _messages.StonesFarAgain == Latest ? _messages.StonesFar : _messages.StonesFarAgain;
+        }
+
+        /// <summary>
+        /// Escribe una línea del guía —la instrucción pedida con «Pista» o la pista tras los
+        /// fallos seguidos (RF-13)— en el mismo registro que los mensajes de los golpes. Vacía o
+        /// nula no escribe nada: <c>HintPolicy</c> devuelve nulo mientras no toca pista.
+        /// </summary>
+        public void RecordGuide(string message)
+        {
+            if (!string.IsNullOrEmpty(message))
+            {
+                _entries.Add(message);
+            }
         }
 
         private string EffectiveMessage(int effectiveStrikes)
@@ -60,13 +92,13 @@ namespace Game.Levels.Fire
                 : _messages.SecondEffectiveStrike;
         }
 
-        private string FailureMessage(StrikePosition position, int consecutiveFailures)
+        private string FailureMessage(ForceBand band, int consecutiveFailures)
         {
-            // Solo «Muy cerca» es efectiva con la configuración del guion, así que un golpe no
-            // efectivo es «Lejos» o «Cerca»; cualquier otra distancia cae en los mensajes de «Cerca».
-            var (fallback, escalated) = position == StrikePosition.Far
-                ? (_messages.FarSparksFade, _messages.FarNeverReach)
-                : (_messages.NearColdStone, _messages.NearBesideLeaves);
+            // Un golpe no efectivo se pasó de suave o de fuerte (Fase 5): cada lado tiene su par
+            // de mensajes, por defecto y «tras dos intentos».
+            var (fallback, escalated) = band == ForceBand.TooSoft
+                ? (_messages.SoftNoSpark, _messages.SoftStonesGraze)
+                : (_messages.HardSparksScatter, _messages.HardSparksFly);
 
             // La variante «tras dos intentos» (guion §4.3.4) solo aplica desde el segundo fallo
             // seguido. Antes no hay alternativa y un mensaje repetido se permite.

@@ -14,7 +14,66 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
   <Id>k__BackingField: N1_Apertura
   <Level>k__BackingField: 1
-  <Illustration>k__BackingField: {fileID: 0}
+  <Illustration>k__BackingField: {fileID: 21300000, guid: 13d0c3738f9d71047b289efb92c892c4, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.78, y: 0.52}
+    <Zoom>k__BackingField: 1.22
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.78, y: 0.52}
+    <Zoom>k__BackingField: 1.22
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 0
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.78, y: 0.52}
+      <Zoom>k__BackingField: 1.22
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 0.06
+      <Tint>k__BackingField: {r: 0.55, g: 0.68, b: 1.0, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 2
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.818, y: 0.48}
+      <Zoom>k__BackingField: 1.45
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.95, y: 0.42}
+      <Radius>k__BackingField: 0.3
+      <Ambient>k__BackingField: 0.1
+      <Tint>k__BackingField: {r: 0.55, g: 0.68, b: 1.0, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 3
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.7, y: 0.44}
+      <Zoom>k__BackingField: 1.6
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.92, y: 0.42}
+      <Radius>k__BackingField: 0.14
+      <Ambient>k__BackingField: 0.04
+      <Tint>k__BackingField: {r: 0.55, g: 0.68, b: 1.0, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 6
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.26, y: 0.43}
+      <Zoom>k__BackingField: 1.55
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 0.0
+      <Tint>k__BackingField: {r: 0.55, g: 0.68, b: 1.0, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 1
+  <LightStart>k__BackingField:
+    <Center>k__BackingField: {x: 0.5, y: 0.5}
+    <Radius>k__BackingField: 0
+    <Ambient>k__BackingField: 0.06
+    <Tint>k__BackingField: {r: 0.55, g: 0.68, b: 1.0, a: 1}
+    <FlashSeconds>k__BackingField: 0.0
+  <CameraSmoothingSeconds>k__BackingField: 1.2
+  <Props>k__BackingField: []
   <IsReflectiveClosing>k__BackingField: 0
   <NextPhase>k__BackingField: 1
   <Lines>k__BackingField:

@@ -176,9 +176,9 @@ de empezar:
   La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04 (carga < 10 s),
   RNF-05 (memoria < 2 GB) y RNF-06 (paquete < 500 MB), y junto al `.exe` nace `Datos/` en la
   primera ejecución (RNF-07, RNF-11). Entran las escenas listadas en `EditorBuildSettings` —la
-  lista crece con cada nivel—, con `Boot` de primera. **Ojo:** el `todo.md` del Slice 2 da
-  `Level2_Forest` por añadida en W06, pero `EditorBuildSettings.asset` no la lista en ningún commit:
-  hoy una build no incluye el bosque. Añadirla desde el Editor (Build Settings), no a mano. `/[Bb]uild[s]?/` está en `.gitignore`: el ejecutable no se versiona.
+  lista crece con cada nivel—, con `Boot` de primera. Hoy son ocho, `Level2_Forest` incluida
+  (entró en `4f69140`); las escenas nuevas se añaden desde el Editor (Build Settings), no a mano.
+  `/[Bb]uild[s]?/` está en `.gitignore`: el ejecutable no se versiona.
 - **Con Rider abierto**, `mcp__rider__run_unity_tests` /
   `mcp__rider__get_unity_compilation_result` corren contra el Editor **abierto** (sin cerrar/reabrir)
   y habilitan el flujo test-first del plugin `unity-coding-skills`. `unity test` queda como

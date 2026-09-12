@@ -50,31 +50,31 @@ namespace Game.Levels.Fire.Tests
         {
             var sut = CreateSystemUnderTest(5, Clock(0f));
 
-            sut.RecordStrike(StrikeOutcome.SparksDied(StrikePosition.Far));
+            sut.RecordStrike(StrikeOutcome.SparksDied(2, ForceBand.TooSoft));
             Assert.That(sut.Complete().Attempts, Is.EqualTo(1), "el primer golpe no efectivo suma un intento");
 
-            sut.RecordStrike(StrikeOutcome.SparksDied(StrikePosition.Near));
+            sut.RecordStrike(StrikeOutcome.SparksDied(10, ForceBand.TooHard));
             Assert.That(sut.Complete().Attempts, Is.EqualTo(2), "cada golpe no efectivo suma uno más, uno por uno");
 
-            sut.RecordStrike(StrikeOutcome.SparkLanded(1));
+            sut.RecordStrike(StrikeOutcome.SparkLanded(7, 1));
             Assert.That(sut.Complete().Attempts, Is.EqualTo(2), "un golpe efectivo posterior no suma a Intentos");
         }
 
         [Test]
         [Category("Acceptance")]
-        public void FireIndicators_RF45_ErrorCorregidoExigeCambioDePosicionSeguidoDeAcierto()
+        public void FireIndicators_RF45_ErrorCorregidoExigeCambioDeFuerzaSeguidoDeAcierto()
         {
             var sut = CreateSystemUnderTest(10, Clock(0f));
 
-            sut.RecordStrike(StrikeOutcome.SparkLanded(1));
-            sut.RecordStrike(StrikeOutcome.SparkLanded(2));
+            sut.RecordStrike(StrikeOutcome.SparkLanded(7, 1));
+            sut.RecordStrike(StrikeOutcome.SparkLanded(7, 2));
             Assert.That(sut.Complete().CorrectedErrors, Is.Zero,
                 "aciertos consecutivos, sin fallo justo antes, no cuentan como error corregido");
 
-            sut.RecordStrike(StrikeOutcome.SparksDied(StrikePosition.Far));
-            sut.RecordStrike(StrikeOutcome.SparksDied(StrikePosition.Near));
-            sut.RecordStrike(StrikeOutcome.SparksDied(StrikePosition.Far));
-            sut.RecordStrike(StrikeOutcome.SparkLanded(3));
+            sut.RecordStrike(StrikeOutcome.SparksDied(2, ForceBand.TooSoft));
+            sut.RecordStrike(StrikeOutcome.SparksDied(10, ForceBand.TooHard));
+            sut.RecordStrike(StrikeOutcome.SparksDied(2, ForceBand.TooSoft));
+            sut.RecordStrike(StrikeOutcome.SparkLanded(7, 3));
             Assert.That(sut.Complete().CorrectedErrors, Is.EqualTo(1),
                 "varios fallos seguidos antes del acierto solo suman un error corregido (RF-45)");
         }
@@ -100,13 +100,13 @@ namespace Game.Levels.Fire.Tests
         {
             var sut = CreateSystemUnderTest(3, Clock(0f));
 
-            sut.RecordStrike(StrikeOutcome.SparkLanded(1));
-            sut.RecordStrike(StrikeOutcome.SparkLanded(2));
-            sut.RecordStrike(StrikeOutcome.SparkLanded(3)); // cruza el mínimo (3) aquí
+            sut.RecordStrike(StrikeOutcome.SparkLanded(7, 1));
+            sut.RecordStrike(StrikeOutcome.SparkLanded(7, 2));
+            sut.RecordStrike(StrikeOutcome.SparkLanded(7, 3)); // cruza el mínimo (3) aquí
             Assert.That(sut.Complete().StepsUsed, Is.EqualTo(3),
                 "se congela en los golpes efectivos acumulados al cruzar el mínimo");
 
-            sut.RecordStrike(StrikeOutcome.SparkLanded(4)); // golpe efectivo posterior
+            sut.RecordStrike(StrikeOutcome.SparkLanded(7, 4)); // golpe efectivo posterior
             Assert.That(sut.Complete().StepsUsed, Is.EqualTo(3),
                 "un golpe efectivo posterior no mueve Pasos utilizados");
         }

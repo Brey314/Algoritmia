@@ -41,7 +41,11 @@ namespace Game.Levels.Fire.Tests
         public async Task FireLevel_RF21_IluminacionSubeUnEscalonPorGolpeEfectivo()
         {
             var (controller, _) = await LoadPanelWithProfile(NewProfile());
-            controller.PositionSlider.value = (int)StrikePosition.VeryClose;
+            controller.ForceSlider.value = 7; // fuerza efectiva (N1_Config, Fase 5)
+            foreach (var piece in controller.Pieces)
+            {
+                piece.MoveTo(controller.FireSpot.anchoredPosition); // todo en su sitio (T22)
+            }
 
             Click(controller.StrikeButton);
             await Awaitable.NextFrameAsync();
@@ -89,14 +93,18 @@ namespace Game.Levels.Fire.Tests
             Assume.That(controller.Lighting, Is.Not.Null, "la escena debe traer CaveLightingController wireado");
             Assume.That(controller.Lighting.Progress, Is.EqualTo(0f),
                 "panel recién cargado: ningún golpe efectivo todavía");
-            Assume.That(ApproximatelyEqual(controller.Lighting.Background.color, controller.Lighting.Darkest),
-                Is.True, "sin golpes efectivos, el fondo ya está en el color más oscuro");
+            Assume.That(controller.Lighting.Current.Ambient, Is.EqualTo(controller.Lighting.Darkest.Ambient),
+                "sin golpes efectivos, la capa de oscuridad ya está en su estado más oscuro");
 
             var instruccion = TextNamed("InstruccionLabel");
             Assume.That(instruccion, Is.Not.Null, "la escena debe traer una InstruccionLabel");
 
-            var contraste = ContrastRatio(instruccion.color, controller.Lighting.Background.color);
-            TestContext.WriteLine($"Contraste texto/fondo en el estado más oscuro: {contraste:F2}:1");
+            // La instrucción va sobre su propia tablilla (mockup 7), no sobre la cueva: el fondo que
+            // cuenta para el contraste es la cara de esa tablilla, que la oscuridad no toca.
+            var tablilla = instruccion.GetComponentInParent<Image>();
+            Assume.That(tablilla, Is.Not.Null, "la instrucción cuelga de una tablilla con Image");
+            var contraste = ContrastRatio(instruccion.color, tablilla.color);
+            TestContext.WriteLine($"Contraste texto/tablilla en el estado más oscuro: {contraste:F2}:1");
 
             Assert.That(contraste, Is.GreaterThanOrEqualTo(4.5),
                 $"el contraste calculado ({contraste:F2}:1) no alcanza el mínimo 4.5:1 de RNF-20");

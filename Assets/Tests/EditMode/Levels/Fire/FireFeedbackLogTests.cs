@@ -24,10 +24,13 @@ namespace Game.Levels.Fire.Tests
         private FireMessages CreateMessages()
         {
             var messages = ScriptableObject.CreateInstance<FireMessages>();
-            messages.FarSparksFade = "lejos-cualquiera";
-            messages.FarNeverReach = "lejos-tras-dos";
-            messages.NearColdStone = "cerca-cualquiera";
-            messages.NearBesideLeaves = "cerca-tras-dos";
+            messages.SoftNoSpark = "suave-cualquiera";
+            messages.SoftStonesGraze = "suave-tras-dos";
+            messages.HardSparksScatter = "fuerte-cualquiera";
+            messages.HardSparksFly = "fuerte-tras-dos";
+            messages.StonesFar = "piedras-lejos";
+            messages.StonesFarAgain = "piedras-lejos-tras-dos";
+            messages.BlowNoPile = "soplo-sin-monton";
             messages.FirstEffectiveStrike = "efectivo-primero";
             messages.SecondEffectiveStrike = "efectivo-segundo";
             messages.FinalEffectiveStrike = "efectivo-final";
@@ -42,28 +45,28 @@ namespace Game.Levels.Fire.Tests
         private static bool HayMensajesConsecutivosIguales(IReadOnlyList<string> entradas) =>
             entradas.Where((entrada, indice) => indice > 0 && entrada == entradas[indice - 1]).Any();
 
-        [TestCase(StrikePosition.Far, "lejos-cualquiera")]
-        [TestCase(StrikePosition.Near, "cerca-cualquiera")]
-        public void FireFeedbackLog_guion434_CadaDistanciaNoEfectivaDevuelveSuMensaje(
-            StrikePosition posicionFallida, string mensajeEsperado)
+        [TestCase(ForceBand.TooSoft, "suave-cualquiera")]
+        [TestCase(ForceBand.TooHard, "fuerte-cualquiera")]
+        public void FireFeedbackLog_guion434_CadaFranjaDeFuerzaNoEfectivaDevuelveSuMensaje(
+            ForceBand franjaFallida, string mensajeEsperado)
         {
             var sut = CreateSystemUnderTest(minimumEffectiveStrikes: 3);
 
-            var actual = sut.Record(StrikeOutcome.SparksDied(posicionFallida), consecutiveFailures: 1);
+            var actual = sut.Record(StrikeOutcome.SparksDied(2, franjaFallida), consecutiveFailures: 1);
 
-            Assert.That(actual, Is.EqualTo(mensajeEsperado), "devuelve el mensaje «cualquiera» de esa distancia");
+            Assert.That(actual, Is.EqualTo(mensajeEsperado), "devuelve el mensaje «cualquiera» de esa franja");
             Assert.That(sut.Entries, Is.EqualTo(new[] { mensajeEsperado }), "y lo registra en el historial");
         }
 
         [Test]
-        public void FireFeedbackLog_RF18_TrasDosFallosSeguidosEnLaMismaDistanciaEscalaElMensaje()
+        public void FireFeedbackLog_RF18_TrasDosFallosSeguidosEnLaMismaFranjaEscalaElMensaje()
         {
             var sut = CreateSystemUnderTest(minimumEffectiveStrikes: 3);
-            sut.Record(StrikeOutcome.SparksDied(StrikePosition.Far), consecutiveFailures: 1);
+            sut.Record(StrikeOutcome.SparksDied(2, ForceBand.TooSoft), consecutiveFailures: 1);
 
-            var actual = sut.Record(StrikeOutcome.SparksDied(StrikePosition.Far), consecutiveFailures: 2);
+            var actual = sut.Record(StrikeOutcome.SparksDied(2, ForceBand.TooSoft), consecutiveFailures: 2);
 
-            Assert.That(actual, Is.EqualTo("lejos-tras-dos"));
+            Assert.That(actual, Is.EqualTo("suave-tras-dos"));
         }
 
         [TestCase(1, "efectivo-primero")]
@@ -74,7 +77,7 @@ namespace Game.Levels.Fire.Tests
         {
             var sut = CreateSystemUnderTest(minimumEffectiveStrikes: 3);
 
-            var actual = sut.Record(StrikeOutcome.SparkLanded(golpesEfectivos), consecutiveFailures: 0);
+            var actual = sut.Record(StrikeOutcome.SparkLanded(7, golpesEfectivos), consecutiveFailures: 0);
 
             Assert.That(actual, Is.EqualTo(mensajeEsperado));
         }
@@ -85,9 +88,9 @@ namespace Game.Levels.Fire.Tests
         {
             var sut = CreateSystemUnderTest(minimumEffectiveStrikes: 3);
 
-            sut.Record(StrikeOutcome.SparksDied(StrikePosition.Far), consecutiveFailures: 1);
-            sut.Record(StrikeOutcome.SparksDied(StrikePosition.Far), consecutiveFailures: 2);
-            sut.Record(StrikeOutcome.SparksDied(StrikePosition.Far), consecutiveFailures: 3);
+            sut.Record(StrikeOutcome.SparksDied(2, ForceBand.TooSoft), consecutiveFailures: 1);
+            sut.Record(StrikeOutcome.SparksDied(2, ForceBand.TooSoft), consecutiveFailures: 2);
+            sut.Record(StrikeOutcome.SparksDied(2, ForceBand.TooSoft), consecutiveFailures: 3);
 
             Assert.That(sut.Entries, Has.Count.EqualTo(3), "tres golpes seguidos dejan tres entradas");
             Assert.That(HayMensajesConsecutivosIguales(sut.Entries), Is.False,
@@ -100,13 +103,37 @@ namespace Game.Levels.Fire.Tests
         {
             var sut = CreateSystemUnderTest(minimumEffectiveStrikes: 3);
 
-            var primero = sut.Record(StrikeOutcome.SparksDied(StrikePosition.Far), consecutiveFailures: 1);
-            var segundo = sut.Record(StrikeOutcome.SparksDied(StrikePosition.Near), consecutiveFailures: 1);
-            var tercero = sut.Record(StrikeOutcome.SparkLanded(1), consecutiveFailures: 0);
+            var primero = sut.Record(StrikeOutcome.SparksDied(2, ForceBand.TooSoft), consecutiveFailures: 1);
+            var segundo = sut.Record(StrikeOutcome.SparksDied(10, ForceBand.TooHard), consecutiveFailures: 1);
+            var tercero = sut.Record(StrikeOutcome.SparkLanded(7, 1), consecutiveFailures: 0);
 
             Assert.That(sut.Entries, Is.EqualTo(new[] { primero, segundo, tercero }),
                 "conserva todos los mensajes anteriores en orden");
             Assert.That(sut.Latest, Is.EqualTo(tercero), "y Latest es el último");
+        }
+
+        [Test]
+        public void FireFeedbackLog_RF16_ConLasPiedrasLejosDevuelveSuMensajeYEscalaTrasDosFallos()
+        {
+            var sut = CreateSystemUnderTest(minimumEffectiveStrikes: 3);
+
+            var primero = sut.Record(StrikeOutcome.StonesTooFar(7, ForceBand.Effective), consecutiveFailures: 1);
+            var segundo = sut.Record(StrikeOutcome.StonesTooFar(7, ForceBand.Effective), consecutiveFailures: 2);
+
+            Assert.That(primero, Is.EqualTo("piedras-lejos"), "el fallo fue de sitio, no de fuerza: mensaje de piedras lejos");
+            Assert.That(segundo, Is.EqualTo("piedras-lejos-tras-dos"), "y al segundo fallo seguido escala (RF-18)");
+        }
+
+        [Test]
+        [Category("Acceptance")]
+        public void FireFeedbackLog_CP02_ElSoploSinMontonSeDescribeSinPenalizar()
+        {
+            var sut = CreateSystemUnderTest(minimumEffectiveStrikes: 3);
+
+            var actual = sut.RecordBlowFailed();
+
+            Assert.That(actual, Is.EqualTo("soplo-sin-monton"), "describe lo que pasó");
+            Assert.That(sut.Entries, Is.EqualTo(new[] { "soplo-sin-monton" }), "y nada más: ni contador ni bloqueo (CP-02)");
         }
 
         [Test]

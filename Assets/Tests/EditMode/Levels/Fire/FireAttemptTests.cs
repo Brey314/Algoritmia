@@ -7,6 +7,11 @@ namespace Game.Levels.Fire.Tests
     [TestFixture]
     public class FireAttemptTests
     {
+        // N1_Config propuesto (Fase 5): diez muescas, efectivas la siete y la ocho.
+        private const int Soft = 2;
+        private const int Hard = 10;
+        private const int Effective = 7;
+
         private readonly List<Object> _configs = new List<Object>();
 
         [TearDown]
@@ -20,54 +25,82 @@ namespace Game.Levels.Fire.Tests
             _configs.Clear();
         }
 
-        private FireLevelConfig CreateConfig(
-            StrikePosition effectivePosition, int minimumEffectiveStrikes, int attemptsBeforeHint)
+        private FireLevelConfig CreateConfig(int minimumEffectiveStrikes, int attemptsBeforeHint)
         {
             var config = ScriptableObject.CreateInstance<FireLevelConfig>();
-            config.EffectivePosition = effectivePosition;
+            config.EffectiveForceMin = 7;
+            config.EffectiveForceMax = 8;
             config.MinimumEffectiveStrikes = minimumEffectiveStrikes;
             config.AttemptsBeforeHint = attemptsBeforeHint;
             _configs.Add(config);
             return config;
         }
 
-        private FireAttempt CreateSystemUnderTest(
-            StrikePosition effectivePosition, int minimumEffectiveStrikes, int attemptsBeforeHint) =>
-            new FireAttempt(CreateConfig(effectivePosition, minimumEffectiveStrikes, attemptsBeforeHint));
+        private FireAttempt CreateSystemUnderTest(int minimumEffectiveStrikes, int attemptsBeforeHint) =>
+            new FireAttempt(CreateConfig(minimumEffectiveStrikes, attemptsBeforeHint));
 
-        private static void StrikeRepeatedly(FireAttempt attempt, StrikePosition position, int times)
+        private static void StrikeRepeatedly(FireAttempt attempt, int force, int times)
         {
             for (var i = 0; i < times; i++)
             {
-                attempt.Strike(position);
+                attempt.Strike(force);
             }
         }
 
-        [TestCase(StrikePosition.Far)]
-        [TestCase(StrikePosition.Near)]
-        [Category("Acceptance")]
-        public void FireAttempt_RF16_GolpeNoEfectivoProduceConsecuenciaYNoSuma(StrikePosition posicionFallida)
+        [TestCase(0, ForceBand.TooSoft)]
+        [TestCase(6, ForceBand.TooSoft)]
+        [TestCase(7, ForceBand.Effective)]
+        [TestCase(8, ForceBand.Effective)]
+        [TestCase(9, ForceBand.TooHard)]
+        [TestCase(10, ForceBand.TooHard)]
+        public void FireAttempt_RNF18_ClasificaLaFuerzaSegunLaFranjaDeLaConfiguracion(int fuerza, ForceBand franjaEsperada)
         {
-            var sut = CreateSystemUnderTest(StrikePosition.VeryClose, 3, 3);
+            var sut = CreateSystemUnderTest(3, 3);
 
-            var actual = sut.Strike(posicionFallida);
+            Assert.That(sut.Classify(fuerza), Is.EqualTo(franjaEsperada));
+        }
 
-            Assert.That(actual.Effective, Is.False, "un golpe desde una distancia no efectiva no prende chispa");
-            Assert.That(actual.Position, Is.EqualTo(posicionFallida), "el resultado recuerda desde dónde se golpeó");
+        [TestCase(Soft, ForceBand.TooSoft)]
+        [TestCase(Hard, ForceBand.TooHard)]
+        [Category("Acceptance")]
+        public void FireAttempt_RF16_GolpeNoEfectivoProduceConsecuenciaYNoSuma(int fuerzaFallida, ForceBand franja)
+        {
+            var sut = CreateSystemUnderTest(3, 3);
+
+            var actual = sut.Strike(fuerzaFallida);
+
+            Assert.That(actual.Effective, Is.False, "un golpe fuera de la franja efectiva no prende chispa");
+            Assert.That(actual.Force, Is.EqualTo(fuerzaFallida), "el resultado recuerda con qué fuerza se golpeó");
+            Assert.That(actual.Band, Is.EqualTo(franja), "y hacia qué lado se falló: eso elige el mensaje");
             Assert.That(sut.EffectiveStrikes, Is.Zero, "un fallo no suma golpe efectivo (RF-16)");
             Assert.That(sut.ConsecutiveFailures, Is.EqualTo(1), "el fallo cuenta como fallo consecutivo");
         }
 
         [Test]
+        [Category("Acceptance")]
+        public void FireAttempt_RF16_ConLasPiedrasLejosNoPrendeAunqueLaFuerzaSeaLaEfectiva()
+        {
+            var sut = CreateSystemUnderTest(3, 3);
+
+            var actual = sut.Strike(Effective, stonesNear: false);
+
+            Assert.That(actual.Effective, Is.False, "sin las piedras cerca no hay chispa que caiga en las hojas (T22)");
+            Assert.That(actual.StonesNear, Is.False, "el resultado dice que el fallo fue de sitio");
+            Assert.That(actual.Band, Is.EqualTo(ForceBand.Effective), "la fuerza sí era la buena");
+            Assert.That(sut.EffectiveStrikes, Is.Zero);
+            Assert.That(sut.ConsecutiveFailures, Is.EqualTo(1), "cuenta como fallo consecutivo hacia la pista");
+        }
+
+        [Test]
         public void FireAttempt_RF16_GolpeEfectivoSumaYReiniciaLosFallos()
         {
-            var sut = CreateSystemUnderTest(StrikePosition.VeryClose, 3, 3);
-            sut.Strike(StrikePosition.Far);
-            sut.Strike(StrikePosition.Near);
+            var sut = CreateSystemUnderTest(3, 3);
+            sut.Strike(Soft);
+            sut.Strike(Hard);
 
-            var actual = sut.Strike(StrikePosition.VeryClose);
+            var actual = sut.Strike(Effective);
 
-            Assert.That(actual.Effective, Is.True, "el golpe desde la posición efectiva prende una chispa");
+            Assert.That(actual.Effective, Is.True, "el golpe con la fuerza efectiva prende una chispa");
             Assert.That(actual.EffectiveStrikes, Is.EqualTo(1), "el resultado trae el acumulado tras contar este golpe");
             Assert.That(sut.EffectiveStrikes, Is.EqualTo(1), "el golpe efectivo suma");
             Assert.That(sut.ConsecutiveFailures, Is.Zero, "un acierto reinicia los fallos consecutivos (guion §4.3.3)");
@@ -75,13 +108,14 @@ namespace Game.Levels.Fire.Tests
 
         [Test]
         [Category("Acceptance")]
-        public void FireAttempt_RF15_CambiarPosicionNoAlteraElEstado()
+        public void FireAttempt_RF15_CambiarLaFuerzaNoAlteraElEstado()
         {
-            var sut = CreateSystemUnderTest(StrikePosition.VeryClose, 3, 3);
+            var sut = CreateSystemUnderTest(3, 3);
 
             Assert.That(sut.EffectiveStrikes, Is.Zero, "sin golpear no hay golpes efectivos");
             Assert.That(sut.ConsecutiveFailures, Is.Zero, "sin golpear no hay fallos");
             Assert.That(sut.CanBlow, Is.False, "sin golpear el soplo no está disponible");
+            Assert.That(sut.Classify(Effective), Is.EqualTo(ForceBand.Effective), "clasificar una fuerza no golpea");
             Assert.That(sut.EffectiveStrikes, Is.Zero, "leer el estado repetidamente no lo cambia");
             Assert.That(sut.CanBlow, Is.False, "leer el estado repetidamente no lo cambia");
         }
@@ -90,9 +124,9 @@ namespace Game.Levels.Fire.Tests
         [Category("Acceptance")]
         public void FireAttempt_RF18_AceptaIntentosIlimitados()
         {
-            var sut = CreateSystemUnderTest(StrikePosition.VeryClose, 3, 3);
+            var sut = CreateSystemUnderTest(3, 3);
 
-            Assert.That(() => StrikeRepeatedly(sut, StrikePosition.Far, 100), Throws.Nothing,
+            Assert.That(() => StrikeRepeatedly(sut, Soft, 100), Throws.Nothing,
                 "cien golpes no efectivos seguidos no lanzan excepción (CP-02, RF-18)");
             Assert.That(sut.ConsecutiveFailures, Is.EqualTo(100), "cada intento se registra: no hay tope (RF-18)");
             Assert.That(sut.EffectiveStrikes, Is.Zero, "cien fallos no suman ningún golpe efectivo");
@@ -102,13 +136,13 @@ namespace Game.Levels.Fire.Tests
         [Test]
         public void FireAttempt_INC32_SoplarSeHabilitaAlAlcanzarElMinimo()
         {
-            var sut = CreateSystemUnderTest(StrikePosition.VeryClose, 3, 3);
+            var sut = CreateSystemUnderTest(3, 3);
 
-            sut.Strike(StrikePosition.VeryClose);
+            sut.Strike(Effective);
             Assert.That(sut.CanBlow, Is.False, "con un golpe efectivo el soplo aún no");
-            sut.Strike(StrikePosition.VeryClose);
+            sut.Strike(Effective);
             Assert.That(sut.CanBlow, Is.False, "con dos golpes efectivos el soplo aún no");
-            sut.Strike(StrikePosition.VeryClose);
+            sut.Strike(Effective);
             Assert.That(sut.CanBlow, Is.True, "al tercer golpe efectivo el soplo se habilita (INC-32)");
         }
 
@@ -116,11 +150,11 @@ namespace Game.Levels.Fire.Tests
         [Category("Acceptance")]
         public void FireAttempt_RF19_SoplarNoSeDeshabilitaTrasFalloPosterior()
         {
-            var sut = CreateSystemUnderTest(StrikePosition.VeryClose, 3, 3);
-            StrikeRepeatedly(sut, StrikePosition.VeryClose, 3);
+            var sut = CreateSystemUnderTest(3, 3);
+            StrikeRepeatedly(sut, Effective, 3);
 
-            sut.Strike(StrikePosition.Far);
-            sut.Strike(StrikePosition.Near);
+            sut.Strike(Soft);
+            sut.Strike(Hard);
 
             Assert.That(sut.CanBlow, Is.True, "lo ganado no se pierde por un fallo posterior (RF-19, INC-32)");
             Assert.That(sut.EffectiveStrikes, Is.EqualTo(3), "un fallo posterior no reduce los golpes efectivos");
@@ -129,14 +163,14 @@ namespace Game.Levels.Fire.Tests
         [Test]
         public void FireAttempt_RNF18_ElUmbralDePistaSaleDeLaConfiguracion()
         {
-            var sut = CreateSystemUnderTest(StrikePosition.VeryClose, 3, 5);
+            var sut = CreateSystemUnderTest(3, 5);
 
-            StrikeRepeatedly(sut, StrikePosition.Far, 4);
+            StrikeRepeatedly(sut, Soft, 4);
             Assert.That(sut.ShouldOfferHint, Is.False, "cuatro fallos con umbral cinco: todavía no");
-            sut.Strike(StrikePosition.Far);
+            sut.Strike(Soft);
             Assert.That(sut.ShouldOfferHint, Is.True, "el quinto fallo alcanza el umbral definido en la configuración (RNF-18)");
 
-            sut.Strike(StrikePosition.VeryClose);
+            sut.Strike(Effective);
             Assert.That(sut.ConsecutiveFailures, Is.Zero, "el acierto reinicia los fallos consecutivos");
             Assert.That(sut.ShouldOfferHint, Is.False, "y con ellos se retira el ofrecimiento de pista (RF-19)");
         }

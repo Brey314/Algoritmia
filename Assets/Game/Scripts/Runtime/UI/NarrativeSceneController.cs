@@ -35,6 +35,10 @@ namespace Game.UI
         [SerializeField] private Button advanceButton;
         [SerializeField] private Button skipButton;
 
+        [SerializeField]
+        [Tooltip("Material con el shader Algoritm/Oscuridad (fx_oscuridad). La capa se crea al arrancar, a pantalla completa, justo encima de la ilustración. Sin él no hay oscuridad.")]
+        private Material darknessMaterial;
+
         internal GameFlowRunner Runner { get; set; }
 
         /// <summary>El avance de la escena en curso. <c>null</c> si no se pudo resolver.</summary>
@@ -45,6 +49,21 @@ namespace Game.UI
 
         /// <summary>Dónde está la cámara ahora mismo, de camino al encuadre de la línea en curso.</summary>
         private CameraFraming _camera;
+
+        /// <summary>La luz ahora mismo, de camino a la de la parada en curso.</summary>
+        private NarrativeLight _light;
+
+        /// <summary>La luz de la parada anterior: a donde vuelve un destello cuando se acaba.</summary>
+        private NarrativeLight _lightBefore;
+
+        /// <summary>Última parada aplicada (−1 = ninguna todavía): así se sabe cuándo llega una nueva.</summary>
+        private int _keyIndex = -1;
+
+        /// <summary>Instante en que termina el destello en curso; 0 si no hay ninguno.</summary>
+        private float _flashUntil;
+
+        private Image _darkness;
+        private Material _darknessInstance;
 
         /// <summary>Los objetos pintados sobre el entorno, con su declaración: son lo que se anima por línea.</summary>
         private readonly List<(NarrativeProp Prop, RectTransform Rect)> _props =
@@ -58,6 +77,8 @@ namespace Game.UI
         internal NarrativeSequence[] Sequences => sequences;
         internal RectTransform IllustrationRect => illustration.rectTransform;
         internal CameraFraming CameraTarget => TargetFraming();
+        internal CameraFraming CameraCurrent => _camera;
+        internal NarrativeLight LightCurrent => _light;
         internal IReadOnlyList<(NarrativeProp Prop, RectTransform Rect)> Props => _props;
 #endif
 
@@ -98,7 +119,13 @@ namespace Game.UI
             illustration.enabled = _sequence.Illustration != null;
             illustration.preserveAspect = false; // el tamaño lo fija el encuadre, ya sin deformar
             _camera = _sequence.CameraStart;
+            _light = _sequence.LightStart;
+            _lightBefore = _sequence.LightStart;
+            _keyIndex = -1;
+            _flashUntil = 0f;
             Frame();
+            EnsureDarkness();
+            ApplyLight();
             PlaceProps(_sequence);
             // RF-06 e INC-28: el botón de omitir no existe en la primera visita, no basta con
             // deshabilitarlo — la escena de cierre es donde el guía nombra lo aprendido.
@@ -119,9 +146,146 @@ namespace Game.UI
 
             // El suavizado lo pone cada escena: un movimiento lento y continuo, sin saltos
             // (RNF-21), pero tan corto o tan largo como pida su ritmo.
+            SyncKey();
             var blend = 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(_sequence.CameraSmoothingSeconds, 0.01f));
             _camera = CameraFraming.Lerp(_camera, TargetFraming(), blend);
+            _light = NarrativeLight.Lerp(_light, TargetLight(), blend);
             Frame();
+            ApplyLight();
+        }
+
+        /// <summary>
+        /// Detecta la llegada a una parada nueva y aplica lo que no se suaviza: el corte seco (cámara
+        /// y luz saltan) y el destello (la luz salta, dura sus segundos y vuelve de golpe a la luz de
+        /// la parada anterior). Todo lo demás lo hace el suavizado de <see cref="Update"/>.
+        /// </summary>
+        private void SyncKey()
+        {
+            var index = ActiveKeyIndex();
+            if (index == _keyIndex)
+            {
+                if (_flashUntil > 0f && Time.time >= _flashUntil)
+                {
+                    _flashUntil = 0f;
+                    _light = _lightBefore; // la vuelta del destello es tan seca como su ida
+                }
+
+                return;
+            }
+
+            _keyIndex = index;
+            _flashUntil = 0f;
+            if (index < 0)
+            {
+                return;
+            }
+
+            var key = _sequence.CameraKeys[index];
+            if (key.HardCut)
+            {
+                _camera = key.Framing;
+                _light = key.Light;
+            }
+
+            if (key.Light.FlashSeconds > 0f)
+            {
+                // «La parada anterior» es la anterior en la lista, no la última aplicada: varias
+                // líneas leídas en un mismo cuadro saltan paradas y el destello debe volver igual.
+                _lightBefore = index > 0 ? _sequence.CameraKeys[index - 1].Light : _sequence.LightStart;
+                _light = key.Light;
+                _flashUntil = Time.time + key.Light.FlashSeconds;
+            }
+        }
+
+        private int ActiveKeyIndex()
+        {
+            var line = Dialogue?.Index ?? 0;
+            var active = -1;
+            for (var i = 0; i < _sequence.CameraKeys.Length; i++)
+            {
+                if (_sequence.CameraKeys[i].Line <= line)
+                {
+                    active = i;
+                }
+            }
+
+            return active;
+        }
+
+        /// <summary>La luz que toca ahora: la de la parada en curso, o la anterior si su destello ya pasó.</summary>
+        private NarrativeLight TargetLight()
+        {
+            if (_keyIndex < 0)
+            {
+                return _sequence.LightStart;
+            }
+
+            var key = _sequence.CameraKeys[_keyIndex];
+            return key.Light.FlashSeconds > 0f && _flashUntil == 0f ? _lightBefore : key.Light;
+        }
+
+        /// <summary>
+        /// La capa de oscuridad: un Image a pantalla completa con el material multiplicativo, hermano
+        /// de la ilustración y justo encima de ella. Hermano y no hijo a propósito: los hijos de la
+        /// ilustración son los objetos pintados y hay pruebas que los cuentan.
+        /// </summary>
+        private void EnsureDarkness()
+        {
+            if (darknessMaterial == null)
+            {
+                return;
+            }
+
+            if (_darkness == null)
+            {
+                var go = new GameObject("Oscuridad", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                go.layer = illustration.gameObject.layer;
+                var rect = (RectTransform)go.transform;
+                rect.SetParent(illustration.rectTransform.parent, false);
+                rect.SetSiblingIndex(illustration.rectTransform.GetSiblingIndex() + 1);
+                rect.anchorMin = Vector2.zero;
+                rect.anchorMax = Vector2.one;
+                rect.offsetMin = rect.offsetMax = Vector2.zero;
+                _darkness = go.GetComponent<Image>();
+                _darkness.raycastTarget = false;
+                _darknessInstance = new Material(darknessMaterial);
+                _darkness.material = _darknessInstance;
+            }
+
+            _darkness.enabled = illustration.enabled;
+        }
+
+        /// <summary>
+        /// Pasa la luz al material en fracciones de pantalla. El centro y el radio vienen en
+        /// fracciones de la ilustración: se convierten con la misma geometría que
+        /// <see cref="IllustrationFraming.Apply"/> deja en la ilustración, así el charco queda pegado
+        /// al mundo cuando la cámara panea o acerca.
+        /// </summary>
+        private void ApplyLight()
+        {
+            if (_darkness == null || illustration.sprite == null)
+            {
+                return;
+            }
+
+            var rect = illustration.rectTransform;
+            var viewport = ((RectTransform)rect.parent).rect.size;
+            var image = illustration.sprite.rect.size;
+            var scale = rect.localScale.x;
+            var local = rect.anchoredPosition + (_light.Center - new Vector2(0.5f, 0.5f)) * image * scale;
+            _darknessInstance.SetVector("_Center", new Vector2(0.5f + local.x / viewport.x, 0.5f + local.y / viewport.y));
+            _darknessInstance.SetFloat("_Radius", _light.Radius * image.y * scale / viewport.y);
+            _darknessInstance.SetFloat("_Ambient", _light.Ambient);
+            _darknessInstance.SetColor("_Tint", _light.Tint);
+            _darknessInstance.SetFloat("_Aspect", viewport.x / viewport.y);
+        }
+
+        private void OnDestroy()
+        {
+            if (_darknessInstance != null)
+            {
+                Destroy(_darknessInstance);
+            }
         }
 
         /// <summary>

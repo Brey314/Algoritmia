@@ -14,55 +14,168 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
   <Id>k__BackingField: N1_Hallazgo
   <Level>k__BackingField: 1
-  <Illustration>k__BackingField: {fileID: 0}
+  <Illustration>k__BackingField: {fileID: 21300000, guid: 13d0c3738f9d71047b289efb92c892c4, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.208, y: 0.39}
+    <Zoom>k__BackingField: 1.78
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.208, y: 0.39}
+    <Zoom>k__BackingField: 1.78
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 0
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.208, y: 0.39}
+      <Zoom>k__BackingField: 1.78
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 0.08
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 2
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.212, y: 0.4}
+      <Zoom>k__BackingField: 1.55
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 0.07
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 5
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.212, y: 0.4}
+      <Zoom>k__BackingField: 1.55
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 0.03
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 6
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.212, y: 0.4}
+      <Zoom>k__BackingField: 1.55
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.205, y: 0.2}
+      <Radius>k__BackingField: 0.6
+      <Ambient>k__BackingField: 0.95
+      <Tint>k__BackingField: {r: 0.92, g: 0.94, b: 1.0, a: 1}
+      <FlashSeconds>k__BackingField: 0.08
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 7
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.212, y: 0.4}
+      <Zoom>k__BackingField: 1.55
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 0.04
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 8
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.212, y: 0.4}
+      <Zoom>k__BackingField: 1.55
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.205, y: 0.2}
+      <Radius>k__BackingField: 0.22
+      <Ambient>k__BackingField: 0.06
+      <Tint>k__BackingField: {r: 0.92, g: 0.94, b: 1.0, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 9
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.218, y: 0.45}
+      <Zoom>k__BackingField: 1.48
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 0.08
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 12
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.258, y: 0.445}
+      <Zoom>k__BackingField: 1.52
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 0.08
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 14
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.222, y: 0.39}
+      <Zoom>k__BackingField: 1.62
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 0.06
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 16
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.215, y: 0.37}
+      <Zoom>k__BackingField: 1.7
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.213, y: 0.21}
+      <Radius>k__BackingField: 0.16
+      <Ambient>k__BackingField: 0.05
+      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  <LightStart>k__BackingField:
+    <Center>k__BackingField: {x: 0.5, y: 0.5}
+    <Radius>k__BackingField: 0
+    <Ambient>k__BackingField: 0.08
+    <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+    <FlashSeconds>k__BackingField: 0.0
+  <CameraSmoothingSeconds>k__BackingField: 2.0
+  <Props>k__BackingField: []
   <IsReflectiveClosing>k__BackingField: 0
   <NextPhase>k__BackingField: 1
   <Lines>k__BackingField:
-  - <Speaker>k__BackingField: "NI\xD1A"
-    <Text>k__BackingField: "\xBFSe fue?"
-  - <Speaker>k__BackingField: "PAP\xC1"
-    <Text>k__BackingField: "S\xED. Pero nos dej\xF3 algo."
+  - <Speaker>k__BackingField: "NIÑA"
+    <Text>k__BackingField: "¿Se fue?"
+  - <Speaker>k__BackingField: "PAPÁ"
+    <Text>k__BackingField: "Sí. Pero nos dejó algo."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "El ni\xF1o se arrodilla y busca con las manos hasta encontrar
-      las dos piedras."
-  - <Speaker>k__BackingField: "NI\xD1O"
-    <Text>k__BackingField: "Dijo que eran especiales. \xBFPor qu\xE9 ser\xE1n especiales
-      unas piedras?"
+    <Text>k__BackingField: "El niño se arrodilla y busca con las manos hasta encontrar las dos piedras. Son frías y pesadas."
+  - <Speaker>k__BackingField: "NIÑO"
+    <Text>k__BackingField: "Dijo que eran especiales. ¿Por qué serán especiales unas piedras?"
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "La ni\xF1a las toca tambi\xE9n. Pasa los dedos por los
-      bordes afilados del s\xEDlex."
+    <Text>k__BackingField: "La niña las toca también. Pasa los dedos por los bordes afilados del sílex."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "Las golpea una contra otra, muy despacio, como si les
-      preguntara algo. Nada. Las golpea m\xE1s fuerte."
+    <Text>k__BackingField: "Las golpea una contra otra, muy despacio, como si les preguntara algo. Nada. Las golpea más fuerte."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "\xA1CLIC! Un destello peque\xF1\xEDsimo, apenas un instante
-      de luz. Se apaga antes de que los ojos lo vean."
-  - <Speaker>k__BackingField: "NI\xD1A"
-    <Text>k__BackingField: "\xBFLo viste?"
-  - <Speaker>k__BackingField: "NI\xD1O"
-    <Text>k__BackingField: "\xA1S\xED! \xA1Otra vez, otra vez!"
+    <Text>k__BackingField: "¡CLIC! Un destello pequeñísimo, apenas un instante de luz que se apaga antes de que los ojos alcancen a verlo. Pero todos lo sienten."
+  - <Speaker>k__BackingField: "NIÑA"
+    <Text>k__BackingField: "¿Lo viste?"
+  - <Speaker>k__BackingField: "NIÑO"
+    <Text>k__BackingField: "¡Sí! ¡Otra vez, otra vez!"
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "Pap\xE1, que ha estado escuchando en silencio, se pone
-      de pie despacio."
-  - <Speaker>k__BackingField: "PAP\xC1"
-    <Text>k__BackingField: Esperen. Estas piedras pueden ser peligrosas si no sabemos
-      usarlas bien.
-  - <Speaker>k__BackingField: "PAP\xC1"
-    <Text>k__BackingField: "Ustedes dos qu\xE9dense con mam\xE1, bien atr\xE1s. Yo
-      lo intento."
+    <Text>k__BackingField: "Papá, que ha estado escuchando en silencio, se pone de pie despacio."
+  - <Speaker>k__BackingField: "PAPÁ"
+    <Text>k__BackingField: "Esperen. Estas piedras pueden ser peligrosas si no sabemos usarlas bien."
+  - <Speaker>k__BackingField: "PAPÁ"
+    <Text>k__BackingField: "Ustedes dos quédense con mamá, bien atrás. Yo lo intento."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "El ni\xF1o quiere protestar, pero mam\xE1 lo toma del
-      hombro con suavidad."
-  - <Speaker>k__BackingField: "MAM\xC1"
-    <Text>k__BackingField: "Pap\xE1 sabe lo que hace."
+    <Text>k__BackingField: "El niño quiere protestar, pero mamá lo toma del hombro con suavidad."
+  - <Speaker>k__BackingField: "MAMÁ"
+    <Text>k__BackingField: "Papá sabe lo que hace."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "Pap\xE1 se arrodilla en el centro de la cueva. Busca
-      a tientas hojas secas y ramitas finas."
+    <Text>k__BackingField: "Papá se arrodilla en el centro de la cueva, busca a tientas un montón de hojas secas y ramitas finas."
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: Las amontona con cuidado en el suelo.
-  - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: Tienes las piedras y tienes las hojas. Sabes que algo
-      puede pasar entre las tres cosas.
-  - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "Lo que no sabes todav\xEDa es c\xF3mo. \xBFDesde d\xF3nde
-      vas a intentarlo?"
+    <Text>k__BackingField: "Las amontona con cuidado en el suelo."
+  - <Speaker>k__BackingField: "ALGORITM"
+    <Text>k__BackingField: "Tienes las piedras y tienes las hojas. Sabes que algo puede pasar entre las tres cosas."
+  - <Speaker>k__BackingField: "ALGORITM"
+    <Text>k__BackingField: "Lo que no sabes todavía es cómo. ¿Desde dónde vas a intentarlo?"

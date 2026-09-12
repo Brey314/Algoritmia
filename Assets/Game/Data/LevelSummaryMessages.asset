@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0265395da5e69f64c879e150d2411664, type: 3}
   m_Name: LevelSummaryMessages
   m_EditorClassIdentifier: Game.UI::Game.UI.LevelSummaryMessages
-  <Intro>k__BackingField: "Esto es lo que pas\xF3 en la cueva:"
-  <TriedSeveralPositions>k__BackingField: Probaste golpear desde varios lugares distintos.
-  <FoundRightAway>k__BackingField: Encontraste el lugar correcto casi de inmediato.
-  <CorrectedApproach>k__BackingField: "Cuando algo no funcion\xF3, cambiaste de lugar
-    y volviste a intentar."
-  <NoNeedToCorrect>k__BackingField: Seguiste el mismo camino hasta que las chispas
-    prendieron.
+  <Intro>k__BackingField: "Esto es lo que pasó en la cueva:"
+  <Discovery>k__BackingField: Descubriste que el fuego necesita chispa y aire.
+  <TriedSeveralPositions>k__BackingField: Probaste golpear con varias fuerzas y desde varios sitios.
+  <FoundRightAway>k__BackingField: Encontraste la fuerza y el sitio correctos casi de inmediato.
+  <CorrectedApproach>k__BackingField: "Cuando algo no funcionó, cambiaste la fuerza o el sitio y volviste a intentar."
+  <NoNeedToCorrect>k__BackingField: Seguiste el mismo camino hasta que las chispas prendieron.
+  <SkillNamed>k__BackingField: "Eso se llama probar y ajustar: es lo mismo que hace quien arma un plan paso a paso."

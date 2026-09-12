@@ -14,49 +14,177 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
   <Id>k__BackingField: N1_NacimientoDelFuego
   <Level>k__BackingField: 1
-  <Illustration>k__BackingField: {fileID: 0}
+  <Illustration>k__BackingField: {fileID: 21300000, guid: 13d0c3738f9d71047b289efb92c892c4, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.215, y: 0.375}
+    <Zoom>k__BackingField: 1.85
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.215, y: 0.375}
+    <Zoom>k__BackingField: 1.85
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 0
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.215, y: 0.375}
+      <Zoom>k__BackingField: 1.85
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.213, y: 0.21}
+      <Radius>k__BackingField: 0.45
+      <Ambient>k__BackingField: 0.35
+      <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 2
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.222, y: 0.4}
+      <Zoom>k__BackingField: 1.6
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.215, y: 0.22}
+      <Radius>k__BackingField: 0.5
+      <Ambient>k__BackingField: 0.45
+      <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 3
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.268, y: 0.42}
+      <Zoom>k__BackingField: 1.45
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.222, y: 0.23}
+      <Radius>k__BackingField: 0.6
+      <Ambient>k__BackingField: 0.55
+      <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 4
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.262, y: 0.44}
+      <Zoom>k__BackingField: 1.34
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.228, y: 0.24}
+      <Radius>k__BackingField: 0.7
+      <Ambient>k__BackingField: 0.65
+      <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 7
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.238, y: 0.42}
+      <Zoom>k__BackingField: 1.55
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.22, y: 0.23}
+      <Radius>k__BackingField: 0.62
+      <Ambient>k__BackingField: 0.7
+      <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 8
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.222, y: 0.395}
+      <Zoom>k__BackingField: 1.8
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.215, y: 0.22}
+      <Radius>k__BackingField: 0.34
+      <Ambient>k__BackingField: 0.6
+      <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 10
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.235, y: 0.43}
+      <Zoom>k__BackingField: 1.5
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.22, y: 0.23}
+      <Radius>k__BackingField: 0.65
+      <Ambient>k__BackingField: 0.72
+      <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 11
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.272, y: 0.425}
+      <Zoom>k__BackingField: 1.58
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.225, y: 0.23}
+      <Radius>k__BackingField: 0.66
+      <Ambient>k__BackingField: 0.72
+      <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 12
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.268, y: 0.418}
+      <Zoom>k__BackingField: 1.66
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.225, y: 0.23}
+      <Radius>k__BackingField: 0.64
+      <Ambient>k__BackingField: 0.74
+      <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 14
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.27, y: 0.5}
+      <Zoom>k__BackingField: 1.18
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.23, y: 0.24}
+      <Radius>k__BackingField: 0.95
+      <Ambient>k__BackingField: 0.85
+      <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 15
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.252, y: 0.455}
+      <Zoom>k__BackingField: 1.38
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.232, y: 0.23}
+      <Radius>k__BackingField: 0.4
+      <Ambient>k__BackingField: 0.32
+      <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+      <FlashSeconds>k__BackingField: 0.0
+    <HardCut>k__BackingField: 0
+  <LightStart>k__BackingField:
+    <Center>k__BackingField: {x: 0.213, y: 0.21}
+    <Radius>k__BackingField: 0.1
+    <Ambient>k__BackingField: 0.35
+    <Tint>k__BackingField: {r: 1.0, g: 0.8, b: 0.55, a: 1}
+    <FlashSeconds>k__BackingField: 0.0
+  <CameraSmoothingSeconds>k__BackingField: 1.4
+  <Props>k__BackingField: []
   <IsReflectiveClosing>k__BackingField: 1
   <NextPhase>k__BackingField: 0
   <Lines>k__BackingField:
-  - <Speaker>k__BackingField:
-    <Text>k__BackingField: "Una llama naranja y dorada crece despacio desde las hojas."
-  - <Speaker>k__BackingField:
-    <Text>k__BackingField: "Es temblorosa al principio, y después más firme y alta."
-  - <Speaker>k__BackingField:
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: "Una llama naranja y dorada crece despacio desde las hojas: temblorosa al principio, luego más firme, más alta."
+  - <Speaker>k__BackingField: 
     <Text>k__BackingField: "La cueva entera se llena de luz y calor en segundos."
-  - <Speaker>k__BackingField:
-    <Text>k__BackingField: "Papá se queda quieto, arrodillado, mirando las llamas."
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: "Papá se queda quieto, arrodillado, mirando las llamas, con las manos temblorosas."
   - <Speaker>k__BackingField: "NIÑOS"
-    <Text>k__BackingField: "¡Papáaaa! ¡Lo lograste!"
-  - <Speaker>k__BackingField:
-    <Text>k__BackingField: "Los niños corren y se lanzan encima de él."
-  - <Speaker>k__BackingField:
-    <Text>k__BackingField: "Mamá llega detrás, riendo y llorando al mismo tiempo."
-  - <Speaker>k__BackingField:
+    <Text>k__BackingField: "¡PAPÁAAA! ¡LO LOGRASTE!"
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: "Los niños salen corriendo y se lanzan encima de él. Mamá llega detrás, riendo y llorando al mismo tiempo."
+  - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Papá los abraza a todos mientras el fuego crepita."
-  - <Speaker>k__BackingField:
+  - <Speaker>k__BackingField: 
     <Text>k__BackingField: "La cueva oscura se convierte en el lugar más cálido del mundo."
   - <Speaker>k__BackingField: "PAPÁ"
     <Text>k__BackingField: "Las piedras tenían razón. Eran especiales."
-  - <Speaker>k__BackingField:
-    <Text>k__BackingField: "En el corazón de las llamas aparece una silueta pequeña."
-  - <Speaker>k__BackingField:
-    <Text>k__BackingField: "Es Chispa, brillando más que nunca, hecho de fuego esta vez."
-  - <Speaker>k__BackingField: "CHISPA"
-    <Text>k__BackingField: "¿Ven? Yo no traje la luz. Solo les mostré dónde buscar.
-      El resto lo hizo papá."
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: "En el corazón de las llamas aparece una silueta pequeña con forma de estrella."
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: "Es Algoritm, brillando más que nunca, hecho de fuego esta vez."
+  - <Speaker>k__BackingField: "ALGORITM"
+    <Text>k__BackingField: "¿Ven? Yo no traje la luz. Solo les mostré dónde buscar. El resto lo hizo papá."
   - <Speaker>k__BackingField: "NIÑA"
-    <Text>k__BackingField: "Papá, ¡tú eres como Chispa!"
-  - <Speaker>k__BackingField:
+    <Text>k__BackingField: "Papá, ¡tú eres como Algoritm!"
+  - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Papá se ríe bajito y la abraza más fuerte."
-  - <Speaker>k__BackingField: "CHISPA"
-    <Text>k__BackingField: "Y algo más. La primera vez no funcionó, ni la segunda.
-      Cambiaste de lugar, volviste a probar y miraste qué pasaba cada vez."
-  - <Speaker>k__BackingField: "CHISPA"
-    <Text>k__BackingField: "Eso tiene nombre: se llama iterar. Probar, mirar el resultado
-      y ajustar."
-  - <Speaker>k__BackingField:
-    <Text>k__BackingField: "Chispa parpadea tres veces y se recoge dentro de la fogata,
-      como una brasa viva."
-  - <Speaker>k__BackingField:
+  - <Speaker>k__BackingField: "ALGORITM"
+    <Text>k__BackingField: "Y algo más. La primera vez no funcionó, ni la segunda. Cambiaste la fuerza, volviste a probar y miraste qué pasaba cada vez."
+  - <Speaker>k__BackingField: "ALGORITM"
+    <Text>k__BackingField: "Eso tiene nombre: se llama iterar. Probar, mirar el resultado y ajustar."
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: "Algoritm parpadea tres veces y se recoge dentro de la fogata, como una brasa que sigue viva."
+  - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Esa noche la familia duerme caliente y unida."

@@ -3,35 +3,46 @@ using UnityEngine;
 namespace Game.Levels.Fire
 {
     /// <summary>
-    /// Los ocho mensajes del área de registro del Nivel 1 (guion §4.3.4). Viven en un asset y no
-    /// en el código: corregir un mensaje es editarlo en el Inspector, no recompilar (CT-05,
-    /// RNF-18). Son observacionales, sin cifras ni juicio de valor (RF-17, CP-03).
+    /// Los mensajes del registro del Nivel 1 (guion §4.3.4; los cuatro de fallo reescritos en la
+    /// Fase 5 para hablar de fuerza en vez de distancia). Observacionales y sin cifras (RF-17).
     /// </summary>
     [CreateAssetMenu(menuName = "Algoritm/Mensajes del nivel fuego", fileName = "N1_Mensajes")]
     public class FireMessages : ScriptableObject
     {
         [field: SerializeField, TextArea(2, 3)]
-        [field: Tooltip("Golpe desde «Lejos». Mensaje por defecto de esa distancia.")]
-        public string FarSparksFade { get; set; }
+        [field: Tooltip("Golpe demasiado suave. Mensaje por defecto de esa franja.")]
+        public string SoftNoSpark { get; set; }
 
         [field: SerializeField, TextArea(2, 3)]
-        [field: Tooltip("Golpe desde «Lejos» tras dos fallos seguidos en esa distancia.")]
-        public string FarNeverReach { get; set; }
+        [field: Tooltip("Golpe demasiado suave tras dos fallos seguidos en esa franja.")]
+        public string SoftStonesGraze { get; set; }
 
         [field: SerializeField, TextArea(2, 3)]
-        [field: Tooltip("Golpe desde «Cerca». Mensaje por defecto de esa distancia.")]
-        public string NearColdStone { get; set; }
+        [field: Tooltip("Golpe demasiado fuerte. Mensaje por defecto de esa franja.")]
+        public string HardSparksScatter { get; set; }
 
         [field: SerializeField, TextArea(2, 3)]
-        [field: Tooltip("Golpe desde «Cerca» tras dos fallos seguidos en esa distancia.")]
-        public string NearBesideLeaves { get; set; }
+        [field: Tooltip("Golpe demasiado fuerte tras dos fallos seguidos en esa franja.")]
+        public string HardSparksFly { get; set; }
 
         [field: SerializeField, TextArea(2, 3)]
-        [field: Tooltip("Primer golpe efectivo desde «Muy cerca».")]
+        [field: Tooltip("Golpe con el sílex o el pedernal lejos de las hojas (T22). Mensaje por defecto.")]
+        public string StonesFar { get; set; }
+
+        [field: SerializeField, TextArea(2, 3)]
+        [field: Tooltip("Golpe con las piedras lejos tras dos fallos seguidos así.")]
+        public string StonesFarAgain { get; set; }
+
+        [field: SerializeField, TextArea(2, 3)]
+        [field: Tooltip("Soplo con las hojas regadas o las piedras lejos: no nace el fuego y no pasa nada más (T23, CP-02).")]
+        public string BlowNoPile { get; set; }
+
+        [field: SerializeField, TextArea(2, 3)]
+        [field: Tooltip("Primer golpe efectivo.")]
         public string FirstEffectiveStrike { get; set; }
 
         [field: SerializeField, TextArea(2, 3)]
-        [field: Tooltip("Segundo golpe efectivo desde «Muy cerca».")]
+        [field: Tooltip("Segundo golpe efectivo.")]
         public string SecondEffectiveStrike { get; set; }
 
         [field: SerializeField, TextArea(2, 3)]

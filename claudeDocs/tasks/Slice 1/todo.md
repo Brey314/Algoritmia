@@ -327,6 +327,67 @@ todas las que siguen son verificación manual y revisión con el usuario.
 
 ---
 
+## Fase 5 — Rediseño de la mecánica del Nivel 1 (abierta el 12/09/2026, pedido de Santiago)
+
+> ⚠️ **Se aparta del guion §4.3 y de RF-15/RF-16 tal como están radicados** (deslizante de
+> *posición* de tres muescas, mensajes por distancia). Santiago lo reafirmó el 12/09/2026: «ese
+> slider mide fuerza, no distancia». Queda como **INC-47** pendiente de registrar en
+> `INCONSISTENCIAS.md` y de corregir en el guion/OE1 cuando se cierre la fase. Los nombres de
+> las pruebas conservan RF-15/RF-16 porque el requisito (hipótesis → experimento → resultado
+> observable) es el mismo; cambia el parámetro de la hipótesis.
+
+**Supuestos que hay que confirmar** (valores en `N1_Config.asset`, se ajustan sin código):
+fuerza efectiva 7–8 de 10 («supongamos un 7 o 8») · una piedra «cerca» = a menos de un radio
+del montón · las hojas están «amontonadas» cuando todas caen dentro de ese radio · soplar sin
+montón no penaliza: solo escribe en el registro lo que pasó (CP-02).
+
+- [x] **T20 · Narrativa del Nivel 1 fiel al guion** — `S` · `EM` + `PM` (12/09/2026)
+      guion §3.1, §4.1, §4.2, §4.4, INC-44 (el guía es **Algoritm**, no «Chispa») · depende de: nada
+      Reescribir las líneas de los cuatro `N1_*.asset` con el texto completo del guion (faltan
+      frases: «Son frías y pesadas», «Pero todos lo sienten», «con las manos temblorosas», «Antes
+      de que alguien pueda responder»…), máximo dos líneas y doce palabras por línea (§11.4), y
+      **remapear las paradas de cámara** (`Camara_Narrativa_N1.md` §4) a los índices nuevos.
+      `N1_NacimientoDelFuego` dice `CHISPA`: pasa a `ALGORITM`.
+- [x] **T21 · Deslizante de fuerza de diez posiciones** — `M` · `EM` + `PM` `MCP` (12/09/2026)
+      RF-15, RF-16, RF-17, RNF-18, CT-05, mockup 7 · depende de: nada
+      **Hecho:** `ForceBand`, `FireAttempt.Strike(int)`/`Classify`, `FireLevelConfig` (10 · 7–8),
+      `FireMessages` con cuatro mensajes de fallo por fuerza, `ForceSliderFeedback`, escena con
+      `FuerzaSlider` 0–10 y etiquetas del mockup; `N1_Guia` reescrita sin nombrar la fuerza.
+      **EditMode 167/167 · PlayMode 92/92 (6 VV omitidas en batchmode)**, corridas por CLI.
+      Pendiente de ver a ojo: el asa que crece y enrojece.
+      `FireLevelConfig`: `ForceLevels` (10), `EffectiveForceMin`/`Max` (7–8). `FireAttempt.Strike(int
+      force)` clasifica en `ForceBand` (suave / efectivo / fuerte); `StrikeOutcome` recuerda la
+      fuerza. `FireMessages` cambia los cuatro mensajes de fallo (suave ×2, fuerte ×2), sin cifras.
+      UI: deslizante 0–10 (rango tomado de la configuración), etiquetas «Fuerte / Fuerza del golpe
+      / Suave», y el asa **crece y enrojece** con la fuerza (`ForceSliderFeedback`). La pista de
+      `N1_Guia` deja de hablar de distancia y no nombra la fuerza correcta (CP-06).
+- [x] **T22 · Hojas, sílex y pedernal arrastrables** — `L` · `EM` + `PM` `MCP` (12/09/2026)
+      CT-06 (clic sostenido), RNF-02, mockup 7 · depende de: T21
+      Sobre la cenital aparecen regados N hojas, el sílex y el pedernal (placeholders hasta A7/A8).
+      Arrastre con puntero (Input System). `FireLayout` (C# plano): distancia de cada pieza al
+      centro del montón → `LeavesPiled` (todas las hojas dentro del radio) y `StonesNear` (las dos
+      piedras dentro del radio). Un golpe es efectivo solo con **fuerza efectiva y piedras cerca**;
+      con las piedras lejos el registro lo dice sin penalizar.
+- [x] **T23 · Soplar condicionado y limpieza de la interfaz** — `M` · `PM` `MCP` (12/09/2026)
+      RF-19, RF-20, CP-02, RNF-19 · depende de: T22
+      «Soplar» se habilita al converger (como hoy) pero el fuego solo nace si `LeavesPiled`; si
+      no, mensaje observacional en el registro y el nivel sigue. Se retiran del `Level1_Cave` el
+      marco «Hoguera», el `MontonHojas` placeholder y la etiqueta de instrucción fija (la
+      instrucción vive en «Pista»); la prueba `RNF03` que exige una `InstruccionLabel` se ajusta.
+- [~] **T24 · Documentos y verificación** — `S` (12/09/2026: todo menos la revisión con el usuario)
+      `Interfaces.md` §7, `Camara_Narrativa_N1.md` §3, `INCONSISTENCIAS.md` (INC-47), suites
+      completas por CLI y captura del panel en Play revisada con el usuario.
+      **Hecho el 12/09/2026 salvo la revisión con el usuario.** Santiago retiró además el registro
+      con historial («estorba»): la tablilla superior muestra el último mensaje (`FeedbackLogView`).
+      T21 ajustado: asa azul→rojo lineal por muesca, escala 0,8–1,2.
+
+### Checkpoint E — mecánica nueva del Nivel 1
+- [x] El nivel se juega entero con la mecánica nueva: arrastrar → elegir fuerza → golpear → soplar — **EditMode 173/173 · PlayMode 95/95 (6 VV omitidas)** por CLI, 12/09/2026
+- [x] Ningún fallo penaliza ni bloquea (CP-02); ninguna pista nombra la fuerza ni la distancia correctas (CP-06) — `FirePanel_RF19_SoplarConLasHojasRegadas…`, `FirePanel_RF13_…` (12/09/2026)
+- [ ] Revisado con el usuario
+
+---
+
 ## Assets visuales — `plan.md` §Assets visuales del Slice 1
 
 Personajes = **obra derivada** de los diseños Anonaky con **autorización escrita concedida**

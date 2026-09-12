@@ -23,9 +23,8 @@ namespace Game.UI.Tests
     {
         private const string FireSceneName = "Level1_Cave";
 
-        // N1_Config: única posición efectiva «Muy cerca» (StrikePosition.VeryClose = 2, la más
-        // alta del deslizante); mínimo de golpes efectivos = 3 (mismo umbral que FirePanelTests).
-        private const float VeryClosePosition = 2f;
+        // N1_Config (Fase 5): el deslizante mide fuerza, 7 cae en la franja efectiva.
+        private const float VeryClosePosition = 7f; // fuerza efectiva (N1_Config, Fase 5)
         private const int MinimumEffectiveStrikes = 3;
 
         [TearDown]
@@ -72,6 +71,14 @@ namespace Game.UI.Tests
             var guardados = new List<string>();
             summary.Saver = new SpyProfileSaver(() => guardados.Add("guardar"));
             summary.Show();
+
+            // Mockups 13 y 13b: título, hallazgo, relato en viñetas y habilidad nombrada, sin cifras (RF-45, CP-03).
+            Assert.That(summary.TitleLabel.text, Is.Not.Empty.And.Not.EndWith(":"), "el título es la apertura del resumen");
+            Assert.That(summary.Bullets, Has.Count.EqualTo(2), "una viñeta por frase del relato");
+            Assert.That(summary.SkillLabel.text, Does.Contain("probar y ajustar"), "nombra la habilidad (RF-12)");
+            var textos = new List<string> { summary.TitleLabel.text, summary.DiscoveryLabel.text, summary.SkillLabel.text };
+            textos.AddRange(summary.Bullets.Select(b => b.text));
+            Assert.That(textos, Has.All.Matches<string>(t => !t.Any(char.IsDigit)), "ninguna cifra a la vista del estudiante");
 
             Click(summary.ContinueButton);
             Assert.That(await WaitUntilAsync(() => runner.Flow.Current == GameState.LevelSelect, 5f), Is.True,
@@ -144,6 +151,7 @@ namespace Game.UI.Tests
         {
             var slider = Object.FindAnyObjectByType<Slider>(FindObjectsInactive.Include);
             slider.value = VeryClosePosition;
+            ArrangeFire();
             ClickTimes(ButtonWithLabel("Golpear"), MinimumEffectiveStrikes);
             Click(ButtonWithLabel("Soplar"));
         }
@@ -217,6 +225,20 @@ namespace Game.UI.Tests
             private readonly Action _onSaveActive;
             public SpyProfileSaver(Action onSaveActive) => _onSaveActive = onSaveActive;
             public void SaveActive() => _onSaveActive();
+        }
+
+        /// <summary>Hojas y piedras al punto del fuego: sin eso ningún golpe prende (T22).</summary>
+        private static void ArrangeFire()
+        {
+            var suelo = GameObject.Find("Suelo").transform;
+            var punto = ((RectTransform)suelo.Find("PuntoDeFuego")).anchoredPosition;
+            foreach (RectTransform pieza in suelo)
+            {
+                if (pieza.name != "PuntoDeFuego")
+                {
+                    pieza.anchoredPosition = punto;
+                }
+            }
         }
     }
 }
