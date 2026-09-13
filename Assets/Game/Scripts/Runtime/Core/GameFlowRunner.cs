@@ -44,7 +44,8 @@ namespace Game.Core
             new Dictionary<PhaseId, string>
             {
                 [new PhaseId(LevelId.Fire, 1)] = "Level1_Cave",
-                [new PhaseId(LevelId.Wheel, 1)] = "Level2_Forest"
+                [new PhaseId(LevelId.Wheel, 1)] = "Level2_Forest",
+                [new PhaseId(LevelId.Wheel, 2)] = "Level2_Workshop"
             };
 
         public static GameFlowRunner Instance { get; private set; }
@@ -115,7 +116,12 @@ namespace Game.Core
 
         public bool StartNarrative(string sequenceId) => Apply(Flow.TryStartNarrative(sequenceId));
 
-        public bool StartPlaying(LevelId level, int phase) => Apply(Flow.TryStartPlaying(level, phase));
+        /// <summary>
+        /// Entra a jugar. La retoma de RNF-14 solo salta a una fase que tenga escena en
+        /// <see cref="PlayingScenes"/>: la FSM no sabe qué escenas existen, y este es quien sí.
+        /// </summary>
+        public bool StartPlaying(LevelId level, int phase) =>
+            Apply(Flow.TryStartPlaying(level, phase, PlayingScenes.ContainsKey));
 
         private bool Apply(bool transitioned)
         {
@@ -135,7 +141,11 @@ namespace Game.Core
                 // cambie (T16, RF-07) — es «Reiniciar» desde el menú de pausa, y sin esto la FSM
                 // aceptaba la transición sin que pasara nada. `Playing` es el único estado que se
                 // tiene a sí mismo como destino legal, así que esto no afecta a ningún otro caso.
-                var mustReload = Flow.Current == GameState.Playing;
+                //
+                // Y reentrar a `Narrative` también recarga: es encadenar dos escenas del guion
+                // (la 2.2 con la 2.3) en la misma escena parametrizada, y `Start` es quien lee
+                // el id nuevo (RF-05).
+                var mustReload = Flow.Current == GameState.Playing || Flow.Current == GameState.Narrative;
                 if ((sceneName != SceneManager.GetActiveScene().name || mustReload)
                     && SceneLoader.Instance != null)
                 {
@@ -145,6 +155,13 @@ namespace Game.Core
             else
             {
                 Debug.LogWarning($"El estado {Flow.Current} todavía no tiene escena asociada.", this);
+                // Una fase que todavía no tiene escena —la 3 del Nivel 2 mientras W13 no exista—
+                // no puede dejar al estudiante en una pantalla sin salida (RNF-13): se vuelve al
+                // menú de niveles en vez de quedarse en la escena anterior con la FSM en Playing.
+                if (Flow.Current == GameState.Playing)
+                {
+                    GoTo(GameState.LevelSelect);
+                }
             }
 
             return true;

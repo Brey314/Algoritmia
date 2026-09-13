@@ -34,10 +34,12 @@ comunicación con el usuario en español.
 | Archivo | Qué contiene |
 |---|---|
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
-| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 30/08/2026, rev. 6 — los hallazgos `INC-01`..`INC-42` están cerrados en los documentos; queda abierto `INC-43` (el guion §12 aún declara `PG-07` pendiente pese a estar concedida la autorización), más residuos cosméticos y los puntos abiertos del guion. |
+| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 02/09/2026, rev. 7 — los hallazgos `INC-01`..`INC-42` están cerrados en los documentos; quedan abiertos `INC-43` (el guion §12 aún declara `PG-07` pendiente pese a estar concedida la autorización), `INC-44` (**el guía se llama Algoritm**, no «Chispa» — vale para todo texto y asset nuevo), `INC-45` (el guía cambia de forma en cada nivel), `INC-46` (tareas del Nivel 3, exige decisión) e `INC-47` (12/09/2026: la mecánica del Nivel 1 **mide fuerza y exige acomodar hojas y piedras**, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF). |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las diecisiete superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
 | `claudeDocs/Camara_Narrativa.md` + `Camara_Narrativa_N2.md` | **La cámara narrativa del Nivel 2.** Inventario de cada movimiento de cámara (foco, zoom, paradas por línea) con quién lo decidió —[S] Santiago / [C] Claude— y el diseño completo de 50 encuadres validados contra 16:9. Los valores viven en `Assets/Game/Data/Narrative/N2_*.asset`; el documento explica el porqué, no sustituye al asset. Regla que evita el choque más común: para bajar la cámara al suelo hay que cerrar el plano (`y = 0.35` exige `zoom ≥ 1.43`). |
+| `docs/Camara_Narrativa_N1.md` + `claudeDocs/Camara_Narrativa_N1.md` | **La cámara y la luz del Nivel 1** (desde el 11/09/2026). El de `docs/` es el **diseño de Santiago** (35 encuadres, cada uno con su estado de luz) y se trata como los `.docx`: no se edita desde código. El de `claudeDocs/` es su inventario: qué quedó en los `N1_*.asset` y en el motor (`NarrativeLight`, `CameraKey.HardCut`, `FlashSeconds`, `LightStart`, shader `Algoritm/Oscuridad`), el mapa parada → línea del asset y las desviaciones con su porqué. Solo el Nivel 1 usa la capa de oscuridad; el Nivel 2 no cambia. |
+| `claudeDocs/Mockups de interfaz Algoritmia.html` | **Los mockups de pantalla** (uno por superficie, numerados). Los `todo.md` y `Camara_Narrativa_N1.md` los citan por número («mockup 7 · Nivel 1 · encendido»); es la referencia de disposición de una escena antes de tocar el `.unity`. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. Los cuatro slices están planeados y entre ellos cubren los 47 RF: `Slice 1` Golden Path y nivel fuego · `Slice 2` La Rueda · `Slice 3` El Río y cierre del juego · `Slice 4` progreso, informe docente y borrado de datos. **Se planean en orden y cada uno supone terminado el anterior**, pero desde el 10/09/2026 el Slice 1 y el Slice 2 corren en paralelo — ver «Dos slices a la vez» abajo. Ninguno rediscute `SPEC.md`. |
 | `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión ya hecha con markitdown. **Nunca editar ninguno de los dos desde código.** |
 | `docs/actas/OE*/Acta_*.md` | Actas de seguimiento: qué se decidió, cuándo y por qué. Una carpeta por objetivo específico —`OE2/` serie `O01..O03` (ago 2026), `OE3/` serie `D01..D04` (sep 2026, la abierta)— y dentro `Acta_<serie><NN>_AAAA-MM-DD.md` junto a su `.docx`. Son la trazabilidad de las decisiones; consultarlas cuando haga falta el *porqué* de un RF, no reabrirlas. **No hay tablero Kanban aparte**: el tablero vive en la §6 de cada acta («Compromisos y tablero Kanban»), con los compromisos nuevos y los movimientos al cierre. Ojo al leerlo hacia atrás: **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` en los movimientos posteriores—, así que una tarjeta se rastrea por su texto, no por su id. |
@@ -46,19 +48,27 @@ comunicación con el usuario en español.
 slice abierto más bajo, salvo que la sesión trabaje el carril paralelo del Slice 2.
 
 **Dos slices a la vez (decisión del 10/09/2026).** La Fase 3 del Slice 1 (T12–T19, nivel fuego)
-se cerró el 11/09/2026; del Slice 1 solo queda abierto el **Checkpoint D** (recorridos, RNF-14,
+se cerró el 11/09/2026. El 12/09/2026 Santiago abrió en el Slice 1 la **Fase 5** (T20–T24,
+rediseño de la mecánica del Nivel 1: arrastrar hojas y piedras → deslizante de **fuerza** 0–10 →
+golpear → soplar; INC-47), que quedó hecha salvo la revisión con el usuario (Checkpoint E). Del
+Slice 1 quedan abiertos el **Checkpoint E** (revisión) y el **Checkpoint D** (recorridos, RNF-14,
 mediciones sobre la build portable). El Slice 2 sigue por su carril. **El reparto es por
 assembly, no por slice** — es lo único que evita que los dos carriles se pisen:
 
 | Carril | Toca |
 |---|---|
-| **Slice 1 · Checkpoint D** | `Game.Levels.Fire`, `Game.Core`, escenas del N1, build portable |
+| **Slice 1 · Checkpoints D y E** | `Game.Levels.Fire`, `Game.Core`, escenas del N1, build portable |
 | **Slice 2** | `Game.Levels.Wheel`, `Game.Scaffolding` |
 
 **El orden de las tarjetas y qué está abierto se lee en los dos `todo.md`, no aquí** — una copia
 de ese estado en este archivo se queda vieja en dos commits. Los cruces entre carriles quedaron
 resueltos: `ILevelReporter` (`Game.Core`, de T17) y el menú de pausa (T16) ya existen, así que
-**W15**, **W17** y **W16** no esperan a nadie.
+**W15**, **W17** y **W16** no esperan a nadie. En sentido contrario, W09 (12/09/2026) tocó
+`Game.Core` y `Game.UI` con prueba: `GameFlow` acepta `Narrative → Narrative` y **retoma en la
+primera fase pendiente que tenga escena** cuando se pide una ya confirmada (RNF-14; el runner le
+pasa su tabla de escenas, y sin fase pendiente jugable se repite la pedida), `GameFlowRunner`
+cae al menú si una fase no tiene escena, y `NarrativeSequence.NextSequenceId` encadena dos
+escenas del guion (la 2.2 con la 2.3) sin un `if` en el controlador.
 
 **Al consumir `PlayerProfile`:** W02 lo reescribió. `ConfirmPhase(LevelId, int, …)` no existe; se
 pasa un `PhaseId` (`Game.Core`). El formato del JSON no cambió.
@@ -176,8 +186,9 @@ de empezar:
   La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04 (carga < 10 s),
   RNF-05 (memoria < 2 GB) y RNF-06 (paquete < 500 MB), y junto al `.exe` nace `Datos/` en la
   primera ejecución (RNF-07, RNF-11). Entran las escenas listadas en `EditorBuildSettings` —la
-  lista crece con cada nivel—, con `Boot` de primera. Hoy son ocho, `Level2_Forest` incluida
-  (entró en `4f69140`); las escenas nuevas se añaden desde el Editor (Build Settings), no a mano.
+  lista crece con cada nivel—, con `Boot` de primera. Hoy son nueve, `Level2_Forest` (entró en
+  `4f69140`) y `Level2_Workshop` (W09, 12/09/2026) incluidas; las escenas nuevas se añaden desde
+  el Editor (Build Settings o un script de editor efímero de la skill `edit-scene`), no a mano.
   `/[Bb]uild[s]?/` está en `.gitignore`: el ejecutable no se versiona.
 - **Con Rider abierto**, `mcp__rider__run_unity_tests` /
   `mcp__rider__get_unity_compilation_result` corren contra el Editor **abierto** (sin cerrar/reabrir)
@@ -220,7 +231,8 @@ antes de escribir la primera línea:
   Fuera de esa cadena cuelgan tres assemblies más: `Game.UI` (→ `Game.Core`, `Game.Scaffolding`,
   `UnityEngine.UI`) con los controladores de pantalla, donde va la mayor parte del código de hoy;
   `Game.Audio` (→ `Game.Core`); y `Game.EditorTools`, **solo Editor**, que no referencia ningún
-  `Game.*`. Hoy tienen código `Game.Core`, `Game.Scaffolding`, `Game.UI`, `Game.Levels.Fire`,
+  `Game.*` (trae `PlayFromBoot` y `Sandbox/CharacterProbe*`, una maqueta de personaje que no es
+  código del juego). Hoy tienen código `Game.Core`, `Game.Scaffolding`, `Game.UI`, `Game.Levels.Fire`,
   `Game.Levels.Wheel` y `Game.EditorTools`: `Game.Audio` es un `.asmdef` vacío a la espera de su
   fase —igual que su `.asmdef` de prueba—, y `Game.Reporting` todavía no existe en disco (llega
   en el Slice 4).

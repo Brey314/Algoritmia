@@ -26,9 +26,9 @@ y no es un olvido:** CP-02 la prohíbe, junto con el límite de intentos y la pe
 | 4 | Menú de niveles | `LevelSelect.unity` | RF-03, RNF-19 | ✓ `LevelSelectController` |
 | 5 | Escena narrativa | `Narrative.unity` | RF-05, RF-06 | ✓ `NarrativeSceneController`, parametrizada por `NarrativeSequence` |
 | 6 | Pausa | superposición | RF-07 | ○ no tiene estado propio en la FSM: va sobre `Playing` |
-| 7 | Nivel 1 · panel de encendido | `Level1_Cave.unity` | RF-14, RF-15, RF-19, RF-21 | ○ Slice 1 |
-| 8 | Nivel 2 · fase 1, selección por patrón | `Level2_Forest.unity` | RF-22..RF-26 | ○ Slice 2 |
-| 9 | Nivel 2 · fase 2, ensamblaje | `Level2_Workshop.unity` | RF-27..RF-29 | ○ Slice 2 |
+| 7 | Nivel 1 · panel de encendido | `Level1_Cave.unity` | RF-14, RF-15, RF-19, RF-21 | ✓ `FirePanelController` (Fase 5 del Slice 1, INC-47) |
+| 8 | Nivel 2 · fase 1, selección por patrón | `Level2_Forest.unity` | RF-22..RF-26 | ✓ `ForestSceneController` (W06/W07) |
+| 9 | Nivel 2 · fase 2, ensamblaje | `Level2_Workshop.unity` | RF-27..RF-29 | ✓ `WorkshopSceneController` (W09, 12/09/2026), contenido en `N2_AssemblyContent.asset` |
 | 10 | Nivel 2 · fase 3, editor de secuencia | `Level2_Maze.unity` | RF-30..RF-33 | ○ Slice 2 |
 | 11 | Nivel 3 · exploración cenital | `Level3_River.unity` | RF-35..RF-39 | ○ Slice 3 |
 | 12 | Nivel 3 · panel de ensamblaje | `Level3_River.unity` | RF-40, RF-42, RF-43 | ○ Slice 3 |

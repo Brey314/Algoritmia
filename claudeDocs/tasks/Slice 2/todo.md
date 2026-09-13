@@ -528,26 +528,135 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       (una vez habilitado no se deshabilita) y el barrido de dígitos de W05
 - [x] El estado de error se distingue **sin depender del color** (RNF-19) — la caja habla por la
       misma tablilla del guía con icono: `ForestScene_RNF19_…`
-- [~] Cierre forzado tras confirmar la fase 1 → retoma en la fase 2 (RNF-14) — **la mitad que
-      existe está probada**: la fase 1 queda en disco (`ForestScene_RF04_…` la relee con
-      `Session.Load`). Retomar **en la fase 2** no se puede afirmar hasta que `Level2_Workshop`
-      exista (W09) y `GameFlowRunner` la tenga en su tabla.
+- [x] Cierre forzado tras confirmar la fase 1 → retoma en la fase 2 (RNF-14) — la fase 1 queda
+      en disco (`ForestScene_RF04_…` la relee con `Session.Load`) y desde W09 (12/09/2026) entrar
+      al nivel con la fase 1 confirmada abre el taller:
+      `WorkshopScene_RNF14_ConLaFase1EnDiscoEntrarAlNivelRetomaEnElTaller`, con la regla en
+      `GameFlow` (`GameFlow_RNF14_…`).
 - [ ] Revisado con el usuario
 
 ---
 
 ## Fase 3 — Taller: ensamblaje secuencial (`nivel-rueda`, fase 2)
 
-- [ ] **W08 · `AssemblySequence`, la máquina de ensamblaje** — `M` · `EM`
+- [x] **W08 · `AssemblySequence`, la máquina de ensamblaje** — `M` · `EM` (12/09/2026)
       RF-28, RF-29, RF-11, RF-17, RNF-18, CP-02, CP-06, CP-03, HU-09, CU-07, guion §6.2.2 · depende de: W07
-- [ ] **W09 · Escena `Level2_Workshop` y cableado del ensamblaje** — `M` · `PM` `MCP`
+      `WorkshopPiece` (las seis piezas), `AssemblyStep` (el último paso hecho; el orden del enum
+      **es** el del guion y solo avanza), `AssemblySequence` (C# plano: `Select` → `Machine` →
+      `Place(pieza, sobreElLugarDeArmado)`) y `AssemblyContent` + `WorkshopPiecePlacement`, el
+      asset `Assets/Game/Data/Wheel/N2_AssemblyContent.asset` con las seis piezas, su sitio en
+      el suelo, el arte de cada estado de la carretilla y los tres rechazos **literales** del
+      guion §6.2.2. Ni una coordenada en la regla: si la pieza cayó sobre el lugar de armado lo
+      mide la escena. Un rechazo no toca nada de lo hecho: está escrito en el `<remarks>` como
+      razón pedagógica (CP-02) para que nadie añada un «deshacer».
+      EditMode: `AssemblySequence_RF28_MecanizarExigeTroncoCortoSeleccionado`,
+      `_RF29_RechazaCadaPasoFueraDeSecuenciaConSuMensaje`, `_RF29_SoltarLejosDelLugarDeArmadoNoEjecutaNada`,
+      `_CP02_UnPasoFueraDeOrdenNoDeshaceLoYaHecho`, `_CP06_ElMensajeDiceQueFaltaAntesNoCualEsElPasoCorrecto`,
+      `_RF17_NingunMensajeContieneDigitos` — 6/6 con mensajes de prueba distintos del asset (RNF-18).
+- [x] **W09 · Escena `Level2_Workshop` y cableado del ensamblaje** — `M` · `PM` `MCP` (12/09/2026)
       RF-27, RF-28, RF-29, RF-04, RF-10, RNF-02, RNF-03, RNF-19, CT-06, HU-09, CU-07,
       INC-41 · depende de: W08
+      `WorkshopSceneController` (adaptador delgado) y `Level2_Workshop.unity`, construida con un
+      script de editor efímero (skill `edit-scene`) y añadida a Build Settings (nueve escenas).
+      Las seis piezas se instancian del asset: los troncos cortos son botones (clic → resaltado
+      con **contorno y tamaño**, RNF-19), el eje, la tabla y la caja llevan el mismo
+      `CargoHandle` de la caja del bosque (pulsar y soltar, nunca el arrastre de uGUI, RNF-02) y
+      la herramienta solo está. «Mecanizar» abajo a la izquierda con **candado** como segundo
+      indicador; la tablilla del guía arriba y «Ayuda» arriba a la derecha. El lugar de armado
+      es una placa traslúcida en el centro: al formar el eje las dos ruedas dejan el suelo y
+      aparece la carretilla en su estado 3, luego 4, luego 5; la animación de terminado es un
+      pulso de escala (nada parpadea, RNF-21) y al acabar se confirma la fase 2, se guarda y se
+      sale a `N2_Escena24_Regreso` (contenido del asset).
+      **Sprites provisionales** generados con PIL en la paleta de `Direccion_de_Arte.md`:
+      `env_n2_taller.png`, `prop_n2_pieza_1/3/4/5.png` (los dos troncos cortos comparten
+      `pieza_1`: son gemelos a propósito, B5), `prop_n2_carretilla_e1..e5.png`; la caja reutiliza
+      `prop_n2_caja_suelo.png` (B5 = B3). Se sustituyen por nombre.
+      **Tres cambios fuera de `Game.Levels.Wheel` que el taller necesitaba** (cruce de carril
+      anotado, todos con prueba):
+      1. `NarrativeSequence.NextSequenceId` + `GameFlow` acepta `Narrative → Narrative` +
+         `GameFlowRunner` recarga la escena al reentrar: la 2.2 encadena con la 2.3 y la 2.3
+         declara `NextPhase = 2`. Antes la 2.2 salía al menú y el taller era inalcanzable.
+         `GameFlow_RF05_DosEscenasNarrativasSeEncadenanSinPasarPorElMenu`,
+         `NarrativeScene_RF05_LaEscena22EncadenaConLa23YEstaEntraAlTaller`.
+      2. `GameFlow.TryStartPlaying` **retoma en la primera fase pendiente** cuando la pedida ya
+         está confirmada (RNF-14): la apertura del nivel siempre pide la fase 1, y con la 1 en
+         disco se entra al taller. Con el nivel completo se juega la pedida (repetir es
+         legítimo) y «Reiniciar» no cambia porque su fase no está confirmada. También rechaza una
+         fase que el nivel no tiene. `GameFlow_RNF14_EntrarAUnaFaseYaConfirmadaRetomaEnLaPrimeraPendiente`.
+         **Corrección del 12/09/2026 (bug de Santiago: «al terminar la primera narrativa del
+         nivel 2 se sale automáticamente»):** con la 1 y la 2 confirmadas la retoma saltaba a la
+         3, que no tiene escena hasta W13, y el runner caía al menú. `TryStartPlaying` recibe
+         ahora un predicado «¿esta fase se puede jugar?» y solo salta a una pendiente jugable;
+         el runner le pasa su tabla de escenas. Con las dos confirmadas se repite la fase 1.
+         `GameFlow_RNF14_SiLaFasePendienteNoEsJugableTodaviaSeJuegaLaPedida`,
+         `GameFlowRunner_RNF14_ConLasDosFasesExistentesConfirmadasEntrarAlNivel2VuelveAlBosque`.
+      3. `GameFlowRunner`: `(Rueda, 2) → Level2_Workshop`, y una fase **sin escena** (la 3
+         mientras W13 no exista) cae al menú de niveles en vez de dejar la FSM en `Playing`
+         sobre la escena anterior (RNF-13).
+      PlayMode: `WorkshopScene_RF27_PresentaLasSeisPiezas`,
+      `_RF28_MecanizarSeHabilitaSoloConTroncoSeleccionadoYConDobleIndicador`,
+      `_RF29_UnPasoFueraDeOrdenDevuelveLaPiezaYNoDeshaceNada`, `_RF29_LaCarretillaCreceSobreLoAnteriorEnCadaPaso`,
+      `_RF29_LaSecuenciaCompletaConfirmaYGuardaLaFase2` (desde `Boot` con perfil real),
+      `_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido`, `_RNF03_NadaSeSaleDePantallaNiSeSolapa`
+      (aserción de layout: nada fuera de pantalla, ninguna pieza sobre otra ni sobre el lugar de
+      armado en reposo), `_RNF14_ConLaFase1EnDiscoEntrarAlNivelRetomaEnElTaller` — 8/8 por el
+      corredor de Rider. **Cazado por la prueba:** el arrastre de prueba no puede esperar un
+      cuadro entre mover y soltar, porque en el Editor hay ratón real y `Update` sigue al cursor
+      de verdad. Pendiente de ver a ojo con el usuario: el pulso de terminado y el candado.
+      **Corrida del 12/09/2026 (corredor de Rider, Editor abierto):** EditMode 128/128
+      (`Wheel`, `Core`, `Scaffolding`, `Architecture`) · PlayMode `WorkshopSceneTests` 8/8,
+      `ForestSceneTests` 28/28, `NarrativeSceneTests` 18/18, `Game.Core.PlayMode.Tests` 7/7.
+      **Segunda vuelta (12/09/2026, pedido de Santiago): el taller es el bosque.** El fondo
+      generado (`env_n2_taller.png`) se descartó: la fase 2 usa `env_n2_bosque_claro.png` con el
+      plano fijo de `Camara_Narrativa_N2.md` §5.6 —foco (0.772, 0.470), zoom 1.32, idéntico al
+      último encuadre de la 2.3— aplicado con `IllustrationFraming.Apply`: cubre sin deformar y
+      el arte definitivo se sustituye por nombre. **Las piezas cuelgan de la ilustración** en
+      fracciones de ella (`WorkshopPiecePlacement.Position/Size`, la convención de
+      `NarrativeProp`), de oeste a este en el orden en que el guía las nombra, y la carretilla
+      crece en el sitio de las ruedas (`AssemblyPosition`); el cierre es el **empuje de cámara**
+      del §5.6 (1,2 s) sobre el mundo, como el del bosque. **No hay zona fija de armado**: el eje
+      se suelta sobre las ruedas y la tabla y la caja sobre el conjunto (o sobre los troncos
+      si no existe aún), que es lo que hace posible el intento fuera de orden literal del guion.
+      Interfaz con la anatomía del Nivel 1: tablilla arriba centrada (marco borde-tablilla, fondo
+      marfil, icono), botón de pista circular arriba a la izquierda, «Mecanizar» abajo centrado
+      con contorno carbón, cara clara, `ButtonPressFeedback` y tablilla «Aún no» con candado.
+      Sin pausa: es W17. `CompletionFraming` va a x 0.705 y no al 0.785 del documento porque la
+      carretilla crece donde estaban las ruedas, no donde estaba la tabla; anotado para
+      Santiago. Capturas en `%AppData%\LocalLow\DefaultCompany\My project\TestScreenshots\
+      Workshop_01..03.png` (prueba `_RNF20_Captura…`, categoría VisualVerification). PlayMode
+      `WorkshopSceneTests` 10/10, con `_RNF23_ElEntornoEsElDelBosque…` (cubre la pantalla con el
+      encuadre de la 2.3) y la aserción de que ni tablilla ni botones tapan la carretilla.
+      **Hallazgo corregido en la tercera vuelta (12/09/2026, pedido de Santiago: «test completo
+      de visibilidad del nivel 2»):** en la 2.2 el cuadro de diálogo tapaba el tronco del niño
+      y la piedra de papá. Dos pruebas nuevas en `NarrativeSceneTests`, un caso por escena:
+      `NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2` (VisualVerification: captura
+      cada parada asentada y escribe `N2_informe_<id>.txt` con dónde queda cada objeto respecto
+      a la pantalla y al cuadro) y `NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadro…`
+      (ningún objeto que se mueve en su línea queda bajo el cuadro, ningún visible más del 15 %,
+      R1 y R2 sobre la cámara real, y el foco nunca salta más de un canvas por segundo). Para
+      que pasaran: el cuadro de diálogo de `Narrative.unity` baja de 240 a 180 px (cuerpo 680×134,
+      la línea más larga del N1 sigue cabiendo, `NarrativeScene_RNF01_…`); las paradas de la 2.2
+      bajan el foco y abren a 1.80 (detalle en `Camara_Narrativa.md`, con el `CompletionFraming`
+      del bosque alineado al nuevo inicio); la 2.3 pinta las seis piezas donde las pone el
+      taller y abre sus tres primeros planos a 1.60; la 2.4 pinta carretilla y piedra; la 2.5 la
+      carretilla cargada con paradas más bajas. **Corrida:** RNF03 6/6 escenas, capturas 2.2 y
+      2.3 revisadas a ojo, `NarrativeSceneTests` restantes 18/18, `ForestSceneTests` 28/28.
+      Sin arte aún: familia, Algoritm, fuego y montón del Puente I, y la carretilla de la 2.4
+      no avanza con las líneas.
+      `GameFlow_RF05_NarrativeSeParametriza…` pedía la fase 2 del **Nivel 1**, que no existe:
+      pasó a pedirla al Nivel 2. No se corrió la suite PlayMode completa de `Game.UI` ni la del
+      Nivel 1: no se tocaron, y el corredor de Rider expira con tres assemblies a la vez.
 
 ### ✅ Checkpoint W-D — Fase 2 completa
-- [ ] El taller se juega entero: perforar → perforar → eje → tabla → caja
-- [ ] Cada intento fuera de orden da el mensaje del guion **y no deshace nada** (CP-02)
-- [ ] Cierre forzado tras confirmar la fase 2 → retoma en la fase 3 (RNF-14)
+- [x] El taller se juega entero: perforar → perforar → eje → tabla → caja —
+      `WorkshopScene_RF29_LaSecuenciaCompletaConfirmaYGuardaLaFase2` lo recorre desde `Boot` con
+      perfil real hasta salir a la narrativa (12/09/2026)
+- [x] Cada intento fuera de orden da el mensaje del guion **y no deshace nada** (CP-02) —
+      `AssemblySequence_RF29_…`, `_CP02_…` y `WorkshopScene_RF29_UnPasoFueraDeOrden…`
+- [~] Cierre forzado tras confirmar la fase 2 → retoma en la fase 3 (RNF-14) — **la mitad que
+      existe está probada**: la fase 2 queda en disco (`Session.Load`) y la regla de retoma ya
+      vive en `GameFlow` (`GameFlow_RNF14_…`). Retomar **en la fase 3** no se puede afirmar hasta
+      que `Level2_Maze` exista (W13); hoy esa entrada cae al menú de niveles (RNF-13).
 - [ ] Revisado con el usuario
 
 ---

@@ -75,6 +75,27 @@ namespace Game.Core.Tests
             await WaitUntil(() => SceneManager.GetActiveScene().name == "Level2_Forest");
         }
 
+        [Test]
+        [Timeout(20000)]
+        public async Task GameFlowRunner_RNF14_ConLasDosFasesExistentesConfirmadasEntrarAlNivel2VuelveAlBosque()
+        {
+            var runner = await BootToMainMenu();
+            runner.GoTo(GameState.ProfileSelect);
+            var profile = PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
+            profile.Reach(LevelId.Wheel);
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 1), default);
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 2), default);
+            runner.SelectProfile(profile);
+
+            // La apertura del nivel pide la fase 1. La pendiente es la 3, que todavía no tiene
+            // escena (W13): se repite la fase 1 en vez de caer al menú «sin continuar»
+            // (visto el 12/09/2026).
+            Assert.That(runner.StartPlaying(LevelId.Wheel, 1), Is.True);
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Playing));
+            Assert.That(runner.Flow.PlayingPhase, Is.EqualTo(1));
+            await WaitUntil(() => SceneManager.GetActiveScene().name == "Level2_Forest");
+        }
+
         private static async Task<GameFlowRunner> BootToMainMenu()
         {
             SceneManager.LoadScene("Boot");

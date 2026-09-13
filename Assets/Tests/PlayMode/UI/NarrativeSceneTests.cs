@@ -452,6 +452,212 @@ namespace Game.UI.Tests
                 "pero cae donde estaba: lo anguloso no rueda (RF-23)");
         }
 
+        /// <summary>
+        /// Recorre las seis escenas del Nivel 2 parada por parada, con la cámara y los movimientos
+        /// ya asentados, y guarda una captura y un informe de dónde queda cada objeto pintado
+        /// respecto a la pantalla y al cuadro de diálogo. Es la hoja de verificación de
+        /// <c>Camara_Narrativa_N2.md</c> §10 sobre el motor real, no sobre recortes.
+        /// </summary>
+        [TestCase("N2_PuenteI")]
+        [TestCase("N2_Escena21_Bosque")]
+        [TestCase("N2_Escena22_ElPatron")]
+        [TestCase("N2_Escena23_Construccion")]
+        [TestCase("N2_Escena24_Regreso")]
+        [TestCase("N2_Escena25_Cierre")]
+        [Timeout(120000)]
+        [Category("VisualVerification")]
+        [Description("Verificar en las capturas N2_*: cada parada muestra lo que su línea cuenta, ningún objeto " +
+                     "pintado queda bajo el cuadro de diálogo mientras se mueve, la línea de árboles nunca sale " +
+                     "del cuadro (R1), ningún encuadre cruza el eje del espejo (R2), y el paso entre paradas es " +
+                     "un solo gesto continuo.")]
+        public async Task NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(string id)
+        {
+            var informe = new System.Text.StringBuilder();
+            var pantalla = new Rect(0f, 0f, Screen.width, Screen.height);
+
+            var (controller, _) = await OpenNarrative(id, LevelId.Wheel);
+            var secuencia = SequenceNamed(controller, id);
+            var cuadro = (RectTransform)GameObject.Find("Canvas/CuadroDialogo").transform;
+            var lineas = secuencia.Lines.Length;
+
+            for (var linea = 0; linea < lineas; linea++)
+            {
+                if (linea > 0)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                await Asentar(controller, secuencia, linea);
+                Capturar($"N2_{id}_L{linea:00}");
+
+                var camara = controller.CameraCurrent;
+                informe.AppendLine(
+                    FormattableString.Invariant($"{id} L{linea} foco=({camara.Focus.x:0.000},{camara.Focus.y:0.000}) zoom={camara.Zoom:0.00} ")
+                    + FormattableString.Invariant($"arriba={camara.Focus.y + 0.5f / camara.Zoom:0.000} ")
+                    + FormattableString.Invariant($"[{camara.Focus.x - 0.25f / camara.Zoom:0.000},{camara.Focus.x + 0.25f / camara.Zoom:0.000}]"));
+                var diálogo = EnPantalla(cuadro);
+                for (var i = 0; i < controller.Props.Count; i++)
+                {
+                    var (prop, rect) = controller.Props[i];
+                    var caja = Dibujo(rect);
+                    var enPantalla = caja.Overlaps(pantalla);
+                    var bajoElCuadro = enPantalla && caja.Overlaps(diálogo);
+                    var seMueve = prop.Motion != PropMotion.None && prop.MotionLine == linea;
+                    informe.AppendLine(
+                        FormattableString.Invariant($"   prop{i} ({prop.Position.x:0.000},{prop.Position.y:0.000}) ")
+                        + FormattableString.Invariant($"y=[{caja.yMin / pantalla.height:0.00},{caja.yMax / pantalla.height:0.00}] ")
+                        + FormattableString.Invariant($"x=[{caja.xMin / pantalla.width:0.00},{caja.xMax / pantalla.width:0.00}] ")
+                        + (enPantalla ? "visible" : "fuera") + (bajoElCuadro ? " BAJO_EL_CUADRO" : "") + (seMueve ? " SE_MUEVE" : ""));
+                }
+            }
+
+            var carpeta = $"{Application.persistentDataPath}/TestScreenshots";
+            System.IO.Directory.CreateDirectory(carpeta);
+            System.IO.File.WriteAllText($"{carpeta}/N2_informe_{id}.txt", informe.ToString());
+            TestContext.WriteLine(informe.ToString());
+        }
+
+        /// <summary>
+        /// Lo que de verdad se dibuja de un objeto pintado: la casilla es cuadrada y el sprite se
+        /// ajusta dentro sin deformarse, así que una barra fina ocupa una franja de la casilla y
+        /// no la casilla entera. Medir la casilla acusaba al tronco largo de estar bajo el cuadro
+        /// cuando lo que estaba era vacío.
+        /// </summary>
+        private static Rect Dibujo(RectTransform rect)
+        {
+            var caja = EnPantalla(rect);
+            var image = rect.GetComponent<Image>();
+            if (image == null || image.sprite == null || !image.preserveAspect || caja.width <= 0f || caja.height <= 0f)
+            {
+                return caja;
+            }
+
+            var aspecto = image.sprite.rect.width / image.sprite.rect.height;
+            var ancho = Mathf.Min(caja.width, caja.height * aspecto);
+            var alto = Mathf.Min(caja.height, caja.width / aspecto);
+            return new Rect(caja.center.x - ancho / 2f, caja.center.y - alto / 2f, ancho, alto);
+        }
+
+        /// <summary>Espera a que la cámara llegue a su parada y a que termine cualquier movimiento de la línea.</summary>
+        private static async Task Asentar(NarrativeSceneController controller, NarrativeSequence secuencia, int linea)
+        {
+            var movimiento = secuencia.Props
+                .Where(prop => prop.Motion != PropMotion.None && prop.MotionLine == linea)
+                .Select(prop => prop.MotionSeconds)
+                .DefaultIfEmpty(0f)
+                .Max();
+            // La cámara se acerca asintóticamente: se da por llegada cuando la diferencia con
+            // el objetivo ya no se ve y el movimiento de la línea terminó, con un tope **en
+            // segundos** por si nunca converge — en frames no vale: el Editor corre a más de
+            // 200 fps en pruebas y 600 cuadros eran menos de 3 s, que no bastaban (12/09/2026).
+            var inicio = Time.realtimeSinceStartup;
+            var anterior = controller.CameraCurrent;
+            var saltoMaximo = 0f;
+            while (Time.realtimeSinceStartup - inicio < 12f)
+            {
+                var actual = controller.CameraCurrent;
+                var objetivo = controller.CameraTarget;
+                saltoMaximo = Mathf.Max(saltoMaximo, Vector2.Distance(actual.Focus, anterior.Focus) / Mathf.Max(Time.deltaTime, 0.0001f));
+                anterior = actual;
+                if (Time.realtimeSinceStartup - inicio > movimiento + 0.2f
+                    && Vector2.Distance(actual.Focus, objetivo.Focus) < 0.0015f
+                    && Mathf.Abs(actual.Zoom - objetivo.Zoom) < 0.004f)
+                {
+                    break;
+                }
+
+                await Awaitable.NextFrameAsync();
+            }
+
+            // Un solo gesto continuo: la velocidad del foco nunca pasa de un canvas entero por
+            // segundo, que es lo que separaría un paneo de un salto (RNF-21, §5.6 del diseño).
+            Assert.That(saltoMaximo, Is.LessThan(1f),
+                $"la cámara saltó ({saltoMaximo:0.00} canvas/s) en vez de deslizarse hacia la parada de la línea {linea}");
+
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+        }
+
+        /// <summary>
+        /// En cada parada de las seis escenas del Nivel 2, ningún objeto que se mueve en esa línea
+        /// queda bajo el cuadro de diálogo, y ninguno de los visibles queda más que un poco. Es
+        /// lo que pasaba en la 2.2 con el tronco del niño y la piedra de papá (12/09/2026).
+        /// </summary>
+        [TestCase("N2_PuenteI")]
+        [TestCase("N2_Escena21_Bosque")]
+        [TestCase("N2_Escena22_ElPatron")]
+        [TestCase("N2_Escena23_Construccion")]
+        [TestCase("N2_Escena24_Regreso")]
+        [TestCase("N2_Escena25_Cierre")]
+        [Timeout(120000)]
+        public async Task NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(string id)
+        {
+            var pantalla = new Rect(0f, 0f, Screen.width, Screen.height);
+            var (controller, _) = await OpenNarrative(id, LevelId.Wheel);
+            var secuencia = SequenceNamed(controller, id);
+            var cuadro = (RectTransform)GameObject.Find("Canvas/CuadroDialogo").transform;
+
+            for (var linea = 0; linea < secuencia.Lines.Length; linea++)
+            {
+                if (linea > 0)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                await Asentar(controller, secuencia, linea);
+                var diálogo = EnPantalla(cuadro);
+
+                // R1 y R2 sobre lo que de verdad se ve, no sobre lo escrito.
+                var camara = controller.CameraCurrent;
+                Assert.That(camara.Focus.y + 0.5f / camara.Zoom, Is.GreaterThanOrEqualTo(IllustrationFraming.TreeLine - 0.01f),
+                    $"{id} L{linea}: la línea de árboles sale del cuadro (R1)");
+                Assert.That((camara.Focus.x - 0.25f / camara.Zoom < IllustrationFraming.MirrorAxis)
+                            == (camara.Focus.x + 0.25f / camara.Zoom < IllustrationFraming.MirrorAxis), Is.True,
+                    $"{id} L{linea}: el cuadro cruza el eje del espejo (R2)");
+
+                for (var i = 0; i < controller.Props.Count; i++)
+                {
+                    var (prop, rect) = controller.Props[i];
+                    var caja = Dibujo(rect);
+                    if (!caja.Overlaps(pantalla))
+                    {
+                        continue; // Fuera de cuadro a propósito: la piedra de la 2.4 entra después.
+                    }
+
+                    var seMueve = prop.Motion != PropMotion.None && prop.MotionLine == linea;
+                    var tapado = Mathf.Max(0f, diálogo.yMax - caja.yMin);
+                    if (seMueve)
+                    {
+                        Assert.That(tapado, Is.LessThanOrEqualTo(0f),
+                            $"{id} L{linea}: el objeto {i} que se mueve en esta línea queda {tapado:0} px bajo el cuadro de diálogo");
+                    }
+                    else
+                    {
+                        Assert.That(tapado, Is.LessThanOrEqualTo(caja.height * 0.15f),
+                            $"{id} L{linea}: el objeto {i} queda {tapado:0} px bajo el cuadro de diálogo, más del 15 % de su alto");
+                    }
+                }
+            }
+        }
+
+        /// <summary>Guarda una captura si hay Game View. En batchmode no la hay y se sigue sin ella.</summary>
+        private static void Capturar(string nombre)
+        {
+            if (Application.isBatchMode)
+            {
+                return;
+            }
+
+            var carpeta = $"{Application.persistentDataPath}/TestScreenshots";
+            System.IO.Directory.CreateDirectory(carpeta);
+            var ruta = $"{carpeta}/{nombre}.png";
+            System.IO.File.Delete(ruta);
+
+            var textura = ScreenCapture.CaptureScreenshotAsTexture();
+            System.IO.File.WriteAllBytes(ruta, textura.EncodeToPNG());
+            Object.Destroy(textura);
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
         private static async Task EsperarSegundos(float segundos)
@@ -516,5 +722,35 @@ namespace Game.UI.Tests
         private static void Click(Button button) =>
             ExecuteEvents.Execute(button.gameObject, new PointerEventData(EventSystem.current),
                 ExecuteEvents.pointerClickHandler);
+
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF05_LaEscena22EncadenaConLa23YEstaEntraAlTaller()
+        {
+            var (controller, runner) = await OpenNarrative("N2_Escena22_ElPatron", LevelId.Wheel);
+            var lineas = SequenceNamed(controller, "N2_Escena22_ElPatron").Lines.Length;
+
+            for (var i = 0; i < lineas; i++)
+            {
+                Click(controller.AdvanceButton);
+            }
+
+            // Dos escenas seguidas del guion (§6.1.3 → §6.2.1): el asset declara la siguiente y
+            // el flujo sigue en Narrative con el id nuevo, sin pasar por el menú.
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Narrative), "sigue en la narrativa");
+            Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N2_Escena23_Construccion"));
+
+            var (construccion, runner2) = await OpenNarrative("N2_Escena23_Construccion", LevelId.Wheel);
+            lineas = SequenceNamed(construccion, "N2_Escena23_Construccion").Lines.Length;
+
+            for (var i = 0; i < lineas; i++)
+            {
+                Click(construccion.AdvanceButton);
+            }
+
+            Assert.That(runner2.Flow.Current, Is.EqualTo(GameState.Playing), "la 2.3 sale a jugar");
+            Assert.That(runner2.Flow.PlayingLevel, Is.EqualTo(LevelId.Wheel));
+            Assert.That(runner2.Flow.PlayingPhase, Is.EqualTo(2), "la fase del taller que declara el asset");
+        }
     }
 }

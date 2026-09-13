@@ -16,30 +16,40 @@ MonoBehaviour:
   <Level>k__BackingField: 2
   <Illustration>k__BackingField: {fileID: 21300000, guid: bbed55b5b972c6c44ac36e4f02bc21c2, type: 3}
   <CameraStart>k__BackingField:
-    <Focus>k__BackingField: {x: 0.852, y: 0.455}
-    <Zoom>k__BackingField: 1.95
+    <Focus>k__BackingField: {x: 0.852, y: 0.4}
+    <Zoom>k__BackingField: 1.7
   <CameraEnd>k__BackingField:
     <Focus>k__BackingField: {x: 0.772, y: 0.5}
     <Zoom>k__BackingField: 1.16
   <CameraKeys>k__BackingField:
   - <Line>k__BackingField: 2
     <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.84, y: 0.465}
-      <Zoom>k__BackingField: 1.75
+      <Focus>k__BackingField: {x: 0.84, y: 0.41}
+      <Zoom>k__BackingField: 1.65
   - <Line>k__BackingField: 3
     <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.808, y: 0.485}
+      <Focus>k__BackingField: {x: 0.808, y: 0.46}
       <Zoom>k__BackingField: 1.4
   - <Line>k__BackingField: 4
     <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.798, y: 0.492}
+      <Focus>k__BackingField: {x: 0.798, y: 0.47}
       <Zoom>k__BackingField: 1.3
   - <Line>k__BackingField: 5
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.772, y: 0.5}
       <Zoom>k__BackingField: 1.16
   <CameraSmoothingSeconds>k__BackingField: 2.5
-  <Props>k__BackingField: []
+  <Props>k__BackingField:
+  - <Art>k__BackingField: {fileID: 21300000, guid: 730e4e910b1eebf42bde323e156e0bff, type: 3}
+    <Position>k__BackingField: {x: 0.79, y: 0.32}
+    <Size>k__BackingField: 0.22
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
   <IsReflectiveClosing>k__BackingField: 1
   <NextPhase>k__BackingField: 0
   <Lines>k__BackingField:

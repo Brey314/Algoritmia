@@ -65,6 +65,10 @@ namespace Game.Scaffolding
         public int NextPhase { get; private set; }
 
         [field: SerializeField]
+        [field: Tooltip("Secuencia narrativa que sigue a esta al terminar, p. ej. la 2.3 tras la 2.2. Vacío = ninguna. Tiene prioridad sobre la fase siguiente.")]
+        public string NextSequenceId { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Las líneas, en el orden en que se leen.")]
         public DialogueLine[] Lines { get; private set; } = new DialogueLine[0];
 

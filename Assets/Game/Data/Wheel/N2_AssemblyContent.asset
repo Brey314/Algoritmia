@@ -1,0 +1,73 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f3e6db1fe07db7549978b87c3520cbb4, type: 3}
+  m_Name: N2_AssemblyContent
+  m_EditorClassIdentifier: Game.Levels.Wheel::Game.Levels.Wheel.AssemblyContent
+  <Pieces>k__BackingField:
+  - <Piece>k__BackingField: 0
+    <Art>k__BackingField: {fileID: 21300000, guid: 0792b2c700950ea4bb7333f999dd66f4, type: 3}
+    <Position>k__BackingField: {x: 0.655, y: 0.3}
+    <Size>k__BackingField: 0.12
+  - <Piece>k__BackingField: 1
+    <Art>k__BackingField: {fileID: 21300000, guid: 0792b2c700950ea4bb7333f999dd66f4, type: 3}
+    <Position>k__BackingField: {x: 0.7, y: 0.3}
+    <Size>k__BackingField: 0.12
+  - <Piece>k__BackingField: 2
+    <Art>k__BackingField: {fileID: 21300000, guid: cdefe5124478a1d48a154482196b0026, type: 3}
+    <Position>k__BackingField: {x: 0.76, y: 0.285}
+    <Size>k__BackingField: 0.17
+  - <Piece>k__BackingField: 4
+    <Art>k__BackingField: {fileID: 21300000, guid: 193d5366145c94643a510de4ef3b4573, type: 3}
+    <Position>k__BackingField: {x: 0.815, y: 0.3}
+    <Size>k__BackingField: 0.11
+  - <Piece>k__BackingField: 3
+    <Art>k__BackingField: {fileID: 21300000, guid: e32ddf3af76ac9a4ba4e7861262d59f5, type: 3}
+    <Position>k__BackingField: {x: 0.87, y: 0.285}
+    <Size>k__BackingField: 0.16
+  - <Piece>k__BackingField: 5
+    <Art>k__BackingField: {fileID: 21300000, guid: 55ca788eb08d23345b9f57fc38312cf0, type: 3}
+    <Position>k__BackingField: {x: 0.925, y: 0.31}
+    <Size>k__BackingField: 0.11
+  <DrilledWheelArt>k__BackingField: {fileID: 21300000, guid: 0c69c9fd600009540b90113856b173c4, type: 3}
+  <AxleArt>k__BackingField: {fileID: 21300000, guid: 2cdae96867bd9694eab2fbc2688616d7, type: 3}
+  <PlankArt>k__BackingField: {fileID: 21300000, guid: 457c5ddb3375d484681cefa09af6f9cd, type: 3}
+  <CompleteArt>k__BackingField: {fileID: 21300000, guid: 730e4e910b1eebf42bde323e156e0bff, type: 3}
+  <SelectedMessage>k__BackingField: "El tronco qued\xF3 resaltado."
+  <AlreadyWheelMessage>k__BackingField: 'Ese tronco ya tiene su agujero: es una rueda.'
+  <SelectNeededMessage>k__BackingField: Mecanizar necesita un tronco corto resaltado.
+  <WheelDrilledMessage>k__BackingField: "Se abri\xF3 un agujero en el centro: el
+    tronco ya es una rueda."
+  <BothWheelsMessage>k__BackingField: "Segunda rueda lista. Las dos tienen por d\xF3nde
+    entrar algo."
+  <AxleFormedMessage>k__BackingField: "El tronco largo entr\xF3 por el centro de
+    las dos ruedas: ya hay un eje."
+  <PlankPlacedMessage>k__BackingField: "La tabla qued\xF3 montada sobre el conjunto."
+  <CompleteMessage>k__BackingField: "La caja va sobre la tabla. La carretilla est\xE1
+    completa."
+  <AxleTooEarlyMessage>k__BackingField: "El tronco todav\xEDa no tiene por d\xF3nde
+    entrar el palo."
+  <PlankTooEarlyMessage>k__BackingField: "La tabla no tiene sobre qu\xE9 apoyarse
+    todav\xEDa."
+  <CargoTooEarlyMessage>k__BackingField: "La caja se caer\xEDa. Falta algo plano
+    debajo."
+  <MissedMessage>k__BackingField: "La pieza vuelve a su sitio: cay\xF3 lejos del
+    lugar de armado."
+  <AssemblyPosition>k__BackingField: {x: 0.68, y: 0.33}
+  <AssemblySize>k__BackingField: 0.3
+  <CompletionSeconds>k__BackingField: 1.2
+  <ClosingSequenceId>k__BackingField: N2_Escena24_Regreso
+  <PlayFraming>k__BackingField:
+    <Focus>k__BackingField: {x: 0.772, y: 0.47}
+    <Zoom>k__BackingField: 1.32
+  <CompletionFraming>k__BackingField:
+    <Focus>k__BackingField: {x: 0.705, y: 0.445}
+    <Zoom>k__BackingField: 1.56

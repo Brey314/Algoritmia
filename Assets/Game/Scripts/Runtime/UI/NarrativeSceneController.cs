@@ -492,6 +492,14 @@ namespace Game.UI
         /// </remarks>
         private void Leave()
         {
+            // Dos escenas del guion seguidas —la 2.2 y la 2.3— se encadenan por el asset: el
+            // flujo vuelve a `Narrative` con el id nuevo y la escena se recarga (RF-05).
+            if (_sequence != null && !string.IsNullOrEmpty(_sequence.NextSequenceId)
+                && Runner.StartNarrative(_sequence.NextSequenceId))
+            {
+                return;
+            }
+
             if (_sequence != null && _sequence.NextPhase > 0
                 && Runner.StartPlaying(_sequence.Level, _sequence.NextPhase))
             {
