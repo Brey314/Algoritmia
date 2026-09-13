@@ -100,20 +100,37 @@ namespace Game.UI.Tests
         }
 
         [Test]
-        [Timeout(30000)]
-        public async Task NarrativeScene_RF05_AvanzarLlegaHastaElFinalYSaleAOtraPantalla()
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF10_LaAperturaEncadenaLasTresEscenasDelNivel1YEntraAJugar()
         {
+            // La apertura del guion §3.1 y detrás las escenas 1.1 y 1.2 del §4, encadenadas
+            // por el asset y sin un solo `if` en el controlador (RF-05).
+            var esperadas = new[] { "N1_Apertura", "N1_AparicionGuia", "N1_Hallazgo" };
             var (controller, runner) = await OpenNarrative("N1_Apertura");
-            var lineas = SequenceNamed(controller, "N1_Apertura").Lines.Length;
+            var vistas = new System.Collections.Generic.List<string>();
 
-            for (var i = 0; i < lineas; i++)
+            while (runner.Flow.Current == GameState.Narrative && vistas.Count < esperadas.Length + 1)
             {
-                Click(controller.AdvanceButton);
+                var id = runner.Flow.NarrativeSequenceId;
+                vistas.Add(id);
+                foreach (var _ in SequenceNamed(controller, id).Lines)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                Assert.That(controller.Dialogue.IsFinished, Is.True, $"{id} se recorre entera");
+                if (runner.Flow.Current == GameState.Narrative)
+                {
+                    controller.Begin(); // la escena se recarga con el id nuevo
+                    await Awaitable.NextFrameAsync();
+                }
             }
 
-            Assert.That(controller.Dialogue.IsFinished, Is.True, "la escena terminó");
-            Assert.That(runner.Flow.Current, Is.Not.EqualTo(GameState.Narrative),
-                "al terminar sale de la escena narrativa, no se queda sin salida (RNF-13)");
+            Assert.That(vistas, Is.EqualTo(esperadas), "las tres, en orden");
+            // Y desemboca en la cueva jugable, no en el menú: el recorrido queda cerrado (RNF-13).
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Playing), "sale a jugar");
+            Assert.That(runner.Flow.PlayingLevel, Is.EqualTo(LevelId.Fire), "el nivel de la secuencia");
+            Assert.That(runner.Flow.PlayingPhase, Is.EqualTo(1), "la fase que declara el asset");
         }
 
         [Test]
@@ -260,13 +277,15 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(30000)]
-        public async Task NarrativeScene_RF05_LaParadaDeCorteSecoSaltaSinSuavizado()
+        public async Task NarrativeScene_RF05_ElCorteSecoFundeANegroSaltaAOscurasYVuelve()
         {
             var (controller, _) = await OpenNarrative("N1_Apertura");
             var secuencia = SequenceNamed(controller, "N1_Apertura");
             var corte = secuencia.CameraKeys.First(k => k.HardCut);
-            Assume.That(corte.Framing.Focus, Is.Not.EqualTo(secuencia.CameraStart.Focus),
+            var antes = secuencia.CameraKeys.Last(k => k.Line < corte.Line).Framing.Focus;
+            Assume.That(corte.Framing.Focus, Is.Not.EqualTo(antes),
                 "el corte seco de la apertura salta a otro sitio del lienzo");
+            Assume.That(secuencia.HardCutFadeSeconds, Is.GreaterThan(0f), "la escena declara fundido");
 
             for (var i = 0; i < corte.Line; i++)
             {
@@ -274,9 +293,28 @@ namespace Game.UI.Tests
             }
 
             await Awaitable.NextFrameAsync();
+            Assert.That(controller.CutFade, Is.LessThan(1f), "el fundido arrancó");
+            // Donde quedó la cámara al empezar el fundido: no tiene por qué ser el encuadre
+            // anterior exacto, porque venía suavizándose hacia él.
+            var congelado = controller.CameraCurrent.Focus;
 
-            // Un solo cuadro después ya está en el encuadre: el salto ocurre a oscuras y nadie
-            // debe ver la cámara recorrer el lienzo (docs/Camara_Narrativa_N1.md §10).
+            // La cámara nunca está a medio camino: o en el encuadre viejo o en el del corte. El
+            // salto ocurre dentro del negro y por eso nadie ve recorrer el lienzo.
+            var masOscuro = 1f;
+            var inicio = Time.realtimeSinceStartup;
+            while (Time.realtimeSinceStartup - inicio < secuencia.HardCutFadeSeconds + 0.2f)
+            {
+                masOscuro = Mathf.Min(masOscuro, controller.CutFade);
+                Assert.That(controller.CameraCurrent.Focus,
+                    Is.EqualTo(congelado).Or.EqualTo(corte.Framing.Focus),
+                    "durante el corte la cámara no se suaviza: o quieta, o ya en el encuadre nuevo");
+                await Awaitable.NextFrameAsync();
+            }
+
+            // El mínimo exacto depende de dónde caiga el cuadro respecto al punto negro: basta con
+            // comprobar que la imagen se apagó de verdad, no que tocó el cero.
+            Assert.That(masOscuro, Is.LessThan(0.2f), "la imagen llegó a negro por el camino");
+            Assert.That(controller.CutFade, Is.EqualTo(1f), "y volvió del fundido");
             Assert.That(controller.CameraCurrent.Focus, Is.EqualTo(corte.Framing.Focus), "la cámara saltó");
             Assert.That(controller.LightCurrent.Ambient, Is.EqualTo(corte.Light.Ambient), "y la luz también");
         }

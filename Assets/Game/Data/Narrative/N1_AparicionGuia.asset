@@ -71,7 +71,7 @@ MonoBehaviour:
       <Focus>k__BackingField: {x: 0.208, y: 0.39}
       <Zoom>k__BackingField: 1.78
     <Light>k__BackingField:
-      <Center>k__BackingField: {x: 0.205, y: 0.26}
+      <Center>k__BackingField: {x: 0.207, y: 0.38}
       <Radius>k__BackingField: 0.3
       <Ambient>k__BackingField: 0.03
       <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
@@ -82,7 +82,7 @@ MonoBehaviour:
       <Focus>k__BackingField: {x: 0.208, y: 0.39}
       <Zoom>k__BackingField: 1.78
     <Light>k__BackingField:
-      <Center>k__BackingField: {x: 0.205, y: 0.26}
+      <Center>k__BackingField: {x: 0.207, y: 0.38}
       <Radius>k__BackingField: 0.06
       <Ambient>k__BackingField: 0.01
       <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
@@ -95,9 +95,32 @@ MonoBehaviour:
     <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
     <FlashSeconds>k__BackingField: 0.0
   <CameraSmoothingSeconds>k__BackingField: 1.2
-  <Props>k__BackingField: []
+  <OpensFromBlack>k__BackingField: 0
+  <HardCutFadeSeconds>k__BackingField: 0.5
+  <Props>k__BackingField:
+  - <Art>k__BackingField: {fileID: 21300000, guid: 8901e2732ad71f04f90af0c7dc82af0f, type: 3}
+    <Position>k__BackingField: {x: 0.186, y: 0.355}
+    <Size>k__BackingField: 0.055
+    <RotationDegrees>k__BackingField: -8
+    <Mirrored>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 21300000, guid: 84d75a8cc5b7a9d4a8aa01ce584d5b88, type: 3}
+    <Position>k__BackingField: {x: 0.236, y: 0.348}
+    <Size>k__BackingField: 0.05
+    <RotationDegrees>k__BackingField: 12
+    <Mirrored>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
   <IsReflectiveClosing>k__BackingField: 0
-  <NextPhase>k__BackingField: 1
+  <NextPhase>k__BackingField: 0
+  <NextSequenceId>k__BackingField: N1_Hallazgo
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "En la oscuridad total, un pequeño destello amarillo parpadea en el aire. Luego otro. Y otro más."

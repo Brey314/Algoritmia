@@ -53,6 +53,14 @@ namespace Game.Scaffolding
         public float CameraSmoothingSeconds { get; private set; } = 1.3f;
 
         [field: SerializeField]
+        [field: Tooltip("La escena abre en negro y funde a entrada. Para un corte entre escenas: la anterior ya se fue, así que solo hay media transición.")]
+        public bool OpensFromBlack { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("Cuánto dura el fundido de un corte seco: la imagen se va a negro, la cámara salta a oscuras y vuelve. Cero: el salto es instantáneo.")]
+        public float HardCutFadeSeconds { get; private set; } = 0.5f;
+
+        [field: SerializeField]
         [field: Tooltip("Objetos pintados sobre el entorno, para que lo que dice el texto se vea. Acompañan a la cámara.")]
         public NarrativeProp[] Props { get; private set; } = new NarrativeProp[0];
 

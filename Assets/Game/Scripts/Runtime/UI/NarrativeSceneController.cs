@@ -62,6 +62,15 @@ namespace Game.UI
         /// <summary>Instante en que termina el destello en curso; 0 si no hay ninguno.</summary>
         private float _flashUntil;
 
+        /// <summary>Segundos que le quedan al fundido del corte seco en curso; 0 = no hay ninguno.</summary>
+        private float _cutRemaining;
+
+        /// <summary>La parada del corte en curso: su encuadre se aplica en el punto negro del fundido.</summary>
+        private CameraKey _cutKey;
+
+        /// <summary>Cuánto se ve de la imagen: 1 normal, 0 negro. Solo lo mueve el fundido del corte.</summary>
+        private float _fade = 1f;
+
         private Image _darkness;
         private Material _darknessInstance;
 
@@ -79,6 +88,7 @@ namespace Game.UI
         internal CameraFraming CameraTarget => TargetFraming();
         internal CameraFraming CameraCurrent => _camera;
         internal NarrativeLight LightCurrent => _light;
+        internal float CutFade => _fade;
         internal IReadOnlyList<(NarrativeProp Prop, RectTransform Rect)> Props => _props;
 #endif
 
@@ -123,6 +133,12 @@ namespace Game.UI
             _lightBefore = _sequence.LightStart;
             _keyIndex = -1;
             _flashUntil = 0f;
+            // Un corte ENTRE escenas es media transición: la anterior ya se fue, así que esta
+            // abre en negro y solo funde a entrada. Fundir a salida desde el encuadre correcto
+            // sería un parpadeo.
+            _cutKey = null;
+            _cutRemaining = _sequence.OpensFromBlack ? Mathf.Max(_sequence.HardCutFadeSeconds, 0f) / 2f : 0f;
+            _fade = _cutRemaining > 0f ? 0f : 1f;
             Frame();
             EnsureDarkness();
             ApplyLight();
@@ -144,9 +160,15 @@ namespace Game.UI
                 return;
             }
 
+            SyncKey();
+            if (_cutRemaining > 0f)
+            {
+                Cut();
+                return;
+            }
+
             // El suavizado lo pone cada escena: un movimiento lento y continuo, sin saltos
             // (RNF-21), pero tan corto o tan largo como pida su ritmo.
-            SyncKey();
             var blend = 1f - Mathf.Exp(-Time.deltaTime / Mathf.Max(_sequence.CameraSmoothingSeconds, 0.01f));
             _camera = CameraFraming.Lerp(_camera, TargetFraming(), blend);
             _light = NarrativeLight.Lerp(_light, TargetLight(), blend);
@@ -175,6 +197,10 @@ namespace Game.UI
 
             _keyIndex = index;
             _flashUntil = 0f;
+            // Avanzar a mitad de un fundido lo cancela: manda la línea que se está leyendo, y
+            // dejar el fundido vivo aplicaría a oscuras el encuadre de una parada ya pasada.
+            _cutRemaining = 0f;
+            _fade = 1f;
             if (index < 0)
             {
                 return;
@@ -183,8 +209,12 @@ namespace Game.UI
             var key = _sequence.CameraKeys[index];
             if (key.HardCut)
             {
-                _camera = key.Framing;
-                _light = key.Light;
+                _cutKey = key;
+                _cutRemaining = Mathf.Max(_sequence.HardCutFadeSeconds, 0f);
+                if (_cutRemaining <= 0f)
+                {
+                    ApplyCut();
+                }
             }
 
             if (key.Light.FlashSeconds > 0f)
@@ -195,6 +225,49 @@ namespace Game.UI
                 _light = key.Light;
                 _flashUntil = Time.time + key.Light.FlashSeconds;
             }
+        }
+
+        /// <summary>
+        /// Un cuadro del fundido de un corte seco: la imagen se va a negro, **el salto ocurre en
+        /// el punto negro** y vuelve. Mientras dura, la cámara no se suaviza: se queda donde
+        /// estaba y luego aparece ya en el encuadre nuevo.
+        /// </summary>
+        /// <remarks>
+        /// El negro lo pone la misma capa de oscuridad que ya multiplica la pantalla —el tinte
+        /// baja a cero y sube— en vez de un panel negro aparte: así el fundido tapa la
+        /// ilustración y los objetos que cuelgan de ella, y **no** el cuadro de diálogo, que va
+        /// por encima de la capa. El texto de la línea sigue legible mientras la imagen cambia,
+        /// que es lo que hace que el corte se lea como una transición y no como un parpadeo.
+        /// </remarks>
+        private void Cut()
+        {
+            var total = Mathf.Max(_sequence.HardCutFadeSeconds, 0.01f);
+            var half = total / 2f;
+            var before = _cutRemaining;
+            _cutRemaining = Mathf.Max(_cutRemaining - Time.deltaTime, 0f);
+
+            if (before > half && _cutRemaining <= half)
+            {
+                ApplyCut();
+            }
+
+            // 1 → 0 → 1: la ida y la vuelta duran lo mismo.
+            _fade = _cutRemaining > 0f ? Mathf.Abs(_cutRemaining - half) / half : 1f;
+            Frame();
+            ApplyLight();
+        }
+
+        /// <summary>El salto en sí: cámara y luz al encuadre de la parada, sin suavizado.</summary>
+        private void ApplyCut()
+        {
+            if (_cutKey == null)
+            {
+                return; // el fundido de apertura no salta a ningún sitio: ya está donde toca
+            }
+
+            _camera = _cutKey.Framing;
+            _light = _cutKey.Light;
+            _lightBefore = _cutKey.Light;
         }
 
         private int ActiveKeyIndex()
@@ -276,7 +349,7 @@ namespace Game.UI
             _darknessInstance.SetVector("_Center", new Vector2(0.5f + local.x / viewport.x, 0.5f + local.y / viewport.y));
             _darknessInstance.SetFloat("_Radius", _light.Radius * image.y * scale / viewport.y);
             _darknessInstance.SetFloat("_Ambient", _light.Ambient);
-            _darknessInstance.SetColor("_Tint", _light.Tint);
+            _darknessInstance.SetColor("_Tint", _light.Tint * _fade);
             _darknessInstance.SetFloat("_Aspect", viewport.x / viewport.y);
         }
 
