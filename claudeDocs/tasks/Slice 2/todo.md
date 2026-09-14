@@ -666,24 +666,109 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 > **W10, W11 y W12 no dependen de W02..W09.** Son la parte de mayor riesgo del slice (INC-33) y
 > conviene adelantarlas. Ver R3 y la pregunta abierta 4 del plan.
 
-- [ ] **W10 · `MazeGrid` y `CartState` — la orientación relativa** — `M` · `EM`
+- [x] **W10 · `MazeGrid` y `CartState` — la orientación relativa** — `M` · `EM` (13/09/2026)
       RF-30, RF-31, RF-33, RNF-13, RNF-18, CT-05, **INC-33**, supuesto 8, guion §6.3.2,
       CU-08 · depende de: W01
-- [ ] **W11 · `BlockSequence` — composición y edición** — `S` · `EM`
+      `Orientation` + `CartState` (valor: casilla y orientación; `Ahead`/`Behind`/`TurnedClockwise`/
+      `TurnedCounterclockwise` devuelven el estado siguiente sin tocar el anterior), `MazeGrid`
+      (`TryMove` es la validación por retroceso entera; `IsWall` es el seto) y `MazeLayout` (SO,
+      `Assets/Game/Data/Wheel/N2_MazeLayout.asset`). **La matriz es 16 × 11 y cubre el seto
+      entero** (pedido de Santiago, 13/09): `BoardMin (0.128, 0.022)` / `BoardMax (0.897, 0.982)`
+      son las esquinas exteriores del seto de `entorno_n2_laberinto.png` en fracciones de la
+      imagen, y cada casilla sale de ~8 % del alto (77 × 78 px sobre el boceto). **El anillo
+      exterior son los arbustos y ya está ocupado**, salvo la salida `(0,8)` (hueco izquierdo,
+      mirando al este) y el refugio `(15,2)` (hueco derecho), que sí se pisan. **El trazado es
+      procedural**: `MazeGrid.Generate(layout, semilla)` siembra `ObstacleCount` casillas en
+      tramos de 1 a 5 en línea —piedras sueltas casi nunca obligan a rodear— y exige por BFS
+      camino con `MinimumDetour`; si no lo hay
+      siembra una menos. `Seed = 0` = otro laberinto por partida. `Solution()` es `internal` y
+      solo para las pruebas (CP-06).
+      EditMode: `CartState_RF31_AvanzarEsRelativoALaOrientacionNoAbsoluto`,
+      `_INC33_GirarRota90GradosACadaLadoSinDesplazar`, `_RF31_RetrocederNoCambiaLaOrientacion`,
+      `MazeGrid_RF33_UnMovimientoInvalidoDevuelveALaCasillaAnterior`,
+      `_RF30_ElAnilloExteriorEsElSetoSalvoLaSalidaYElRefugio`, `_RNF13_ExisteUnaSecuenciaQueAlcanzaElRefugio`,
+      `_RNF18_LaMismaSemillaProduceElMismoTrazadoYSalidaYRefugioNoCambian`,
+      `_RNF13_ConDemasiadosObstaculosSiembraMenosAntesQueDejarElRefugioInalcanzable`,
+      `MazeLayout_RNF13_LaSecuenciaDeCierreDeLaFase3ExisteEnElProyecto` — 9/9.
+- [x] **W11 · `BlockSequence` — composición y edición** — `S` · `EM` (13/09/2026)
       RF-31, RF-34, RF-18, CP-02, HU-10, CU-08 (FA-3a, FA-6a) · depende de: W10
-- [ ] **W12 · `SequenceExecutor` — paso a paso y validación por retroceso** — `M` · `EM`
+      **Los bloques son los del mockup 10 · bloques encajables, ajustados por Santiago el
+      13/09/2026** (retroceder con cuenta en vez de recoger): `InstructionBlock` es un valor con
+      `Kind` (`Forward`, `Backward`, `Turn`) y su parámetro —`Count` 1..9 para «Avanzar» y
+      «Retroceder», `Direction` izquierda/derecha para «Girar»—; `BlockSequence` (`Add`/`Insert`
+      acotado/`RemoveAt`/`Move`/`Replace` para editar en su sitio), sin tope de bloques ni de
+      ediciones (CP-02). Son los tres de RF-31 con cuenta y lado: el RF queda por **precisar** en
+      los documentos (INC-48 candidato), no por cambiar.
+      EditMode: `BlockSequence_RF31_SoloExistenTresTiposDeBloqueYCadaUnoLlevaSuParametro`,
+      `_RF34_RetirarReordenarYEditarPreservaElRestoDeLaSecuencia`,
+      `_CU08_UnaSecuenciaVaciaDevuelveResultadoTipadoNoExcepcion`, `_CP02_NoHayLimiteDeBloquesNiDeEdiciones` — 4/4.
+- [x] **W12 · `SequenceExecutor` — paso a paso y validación por retroceso** — `M` · `EM` (13/09/2026)
       RF-32, RF-33, RF-34, RF-11, RNF-13, CP-02, CP-03, CP-06, HU-10, CU-08 · depende de: W11
-- [ ] **W13 · Escena `Level2_Maze` y editor de bloques** — `M` · `PM` `MCP`
+      `SequenceExecutor.Execute(secuencia, rejilla)` → `ExecutionResult` (`Steps`, `ReachedGoal`,
+      `IsEmpty`, `StoppedAtStep`) con un `ExecutionStep` por bloque y un `CartMove` por casilla
+      («Avanzar ×n» y «Retroceder ×n» son n movimientos; dentro de un bloque se tropieza una
+      sola vez y las casillas restantes ya no se intentan). «Girar» a cada lado. Un bloque
+      inválido se intenta, vuelve y **la ejecución
+      sigue**; llegar al refugio termina y los bloques sobrantes no corren. El resultado no tiene
+      ninguna propiedad de tipo `InstructionBlock`/`BlockKind` ni cifra (reflexión, CP-06/CP-03).
+      EditMode: `SequenceExecutor_RF32_RecorreLaSecuenciaPasoAPasoResaltandoElBloqueEnCurso`,
+      `_RF33_UnMovimientoInvalidoRetrocedeYLaEjecucionContinua`, `_RF31_RetrocederMueveHaciaAtrasSinCambiarLaOrientacion`,
+      `_CP06_ElResultadoNoNombraElBloqueQueDebeCorregirse`, `_RNF13_LaSecuenciaCorrectaAlcanzaElRefugio` — 5/5.
+- [x] **W13 · Escena `Level2_Maze` y editor de bloques** — `M` · `PM` `MCP` (13/09/2026)
       RF-30, RF-31, RF-32, RF-13, RNF-02, RNF-03, RNF-19, CT-06, **PG-04**, HU-10,
       CU-08 · depende de: W12, W09
-- [ ] **W14 · Reintento sin reiniciar el nivel** — `S` · `PM` `MCP`
+      `MazeSceneController` (adaptador delgado) y `Level2_Maze.unity`, construida con un script
+      de editor efímero (skill `edit-scene`, lanzado por `coplay-mcp`) y añadida a Build Settings
+      (**diez** escenas). `GameFlowRunner` mapea `Wheel/3 → Level2_Maze` y
+      `N2_Escena24_Regreso.asset` pasa a `NextPhase = 3`. **Al pie de la letra el mockup 10 ·
+      bloques encajables** (`claudeDocs/Mockups de interfaz Algoritmia.html`): claro cenital a la
+      izquierda (panel `0..0.675` del ancho); a la derecha «Tu secuencia» con los bloques
+      encajados (muesca arriba, pestaña abajo; «Girar» píldora, «Retroceder» con rombo), cada
+      uno con su control desplegado —«Avanzar» y «Retroceder» − n +, «Girar» ‹ ›—, la casilla
+      «Suelta un bloque aquí», el cajón «Bloques» (cerrado al abrir; la flecha lo abre y muestra
+      Avanzar, Girar y Retroceder con «Arrastra un bloque a tu secuencia») y «Ejecutar» a todo
+      el ancho. **Cuando
+      los bloques se acumulan se comprimen** (pedido de Santiago): desaparecen contador y lado y
+      queda el rótulo con una flecha «→» que despliega ese bloque; uno desplegado a la vez, la
+      casilla de soltar también se encoge, y si ni así caben las filas comprimidas se estrechan
+      hasta 44 px (`ponytail:` sin `ScrollRect`). **El entorno cabe entero en su panel sin
+      deformarse** (escala mínima, tamaño nativo + `localScale`, banda del color del pasto):
+      cambiar el PNG basta. Obstáculos, refugio y carretilla cuelgan del entorno en
+      las fracciones de `MazeLayout`; la carretilla **se rota** según su orientación y lleva un
+      morro. **Sprites propios del laberinto**, duplicados de los existentes para poder
+      reemplazarlos por nombre (pedido de Santiago): `prop_n2_laberinto_carretilla.png` y
+      `prop_n2_laberinto_obstaculo.png`. Bloques con
+      `CargoHandle` (pulsar y soltar, nunca el arrastre de uGUI): de la paleta a la secuencia se
+      engancha donde cae; de la secuencia hacia fuera, se retira. Queda fuera el botón de pausa
+      del mockup: es W17.
+      PlayMode: `MazeScene_RF30_PresentaCarretillaRefugioYObstaculos`,
+      `_RNF23_ElEntornoCabeEnteroEnSuPanelSinDeformarseYLaMatrizCubreElSeto`,
+      `_PG04_EjecutarRespondeAClicSimpleNoADobleClic`, `_RNF19_LosTresBloquesSeDistinguenPorFormaYElCajonLosGuarda`,
+      `_RF31_LaOrientacionDeLaCarretillaEsVisibleYGiraACadaLado`, `_RF31_ElContadorDeAvanzarYRetrocederSeEditaEnElBloqueEntre1Y9`,
+      `_RF34_SoltarSobreLaSecuenciaEnganchaYSoltarFueraRetira`,
+      `_RNF03_AlAcumularseLosBloquesSeComprimenYLaFlechaDespliegaUno`,
+      `_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido`,
+      `_RNF20_CapturaDelLaberintoEnReposoConBloquesYEnEjecucion` (VV, cuatro capturas) — corridas
+      **contra el Editor abierto** con `TestRunnerApi` desde un script efímero (Rider MCP sin
+      conectar): 13/13 con las de W14.
+- [x] **W14 · Reintento sin reiniciar el nivel** — `S` · `PM` `MCP` (13/09/2026)
       RF-34, RF-18, RF-04, CP-02, HU-10, CU-08 (FA-6a) · depende de: W13
+      En `MazeSceneController`: al terminar sin llegar, el bloque donde se detuvo el avance queda
+      resaltado (contorno + tamaño), la carretilla vuelve a la salida y la secuencia sigue en
+      pantalla; `Executions` existe para el indicador
+      docente (W15) y no limita nada (comentario «por qué no» junto al contador). Llegar al
+      refugio confirma `Wheel/3`, guarda y sale a `N2_Escena25_Cierre`. Mensajes del asset, sin
+      cifras (CP-03) y sin nombrar el bloque (CP-06).
+      PlayMode: `MazeScene_RF34_TrasUnaEjecucionFallidaLaSecuenciaPermaneceEnPantalla`,
+      `_CP02_NoHayLimiteDeEjecucionesNiPantallaDeDerrota`, `_RF04_AlcanzarElRefugioConfirmaYGuardaLaFase3`.
 
 ### ✅ Checkpoint W-E — Fase 3 completa
-- [ ] El laberinto se resuelve componiendo → ejecutando → corrigiendo → volviendo a ejecutar
-- [ ] «Avanzar» produce desplazamientos distintos según la orientación, **verificado jugando** (INC-33)
-- [ ] «Ejecutar» responde a **clic simple**, no a doble clic (PG-04, RNF-02)
-- [ ] Ninguna retroalimentación nombra el bloque a corregir (CP-06)
+- [~] El laberinto se resuelve componiendo → ejecutando → corrigiendo → volviendo a ejecutar —
+      probado (`MazeScene_RF34_…`, `_RF04_…`); falta jugarlo en el Editor
+- [~] «Avanzar» produce desplazamientos distintos según la orientación, **verificado jugando** (INC-33) —
+      la regla está probada (`CartState_RF31_…`); la verificación jugando es de Santiago
+- [x] «Ejecutar» responde a **clic simple**, no a doble clic (PG-04, RNF-02)
+- [x] Ninguna retroalimentación nombra el bloque a corregir (CP-06)
 - [ ] Revisado con el usuario
 
 ---

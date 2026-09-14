@@ -45,7 +45,8 @@ namespace Game.Core
             {
                 [new PhaseId(LevelId.Fire, 1)] = "Level1_Cave",
                 [new PhaseId(LevelId.Wheel, 1)] = "Level2_Forest",
-                [new PhaseId(LevelId.Wheel, 2)] = "Level2_Workshop"
+                [new PhaseId(LevelId.Wheel, 2)] = "Level2_Workshop",
+                [new PhaseId(LevelId.Wheel, 3)] = "Level2_Maze"
             };
 
         public static GameFlowRunner Instance { get; private set; }

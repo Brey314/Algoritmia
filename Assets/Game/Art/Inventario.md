@@ -192,8 +192,8 @@ el color de acento del nivel está prohibido en el decorado (§9.2, §4.2).
 | ✓ `prop_n2_caja_suelo.png` — **provisional** (generado por código, W07, 11/09/2026); ○ `_sobre_troncos`, `_rodando` — hoy los tres estados usan el mismo sprite | `B3` |
 | ✓ `prop_n2_pieza_1.png` (tronco corto; **los dos gemelos comparten este archivo**), `_3` (eje), `_4` (tabla), `_5` (herramienta) — **provisionales** (generados por código, W09, 12/09/2026); la caja (`_6`) **es** `prop_n2_caja_suelo.png` (B5 = B3). Referenciados desde `Assets/Game/Data/Wheel/N2_AssemblyContent.asset`: sustituir el `.png` conservando el nombre basta | `B5` |
 | ✓ `prop_n2_carretilla_e1.png` … `_e5` — **provisionales** (W09, 12/09/2026): `e2` es la rueda perforada que sustituye al tronco al mecanizar, `e3`..`e5` los estados del conjunto en el lugar de armado; `e1` no se usa en escena (igual a `pieza_1`) | `B6` |
-| ○ `prop_n2_carretilla_cenital_norte.png`, `_este`, `_sur`, `_oeste` | `B7` |
-| ○ `prop_n2_obstaculo_piedra.png`, `_curva`, `_pendiente` | `B8` |
+| ✓ `prop_n2_laberinto_carretilla.png` — **provisional** (W13, 13/09/2026): copia de `_carretilla_e5`; la escena la rota según la orientación y le pone un morro. Referenciada desde `N2_MazeLayout.asset` (`CartArt`): sustituir el `.png` conservando el nombre basta. ○ `prop_n2_carretilla_cenital_norte.png`, `_este`, `_sur`, `_oeste` | `B7` |
+| ✓ `prop_n2_laberinto_obstaculo.png` — **provisional** (W13): copia de `_piedra_a`; `N2_MazeLayout.asset` (`ObstacleArt[0]`). ○ `prop_n2_obstaculo_piedra.png`, `_curva`, `_pendiente` | `B8` |
 
 Solo los troncos llevan la madera trabajada `#C79A5E`: es lo que separa lo fabricado de lo
 natural y a la vez lo válido del distractor (§8.2).

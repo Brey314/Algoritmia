@@ -37,11 +37,11 @@ comunicación con el usuario en español.
 | `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 02/09/2026, rev. 7 — los hallazgos `INC-01`..`INC-42` están cerrados en los documentos; quedan abiertos `INC-43` (el guion §12 aún declara `PG-07` pendiente pese a estar concedida la autorización), `INC-44` (**el guía se llama Algoritm**, no «Chispa» — vale para todo texto y asset nuevo), `INC-45` (el guía cambia de forma en cada nivel), `INC-46` (tareas del Nivel 3, exige decisión) e `INC-47` (12/09/2026: la mecánica del Nivel 1 **mide fuerza y exige acomodar hojas y piedras**, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF). |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las diecisiete superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
-| `claudeDocs/Camara_Narrativa.md` + `Camara_Narrativa_N2.md` | **La cámara narrativa del Nivel 2.** Inventario de cada movimiento de cámara (foco, zoom, paradas por línea) con quién lo decidió —[S] Santiago / [C] Claude— y el diseño completo de 50 encuadres validados contra 16:9. Los valores viven en `Assets/Game/Data/Narrative/N2_*.asset`; el documento explica el porqué, no sustituye al asset. Regla que evita el choque más común: para bajar la cámara al suelo hay que cerrar el plano (`y = 0.35` exige `zoom ≥ 1.43`). |
-| `docs/Camara_Narrativa_N1.md` + `claudeDocs/Camara_Narrativa_N1.md` | **La cámara y la luz del Nivel 1** (desde el 11/09/2026). El de `docs/` es el **diseño de Santiago** (35 encuadres, cada uno con su estado de luz) y se trata como los `.docx`: no se edita desde código. El de `claudeDocs/` es su inventario: qué quedó en los `N1_*.asset` y en el motor (`NarrativeLight`, `CameraKey.HardCut`, `FlashSeconds`, `LightStart`, shader `Algoritm/Oscuridad`), el mapa parada → línea del asset y las desviaciones con su porqué. Solo el Nivel 1 usa la capa de oscuridad; el Nivel 2 no cambia. |
+| `claudeDocs/Camara_Narrativa_N2.md` + `docs/md/Camara_Narrativa.md` | **La cámara narrativa del Nivel 2.** El de `claudeDocs/` es el **diseño** (50 encuadres validados contra 16:9); el de `docs/md/` es el **inventario de lo aplicado**: cada movimiento de cámara (foco, zoom, paradas por línea) con quién lo decidió —[S] Santiago / [C] Claude—. Los valores viven en `Assets/Game/Data/Narrative/N2_*.asset`; el documento explica el porqué, no sustituye al asset. Regla que evita el choque más común: para bajar la cámara al suelo hay que cerrar el plano (`y = 0.35` exige `zoom ≥ 1.43`). |
+| `docs/Camara_Narrativa_N1.md` + `docs/md/Camara_Narrativa_N1.md` | **La cámara y la luz del Nivel 1** (desde el 11/09/2026). El de `docs/` es el **diseño de Santiago** (35 encuadres, cada uno con su estado de luz) y se trata como los `.docx`: no se edita desde código. El de `docs/md/` es su inventario: qué quedó en los `N1_*.asset` y en el motor (`NarrativeLight`, `CameraKey.HardCut`, `FlashSeconds`, `LightStart`, shader `Algoritm/Oscuridad`), el mapa parada → línea del asset y las desviaciones con su porqué. Solo el Nivel 1 usa la capa de oscuridad; el Nivel 2 no cambia. |
 | `claudeDocs/Mockups de interfaz Algoritmia.html` | **Los mockups de pantalla** (uno por superficie, numerados). Los `todo.md` y `Camara_Narrativa_N1.md` los citan por número («mockup 7 · Nivel 1 · encendido»); es la referencia de disposición de una escena antes de tocar el `.unity`. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. Los cuatro slices están planeados y entre ellos cubren los 47 RF: `Slice 1` Golden Path y nivel fuego · `Slice 2` La Rueda · `Slice 3` El Río y cierre del juego · `Slice 4` progreso, informe docente y borrado de datos. **Se planean en orden y cada uno supone terminado el anterior**, pero desde el 10/09/2026 el Slice 1 y el Slice 2 corren en paralelo — ver «Dos slices a la vez» abajo. Ninguno rediscute `SPEC.md`. |
-| `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión ya hecha con markitdown. **Nunca editar ninguno de los dos desde código.** |
+| `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión ya hecha con markitdown. Hoy solo están convertidos **guion, historias de usuario y OE1**: trabajo de grado, OE2 y arquitectura hay que convertirlos antes de citarlos. **Nunca editar ninguno de los dos desde código.** |
 | `docs/actas/OE*/Acta_*.md` | Actas de seguimiento: qué se decidió, cuándo y por qué. Una carpeta por objetivo específico —`OE2/` serie `O01..O03` (ago 2026), `OE3/` serie `D01..D04` (sep 2026, la abierta)— y dentro `Acta_<serie><NN>_AAAA-MM-DD.md` junto a su `.docx`. Son la trazabilidad de las decisiones; consultarlas cuando haga falta el *porqué* de un RF, no reabrirlas. **No hay tablero Kanban aparte**: el tablero vive en la §6 de cada acta («Compromisos y tablero Kanban»), con los compromisos nuevos y los movimientos al cierre. Ojo al leerlo hacia atrás: **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` en los movimientos posteriores—, así que una tarjeta se rastrea por su texto, no por su id. |
 
 **Dónde empezar una sesión de código:** en la primera casilla sin marcar del `todo.md` del
@@ -90,11 +90,11 @@ PYTHONIOENCODING=utf-8 markitdown "docs/<archivo>.docx" > "docs/md/<archivo>.md"
 ```
 
 **`graphify-out/` es el grafo de conocimiento del proyecto entero — el atajo para saber dónde
-está cada cosa.** Lo construye `/graphify` sobre las 80 fuentes del repo (código, `claudeDocs/`,
-`docs/md/`, `Packages/`) y las resuelve en 1744 nodos y 3501 aristas agrupados en comunidades con
-nombre: «GameFlow, la FSM», «Persistencia de perfiles», «Andamiaje de pistas (HintPolicy)»,
-«Assemblies y prueba de arquitectura», «Nivel 1 · encendido del fuego». **Antes de rastrear a mano
-con Grep** cualquier pregunta de ubicación o de relación —dónde vive un comportamiento, qué toca un
+está cada cosa.** Lo construye `/graphify` sobre las 185 fuentes del repo (código, `claudeDocs/`,
+`docs/`, `docs/md/`, `Packages/`) y las resuelve en 2670 nodos y 5811 aristas agrupados en comunidades con
+nombre: «Persistencia de perfiles (SaveStore)», «FirePanelController · adaptador del N1»,
+«NarrativeSceneController · cámara y luz», «Menú de pausa (RF-07, HU-17)», «Dirección de arte ·
+la ley visual». **Antes de rastrear a mano con Grep** cualquier pregunta de ubicación o de relación —dónde vive un comportamiento, qué toca un
 cambio, por dónde pasa un RF, qué depende de qué— preguntárselo al grafo:
 
 ```
@@ -105,12 +105,15 @@ graphify explain "HintPolicy"
 
 `GRAPH_REPORT.md` es el índice legible —empezar por su sección «Community Hubs»—; `graph.json` es
 el grafo para consumo de agente y `graph.html` la vista interactiva. Es una **foto**, fechada el
-08/09/2026: refrescarla con `/graphify . --update` tras un bloque de trabajo, y confirmar en el
+13/09/2026: refrescarla con `/graphify . --update` tras un bloque de trabajo, y confirmar en el
 código lo que el grafo señale antes de citarlo — ubica, no sustituye a leer el archivo.
 
 `docs/md/`, `docs/actas/` y `graphify-out/` están en `.gitignore`: existen en este equipo pero no
 en un clon limpio. Las conversiones se rehacen con markitdown, el grafo con `/graphify`; las
-actas no se rehacen.
+actas **no** se rehacen — y tampoco los dos inventarios de cámara `docs/md/Camara_Narrativa.md`
+y `docs/md/Camara_Narrativa_N1.md`, que están escritos a mano y no salen de ningún `.docx`:
+viven ignorados y sin copia. Moverlos a `claudeDocs/` o excluirlos del `.gitignore` es una
+decisión pendiente de Santiago.
 
 **Nunca** abrir un `.docx` con Read ni descomprimiendo el zip. markitdown ya está en el `PATH`;
 sin `PYTHONIOENCODING=utf-8` los acentos salen como mojibake. El shell por defecto de este
@@ -186,8 +189,8 @@ de empezar:
   La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04 (carga < 10 s),
   RNF-05 (memoria < 2 GB) y RNF-06 (paquete < 500 MB), y junto al `.exe` nace `Datos/` en la
   primera ejecución (RNF-07, RNF-11). Entran las escenas listadas en `EditorBuildSettings` —la
-  lista crece con cada nivel—, con `Boot` de primera. Hoy son nueve, `Level2_Forest` (entró en
-  `4f69140`) y `Level2_Workshop` (W09, 12/09/2026) incluidas; las escenas nuevas se añaden desde
+  lista crece con cada nivel—, con `Boot` de primera. Hoy son diez, `Level2_Forest` (entró en
+  `4f69140`), `Level2_Workshop` (W09, 12/09/2026) y `Level2_Maze` (W13, 13/09/2026) incluidas; las escenas nuevas se añaden desde
   el Editor (Build Settings o un script de editor efímero de la skill `edit-scene`), no a mano.
   `/[Bb]uild[s]?/` está en `.gitignore`: el ejecutable no se versiona.
 - **Con Rider abierto**, `mcp__rider__run_unity_tests` /

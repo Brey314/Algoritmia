@@ -77,7 +77,7 @@ namespace Game.Core.Tests
 
         [Test]
         [Timeout(20000)]
-        public async Task GameFlowRunner_RNF14_ConLasDosFasesExistentesConfirmadasEntrarAlNivel2VuelveAlBosque()
+        public async Task GameFlowRunner_RNF14_ConLasDosPrimerasFasesConfirmadasEntrarAlNivel2RetomaEnElLaberinto()
         {
             var runner = await BootToMainMenu();
             runner.GoTo(GameState.ProfileSelect);
@@ -87,13 +87,13 @@ namespace Game.Core.Tests
             profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 2), default);
             runner.SelectProfile(profile);
 
-            // La apertura del nivel pide la fase 1. La pendiente es la 3, que todavía no tiene
-            // escena (W13): se repite la fase 1 en vez de caer al menú «sin continuar»
-            // (visto el 12/09/2026).
+            // La apertura del nivel pide la fase 1. La pendiente es la 3 y desde W13 (13/09/2026)
+            // tiene escena: se retoma ahí, no se repite el bosque. Hasta W13 esta misma prueba
+            // esperaba la fase 1, porque sin escena para la 3 se repetía la pedida.
             Assert.That(runner.StartPlaying(LevelId.Wheel, 1), Is.True);
             Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Playing));
-            Assert.That(runner.Flow.PlayingPhase, Is.EqualTo(1));
-            await WaitUntil(() => SceneManager.GetActiveScene().name == "Level2_Forest");
+            Assert.That(runner.Flow.PlayingPhase, Is.EqualTo(3));
+            await WaitUntil(() => SceneManager.GetActiveScene().name == "Level2_Maze");
         }
 
         private static async Task<GameFlowRunner> BootToMainMenu()
