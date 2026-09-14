@@ -54,11 +54,40 @@ namespace Game.Levels.Wheel.Tests
         }
 
         [Test]
+        public void AssemblySequence_RF28_ElMazoSobreElTroncoResaltadoMecanizaIgualQueElBoton()
+        {
+            var sut = Taller();
+
+            // Sin tronco resaltado el sitio da igual: lo que falta es elegir uno, y eso es lo que
+            // se dice — no «fallaste el golpe» (CP-06).
+            var sinElegir = sut.Place(WorkshopPiece.Tool, true);
+            Assert.That(sinElegir.Accepted, Is.False);
+            Assert.That(sinElegir.Message, Is.EqualTo("elige un tronco"), "el mismo rechazo que pulsar «Mecanizar» sin selección");
+
+            sut.Select(WorkshopPiece.ShortLogA);
+            var lejos = sut.Place(WorkshopPiece.Tool, false);
+            Assert.That(lejos.Accepted, Is.False, "con el tronco resaltado, errar el golpe sí es puntería");
+            Assert.That(lejos.Message, Is.EqualTo("lejos"));
+            Assert.That(sut.IsDrilled(WorkshopPiece.ShortLogA), Is.False);
+            Assert.That(sut.CanMachine, Is.True, "y el tronco sigue resaltado: un intento no deshace nada (CP-02)");
+
+            var golpe = sut.Place(WorkshopPiece.Tool, true);
+            Assert.That(golpe.Accepted, Is.True);
+            Assert.That(golpe.Message, Is.EqualTo("rueda uno"), "el mazo ejecuta el mismo paso 2 que el botón (RF-28)");
+            Assert.That(sut.IsDrilled(WorkshopPiece.ShortLogA), Is.True);
+            Assert.That(sut.CanMachine, Is.False, "y consume la selección igual que él");
+
+            sut.Select(WorkshopPiece.ShortLogA);
+            Assert.That(sut.Place(WorkshopPiece.Tool, true).Message, Is.EqualTo("ya es rueda"),
+                "sobre una rueda ya perforada, los dos gestos rechazan con el mismo mensaje");
+        }
+
+        [Test]
         public void AssemblySequence_RF29_RechazaCadaPasoFueraDeSecuenciaConSuMensaje()
         {
             var sut = Taller();
 
-            var eje = sut.Place(WorkshopPiece.LongLog, overAssembly: true);
+            var eje = sut.Place(WorkshopPiece.LongLog, overTarget: true);
             Assert.That(eje.Accepted, Is.False, "el eje no entra sin las dos ruedas");
             Assert.That(eje.Message, Is.EqualTo("falta perforar"));
             Assert.That(sut.IsAxleFormed, Is.False);
@@ -95,7 +124,7 @@ namespace Game.Levels.Wheel.Tests
             var sut = Taller();
             PerforarLasDos(sut);
 
-            var lejos = sut.Place(WorkshopPiece.LongLog, overAssembly: false);
+            var lejos = sut.Place(WorkshopPiece.LongLog, overTarget: false);
 
             Assert.That(lejos.Accepted, Is.False);
             Assert.That(lejos.Message, Is.EqualTo("lejos"), "se describe dónde cayó, sin regañar (CP-02)");

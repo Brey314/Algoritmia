@@ -91,7 +91,7 @@ PYTHONIOENCODING=utf-8 markitdown "docs/<archivo>.docx" > "docs/md/<archivo>.md"
 
 **`graphify-out/` es el grafo de conocimiento del proyecto entero — el atajo para saber dónde
 está cada cosa.** Lo construye `/graphify` sobre las 185 fuentes del repo (código, `claudeDocs/`,
-`docs/`, `docs/md/`, `Packages/`) y las resuelve en 2670 nodos y 5811 aristas agrupados en comunidades con
+`docs/`, `docs/md/`, `Packages/`) y las resuelve en 3059 nodos y 6362 aristas agrupados en comunidades con
 nombre: «Persistencia de perfiles (SaveStore)», «FirePanelController · adaptador del N1»,
 «NarrativeSceneController · cámara y luz», «Menú de pausa (RF-07, HU-17)», «Dirección de arte ·
 la ley visual». **Antes de rastrear a mano con Grep** cualquier pregunta de ubicación o de relación —dónde vive un comportamiento, qué toca un
@@ -105,7 +105,7 @@ graphify explain "HintPolicy"
 
 `GRAPH_REPORT.md` es el índice legible —empezar por su sección «Community Hubs»—; `graph.json` es
 el grafo para consumo de agente y `graph.html` la vista interactiva. Es una **foto**, fechada el
-13/09/2026: refrescarla con `/graphify . --update` tras un bloque de trabajo, y confirmar en el
+14/09/2026: refrescarla con `/graphify . --update` tras un bloque de trabajo, y confirmar en el
 código lo que el grafo señale antes de citarlo — ubica, no sustituye a leer el archivo.
 
 `docs/md/`, `docs/actas/` y `graphify-out/` están en `.gitignore`: existen en este equipo pero no

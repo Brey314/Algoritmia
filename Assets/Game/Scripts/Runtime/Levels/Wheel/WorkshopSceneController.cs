@@ -26,6 +26,13 @@ namespace Game.Levels.Wheel
     ///
     /// Los arrastres son **pulsar y soltar** con <see cref="CargoHandle"/>, nunca el arrastre de
     /// uGUI, por el mismo motivo que la caja del bosque (RNF-02, CT-06).
+    ///
+    /// **Mecanizar tiene dos gestos y una sola regla.** El botón es el del guion §6.2.2 paso 2 y
+    /// de RF-28, y se queda; el mazo se puede además soltar sobre el tronco resaltado, que es lo
+    /// que una herramienta invita a hacer. Los dos caminos entran en
+    /// <see cref="AssemblySequence.Machine"/>, así que no hay dos versiones de la regla que
+    /// puedan separarse. Se añadió el gesto en vez de sustituir el botón porque RF-28 lo nombra
+    /// y es entregable radicado (13/09/2026).
     /// </remarks>
     public class WorkshopSceneController : MonoBehaviour
     {
@@ -178,12 +185,12 @@ namespace Game.Levels.Wheel
 
         /// <summary>
         /// Deja una pieza sobre el entorno, en el punto que le da el asset, y la cablea según lo que
-        /// es: los troncos cortos se pulsan, el eje, la tabla y la caja se sostienen, y la
-        /// herramienta solo está (guion §6.2.2).
+        /// es: los troncos cortos se pulsan, y el mazo, el eje, la tabla y la caja se sostienen
+        /// (guion §6.2.2).
         /// </summary>
         /// <remarks>
-        /// El modelo trae botón y asa; a cada pieza se le quita lo que no usa en vez de tener tres
-        /// modelos. Así la prueba del mapa de controles puede afirmar que **solo** tres objetos
+        /// El modelo trae botón y asa; a cada pieza se le quita lo que no usa en vez de tener dos
+        /// modelos. Así la prueba del mapa de controles puede afirmar que **solo** cuatro objetos
         /// responden al clic sostenido y que todo lo demás interactivo es un botón (RNF-02).
         /// </remarks>
         private void Spawn(WorkshopPiecePlacement placement)
@@ -214,17 +221,11 @@ namespace Game.Levels.Wheel
                 button.onClick.AddListener(() => Select(piece));
                 Destroy(handle);
             }
-            else if (AssemblySequence.IsDraggable(piece))
+            else
             {
                 handle.Taken += () => Take(piece);
                 handle.Released += () => Release(piece);
                 Destroy(button);
-            }
-            else
-            {
-                image.raycastTarget = false;
-                Destroy(button);
-                Destroy(handle);
             }
 
             rect.gameObject.SetActive(true);
@@ -248,9 +249,16 @@ namespace Game.Levels.Wheel
         /// <summary>«Mecanizar»: el tronco resaltado pasa a ser rueda (RF-28).</summary>
         internal void Machine()
         {
-            var drilled = _assembly.Selected;
-            var outcome = _assembly.Machine();
+            var selected = _assembly.Selected;
+            Drill(selected, _assembly.Machine());
+        }
 
+        /// <summary>
+        /// Pinta el resultado de mecanizar, venga del botón o del mazo: el tronco perforado cambia
+        /// de ilustración en su sitio y la selección se consume.
+        /// </summary>
+        private void Drill(WorkshopPiece? drilled, PatternSelection.Outcome outcome)
+        {
             if (!outcome.Accepted)
             {
                 Show(outcome.Message, rejectedIcon, rejectedColor);
@@ -342,6 +350,18 @@ namespace Game.Levels.Wheel
 
             _held = null;
             var rect = _pieces[piece].Rect;
+
+            // El mazo no se integra en nada: golpea y vuelve a su sitio, como el martillo que es.
+            // Se mide dónde cayó **antes** de devolverlo, o nunca tocaría el tronco.
+            if (piece == WorkshopPiece.Tool)
+            {
+                var selected = _assembly.Selected;
+                var onLog = OverSelectedLog(rect);
+                rect.anchoredPosition = Vector2.zero;
+                Drill(selected, _assembly.Place(piece, onLog));
+                return;
+            }
+
             var over = OverAssembly(piece, rect);
             var outcome = _assembly.Place(piece, over);
 
@@ -391,6 +411,15 @@ namespace Game.Levels.Wheel
         /// coloca nada solo. Y soltar el eje sobre un tronco **sin perforar** es exactamente el
         /// intento fuera de orden que el guion describe, con su mensaje.
         /// </remarks>
+        /// <summary>
+        /// Si el mazo cayó sobre el tronco resaltado. Sin tronco resaltado no hay destino: el
+        /// gesto se rechaza igual que pulsar «Mecanizar» sin seleccionar (RF-28).
+        /// </summary>
+        private bool OverSelectedLog(RectTransform rect) =>
+            _assembly.Selected.HasValue
+            && _pieces.TryGetValue(_assembly.Selected.Value, out var entry)
+            && EnPantalla(rect).Overlaps(EnPantalla(entry.Rect));
+
         private bool OverAssembly(WorkshopPiece piece, RectTransform rect)
         {
             var box = EnPantalla(rect);

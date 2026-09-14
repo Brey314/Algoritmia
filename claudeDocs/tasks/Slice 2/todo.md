@@ -553,7 +553,17 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       `_RF29_RechazaCadaPasoFueraDeSecuenciaConSuMensaje`, `_RF29_SoltarLejosDelLugarDeArmadoNoEjecutaNada`,
       `_CP02_UnPasoFueraDeOrdenNoDeshaceLoYaHecho`, `_CP06_ElMensajeDiceQueFaltaAntesNoCualEsElPasoCorrecto`,
       `_RF17_NingunMensajeContieneDigitos` — 6/6 con mensajes de prueba distintos del asset (RNF-18).
-- [x] **W09 · Escena `Level2_Workshop` y cableado del ensamblaje** — `M` · `PM` `MCP` (12/09/2026)
+      **Ampliación del 14/09/2026 — el mazo deja de ser decorado.** Lo destapó una arista del
+      grafo: `WorkshopPiece.Tool` estaba en escena por RF-27 (seis piezas) pero `IsShortLog`,
+      `IsDraggable` y `AssemblyStep` lo excluían, y `Spawn` le destruía el botón y el asa. Ahora
+      `IsDraggable` lo incluye y `Place(Tool, sobreElTroncoResaltado)` delega en el `Machine()` de
+      siempre, así que **mecanizar tiene dos gestos y una sola regla**. Sin tronco resaltado el
+      sitio da igual y se dice qué falta elegir; con uno resaltado y lejos, sí es fallo de
+      puntería. El parámetro de `Place` pasa a llamarse `overTarget`: su destino ya no es solo el
+      lugar de armado. **El botón «Mecanizar» se queda** — RF-28 y el guion §6.2.2 paso 2 lo
+      nombran y son entregables radicados, así que el gesto se **añade**, no sustituye.
+      EditMode: `AssemblySequence_RF28_ElMazoSobreElTroncoResaltadoMecanizaIgualQueElBoton` — 7/7.
+- [x] **W09 · Escena `Level2_Workshop` y cableado del ensamblaje** — `M` · `PM` `MCP` (12/09/2026, ampliada el 14/09/2026)
       RF-27, RF-28, RF-29, RF-04, RF-10, RNF-02, RNF-03, RNF-19, CT-06, HU-09, CU-07,
       INC-41 · depende de: W08
       `WorkshopSceneController` (adaptador delgado) y `Level2_Workshop.unity`, construida con un
@@ -849,6 +859,23 @@ decorado la lleva (`Direccion_de_Arte.md` §8.2).
 ---
 
 ## Bloqueantes y decisiones pendientes
+
+- [ ] **Dos pruebas del bosque dependen de dónde esté el ratón real (14/09/2026).**
+      `ForestScene_RF22_LosObjetosCaenEntreElCincoYElSesentaPorCientoDeLaPantalla` y
+      `_RF22_LosObjetosMasAltosSeVenMasPequenos` fallaron en una corrida PlayMode completa
+      (por 1 px y por 0,8 %) y pasan solas, 28/28. La causa no es aleatoria:
+      `ForestSceneController.Place` multiplica la escala por `HoverScale` según la distancia al
+      cursor (`Mouse.current`) y `ForestObjectNudge` aparta lo que el cursor roza; en el Editor
+      ese cursor está donde lo dejó el usuario. Arreglo de una línea cuando se aborde: que esas
+      dos pruebas construyan el config con `HoverRadius = 0`, o que lleven el ratón fuera del
+      suelo antes de medir. **No es regresión de W08/W09.**
+
+- [x] **El mazo del taller estaba inerte (14/09/2026).** Salió de revisar a mano las aristas
+      AMBIGUOUS del grafo: «Ensamblaje de la carretilla ↔ Pieza 5 · mazo de piedra» era correcta y
+      señalaba que `WorkshopPiece.Tool` no participaba de nada. Santiago decidió que se arrastre
+      sobre el tronco. Se implementó **sumando** el gesto y conservando el botón, porque RF-28
+      dice «el **botón** de mecanizar» y el guion §6.2.2 paso 2 también: ni el RF ni el guion
+      necesitan corrección, y lo radicado se sigue cumpliendo al pie de la letra.
 
 - [~] **R2 · Cerrar el Slice 1** hasta su Checkpoint D. **Dejó de ser bloqueante duro para W02**
       (decisión del 10/09/2026): el freno real era la colisión con T17 sobre `PlayerProfile.cs` y

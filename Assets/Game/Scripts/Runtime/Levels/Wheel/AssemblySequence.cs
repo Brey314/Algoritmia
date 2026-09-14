@@ -54,9 +54,13 @@ namespace Game.Levels.Wheel
         public static bool IsShortLog(WorkshopPiece piece) =>
             piece == WorkshopPiece.ShortLogA || piece == WorkshopPiece.ShortLogB;
 
-        /// <summary>Solo el tronco largo, la tabla y la caja se arrastran (guion §6.2.2 pasos 4–6).</summary>
+        /// <summary>
+        /// El mazo, el tronco largo, la tabla y la caja se arrastran (guion §6.2.2 pasos 4–6, y
+        /// el mazo como segunda vía del paso 2).
+        /// </summary>
         public static bool IsDraggable(WorkshopPiece piece) =>
-            piece == WorkshopPiece.LongLog || piece == WorkshopPiece.Plank || piece == WorkshopPiece.Cargo;
+            piece == WorkshopPiece.Tool || piece == WorkshopPiece.LongLog
+            || piece == WorkshopPiece.Plank || piece == WorkshopPiece.Cargo;
 
         /// <summary>
         /// Clic sobre una pieza. Un tronco corto queda resaltado —siempre disponible—; cualquier
@@ -74,7 +78,11 @@ namespace Game.Levels.Wheel
                 _drilled.Contains(piece) ? _content.AlreadyWheelMessage : _content.SelectedMessage);
         }
 
-        /// <summary>«Mecanizar»: abre el agujero central del tronco resaltado, que pasa a ser rueda.</summary>
+        /// <summary>
+        /// Mecanizar: abre el agujero central del tronco resaltado, que pasa a ser rueda (RF-28).
+        /// Es el paso 2 del guion §6.2.2, al que se llega por el botón o soltándole encima el
+        /// mazo (<see cref="Place"/>); los dos gestos ejecutan esta misma regla.
+        /// </summary>
         public PatternSelection.Outcome Machine()
         {
             if (!CanMachine)
@@ -91,18 +99,29 @@ namespace Game.Levels.Wheel
         }
 
         /// <summary>
-        /// Soltar una pieza arrastrada. <paramref name="overAssembly"/> lo decide la escena
-        /// midiendo si cayó sobre el lugar de armado. Fuera de secuencia no se ejecuta y el mensaje
-        /// dice qué falta antes (RF-29, CP-06); el adaptador devuelve la pieza a su sitio.
+        /// Soltar una pieza arrastrada. <paramref name="overTarget"/> lo decide la escena
+        /// midiendo si cayó sobre su destino: el tronco resaltado para el mazo, el lugar de armado
+        /// para las demás. Fuera de secuencia no se ejecuta y el mensaje dice qué falta antes
+        /// (RF-29, CP-06); el adaptador devuelve la pieza a su sitio.
         /// </summary>
-        public PatternSelection.Outcome Place(WorkshopPiece piece, bool overAssembly)
+        public PatternSelection.Outcome Place(WorkshopPiece piece, bool overTarget)
         {
             if (!IsDraggable(piece))
             {
                 return new PatternSelection.Outcome(false, string.Empty);
             }
 
-            if (!overAssembly)
+            // El mazo se resuelve antes que el rechazo por sitio: sin tronco resaltado da igual
+            // dónde cayó, porque lo que falta es elegir el tronco y eso es lo que hay que decir
+            // (CP-06). Con uno resaltado y lejos, sí es un fallo de puntería.
+            if (piece == WorkshopPiece.Tool)
+            {
+                return CanMachine && !overTarget
+                    ? new PatternSelection.Outcome(false, _content.MissedMessage)
+                    : Machine();
+            }
+
+            if (!overTarget)
             {
                 return new PatternSelection.Outcome(false, _content.MissedMessage);
             }

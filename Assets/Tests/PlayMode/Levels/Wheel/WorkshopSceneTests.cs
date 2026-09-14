@@ -107,6 +107,43 @@ namespace Game.Levels.Wheel.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task WorkshopScene_RF28_ElMazoArrastradoSobreElTroncoResaltadoLoPerforaIgualQueElBoton()
+        {
+            var taller = await OpenWorkshop();
+            var tronco = taller.Pieces[WorkshopPiece.ShortLogA];
+            var macizo = tronco.Image.sprite;
+            var sitioDelMazo = taller.Pieces[WorkshopPiece.Tool].Rect.anchoredPosition;
+
+            // Sin tronco resaltado, soltarlo encima no perfora: falta elegir (RF-28).
+            await Arrastrar(taller, WorkshopPiece.Tool, tronco.Rect);
+            Assert.That(taller.Assembly.IsDrilled(WorkshopPiece.ShortLogA), Is.False);
+            Assert.That(taller.MessageLabel.text, Is.EqualTo(taller.Config.SelectNeededMessage));
+
+            taller.Select(WorkshopPiece.ShortLogA);
+            await Arrastrar(taller, WorkshopPiece.Tool, taller.Pieces[WorkshopPiece.Cargo].Rect);
+            Assert.That(taller.Assembly.IsDrilled(WorkshopPiece.ShortLogA), Is.False, "lejos del tronco no perfora");
+            Assert.That(taller.MessageLabel.text, Is.EqualTo(taller.Config.MissedMessage));
+
+            await Arrastrar(taller, WorkshopPiece.Tool, tronco.Rect);
+
+            Assert.That(taller.Assembly.IsDrilled(WorkshopPiece.ShortLogA), Is.True, "el mazo sobre el tronco lo mecaniza");
+            Assert.That(tronco.Image.sprite, Is.SameAs(taller.Config.DrilledWheelArt), "y la rueda se pinta en su sitio");
+            Assert.That(taller.MessageLabel.text, Is.EqualTo(taller.Config.WheelDrilledMessage));
+            Assert.That(taller.Pieces[WorkshopPiece.Tool].Rect.gameObject.activeSelf, Is.True,
+                "el mazo no se integra en nada: golpea y sigue en el suelo");
+            Assert.That(taller.Pieces[WorkshopPiece.Tool].Rect.anchoredPosition, Is.EqualTo(sitioDelMazo), "y vuelve a su sitio");
+            Assert.That(tronco.Image.sprite, Is.Not.SameAs(macizo));
+
+            // El botón sigue siendo el gesto de RF-28 y del guion §6.2.2 paso 2: la segunda rueda
+            // se perfora con él, sobre la misma regla.
+            taller.Select(WorkshopPiece.ShortLogB);
+            Assert.That(taller.MachineButton.interactable, Is.True);
+            taller.MachineButton.onClick.Invoke();
+            Assert.That(taller.Assembly.DrilledWheels, Is.EqualTo(2), "los dos caminos dejan el mismo estado");
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task WorkshopScene_RF29_UnPasoFueraDeOrdenDevuelveLaPiezaYNoDeshaceNada()
         {
             var workshop = await OpenWorkshop();
@@ -205,8 +242,8 @@ namespace Game.Levels.Wheel.Tests
                 .ToArray();
 
             Assert.That(arrastrables, Is.Empty, "ningún elemento del taller usa el arrastre de uGUI");
-            Assert.That(sostenidos, Is.EqualTo(new[] { "Pieza_Cargo", "Pieza_LongLog", "Pieza_Plank" }),
-                "lo único que responde al clic sostenido son las tres piezas que se colocan");
+            Assert.That(sostenidos, Is.EqualTo(new[] { "Pieza_Cargo", "Pieza_LongLog", "Pieza_Plank", "Pieza_Tool" }),
+                "lo único que responde al clic sostenido son las tres piezas que se colocan y el mazo");
         }
 
         [Test]
