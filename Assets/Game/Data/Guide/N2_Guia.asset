@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2991c473d81d30c47962fa1639427b06, type: 3}
+  m_Name: N2_Guia
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.GuideContent
+  <Level>k__BackingField: 2
+  <Steps>k__BackingField:
+  - <Id>k__BackingField: Seleccionar
+    <Instruction>k__BackingField: "Selecciona los objetos que se muevan con facilidad y \xFAnelos. Cuando tengas cinco, veremos qu\xE9 pasa."
+    <Hint>k__BackingField: "Mira c\xF3mo se mueve cada uno cuando lo empujas. \xBFCu\xE1les se traban y cu\xE1les no?"
+  - <Id>k__BackingField: Construir
+    <Instruction>k__BackingField: "Abre agujeros en el centro de los troncos cortos, luego \xFAnelos con el tronco largo. Coloca encima la tabla y sobre ella la caja de alimentos. En ese orden: cada paso necesita que el anterior est\xE9 hecho."
+    <Hint>k__BackingField: "Mira la pieza que quieres poner. \xBFSobre qu\xE9 se apoyar\xEDa si la sueltas ahora?"
+  - <Id>k__BackingField: Programar
+    <Instruction>k__BackingField: "Lleva la carretilla hasta el refugio. Pero no la vas a empujar t\xFA. Vas a escribir antes todos los pasos, y luego los ejecutas de una sola vez."
+    <Hint>k__BackingField: "Mira en qu\xE9 paso se detuvo la carretilla. \xBFHacia d\xF3nde miraba justo antes?"

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Game.Core
@@ -26,9 +27,11 @@ namespace Game.Core
                 {
                     GameState.Narrative, GameState.Playing, GameState.MainMenu
                 },
+                // Narrative → Narrative es encadenar dos escenas del guion seguidas (la 2.2 con
+                // la 2.3): el asset declara la siguiente, el flujo solo la acepta (RF-05).
                 [GameState.Narrative] = new[]
                 {
-                    GameState.Playing, GameState.LevelSummary, GameState.LevelSelect
+                    GameState.Narrative, GameState.Playing, GameState.LevelSummary, GameState.LevelSelect
                 },
                 // Playing → Playing es reiniciar el nivel o entrar a la fase siguiente (RF-07).
                 [GameState.Playing] = new[]
@@ -114,9 +117,35 @@ namespace Game.Core
         /// Entra a jugar una fase de un nivel. Rechaza el nivel que el perfil activo todavía no
         /// tiene desbloqueado (RF-03) sin cambiar de estado.
         /// </summary>
-        public bool TryStartPlaying(LevelId level, int phase)
+        /// <param name="isPlayable">
+        /// Qué fases tienen ya escena. La retoma de RNF-14 solo salta a una fase pendiente que se
+        /// pueda jugar; mientras la 3 del Nivel 2 no exista (W13), un perfil con la 1 y la 2
+        /// confirmadas vuelve a jugar la pedida en vez de caer al menú sin explicación
+        /// (12/09/2026). Nulo = todas.
+        /// </param>
+        public bool TryStartPlaying(LevelId level, int phase, Predicate<PhaseId> isPlayable = null)
         {
-            if (ActiveProfile == null || !ActiveProfile.IsUnlocked(level) || !TryGoTo(GameState.Playing))
+            if (ActiveProfile == null || !ActiveProfile.IsUnlocked(level)
+                || phase < 1 || phase > PhaseId.PhaseCountOf(level))
+            {
+                return false;
+            }
+
+            // RNF-14: una fase ya confirmada no se vuelve a jugar por entrar al nivel otra vez
+            // —la apertura del nivel siempre pide la fase 1— sino que se retoma en la primera
+            // pendiente. Con el nivel completo no hay pendiente y se juega la pedida: repetir
+            // un nivel terminado es legítimo, y «Reiniciar» desde la pausa vuelve a una fase
+            // que todavía no está confirmada, así que tampoco lo toca.
+            if (ActiveProfile.IsPhaseConfirmed(new PhaseId(level, phase)))
+            {
+                var pending = ActiveProfile.NextPendingPhase(level);
+                if (pending.HasValue && (isPlayable == null || isPlayable(pending.Value)))
+                {
+                    phase = pending.Value.Phase;
+                }
+            }
+
+            if (!TryGoTo(GameState.Playing))
             {
                 return false;
             }

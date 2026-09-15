@@ -1,26 +1,50 @@
 # Spec: Prototipo de videojuego educativo — Pensamiento Computacional
 
-Contrato de desarrollo derivado de los seis documentos en `docs/`. Los identificadores
+Contrato de desarrollo derivado de los documentos en `docs/`. Los identificadores
 RF/RNF/CP/CT/CN/CU/HU/PG remiten a esos documentos y son la unidad de trazabilidad (CT-10).
 
+**Los documentos se refundieron el 14/09/2026: de seis pasaron a cuatro.** OE1 es ahora
+`Solución OE1_Requerimientos.docx`, y `Solucion_OE2_Diseno_final.docx` absorbe en un solo archivo
+el guion, los casos de uso, las historias de usuario, las matrices de trazabilidad y la
+arquitectura. El trabajo de grado salió de `docs/`: se recupera con
+`git show HEAD:"docs/Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx"`.
+
 **Orden de precedencia.** Cuando dos documentos se contradicen gana el de mayor prioridad, y se
-corrige el otro. Verificado contra su estado del 30/08/2026 (rev. 6):
+corrige el otro. Verificado contra su estado del 14/09/2026 (rev. 8):
 
 | # | Documento | Qué gobierna |
 |---|---|---|
-| 1 | `Trabajo_de_Grado_2026_ICONTEC_IEEE.docx` | Objetivos, KPI, alcance, marco jurídico, metodología Árcade |
-| 2 | `OE1_Requerimientos (3).docx` | Lineamientos CP/CT/CN, RF-01..RF-47, RNF-01..RNF-23 |
-| 3 | `Guion_Completo_Videojuego.docx` | Narrativa, mecánicas, parámetros y textos exactos |
-| 4 | `OE2_historias_completas.docx` | CU-01..CU-12, HU-01..HU-18, matrices de trazabilidad |
-| 5 | `Historias_de_Usuario_HU01_HU18_v2.docx` | HU detalladas (HU-01..HU-18): flujos, criterios y reglas de negocio |
-| 6 | `arquitectura_videojuego_v2.docx` | Decisiones técnicas de implementación |
+| 1 | Trabajo de grado — **fuera de `docs/`**, solo en `git show HEAD:…` | Objetivos, KPI, alcance, marco jurídico, metodología Árcade |
+| 2 | `Solución OE1_Requerimientos.docx` | Lineamientos CP/CT/CN, RF-01..RF-47, RNF-01..RNF-23 |
+| 3 | `Solucion_OE2_Diseno_final.docx` §1 (guion) | Narrativa, mecánicas, parámetros y textos exactos |
+| 4 | `Solucion_OE2_Diseno_final.docx` §2–§3 | CU-01..CU-12, HU-01..HU-18, matrices de trazabilidad |
+| 5 | `Historias_de_Usuario_HU01_HU18_v2 (1).docx` | HU detalladas (HU-01..HU-18): flujos, criterios y reglas de negocio |
+| 6 | `arquitectura_videojuego_v2 (2).docx` | Decisiones técnicas de implementación |
+
+**Traducción de las citas anteriores a la refundición**, que siguen apareciendo en todo
+`claudeDocs/`: «guion §N» → `Solucion_OE2_Diseno_final` **§1.N** («guion §4.3» es §1.4.3;
+«guion §12», los puntos abiertos `PG-*`, es §1.2); «OE2 §4» —control de cambios— es §5.
+
+> **La §4 del documento refundido es arquitectura obsoleta — no se usa (`INC-48`).** La
+> refundición copió ahí el capítulo **anterior** a la alineación: reintroduce
+> `Application.persistentDataPath`, `CinematicsPlayer` sobre StreamingAssets, los ocho estados
+> fijos, `EntityManager` con enemigos y el `EventBus` global. Gana
+> `arquitectura_videojuego_v2 (2).docx`, que es lo que este documento adopta y lo que el código
+> implementa. Las filas 3 y 4 de la tabla viven además en el **mismo archivo**, así que un choque
+> entre ellas no lo resuelve la precedencia sino la edición del documento.
 
 La precedencia no resuelve las contradicciones **internas** a un documento: esas se corrigen
-editándolo. `INCONSISTENCIAS.md` (rev. 6, 30/08/2026) registra los 43 hallazgos históricos; **todos
-están cerrados en los `.docx`** salvo `INC-43` (el guion §12 aún declara `PG-07` pendiente después
-de concederse la autorización) y dos residuos cosméticos (pies de página de HU-17/HU-18).
-Este documento ya no necesita separar «lo que dice el documento» de «lo que implementa el
-código»: coinciden.
+editándolo. `INCONSISTENCIAS.md` (rev. 10, 15/09/2026) registra los 50 hallazgos históricos.
+**`INC-01`..`INC-45` están cerrados en los `.docx`.** Siguen abiertos `INC-46` (la lista de tareas
+del Nivel 3, que exige una decisión), `INC-47`, `INC-48`, `INC-49` e `INC-50`, más tres residuos
+menores.
+
+**Hay un punto en el que el documento y el código ya no coinciden, y es deliberado: `INC-47`.**
+La mecánica del Nivel 1 implementada mide **fuerza** y exige acomodar hojas y piedras; los
+documentos —incluidos los refundidos— mantienen el deslizante de **posición** (`RF-15`, `RF-16`,
+HU-06, guion §1.4.3). Donde este documento describe el Nivel 1, describe **el código**; la
+divergencia con los `.docx` está registrada y fechada, no es un descuido. En todo lo demás,
+documento y código coinciden.
 
 **Numeración.** Los RF están cerrados en `RF-01..RF-47`. Los RNF **no**: el control de cambios de
 OE1 del 24/08/2026 insertó `RNF-18` (parametrización de contenidos, el enunciado de CT-05) y
@@ -203,6 +227,27 @@ reutilizable**; `Playing` con un `LevelId` y una fase. Añadir una escena narrat
 un asset, no un estado, una escena y una rama del FSM. Es menos código y menos peso en el
 paquete (RNF-06).
 
+Tres consecuencias de esa parametrización que el código ya ejerce y conviene no volver a
+discutir:
+
+- **La fase es un tipo, no un `int`.** `PhaseId` (`Game.Core`) es lo que atraviesa
+  `PlayerProfile`, `GameFlow` y el desbloqueo secuencial. No existe
+  `ConfirmPhase(LevelId, int, …)`; el formato del JSON persistido no cambió por ello.
+- **`GameFlow` acepta `Narrative → Narrative`**, y cuando se le pide una fase **ya confirmada**
+  retoma en la **primera fase pendiente que tenga escena** (RNF-14). El runner le pasa su tabla
+  de escenas; sin fase pendiente jugable repite la pedida, y `GameFlowRunner` cae al menú si una
+  fase no tiene escena. Eso es lo que hace verificable la recuperación tras cierre forzado sin
+  una rama por nivel.
+- **`NarrativeSequence.NextSequenceId` encadena dos escenas del guion** —la 2.2 con la 2.3—
+  desde el asset. Encadenar escenas narrativas no cuesta un `if` en el controlador.
+
+**La oscuridad del Nivel 1 es una capa propia, y solo del Nivel 1.** `NarrativeLight`
+(`Game.Scaffolding`) junto con `CameraKey.HardCut`, `FlashSeconds` y `LightStart` en los
+`N1_*.asset`, sobre el shader `Algoritm/Oscuridad`. El Nivel 2 no la usa y no debe heredarla:
+`RF-21` (iluminación progresiva) es de prioridad Baja y está acotado al nivel del fuego. El
+diseño de los encuadres vive en `docs/Camara_Narrativa_N1.md` y su inventario en
+`docs/md/Camara_Narrativa_N1.md` — ambos fuera de git, sin copia.
+
 ### El FSM es C# plano
 
 `GameFlow` no es un MonoBehaviour: es una máquina de estados sin dependencias de Unity, con un
@@ -287,6 +332,7 @@ Assets/
       Boot.unity  MainMenu.unity  LevelSelect.unity  Credits.unity
       TeacherReport.unity
       Narrative.unity          ← única, parametrizada por NarrativeSequence
+      LevelSummary.unity       ← única, cierre de cualquier nivel (RF-45, sin cifras)
       Level1_Cave.unity
       Level2_Forest.unity  Level2_Workshop.unity  Level2_Maze.unity
       Level3_River.unity
@@ -311,6 +357,11 @@ Los namespaces siguen la ruta relativa a `Scripts`, elidiendo `Runtime`:
 `Game.Levels.River`, `Game.Reporting`, `Game.UI` y `Game.Audio`, más un assembly de pruebas por
 cada uno. Ningún assembly de nivel referencia a otro assembly de nivel: eso es lo que hace
 ejecutable la prueba de exclusión de RNF-16.
+
+Fuera de esa cadena cuelga **`Game.EditorTools`, solo Editor**, que **no referencia ningún
+`Game.*`**: trae `PlayFromBoot` —que fuerza el arranque en `Boot` al pulsar Play, y se suspende
+solo en batchmode y durante las corridas del Test Runner— y la maqueta `Sandbox/CharacterProbe*`,
+que no es código del juego. No entra en el paquete de entrega y por eso no cuenta para RNF-16.
 
 `Game.UI` y `Game.Audio` están en la lista de la arquitectura §9 (INC-40, cerrado): `HUDController`
 y `AudioManager` tienen que compilar en algún sitio, y meterlos en `Game.Core` haría que el
@@ -405,6 +456,14 @@ Unity Test Framework. Rigen `unity-coding-skills:test-designing-guide` y `test-w
 | Aserción de layout | PlayMode | Elemento dentro de pantalla, sin solapamientos, texto sin desbordar, botón alcanzable por raycast. `[Category("Integration")]`. |
 | Verificación visual | PlayMode | Solo lo que no admite aserción estricta: contraste (RNF-20), doble indicador color+icono (RNF-19), ausencia de destellos rápidos (RNF-21). `[Category("VisualVerification")]`. |
 | Manual | Plan de pruebas OE4 | Presupuestos de rendimiento, ejecución portable en dos equipos, ejecución sin red, cierre forzado y recuperación. |
+
+**Probar sin ampliar la superficie pública.** Un `AssemblyInfo.cs` en la raíz del módulo con
+`[assembly: InternalsVisibleTo("<Módulo>.Tests")]`. Nunca subir un miembro a `public` solo para
+que lo alcance una prueba. **El assembly de PlayMode se llama `<Módulo>.PlayMode.Tests` y
+necesita su propia línea**: sin ella el `internal` no se ve desde PlayMode aunque la de EditMode
+esté puesta. `Game.Architecture.Tests` es la excepción a todo lo anterior —no referencia ningún
+`Game.*` porque lee los `.asmdef` del disco, y así puede exigir el assembly de un módulo que
+todavía no tiene código (RNF-15, RNF-16).
 
 **Regla de trazabilidad (CT-10): todo RF tiene al menos un caso de prueba que lo nombra.**
 El nombre del método de prueba cita el identificador, de modo que la matriz del plan de
@@ -506,15 +565,31 @@ Verificables, uno por KPI del trabajo de grado (§2.3):
 
 ## Decisiones sobre los documentos en conflicto
 
-`INCONSISTENCIAS.md` (rev. 6, 30/08/2026) registra los 43 hallazgos históricos entre los seis
-`.docx`. **Todos están cerrados en los documentos** salvo `INC-43`, que no toca al código: el
-guion §12 declara `PG-07` pendiente cuando la autorización ya se concedió. El código sigue
-sencillamente lo que dicen.
+`INCONSISTENCIAS.md` (rev. 10, 15/09/2026) registra los 50 hallazgos históricos entre los `.docx`.
+**`INC-01`..`INC-45` están cerrados en los documentos**, `INC-43`/`INC-44`/`INC-45` desde la
+refundición del 14/09/2026. Siguen abiertos cinco, y tres de ellos son el código adelantándose
+al documento:
+
+- **`INC-46`** — la lista de tareas del Nivel 3 está descrita como dos objetos distintos. Se
+  cierra dentro de `claudeDocs/`, pero **exige una decisión**; afecta al Slice 3, no a lo hecho.
+- **`INC-47`** — la mecánica del Nivel 1. **Es la única divergencia viva entre documento y
+  código**, y es deliberada: ver el supuesto 7.
+- **`INC-48`** — la §4 del documento refundido es arquitectura obsoleta. Gana
+  `arquitectura_videojuego_v2 (2).docx`; el código no cambia.
+- **`INC-49`** — el menú de pausa. En código son los rótulos del **mockup 6** (Reanudar ·
+  Reiniciar · Volver al menú de niveles, W17, 15/09/2026) y HU-17 todavía dice «Continuar /
+  Reiniciar nivel / Volver al menú principal». Decidido a favor del mockup: lo que falta es
+  corregir HU-17, no el código.
+- **`INC-50`** — el rodado del Nivel 2. «Empujar» confirma la fase y sale a la escena 2.2, que es
+  la que anima el rodado (W19, 15/09/2026); RF-26 y HU-08 lo describen dentro de la mecánica. El
+  requisito —ver rodar la caja sobre lo redondo— se cumple; cambia dónde.
+
+En todo lo demás el código sigue sencillamente lo que dicen los documentos.
 Lo que el código materializa de cada decisión, para que no se pierda al leer solo el `.docx`:
 
 | Hallazgo (cerrado) | Lo que el código materializa |
 |---|---|
-| INC-25 · HU-17 | Pausa como capa de UI sobre `Playing`: Continuar (restituye el estado exacto), Reiniciar nivel (confirmación, nunca re-bloquea un nivel desbloqueado, no borra indicadores), Volver al menú. Sin `GameOver`. |
+| INC-25 · HU-17 | Pausa como capa de UI sobre `Playing`, no un estado nuevo: `Time.timeScale = 0` mientras está abierta. Rótulos del mockup 6 (INC-49): Reanudar (restituye el estado exacto), Reiniciar (confirmación, repite **la fase activa**, nunca re-bloquea un nivel desbloqueado, no borra indicadores), Volver al menú de niveles. Un solo prefab `MenuPausa` en las cuatro escenas jugables. Sin `GameOver`. |
 | INC-26 · HU-14 | El resumen de fin de nivel es **narrativo y sin cifras** (RF-45, RF-17, CP-03). Las cifras solo viven en `TeacherReport` (RF-46); no hay `ScoreManager`. |
 | INC-01 · controles | **Botones de dirección en pantalla, accionados con clic.** Nunca teclado. El mapa de controles se inspecciona sin salvedades (RNF-02, CT-06). |
 | INC-27 · RNF-09 | Se persisten nombre o alias, nivel alcanzado, fases confirmadas y los cuatro indicadores. Nada más. |
@@ -565,10 +640,30 @@ Corregir cualquiera de estos ahora sale más barato que después.
 6. **Nivel 3 usa botones de dirección en pantalla**, accionados con clic — no el teclado. Letra
    vigente en todos los documentos: RF-35, guion §2.1 y §8.2, CU-09, HU-11 y arquitectura §1.
    **No hay excepción alguna a RNF-02 ni a CT-06** (INC-01, cerrado).
-7. **Los valores del Nivel 1** (`posicionEfectiva` = Muy cerca, `golpesEfectivosMinimos` = 3,
-   `intentosParaPista` = 3) son los propuestos por el guion §4.3.2 y siguen sin validarse jugando
-   (PG-06, hoy correctamente abierto). Viven en `FireLevelConfig` para que ajustarlos no cueste
-   una recompilación.
+7. **La mecánica del Nivel 1 mide fuerza y cercanía, no posición** (rediseño del 12/09/2026,
+   T20–T24, ampliado el 15/09/2026, T25–T27; `INC-47`). Primero el estudiante **reúne** hojas y
+   piedras en el círculo del centro (la ayuda lo dibuja); reunido todo, la cámara se acerca al
+   doble, las hojas se acomodan en fogata y fija dos hipótesis en dos deslizantes de 0 a 10 —la
+   **fuerza** del golpe y la **cercanía** de las piedras—, golpea y sopla. Los documentos —incluidos los refundidos del
+   14/09/2026— siguen describiendo un deslizante de **posición** de tres distancias (`RF-15`,
+   `RF-16`, HU-06, guion §1.4.3): **aquí gana el código**, y la divergencia está registrada y
+   fechada en `INCONSISTENCIAS.md`. Los nombres de las pruebas conservan `RF-15`/`RF-16` porque el
+   requisito de fondo no cambió: hipótesis → experimento → resultado observable → ajuste.
+
+   Valores vigentes en `FireLevelConfig`, **ninguno validado jugando todavía** (`PG-06`, abierto,
+   se cierra en el Checkpoint D):
+
+   | Campo | Valor |
+   |---|---|
+   | `ForceLevels` | 10 |
+   | `EffectiveForceMin` · `EffectiveForceMax` | 7 · 8 |
+   | `PileRadius` · `StonesRadius` | 0.10 · 0.20 |
+   | `MinimumEffectiveStrikes` | 3 |
+   | `AttemptsBeforeHint` | 3 |
+
+   Viven en un ScriptableObject (CT-05, RNF-18) para que ajustarlos no cueste una recompilación.
+   La pista tras tres fallos **nunca nombra la fuerza efectiva**, igual que antes nunca nombraba
+   la posición (CP-06).
 8. **Los bloques del laberinto** son relativos a la orientación de la carretilla: «Girar» rota 90°
    en sentido horario y «Avanzar» / «Retroceder» mueven adelante y atrás respecto de esa
    orientación. Letra vigente en RF-31 y en el guion §6.3.2 (INC-33, cerrado). Con la lectura
@@ -597,9 +692,11 @@ por nivel está fijada en OE1 §3.6.1, con lista cerrada.
 
 ## Preguntas abiertas
 
-Ya no hay preguntas de diseño ni de redacción con efecto en el código: de los 43 hallazgos de
-`INCONSISTENCIAS.md` solo `INC-43` sigue abierto —una fila desactualizada del guion §12, sin
-efecto en el código— y este documento sigue su resolución.
+De los 48 hallazgos de `INCONSISTENCIAS.md` quedan tres abiertos, y **solo uno exige una decisión
+de diseño**: `INC-46`, la lista de tareas del Nivel 3 (cuerda con nudos contra panel de casillas),
+que hay que resolver antes de abrir el Slice 3. `INC-47` es una divergencia ya decidida —gana el
+código, ver supuesto 7— y `INC-48` también —gana `arquitectura_videojuego_v2 (2).docx`—: ninguno
+de los dos bloquea trabajo, pero los dos esperan una edición manual del `.docx`.
 
 **Del guion (§12), sin resolver** — son del guion, no conflictos entre documentos:
 **PG-01** título del producto · ~~**PG-02** nombre definitivo del guía~~ **cerrado 02/09/2026: Algoritm** (INC-44, INC-45) ·
@@ -607,9 +704,12 @@ efecto en el código— y este documento sigue su resolución.
 confunde · **PG-06** validar jugando los valores del Nivel 1 (`FireLevelConfig`).
 
 **PG-07 cerrado (30/08/2026):** la autorización escrita de los personajes de la Familia Anonaky
-fue concedida. Falta reflejarlo en el guion §12 (INC-43).
+fue concedida, y desde la refundición del 14/09/2026 el `.docx` ya lo refleja (INC-43, cerrado).
 
-**Residuo cosmético en `docs/`:** HU-17 y HU-18 no llevan el encabezado «Página 17/18 de 18».
+**Residuos cosméticos en `docs/`:** HU-17 y HU-18 no llevan el encabezado «Página 17/18 de 18»
+(`INC-24-r`); `Solucion_OE2_Diseno_final` §1.4.3 llama «Chispa» al guía en el estado E5
+(`INC-44-r`) y §1.1.1 conserva la cláusula «Nombre provisional» pese a que `PG-02` está cerrado
+(`INC-44-r2`). Ninguno afecta a un criterio de verificación.
 
 **Cerrado desde la rev. 4:** la semántica de los bloques del laberinto (lectura relativa, giro
 90° horario, fijada en RF-31 y guion §6.3.2 — INC-33); `RF-19` sin condición de posición

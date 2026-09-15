@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0265395da5e69f64c879e150d2411664, type: 3}
+  m_Name: N2_ResumenNivel
+  m_EditorClassIdentifier: Game.UI::Game.UI.LevelSummaryMessages
+  <Level>k__BackingField: 2
+  <Intro>k__BackingField: "Esto es lo que pasó con la rueda:"
+  <Discovery>k__BackingField: Descubriste que lo redondo rueda y que una carretilla se arma en orden.
+  <TriedSeveralPositions>k__BackingField: "Probaste objetos, piezas y caminos que no servían antes de dar con los buenos."
+  <FoundRightAway>k__BackingField: Elegiste los troncos, el orden de las piezas y el camino casi de inmediato.
+  <CorrectedApproach>k__BackingField: "Cuando algo no encajó, cambiaste de idea y volviste a intentar."
+  <NoNeedToCorrect>k__BackingField: Seguiste tu plan del bosque al taller y del taller al refugio.
+  <SkillNamed>k__BackingField: "Eso se llama abstraer y pensar como un algoritmo: quedarte con lo que importa y ordenar los pasos."

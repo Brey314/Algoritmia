@@ -58,10 +58,10 @@ namespace Game.Core.Tests
             var indicators = new PerformanceIndicators(attempts: 4, correctedErrors: 2, stepsUsed: 3,
                 resolutionSeconds: 91.5f);
 
-            sut.ConfirmPhase(LevelId.Fire, phase: 1, indicators);
+            sut.ConfirmPhase(new PhaseId(LevelId.Fire, 1), indicators);
 
-            Assert.That(sut.IsPhaseConfirmed(LevelId.Fire, 1), Is.True);
-            Assert.That(sut.IndicatorsFor(LevelId.Fire, 1), Is.EqualTo(indicators));
+            Assert.That(sut.IsPhaseConfirmed(new PhaseId(LevelId.Fire, 1)), Is.True);
+            Assert.That(sut.IndicatorsFor(new PhaseId(LevelId.Fire, 1)), Is.EqualTo(indicators));
             Assert.That(sut.ConfirmedPhases.Count, Is.EqualTo(1));
         }
 
@@ -73,12 +73,12 @@ namespace Game.Core.Tests
             // una repetición posterior ni la revoca ni la sobrescribe (RF-41, CP-02).
             var sut = PlayerProfile.Create("Ana", NoExistingProfiles).Profile;
             var first = new PerformanceIndicators(4, 2, 3, 91.5f);
-            sut.ConfirmPhase(LevelId.Fire, 1, first);
+            sut.ConfirmPhase(new PhaseId(LevelId.Fire, 1), first);
 
-            sut.ConfirmPhase(LevelId.Fire, 1, new PerformanceIndicators(1, 0, 3, 30f));
+            sut.ConfirmPhase(new PhaseId(LevelId.Fire, 1), new PerformanceIndicators(1, 0, 3, 30f));
 
-            Assert.That(sut.IsPhaseConfirmed(LevelId.Fire, 1), Is.True);
-            Assert.That(sut.IndicatorsFor(LevelId.Fire, 1), Is.EqualTo(first));
+            Assert.That(sut.IsPhaseConfirmed(new PhaseId(LevelId.Fire, 1)), Is.True);
+            Assert.That(sut.IndicatorsFor(new PhaseId(LevelId.Fire, 1)), Is.EqualTo(first));
             Assert.That(sut.ConfirmedPhases.Count, Is.EqualTo(1));
         }
 

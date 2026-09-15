@@ -34,9 +34,9 @@ namespace Game.Levels.Fire
         /// <summary>Registra el resultado de un golpe y devuelve el mensaje elegido (RF-11, RF-17).</summary>
         public string Record(StrikeOutcome outcome, int consecutiveFailures)
         {
-            var message = outcome.Effective
-                ? EffectiveMessage(outcome.EffectiveStrikes)
-                : FailureMessage(outcome.Position, consecutiveFailures);
+            var message = outcome.Effective ? EffectiveMessage(outcome.EffectiveStrikes)
+                : outcome.Spacing != SpacingBand.Effective ? SpacingMessage(outcome.Spacing, consecutiveFailures)
+                : FailureMessage(outcome.Band, consecutiveFailures);
             _entries.Add(message);
             return message;
         }
@@ -46,6 +46,19 @@ namespace Game.Levels.Fire
         {
             _entries.Add(_messages.BlowSuccess);
             return _messages.BlowSuccess;
+        }
+
+        /// <summary>
+        /// Escribe una línea del guía —la instrucción pedida con «Pista» o la pista tras los
+        /// fallos seguidos (RF-13)— en el mismo registro que los mensajes de los golpes. Vacía o
+        /// nula no escribe nada: <c>HintPolicy</c> devuelve nulo mientras no toca pista.
+        /// </summary>
+        public void RecordGuide(string message)
+        {
+            if (!string.IsNullOrEmpty(message))
+            {
+                _entries.Add(message);
+            }
         }
 
         private string EffectiveMessage(int effectiveStrikes)
@@ -60,14 +73,20 @@ namespace Game.Levels.Fire
                 : _messages.SecondEffectiveStrike;
         }
 
-        private string FailureMessage(StrikePosition position, int consecutiveFailures)
-        {
-            // Solo «Muy cerca» es efectiva con la configuración del guion, así que un golpe no
-            // efectivo es «Lejos» o «Cerca»; cualquier otra distancia cae en los mensajes de «Cerca».
-            var (fallback, escalated) = position == StrikePosition.Far
-                ? (_messages.FarSparksFade, _messages.FarNeverReach)
-                : (_messages.NearColdStone, _messages.NearBesideLeaves);
+        /// <summary>Las piedras no chocaron: separadas o demasiado encimadas (T26). Cada lado tiene su par.</summary>
+        private string SpacingMessage(SpacingBand spacing, int consecutiveFailures) =>
+            spacing == SpacingBand.TooFar
+                ? Escalate(_messages.StonesFar, _messages.StonesFarAgain, consecutiveFailures)
+                : Escalate(_messages.StonesTooClose, _messages.StonesTooCloseAgain, consecutiveFailures);
 
+        /// <summary>Un golpe no efectivo se pasó de suave o de fuerte (Fase 5). Cada lado tiene su par.</summary>
+        private string FailureMessage(ForceBand band, int consecutiveFailures) =>
+            band == ForceBand.TooSoft
+                ? Escalate(_messages.SoftNoSpark, _messages.SoftStonesGraze, consecutiveFailures)
+                : Escalate(_messages.HardSparksScatter, _messages.HardSparksFly, consecutiveFailures);
+
+        private string Escalate(string fallback, string escalated, int consecutiveFailures)
+        {
             // La variante «tras dos intentos» (guion §4.3.4) solo aplica desde el segundo fallo
             // seguido. Antes no hay alternativa y un mensaje repetido se permite.
             if (consecutiveFailures < 2)

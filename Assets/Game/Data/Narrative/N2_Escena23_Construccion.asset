@@ -1,0 +1,135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe39808d68b138e4fb74e8e86cb55219, type: 3}
+  m_Name: N2_Escena23_Construccion
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
+  <Id>k__BackingField: N2_Escena23_Construccion
+  <Level>k__BackingField: 2
+  <Illustration>k__BackingField: {fileID: 21300000, guid: bbed55b5b972c6c44ac36e4f02bc21c2, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.7, y: 0.45}
+    <Zoom>k__BackingField: 1.62
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.772, y: 0.47}
+    <Zoom>k__BackingField: 1.32
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 1
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.745, y: 0.455}
+      <Zoom>k__BackingField: 1.52
+  - <Line>k__BackingField: 2
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.762, y: 0.435}
+      <Zoom>k__BackingField: 1.78
+  - <Line>k__BackingField: 3
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.775, y: 0.47}
+      <Zoom>k__BackingField: 1.35
+  - <Line>k__BackingField: 4
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.694, y: 0.4}
+      <Zoom>k__BackingField: 1.6
+  - <Line>k__BackingField: 5
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.748, y: 0.4}
+      <Zoom>k__BackingField: 1.6
+  - <Line>k__BackingField: 6
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.8, y: 0.4}
+      <Zoom>k__BackingField: 1.6
+  - <Line>k__BackingField: 7
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.772, y: 0.47}
+      <Zoom>k__BackingField: 1.32
+  <CameraSmoothingSeconds>k__BackingField: 1.3
+  <OpensFromBlack>k__BackingField: 1
+  <HardCutFadeSeconds>k__BackingField: 0.5
+  <Props>k__BackingField:
+  - <Art>k__BackingField: {fileID: 21300000, guid: 0792b2c700950ea4bb7333f999dd66f4, type: 3}
+    <Position>k__BackingField: {x: 0.655, y: 0.408}
+    <Size>k__BackingField: 0.12
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 21300000, guid: 0792b2c700950ea4bb7333f999dd66f4, type: 3}
+    <Position>k__BackingField: {x: 0.7, y: 0.408}
+    <Size>k__BackingField: 0.12
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 21300000, guid: cdefe5124478a1d48a154482196b0026, type: 3}
+    <Position>k__BackingField: {x: 0.76, y: 0.393}
+    <Size>k__BackingField: 0.17
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 21300000, guid: 193d5366145c94643a510de4ef3b4573, type: 3}
+    <Position>k__BackingField: {x: 0.815, y: 0.408}
+    <Size>k__BackingField: 0.11
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 21300000, guid: e32ddf3af76ac9a4ba4e7861262d59f5, type: 3}
+    <Position>k__BackingField: {x: 0.87, y: 0.393}
+    <Size>k__BackingField: 0.16
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 21300000, guid: 55ca788eb08d23345b9f57fc38312cf0, type: 3}
+    <Position>k__BackingField: {x: 0.925, y: 0.418}
+    <Size>k__BackingField: 0.11
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+  <IsReflectiveClosing>k__BackingField: 0
+  <NextPhase>k__BackingField: 2
+  <Lines>k__BackingField:
+  - <Speaker>k__BackingField: "NI\xD1A"
+    <Text>k__BackingField: Si hacemos algo redondo... podemos usarlo.
+  - <Speaker>k__BackingField: "PAP\xC1"
+    <Text>k__BackingField: Construyamos uno.
+  - <Speaker>k__BackingField: "NI\xD1O"
+    <Text>k__BackingField: "\xA1Probemos!"
+  - <Speaker>k__BackingField: "MAM\xC1"
+    <Text>k__BackingField: Paso a paso... podemos lograrlo.
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: Abre agujeros en el centro de los troncos cortos.
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "Luego \xFAnelos con el tronco largo."
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: Coloca encima la tabla.
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "Y sobre ella, la caja de alimentos. En ese orden: cada paso necesita que el anterior est\xE9 hecho."

@@ -55,14 +55,14 @@ namespace Game.UI.Tests
         {
             var saved = PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
             saved.Reach(LevelId.Wheel);
-            saved.ConfirmPhase(LevelId.Fire, 1, new PerformanceIndicators(4, 2, 3, 90f));
+            saved.ConfirmPhase(new PhaseId(LevelId.Fire, 1), new PerformanceIndicators(4, 2, 3, 90f));
             _store.Save(saved);
             var runner = await OpenProfilePanel();
 
             ClickProfileEntry("Ana");
 
             Assert.That(runner.Flow.ActiveProfile.ReachedLevel, Is.EqualTo(LevelId.Wheel), "nivel alcanzado");
-            Assert.That(runner.Flow.ActiveProfile.IsPhaseConfirmed(LevelId.Fire, 1), Is.True, "fase confirmada");
+            Assert.That(runner.Flow.ActiveProfile.IsPhaseConfirmed(new PhaseId(LevelId.Fire, 1)), Is.True, "fase confirmada");
         }
 
         [Test]

@@ -72,6 +72,98 @@ namespace Game.Scaffolding.Tests
             Assert.That(sut.RequestHelp(), Is.EqualTo(Soplar.Instruction), "la ayuda es de la tarea activa, no del objetivo del nivel");
         }
 
+        // --- el Nivel 2: tres fases encadenadas (W03) ---------------------------------------
+
+        private static readonly GuideStep[] FasesDelNivel2 =
+        {
+            new GuideStep("Seleccionar", "Selecciona los objetos que se muevan con facilidad.",
+                "¿Cuáles se traban cuando los empujas?"),
+            new GuideStep("Construir", "Abre agujeros en los troncos cortos y arma la carretilla.",
+                "Mira la pieza que quieres poner. ¿Sobre qué se apoyaría?"),
+            new GuideStep("Programar", "Escribe todos los pasos y luego ejecútalos de una vez.",
+                "¿En qué paso se detuvo la carretilla?")
+        };
+
+        [Test]
+        public void HintPolicy_RF13_ContadorDeFallosEsPorFaseNoPorNivel()
+        {
+            var sut = new HintPolicy(FasesDelNivel2[0]);
+            sut.RegisterFailedAttempt();
+            sut.RegisterFailedAttempt();
+
+            sut.Activate(FasesDelNivel2[1]);
+
+            // Los dos fallos del bosque no acercan la pista del taller: si el contador fuera del
+            // nivel, la fase 2 empezaría a un fallo de recibir ayuda que nadie pidió.
+            Assert.That(sut.RegisterFailedAttempt(), Is.Null, "primer fallo de la fase 2");
+            Assert.That(sut.RegisterFailedAttempt(), Is.Null, "segundo fallo de la fase 2");
+            Assert.That(sut.RegisterFailedAttempt(), Is.EqualTo(FasesDelNivel2[1].Hint),
+                "la pista es la de la fase activa, no la del nivel");
+        }
+
+        [Test]
+        public void HintPolicy_RF13_AyudaADemandaNoAlteraElEstadoEnLasTresFases()
+        {
+            var sut = new HintPolicy(FasesDelNivel2[0]);
+
+            foreach (var fase in FasesDelNivel2)
+            {
+                sut.Activate(fase);
+                sut.RegisterFailedAttempt();
+                sut.RequestHelp();
+                sut.RequestHelp();
+
+                Assert.That(sut.RequestHelp(), Is.EqualTo(fase.Instruction),
+                    $"la ayuda repite la instrucción vigente en {fase.Id}");
+                Assert.That(sut.ConsecutiveFailures, Is.EqualTo(1),
+                    $"pedir ayuda tres veces en {fase.Id} no mueve el contador (CP-06)");
+            }
+        }
+
+        [Test]
+        public void WheelGuide_RNF03_UnaSolaTareaActivaPorFase()
+        {
+            var pasos = PasosDelNivel(LevelId.Wheel).ToArray();
+
+            // El Nivel 2 no muestra lista de tareas —esa es del Nivel 3 (INC-41)—: una tarea
+            // vigente por fase y ninguna más.
+            Assert.That(pasos.Length, Is.EqualTo(PhaseId.PhaseCountOf(LevelId.Wheel)),
+                "una tarea por fase del Nivel 2");
+            Assert.That(pasos.Select(paso => paso.Id).Distinct().Count(), Is.EqualTo(pasos.Length),
+                "sin tareas repetidas");
+
+            var sut = new HintPolicy(pasos[0]);
+            foreach (var paso in pasos)
+            {
+                sut.Activate(paso);
+                Assert.That(sut.ActiveStep, Is.SameAs(paso), "solo una tarea está activa a la vez");
+            }
+        }
+
+        [Test]
+        public void HintPolicy_CP06_NingunaPistaDelNivel2NombraLaRespuesta()
+        {
+            // Solo sobre la **pista**: la instrucción sí puede enunciar el objetivo y el orden de
+            // construcción —es lo que Chispa dice en el guion §6.2.1—, la pista no (RF-13, CP-06).
+            var prohibido = new Dictionary<string, string[]>
+            {
+                ["Seleccionar"] = new[] { "redond" }, // el patrón lo nombra el estudiante (§6.1.3)
+                ["Construir"] = new[] { "primero", "luego", "después", "orden" },
+                ["Programar"] = new[] { "avanzar", "retroceder", "girar" }
+            };
+
+            var resuelven = PasosDelNivel(LevelId.Wheel)
+                .Where(paso => prohibido.ContainsKey(paso.Id))
+                .SelectMany(paso => prohibido[paso.Id]
+                    .Where(termino => Menciona(paso.Hint, termino))
+                    .Select(termino => $"{paso.Id} nombra «{termino}»: «{paso.Hint}»"))
+                .ToArray();
+
+            Assert.That(resuelven, Is.Empty, "la pista orienta, no resuelve la fase");
+            Assert.That(PasosDelNivel(LevelId.Wheel).Select(paso => paso.Id),
+                Is.EquivalentTo(prohibido.Keys), "las tres fases del Nivel 2 están cubiertas");
+        }
+
         // --- contenido de los assets, no de la clase ---------------------------------------
         // Los textos viven fuera del código (CT-05, RNF-18), así que CP-06 y RNF-01 hay que
         // verificarlos sobre el asset. Mismo criterio que en NarrativeSequenceTests.

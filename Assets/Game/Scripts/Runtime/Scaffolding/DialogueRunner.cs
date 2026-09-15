@@ -16,9 +16,10 @@ namespace Game.Scaffolding
     /// registro de escenas vistas, así que «ya vista» se **deriva del progreso** en lugar de
     /// persistirse. Por eso llega como un dato de entrada y no se calcula aquí.
     ///
-    /// El cierre reflexivo no necesita una regla propia: como cualquier otra escena, la primera
-    /// vez no ofrece omitir, que es justo lo que piden CP-07 y RF-12 — es donde el guía nombra la
-    /// habilidad practicada, y saltárselo vaciaría el nivel de su parte pedagógica.
+    /// El cierre reflexivo **sí necesita una regla propia**, y aquí no está: se llega a él la
+    /// primera vez justo después de confirmar la última fase, cuando «ya vio alguna escena de
+    /// este nivel» es cierto pero la escena es nueva. Quien lo distingue es
+    /// <see cref="NarrativeVisitPolicy"/>; para este runner sigue siendo un booleano de entrada.
     /// </remarks>
     public class DialogueRunner
     {
@@ -40,6 +41,16 @@ namespace Game.Scaffolding
 
         /// <summary>Si se puede ofrecer el botón de omitir (INC-28).</summary>
         public bool CanSkip { get; }
+
+        /// <summary>
+        /// Cuánto de la escena va leído, de 0 en la primera línea a 1 en la última o al terminar.
+        /// Es lo que lleva la cámara por la ilustración **al ritmo de la narrativa** y no del reloj.
+        /// </summary>
+        public float Progress =>
+            IsFinished || _lines.Count <= 1 ? 1f : (float)_index / (_lines.Count - 1);
+
+        /// <summary>Índice de la línea en curso, desde 0. Es lo que dispara lo que se anima en cada línea.</summary>
+        public int Index => _index;
 
         /// <summary>
         /// Pasa a la línea siguiente. Devuelve si quedaba alguna: en la última línea devuelve

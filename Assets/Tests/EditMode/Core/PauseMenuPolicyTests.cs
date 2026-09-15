@@ -23,7 +23,7 @@ namespace Game.Core.Tests
             var profile = PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
             var indicators = new PerformanceIndicators(attempts: 4, correctedErrors: 2, stepsUsed: 3,
                 resolutionSeconds: 91.5f);
-            profile.ConfirmPhase(LevelId.Fire, 1, indicators);
+            profile.ConfirmPhase(new PhaseId(LevelId.Fire, 1), indicators);
             profile.Reach(LevelId.Wheel); // Nivel 2 ya desbloqueado por una convergencia previa.
 
             // GameFlowRunner desnudo: sin escena ni SceneLoader, así que Apply() no tiene nada que
@@ -44,9 +44,9 @@ namespace Game.Core.Tests
             Assert.That(runner.Flow.PlayingPhase, Is.EqualTo(1));
             Assert.That(profile.IsUnlocked(LevelId.Wheel), Is.True,
                 "Restart re-bloqueó un nivel ya desbloqueado");
-            Assert.That(profile.IsPhaseConfirmed(LevelId.Fire, 1), Is.True,
+            Assert.That(profile.IsPhaseConfirmed(new PhaseId(LevelId.Fire, 1)), Is.True,
                 "Restart borró una fase ya confirmada");
-            Assert.That(profile.IndicatorsFor(LevelId.Fire, 1), Is.EqualTo(indicators),
+            Assert.That(profile.IndicatorsFor(new PhaseId(LevelId.Fire, 1)), Is.EqualTo(indicators),
                 "Restart alteró los indicadores de una fase ya confirmada");
             Assert.That(profile.ConfirmedPhases.Count, Is.EqualTo(1),
                 "Restart cambió el número de fases confirmadas");

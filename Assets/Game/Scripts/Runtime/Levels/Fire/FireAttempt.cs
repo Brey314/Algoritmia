@@ -1,14 +1,15 @@
 namespace Game.Levels.Fire
 {
     /// <summary>
-    /// Estado del panel de encendido del Nivel 1: resuelve un golpe según la distancia y lleva los
-    /// dos contadores —golpes efectivos y fallos consecutivos— del guion §4.3.3/§4.3.5.
+    /// Estado del panel de encendido del Nivel 1: resuelve un golpe según la fuerza y la cercanía
+    /// de las piedras, y lleva los dos contadores —golpes efectivos y fallos consecutivos— del
+    /// guion §4.3.3/§4.3.5.
     /// </summary>
     /// <remarks>
     /// C# plano, sin dependencias de Unity: la regla se prueba en EditMode, sin escena ni frames.
     /// El panel jugable (T14) solo traduce el clic de «Golpear» a <see cref="Strike"/> y el estado
-    /// a la UI. No guarda la posición del deslizante: esa es estado de UI y solo entra al llamar
-    /// <see cref="Strike"/> (RF-15).
+    /// a la UI. No guarda lo que marcan los deslizantes: eso es estado de UI y solo entra al
+    /// llamar <see cref="Strike"/> (RF-15).
     /// </remarks>
     public class FireAttempt
     {
@@ -30,13 +31,30 @@ namespace Game.Levels.Fire
         /// <summary>Toca que el guía ofrezca una pista: fallos consecutivos suficientes (RF-13).</summary>
         public bool ShouldOfferHint => _consecutiveFailures >= _config.AttemptsBeforeHint;
 
-        /// <summary>Resuelve un golpe desde la posición dada y devuelve lo observado.</summary>
-        public StrikeOutcome Strike(StrikePosition position)
+        /// <summary>Dónde cae una fuerza respecto de la franja efectiva de la configuración.</summary>
+        public ForceBand Classify(int force) =>
+            force < _config.EffectiveForceMin ? ForceBand.TooSoft
+            : force > _config.EffectiveForceMax ? ForceBand.TooHard
+            : ForceBand.Effective;
+
+        /// <summary>
+        /// Resuelve un golpe con la fuerza dada y devuelve lo observado. Con las piedras separadas
+        /// o demasiado encimadas (<paramref name="spacing"/> distinto de efectivo) no prende con
+        /// ninguna fuerza (T26): primero tienen que chocar.
+        /// </summary>
+        public StrikeOutcome Strike(int force, SpacingBand spacing = SpacingBand.Effective)
         {
-            if (position != _config.EffectivePosition)
+            var band = Classify(force);
+            if (spacing != SpacingBand.Effective)
             {
                 _consecutiveFailures++;
-                return StrikeOutcome.SparksDied(position);
+                return StrikeOutcome.StonesMisplaced(force, band, spacing);
+            }
+
+            if (band != ForceBand.Effective)
+            {
+                _consecutiveFailures++;
+                return StrikeOutcome.SparksDied(force, band);
             }
 
             // «Por qué no» pedagógico: lo ganado no se reduce nunca. Un fallo posterior no baja
@@ -46,7 +64,7 @@ namespace Game.Levels.Fire
             // derrota que el proyecto prohíbe.
             _effectiveStrikes++;
             _consecutiveFailures = 0;
-            return StrikeOutcome.SparkLanded(_effectiveStrikes);
+            return StrikeOutcome.SparkLanded(force, _effectiveStrikes);
         }
     }
 }

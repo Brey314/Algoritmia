@@ -87,5 +87,23 @@ namespace Game.Scaffolding.Tests
             Assert.That(sut.IsFinished, Is.True);
             Assert.That(sut.Advance(), Is.False);
         }
+
+        [Test]
+        public void DialogueRunner_RF05_ElProgresoVaDeCeroAUnoAlRitmoDeLasLineas()
+        {
+            var sut = new DialogueRunner(TresLineas, alreadySeen: false);
+
+            // Es lo que mueve la cámara por la ilustración: al ritmo de la lectura, no del reloj.
+            Assert.That(sut.Progress, Is.EqualTo(0f), "en la primera línea");
+            sut.Advance();
+            Assert.That(sut.Progress, Is.EqualTo(0.5f), "a mitad de la escena");
+            sut.Advance();
+            Assert.That(sut.Progress, Is.EqualTo(1f), "en la última");
+            sut.Advance();
+            Assert.That(sut.Progress, Is.EqualTo(1f), "y terminada sigue en el final");
+
+            Assert.That(new DialogueRunner(Array.Empty<DialogueLine>(), false).Progress, Is.EqualTo(1f),
+                "una secuencia sin líneas no tiene recorrido que hacer");
+        }
     }
 }

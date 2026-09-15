@@ -32,8 +32,8 @@ namespace Game.Core
         public LevelId ReachedLevel => (LevelId)reachedLevel;
 
         /// <summary>Fases ya confirmadas, en el orden en que se confirmaron (RF-04).</summary>
-        public IReadOnlyList<(LevelId Level, int Phase)> ConfirmedPhases => phases
-            .Select(record => ((LevelId)record.level, record.phase))
+        public IReadOnlyList<PhaseId> ConfirmedPhases => phases
+            .Select(record => new PhaseId((LevelId)record.level, record.phase))
             .ToArray();
 
         /// <summary>Requerido por <c>JsonUtility</c>; para crear un perfil se usa <see cref="Create"/>.</summary>
@@ -87,17 +87,17 @@ namespace Game.Core
         /// Confirma una fase con sus indicadores (RF-04, RF-45). Si la fase ya estaba confirmada
         /// no se toca: OE1 §3.6.1 nota 4 manda conservar el registro del intento anterior.
         /// </summary>
-        public void ConfirmPhase(LevelId level, int phase, PerformanceIndicators indicators)
+        public void ConfirmPhase(PhaseId phase, PerformanceIndicators indicators)
         {
-            if (IsPhaseConfirmed(level, phase))
+            if (IsPhaseConfirmed(phase))
             {
                 return;
             }
 
             phases.Add(new PhaseRecord
             {
-                level = (int)level,
-                phase = phase,
+                level = (int)phase.Level,
+                phase = phase.Phase,
                 attempts = indicators.Attempts,
                 correctedErrors = indicators.CorrectedErrors,
                 stepsUsed = indicators.StepsUsed,
@@ -105,20 +105,43 @@ namespace Game.Core
             });
         }
 
-        public bool IsPhaseConfirmed(LevelId level, int phase) => Find(level, phase) != null;
+        public bool IsPhaseConfirmed(PhaseId phase) => Find(phase) != null;
 
         /// <summary>Indicadores registrados de la fase, o los de una fase sin jugar si no hay.</summary>
-        public PerformanceIndicators IndicatorsFor(LevelId level, int phase)
+        public PerformanceIndicators IndicatorsFor(PhaseId phase)
         {
-            var record = Find(level, phase);
+            var record = Find(phase);
             return record == null
                 ? default
                 : new PerformanceIndicators(record.attempts, record.correctedErrors, record.stepsUsed,
                     record.resolutionSeconds);
         }
 
-        private PhaseRecord Find(LevelId level, int phase) =>
-            phases.FirstOrDefault(record => record.level == (int)level && record.phase == phase);
+        /// <summary>Si están confirmadas todas las fases del nivel (RF-03).</summary>
+        public bool IsLevelComplete(LevelId level) => PhaseId.AllOf(level).All(IsPhaseConfirmed);
+
+        /// <summary>
+        /// Primera fase del nivel sin confirmar, o <c>null</c> si el nivel está completo. Es el
+        /// punto de retoma tras un cierre: se vuelve a la fase pendiente, no al principio del
+        /// nivel (RNF-14, HU-14).
+        /// </summary>
+        public PhaseId? NextPendingPhase(LevelId level)
+        {
+            // Un bucle y no FirstOrDefault: PhaseId es struct, así que «no encontrado» ya es una
+            // fase válida —la 0 no existe— y el nivel completo dejaría de distinguirse.
+            foreach (var phase in PhaseId.AllOf(level))
+            {
+                if (!IsPhaseConfirmed(phase))
+                {
+                    return phase;
+                }
+            }
+
+            return null;
+        }
+
+        private PhaseRecord Find(PhaseId phase) => phases.FirstOrDefault(record =>
+            record.level == (int)phase.Level && record.phase == phase.Phase);
 
         /// <summary>Una fase confirmada con sus cuatro indicadores. Su forma es la del JSON.</summary>
         [Serializable]
