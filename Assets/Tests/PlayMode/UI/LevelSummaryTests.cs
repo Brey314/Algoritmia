@@ -25,6 +25,7 @@ namespace Game.UI.Tests
 
         // N1_Config (Fase 5): el deslizante mide fuerza, 7 cae en la franja efectiva.
         private const float VeryClosePosition = 7f; // fuerza efectiva (N1_Config, Fase 5)
+        private const float EffectiveSpacing = 2f; // las piedras se rozan (N1_Config, Fase 6)
         private const int MinimumEffectiveStrikes = 3;
 
         [TearDown]
@@ -49,7 +50,7 @@ namespace Game.UI.Tests
             var profile = NewProfile();
             var runner = await LoadFireLevelWithProfile(profile);
 
-            ConvergeAndBlow();
+            await ConvergeAndBlow();
             Assert.That(await WaitUntilAsync(() => runner.Flow.Current == GameState.Narrative, 5f), Is.True,
                 "el flujo no llegó a la escena narrativa de cierre tras soplar");
 
@@ -96,7 +97,7 @@ namespace Game.UI.Tests
         {
             var runner = await LoadFireLevelWithProfile(NewProfile());
 
-            ConvergeAndBlow();
+            await ConvergeAndBlow();
             Assert.That(await WaitUntilAsync(() => runner.Flow.Current == GameState.Narrative, 5f), Is.True,
                 "el flujo no llegó a la escena narrativa de cierre tras soplar");
 
@@ -207,12 +208,12 @@ namespace Game.UI.Tests
             return runner;
         }
 
-        /// <summary>Marca «Muy cerca», converge con el mínimo de golpes efectivos y pulsa «Soplar».</summary>
-        private static void ConvergeAndBlow()
+        /// <summary>Reúne, marca fuerza y cercanía efectivas, converge con el mínimo de golpes efectivos y pulsa «Soplar».</summary>
+        private static async Task ConvergeAndBlow()
         {
-            var slider = Object.FindAnyObjectByType<Slider>(FindObjectsInactive.Include);
-            slider.value = VeryClosePosition;
-            ArrangeFire();
+            await ReunirAsync();
+            SliderNamed("FuerzaSlider").value = VeryClosePosition;
+            SliderNamed("CercaniaSlider").value = EffectiveSpacing;
             ClickTimes(ButtonWithLabel("Golpear"), MinimumEffectiveStrikes);
             Click(ButtonWithLabel("Soplar"));
         }
@@ -289,17 +290,42 @@ namespace Game.UI.Tests
         }
 
         /// <summary>Hojas y piedras al punto del fuego: sin eso ningún golpe prende (T22).</summary>
-        private static void ArrangeFire()
+        /// <summary>
+        /// Reúne todas las piezas en el punto del fuego y suelta la última con un fin de arrastre
+        /// real (T25): el panel pasa al encendido por su propio evento, sin tocar
+        /// <c>Game.Levels.Fire</c>. Termina cuando «Golpear» está en pantalla.
+        /// </summary>
+        private static async Task ReunirAsync()
         {
             var suelo = GameObject.Find("Suelo").transform;
-            var punto = ((RectTransform)suelo.Find("PuntoDeFuego")).anchoredPosition;
+            var punto = (RectTransform)suelo.Find("PuntoDeFuego");
+            RectTransform ultima = null;
             foreach (RectTransform pieza in suelo)
             {
-                if (pieza.name != "PuntoDeFuego")
+                if (pieza.name != "PuntoDeFuego" && pieza.name != "AnilloReunion")
                 {
-                    pieza.anchoredPosition = punto;
+                    pieza.anchoredPosition = punto.anchoredPosition;
+                    ultima = pieza;
                 }
             }
+
+            var pointer = new PointerEventData(EventSystem.current)
+            {
+                position = RectTransformUtility.WorldToScreenPoint(null, punto.position)
+            };
+            ExecuteEvents.Execute(ultima.gameObject, pointer, ExecuteEvents.endDragHandler);
+
+            var deadline = Time.realtimeSinceStartup + 5f;
+            while (!(ButtonWithLabel("Golpear")?.isActiveAndEnabled ?? false) && Time.realtimeSinceStartup < deadline)
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            Assume.That(ButtonWithLabel("Golpear").isActiveAndEnabled, Is.True, "el panel pasó al encendido");
+            await Awaitable.NextFrameAsync(); // deja correr Awake/Start de la interfaz recién activada
         }
+
+        private static Slider SliderNamed(string name) => Array.Find(
+            Object.FindObjectsByType<Slider>(FindObjectsInactive.Include), slider => slider.name == name);
     }
 }

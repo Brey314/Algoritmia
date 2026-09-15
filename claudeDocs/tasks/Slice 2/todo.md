@@ -900,6 +900,15 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       `grep` sobre `Assets/Tests`: RF-22 (11), RF-23 (10), RF-24 (6), RF-25 (6), RF-26 (7), RF-27 (1),
       RF-28 (4), RF-29 (5), RF-30 (2), RF-31 (6), RF-32 (1), RF-33 (2), RF-34 (3).
 - [ ] Revisado con el usuario antes de abrir el Slice 3
+- [x] **W19 · «Empujar» sale directo a la narrativa y la fila va pegada** (15/09/2026, pedido de
+      Santiago) — RF-26, RF-05. `ForestSceneController.Push` ya no anima el rodado: confirma la
+      fase y sale a `ClosingSequenceId`; el rodado que se ve es el de `N2_Escena22_ElPatron`
+      (`RollMotion`). `WheelLevelConfig` pierde `RollSeconds` / `FallSeconds`. La fila de troncos
+      (`Panel_LogRow`, `GridLayoutGroup`) pasa de hueco 12 a **−12**: centros a 0,889 del tamaño
+      del tronco, igual que los props de la 2.2 (0,0175 × 3198 / 0,07 × 899). Pruebas:
+      `ForestScene_RF26_EmpujarNoAnimaElRodadoEnLaMecanica…`,
+      `ForestScene_RF26_LosTroncosDeLaFilaVanPegadosComoEnLaEscena22`; se retiran las tres del
+      rodado en la mecánica y `WheelLevel_RNF21_…` vigila el acercamiento en vez del rodado.
 
 **Código de la Fase 5 completo (W15–W18).** Corridas del 15/09/2026 contra el Editor abierto
 (`TestRunnerApi` desde un script efímero, ver R1): **EditMode 212/212** · **PlayMode 148/148**

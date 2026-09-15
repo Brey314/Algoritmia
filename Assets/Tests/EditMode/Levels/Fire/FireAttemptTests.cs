@@ -76,16 +76,17 @@ namespace Game.Levels.Fire.Tests
             Assert.That(sut.ConsecutiveFailures, Is.EqualTo(1), "el fallo cuenta como fallo consecutivo");
         }
 
-        [Test]
+        [TestCase(SpacingBand.TooFar)]
+        [TestCase(SpacingBand.TooClose)]
         [Category("Acceptance")]
-        public void FireAttempt_RF16_ConLasPiedrasLejosNoPrendeAunqueLaFuerzaSeaLaEfectiva()
+        public void FireAttempt_RF16_SiLasPiedrasNoChocanNoPrendeAunqueLaFuerzaSeaLaEfectiva(SpacingBand cercania)
         {
             var sut = CreateSystemUnderTest(3, 3);
 
-            var actual = sut.Strike(Effective, stonesNear: false);
+            var actual = sut.Strike(Effective, cercania);
 
-            Assert.That(actual.Effective, Is.False, "sin las piedras cerca no hay chispa que caiga en las hojas (T22)");
-            Assert.That(actual.StonesNear, Is.False, "el resultado dice que el fallo fue de sitio");
+            Assert.That(actual.Effective, Is.False, "separadas o encimadas de más no hay choque que haga chispa (T26)");
+            Assert.That(actual.Spacing, Is.EqualTo(cercania), "el resultado dice que el fallo fue de cercanía");
             Assert.That(actual.Band, Is.EqualTo(ForceBand.Effective), "la fuerza sí era la buena");
             Assert.That(sut.EffectiveStrikes, Is.Zero);
             Assert.That(sut.ConsecutiveFailures, Is.EqualTo(1), "cuenta como fallo consecutivo hacia la pista");

@@ -12,15 +12,19 @@ recupera con `git show HEAD:"docs/Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx"`.
 sección de este documento siguen valiendo con una traducción mecánica: «guion §N» → `Solucion_OE2`
 §1.N, «OE2 §4» → `Solucion_OE2` §5 (control de cambios).
 
-**Verificación vigente: 14/09/2026, rev. 8.** Los documentos refundidos se releyeron contra los
+**Verificación vigente: 15/09/2026, rev. 10.** Los documentos refundidos se releyeron contra los
 hallazgos que seguían abiertos. **Los hallazgos INC-01 … INC-45 están cerrados**: la refundición
 del 14/09/2026 aplicó en los `.docx` las tres correcciones que esperaban edición manual —`PG-07`
 cerrado (INC-43), el guía renombrado a **Algoritm** (INC-44) y su forma cambiante por nivel
-(INC-45)—. Quedan **tres abiertos**: **INC-46** (la lista de tareas del Nivel 3 está descrita como
-dos objetos distintos; se cierra dentro de `claudeDocs/`, pero exige una decisión), **INC-47**
-(la mecánica del Nivel 1 implementada mide fuerza, y los documentos refundidos **mantienen** el
-deslizante de posición) e **INC-48** (la refundición reintrodujo el capítulo de arquitectura
-**anterior** a su alineación). Más tres residuos menores, listados al final.
+(INC-45)—. Quedan **cinco abiertos**: **INC-46** (la lista de tareas del Nivel 3 está descrita
+como dos objetos distintos; se cierra dentro de `claudeDocs/`, pero exige una decisión),
+**INC-47** (la mecánica del Nivel 1 implementada mide fuerza, y los documentos refundidos
+**mantienen** el deslizante de posición), **INC-48** (la refundición reintrodujo el capítulo de
+arquitectura **anterior** a su alineación), **INC-49** (el menú de pausa implementado es el del
+mockup 6 y HU-17 conserva los rótulos viejos) e **INC-50** (el rodado del Nivel 2 se ve solo en la
+narrativa, no al pulsar «Empujar»). INC-47, INC-49 e INC-50 son el mismo caso: el código se
+adelantó al `.docx` por decisión de Santiago, y lo que falta es editar el documento. Más tres
+residuos menores, listados al final.
 
 > **Los hallazgos 44 y 45 no nacieron de un conflicto entre documentos, sino de una decisión del
 > autor tomada el 02/09/2026.** Se registraron aquí igual, porque el efecto era el mismo: los
@@ -88,8 +92,10 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-44 | El guía se llama Algoritm; los documentos decían «Chispa» | Guion, HU, OE1, OE2 | **Cerrado** (14/09/2026, residuo menor: una mención en la tabla E5) |
 | INC-45 | El guía cambia de forma por nivel; el guion fijaba una sola | Guion | **Cerrado** (14/09/2026) |
 | INC-46 | La lista de tareas del Nivel 3: cuerda con nudos contra panel de casillas | Dirección de arte, Slice 3 | **Abierto** |
-| INC-47 | La mecánica del Nivel 1 mide fuerza y exige acomodar hojas y piedras; el guion y RF-15 fijan un deslizante de posición | Guion, OE1, HU | **Abierto** |
+| INC-47 | La mecánica del Nivel 1 reúne los materiales en un círculo y luego mide fuerza y cercanía de las piedras en dos deslizantes; el guion y RF-15 fijan un deslizante de posición | Guion, OE1, HU | **Abierto** |
 | INC-48 | Dos arquitecturas contradictorias en `docs/`: la refundición trajo de vuelta el capítulo anterior a la alineación | OE2 §4, Arquitectura | **Abierto** (decisión tomada: gana la alineada) |
+| INC-49 | El menú de pausa implementado es el del mockup 6 (Reanudar · Reiniciar · Volver al menú de niveles); HU-17 dice «Continuar / Reiniciar nivel / Volver al menú principal» | HU, OE2 §3 | **Abierto** |
+| INC-50 | «Empujar» en el bosque no anima el rodado: sale a la escena 2.2, que lo cuenta; RF-26 y HU-08 lo describen dentro de la mecánica | OE1, HU, CU | **Abierto** |
 
 ---
 
@@ -442,11 +448,22 @@ hojas están amontonadas y cerca. Sin montón, el soplo se describe y no se pena
 cerca; mensajes por distancia; E1 «deslizante en Lejos»), OE1 RF-15 («control deslizante de
 posición… tres distancias») y RF-16, HU-06.
 
+**Ampliación del 15/09/2026 (Fase 6, T25–T27).** La mecánica queda en **dos fases**: (1) reunir
+todas las hojas y las dos piedras en el círculo del centro de la pantalla —«Pista» lo dibuja; su
+radio llega a la mitad del botón de abajo— sin ninguna otra interfaz; (2) al reunirlo todo la
+cámara se acerca al doble, las hojas se acomodan solas en fogata y aparecen **dos deslizantes**:
+fuerza (0–10, efectiva 7–8) y **cercanía de las piedras** (0–10: de separadas la longitud de una
+hoja a una encima de otra; certero cuando se rozan encimadas unos cinco píxeles). Las piedras ya no
+se arrastran en el encendido y «Soplar» ya no puede fallar por hojas regadas. Sobre «Soplar» queda
+solo el candado, sin el rótulo «Aún no». Todo en `N1_Config.asset`, `N1_Guia.asset` (paso
+`Reunir`) y `N1_Mensajes.asset` (piedras separadas / encimadas).
+
 **Corrección pendiente.** Guion §4.3 (elementos, parámetros, comportamiento, mensajes, flujo y
-pista) y §4.4 («cambiaste de lugar» → «cambiaste la fuerza»), OE1 RF-15/RF-16, HU-06. El registro
-con historial (HU-06) pasa a una tablilla con **el último mensaje**; el historial completo sigue en
-`FireFeedbackLog.Entries` para el informe docente. En código ya está aplicado: los nombres de las
-pruebas conservan RF-15/RF-16 porque el requisito (hipótesis → experimento → resultado) es el mismo.
+pista) y §4.4 («cambiaste de lugar» → «cambiaste la fuerza o la cercanía»), OE1 RF-15/RF-16, HU-06.
+El registro con historial (HU-06) pasa a una tablilla con **el último mensaje**; el historial
+completo sigue en `FireFeedbackLog.Entries` para el informe docente. En código ya está aplicado: los
+nombres de las pruebas conservan RF-15/RF-16 porque el requisito (hipótesis → experimento →
+resultado) es el mismo.
 
 ### INC-48 · La refundición reintrodujo la arquitectura anterior a su alineación — abierto
 
@@ -505,6 +522,21 @@ al menú de niveles». En código ya está aplicado (`PauseMenuController`, `Men
 pruebas conservan HU-17 en el nombre porque la historia —detener, reanudar sin perder nada,
 reiniciar con confirmación— es la misma.
 
+### INC-50 · El rodado del Nivel 2 solo se ve en la narrativa — abierto
+
+**Decisión de Santiago, 15/09/2026** (Slice 2, W19): al pulsar «Empujar» la mecánica del bosque
+**no anima el rodado**; confirma la fase y sale a la escena 2.2, que es la que lo cuenta con
+`RollMotion`. Además la fila de troncos del bosque va **pegada** (centros a 0,889 del tamaño del
+tronco), igual que los props de esa escena, para que el corte entre las dos no se note.
+
+**Qué dicen hoy los documentos.** RF-26 y HU-08: «al accionar Empujar se reproduce la
+demostración del rodado»; CU-06 flujo principal, paso del empuje; guion §1.6.1.2 describe el
+rodado dentro de la mecánica.
+
+**Corrección pendiente.** RF-26, HU-08 y CU-06: «Empujar» cierra la fase y la demostración del
+rodado es la escena narrativa 2.2 (guion §1.6.1.3). El requisito de fondo —el estudiante ve rodar
+la caja sobre los troncos redondos— se sigue cumpliendo; cambia dónde.
+
 ## Residuos y puntos abiertos
 
 **Residuos menores** (no afectan al código ni a un criterio de verificación):
@@ -528,6 +560,10 @@ INC-43).
 
 ## Historial de revisiones
 
+- **rev. 10 (15/09/2026, segunda entrada)** — Fase 6 del Slice 1 y W19 del Slice 2. **INC-47** se
+  amplía (dos fases: reunir en el círculo y encender con dos deslizantes, fuerza y cercanía; sin
+  rótulo «Aún no»). Se abre **INC-50**: «Empujar» no anima el rodado en la mecánica del bosque; lo
+  cuenta la escena 2.2, y la fila de troncos va pegada como en ella.
 - **rev. 9 (15/09/2026)** — Cierre de la Fase 5 del Slice 2. Se abre **INC-49**: el menú de
   pausa sigue el mockup 6 (Reanudar · Reiniciar · Volver al menú de niveles) y HU-17 todavía dice
   «Continuar, Reiniciar nivel y Volver al menú principal». Decisión de Santiago el mismo día:

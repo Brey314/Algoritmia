@@ -63,11 +63,16 @@ frase y repite **la fase activa**, INC-25) y **Volver al menú de niveles** (sec
 de dificultad: no existen. Con la pausa abierta el tiempo se detiene (`Time.timeScale = 0`) y no
 suma al indicador de resolución (OE1 §3.6.1 nota 1).
 
-**7 · Nivel 1.** Desde el 12/09/2026 (Fase 5, INC-47): la cueva cenital a sangre con hojas, sílex y
-pedernal regados que se **arrastran** al punto del fuego; deslizante vertical de **fuerza** con diez
-muescas (el asa va de azul a rojo y crece con la fuerza), botón «Golpear», botón «Soplar»
-—deshabilitado hasta que RF-19 lo permita, y la diferencia se lee por el candado grabado, no por el
-color—, botón de pista arriba a la izquierda y pausa arriba a la derecha. Una sola tablilla arriba
+**7 · Nivel 1.** Desde el 15/09/2026 (Fase 6, INC-47) son **dos momentos**. *Reunir*: la cueva
+cenital a sangre con hojas, sílex y pedernal regados que se **arrastran** al centro; en pantalla
+solo la tablilla, «Pista» (que además dibuja el círculo de reunión, con el borde a la altura de la
+mitad del botón de abajo) y la pausa. *Encender*: la cámara al doble sobre la fogata —las hojas en
+anillo, sin encimarse, y las piedras en el centro—, deslizante vertical de **fuerza** con diez
+muescas (el asa va de azul a rojo y crece con la fuerza), deslizante horizontal de **cercanía de
+las piedras** con diez muescas entre la mitad de «Soplar» y la mitad de «Golpear» («Lejos» a la
+izquierda, «Cerca» a la derecha), botón «Golpear», botón «Soplar» —deshabilitado hasta que RF-19 lo
+permita, y la diferencia se lee por el candado, sin rótulo, no por el color—, botón de pista
+arriba a la izquierda y pausa arriba a la derecha. Una sola tablilla arriba
 muestra la instrucción y luego **el último mensaje** del registro (el historial ya no se ve). La
 progresión de luz del nivel es retroalimentación en sí misma (RF-21), pero **nunca es el único
 canal** (RNF-19).

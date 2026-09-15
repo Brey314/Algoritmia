@@ -101,11 +101,13 @@ namespace Game.Levels.Wheel.Tests
         [Timeout(120000)]
         [Category("Acceptance")]
         [Category("VisualVerification")]
-        [Description("Verificar en las capturas: el rodado de la caja y el recorrido de la carretilla son movimientos continuos, " +
+        [Description("Verificar en las capturas: el acercamiento del bosque y el recorrido de la carretilla son movimientos continuos, " +
                      "sin parpadeos ni destellos; ningún elemento se apaga y enciende durante la animación.")]
         public async Task WheelLevel_RNF21_NingunaAnimacionDelNivel2TieneDestellos()
         {
-            // El rodado (RF-26): la caja avanza sin saltos y nada se apaga en el camino.
+            // El acercamiento al completar el acopio: los troncos vuelan a la fila y la cámara se
+            // acerca sin que nada se apague en el camino. (El rodado ya no se anima aquí: lo
+            // cuenta la escena 2.2, que vigila NarrativeSceneTests.)
             var forest = await OpenScene<ForestSceneController>("Level2_Forest", f => f.Spawned.Count > 0);
             Canvas.ForceUpdateCanvases();
             await Awaitable.NextFrameAsync();
@@ -114,42 +116,28 @@ namespace Game.Levels.Wheel.Tests
                 entrada.Button.onClick.Invoke();
             }
 
-            while (forest.IsTransitioning)
-            {
-                await Awaitable.NextFrameAsync();
-            }
-
-            Canvas.ForceUpdateCanvases();
-            await Awaitable.NextFrameAsync();
-            forest.TakeCargo();
-            forest.DragCargoTo(EnPantalla(forest.LogRow).center);
-            forest.ReleaseCargo();
-            Assume.That(forest.Cargo.IsPlaced, Is.True, "la caja quedó sobre los troncos");
-            await Awaitable.NextFrameAsync();
-
-            forest.PushButton.onClick.Invoke();
             var caja = forest.CargoRect;
             var cajaImagen = caja.GetComponent<Image>();
             var saltoMaximo = 0f;
-            var anterior = caja.anchoredPosition;
+            var anterior = forest.World.localScale.x;
             var muestras = 0;
-            while (forest.IsRolling)
+            while (forest.IsTransitioning)
             {
                 await Awaitable.NextFrameAsync();
-                saltoMaximo = Mathf.Max(saltoMaximo, Vector2.Distance(anterior, caja.anchoredPosition));
-                anterior = caja.anchoredPosition;
+                saltoMaximo = Mathf.Max(saltoMaximo, Mathf.Abs(forest.World.localScale.x - anterior));
+                anterior = forest.World.localScale.x;
                 muestras++;
                 Assert.That(caja.gameObject.activeSelf && cajaImagen.enabled && cajaImagen.color.a > 0.99f, Is.True,
-                    "la caja no parpadea durante el rodado (RNF-21)");
+                    "la caja no parpadea durante el acercamiento (RNF-21)");
                 Assert.That(forest.Environment.enabled && forest.Environment.color.a > 0.99f, Is.True, "el bosque no destella");
                 if (muestras == 10)
                 {
-                    Capturar("WheelLevel_RNF21_Rodado");
+                    Capturar("WheelLevel_RNF21_Acercamiento");
                 }
             }
 
-            Assert.That(muestras, Is.GreaterThan(5), "el rodado dura varios cuadros: es una animación, no un corte");
-            Assert.That(saltoMaximo, Is.LessThan(150f), $"ningún cuadro salta más de lo que el ojo sigue (máximo {saltoMaximo:F0} px)");
+            Assert.That(muestras, Is.GreaterThan(5), "el acercamiento dura varios cuadros: es una animación, no un corte");
+            Assert.That(saltoMaximo, Is.LessThan(0.15f), $"ningún cuadro salta más de lo que el ojo sigue (máximo {saltoMaximo:F3} de escala)");
 
             // La ejecución paso a paso (RF-32): la carretilla se desliza casilla a casilla.
             var maze = await OpenScene<MazeSceneController>("Level2_Maze", m => m.Rows != null);

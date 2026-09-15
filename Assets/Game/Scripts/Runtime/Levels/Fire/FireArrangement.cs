@@ -4,38 +4,36 @@ using UnityEngine;
 namespace Game.Levels.Fire
 {
     /// <summary>
-    /// Dónde están las piezas respecto del punto del fuego (Fase 5, T22): las hojas hacen montón
-    /// cuando todas caen dentro del radio del montón, y las piedras están «cerca» cuando las dos
-    /// caen dentro del radio de las piedras. Todo en la misma unidad que las posiciones.
+    /// Si los materiales están reunidos (Fase 6, T25): todas las piezas —hojas, sílex y pedernal—
+    /// dentro del círculo del centro de la pantalla. Todo en la misma unidad que las posiciones.
     /// </summary>
     /// <remarks>
-    /// C# plano: se prueba en EditMode sin escena. El panel solo le pasa posiciones; la regla de
-    /// qué cuenta como «cerca» vive aquí y sus radios en <see cref="FireLevelConfig"/>.
+    /// C# plano: se prueba en EditMode sin escena. El panel solo le pasa posiciones; el radio lo
+    /// mide el panel a partir del botón de abajo (el borde del círculo queda a la altura de la
+    /// mitad del botón), así que no es un parámetro del asset.
     /// </remarks>
     public class FireArrangement
     {
         private readonly Vector2 _spot;
-        private readonly float _pileRadius;
-        private readonly float _stonesRadius;
+        private readonly float _radius;
 
-        public FireArrangement(Vector2 spot, float pileRadius, float stonesRadius)
+        public FireArrangement(Vector2 spot, float radius)
         {
             _spot = spot;
-            _pileRadius = pileRadius;
-            _stonesRadius = stonesRadius;
+            _radius = radius;
         }
 
-        /// <summary>Todas las hojas dentro del radio del montón. Sin hojas no hay montón.</summary>
-        public bool IsPiled(IReadOnlyList<Vector2> leaves)
+        /// <summary>Todas las piezas dentro del círculo. Sin piezas no hay nada reunido.</summary>
+        public bool IsGathered(IReadOnlyList<Vector2> pieces)
         {
-            if (leaves.Count == 0)
+            if (pieces.Count == 0)
             {
                 return false;
             }
 
-            foreach (var leaf in leaves)
+            foreach (var piece in pieces)
             {
-                if (!Within(leaf, _pileRadius))
+                if ((piece - _spot).sqrMagnitude > _radius * _radius)
                 {
                     return false;
                 }
@@ -43,11 +41,5 @@ namespace Game.Levels.Fire
 
             return true;
         }
-
-        /// <summary>El sílex y el pedernal, los dos, dentro del radio de las piedras.</summary>
-        public bool StonesNear(Vector2 silex, Vector2 pedernal) =>
-            Within(silex, _stonesRadius) && Within(pedernal, _stonesRadius);
-
-        private bool Within(Vector2 position, float radius) => (position - _spot).sqrMagnitude <= radius * radius;
     }
 }

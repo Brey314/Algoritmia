@@ -4,9 +4,11 @@ namespace Game.Levels.Fire
 {
     /// <summary>
     /// Los parámetros ajustables jugando del Nivel 1 (guion §4.3.2, reescrito en la Fase 5 con
-    /// fuerza en vez de distancia). Viven en un asset y no en el código para que retocarlos no
-    /// cueste una recompilación (CT-05, RNF-18). Los valores por defecto son los acordados con
-    /// Santiago el 12/09/2026: diez muescas, efectivas la siete y la ocho.
+    /// fuerza en vez de distancia y en la Fase 6 con la cercanía de las piedras en un deslizante).
+    /// Viven en un asset y no en el código para que retocarlos no cueste una recompilación
+    /// (CT-05, RNF-18). Los valores por defecto son los acordados con Santiago el 12/09/2026 y el
+    /// 15/09/2026: diez muescas de fuerza, efectivas la siete y la ocho; diez muescas de cercanía,
+    /// efectiva la que deja las piedras rozándose unos cinco píxeles.
     /// </summary>
     [CreateAssetMenu(menuName = "Algoritm/Configuración del nivel fuego", fileName = "N1_Config")]
     public class FireLevelConfig : ScriptableObject
@@ -24,12 +26,24 @@ namespace Game.Levels.Fire
         public int EffectiveForceMax { get; set; } = 8;
 
         [field: SerializeField]
-        [field: Tooltip("Radio del montón, como fracción del alto del suelo: todas las hojas deben caer dentro para que haya montón (T22).")]
-        public float PileRadius { get; set; } = 0.10f;
+        [field: Tooltip("Muesca máxima del deslizante de cercanía de las piedras (va de 0, lo más lejos, a este valor, una encima de otra).")]
+        public int SpacingLevels { get; set; } = 10;
 
         [field: SerializeField]
-        [field: Tooltip("Radio de las piedras, como fracción del alto del suelo: el sílex y el pedernal deben caer dentro para que un golpe pueda prender (T22).")]
-        public float StonesRadius { get; set; } = 0.20f;
+        [field: Tooltip("Cuánto deben encimarse las piedras para que el golpe haga chispa, en píxeles del lienzo de referencia (1920×1080) antes del acercamiento.")]
+        public float EffectiveOverlap { get; set; } = 5f;
+
+        [field: SerializeField]
+        [field: Tooltip("Margen a cada lado del encimado efectivo dentro del cual el golpe sigue siendo certero, en los mismos píxeles.")]
+        public float OverlapTolerance { get; set; } = 4f;
+
+        [field: SerializeField]
+        [field: Tooltip("Cuánto se acerca la cámara al entorno al reunir los materiales (2 = el doble).")]
+        public float GatherZoom { get; set; } = 2f;
+
+        [field: SerializeField]
+        [field: Tooltip("Cuánto dura el acercamiento y el acomodo de las hojas en fogata, en segundos.")]
+        public float GatherSeconds { get; set; } = 0.8f;
 
         [field: SerializeField]
         [field: Tooltip("Golpes efectivos necesarios para habilitar el soplo.")]

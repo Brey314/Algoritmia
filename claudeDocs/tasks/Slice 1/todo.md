@@ -388,6 +388,50 @@ montón no penaliza: solo escribe en el registro lo que pasó (CP-02).
 
 ---
 
+## Fase 6 — Reunir y encender (abierta el 15/09/2026, pedido de Santiago)
+
+> Amplía INC-47: la mecánica del Nivel 1 pasa a **dos fases**. Primero solo se reúnen los
+> materiales en el centro de la pantalla; después la cámara se acerca al doble, las hojas se
+> acomodan en fogata y la **cercanía de las piedras se elige con un segundo deslizante**, no
+> arrastrándolas. El rótulo «Aún no» de «Soplar» desaparece: el candado basta.
+
+- [x] **T25 · Reunir: círculo de reunión y acercamiento** — `M` · `EM` + `PM` `MCP` (15/09/2026)
+      RF-13, RF-14, CT-06, RNF-21, CP-02, CP-06 · depende de: T22
+      Al abrir solo hay piezas, tablilla y «Pista» (`ignitionUi` oculta). «Pista» escribe la
+      instrucción de `N1_Guia · Reunir` y **dibuja el círculo** (`RingSprite`, generado en
+      memoria): radio = distancia horizontal del centro a la mitad de «Golpear», así que el borde
+      queda alineado con la mitad del botón de abajo (`FirePanelController.GatherRadius`; sale de
+      la escena, no del asset). `FireArrangement.IsGathered` (C# plano): todas las piezas dentro.
+      Al soltar la última pieza dentro (`DraggablePiece.Dropped`) arranca `EnterIgnitionAsync`:
+      las piezas dejan de arrastrarse, `Fondo` y `Suelo` escalan a `GatherZoom` (×2) en
+      `GatherSeconds` (0,8 s), las hojas van a un anillo tangente —juntas, no encimadas— y las
+      piedras al centro; luego aparece la interfaz del encendido y la tablilla pasa a la
+      instrucción de golpear. Una pieza fuera: no pasa nada, sin regaño (CP-02).
+- [x] **T26 · Deslizante de cercanía de las piedras** — `M` · `EM` + `PM` `MCP` (15/09/2026)
+      RF-15, RF-16, RF-17, RNF-18, RNF-19, CT-05 · depende de: T25
+      `CercaniaSlider` horizontal (copia del de fuerza, sin `ForceSliderFeedback`), 456×120 a
+      y=222, con el recorrido del asa de la mitad de «Soplar» a la mitad de «Golpear» (x = ±172)
+      y etiquetas «Lejos» / «Cerca». Muesca 0 = piedras separadas **la longitud de una hoja**;
+      muesca 10 = una encima de otra. `StoneSpacing` (C# plano): `Distance`, `Overlap`,
+      `Classify` → `SpacingBand` (lejos / efectivo / encimadas); certero cuando se enciman
+      `EffectiveOverlap` ± `OverlapTolerance` (5 ± 4 px del lienzo de referencia) — con las
+      piezas de hoy, **la muesca 2**. `FireAttempt.Strike(force, spacing)` juzga la cercanía antes
+      que la fuerza; `StrikeOutcome.StonesMisplaced`; `FireMessages` pierde `BlowNoPile` y gana
+      `StonesTooClose(+Again)`. Soplar ya no puede fallar: las hojas siempre están en fogata.
+- [x] **T27 · Limpieza y documentos** — `S` · `PM` `MCP` (15/09/2026)
+      RNF-19, RNF-20 · depende de: T26
+      Se retira `BadgeBloqueado/AunNo` (queda `IconoCandado`). `N1_Config` sin `PileRadius` /
+      `StonesRadius`, con `SpacingLevels`, `EffectiveOverlap`, `OverlapTolerance`, `GatherZoom`,
+      `GatherSeconds`. `N1_Guia` con el paso `Reunir` y el de `Golpear` reescrito. `Interfaces.md`
+      §7, `Camara_Narrativa_N1.md` §3 e `INCONSISTENCIAS.md` (INC-47) al día.
+
+### Checkpoint F — reunir y encender
+- [x] El nivel se juega entero: reunir → acercamiento → fuerza y cercanía → golpear → soplar — **EditMode 221/221 · PlayMode 144/153** por CLI (`unity test`, Editor cerrado, 15/09/2026): 6 VV omitidas en batchmode y **3 fallos preexistentes de disposición** en la resolución 640×480 del batchmode (`MazeScene_RNF03_AlAcumularse…`, `WorkshopScene_RNF03_NadaSeSale…`, `NarrativeScene_RNF01_LaLineaMasLarga…`), medidos 0/3 también sobre el código sin la Fase 6 — pasan con el Editor abierto (W-F, 148/148)
+- [x] Ningún fallo penaliza ni bloquea (CP-02); ninguna pista ni mensaje nombra la muesca correcta (CP-06, RF-17) — `FirePanel_RF16_ConLasPiedrasSeparadasOEncimadas…`, `FirePanel_RF13_…`
+- [ ] Revisado con el usuario: el radio del círculo, el tamaño de la fogata y que la muesca 2 sea la certera (PG-06 sigue abierto)
+
+---
+
 ## Assets visuales — `plan.md` §Assets visuales del Slice 1
 
 Personajes = **obra derivada** de los diseños Anonaky con **autorización escrita concedida**

@@ -34,9 +34,10 @@ corrige el otro. Verificado contra su estado del 14/09/2026 (rev. 8):
 > entre ellas no lo resuelve la precedencia sino la edición del documento.
 
 La precedencia no resuelve las contradicciones **internas** a un documento: esas se corrigen
-editándolo. `INCONSISTENCIAS.md` (rev. 8, 14/09/2026) registra los 48 hallazgos históricos.
+editándolo. `INCONSISTENCIAS.md` (rev. 10, 15/09/2026) registra los 50 hallazgos históricos.
 **`INC-01`..`INC-45` están cerrados en los `.docx`.** Siguen abiertos `INC-46` (la lista de tareas
-del Nivel 3, que exige una decisión), `INC-47` y `INC-48`, más tres residuos menores.
+del Nivel 3, que exige una decisión), `INC-47`, `INC-48`, `INC-49` e `INC-50`, más tres residuos
+menores.
 
 **Hay un punto en el que el documento y el código ya no coinciden, y es deliberado: `INC-47`.**
 La mecánica del Nivel 1 implementada mide **fuerza** y exige acomodar hojas y piedras; los
@@ -564,9 +565,10 @@ Verificables, uno por KPI del trabajo de grado (§2.3):
 
 ## Decisiones sobre los documentos en conflicto
 
-`INCONSISTENCIAS.md` (rev. 8, 14/09/2026) registra los 48 hallazgos históricos entre los `.docx`.
+`INCONSISTENCIAS.md` (rev. 10, 15/09/2026) registra los 50 hallazgos históricos entre los `.docx`.
 **`INC-01`..`INC-45` están cerrados en los documentos**, `INC-43`/`INC-44`/`INC-45` desde la
-refundición del 14/09/2026. Siguen abiertos tres, y solo uno toca al código:
+refundición del 14/09/2026. Siguen abiertos cinco, y tres de ellos son el código adelantándose
+al documento:
 
 - **`INC-46`** — la lista de tareas del Nivel 3 está descrita como dos objetos distintos. Se
   cierra dentro de `claudeDocs/`, pero **exige una decisión**; afecta al Slice 3, no a lo hecho.
@@ -574,13 +576,20 @@ refundición del 14/09/2026. Siguen abiertos tres, y solo uno toca al código:
   código**, y es deliberada: ver el supuesto 7.
 - **`INC-48`** — la §4 del documento refundido es arquitectura obsoleta. Gana
   `arquitectura_videojuego_v2 (2).docx`; el código no cambia.
+- **`INC-49`** — el menú de pausa. En código son los rótulos del **mockup 6** (Reanudar ·
+  Reiniciar · Volver al menú de niveles, W17, 15/09/2026) y HU-17 todavía dice «Continuar /
+  Reiniciar nivel / Volver al menú principal». Decidido a favor del mockup: lo que falta es
+  corregir HU-17, no el código.
+- **`INC-50`** — el rodado del Nivel 2. «Empujar» confirma la fase y sale a la escena 2.2, que es
+  la que anima el rodado (W19, 15/09/2026); RF-26 y HU-08 lo describen dentro de la mecánica. El
+  requisito —ver rodar la caja sobre lo redondo— se cumple; cambia dónde.
 
 En todo lo demás el código sigue sencillamente lo que dicen los documentos.
 Lo que el código materializa de cada decisión, para que no se pierda al leer solo el `.docx`:
 
 | Hallazgo (cerrado) | Lo que el código materializa |
 |---|---|
-| INC-25 · HU-17 | Pausa como capa de UI sobre `Playing`: Continuar (restituye el estado exacto), Reiniciar nivel (confirmación, nunca re-bloquea un nivel desbloqueado, no borra indicadores), Volver al menú. Sin `GameOver`. |
+| INC-25 · HU-17 | Pausa como capa de UI sobre `Playing`, no un estado nuevo: `Time.timeScale = 0` mientras está abierta. Rótulos del mockup 6 (INC-49): Reanudar (restituye el estado exacto), Reiniciar (confirmación, repite **la fase activa**, nunca re-bloquea un nivel desbloqueado, no borra indicadores), Volver al menú de niveles. Un solo prefab `MenuPausa` en las cuatro escenas jugables. Sin `GameOver`. |
 | INC-26 · HU-14 | El resumen de fin de nivel es **narrativo y sin cifras** (RF-45, RF-17, CP-03). Las cifras solo viven en `TeacherReport` (RF-46); no hay `ScoreManager`. |
 | INC-01 · controles | **Botones de dirección en pantalla, accionados con clic.** Nunca teclado. El mapa de controles se inspecciona sin salvedades (RNF-02, CT-06). |
 | INC-27 · RNF-09 | Se persisten nombre o alias, nivel alcanzado, fases confirmadas y los cuatro indicadores. Nada más. |
@@ -631,9 +640,11 @@ Corregir cualquiera de estos ahora sale más barato que después.
 6. **Nivel 3 usa botones de dirección en pantalla**, accionados con clic — no el teclado. Letra
    vigente en todos los documentos: RF-35, guion §2.1 y §8.2, CU-09, HU-11 y arquitectura §1.
    **No hay excepción alguna a RNF-02 ni a CT-06** (INC-01, cerrado).
-7. **La mecánica del Nivel 1 mide fuerza, no posición** (rediseno del 12/09/2026, T20–T24;
-   `INC-47`). El estudiante arrastra hojas y piedras hasta acomodarlas, fija una **fuerza** en un
-   deslizante de 0 a 10, golpea y sopla. Los documentos —incluidos los refundidos del
+7. **La mecánica del Nivel 1 mide fuerza y cercanía, no posición** (rediseño del 12/09/2026,
+   T20–T24, ampliado el 15/09/2026, T25–T27; `INC-47`). Primero el estudiante **reúne** hojas y
+   piedras en el círculo del centro (la ayuda lo dibuja); reunido todo, la cámara se acerca al
+   doble, las hojas se acomodan en fogata y fija dos hipótesis en dos deslizantes de 0 a 10 —la
+   **fuerza** del golpe y la **cercanía** de las piedras—, golpea y sopla. Los documentos —incluidos los refundidos del
    14/09/2026— siguen describiendo un deslizante de **posición** de tres distancias (`RF-15`,
    `RF-16`, HU-06, guion §1.4.3): **aquí gana el código**, y la divergencia está registrada y
    fechada en `INCONSISTENCIAS.md`. Los nombres de las pruebas conservan `RF-15`/`RF-16` porque el

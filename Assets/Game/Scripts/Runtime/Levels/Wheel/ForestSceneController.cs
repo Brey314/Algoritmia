@@ -74,7 +74,7 @@ namespace Game.Levels.Wheel
         private RectTransform cargo;
 
         [SerializeField]
-        [Tooltip("«Empujar»: se habilita con la caja colocada y reproduce el rodado (RF-26).")]
+        [Tooltip("«Empujar»: se habilita con la caja colocada y sale a la escena narrativa, que es la que cuenta el rodado (RF-26).")]
         private Button pushButton;
 
         [SerializeField]
@@ -117,7 +117,7 @@ namespace Game.Levels.Wheel
         /// <summary>Los troncos acopiados, en orden: son los que se alinean junto a la caja.</summary>
         private readonly List<ForestObject> _collected = new List<ForestObject>();
 
-        /// <summary>Los troncos alineados en la fila, que giran bajo la caja durante el rodado.</summary>
+        /// <summary>Los troncos alineados en la fila, pegados como en la escena 2.2 que los hereda.</summary>
         private readonly List<Image> _row = new List<Image>();
 
         private static readonly PhaseId Phase1 = new PhaseId(LevelId.Wheel, 1);
@@ -131,8 +131,6 @@ namespace Game.Levels.Wheel
         /// <summary>El flujo del juego. Lo pone <c>Boot</c>; una prueba puede inyectar otro.</summary>
         internal GameFlowRunner Runner { get; set; }
 
-        /// <summary>Si el rodado está en curso (RF-26).</summary>
-        internal bool IsRolling { get; private set; }
 
         /// <summary>Si los troncos van volando del acopio a la caja y la cámara se está acercando.</summary>
         internal bool IsTransitioning { get; private set; }
@@ -483,7 +481,16 @@ namespace Game.Levels.Wheel
             Show(outcome.Message, rejectedIcon, rejectedColor);
         }
 
-        /// <summary>«Empujar»: reproduce el rodado una sola vez; la segunda pulsación no hace nada.</summary>
+        /// <summary>
+        /// «Empujar»: confirma la fase y sale a la escena narrativa, una sola vez; la segunda
+        /// pulsación no hace nada.
+        /// </summary>
+        /// <remarks>
+        /// **Aquí no se anima el rodado.** Hasta el 15/09/2026 la caja recorría la fila en la
+        /// mecánica y la escena 2.2 lo repetía; Santiago pidió quitar la copia: el rodado que se
+        /// ve es el de la narrativa (RF-26, <c>N2_Escena22_ElPatron</c>, con <c>RollMotion</c>), que
+        /// abre con el mismo encuadre y los mismos troncos que deja el bosque.
+        /// </remarks>
         private void Push()
         {
             if (!_cargo.Push())
@@ -491,64 +498,6 @@ namespace Game.Levels.Wheel
                 return;
             }
 
-            _ = RollAsync();
-        }
-
-        /// <summary>
-        /// La demostración del rodado (RF-26): la caja recorre la fila de troncos mientras estos
-        /// giran bajo ella, y al terminar la fase 1 queda confirmada.
-        /// </summary>
-        /// <remarks>
-        /// Es una interpolación continua de posición y giro, y **nada más cambia**: ningún gráfico
-        /// se apaga, se enciende ni cambia de color durante el recorrido. Así es como se cumple
-        /// RNF-21 —sin parpadeos ni destellos— y así lo vigila la prueba que muestrea cada cuadro.
-        /// </remarks>
-        private async Awaitable RollAsync()
-        {
-            IsRolling = true;
-            var rollSeconds = Mathf.Max(config.RollSeconds, 0f);
-            var fallSeconds = Mathf.Max(config.FallSeconds, 0f);
-            var total = rollSeconds + fallSeconds;
-            var rollShare = total > 0f ? rollSeconds / total : 1f;
-            var elapsed = 0f;
-
-            try
-            {
-                // Pasado el último tronco la caja cae al suelo por la derecha: el rodado termina
-                // con la caja en el piso, no flotando sobre el borde de la fila. **Es el mismo
-                // rodado que cuenta la narrativa**: RollMotion decide avance, giro, caída y ladeo.
-                var row = EnPantalla(logRow);
-                var box = EnPantalla(cargo);
-                var landing = new Vector2(row.xMax + box.width / 2f, row.yMin + box.height / 2f);
-
-                do
-                {
-                    elapsed += Time.deltaTime;
-                    var t = total > 0f ? Mathf.Clamp01(elapsed / total) : 1f;
-                    var roll = RollMotion.Evaluate(t, rollShare);
-
-                    var end = RowPoint(1f);
-                    var point = roll.Fall <= 0f
-                        ? RowPoint(roll.Along)
-                        : new Vector2(Mathf.Lerp(end.x, landing.x, roll.Fall), Mathf.Lerp(end.y, landing.y, roll.Drop));
-                    cargo.anchoredPosition = ToAnchored(cargo, point);
-                    // La caja **rueda**: gira sobre sí misma mientras avanza, exactamente como en
-                    // la narrativa, y al caer se ladea.
-                    cargo.localRotation = Quaternion.Euler(0f, 0f, roll.Spin + roll.Tilt);
-                    foreach (var log in _row)
-                    {
-                        log.rectTransform.localRotation = Quaternion.Euler(0f, 0f, roll.Spin);
-                    }
-
-                    await Awaitable.NextFrameAsync(destroyCancellationToken);
-                } while (elapsed < total);
-            }
-            catch (System.OperationCanceledException)
-            {
-                return; // La escena se descargó a mitad del rodado: no hay nada que confirmar.
-            }
-
-            IsRolling = false;
             ConfirmPhase1AndLeave();
         }
 

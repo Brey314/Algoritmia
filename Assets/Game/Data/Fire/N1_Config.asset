@@ -15,7 +15,10 @@ MonoBehaviour:
   <ForceLevels>k__BackingField: 10
   <EffectiveForceMin>k__BackingField: 7
   <EffectiveForceMax>k__BackingField: 8
-  <PileRadius>k__BackingField: 0.1
-  <StonesRadius>k__BackingField: 0.2
+  <SpacingLevels>k__BackingField: 10
+  <EffectiveOverlap>k__BackingField: 5
+  <OverlapTolerance>k__BackingField: 4
+  <GatherZoom>k__BackingField: 2
+  <GatherSeconds>k__BackingField: 0.8
   <MinimumEffectiveStrikes>k__BackingField: 3
   <AttemptsBeforeHint>k__BackingField: 3

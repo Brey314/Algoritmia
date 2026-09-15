@@ -41,11 +41,9 @@ namespace Game.Levels.Fire.Tests
         public async Task FireLevel_RF21_IluminacionSubeUnEscalonPorGolpeEfectivo()
         {
             var (controller, _) = await LoadPanelWithProfile(NewProfile());
+            await Reunir(controller);
             controller.ForceSlider.value = 7; // fuerza efectiva (N1_Config, Fase 5)
-            foreach (var piece in controller.Pieces)
-            {
-                piece.MoveTo(controller.FireSpot.anchoredPosition); // todo en su sitio (T22)
-            }
+            controller.SpacingSlider.value = 2; // las piedras se rozan (N1_Config, Fase 6)
 
             Click(controller.StrikeButton);
             await Awaitable.NextFrameAsync();
@@ -137,6 +135,23 @@ namespace Game.Levels.Fire.Tests
 
         private static PlayerProfile NewProfile() =>
             PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
+
+        /// <summary>Reúne todas las piezas en el centro y espera el acercamiento (T25).</summary>
+        private static async Task Reunir(FirePanelController controller)
+        {
+            foreach (var piece in controller.Pieces)
+            {
+                piece.MoveTo(controller.FireSpot.anchoredPosition);
+            }
+
+            controller.TryFinishGathering();
+            while (controller.IsTransitioning)
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            Assume.That(controller.IsGathering, Is.False, "el panel pasó al encendido");
+        }
 
         private static async Task<(FirePanelController controller, GameFlowRunner runner)>
             LoadPanelWithProfile(PlayerProfile profile)

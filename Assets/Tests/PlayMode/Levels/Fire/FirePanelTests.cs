@@ -22,11 +22,15 @@ namespace Game.Levels.Fire.Tests
     {
         private const string SceneName = "Level1_Cave";
 
-        // N1_Config (Fase 5): fuerza efectiva 7–8 de 10, mínimo de golpes efectivos = 3.
+        // N1_Config (Fases 5 y 6): fuerza efectiva 7–8 de 10, mínimo de golpes efectivos = 3;
+        // cercanía de diez muescas, efectiva la dos (las piedras se rozan encimadas ~5 px).
         private const int MinimumEffectiveStrikes = 3;
         private const int SoftForce = 2;
         private const int HardForce = 10;
         private const int EffectiveForce = 7;
+        private const int FarSpacing = 0;
+        private const int EffectiveSpacing = 2;
+        private const int CloseSpacing = 10;
 
         [TearDown]
         public void DestruirLosObjetosPersistentes()
@@ -42,34 +46,151 @@ namespace Game.Levels.Fire.Tests
             }
         }
 
+        // --- reunir (T25) ------------------------------------------------------------------
+
         [Test]
         [Timeout(20000)]
-        public async Task FirePanel_RF14_PresentaDeslizanteBotonGolpearYRegistro()
+        [Category("Acceptance")]
+        public async Task FirePanel_RF14_AlAbrirSoloHayPiezasTablillaYPista()
         {
             var controller = await LoadPanel();
-            var strike = ButtonWithLabel("Golpear");
             var mensaje = RectNamed("Mensaje");
 
-            Assert.That(ReachableByRaycast(controller.ForceSlider.GetComponent<RectTransform>()), Is.True,
-                "deslizante de fuerza alcanzable");
-            Assert.That(strike is not null && ReachableByRaycast(strike.GetComponent<RectTransform>()), Is.True,
-                "botón «Golpear» alcanzable");
-            // La tablilla no se pulsa: basta con que esté visible y dentro del panel, sin nada encima.
+            Assert.That(controller.IsGathering, Is.True, "el nivel abre reuniendo los materiales");
+            Assert.That(controller.IgnitionUi, Has.All.Matches<GameObject>(element => !element.activeSelf),
+                "sin deslizantes ni «Golpear» ni «Soplar» hasta reunir");
+            Assert.That(controller.BlowLockedBadge.activeSelf, Is.False, "ni candado: no hay botón que candar");
+            Assert.That(controller.GatherRing.gameObject.activeSelf, Is.False, "el círculo no se dibuja solo: lo pide la ayuda");
+            Assert.That(controller.Pieces, Has.All.Matches<DraggablePiece>(piece => piece.isActiveAndEnabled),
+                "las piezas están en el suelo y se pueden arrastrar");
+            Assert.That(ReachableByRaycast((RectTransform)controller.HintButton.transform), Is.True, "«Pista» alcanzable");
             Assert.That(mensaje is not null && mensaje.gameObject.activeInHierarchy && IsWithin(mensaje, RectNamed("Panel")), Is.True,
                 "tablilla de mensajes visible dentro del panel");
+            Assert.That(LogLines().text, Does.Not.Match(@"\d").And.Not.Empty, "la tablilla abre con la instrucción de reunir");
         }
 
         [Test]
         [Timeout(20000)]
-        public async Task FirePanel_RF15_MoverElDeslizanteNoEjecutaNingunGolpe()
+        [Category("Acceptance")]
+        public async Task FirePanel_RF13_AlReunirLaPistaDibujaElCirculoConElBordeEnLaMitadDelBotonDeAbajo()
         {
             var controller = await LoadPanel();
-            var slider = controller.ForceSlider;
+            var golpear = (RectTransform)controller.StrikeButton.transform;
+            var suelo = (RectTransform)controller.FireSpot.parent;
+
+            Click(controller.HintButton);
+            await Awaitable.NextFrameAsync();
+
+            var ring = controller.GatherRing;
+            Assert.That(ring.gameObject.activeSelf, Is.True, "la ayuda dibuja el contorno de la zona de reunión");
+            Assert.That(ring.sprite, Is.Not.Null, "con un anillo pintado");
+            Assert.That(ring.rectTransform.anchoredPosition, Is.EqualTo(controller.FireSpot.anchoredPosition), "centrado en el punto del fuego");
+            // El radio llega, en horizontal, hasta la mitad del botón de abajo: el borde del
+            // círculo queda alineado con el centro de «Golpear» (pedido de Santiago, 15/09/2026).
+            var centroGolpear = suelo.InverseTransformPoint(golpear.TransformPoint(golpear.rect.center));
+            Assert.That(ring.rectTransform.rect.width / 2f, Is.EqualTo(Mathf.Abs(centroGolpear.x)).Within(0.5f),
+                "el radio es la distancia horizontal del centro a la mitad del botón");
+            Assert.That(LogLines().text, Is.EqualTo(controller.Log.Latest).And.Not.Match(@"\d"),
+                "y la tablilla repite la instrucción de reunir, sin cifras (CP-06)");
+            Assert.That(controller.IsGathering, Is.True, "pedir ayuda no reúne nada por el estudiante");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FirePanel_RF14_ConUnaPiezaFueraDelCirculoNoPasaAlEncendido()
+        {
+            var controller = await LoadPanel();
+            var fuera = controller.Pieces[^1];
+            foreach (var piece in controller.Pieces)
+            {
+                piece.MoveTo(controller.FireSpot.anchoredPosition);
+            }
+
+            fuera.MoveTo(controller.FireSpot.anchoredPosition + new Vector2(controller.GatherRadius + 20f, 0f));
+            controller.TryFinishGathering();
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(controller.AllGathered, Is.False, "una pieza fuera del círculo y no está todo reunido");
+            Assert.That(controller.IsGathering, Is.True, "sigue reuniendo");
+            Assert.That(controller.IgnitionUi, Has.All.Matches<GameObject>(element => !element.activeSelf));
+            Assert.That(controller.Log.Entries, Is.Empty, "y no se regaña: no pasa nada (CP-02)");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FirePanel_RF14_ReunirTodoDentroDelCirculoAcercaLaCamaraYArmaLaFogata()
+        {
+            var controller = await LoadPanel();
+            Assume.That(controller.Environment, Is.Not.Empty, "la escena cablea qué acerca la cámara");
+
+            await Reunir(controller);
+
+            Assert.That(controller.Environment, Has.All.Matches<RectTransform>(element => Mathf.Approximately(element.localScale.x, 2f)),
+                "el entorno se ve al doble (N1_Config.GatherZoom)");
+            Assert.That(controller.IgnitionUi, Has.All.Matches<GameObject>(element => element.activeSelf),
+                "aparece la interfaz del encendido");
+            Assert.That(controller.Pieces, Has.All.Matches<DraggablePiece>(piece => !piece.enabled),
+                "las piezas ya no se arrastran");
+
+            // Las hojas quedan juntas como para una fogata, pero ninguna encima de otra.
+            var hojas = controller.Pieces.Where(piece => piece.Kind == PieceKind.Leaf).ToArray();
+            var ancho = hojas[0].Width;
+            var spot = controller.FireSpot.anchoredPosition;
+            for (var i = 0; i < hojas.Length; i++)
+            {
+                Assert.That(Vector2.Distance(hojas[i].Position, spot), Is.LessThan(ancho * 1.5f), $"hoja {i} pegada al punto del fuego");
+                for (var j = i + 1; j < hojas.Length; j++)
+                {
+                    Assert.That(Vector2.Distance(hojas[i].Position, hojas[j].Position), Is.GreaterThanOrEqualTo(ancho - 0.5f),
+                        $"hojas {i} y {j} se tocan pero no se enciman");
+                }
+            }
+
+            // Y las piedras, a la distancia de la muesca, una a cada lado del centro.
+            var silex = controller.Pieces.Single(piece => piece.Kind == PieceKind.Silex).Position;
+            var pedernal = controller.Pieces.Single(piece => piece.Kind == PieceKind.Pedernal).Position;
+            var distancia = controller.Spacing.Distance(controller.SelectedSpacing);
+            Assert.That(pedernal.x - silex.x, Is.EqualTo(distancia).Within(0.01f), "separadas lo que marca el deslizante");
+            Assert.That((silex + pedernal) / 2f, Is.EqualTo(spot), "centradas en el punto del fuego");
+            Assert.That(LogLines().text, Is.EqualTo(controller.Log.Latest).And.Not.Match(@"\d"),
+                "la tablilla pasa a la instrucción de golpear, sin cifras (CP-06)");
+        }
+
+        // --- encender (Fases 5 y 6) --------------------------------------------------------
+
+        [Test]
+        [Timeout(20000)]
+        public async Task FirePanel_RF14_AlEncenderPresentaLosDosDeslizantesGolpearYSoplar()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            Canvas.ForceUpdateCanvases();
+
+            Assert.That(ReachableByRaycast(controller.ForceSlider.GetComponent<RectTransform>()), Is.True,
+                "deslizante de fuerza alcanzable");
+            Assert.That(ReachableByRaycast(controller.SpacingSlider.GetComponent<RectTransform>()), Is.True,
+                "deslizante de cercanía alcanzable");
+            Assert.That(ReachableByRaycast(controller.StrikeButton.GetComponent<RectTransform>()), Is.True,
+                "botón «Golpear» alcanzable");
+            Assert.That(ReachableByRaycast(controller.BlowButton.GetComponent<RectTransform>()), Is.True,
+                "botón «Soplar» alcanzable");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task FirePanel_RF15_MoverLosDeslizantesNoEjecutaNingunGolpe()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
             var antes = LogLines().text;
 
-            slider.value = EffectiveForce;
-            slider.value = HardForce;
-            slider.value = SoftForce;
+            controller.ForceSlider.value = EffectiveForce;
+            controller.ForceSlider.value = HardForce;
+            controller.ForceSlider.value = SoftForce;
+            controller.SpacingSlider.value = CloseSpacing;
+            controller.SpacingSlider.value = EffectiveSpacing;
             await Awaitable.NextFrameAsync();
 
             Assert.That(LogLines().text, Is.EqualTo(antes), "la tablilla sigue con la instrucción: nada se ejecutó");
@@ -79,11 +200,47 @@ namespace Game.Levels.Fire.Tests
 
         [Test]
         [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FirePanel_RF15_ElDeslizanteDeCercaniaVaDeLaMitadDeSoplarALaMitadDeGolpearYMueveLasPiedras()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            var slider = controller.SpacingSlider;
+            var soplar = (RectTransform)controller.BlowButton.transform;
+            var golpear = (RectTransform)controller.StrikeButton.transform;
+            var silex = controller.Pieces.Single(piece => piece.Kind == PieceKind.Silex);
+            var pedernal = controller.Pieces.Single(piece => piece.Kind == PieceKind.Pedernal);
+            var hoja = controller.Pieces.First(piece => piece.Kind == PieceKind.Leaf);
+
+            Assert.That(slider.wholeNumbers, Is.True, "muescas enteras");
+            Assert.That(slider.minValue, Is.EqualTo(0f));
+            Assert.That(slider.maxValue, Is.EqualTo(10f), "diez muescas (N1_Config.SpacingLevels)");
+            Assert.That(slider.direction, Is.EqualTo(Slider.Direction.LeftToRight), "paralelo a los botones: a la izquierda lejos, a la derecha cerca");
+
+            slider.value = FarSpacing;
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            Assert.That(ScreenX(slider.handleRect), Is.EqualTo(ScreenX(soplar)).Within(2f), "la muesca cero queda sobre la mitad de «Soplar»");
+            Assert.That(pedernal.Position.x - silex.Position.x, Is.EqualTo(hoja.Width).Within(0.01f),
+                "y separa las piedras la longitud de una hoja");
+
+            slider.value = CloseSpacing;
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            Assert.That(ScreenX(slider.handleRect), Is.EqualTo(ScreenX(golpear)).Within(2f), "la muesca diez queda sobre la mitad de «Golpear»");
+            Assert.That(silex.Position, Is.EqualTo(pedernal.Position), "y deja una piedra encima de la otra");
+        }
+
+        [Test]
+        [Timeout(20000)]
         public async Task FirePanel_RF16_GolpearEscribeEnElRegistroElMensajeDeLaFuerza()
         {
             var controller = await LoadPanel();
+            await Reunir(controller);
             controller.ForceSlider.value = SoftForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
             var instruccion = LogLines().text;
+            var entradasAntes = controller.Log.Entries.Count;
 
             Click(controller.StrikeButton);
             await Awaitable.NextFrameAsync();
@@ -94,8 +251,30 @@ namespace Game.Levels.Fire.Tests
             var trasSegundoGolpe = LogLines().text;
 
             Assert.That(trasPrimerGolpe, Is.Not.EqualTo(instruccion).And.Not.Empty, "el primer golpe escribe el mensaje de la fuerza");
-            Assert.That(controller.Log.Entries, Has.Count.EqualTo(2), "el segundo golpe acumula una segunda entrada");
+            Assert.That(controller.Log.Entries, Has.Count.EqualTo(entradasAntes + 2), "el segundo golpe acumula una segunda entrada");
             Assert.That(trasSegundoGolpe, Is.EqualTo(controller.Log.Latest), "y la tablilla muestra la última");
+        }
+
+        [TestCase(FarSpacing)]
+        [TestCase(CloseSpacing)]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FirePanel_RF16_ConLasPiedrasSeparadasOEncimadasElGolpeNoPrendeNiPenaliza(int muesca)
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = muesca;
+            var entradasAntes = controller.Log.Entries.Count;
+
+            ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes);
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(controller.Attempt.EffectiveStrikes, Is.Zero, "si las piedras no chocan ninguna fuerza prende");
+            Assert.That(controller.BlowButton.interactable, Is.False, "y «Soplar» sigue bloqueado");
+            Assert.That(controller.Log.Entries.Count, Is.GreaterThan(entradasAntes), "la tablilla cuenta lo que pasó");
+            Assert.That(LogLines().text, Is.EqualTo(controller.Log.Latest).And.Not.Match(@"\d"), "sin cifras (RF-17)");
+            Assert.That(controller.StrikeButton.interactable, Is.True, "y se puede seguir golpeando (CP-02)");
         }
 
         [Test]
@@ -103,11 +282,12 @@ namespace Game.Levels.Fire.Tests
         public async Task FirePanel_RF19_SoplarSeHabilitaAlAlcanzarElMinimoDeGolpesEfectivos()
         {
             var controller = await LoadPanel();
+            await Reunir(controller);
             controller.ForceSlider.value = EffectiveForce;
-            Arrange(controller);
+            controller.SpacingSlider.value = EffectiveSpacing;
 
             Assert.That(controller.BlowButton.interactable, Is.False, "«Soplar» deshabilitado antes de converger");
-            Assert.That(controller.BlowLockedBadge.activeInHierarchy, Is.True, "badge de bloqueo visible antes");
+            Assert.That(controller.BlowLockedBadge.activeInHierarchy, Is.True, "candado visible antes");
 
             ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes);
             await Awaitable.NextFrameAsync();
@@ -115,14 +295,15 @@ namespace Game.Levels.Fire.Tests
             Assert.That(controller.BlowButton.interactable, Is.True,
                 "«Soplar» habilitado tras el mínimo de golpes efectivos");
             Assert.That(controller.BlowLockedBadge.activeInHierarchy, Is.False,
-                "badge de bloqueo oculto tras converger");
+                "candado oculto tras converger");
         }
 
         [Test]
         [Timeout(20000)]
-        public async Task FirePanel_RF15_ElDeslizanteTieneDiezMuescasYElAsaCreceYEnrojeceConLaFuerza()
+        public async Task FirePanel_RF15_ElDeslizanteDeFuerzaTieneDiezMuescasYElAsaCreceYEnrojeceConLaFuerza()
         {
             var controller = await LoadPanel();
+            await Reunir(controller);
             var slider = controller.ForceSlider;
             var feedback = slider.GetComponent<ForceSliderFeedback>();
             Assume.That(feedback, Is.Not.Null, "el deslizante lleva ForceSliderFeedback");
@@ -159,7 +340,7 @@ namespace Game.Levels.Fire.Tests
 
             Assert.That(controller.Log.Entries, Has.Count.EqualTo(1), "una sola entrada: la instrucción del paso activo");
             Assert.That(LogLines().text, Is.EqualTo(controller.Log.Latest), "y la tablilla la muestra");
-            Assert.That(LogLines().text, Does.Not.Match(@"\d"), "la ayuda no nombra la fuerza correcta (CP-06)");
+            Assert.That(LogLines().text, Does.Not.Match(@"\d"), "la ayuda no nombra ninguna cifra (CP-06)");
             Assert.That(controller.Attempt.EffectiveStrikes, Is.EqualTo(0), "pedir ayuda no golpea");
         }
 
@@ -168,7 +349,10 @@ namespace Game.Levels.Fire.Tests
         public async Task FirePanel_RF13_TrasTresFallosSeguidosElRegistroSumaLaPista()
         {
             var controller = await LoadPanel();
+            await Reunir(controller);
             controller.ForceSlider.value = SoftForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+            var entradasAntes = controller.Log.Entries.Count;
 
             ClickTimes(controller.StrikeButton, 2);
             await Awaitable.NextFrameAsync();
@@ -178,9 +362,9 @@ namespace Game.Levels.Fire.Tests
             await Awaitable.NextFrameAsync();
             var trasTresFallos = controller.Log.Entries;
 
-            Assert.That(trasDosFallos, Is.EqualTo(2), "dos fallos: solo los dos mensajes de la fuerza");
-            Assert.That(trasTresFallos, Has.Count.EqualTo(4), "el tercer fallo seguido añade la pista (N1_Config: 3)");
-            Assert.That(controller.Log.Latest, Does.Not.Match(@"\d"), "la pista no nombra la fuerza efectiva (CP-06)");
+            Assert.That(trasDosFallos, Is.EqualTo(entradasAntes + 2), "dos fallos: solo los dos mensajes de la fuerza");
+            Assert.That(trasTresFallos, Has.Count.EqualTo(entradasAntes + 4), "el tercer fallo seguido añade la pista (N1_Config: 3)");
+            Assert.That(controller.Log.Latest, Does.Not.Match(@"\d"), "la pista no nombra la fuerza ni la cercanía efectivas (CP-06)");
             Assert.That(LogLines().text, Is.EqualTo(controller.Log.Latest), "y la tablilla muestra la pista");
         }
 
@@ -189,14 +373,16 @@ namespace Game.Levels.Fire.Tests
         public async Task FirePanel_RF19_SoplarAtenuadoNoRespondeNiRegistraError()
         {
             var controller = await LoadPanel();
+            await Reunir(controller);
             Assume.That(controller.BlowButton.interactable, Is.False);
             var antes = LogLines().text;
+            var entradasAntes = controller.Log.Entries.Count;
 
             Click(controller.BlowButton);
             await Awaitable.NextFrameAsync();
 
             Assert.That(LogLines().text, Is.EqualTo(antes), "la tablilla no cambia");
-            Assert.That(controller.Log.Entries, Is.Empty);
+            Assert.That(controller.Log.Entries, Has.Count.EqualTo(entradasAntes));
             LogAssert.NoUnexpectedReceived();
         }
 
@@ -233,14 +419,17 @@ namespace Game.Levels.Fire.Tests
             Assert.That(etiquetasDeInstruccion.Length, Is.EqualTo(1), "una sola etiqueta de instrucción activa");
         }
 
-        // Aserción de layout determinista (no verificación visual): que el ScrollRect absorba el
-        // crecimiento del registro. Va con [Category("Integration")] de la clase.
+        // Aserción de layout determinista (no verificación visual): que la tablilla absorba el
+        // registro. Va con [Category("Integration")] de la clase.
         [Test]
         [Timeout(20000)]
         public async Task FirePanel_RF17_LaTablillaMuestraElUltimoMensajeSinDesbordarTrasDiezIntentos()
         {
             var controller = await LoadPanel();
+            await Reunir(controller);
             controller.ForceSlider.value = SoftForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+            var entradasAntes = controller.Log.Entries.Count;
 
             ClickTimes(controller.StrikeButton, 10);
             Canvas.ForceUpdateCanvases();
@@ -248,7 +437,7 @@ namespace Game.Levels.Fire.Tests
 
             var texto = LogLines();
             // Diez mensajes de la fuerza más una pista cada tres fallos seguidos (RF-13, N1_Config).
-            Assert.That(controller.Log.Entries, Has.Count.EqualTo(10 + 10 / 3), "trece entradas registradas");
+            Assert.That(controller.Log.Entries, Has.Count.EqualTo(entradasAntes + 10 + 10 / 3), "trece entradas más registradas");
             Assert.That(texto.text, Is.EqualTo(controller.Log.Latest), "la tablilla muestra solo el último mensaje");
             Assert.That(texto.preferredHeight, Is.LessThanOrEqualTo(texto.rectTransform.rect.height + 0.5f),
                 "y cabe en ella sin desbordar");
@@ -257,14 +446,32 @@ namespace Game.Levels.Fire.Tests
 
         [Test]
         [Timeout(20000)]
-        [Category("VisualVerification")]
-        [Description("Tras ejecutar esta prueba, revisar la captura: el botón «Soplar» atenuado " +
-                     "muestra un icono de candado y la palabra «Aún no» además del color, no solo por " +
-                     "color; el contraste texto/fondo del registro y de los controles es suficiente " +
-                     "(≥ 4.5:1, RNF-20); los glifos con tilde («Aún no», la instrucción) se dibujan.")]
-        public async Task FirePanel_RNF19_SoplarAtenuadoSeDistinguePorIconoYTextoAdemasDelColor()
+        [Category("Acceptance")]
+        public async Task FirePanel_RNF19_SoplarAtenuadoSeDistinguePorElCandadoAdemasDelColorYSinRotuloAunNo()
         {
-            await LoadPanel();
+            var controller = await LoadPanel();
+            await Reunir(controller);
+
+            Assert.That(controller.BlowLockedBadge.activeInHierarchy, Is.True, "el candado acompaña a «Soplar» atenuado");
+            Assert.That(controller.BlowLockedBadge.GetComponentsInChildren<Image>(true).Any(image => image.gameObject != controller.BlowLockedBadge),
+                Is.True, "y es un icono: forma además de color (RNF-19)");
+            Assert.That(Object.FindObjectsByType<Text>(FindObjectsInactive.Include)
+                    .Any(text => text.text.Contains("Aún no", StringComparison.OrdinalIgnoreCase)), Is.False,
+                "sin el rótulo «Aún no»: el candado ya lo dice (pedido de Santiago, 15/09/2026)");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("VisualVerification")]
+        [Description("Tras ejecutar esta prueba, revisar la captura: la cámara está al doble sobre la " +
+                     "fogata; las hojas quedan juntas sin encimarse y las piedras en el centro; el botón " +
+                     "«Soplar» atenuado muestra solo el candado, sin rótulo; el deslizante de cercanía va " +
+                     "de la mitad de «Soplar» a la mitad de «Golpear»; el contraste de la tablilla y de " +
+                     "los controles es suficiente (≥ 4.5:1, RNF-20).")]
+        public async Task FirePanel_RNF19_ElEncendidoSeVeComoElMockupConElCandadoSinRotulo()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
 
             CaptureScreenshot("FirePanel_RNF19_SoplarAtenuado");
         }
@@ -276,7 +483,7 @@ namespace Game.Levels.Fire.Tests
         {
             var (controller, runner) = await LoadPanelWithProfile(NewProfile());
 
-            ConvergeAndBlow(controller);
+            await ConvergeAndBlow(controller);
             var llego = await WaitUntilAsync(() => runner.Flow.Current == GameState.Narrative, 5f);
 
             Assert.That(llego, Is.True, "el flujo no llegó a Narrative tras soplar");
@@ -302,7 +509,7 @@ namespace Game.Levels.Fire.Tests
         {
             var (controller, _) = await LoadPanelWithProfile(NewProfile());
 
-            ConvergeAndBlow(controller);
+            await ConvergeAndBlow(controller);
             for (var i = 0; i < 10; i++)
             {
                 await Awaitable.NextFrameAsync();
@@ -338,61 +545,28 @@ namespace Game.Levels.Fire.Tests
                 "ni por abajo");
         }
 
-        [Test]
-        [Timeout(20000)]
-        [Category("Acceptance")]
-        public async Task FirePanel_RF16_ConLasPiedrasLejosDeLasHojasElGolpeNoPrendeNiPenaliza()
-        {
-            var controller = await LoadPanel();
-            controller.ForceSlider.value = EffectiveForce;
-            Assume.That(controller.StonesNear, Is.False, "al abrir, sílex y pedernal están regados lejos del punto del fuego");
-
-            ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes);
-            await Awaitable.NextFrameAsync();
-
-            Assert.That(controller.Attempt.EffectiveStrikes, Is.Zero, "con las piedras lejos ninguna fuerza prende");
-            Assert.That(controller.BlowButton.interactable, Is.False, "y «Soplar» sigue bloqueado");
-            Assert.That(LogLines().text, Is.EqualTo(controller.Log.Latest).And.Not.Empty, "la tablilla cuenta lo que pasó");
-        }
-
-        [Test]
-        [Timeout(20000)]
-        [Category("Acceptance")]
-        public async Task FirePanel_RF19_SoplarConLasHojasRegadasNoPrendeElFuegoYNoPenaliza()
-        {
-            var (controller, runner) = await LoadPanelWithProfile(NewProfile());
-            controller.ForceSlider.value = EffectiveForce;
-            Arrange(controller);
-            ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes);
-            Assume.That(controller.BlowButton.interactable, Is.True, "convergió con todo en su sitio");
-
-            // Una hoja se va lejos: hay convergencia pero ya no hay montón.
-            Array.Find(controller.Pieces, piece => piece.Kind == PieceKind.Leaf).MoveTo(new Vector2(700f, -400f));
-            Assume.That(controller.LeavesPiled, Is.False);
-            var entradasAntes = controller.Log.Entries.Count;
-
-            Click(controller.BlowButton);
-            for (var i = 0; i < 5; i++)
-            {
-                await Awaitable.NextFrameAsync();
-            }
-
-            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Playing), "no nace el fuego: sigue jugando");
-            Assert.That(controller.Log.Entries, Has.Count.EqualTo(entradasAntes + 1), "se describe lo que pasó");
-            Assert.That(controller.BlowButton.interactable, Is.True, "y «Soplar» no se bloquea: lo ganado permanece (CP-02)");
-            Assert.That(controller.Attempt.EffectiveStrikes, Is.EqualTo(MinimumEffectiveStrikes));
-        }
-
         // --- helpers -----------------------------------------------------------------------
 
-        /// <summary>Deja hojas y piedras en el punto del fuego: la disposición correcta (T22).</summary>
-        private static void Arrange(FirePanelController controller)
+        /// <summary>Reúne todas las piezas en el punto del fuego y espera el acercamiento (T25).</summary>
+        private static async Task Reunir(FirePanelController controller)
         {
             foreach (var piece in controller.Pieces)
             {
                 piece.MoveTo(controller.FireSpot.anchoredPosition);
             }
+
+            controller.TryFinishGathering();
+            while (controller.IsTransitioning)
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            Assume.That(controller.IsGathering, Is.False, "el panel pasó al encendido");
+            await Awaitable.NextFrameAsync(); // deja correr Awake/Start de la interfaz recién activada
         }
+
+        private static float ScreenX(RectTransform rect) =>
+            RectTransformUtility.WorldToScreenPoint(null, rect.TransformPoint(rect.rect.center)).x;
 
         private static PointerEventData Pointer(Vector2 position, Vector2 pressPosition) =>
             new PointerEventData(EventSystem.current) { position = position, pressPosition = pressPosition };
@@ -427,8 +601,8 @@ namespace Game.Levels.Fire.Tests
 
         /// <summary>
         /// Variante de <see cref="LoadPanel"/> con un <see cref="GameFlowRunner"/> real y un perfil
-        /// activo (T15): las tres pruebas de convergencia necesitan `Flow` para observar a dónde
-        /// salta «Soplar» y a quién guarda/desbloquea.
+        /// activo (T15): las pruebas de convergencia necesitan `Flow` para observar a dónde
+        /// salta «Soplar».
         /// </summary>
         private static async Task<(FirePanelController controller, GameFlowRunner runner)>
             LoadPanelWithProfile(PlayerProfile profile)
@@ -448,11 +622,12 @@ namespace Game.Levels.Fire.Tests
             return (controller, runner);
         }
 
-        /// <summary>Marca «Muy cerca», converge con el mínimo de golpes efectivos y pulsa «Soplar».</summary>
-        private static void ConvergeAndBlow(FirePanelController controller)
+        /// <summary>Reúne, marca fuerza y cercanía efectivas, converge con el mínimo de golpes y pulsa «Soplar».</summary>
+        private static async Task ConvergeAndBlow(FirePanelController controller)
         {
+            await Reunir(controller);
             controller.ForceSlider.value = EffectiveForce;
-            Arrange(controller);
+            controller.SpacingSlider.value = EffectiveSpacing;
             ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes);
             Click(controller.BlowButton);
         }
@@ -490,25 +665,18 @@ namespace Game.Levels.Fire.Tests
             }
         }
 
-        private static Button ButtonWithLabel(string label) => Array.Find(
-            Object.FindObjectsByType<Button>(FindObjectsInactive.Include),
-            b => b.GetComponentInChildren<Text>(true) is { } text && text.text.Trim() == label);
-
         private static Text LogLines() => Array.Find(
             Object.FindObjectsByType<Text>(FindObjectsInactive.Include), t => t.name == "InstruccionLabel");
 
         private static RectTransform RectNamed(string name) => Array.Find(
             Object.FindObjectsByType<RectTransform>(FindObjectsInactive.Include), rt => rt.name == name);
 
-        private static string[] SplitLines(string text) =>
-            text.Split('\n').Where(line => line.Length > 0).ToArray();
-
         private static bool ReachableByRaycast(RectTransform target)
         {
             var raycaster = Object.FindAnyObjectByType<GraphicRaycaster>();
             var pointer = new PointerEventData(EventSystem.current)
             {
-                position = RectTransformUtility.WorldToScreenPoint(null, target.position)
+                position = RectTransformUtility.WorldToScreenPoint(null, target.TransformPoint(target.rect.center))
             };
             var results = new List<RaycastResult>();
             raycaster.Raycast(pointer, results);

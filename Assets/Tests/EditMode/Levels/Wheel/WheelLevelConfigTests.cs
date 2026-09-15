@@ -45,7 +45,8 @@ namespace Game.Levels.Wheel.Tests
                 .Single(sequence => sequence.Id == config.ClosingSequenceId);
 
             // Del bosque a la narrativa la vista no cambia: el encuadre exacto en el que acaba el
-            // zoom de cierre, los cinco troncos donde estaban y la caja rodando con la misma duración.
+            // zoom de cierre y los cinco troncos donde estaban. El rodado lo cuenta solo la
+            // narrativa (RF-26, 15/09/2026): la mecánica sale a ella al pulsar «Empujar».
             Assert.That(cierre.CameraStart.Focus, Is.EqualTo(config.CompletionFraming.Focus),
                 "el mismo foco con el que terminó el bosque");
             Assert.That(cierre.CameraStart.Zoom, Is.EqualTo(config.CompletionFraming.Zoom).Within(0.001f),
@@ -57,9 +58,8 @@ namespace Game.Levels.Wheel.Tests
             var rodando = cierre.Props.Where(prop => prop.Motion == PropMotion.Roll && prop.MotionLine == 0).ToArray();
             Assert.That(rodando.Count(prop => prop.MotionDistance == 0f), Is.EqualTo(config.RequiredLogs),
                 "un tronco girando en el sitio por cada tronco de la fila");
-            Assert.That(rodando.Single(prop => prop.MotionDistance > 0f).MotionSeconds,
-                Is.EqualTo(config.RollSeconds + config.FallSeconds).Within(0.001f),
-                "la caja rueda y cae lo mismo que en el bosque");
+            Assert.That(rodando.Count(prop => prop.MotionDistance > 0f), Is.EqualTo(1),
+                "y una sola caja que recorre la fila: el rodado que el bosque ya no anima");
         }
 
         [Test]

@@ -14,11 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.GuideContent
   <Level>k__BackingField: 1
   <Steps>k__BackingField:
+  - <Id>k__BackingField: Reunir
+    <Instruction>k__BackingField: "Reúne todas las hojas y las dos piedras en el centro de la
+      pantalla."
+    <Hint>k__BackingField: "Todo tiene que quedar dentro del círculo. ¿Qué pieza sigue
+      fuera?"
   - <Id>k__BackingField: Golpear
-    <Instruction>k__BackingField: "Junta las hojas, acerca el sílex y el pedernal, elige la fuerza
-      y golpea para hacer chispas."
-    <Hint>k__BackingField: "Las chispas dependen de cómo chocan las piedras y de qué tan cerca
-      están de las hojas. ¿Qué cambiarías antes del próximo golpe?"
+    <Instruction>k__BackingField: "Elige la fuerza y qué tan cerca van las piedras, y golpea
+      para hacer chispas."
+    <Hint>k__BackingField: "Las chispas dependen de cómo chocan las piedras: de la fuerza y de
+      qué tan juntas están. ¿Qué cambiarías antes del próximo golpe?"
   - <Id>k__BackingField: Soplar
     <Instruction>k__BackingField: "Sopla despacio sobre el montón de hojas para avivar el humo."
     <Hint>k__BackingField: "El humo ya está ahí. ¿Está todo junto y cerca? ¿Qué le falta para

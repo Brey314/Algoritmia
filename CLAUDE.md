@@ -35,7 +35,7 @@ comunicación con el usuario en español.
 | Archivo | Qué contiene |
 |---|---|
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
-| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 15/09/2026, rev. 9 — los hallazgos `INC-01`..`INC-45` están cerrados en los documentos: la refundición del 14/09/2026 aplicó `PG-07` cerrado (`INC-43`), el guía renombrado a **Algoritm** (`INC-44`) y su forma cambiante por nivel —fuego, rueda, gota— (`INC-45`). **Algoritm y las tres formas rigen para todo texto y asset nuevo.** Quedan abiertos `INC-46` (tareas del Nivel 3, exige decisión), `INC-47` (12/09/2026: la mecánica del Nivel 1 **mide fuerza y exige acomodar hojas y piedras**, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF), `INC-48` (el §4 del documento refundido es la arquitectura vieja) e `INC-49` (15/09/2026: el menú de pausa es el del mockup 6 —Reanudar · Reiniciar · Volver al menú de niveles— y HU-17 aún dice «Continuar / Reiniciar nivel / Volver al menú principal»). |
+| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 15/09/2026, rev. 10 — los hallazgos `INC-01`..`INC-45` están cerrados en los documentos: la refundición del 14/09/2026 aplicó `PG-07` cerrado (`INC-43`), el guía renombrado a **Algoritm** (`INC-44`) y su forma cambiante por nivel —fuego, rueda, gota— (`INC-45`). **Algoritm y las tres formas rigen para todo texto y asset nuevo.** Quedan abiertos `INC-46` (tareas del Nivel 3, exige decisión), `INC-47` (12 y 15/09/2026: la mecánica del Nivel 1 **reúne los materiales en un círculo y luego mide fuerza y cercanía de las piedras en dos deslizantes**, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF), `INC-48` (el §4 del documento refundido es la arquitectura vieja), `INC-49` (15/09/2026: el menú de pausa es el del mockup 6 —Reanudar · Reiniciar · Volver al menú de niveles— y HU-17 aún dice «Continuar / Reiniciar nivel / Volver al menú principal») e `INC-50` (15/09/2026: «Empujar» en el bosque no anima el rodado, sale a la escena 2.2 que lo cuenta; RF-26/HU-08 lo describen dentro de la mecánica). |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las diecisiete superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
 | `claudeDocs/Camara_Narrativa_N2.md` + `docs/md/Camara_Narrativa.md` | **La cámara narrativa del Nivel 2.** El de `claudeDocs/` es el **diseño** (50 encuadres validados contra 16:9); el de `docs/md/` es el **inventario de lo aplicado**: cada movimiento de cámara (foco, zoom, paradas por línea) con quién lo decidió —[S] Santiago / [C] Claude—. Los valores viven en `Assets/Game/Data/Narrative/N2_*.asset`; el documento explica el porqué, no sustituye al asset. Regla que evita el choque más común: para bajar la cámara al suelo hay que cerrar el plano (`y = 0.35` exige `zoom ≥ 1.43`). |
@@ -53,9 +53,11 @@ slice abierto más bajo, salvo que la sesión trabaje el carril paralelo del Sli
 **Dos slices a la vez (decisión del 10/09/2026).** La Fase 3 del Slice 1 (T12–T19, nivel fuego)
 se cerró el 11/09/2026. El 12/09/2026 Santiago abrió en el Slice 1 la **Fase 5** (T20–T24,
 rediseño de la mecánica del Nivel 1: arrastrar hojas y piedras → deslizante de **fuerza** 0–10 →
-golpear → soplar; INC-47), que quedó hecha salvo la revisión con el usuario (Checkpoint E). Del
-Slice 1 quedan abiertos el **Checkpoint E** (revisión) y el **Checkpoint D** (recorridos, RNF-14,
-mediciones sobre la build portable). El Slice 2 sigue por su carril. **El reparto es por
+golpear → soplar; INC-47), que quedó hecha salvo la revisión con el usuario (Checkpoint E), y el
+15/09/2026 la **Fase 6** (T25–T27: primero **reunir** todo en el círculo del centro, luego la
+cámara al doble y **dos deslizantes**, fuerza y cercanía de las piedras; sin rótulo «Aún no»). Del
+Slice 1 quedan abiertos los **Checkpoints E y F** (revisión) y el **Checkpoint D** (recorridos,
+RNF-14, mediciones sobre la build portable). El Slice 2 sigue por su carril. **El reparto es por
 assembly, no por slice** — es lo único que evita que los dos carriles se pisen:
 
 | Carril | Toca |
@@ -122,9 +124,11 @@ graphify explain "HintPolicy"
 ```
 
 `GRAPH_REPORT.md` es el índice legible —empezar por su sección «Community Hubs»—; `graph.json` es
-el grafo para consumo de agente y `graph.html` la vista interactiva. Es una **foto**, fechada el
-14/09/2026: refrescarla con `/graphify . --update` tras un bloque de trabajo, y confirmar en el
-código lo que el grafo señale antes de citarlo — ubica, no sustituye a leer el archivo.
+el grafo para consumo de agente y `graph.html` la vista interactiva. Es una **foto**: la vigente es
+del 15/09/2026 sobre el commit `8de614f`, 3170 nodos y 6066 aristas en 269 comunidades. Se refresca
+con `/graphify . --update` tras un bloque de trabajo —el incremental solo reextrae lo que cambió, y
+si lo cambiado es solo `.cs` no cuesta nada porque el AST no usa modelo—, y lo que el grafo señale
+se confirma en el código antes de citarlo: ubica, no sustituye a leer el archivo.
 
 `docs/md/`, `docs/actas/` y `graphify-out/` están en `.gitignore`: existen en este equipo pero no
 en un clon limpio. Las conversiones se rehacen con markitdown, el grafo con `/graphify`; las
@@ -158,7 +162,7 @@ arquitectura. **El trabajo de grado ya no está en `docs/`**: si hace falta cita
 historias → historias de usuario detalladas → arquitectura. Gana el de mayor prioridad y se
 corrige el otro. Las filas 3 y 4 viven ahora en el **mismo archivo**, así que un choque entre
 ellas ya no lo resuelve la precedencia sino la edición del documento. Las contradicciones internas
-están resueltas y registradas en `claudeDocs/INCONSISTENCIAS.md` (rev. 8, 14/09/2026).
+están resueltas y registradas en `claudeDocs/INCONSISTENCIAS.md` (rev. 10, 15/09/2026).
 
 Los nombres en disco no coinciden con cómo se citan los documentos. El mapa, en orden de
 precedencia:

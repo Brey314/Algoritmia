@@ -8,41 +8,28 @@ namespace Game.Levels.Fire.Tests
     {
         private static readonly Vector2 Spot = new Vector2(10f, -20f);
 
-        private static FireArrangement CreateSystemUnderTest() =>
-            new FireArrangement(Spot, pileRadius: 50f, stonesRadius: 100f);
+        private static FireArrangement CreateSystemUnderTest() => new FireArrangement(Spot, radius: 100f);
 
         [Test]
         [Category("Acceptance")]
-        public void FireArrangement_RF16_LasPiedrasEstanCercaSoloSiLasDosCaenEnSuRadio()
+        public void FireArrangement_RF14_EstaTodoReunidoSoloSiCadaPiezaCaeDentroDelCirculo()
         {
             var sut = CreateSystemUnderTest();
 
-            Assert.That(sut.StonesNear(Spot + new Vector2(60f, 0f), Spot + new Vector2(0f, -99f)), Is.True,
-                "las dos dentro del radio de las piedras");
-            Assert.That(sut.StonesNear(Spot + new Vector2(60f, 0f), Spot + new Vector2(0f, 101f)), Is.False,
-                "con el pedernal fuera no cuenta");
-            Assert.That(sut.StonesNear(Spot + new Vector2(-150f, 0f), Spot), Is.False,
-                "con el sílex fuera tampoco");
+            Assert.That(sut.IsGathered(new[] { Spot, Spot + new Vector2(60f, 0f), Spot + new Vector2(0f, -99f) }), Is.True,
+                "tres piezas dentro del círculo");
+            Assert.That(sut.IsGathered(new[] { Spot, Spot + new Vector2(60f, 0f), Spot + new Vector2(0f, 101f) }), Is.False,
+                "una sola pieza fuera y no está reunido");
+            Assert.That(sut.IsGathered(new[] { Spot + new Vector2(-150f, 0f), Spot }), Is.False,
+                "tampoco si la que falta es la primera");
         }
 
         [Test]
-        [Category("Acceptance")]
-        public void FireArrangement_RF19_HayMontonSoloSiTodasLasHojasCaenEnSuRadio()
+        public void FireArrangement_RF14_SinPiezasNoHayNadaReunido()
         {
             var sut = CreateSystemUnderTest();
 
-            Assert.That(sut.IsPiled(new[] { Spot, Spot + new Vector2(30f, 30f), Spot + new Vector2(-49f, 0f) }), Is.True,
-                "tres hojas dentro del radio del montón");
-            Assert.That(sut.IsPiled(new[] { Spot, Spot + new Vector2(30f, 30f), Spot + new Vector2(-51f, 0f) }), Is.False,
-                "una sola hoja fuera deshace el montón");
-        }
-
-        [Test]
-        public void FireArrangement_RF19_SinHojasNoHayMonton()
-        {
-            var sut = CreateSystemUnderTest();
-
-            Assert.That(sut.IsPiled(new Vector2[0]), Is.False);
+            Assert.That(sut.IsGathered(new Vector2[0]), Is.False);
         }
     }
 }

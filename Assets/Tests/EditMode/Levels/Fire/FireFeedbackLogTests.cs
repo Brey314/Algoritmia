@@ -30,7 +30,8 @@ namespace Game.Levels.Fire.Tests
             messages.HardSparksFly = "fuerte-tras-dos";
             messages.StonesFar = "piedras-lejos";
             messages.StonesFarAgain = "piedras-lejos-tras-dos";
-            messages.BlowNoPile = "soplo-sin-monton";
+            messages.StonesTooClose = "piedras-encimadas";
+            messages.StonesTooCloseAgain = "piedras-encimadas-tras-dos";
             messages.FirstEffectiveStrike = "efectivo-primero";
             messages.SecondEffectiveStrike = "efectivo-segundo";
             messages.FinalEffectiveStrike = "efectivo-final";
@@ -112,28 +113,28 @@ namespace Game.Levels.Fire.Tests
             Assert.That(sut.Latest, Is.EqualTo(tercero), "y Latest es el último");
         }
 
-        [Test]
-        public void FireFeedbackLog_RF16_ConLasPiedrasLejosDevuelveSuMensajeYEscalaTrasDosFallos()
+        [TestCase(SpacingBand.TooFar, "piedras-lejos", "piedras-lejos-tras-dos")]
+        [TestCase(SpacingBand.TooClose, "piedras-encimadas", "piedras-encimadas-tras-dos")]
+        public void FireFeedbackLog_RF16_SiLasPiedrasNoChocanDevuelveSuMensajeYEscalaTrasDosFallos(
+            SpacingBand cercania, string porDefecto, string trasDos)
         {
             var sut = CreateSystemUnderTest(minimumEffectiveStrikes: 3);
 
-            var primero = sut.Record(StrikeOutcome.StonesTooFar(7, ForceBand.Effective), consecutiveFailures: 1);
-            var segundo = sut.Record(StrikeOutcome.StonesTooFar(7, ForceBand.Effective), consecutiveFailures: 2);
+            var primero = sut.Record(StrikeOutcome.StonesMisplaced(7, ForceBand.Effective, cercania), consecutiveFailures: 1);
+            var segundo = sut.Record(StrikeOutcome.StonesMisplaced(7, ForceBand.Effective, cercania), consecutiveFailures: 2);
 
-            Assert.That(primero, Is.EqualTo("piedras-lejos"), "el fallo fue de sitio, no de fuerza: mensaje de piedras lejos");
-            Assert.That(segundo, Is.EqualTo("piedras-lejos-tras-dos"), "y al segundo fallo seguido escala (RF-18)");
+            Assert.That(primero, Is.EqualTo(porDefecto), "el fallo fue de cercanía, no de fuerza: su mensaje");
+            Assert.That(segundo, Is.EqualTo(trasDos), "y al segundo fallo seguido escala (RF-18)");
         }
 
         [Test]
-        [Category("Acceptance")]
-        public void FireFeedbackLog_CP02_ElSoploSinMontonSeDescribeSinPenalizar()
+        public void FireFeedbackLog_RF16_LaCercaniaMandaSobreLaFuerzaCuandoFallanLasDos()
         {
             var sut = CreateSystemUnderTest(minimumEffectiveStrikes: 3);
 
-            var actual = sut.RecordBlowFailed();
+            var actual = sut.Record(StrikeOutcome.StonesMisplaced(2, ForceBand.TooSoft, SpacingBand.TooFar), consecutiveFailures: 1);
 
-            Assert.That(actual, Is.EqualTo("soplo-sin-monton"), "describe lo que pasó");
-            Assert.That(sut.Entries, Is.EqualTo(new[] { "soplo-sin-monton" }), "y nada más: ni contador ni bloqueo (CP-02)");
+            Assert.That(actual, Is.EqualTo("piedras-lejos"), "primero tienen que chocar; la fuerza se juzga después");
         }
 
         [Test]

@@ -69,15 +69,7 @@ namespace Game.Levels.Wheel
         public string CargoMissedMessage { get; private set; } = "Ahí la caja no toca los troncos. Déjala encima de ellos.";
 
         [field: SerializeField]
-        [field: Tooltip("Cuánto dura la demostración del rodado, en segundos (RF-26).")]
-        public float RollSeconds { get; private set; } = 2.5f;
-
-        [field: SerializeField]
-        [field: Tooltip("Cuánto tarda la caja en caer al suelo al pasar el último tronco, en segundos.")]
-        public float FallSeconds { get; private set; } = 0.45f;
-
-        [field: SerializeField]
-        [field: Tooltip("Secuencia narrativa a la que sale el bosque tras el rodado (guion §6.1.3). A dónde sale una fase es contenido, no código (RF-05).")]
+        [field: Tooltip("Secuencia narrativa a la que sale el bosque al empujar la caja (guion §6.1.3): es la que cuenta el rodado (RF-26). A dónde sale una fase es contenido, no código (RF-05).")]
         public string ClosingSequenceId { get; private set; } = "N2_Escena22_ElPatron";
 
         [field: SerializeField]
@@ -147,7 +139,6 @@ namespace Game.Levels.Wheel
             string pendingLogsFormat = "faltan {0}",
             string cargoPlacedMessage = "colocada",
             string cargoMissedMessage = "fuera",
-            float rollSeconds = 0.1f,
             string closingSequenceId = "cierre")
         {
             var config = CreateInstance<WheelLevelConfig>();
@@ -159,7 +150,6 @@ namespace Game.Levels.Wheel
             config.PendingLogsFormat = pendingLogsFormat;
             config.CargoPlacedMessage = cargoPlacedMessage;
             config.CargoMissedMessage = cargoMissedMessage;
-            config.RollSeconds = rollSeconds;
             config.ClosingSequenceId = closingSequenceId;
             return config;
         }

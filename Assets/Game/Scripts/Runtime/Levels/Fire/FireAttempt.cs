@@ -1,14 +1,15 @@
 namespace Game.Levels.Fire
 {
     /// <summary>
-    /// Estado del panel de encendido del Nivel 1: resuelve un golpe según la fuerza y lleva los
-    /// dos contadores —golpes efectivos y fallos consecutivos— del guion §4.3.3/§4.3.5.
+    /// Estado del panel de encendido del Nivel 1: resuelve un golpe según la fuerza y la cercanía
+    /// de las piedras, y lleva los dos contadores —golpes efectivos y fallos consecutivos— del
+    /// guion §4.3.3/§4.3.5.
     /// </summary>
     /// <remarks>
     /// C# plano, sin dependencias de Unity: la regla se prueba en EditMode, sin escena ni frames.
     /// El panel jugable (T14) solo traduce el clic de «Golpear» a <see cref="Strike"/> y el estado
-    /// a la UI. No guarda la fuerza del deslizante: esa es estado de UI y solo entra al llamar
-    /// <see cref="Strike"/> (RF-15).
+    /// a la UI. No guarda lo que marcan los deslizantes: eso es estado de UI y solo entra al
+    /// llamar <see cref="Strike"/> (RF-15).
     /// </remarks>
     public class FireAttempt
     {
@@ -37,16 +38,17 @@ namespace Game.Levels.Fire
             : ForceBand.Effective;
 
         /// <summary>
-        /// Resuelve un golpe con la fuerza dada y devuelve lo observado. Con alguna piedra lejos
-        /// de las hojas (<paramref name="stonesNear"/> falso) no prende con ninguna fuerza (T22).
+        /// Resuelve un golpe con la fuerza dada y devuelve lo observado. Con las piedras separadas
+        /// o demasiado encimadas (<paramref name="spacing"/> distinto de efectivo) no prende con
+        /// ninguna fuerza (T26): primero tienen que chocar.
         /// </summary>
-        public StrikeOutcome Strike(int force, bool stonesNear = true)
+        public StrikeOutcome Strike(int force, SpacingBand spacing = SpacingBand.Effective)
         {
             var band = Classify(force);
-            if (!stonesNear)
+            if (spacing != SpacingBand.Effective)
             {
                 _consecutiveFailures++;
-                return StrikeOutcome.StonesTooFar(force, band);
+                return StrikeOutcome.StonesMisplaced(force, band, spacing);
             }
 
             if (band != ForceBand.Effective)

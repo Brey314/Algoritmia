@@ -19,12 +19,14 @@ MonoBehaviour:
     todas partes, lejos de las hojas."
   <HardSparksFly>k__BackingField: "Las chispas vuelan tan rápido que se apagan en el aire
     antes de caer."
-  <StonesFar>k__BackingField: "Las chispas caen donde no hay nada que prender: el sílex
-    y el pedernal están lejos de las hojas."
-  <StonesFarAgain>k__BackingField: "Otra vez las chispas mueren sobre la piedra desnuda,
-    lejos del montón."
-  <BlowNoPile>k__BackingField: "El aire se lleva el humo: las hojas están regadas y no hay
-    montón que avivar."
+  <StonesFar>k__BackingField: "El sílex y el pedernal están separados: el golpe cae
+    en el aire y no sale ninguna chispa."
+  <StonesFarAgain>k__BackingField: "Otra vez las piedras no llegan a tocarse. Sin choque
+    no hay chispa."
+  <StonesTooClose>k__BackingField: "Las piedras están tan encimadas que no chocan: solo
+    se frotan y raspan."
+  <StonesTooCloseAgain>k__BackingField: "Otra vez demasiado juntas. Rozan y rozan, pero
+    ninguna chispa salta."
   <FirstEffectiveStrike>k__BackingField: "Una chispa cae dentro de las hojas. Brilla
     un instante y se apaga."
   <SecondEffectiveStrike>k__BackingField: "Otra chispa cae dentro. Esta vez el brillo

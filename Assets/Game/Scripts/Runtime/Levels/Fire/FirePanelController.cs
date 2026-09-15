@@ -7,16 +7,19 @@ using UnityEngine.UI;
 namespace Game.Levels.Fire
 {
     /// <summary>
-    /// El panel de encendido del Nivel 1 (RF-14, guion §4.3.1): traduce los clics de «Golpear» y
-    /// «Soplar» a llamadas de <see cref="FireAttempt"/> / <see cref="FireFeedbackLog"/> y el estado
-    /// resultante a la UI.
+    /// El panel de encendido del Nivel 1 (RF-14, guion §4.3.1), en dos fases (Fase 6, 15/09/2026):
+    /// **reunir** —arrastrar hojas, sílex y pedernal al círculo del centro; «Pista» dibuja el
+    /// círculo— y **encender** —la cámara se acerca, las hojas se acomodan en fogata y aparecen
+    /// los deslizantes de fuerza y de cercanía de las piedras con «Golpear» y «Soplar»—. Traduce
+    /// los clics a <see cref="FireAttempt"/> / <see cref="FireFeedbackLog"/> y el estado a la UI.
     /// </summary>
     /// <remarks>
-    /// Adaptador delgado: **no contiene ninguna regla del juego**. El deslizante representa la
-    /// hipótesis y no produce efecto hasta «Golpear» (RF-15); el resultado de cada golpe lo decide
-    /// <see cref="FireAttempt"/> (T12) y el mensaje <see cref="FireFeedbackLog"/> (T13). Al converger
-    /// y accionar «Soplar», anima el nacimiento del fuego y encadena a la confirmación de fase, el
-    /// desbloqueo del Nivel 2 y la escena narrativa de cierre (T15, RF-03, RF-04, RF-20).
+    /// Adaptador delgado: **no contiene ninguna regla del juego**. Si está todo reunido lo dice
+    /// <see cref="FireArrangement"/>; dónde van las piedras y si chocan, <see cref="StoneSpacing"/>;
+    /// los deslizantes representan la hipótesis y no producen efecto hasta «Golpear» (RF-15); el
+    /// resultado de cada golpe lo decide <see cref="FireAttempt"/> (T12) y el mensaje
+    /// <see cref="FireFeedbackLog"/> (T13). Al converger y accionar «Soplar», anima el nacimiento
+    /// del fuego y encadena a la escena narrativa de cierre (T15, RF-20).
     /// </remarks>
     public class FirePanelController : MonoBehaviour
     {
@@ -27,11 +30,16 @@ namespace Game.Levels.Fire
         [UnityEngine.Serialization.FormerlySerializedAs("positionSlider")]
         [Tooltip("Deslizante de fuerza (Fase 5). Su rango lo fija la configuración al arrancar.")]
         private Slider forceSlider;
+
+        [SerializeField]
+        [Tooltip("Deslizante de cercanía de las piedras (T26): a la izquierda lejos, a la derecha una encima de otra. Su rango lo fija la configuración.")]
+        private Slider spacingSlider;
+
         [SerializeField] private Button strikeButton;
         [SerializeField] private Button blowButton;
 
         [SerializeField]
-        [Tooltip("Icono de candado + texto «Aún no»: el segundo indicador de RNF-19 para «Soplar».")]
+        [Tooltip("Icono de candado sobre «Soplar»: el segundo indicador de RNF-19 mientras está atenuado.")]
         private GameObject blowLockedBadge;
 
         [SerializeField] private FeedbackLogView logView;
@@ -41,8 +49,20 @@ namespace Game.Levels.Fire
         private DraggablePiece[] pieces = Array.Empty<DraggablePiece>();
 
         [SerializeField]
-        [Tooltip("El punto del fuego: donde hay que amontonar las hojas y acercar las piedras. Los radios salen de la configuración, como fracción del alto del suelo.")]
+        [Tooltip("El punto del fuego: el centro de la pantalla, donde se reúnen los materiales y se arma la fogata.")]
         private RectTransform fireSpot;
+
+        [SerializeField]
+        [Tooltip("Contorno de la zona de reunión (T25). Se dibuja al pedir ayuda; su tamaño lo fija el panel a partir del botón de abajo.")]
+        private Image gatherRing;
+
+        [SerializeField]
+        [Tooltip("Lo que la cámara acerca al reunir los materiales: el fondo de la cueva y el suelo con las piezas (T25).")]
+        private RectTransform[] environment = Array.Empty<RectTransform>();
+
+        [SerializeField]
+        [Tooltip("La interfaz del encendido —deslizantes, etiquetas, «Golpear» y «Soplar»—, oculta mientras se reúnen los materiales (T25).")]
+        private GameObject[] ignitionUi = Array.Empty<GameObject>();
 
         [SerializeField]
         [Tooltip("Iluminación progresiva del escenario (RF-21, prioridad Baja). Puede quedar sin " +
@@ -50,39 +70,76 @@ namespace Game.Levels.Fire
         private CaveLightingController lighting;
 
         [SerializeField]
-        [Tooltip("Pasos del guía del Nivel 1 (N1_Guia): instrucción y pista de «Golpear» y de «Soplar».")]
+        [Tooltip("Pasos del guía del Nivel 1 (N1_Guia): instrucción y pista de «Reunir», «Golpear» y «Soplar».")]
         private GuideContent guide;
 
         [SerializeField]
-        [Tooltip("Botón «Pista» (mockup 7, arriba a la izquierda): repite la instrucción del paso (RF-13).")]
+        [Tooltip("Botón «Pista» (mockup 7, arriba a la izquierda): repite la instrucción del paso (RF-13) y, al reunir, dibuja el círculo.")]
         private Button hintButton;
 
         private FireAttempt _attempt;
         private FireFeedbackLog _log;
         private FireIndicatorCollector _indicators;
         private HintPolicy _hints;
+        private StoneSpacing _spacing;
 
         /// <summary>El flujo del juego. Sin él (escena abierta sin pasar por Boot) no se navega.</summary>
         internal GameFlowRunner Runner { get; set; }
+
+        /// <summary>Todavía se están reuniendo los materiales: sin interfaz de encendido (T25).</summary>
+        internal bool IsGathering { get; private set; } = true;
+
+        /// <summary>La cámara se está acercando y las hojas acomodando: entre las dos fases.</summary>
+        internal bool IsTransitioning { get; private set; }
 
         /// <summary>La fuerza que marca el deslizante. Solo <see cref="Strike"/> la lee (RF-15).</summary>
         internal int SelectedForce =>
             Mathf.Clamp(Mathf.RoundToInt(forceSlider.value), 0, config.ForceLevels);
 
+        /// <summary>La muesca de cercanía que marca el deslizante. Solo <see cref="Strike"/> la juzga (RF-15).</summary>
+        internal int SelectedSpacing =>
+            Mathf.Clamp(Mathf.RoundToInt(spacingSlider.value), 0, config.SpacingLevels);
+
+        /// <summary>
+        /// Radio del círculo de reunión: del centro a la mitad del botón de abajo en horizontal
+        /// (pedido de Santiago, 15/09/2026). Sale de la escena, no del asset: es disposición.
+        /// </summary>
+        internal float GatherRadius
+        {
+            get
+            {
+                var button = (RectTransform)strikeButton.transform;
+                var center = Floor.InverseTransformPoint(button.TransformPoint(button.rect.center));
+                return Mathf.Abs(center.x - fireSpot.anchoredPosition.x);
+            }
+        }
+
+        /// <summary>Todas las piezas dentro del círculo de reunión (T25).</summary>
+        internal bool AllGathered =>
+            new FireArrangement(fireSpot.anchoredPosition, GatherRadius)
+                .IsGathered(Array.ConvertAll(pieces, piece => piece.Position));
+
 #if UNITY_INCLUDE_TESTS
         internal Slider ForceSlider => forceSlider;
+        internal Slider SpacingSlider => spacingSlider;
         internal Button StrikeButton => strikeButton;
         internal Button BlowButton => blowButton;
         internal GameObject BlowLockedBadge => blowLockedBadge;
         internal FeedbackLogView LogView => logView;
         internal DraggablePiece[] Pieces => pieces;
         internal RectTransform FireSpot => fireSpot;
+        internal Image GatherRing => gatherRing;
+        internal RectTransform[] Environment => environment;
+        internal GameObject[] IgnitionUi => ignitionUi;
         internal FireAttempt Attempt => _attempt;
         internal FireFeedbackLog Log => _log;
         internal FireIndicatorCollector Indicators => _indicators;
+        internal StoneSpacing Spacing => _spacing;
         internal CaveLightingController Lighting => lighting;
         internal Button HintButton => hintButton;
 #endif
+
+        private RectTransform Floor => (RectTransform)fireSpot.parent;
 
         private void Awake() => Runner ??= GameFlowRunner.Instance;
 
@@ -98,12 +155,19 @@ namespace Game.Levels.Fire
 
             // La ayuda es una capa aparte (CP-06, T11): el panel solo la pulsa. Sin asset de guía
             // la política queda con paso nulo y no escribe nada — el nivel sigue jugable.
-            _hints = new HintPolicy(Step("Golpear"), config.AttemptsBeforeHint);
+            _hints = new HintPolicy(Step("Reunir"), config.AttemptsBeforeHint);
 
-            // El rango del deslizante sale de la configuración, no de la escena (CT-05, RNF-18).
+            // Los rangos de los deslizantes salen de la configuración, no de la escena (CT-05, RNF-18).
             forceSlider.wholeNumbers = true;
             forceSlider.minValue = 0;
             forceSlider.maxValue = config.ForceLevels;
+            spacingSlider.wholeNumbers = true;
+            spacingSlider.minValue = 0;
+            spacingSlider.maxValue = config.SpacingLevels;
+            spacingSlider.onValueChanged.AddListener(_ => PlaceStones());
+
+            // Lo más lejos que se separan las piedras es la longitud de una hoja (T26).
+            _spacing = new StoneSpacing(config, WidthOf(PieceKind.Silex), WidthOf(PieceKind.Leaf));
 
             strikeButton.onClick.AddListener(Strike);
             blowButton.onClick.AddListener(Blow);
@@ -112,40 +176,179 @@ namespace Game.Levels.Fire
                 hintButton.onClick.AddListener(RequestHelp);
             }
 
+            foreach (var piece in pieces)
+            {
+                piece.Dropped += Piece_Dropped;
+            }
+
+            // Reuniendo solo hay piezas, tablilla y «Pista»: la interfaz del encendido llega con
+            // el acercamiento (T25). El círculo se dibuja al pedir ayuda.
+            gatherRing.gameObject.SetActive(false);
+            foreach (var element in ignitionUi)
+            {
+                element.SetActive(false);
+            }
+
             RefreshBlow();
             RefreshLighting();
         }
 
-        /// <summary>Las dos piedras dentro del radio de las piedras (T22). Sin punto de fuego cableado, siempre.</summary>
-        internal bool StonesNear =>
-            fireSpot == null || Arrangement.StonesNear(PositionOf(PieceKind.Silex), PositionOf(PieceKind.Pedernal));
+        private void Piece_Dropped(DraggablePiece _) => TryFinishGathering();
 
-        /// <summary>Todas las hojas dentro del radio del montón (T22). Sin punto de fuego cableado, siempre.</summary>
-        internal bool LeavesPiled =>
-            fireSpot == null || Arrangement.IsPiled(Array.ConvertAll(
-                Array.FindAll(pieces, piece => piece.Kind == PieceKind.Leaf), piece => piece.Position));
-
-        private FireArrangement Arrangement
+        /// <summary>Si ya está todo dentro del círculo, pasa al encendido. Lo llaman las piezas al soltarse y las pruebas.</summary>
+        internal void TryFinishGathering()
         {
-            get
+            if (!IsGathering || IsTransitioning || !AllGathered)
             {
-                var floorHeight = ((RectTransform)fireSpot.parent).rect.height;
-                return new FireArrangement(fireSpot.anchoredPosition,
-                    config.PileRadius * floorHeight, config.StonesRadius * floorHeight);
+                return;
+            }
+
+            _ = EnterIgnitionAsync();
+        }
+
+        /// <summary>
+        /// El paso de reunir a encender (T25): las piezas dejan de arrastrarse, la cámara se
+        /// acerca al entorno, las hojas se acomodan en fogata —juntas, no encimadas— y las
+        /// piedras donde diga el deslizante; al terminar aparece la interfaz del encendido.
+        /// </summary>
+        private async Awaitable EnterIgnitionAsync()
+        {
+            IsTransitioning = true;
+            gatherRing.gameObject.SetActive(false);
+            foreach (var piece in pieces)
+            {
+                piece.enabled = false; // ya no se arrastran: desde aquí las piedras las mueve el deslizante
+            }
+
+            var starts = Array.ConvertAll(pieces, piece => piece.Position);
+            var targets = CampfireLayout();
+            var seconds = Mathf.Max(config.GatherSeconds, 0f);
+
+            try
+            {
+                // Una única interpolación continua: nada parpadea ni cambia de color (RNF-21).
+                for (var elapsed = 0f; elapsed < seconds; elapsed += Time.deltaTime)
+                {
+                    var t = Mathf.SmoothStep(0f, 1f, elapsed / seconds);
+                    Zoom(Mathf.Lerp(1f, config.GatherZoom, t));
+                    for (var i = 0; i < pieces.Length; i++)
+                    {
+                        pieces[i].MoveTo(Vector2.Lerp(starts[i], targets[i], t));
+                    }
+
+                    await Awaitable.NextFrameAsync(destroyCancellationToken);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return; // el panel se destruyó (cambio de escena) a mitad del acercamiento.
+            }
+
+            Zoom(config.GatherZoom);
+            for (var i = 0; i < pieces.Length; i++)
+            {
+                pieces[i].MoveTo(targets[i]);
+            }
+
+            IsGathering = false;
+            IsTransitioning = false;
+            foreach (var element in ignitionUi)
+            {
+                element.SetActive(true);
+            }
+
+            PlaceStones();
+            RefreshBlow();
+
+            // La tarea cambia: la tablilla pasa a la instrucción de golpear (guion §4.3.1).
+            _hints.Activate(Step("Golpear"));
+            _log.RecordGuide(_hints.RequestHelp());
+            logView.Show(_log.Entries);
+        }
+
+        private void Zoom(float scale)
+        {
+            foreach (var element in environment)
+            {
+                element.localScale = Vector3.one * scale;
             }
         }
 
-        private Vector2 PositionOf(PieceKind kind)
+        /// <summary>
+        /// Dónde acaba cada pieza al encender: las hojas en anillo alrededor del punto del fuego,
+        /// tangentes entre sí —juntas, no una encima de otra—, y las piedras en el centro, a la
+        /// distancia que marque el deslizante.
+        /// </summary>
+        private Vector2[] CampfireLayout()
         {
-            var piece = Array.Find(pieces, candidate => candidate.Kind == kind);
-            // Sin esa piedra en la escena se toma como lejos: la regla nunca prende sin las dos.
-            return piece != null ? piece.Position : new Vector2(float.MaxValue / 4f, 0f);
+            var spot = fireSpot.anchoredPosition;
+            var leaves = Array.FindAll(pieces, piece => piece.Kind == PieceKind.Leaf).Length;
+            var leafWidth = WidthOf(PieceKind.Leaf);
+            // Radio con el que dos hojas vecinas del anillo se tocan sin encimarse.
+            var ringRadius = leaves > 1 ? leafWidth / (2f * Mathf.Sin(Mathf.PI / leaves)) : 0f;
+            var distance = _spacing.Distance(SelectedSpacing);
+
+            var targets = new Vector2[pieces.Length];
+            var leaf = 0;
+            for (var i = 0; i < pieces.Length; i++)
+            {
+                targets[i] = pieces[i].Kind switch
+                {
+                    PieceKind.Silex => spot + new Vector2(-distance / 2f, 0f),
+                    PieceKind.Pedernal => spot + new Vector2(distance / 2f, 0f),
+                    _ => spot + ringRadius * Direction(leaf++, leaves)
+                };
+            }
+
+            return targets;
         }
 
-        /// <summary>Ejecuta un golpe con la fuerza marcada y refresca la UI (RF-16).</summary>
+        private static Vector2 Direction(int index, int count)
+        {
+            var angle = Mathf.PI / 2f + 2f * Mathf.PI * index / count; // la primera hoja arriba
+            return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+        }
+
+        /// <summary>El sílex y el pedernal a la distancia de la muesca, uno a cada lado del punto del fuego (T26).</summary>
+        private void PlaceStones()
+        {
+            if (IsGathering)
+            {
+                return; // reuniendo, las piedras van donde el estudiante las suelte
+            }
+
+            var spot = fireSpot.anchoredPosition;
+            var distance = _spacing.Distance(SelectedSpacing);
+            foreach (var piece in pieces)
+            {
+                if (piece.Kind == PieceKind.Silex)
+                {
+                    piece.MoveTo(spot + new Vector2(-distance / 2f, 0f));
+                    piece.transform.SetAsLastSibling(); // las piedras van sobre las hojas
+                }
+                else if (piece.Kind == PieceKind.Pedernal)
+                {
+                    piece.MoveTo(spot + new Vector2(distance / 2f, 0f));
+                    piece.transform.SetAsLastSibling();
+                }
+            }
+        }
+
+        private float WidthOf(PieceKind kind)
+        {
+            var piece = Array.Find(pieces, candidate => candidate.Kind == kind);
+            return piece != null ? piece.Width : 1f;
+        }
+
+        /// <summary>Ejecuta un golpe con la fuerza y la cercanía marcadas y refresca la UI (RF-16).</summary>
         internal void Strike()
         {
-            var outcome = _attempt.Strike(SelectedForce, StonesNear);
+            if (IsGathering)
+            {
+                return; // sin fogata no hay qué golpear: el botón ni siquiera está en pantalla.
+            }
+
+            var outcome = _attempt.Strike(SelectedForce, _spacing.Classify(SelectedSpacing));
             _indicators.RecordStrike(outcome);
             _log.Record(outcome, _attempt.ConsecutiveFailures);
             if (outcome.Effective)
@@ -166,11 +369,32 @@ namespace Game.Levels.Fire
             RefreshLighting();
         }
 
-        /// <summary>«Pista»: repite la instrucción del paso activo en el registro (RF-13, HU-03).</summary>
+        /// <summary>
+        /// «Pista»: repite la instrucción del paso activo en la tablilla (RF-13, HU-03). Reuniendo,
+        /// además dibuja el círculo donde tiene que quedar todo (T25).
+        /// </summary>
         internal void RequestHelp()
         {
             _log.RecordGuide(_hints.RequestHelp());
             logView.Show(_log.Entries);
+            if (IsGathering && !IsTransitioning)
+            {
+                ShowRing();
+            }
+        }
+
+        private void ShowRing()
+        {
+            var diameter = 2f * GatherRadius;
+            if (gatherRing.sprite == null)
+            {
+                gatherRing.sprite = RingSprite.Create(Mathf.RoundToInt(diameter), thickness: 6f);
+            }
+
+            var rect = gatherRing.rectTransform;
+            rect.anchoredPosition = fireSpot.anchoredPosition;
+            rect.sizeDelta = Vector2.one * diameter;
+            gatherRing.gameObject.SetActive(true);
         }
 
         private GuideStep Step(string id) =>
@@ -183,16 +407,6 @@ namespace Game.Levels.Fire
             // un clic simulado en pruebas no pasa por esa comprobación de la UI.
             if (!_attempt.CanBlow)
             {
-                return;
-            }
-
-            // «Por qué no» pedagógico: soplar con las hojas regadas no es un error que se
-            // castigue —no hay contador ni bloqueo (CP-02)—; solo se cuenta lo que pasó y el
-            // estudiante reacomoda y vuelve a soplar (T23).
-            if (!LeavesPiled || !StonesNear)
-            {
-                _log.RecordBlowFailed();
-                logView.Show(_log.Entries);
                 return;
             }
 
@@ -282,12 +496,12 @@ namespace Game.Levels.Fire
         private void RefreshBlow()
         {
             // «Por qué no» pedagógico: `CanBlow` de FireAttempt nunca vuelve a falso una vez
-            // alcanzado el mínimo (INC-32), así que el botón y su badge tampoco re-bloquean tras
-            // un fallo posterior. Lo ganado permanece.
+            // alcanzado el mínimo (INC-32), así que el botón y su candado tampoco re-bloquean tras
+            // un fallo posterior. Lo ganado permanece. Reuniendo no hay botón, así que tampoco candado.
             blowButton.interactable = _attempt.CanBlow;
             if (blowLockedBadge != null)
             {
-                blowLockedBadge.SetActive(!_attempt.CanBlow);
+                blowLockedBadge.SetActive(!IsGathering && !_attempt.CanBlow);
             }
         }
 
@@ -296,6 +510,5 @@ namespace Game.Levels.Fire
         /// la resolución (E7).</summary>
         private void RefreshLighting() =>
             lighting?.SetProgress((float)_attempt.EffectiveStrikes / (config.MinimumEffectiveStrikes + 1));
-
     }
 }

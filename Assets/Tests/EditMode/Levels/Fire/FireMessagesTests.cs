@@ -21,7 +21,8 @@ namespace Game.Levels.Fire.Tests
             messages.HardSparksFly,
             messages.StonesFar,
             messages.StonesFarAgain,
-            messages.BlowNoPile,
+            messages.StonesTooClose,
+            messages.StonesTooCloseAgain,
             messages.FirstEffectiveStrike,
             messages.SecondEffectiveStrike,
             messages.FinalEffectiveStrike,
@@ -30,7 +31,7 @@ namespace Game.Levels.Fire.Tests
 
         [Test]
         [Category("Acceptance")]
-        public void FireMessages_RNF18_LosOnceMensajesDelNivelEstanDefinidos()
+        public void FireMessages_RNF18_LosDoceMensajesDelNivelEstanDefinidos()
         {
             var sut = CargarAssetDeMensajes();
 

@@ -35,7 +35,7 @@ namespace Game.Levels.Fire
         public string Record(StrikeOutcome outcome, int consecutiveFailures)
         {
             var message = outcome.Effective ? EffectiveMessage(outcome.EffectiveStrikes)
-                : !outcome.StonesNear ? StonesFarMessage(consecutiveFailures)
+                : outcome.Spacing != SpacingBand.Effective ? SpacingMessage(outcome.Spacing, consecutiveFailures)
                 : FailureMessage(outcome.Band, consecutiveFailures);
             _entries.Add(message);
             return message;
@@ -46,25 +46,6 @@ namespace Game.Levels.Fire
         {
             _entries.Add(_messages.BlowSuccess);
             return _messages.BlowSuccess;
-        }
-
-        /// <summary>Soplo con las hojas regadas o las piedras lejos: se describe, no se penaliza (T23, CP-02).</summary>
-        public string RecordBlowFailed()
-        {
-            _entries.Add(_messages.BlowNoPile);
-            return _messages.BlowNoPile;
-        }
-
-        private string StonesFarMessage(int consecutiveFailures)
-        {
-            // Mismo criterio que los fallos de fuerza: la variante «tras dos intentos» solo desde
-            // el segundo fallo seguido, y sin repetir dos veces seguidas cuando hay alternativa.
-            if (consecutiveFailures < 2)
-            {
-                return _messages.StonesFar;
-            }
-
-            return _messages.StonesFarAgain == Latest ? _messages.StonesFar : _messages.StonesFarAgain;
         }
 
         /// <summary>
@@ -92,14 +73,20 @@ namespace Game.Levels.Fire
                 : _messages.SecondEffectiveStrike;
         }
 
-        private string FailureMessage(ForceBand band, int consecutiveFailures)
-        {
-            // Un golpe no efectivo se pasó de suave o de fuerte (Fase 5): cada lado tiene su par
-            // de mensajes, por defecto y «tras dos intentos».
-            var (fallback, escalated) = band == ForceBand.TooSoft
-                ? (_messages.SoftNoSpark, _messages.SoftStonesGraze)
-                : (_messages.HardSparksScatter, _messages.HardSparksFly);
+        /// <summary>Las piedras no chocaron: separadas o demasiado encimadas (T26). Cada lado tiene su par.</summary>
+        private string SpacingMessage(SpacingBand spacing, int consecutiveFailures) =>
+            spacing == SpacingBand.TooFar
+                ? Escalate(_messages.StonesFar, _messages.StonesFarAgain, consecutiveFailures)
+                : Escalate(_messages.StonesTooClose, _messages.StonesTooCloseAgain, consecutiveFailures);
 
+        /// <summary>Un golpe no efectivo se pasó de suave o de fuerte (Fase 5). Cada lado tiene su par.</summary>
+        private string FailureMessage(ForceBand band, int consecutiveFailures) =>
+            band == ForceBand.TooSoft
+                ? Escalate(_messages.SoftNoSpark, _messages.SoftStonesGraze, consecutiveFailures)
+                : Escalate(_messages.HardSparksScatter, _messages.HardSparksFly, consecutiveFailures);
+
+        private string Escalate(string fallback, string escalated, int consecutiveFailures)
+        {
             // La variante «tras dos intentos» (guion §4.3.4) solo aplica desde el segundo fallo
             // seguido. Antes no hay alternativa y un mensaje repetido se permite.
             if (consecutiveFailures < 2)

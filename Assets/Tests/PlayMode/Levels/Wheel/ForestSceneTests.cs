@@ -557,103 +557,47 @@ namespace Game.Levels.Wheel.Tests
 
         [Test]
         [Timeout(30000)]
-        [Category("VisualVerification")]
-        [Description("Tras ejecutar esta prueba, revisar la captura de mitad del rodado: la caja va " +
-                     "sobre la fila de troncos y ninguno parpadea ni cambia de color; el movimiento " +
-                     "se lee como un rodado continuo, sin saltos ni destellos.")]
-        public async Task ForestScene_RNF21_LaAnimacionDelRodadoNoTieneDestellos()
+        public async Task ForestScene_RF26_EmpujarNoAnimaElRodadoEnLaMecanicaSinoQueSaleALaNarrativa()
         {
             var forest = await OpenForest();
             Canvas.ForceUpdateCanvases();
             await Awaitable.NextFrameAsync();
             await Colocar(forest);
-
-            var graficos = Object.FindObjectsByType<Graphic>(FindObjectsInactive.Exclude);
-            var antes = graficos.ToDictionary(grafico => grafico, grafico => (grafico.enabled, grafico.color));
-            var xPrevia = forest.CargoRect.anchoredPosition.x;
-            var frames = 0;
-            var capturada = false;
+            var antes = forest.CargoRect.anchoredPosition;
 
             forest.PushButton.onClick.Invoke();
-            Assert.That(forest.IsRolling, Is.True, "accionar «Empujar» arranca el rodado");
+            await Awaitable.NextFrameAsync();
 
-            while (forest.IsRolling)
-            {
-                await Awaitable.NextFrameAsync();
-                frames++;
-
-                // Un destello es un gráfico que se apaga y enciende o cambia de color entre dos
-                // cuadros. Durante el rodado nada de eso ocurre: solo se mueven la caja y los
-                // troncos (RNF-21).
-                foreach (var grafico in graficos.Where(grafico => grafico != null))
-                {
-                    Assert.That((grafico.enabled, grafico.color), Is.EqualTo(antes[grafico]),
-                        $"{grafico.name} no parpadea ni cambia de color durante el rodado");
-                }
-
-                // Con tolerancia de una centésima de píxel: el ruido de convertir pantalla ↔
-                // lienzo no es un salto, y un salto de verdad son píxeles enteros.
-                Assert.That(forest.CargoRect.anchoredPosition.x, Is.GreaterThanOrEqualTo(xPrevia - 0.01f),
-                    "la caja avanza siempre en el mismo sentido: no salta hacia atrás");
-                xPrevia = forest.CargoRect.anchoredPosition.x;
-
-                if (!capturada && frames > 5)
-                {
-                    capturada = Capturar("ForestScene_RNF21_Rodado");
-                }
-            }
-
-            Assert.That(frames, Is.GreaterThan(1), "el rodado dura varios cuadros: no es un salto");
-            Assert.That(forest.Cargo.IsPushed, Is.True);
+            // El rodado que se ve es el de la escena 2.2 (RollMotion): aquí la caja no se mueve
+            // ni un píxel al empujar. Sin GameFlowRunner la escena se queda —lo avisa por consola—;
+            // con él, ForestScene_RF04 comprueba que sale a la secuencia de cierre.
+            Assert.That(forest.Cargo.IsPushed, Is.True, "el empuje queda resuelto (RF-26)");
+            Assert.That(forest.CargoRect.anchoredPosition, Is.EqualTo(antes), "y la caja no rueda en la mecánica");
+            Assert.That(forest.PushButton.interactable, Is.True, "el botón sigue habilitado (CP-02)");
         }
 
         [Test]
         [Timeout(30000)]
-        public async Task ForestScene_RF26_AlPasarElUltimoTroncoLaCajaCaeAlSueloPorLaDerecha()
+        public async Task ForestScene_RF26_LosTroncosDeLaFilaVanPegadosComoEnLaEscena22()
         {
             var forest = await OpenForest();
             Canvas.ForceUpdateCanvases();
             await Awaitable.NextFrameAsync();
-            await Colocar(forest);
-            var fila = EnPantalla(forest.LogRow);
+            await Acopiar(forest);
 
-            forest.PushButton.onClick.Invoke();
-            while (forest.IsRolling)
+            // En N2_Escena22_ElPatron los troncos van a 0,0175 del ancho de la ilustración
+            // (3198 px) con 0,07 de su alto (899 px): centros a 0,889 del tamaño del tronco, es
+            // decir, encimados. La fila del bosque tiene que leerse igual (pedido de Santiago,
+            // 15/09/2026), que es lo que hace que la 2.2 la herede sin salto.
+            const float relacionNarrativa = (0.0175f * 3198f) / (0.07f * 899f);
+            var troncos = forest.Row.Select(tronco => EnPantalla(tronco.rectTransform)).ToArray();
+            Assume.That(troncos.Length, Is.GreaterThan(1));
+            for (var i = 1; i < troncos.Length; i++)
             {
-                await Awaitable.NextFrameAsync();
+                var relacion = (troncos[i].center.x - troncos[i - 1].center.x) / troncos[i].width;
+                Assert.That(relacion, Is.EqualTo(relacionNarrativa).Within(0.02f),
+                    $"troncos {i - 1} y {i}: centros a {relacion:F3} del ancho, como en la narrativa");
             }
-
-            // La caja cae ladeada, así que su envolvente crece: se mide por el centro y por su
-            // alto sin girar, no por las esquinas de la envolvente.
-            var caja = EnPantalla(forest.CargoRect);
-            var alto = forest.CargoRect.rect.height * Mathf.Abs(forest.CargoRect.lossyScale.y);
-            Assert.That(caja.center.x, Is.GreaterThan(fila.xMax), "la caja queda a la derecha del último tronco");
-            Assert.That(caja.center.y - alto / 2f, Is.EqualTo(fila.yMin).Within(2f),
-                "y en el suelo, a la altura de la base de los troncos");
-            Assert.That(forest.CargoRect.localEulerAngles.z, Is.Not.EqualTo(0f).Within(0.5f), "ladeada, como cae lo que pesa");
-        }
-
-        [Test]
-        [Timeout(30000)]
-        public async Task ForestScene_RF26_ElRodadoSeReproduceUnaSolaVezYNoDeshaceLaColocacion()
-        {
-            var forest = await OpenForest();
-            Canvas.ForceUpdateCanvases();
-            await Awaitable.NextFrameAsync();
-            await Colocar(forest);
-
-            forest.PushButton.onClick.Invoke();
-            while (forest.IsRolling)
-            {
-                await Awaitable.NextFrameAsync();
-            }
-
-            var final = forest.CargoRect.anchoredPosition;
-            forest.PushButton.onClick.Invoke();
-
-            Assert.That(forest.IsRolling, Is.False, "la segunda pulsación no relanza el rodado");
-            Assert.That(forest.CargoRect.anchoredPosition, Is.EqualTo(final), "ni mueve la caja de donde acabó");
-            Assert.That(forest.PushButton.interactable, Is.True, "y el botón sigue habilitado (CP-02)");
         }
 
         [Test]
