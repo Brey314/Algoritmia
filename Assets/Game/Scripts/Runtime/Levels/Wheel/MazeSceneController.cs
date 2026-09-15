@@ -146,6 +146,7 @@ namespace Game.Levels.Wheel
 
         private MazeGrid _grid;
         private HintPolicy _hints;
+        private WheelIndicatorCollector _indicators;
         private Canvas _canvas;
         private RectTransform _held;
         private InstructionBlock _heldBlock;
@@ -202,6 +203,12 @@ namespace Game.Levels.Wheel
         {
             _grid = MazeGrid.Generate(layout, layout.Seed != 0 ? layout.Seed : System.Environment.TickCount);
             _hints = new HintPolicy(StepForPhase3());
+            _indicators = new WheelIndicatorCollector(Phase3.Phase, () => Time.realtimeSinceStartup);
+            if (Runner != null)
+            {
+                Runner.ActiveReporter = _indicators; // RF-07: la pausa no suma tiempo de resolución.
+            }
+
             _canvas = environment.GetComponentInParent<Canvas>();
 
             FitEnvironment();
@@ -553,6 +560,7 @@ namespace Game.Levels.Wheel
             }
 
             _sequence.Replace(index, _sequence[index].WithCount(_sequence[index].Count + delta));
+            _indicators.RecordEdit();
             RefreshRows();
         }
 
@@ -565,6 +573,7 @@ namespace Game.Levels.Wheel
             }
 
             _sequence.Replace(index, _sequence[index].WithDirection(direction));
+            _indicators.RecordEdit();
             RefreshRows();
         }
 
@@ -618,6 +627,7 @@ namespace Game.Levels.Wheel
             }
 
             var block = _sequence.RemoveAt(index);
+            _indicators.RecordEdit(); // Retirar un bloque (§3.6.1, fase 3).
             RefreshRows();
             TakeFromPalette(block);
         }
@@ -650,6 +660,7 @@ namespace Game.Levels.Wheel
             {
                 var index = IndexAt(screenPoint);
                 _sequence.Insert(index, _heldBlock);
+                _indicators.RecordEdit(); // Enganchar —o reordenar— un bloque (§3.6.1, fase 3).
                 _expanded = index;
             }
 
@@ -678,6 +689,7 @@ namespace Game.Levels.Wheel
         internal void AddBlock(InstructionBlock block)
         {
             _sequence.Add(block);
+            _indicators.RecordEdit();
             RefreshRows();
         }
 
@@ -698,7 +710,10 @@ namespace Game.Levels.Wheel
             }
 
             Executions++;
-            _ = ExecuteAsync(SequenceExecutor.Execute(_sequence, _grid));
+            var result = SequenceExecutor.Execute(_sequence, _grid);
+            // Intentos = ejecuciones que no llegan; Pasos = bloques de la que llegó (§3.6.1, fase 3).
+            _indicators.RecordExecution(result.ReachedGoal, _sequence.Count);
+            _ = ExecuteAsync(result);
         }
 
         /// <summary>
@@ -827,9 +842,9 @@ namespace Game.Levels.Wheel
             var profile = Runner.Flow.ActiveProfile;
             if (profile != null)
             {
-                // W15 emitirá los cuatro indicadores reales de la fase; hasta entonces se confirma
-                // con los de una fase sin medir. Lo aprobado queda en disco antes de salir (RF-04).
-                profile.ConfirmPhase(Phase3, default);
+                // Los cuatro indicadores de la fase (RF-45, W15) quedan en disco antes de salir
+                // (RF-04, RNF-14). Nunca se muestran al estudiante (CP-03).
+                profile.ConfirmPhase(Phase3, _indicators.Complete());
                 Runner.Session.SaveActive();
             }
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Game.Core;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,12 +13,15 @@ namespace Game.UI
     /// </summary>
     /// <remarks>
     /// Adaptador delgado: el texto lo compone <see cref="LevelSummaryComposer"/> a partir de los
-    /// indicadores; aquí solo se reparte en la tablilla —título, hallazgo, viñetas del relato y
-    /// la habilidad nombrada— y se cablean los dos botones, que hoy salen al mismo sitio.
+    /// indicadores de **todas** las fases del nivel —una en el Nivel 1, tres en el Nivel 2—;
+    /// aquí solo se reparte en la tablilla —título, hallazgo, viñetas del relato y la habilidad
+    /// nombrada— y se cablean los dos botones, que hoy salen al mismo sitio.
     /// </remarks>
     public class LevelSummaryController : MonoBehaviour
     {
-        [SerializeField] private LevelSummaryMessages messages;
+        [SerializeField]
+        [Tooltip("Un asset de mensajes por nivel (RF-45, CT-05). Se elige por el nivel que se acaba de jugar.")]
+        private LevelSummaryMessages[] messagesByLevel;
 
         [SerializeField]
         [Tooltip("Título de la tablilla: la línea de apertura del resumen, sin los dos puntos.")]
@@ -86,19 +90,32 @@ namespace Game.UI
                 return;
             }
 
-            var indicators = Runner.PendingIndicators;
-            flow.ActiveProfile.ConfirmPhase(new PhaseId(level, flow.PlayingPhase), indicators);
-            LevelUnlockPolicy.UnlockAfterCompleting(flow.ActiveProfile, level);
+            // La última fase la trae el runner (HU-14 paso 6); las anteriores del nivel ya están
+            // confirmadas en el perfil (RF-04). Confirmar una fase ya confirmada no la toca.
+            var profile = flow.ActiveProfile;
+            profile.ConfirmPhase(new PhaseId(level, flow.PlayingPhase), Runner.PendingIndicators);
+            LevelUnlockPolicy.UnlockAfterCompleting(profile, level);
             (Saver ?? Runner.Session).SaveActive();
+
+            var messages = MessagesFor(level);
+            if (messages == null)
+            {
+                Debug.LogWarning($"«LevelSummary» no tiene mensajes para el nivel {level}.", this);
+                return;
+            }
 
             // El compositor devuelve la apertura y las frases del relato separadas por línea en
             // blanco: la primera es el título, el resto son las viñetas.
-            var lines = LevelSummaryComposer.Compose(messages, indicators).Split(new[] { "\n\n" }, System.StringSplitOptions.RemoveEmptyEntries);
+            var phases = PhaseId.AllOf(level).Select(profile.IndicatorsFor);
+            var lines = LevelSummaryComposer.Compose(messages, phases).Split(new[] { "\n\n" }, System.StringSplitOptions.RemoveEmptyEntries);
             titleLabel.text = lines[0].TrimEnd(':');
             discoveryLabel.text = messages.Discovery;
             skillLabel.text = messages.SkillNamed;
             FillBullets(lines, 1);
         }
+
+        private LevelSummaryMessages MessagesFor(LevelId level) =>
+            messagesByLevel?.FirstOrDefault(messages => messages != null && messages.Level == level);
 
         private void FillBullets(string[] lines, int from)
         {

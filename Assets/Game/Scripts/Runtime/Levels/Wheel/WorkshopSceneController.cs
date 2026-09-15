@@ -107,6 +107,7 @@ namespace Game.Levels.Wheel
 
         private AssemblySequence _assembly;
         private HintPolicy _hints;
+        private WheelIndicatorCollector _indicators;
         private Canvas _canvas;
         private WorkshopPiece? _held;
 
@@ -136,6 +137,12 @@ namespace Game.Levels.Wheel
         {
             _assembly = new AssemblySequence(config);
             _hints = new HintPolicy(StepForPhase2());
+            _indicators = new WheelIndicatorCollector(Phase2.Phase, () => Time.realtimeSinceStartup);
+            if (Runner != null)
+            {
+                Runner.ActiveReporter = _indicators; // RF-07: la pausa no suma tiempo de resolución.
+            }
+
             _canvas = world.GetComponentInParent<Canvas>();
 
             // El entorno primero: Apply deja al elemento con el tamaño nativo de la imagen y lo
@@ -261,10 +268,12 @@ namespace Game.Levels.Wheel
         {
             if (!outcome.Accepted)
             {
+                _indicators.RecordRejected(); // Intentos de la fase 2: acciones fuera de secuencia (§3.6.1).
                 Show(outcome.Message, rejectedIcon, rejectedColor);
                 return;
             }
 
+            _indicators.RecordAccepted(); // Perforar es un paso de ensamblaje ejecutado en orden.
             if (drilled.HasValue && _pieces.TryGetValue(drilled.Value, out var entry))
             {
                 // La rueda **es** el mismo tronco con el agujero: se cambia la ilustración en su
@@ -370,6 +379,7 @@ namespace Game.Levels.Wheel
                 rect.gameObject.SetActive(false);
                 ShowAssembly(piece);
                 _hints.RegisterSuccessfulAttempt();
+                _indicators.RecordAccepted();
                 Show(outcome.Message, acceptedIcon, acceptedColor);
 
                 if (_assembly.IsComplete)
@@ -391,6 +401,7 @@ namespace Game.Levels.Wheel
                 return;
             }
 
+            _indicators.RecordRejected(); // Intentos de la fase 2: acciones fuera de secuencia (§3.6.1).
             var hint = _hints.RegisterFailedAttempt();
             if (hint != null)
             {
@@ -534,10 +545,9 @@ namespace Game.Levels.Wheel
             var profile = Runner.Flow.ActiveProfile;
             if (profile != null)
             {
-                // W15 emitirá los cuatro indicadores reales de la fase; hasta entonces se confirma
-                // con los de una fase sin medir. Lo que importa es que lo aprobado quede en disco
-                // antes de salir (RF-04, RNF-14).
-                profile.ConfirmPhase(Phase2, default);
+                // Los cuatro indicadores de la fase (RF-45, W15) quedan en disco antes de salir
+                // (RF-04, RNF-14). Nunca se muestran al estudiante (CP-03).
+                profile.ConfirmPhase(Phase2, _indicators.Complete());
                 Runner.Session.SaveActive();
             }
 

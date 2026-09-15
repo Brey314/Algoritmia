@@ -32,11 +32,18 @@ namespace Game.UI.Tests
             return messages;
         }
 
-        private static NarrativeSequence CargarSecuenciaDeCierre() =>
+        private static NarrativeSequence CargarSecuenciaDeCierre(string id = "N1_NacimientoDelFuego") =>
             AssetDatabase.FindAssets($"t:{nameof(NarrativeSequence)}")
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(AssetDatabase.LoadAssetAtPath<NarrativeSequence>)
-                .Single(sequence => sequence != null && sequence.Id == "N1_NacimientoDelFuego");
+                .Single(sequence => sequence != null && sequence.Id == id);
+
+        /// <summary>El asset real de mensajes de un nivel: lo que se prueba es el contenido radicado, no un doble.</summary>
+        private static LevelSummaryMessages CargarMensajes(LevelId level) =>
+            AssetDatabase.FindAssets($"t:{nameof(LevelSummaryMessages)}")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<LevelSummaryMessages>)
+                .Single(messages => messages != null && messages.Level == level);
 
         [Test]
         [Category("Acceptance")]
@@ -69,6 +76,60 @@ namespace Game.UI.Tests
                 "el guía nombra la habilidad practicada (RF-12)");
             Assert.That(texto, Does.Contain("cambiaste").IgnoreCase,
                 "y la liga a una acción concreta que hizo el jugador (RF-12, HU-14)");
+        }
+
+        [Test]
+        [Category("Acceptance")]
+        public void LevelSummary_RF45_ElResumenDelNivel2NoContieneNingunDigito()
+        {
+            var messages = CargarMensajes(LevelId.Wheel);
+            var fases = new[]
+            {
+                new[] { new PerformanceIndicators(0, 0, 0, 12f), new PerformanceIndicators(0, 0, 5, 30f), new PerformanceIndicators(0, 0, 7, 40f) },
+                new[] { new PerformanceIndicators(9, 3, 0, 120f), new PerformanceIndicators(4, 2, 5, 300f), new PerformanceIndicators(11, 6, 8, 900f) },
+                new[] { new PerformanceIndicators(0, 0, 0, 1f), new PerformanceIndicators(0, 0, 5, 1f), new PerformanceIndicators(1, 0, 4, 1f) },
+                new[] { new PerformanceIndicators(0, 0, 0, 1f), new PerformanceIndicators(0, 1, 5, 1f), new PerformanceIndicators(0, 0, 4, 1f) }
+            };
+
+            var textos = fases.Select(indicadores => LevelSummaryComposer.Compose(messages, indicadores))
+                .Concat(new[] { messages.Discovery, messages.SkillNamed });
+
+            Assert.That(textos, Has.All.Matches<string>(texto => !texto.Any(char.IsDigit)),
+                "RF-45/CP-03 (INC-26): el resumen del Nivel 2 no contiene ninguna cifra, sean cuales sean las tres fases");
+        }
+
+        [Test]
+        [Category("Acceptance")]
+        public void LevelSummary_RF12_NombraLaAbstraccionYElPensamientoAlgoritmico()
+        {
+            var cierre = string.Join(" ", CargarSecuenciaDeCierre("N2_Escena25_Cierre").Lines.Select(line => line.Text));
+            var resumen = CargarMensajes(LevelId.Wheel).SkillNamed;
+
+            foreach (var texto in new[] { cierre, resumen })
+            {
+                Assert.That(texto, Does.Contain("abstraer").IgnoreCase, "nombra la abstracción (RF-12, guion §6.4)");
+                Assert.That(texto, Does.Contain("algoritmo").IgnoreCase, "y el pensamiento algorítmico");
+            }
+
+            Assert.That(cierre, Does.Contain("ordenaron").IgnoreCase.Or.Contain("ordenar").IgnoreCase,
+                "y las liga a lo que el jugador acaba de hacer (HU-14)");
+        }
+
+        [Test]
+        public void LevelSummaryComposer_RF45_ElResumenDeUnNivelDeVariasFasesSumaLasFases()
+        {
+            var messages = CreateMessages();
+            var fases = new[]
+            {
+                new PerformanceIndicators(0, 0, 0, 10f),
+                new PerformanceIndicators(0, 0, 5, 10f),
+                new PerformanceIndicators(2, 1, 4, 10f) // solo el laberinto tuvo intentos y correcciones
+            };
+
+            var actual = LevelSummaryComposer.Compose(messages, fases);
+
+            Assert.That(actual, Does.Contain(messages.TriedSeveralPositions), "un intento en cualquier fase cuenta para el relato");
+            Assert.That(actual, Does.Contain(messages.CorrectedApproach), "y un error corregido también");
         }
 
         [Test]

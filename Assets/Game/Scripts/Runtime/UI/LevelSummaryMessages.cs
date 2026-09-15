@@ -1,15 +1,20 @@
+using Game.Core;
 using UnityEngine;
 
 namespace Game.UI
 {
     /// <summary>
     /// Los textos del resumen de fin de nivel (RF-17, RF-45): en palabras, sin cifras, y fuera
-    /// del código (CT-05). Los valores por defecto son los de los mockups 13 y 13b, ya con la
-    /// mecánica de fuerza y disposición del Nivel 1 (INC-47).
+    /// del código (CT-05). Un asset por nivel; los valores por defecto son los de los mockups 13
+    /// y 13b, ya con la mecánica de fuerza y disposición del Nivel 1 (INC-47).
     /// </summary>
     [CreateAssetMenu(menuName = "Game/UI/Level Summary Messages", fileName = "LevelSummaryMessages")]
     public class LevelSummaryMessages : ScriptableObject
     {
+        [field: SerializeField]
+        [field: Tooltip("Nivel que resume este asset. La escena elige el asset por el nivel que se acaba de jugar.")]
+        public LevelId Level { get; private set; } = LevelId.Fire;
+
         [field: SerializeField, TextArea(2, 4)]
         [field: Tooltip("La línea de apertura del resumen, siempre presente. Es el título de la tablilla.")]
         public string Intro { get; private set; } = "Esto es lo que pasó en la cueva:";

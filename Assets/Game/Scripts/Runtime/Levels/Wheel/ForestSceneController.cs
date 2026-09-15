@@ -125,6 +125,7 @@ namespace Game.Levels.Wheel
         private PatternSelection _selection;
         private CargoPlacement _cargo;
         private HintPolicy _hints;
+        private WheelIndicatorCollector _indicators;
         private Canvas _canvas;
 
         /// <summary>El flujo del juego. Lo pone <c>Boot</c>; una prueba puede inyectar otro.</summary>
@@ -162,6 +163,12 @@ namespace Game.Levels.Wheel
             _selection = new PatternSelection(config);
             _cargo = new CargoPlacement(_selection, config);
             _hints = new HintPolicy(StepForPhase1());
+            _indicators = new WheelIndicatorCollector(Phase1.Phase, () => Time.realtimeSinceStartup);
+            if (Runner != null)
+            {
+                Runner.ActiveReporter = _indicators; // RF-07: la pausa no suma tiempo de resolución.
+            }
+
             _canvas = floorArea.GetComponentInParent<Canvas>();
 
             // La caja se agarra al pulsar y se suelta al soltar: pulsar y soltar, no arrastrar
@@ -567,10 +574,9 @@ namespace Game.Levels.Wheel
             var profile = Runner.Flow.ActiveProfile;
             if (profile != null)
             {
-                // W15 emitirá los cuatro indicadores reales de la fase; hasta entonces se confirma
-                // con los de una fase sin medir. Lo que importa hoy es que lo aprobado quede en
-                // disco antes de salir (RF-04, RNF-14).
-                profile.ConfirmPhase(Phase1, default);
+                // Los cuatro indicadores de la fase (RF-45, W15) quedan en disco antes de salir
+                // (RF-04, RNF-14). Nunca se muestran al estudiante (CP-03).
+                profile.ConfirmPhase(Phase1, _indicators.Complete());
                 Runner.Session.SaveActive();
             }
 
@@ -716,6 +722,7 @@ namespace Game.Levels.Wheel
                 button.gameObject.SetActive(false);
                 Store(forestObject);
                 _hints.RegisterSuccessfulAttempt();
+                _indicators.RecordAccepted();
                 Show(outcome.Message, acceptedIcon, acceptedColor);
 
                 if (_selection.IsComplete)
@@ -733,6 +740,7 @@ namespace Game.Levels.Wheel
 
             // El distractor se queda donde estaba: rechazar no retira nada ni cierra ningún
             // camino, y no existe la penalización (CP-02, RF-18).
+            _indicators.RecordRejected(); // Intentos de la fase 1: selecciones de un objeto no válido (§3.6.1).
             var hint = _hints.RegisterFailedAttempt();
             if (hint != null)
             {

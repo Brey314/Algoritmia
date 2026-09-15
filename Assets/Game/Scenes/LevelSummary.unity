@@ -626,7 +626,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 734d895fc4c25ab4b8bd990eba8cfff3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game.UI::Game.UI.LevelSummaryController
-  messages: {fileID: 11400000, guid: 31a8c4754309ce84a8d72f77d2abec2e, type: 2}
+  messagesByLevel:
+  - {fileID: 11400000, guid: 31a8c4754309ce84a8d72f77d2abec2e, type: 2}
+  - {fileID: 11400000, guid: a3464ba275bec1447b9d81d92bc3ffb1, type: 2}
   titleLabel: {fileID: 592572067}
   discoveryLabel: {fileID: 326154433}
   bulletsContainer: {fileID: 829280421}

@@ -186,8 +186,10 @@ namespace Game.Levels.Wheel.Tests
                 .ToArray();
 
             Assert.That(arrastrables, Is.Empty, "ningún elemento del bosque usa el arrastre de uGUI");
-            Assert.That(sostenidos, Is.EqualTo(new[] { "Objeto_Caja" }),
-                "lo único que responde al clic sostenido es la caja");
+            // «BotonPausa» (prefab MenuPausa, W17) atiende el pulsar solo para hundir su cara
+            // mientras dura el clic —ButtonPressFeedback, RNF-02— y sigue siendo un botón.
+            Assert.That(sostenidos, Is.EquivalentTo(new[] { "Objeto_Caja", "BotonPausa" }),
+                "lo único que responde al clic sostenido es la caja (y el botón de pausa, solo para pintarse)");
         }
 
         [Test]

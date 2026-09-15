@@ -199,10 +199,11 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(30000)]
-        public async Task NarrativeScene_RF05_LaSecuenciaSinFaseSiguienteVuelveAlMenuDeNiveles()
+        public async Task NarrativeScene_RF05_LaEscenaPuenteEncadenaConLaEscena21()
         {
-            // `N2_PuenteI` no declara fase siguiente ni es cierre: su salida es el menú, y eso
-            // deja el recorrido cerrado (RNF-13). Las de apertura del N1 ya entran a jugar (T14).
+            // Hasta el 15/09/2026 `N2_PuenteI` no declaraba salida y caía al menú: el Nivel 2
+            // abría en la 2.1 y el puente no se veía nunca. Desde el Checkpoint W-F el nivel abre
+            // con el puente y este encadena con la 2.1 por su asset (RF-05, Camara_Narrativa_N2 §5).
             var (controller, runner) = await OpenNarrative("N2_PuenteI", LevelId.Wheel);
             var lineas = SequenceNamed(controller, "N2_PuenteI").Lines.Length;
 
@@ -211,7 +212,8 @@ namespace Game.UI.Tests
                 Click(controller.AdvanceButton);
             }
 
-            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.LevelSelect));
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Narrative), "el puente no sale al menú");
+            Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N2_Escena21_Bosque"), "encadena con la 2.1");
         }
 
         [Test]

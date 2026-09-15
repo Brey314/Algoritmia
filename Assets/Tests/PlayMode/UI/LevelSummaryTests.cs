@@ -108,6 +108,67 @@ namespace Game.UI.Tests
                 "puede omitir — si esto falla, «ConfirmPhase» volvió a adelantarse a la narrativa");
         }
 
+        [Test]
+        [Timeout(45000)]
+        [Category("Acceptance")]
+        public async Task LevelSummary_RF03_DevuelveAlMenuConNivel3Desbloqueado()
+        {
+            // Un perfil que acaba de resolver el laberinto: las fases 1 y 2 ya están en el perfil
+            // (las confirma cada escena, W07/W09) y la 3 la trae el runner (HU-14 paso 6).
+            var profile = NewProfile();
+            profile.Reach(LevelId.Wheel);
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 1), new PerformanceIndicators(3, 1, 0, 60f));
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 2), new PerformanceIndicators(0, 0, 5, 90f));
+
+            var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
+            await Awaitable.NextFrameAsync(); // GameFlowRunner.Start() navega solo a MainMenu
+            runner.GoTo(GameState.ProfileSelect);
+            runner.SelectProfile(profile);
+            runner.StartPlaying(LevelId.Wheel, 3);
+            runner.PendingIndicators = new PerformanceIndicators(2, 2, 6, 120f);
+            Assume.That(runner.StartNarrative("N2_Escena25_Cierre"), Is.True, "el laberinto sale al cierre reflexivo");
+
+            var load = SceneManager.LoadSceneAsync("Narrative", LoadSceneMode.Single);
+            while (load is { isDone: false })
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            await Awaitable.NextFrameAsync();
+            await Awaitable.NextFrameAsync();
+            new GameObject("TestSceneLoader").AddComponent<SceneLoader>();
+
+            var narrative = await WaitForComponentAsync<NarrativeSceneController>(10f);
+            Assert.That(narrative, Is.Not.Null, "no apareció el cierre reflexivo del Nivel 2");
+            Assert.That(narrative.SkipButton.gameObject.activeInHierarchy, Is.False,
+                "CP-07: la primera vez el cierre reflexivo no se puede omitir");
+            AvanzarNarrativaHastaElFinal(narrative, "N2_Escena25_Cierre");
+
+            Assert.That(await WaitUntilAsync(() => runner.Flow.Current == GameState.LevelSummary, 5f), Is.True,
+                "el cierre reflexivo no llevó al resumen de fin de nivel");
+            var summary = await WaitForComponentAsync<LevelSummaryController>(10f);
+            Assert.That(summary, Is.Not.Null, "no apareció el resumen del Nivel 2");
+
+            var textos = new List<string> { summary.TitleLabel.text, summary.DiscoveryLabel.text, summary.SkillLabel.text };
+            textos.AddRange(summary.Bullets.Select(b => b.text));
+            Assert.That(summary.TitleLabel.text, Does.Contain("rueda").IgnoreCase, "el resumen es el del Nivel 2, no el de la cueva");
+            Assert.That(summary.SkillLabel.text, Does.Contain("abstraer").IgnoreCase.And.Contain("algoritmo").IgnoreCase,
+                "nombra las dos habilidades ejercitadas (RF-12, guion §6.4)");
+            Assert.That(textos, Has.All.Matches<string>(t => !t.Any(char.IsDigit)), "ninguna cifra de las tres fases se filtra (INC-26)");
+
+            Click(summary.ContinueButton);
+            Assert.That(await WaitUntilAsync(() => runner.Flow.Current == GameState.LevelSelect, 5f), Is.True,
+                "«Continuar» no volvió al menú de niveles");
+            Assert.That(profile.IsUnlocked(LevelId.River), Is.True, "el Nivel 3 queda desbloqueado (RF-03)");
+            Assert.That(profile.IsLevelComplete(LevelId.Wheel), Is.True, "las tres fases del Nivel 2 quedan confirmadas (RF-04)");
+
+            var levelSelect = await WaitForComponentAsync<LevelSelectController>(10f);
+            Assert.That(levelSelect, Is.Not.Null);
+            await Awaitable.NextFrameAsync();
+            Assert.That(levelSelect.ButtonFor(LevelId.River).interactable, Is.True, "el menú muestra el Nivel 3 habilitado (RF-03)");
+            Assert.That(levelSelect.LockBadgeShownFor(LevelId.River), Is.False, "y sin candado (RNF-19)");
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
         private static PlayerProfile NewProfile() =>

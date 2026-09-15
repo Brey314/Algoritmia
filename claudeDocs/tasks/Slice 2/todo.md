@@ -1,6 +1,7 @@
 # Tablero — Slice 2: La Rueda
 
-Plan técnico: [`plan.md`](plan.md). Contrato: `claudeDocs/SPEC.md`.
+Plan técnico: [`plan.md`](plan.md). Resultados del slice, con el seguimiento de las actas del OE3 y
+el inventario de archivos: [`Slice-2-Resultados.md`](Slice-2-Resultados.md). Contrato: `claudeDocs/SPEC.md`.
 Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 **Leyenda:** `EM` = EditMode (lógica pura, sin escena) · `PM` = PlayMode (integración) ·
@@ -785,29 +786,127 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ## Fase 5 — Cierre del nivel
 
-- [ ] **W15 · Emisión de los cuatro indicadores del Nivel 2** — `M` · `EM`
+- [x] **W15 · Emisión de los cuatro indicadores del Nivel 2** — `M` · `EM` (15/09/2026)
       RF-45, RF-04, RF-07, RNF-09, RNF-14, CP-03, CP-09, OE1 §3.6.1 (notas 1–5), INC-27,
       INC-29 · depende de: W14, Slice 1 T17
-      ⚠️ **`Pasos utilizados` de la fase 1 no está definido en §3.6.1** — ver pregunta abierta 1
-- [ ] **W17 · Pausa y reinicio sobre las tres escenas del Nivel 2** — `S` · `PM` `MCP`
+      `WheelIndicatorCollector` (`Game.Levels.Wheel`, implementa `ILevelReporter`): **un solo
+      tipo para las tres fases** —la mecánica de registro es la misma y lo que cambia por fase es
+      qué cuenta como paso—. `RecordRejected`/`RecordAccepted` (fases 1 y 2: intento = rechazo;
+      error corregido = rechazo seguido de acierto; paso = acción de ensamblaje aceptada, **solo
+      en la fase 2**), `RecordEdit`/`RecordExecution` (fase 3: intento = ejecución que no llega;
+      error corregido = ediciones entre una ejecución fallida y la siguiente; paso = bloques de
+      la que llegó), `PauseOpened`/`PauseClosed` (nota 1). Los tres controladores lo crean en
+      `Start`, lo registran en `GameFlowRunner.ActiveReporter` y confirman la fase con
+      `_indicators.Complete()` donde antes iba `default`. **`Pasos utilizados` de la fase 1 se
+      emite 0 («no aplica»)**: §3.6.1 no lo define y no se decide desde el código (pregunta
+      abierta 1). El asmdef `Game.Levels.Wheel.Tests` gana la referencia a `Game.Core`.
+      EditMode: `WheelIndicators_RF45_IntentosSeCuentanSegunLaDefinicionDeCadaFase`,
+      `_RF45_ErrorCorregidoEnFases1Y2EsUnRechazoSeguidoDeLaAccionCorrecta`,
+      `_RF45_ErrorCorregidoEnFase3ExigeEdicionEntreDosEjecuciones`,
+      `_RF45_PasosUtilizadosSigueLaDefinicionDeCadaFase`, `_RF07_LaPausaNoSumaTiempoDeResolucion`,
+      `_OE1361_ReiniciarElNivelNoBorraLosIndicadoresRegistrados`,
+      `_CP03_NingunIndicadorLlegaALaUIDelEstudiante` (barrido de reflexión sobre `Game.UI`) — 7/7.
+- [x] **W17 · Pausa y reinicio sobre las tres escenas del Nivel 2** — `S` · `PM` `MCP` (15/09/2026)
       RF-07, RF-03, RF-04, CP-02, HU-17 (FA-01..FA-05), INC-25 · depende de: W14, Slice 1 T16
-- [ ] **W18 · Doble indicador y contraste en los estados de error** — `S` · `VV` `MCP`
+      **El menú de pausa es ahora el prefab `Assets/Game/Prefabs/UI/MenuPausa.prefab`**, sacado
+      de `Level1_Cave` con un script de editor efímero (skill `edit-scene` vía `coplay-mcp`) e
+      instanciado como último hijo del `Canvas` en `Level2_Forest`, `Level2_Workshop` y
+      `Level2_Maze`; el N1 usa la misma instancia. **Disposición del mockup 6, ajustado por
+      Santiago el 15/09/2026**: tablilla marfil sobre velo carbón al 72 %, título «Pausa»,
+      **Reanudar** (primario ámbar), **Reiniciar** (secundario, nuevo en el mockup: entre los
+      otros dos y con el estilo de «Volver al menú de niveles») y **Volver al menú de niveles**
+      (secundario) — antes el tercer botón decía «Volver al menú» y salía al inicio; ahora sale a
+      `LevelSelect`. Es lo que abre **INC-49** (HU-17 dice «Continuar / Reiniciar nivel / Volver
+      al menú principal»). `PauseMenuController`: `mainMenuButton` → `levelSelectButton`
+      (`FormerlySerializedAs`), y **`Time.timeScale = 0` con la pausa abierta** —HU-17 «el nivel
+      queda detenido»: rodado y ejecución paso a paso se congelan— con vuelta a 1 al reanudar,
+      al salir y en `OnDestroy` (la recarga de «Reiniciar»). `PauseMenuPolicy.Restart` no cambió:
+      repite `StartPlaying(nivel, fase activa)`, así que reinicia **la fase**, nunca las
+      confirmadas (INC-25). Confirmación: «Vas a volver a empezar esta parte del nivel. Lo que ya
+      guardaste no se pierde.» El mockup 6 del HTML quedó editado (más el glifo `reiniciar` en el
+      sistema de diseño), re-empaquetado en su bundle gzip+base64.
+      PlayMode (`Game.Levels.Wheel.PlayMode.Tests`, sin referenciar `Game.UI`: botones por
+      etiqueta): `PauseMenu_HU17_ContinuarRestituyeLaSecuenciaDeBloquesAMedioComponer`,
+      `_INC25_ReiniciarNivelNoDescartaLasFasesYaConfirmadas` (taller con la fase 1 confirmada y
+      sus indicadores: reinicia la fase 2, conserva la 1 y sus cifras, no re-bloquea),
+      `_CP02_NingunaRutaDeLaPausaLlevaAUnaPantallaDeDerrota` — 3/3; `PauseMenuTests` del N1
+      siguen 4/4 sobre el prefab.
+- [x] **W18 · Doble indicador y contraste en los estados de error** — `S` · `VV` `MCP` (15/09/2026)
       **RNF-19** (su criterio de verificación es este nivel), RNF-20, RNF-21, CN-04 · depende de: W07, W09, W14
-- [ ] **W16 · Resumen, cierre reflexivo y desbloqueo del Nivel 3** — `M` · `EM` + `PM`
+      `WheelAccessibilityTests`: `WheelLevel_RNF19_LosTresEstadosDeErrorSeLeenSinColor` (objeto
+      no válido, paso fuera de secuencia, movimiento inválido: icono ≠ al del acierto + texto sin
+      cifras; en el laberinto el bloque detenido lleva contorno y tamaño; tres capturas),
+      `_RNF20_ContrasteSuficienteEnLasTresEscenas` (WCAG real texto/cara: mensajes, contador,
+      «Mecanizar», «Ejecutar», rótulos de los bloques y los cinco botones de la pausa en cada
+      escena, ≥ 4.5:1) y `_RNF21_NingunaAnimacionDelNivel2TieneDestellos` (rodado y ejecución
+      muestreados cuadro a cuadro: nada se apaga, ningún salto mayor que el que sigue el ojo; dos
+      capturas). **Hallazgo real de RNF-20**: el contador «Troncos redondos: n de 5» se pintaba
+      sobre el pasto sin tablilla; ahora cuelga de `Tablilla_Contador` (misma marfil que la del
+      guía) en `Level2_Forest`. **Segundo hallazgo de RNF-20**: «Ejecutar» iba en naranja
+      Algoritm (`#E2571F`) y el texto carbón daba **4,07:1**; pasa al ámbar de acción primaria
+      (`#E8A33D`, el `PrimaryButton` del mockup 10). Capturas en
+      `%AppData%\LocalLow\DefaultCompany\My project\TestScreenshots\WheelLevel_*.png`,
+      revisadas: iconos de advertencia junto al texto, contorno ámbar en el bloque detenido.
+- [x] **W16 · Resumen, cierre reflexivo y desbloqueo del Nivel 3** — `M` · `EM` + `PM` (15/09/2026)
       RF-45, RF-12, RF-17, RF-03, CP-03, CP-07, CP-10, HU-14, CU-08, INC-26,
       guion §6.4 · depende de: W15, W17, W18
+      `LevelSummaryMessages` gana `Level`; `LevelSummaryController` pasa de un asset a
+      `messagesByLevel[]` y elige por `Flow.PlayingLevel`; el relato se compone con
+      `LevelSummaryComposer.Compose(messages, IEnumerable<PerformanceIndicators>)`, que **suma
+      los intentos y correcciones de todas las fases del nivel** (`profile.IndicatorsFor` tras
+      confirmar la última) — una línea fija por variante, sin cifra posible. Contenido nuevo
+      `Assets/Game/Data/Wheel/N2_ResumenNivel.asset` («Esto es lo que pasó con la rueda:» …
+      «Eso se llama abstraer y pensar como un algoritmo: quedarte con lo que importa y ordenar
+      los pasos.»), que cubre bosque, taller y refugio. El cierre reflexivo ya era
+      `N2_Escena25_Cierre` (§6.4, `IsReflectiveClosing`): sale a `LevelSummary`, que confirma la
+      fase 3 (idempotente: el laberinto ya la confirmó con indicadores), desbloquea el Nivel 3 y
+      guarda. CP-07 se sostiene porque `NarrativeVisitPolicy` mira el desbloqueo, no la fase.
+      EditMode: `LevelSummary_RF45_ElResumenDelNivel2NoContieneNingunDigito` (asset real, cuatro
+      combinaciones de tres fases), `_RF12_NombraLaAbstraccionYElPensamientoAlgoritmico` (cierre
+      y resumen), `LevelSummaryComposer_RF45_ElResumenDeUnNivelDeVariasFasesSumaLasFases` — 3/3.
+      PlayMode: `LevelSummary_RF03_DevuelveAlMenuConNivel3Desbloqueado` (cierre no omitible,
+      resumen de la rueda sin cifras, «Continuar» → `LevelSelect` con el Nivel 3 habilitado y sin
+      candado) — 1/1.
 
 ### ✅ Checkpoint W-F — Slice 2 completo
-- [ ] **Dos recorridos completos** del Nivel 2 sin incidencias (RNF-13): puente → bosque → patrón
-      → taller → regreso → laberinto → cierre → menú con Nivel 3 desbloqueado
-- [ ] Cierre forzado **en cada una de las tres fases** → retoma desde la última confirmada (RNF-14)
-- [ ] Prueba de exclusión RNF-16 en los dos sentidos: quitar `Wheel` y quitar `Fire`
-- [ ] Carga de las tres escenas < 10 s y memoria < 2 GB, **medidas** (RNF-04, RNF-05)
-- [ ] Paquete acumulado < 500 MB con el arte del Slice 2 incluido (RNF-06)
-- [ ] Mapa de controles de las tres escenas: solo clic y clic sostenido (RNF-02, CT-06)
-- [ ] **PG-05** verificado: el paso del panel del N1 al arrastre del N2 no confunde. Anotarlo
-- [ ] RF-22..RF-34 tienen cada uno al menos una prueba que los nombra (CT-10)
+- [x] **Dos recorridos completos** del Nivel 2 sin incidencias (RNF-13): puente → bosque → patrón
+      → taller → regreso → laberinto → cierre → menú con Nivel 3 desbloqueado —
+      `WheelLevel_RNF13_RecorreElNivel2CompletoHastaElMenuConNivel3Desbloqueado_{Primer,Segundo}Recorrido`
+      (`WheelLevelJourneyTests`, desde `Boot` con perfil real, narrativas línea a línea con su
+      «Continuar»; comprueba además los indicadores en disco: 5 pasos en el taller, los bloques
+      de la solución en el laberinto). **Hallazgo real (15/09/2026)**: la escena puente
+      `N2_PuenteI` no declaraba salida —caía al menú— y el nivel abría en la 2.1, así que el
+      puente no se veía nunca. Ahora el Nivel 2 abre con `N2_PuenteI` (`LevelSelect`) y el
+      asset encadena con `N2_Escena21_Bosque` (`NextSequenceId`); la prueba
+      `NarrativeScene_RF05_LaSecuenciaSinFaseSiguienteVuelveAlMenuDeNiveles` pasa a ser
+      `_RF05_LaEscenaPuenteEncadenaConLaEscena21`.
+- [x] Cierre forzado **en cada una de las tres fases** → retoma desde la última confirmada (RNF-14) —
+      las tres fases quedan en disco al confirmarse (`ForestScene_RF04_…`, `WorkshopScene_RF29_…`,
+      `MazeScene_RF04_…`) y la retoma vive en `GameFlow` (`GameFlow_RNF14_…`); con `Level2_Maze`
+      ya existente, la mitad pendiente del Checkpoint W-D (retomar en la fase 3) queda cubierta
+      por el recorrido completo. El clic manual sobre el ejecutable sigue siendo de Santiago.
+- [~] Prueba de exclusión RNF-16 en los dos sentidos: quitar `Wheel` y quitar `Fire` — la regla
+      está probada en `Game.Architecture.Tests` (`_RNF16_…`, ningún nivel referencia a otro);
+      retirar el assembly a mano y ejecutar es verificación manual de Santiago.
+- [ ] Carga de las tres escenas < 10 s y memoria < 2 GB, **medidas** (RNF-04, RNF-05) —
+      exige `unity build` con el Editor cerrado; no se hizo en esta sesión.
+- [ ] Paquete acumulado < 500 MB con el arte del Slice 2 incluido (RNF-06) — ídem, sobre la build.
+- [x] Mapa de controles de las tres escenas: solo clic y clic sostenido (RNF-02, CT-06) —
+      `ForestScene_RNF02_…`, `WorkshopScene_RNF02_…`, `MazeScene_RNF02_…`; el prefab de pausa
+      solo añade botones.
+- [ ] **PG-05** verificado: el paso del panel del N1 al arrastre del N2 no confunde. Anotarlo —
+      es observación en la sesión de prueba con estudiantes.
+- [x] RF-22..RF-34 tienen cada uno al menos una prueba que los nombra (CT-10) — verificado con
+      `grep` sobre `Assets/Tests`: RF-22 (11), RF-23 (10), RF-24 (6), RF-25 (6), RF-26 (7), RF-27 (1),
+      RF-28 (4), RF-29 (5), RF-30 (2), RF-31 (6), RF-32 (1), RF-33 (2), RF-34 (3).
 - [ ] Revisado con el usuario antes de abrir el Slice 3
+
+**Código de la Fase 5 completo (W15–W18).** Corridas del 15/09/2026 contra el Editor abierto
+(`TestRunnerApi` desde un script efímero, ver R1): **EditMode 212/212** · **PlayMode 148/148**
+(suite completa 146/148 en 638 s y las dos restantes —`ForestScene_RNF02_…`, que ahora cuenta
+el botón de pausa, y `LevelSelect_RF05_…`, que ahora espera el puente— repetidas en verde tras
+actualizar su expectativa; las seis capturas VV revisadas). Queda del Checkpoint W-F lo que
+exige la build o al usuario: RNF-04/05/06, la exclusión a mano de RNF-16, PG-05 y la revisión.
 
 ---
 
@@ -882,11 +981,16 @@ decorado la lleva (`Direccion_de_Arte.md` §8.2).
       `SaveStore.cs`, y T17 no había empezado, así que W02 escribió primero y T17 se apoya en su
       API. Lo que sigue dependiendo del Slice 1 es el **consumidor en juego** del modelo de fase
       (T17/T18) y la verificación de RNF-14 sobre el ejecutable, ambos en el Checkpoint D.
-- [ ] **R1 · Instalar el servidor MCP de Unity** (`run_unity_tests`). Este slice tiene ocho
-      tareas `MCP` contra las seis del Slice 1: el costo de no tenerlo crece.
-- [ ] **Pregunta abierta 1 · `Pasos utilizados` de la fase 1** sin definir en OE1 §3.6.1.
-      Es un entregable radicado: **no se decide desde el código**. Hasta que se resuelva, W15 lo
-      emite como «no aplica» y lo documenta.
+- [~] **R1 · Instalar el servidor MCP de Unity** (`run_unity_tests`). Este slice tiene ocho
+      tareas `MCP` contra las seis del Slice 1: el costo de no tenerlo crece. **Paliativo que
+      funcionó el 15/09/2026** (W15–W18 y W-F): un script de editor efímero con `[InitializeOnLoad]`
+      que registra `TestRunnerApi.RegisterCallbacks` tras cada recarga de dominio y escribe el
+      resultado en un archivo; se lanza con `coplay-mcp` `execute_script` y se sondea el archivo
+      desde la terminal. Sirve para EditMode y PlayMode con el Editor abierto; se borró al terminar.
+- [~] **Pregunta abierta 1 · `Pasos utilizados` de la fase 1** sin definir en OE1 §3.6.1.
+      Es un entregable radicado: **no se decide desde el código**. W15 lo emite como **0 («no
+      aplica»)** y lo deja escrito en `WheelIndicatorCollector` y en su prueba
+      (`_RF45_PasosUtilizadosSigueLaDefinicionDeCadaFase`). Sigue pendiente la definición en OE1.
 - [ ] **Pregunta abierta 3 · Trazado del laberinto.** Validar `N2_MazeLayout.asset` jugando: al
       menos una solución que **exija girar**, ninguna que se resuelva con «Avanzar» repetido.
 - [ ] **Pregunta abierta 4 · ¿Se adelantan W10..W12?** Recomendación: sí, para descargar INC-33.

@@ -122,9 +122,11 @@ namespace Game.UI.Tests
             Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Narrative), "entra a la narrativa");
             // El id se componía con la fórmula «N{nivel}_Apertura», que solo existe para el
             // Nivel 1: el Nivel 2 pedía «N2_Apertura», ninguna secuencia respondía y la escena
-            // narrativa se quedaba en blanco. Qué secuencia abre cada nivel es contenido.
-            Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N2_Escena21_Bosque"),
-                "el Nivel 2 abre por la escena 2.1 del guion, que es la que existe");
+            // narrativa se quedaba en blanco. Qué secuencia abre cada nivel es contenido: desde
+            // el Checkpoint W-F (15/09/2026) el Nivel 2 abre con la escena puente, que encadena
+            // con la 2.1 por su asset (Camara_Narrativa_N2 §5).
+            Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N2_PuenteI"),
+                "el Nivel 2 abre por la escena puente del guion");
         }
 
         // --- helpers -----------------------------------------------------------------------

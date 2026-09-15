@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Game.Core;
 
 namespace Game.UI
@@ -25,6 +26,24 @@ namespace Game.UI
                 : messages.NoNeedToCorrect;
 
             return string.Join("\n\n", messages.Intro, attemptsLine, correctedLine);
+        }
+
+        /// <summary>
+        /// El resumen de un nivel de varias fases (el Nivel 2, W16): un solo relato que cubre las
+        /// tres, así que lo que hubo en cualquiera de ellas se suma antes de elegir la variante.
+        /// Sumar no crea una cifra nueva a la vista: el texto sigue siendo una línea fija.
+        /// </summary>
+        public static string Compose(LevelSummaryMessages messages, IEnumerable<PerformanceIndicators> phases)
+        {
+            var attempts = 0;
+            var correctedErrors = 0;
+            foreach (var phase in phases)
+            {
+                attempts += phase.Attempts;
+                correctedErrors += phase.CorrectedErrors;
+            }
+
+            return Compose(messages, new PerformanceIndicators(attempts, correctedErrors, 0, 0f));
         }
     }
 }

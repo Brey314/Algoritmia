@@ -13,9 +13,10 @@ Presupuestos duros que se verifican, no se estiman (RNF-04..RNF-06): carga de es
 memoria < 2 GB, paquete < 500 MB.
 
 **Estado del código: no se transcribe aquí.** La única fuente es el `todo.md` del slice abierto
-(hoy `claudeDocs/tasks/Slice 1/todo.md`) más los `Fase-N-Resultados.md` de al lado: casillas,
-cifras de pruebas y checkpoints se leen ahí y no se duplican en este archivo — una copia se queda
-vieja en dos commits. Empezar leyéndolo.
+(hoy `claudeDocs/tasks/Slice 1/todo.md`) más los documentos de resultados **que existan** a su lado
+—el Slice 1 tiene `Fase-N-Resultados.md` de las fases 0 a 3 y ninguno de la 5; el Slice 2 tiene uno
+solo, `Slice-2-Resultados.md`, de slice entero—: casillas, cifras de pruebas y checkpoints se leen
+ahí y no se duplican en este archivo — una copia se queda vieja en dos commits. Empezar leyéndolo.
 
 **Rider 2026.2.0.2 con el plugin «MCP Server Extension for Unity» (id 30357)**, instalados el
 06/09/2026 (vía winget). `mcp__rider__*` habla con el **Rider abierto** y con el proyecto cargado:
@@ -34,15 +35,17 @@ comunicación con el usuario en español.
 | Archivo | Qué contiene |
 |---|---|
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
-| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 02/09/2026, rev. 7 — los hallazgos `INC-01`..`INC-42` están cerrados en los documentos; quedan abiertos `INC-43` (el guion §12 aún declara `PG-07` pendiente pese a estar concedida la autorización), `INC-44` (**el guía se llama Algoritm**, no «Chispa» — vale para todo texto y asset nuevo), `INC-45` (el guía cambia de forma en cada nivel), `INC-46` (tareas del Nivel 3, exige decisión) e `INC-47` (12/09/2026: la mecánica del Nivel 1 **mide fuerza y exige acomodar hojas y piedras**, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF). |
+| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. Verificación vigente: 15/09/2026, rev. 9 — los hallazgos `INC-01`..`INC-45` están cerrados en los documentos: la refundición del 14/09/2026 aplicó `PG-07` cerrado (`INC-43`), el guía renombrado a **Algoritm** (`INC-44`) y su forma cambiante por nivel —fuego, rueda, gota— (`INC-45`). **Algoritm y las tres formas rigen para todo texto y asset nuevo.** Quedan abiertos `INC-46` (tareas del Nivel 3, exige decisión), `INC-47` (12/09/2026: la mecánica del Nivel 1 **mide fuerza y exige acomodar hojas y piedras**, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF), `INC-48` (el §4 del documento refundido es la arquitectura vieja) e `INC-49` (15/09/2026: el menú de pausa es el del mockup 6 —Reanudar · Reiniciar · Volver al menú de niveles— y HU-17 aún dice «Continuar / Reiniciar nivel / Volver al menú principal»). |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las diecisiete superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
 | `claudeDocs/Camara_Narrativa_N2.md` + `docs/md/Camara_Narrativa.md` | **La cámara narrativa del Nivel 2.** El de `claudeDocs/` es el **diseño** (50 encuadres validados contra 16:9); el de `docs/md/` es el **inventario de lo aplicado**: cada movimiento de cámara (foco, zoom, paradas por línea) con quién lo decidió —[S] Santiago / [C] Claude—. Los valores viven en `Assets/Game/Data/Narrative/N2_*.asset`; el documento explica el porqué, no sustituye al asset. Regla que evita el choque más común: para bajar la cámara al suelo hay que cerrar el plano (`y = 0.35` exige `zoom ≥ 1.43`). |
 | `docs/Camara_Narrativa_N1.md` + `docs/md/Camara_Narrativa_N1.md` | **La cámara y la luz del Nivel 1** (desde el 11/09/2026). El de `docs/` es el **diseño de Santiago** (35 encuadres, cada uno con su estado de luz) y se trata como los `.docx`: no se edita desde código. El de `docs/md/` es su inventario: qué quedó en los `N1_*.asset` y en el motor (`NarrativeLight`, `CameraKey.HardCut`, `FlashSeconds`, `LightStart`, shader `Algoritm/Oscuridad`), el mapa parada → línea del asset y las desviaciones con su porqué. Solo el Nivel 1 usa la capa de oscuridad; el Nivel 2 no cambia. |
+| `docs/md/verificacion_encuadres_N1/` + `_N2/` | **Las hojas de verificación de encuadres** (acta D05, 13/09/2026): un PNG por escena y por parada, **generado desde el contenido y no a mano**, con los objetos donde el asset los pone y la franja del cuadro de diálogo marcada en rojo. Se rehacen cuando el contenido cambia; los dos inventarios de cámara las citan como `claudeDocs/verificacion_encuadres_*` — la ruta real es `docs/md/`. |
+| `Assets/Game/Art/Inventario.md` | **El índice de sprites.** Qué archivo va en cada carpeta de `Assets/Game/Art/`, con la tarea que lo produce, la nomenclatura (`char_`, `prop_`, `env_`, `ui_`, `fx_`, `ref_`; niveles `n1`/`n2`/`n3`) y la convención de `.anim`. No decide nada: manda el tablero de arte `Tareas.xlsx` (163 piezas, tareas `S01..S16c`), **que no está en el repo**, y luego los `plan.md` y `Direccion_de_Arte.md`. |
 | `claudeDocs/Mockups de interfaz Algoritmia.html` | **Los mockups de pantalla** (uno por superficie, numerados). Los `todo.md` y `Camara_Narrativa_N1.md` los citan por número («mockup 7 · Nivel 1 · encendido»); es la referencia de disposición de una escena antes de tocar el `.unity`. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. Los cuatro slices están planeados y entre ellos cubren los 47 RF: `Slice 1` Golden Path y nivel fuego · `Slice 2` La Rueda · `Slice 3` El Río y cierre del juego · `Slice 4` progreso, informe docente y borrado de datos. **Se planean en orden y cada uno supone terminado el anterior**, pero desde el 10/09/2026 el Slice 1 y el Slice 2 corren en paralelo — ver «Dos slices a la vez» abajo. Ninguno rediscute `SPEC.md`. |
-| `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión ya hecha con markitdown. Hoy solo están convertidos **guion, historias de usuario y OE1**: trabajo de grado, OE2 y arquitectura hay que convertirlos antes de citarlos. **Nunca editar ninguno de los dos desde código.** |
-| `docs/actas/OE*/Acta_*.md` | Actas de seguimiento: qué se decidió, cuándo y por qué. Una carpeta por objetivo específico —`OE2/` serie `O01..O03` (ago 2026), `OE3/` serie `D01..D04` (sep 2026, la abierta)— y dentro `Acta_<serie><NN>_AAAA-MM-DD.md` junto a su `.docx`. Son la trazabilidad de las decisiones; consultarlas cuando haga falta el *porqué* de un RF, no reabrirlas. **No hay tablero Kanban aparte**: el tablero vive en la §6 de cada acta («Compromisos y tablero Kanban»), con los compromisos nuevos y los movimientos al cierre. Ojo al leerlo hacia atrás: **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` en los movimientos posteriores—, así que una tarjeta se rastrea por su texto, no por su id. |
+| `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión ya hecha con markitdown. **Los cuatro `.docx` de hoy están convertidos** (14/09/2026). **Nunca editar ninguno de los dos desde código.** |
+| `docs/actas/OE*/Acta_*.md` | Actas de seguimiento: qué se decidió, cuándo y por qué. Una carpeta por objetivo específico —`OE2/` serie `O01..O03` (ago 2026), `OE3/` serie `D01..D05` (sep 2026, la abierta)— y dentro `Acta_<serie><NN>_AAAA-MM-DD.md` junto a su `.docx` (las dos últimas, `D04` y `D05`, solo tienen el `.md`). Son la trazabilidad de las decisiones; consultarlas cuando haga falta el *porqué* de un RF, no reabrirlas. **No hay tablero Kanban aparte**: el tablero vive en la §6 de cada acta («Compromisos y tablero Kanban»), con los compromisos nuevos y los movimientos al cierre. Ojo al leerlo hacia atrás: **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` en los movimientos posteriores—, así que una tarjeta se rastrea por su texto, no por su id. |
 
 **Dónde empezar una sesión de código:** en la primera casilla sin marcar del `todo.md` del
 slice abierto más bajo, salvo que la sesión trabaje el carril paralelo del Slice 2.
@@ -61,14 +64,24 @@ assembly, no por slice** — es lo único que evita que los dos carriles se pise
 | **Slice 2** | `Game.Levels.Wheel`, `Game.Scaffolding` |
 
 **El orden de las tarjetas y qué está abierto se lee en los dos `todo.md`, no aquí** — una copia
-de ese estado en este archivo se queda vieja en dos commits. Los cruces entre carriles quedaron
-resueltos: `ILevelReporter` (`Game.Core`, de T17) y el menú de pausa (T16) ya existen, así que
-**W15**, **W17** y **W16** no esperan a nadie. En sentido contrario, W09 (12/09/2026) tocó
+de ese estado en este archivo se queda vieja en dos commits. La Fase 5 del Slice 2 (W15–W18)
+se cerró el 15/09/2026; del Checkpoint W-F quedan las mediciones sobre la build, la exclusión
+manual de RNF-16, PG-05 y la revisión. **Dos cruces que ahora comparten los dos carriles:** el
+menú de pausa es el prefab `Assets/Game/Prefabs/UI/MenuPausa.prefab` (mockup 6: Reanudar ·
+Reiniciar · Volver al menú de niveles; `Time.timeScale = 0` mientras está abierto), instanciado
+en las cuatro escenas jugables —tocarlo cambia el N1 y el N2 a la vez—, y `LevelSummary` elige
+sus mensajes por nivel (`LevelSummaryMessages.Level`, un asset por nivel en
+`LevelSummaryController.messagesByLevel`) y compone el relato sumando **todas** las fases del
+nivel. En sentido contrario, W09 (12/09/2026) tocó
 `Game.Core` y `Game.UI` con prueba: `GameFlow` acepta `Narrative → Narrative` y **retoma en la
 primera fase pendiente que tenga escena** cuando se pide una ya confirmada (RNF-14; el runner le
 pasa su tabla de escenas, y sin fase pendiente jugable se repite la pedida), `GameFlowRunner`
-cae al menú si una fase no tiene escena, y `NarrativeSequence.NextSequenceId` encadena dos
-escenas del guion (la 2.2 con la 2.3) sin un `if` en el controlador.
+cae al menú si una fase no tiene escena, y `NarrativeSequence.NextSequenceId` encadena escenas
+del guion sin un `if` en el controlador — la 2.2 con la 2.3, y desde el 13/09/2026 también
+`N1_Apertura → N1_AparicionGuia → N1_Hallazgo`, que hasta entonces no las pedía nadie, y desde
+el 15/09/2026 `N2_PuenteI → N2_Escena21_Bosque` (el Nivel 2 abre con el puente; antes abría en
+la 2.1 y el puente caía al menú). Encadenar una escena es editar su asset, nunca tocar el
+controlador.
 
 **Al consumir `PlayerProfile`:** W02 lo reescribió. `ConfirmPhase(LevelId, int, …)` no existe; se
 pasa un `PhaseId` (`Game.Core`). El formato del JSON no cambió.
@@ -81,6 +94,10 @@ ejecutable.
 **`unity test` abre su propia instancia batchmode y exige el Editor cerrado**: dos carriles en la
 misma máquina no pueden correr pruebas a la vez.
 
+**Los `Assets/InitTestScene*.unity` son basura de corridas PlayMode interrumpidas** — el Test
+Runner las crea y normalmente las borra al terminar. Están en `.gitignore`, no las referencia
+nadie y se borran sin mirar.
+
 **Leer un documento fuente:** usar la conversión ya hecha en `docs/md/<mismo nombre>.md` —
 se lee con Read y se busca con Grep, que es lo que hace viable citar un RF sin releer el
 documento entero. Regenerarla solo si el `.docx` cambió:
@@ -90,8 +107,9 @@ PYTHONIOENCODING=utf-8 markitdown "docs/<archivo>.docx" > "docs/md/<archivo>.md"
 ```
 
 **`graphify-out/` es el grafo de conocimiento del proyecto entero — el atajo para saber dónde
-está cada cosa.** Lo construye `/graphify` sobre las 185 fuentes del repo (código, `claudeDocs/`,
-`docs/`, `docs/md/`, `Packages/`) y las resuelve en 3059 nodos y 6362 aristas agrupados en comunidades con
+está cada cosa.** Lo construye `/graphify` sobre las fuentes del repo (código, `claudeDocs/`,
+`docs/`, `docs/md/`) menos lo que excluya `.graphifyignore` —hoy `Packages/`, que metía 527 nodos
+del árbol de dependencias de Unity sin conectar con nada— y las resuelve en comunidades con
 nombre: «Persistencia de perfiles (SaveStore)», «FirePanelController · adaptador del N1»,
 «NarrativeSceneController · cámara y luz», «Menú de pausa (RF-07, HU-17)», «Dirección de arte ·
 la ley visual». **Antes de rastrear a mano con Grep** cualquier pregunta de ubicación o de relación —dónde vive un comportamiento, qué toca un
@@ -112,8 +130,9 @@ código lo que el grafo señale antes de citarlo — ubica, no sustituye a leer 
 en un clon limpio. Las conversiones se rehacen con markitdown, el grafo con `/graphify`; las
 actas **no** se rehacen — y tampoco los dos inventarios de cámara `docs/md/Camara_Narrativa.md`
 y `docs/md/Camara_Narrativa_N1.md`, que están escritos a mano y no salen de ningún `.docx`:
-viven ignorados y sin copia. Moverlos a `claudeDocs/` o excluirlos del `.gitignore` es una
-decisión pendiente de Santiago.
+viven ignorados y sin copia. Las hojas de `docs/md/verificacion_encuadres_*` sí se rehacen, pero
+desde el contenido de los `*.asset` y no a mano. Mover los inventarios a `claudeDocs/` o
+excluirlos del `.gitignore` es una decisión pendiente de Santiago.
 
 **Nunca** abrir un `.docx` con Read ni descomprimiendo el zip. markitdown ya está en el `PATH`;
 sin `PYTHONIOENCODING=utf-8` los acentos salen como mojibake. El shell por defecto de este
@@ -129,22 +148,33 @@ el nombre: sin comillas, cualquier comando de shell falla o toca el archivo equi
 repite. Si algo del código contradice a `SPEC.md`, gana `SPEC.md` o se corrige el documento
 explícitamente.
 
-**Orden de precedencia entre los `.docx`** cuando se contradicen: trabajo de grado → OE1 →
-guion → OE2 → historias de usuario → arquitectura. Gana el de mayor prioridad y se corrige el
-otro. Las contradicciones internas a un mismo documento no las resuelve la precedencia: están
-resueltas y registradas en `claudeDocs/INCONSISTENCIAS.md` (rev. 6, 30/08/2026).
+**Los documentos se refundieron el 14/09/2026: de seis pasaron a cuatro.** OE1 es ahora
+`Solución OE1_Requerimientos.docx`, y `Solucion_OE2_Diseno_final.docx` absorbe en un solo archivo
+el guion, los casos de uso, las historias de usuario, las matrices de trazabilidad y la
+arquitectura. **El trabajo de grado ya no está en `docs/`**: si hace falta citarlo se recupera con
+`git show HEAD:"docs/Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx" > <destino>.docx`.
 
-Los nombres en disco no coinciden con cómo se citan los documentos — vienen con sufijos de
-descarga. El mapa, en orden de precedencia:
+**Orden de precedencia** cuando se contradicen: trabajo de grado → OE1 → guion → casos de uso e
+historias → historias de usuario detalladas → arquitectura. Gana el de mayor prioridad y se
+corrige el otro. Las filas 3 y 4 viven ahora en el **mismo archivo**, así que un choque entre
+ellas ya no lo resuelve la precedencia sino la edición del documento. Las contradicciones internas
+están resueltas y registradas en `claudeDocs/INCONSISTENCIAS.md` (rev. 8, 14/09/2026).
+
+Los nombres en disco no coinciden con cómo se citan los documentos. El mapa, en orden de
+precedencia:
 
 | # | Documento | Archivo en `docs/` |
 |---|---|---|
-| 1 | Trabajo de grado | `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx` |
-| 2 | OE1 requerimientos | `OE1_Requerimientos (3) (1).docx` |
-| 3 | Guion | `Guion_Completo_Videojuego (1).docx` |
-| 4 | OE2 historias completas | `OE2_historias_completas (1).docx` |
-| 5 | Historias de usuario | `Historias_de_Usuario_HU01_HU18_v2 (1).docx` |
-| 6 | Arquitectura | `arquitectura_videojuego_v2 (2).docx` |
+| 1 | Trabajo de grado | **fuera de `docs/`** — solo en `git show HEAD:…` |
+| 2 | OE1 requerimientos | `Solución OE1_Requerimientos.docx` |
+| 3 | Guion | `Solucion_OE2_Diseno_final.docx` §1 |
+| 4 | Casos de uso, historias y matrices | `Solucion_OE2_Diseno_final.docx` §2–§3 |
+| 5 | Historias de usuario detalladas | `Historias_de_Usuario_HU01_HU18_v2 (1).docx` |
+| 6 | Arquitectura | `arquitectura_videojuego_v2 (2).docx` y `Solucion_OE2_Diseno_final.docx` §4 |
+
+**Traducción de las citas viejas**, que siguen apareciendo en `claudeDocs/` y en los `todo.md`:
+«guion §N» → `Solucion_OE2_Diseno_final` **§1.N** («guion §4.3» es §1.4.3, «guion §12»
+—puntos abiertos `PG-*`— es §1.2); «OE2 §4» —control de cambios— es §5.
 
 (`SPEC.md` §Arquitectura cita `docs/arquitectura_videojuego_v2.docx`, sin el ` (2)`: es el
 nombre lógico, no la ruta real.)
@@ -238,7 +268,8 @@ antes de escribir la primera línea:
   código del juego). Hoy tienen código `Game.Core`, `Game.Scaffolding`, `Game.UI`, `Game.Levels.Fire`,
   `Game.Levels.Wheel` y `Game.EditorTools`: `Game.Audio` es un `.asmdef` vacío a la espera de su
   fase —igual que su `.asmdef` de prueba—, y `Game.Reporting` todavía no existe en disco (llega
-  en el Slice 4).
+  en el Slice 4). **El sonido del juego está comprometido con otra persona** (acta D05, tarjeta
+  `D05-2`, 27/09/2026): no llenar `Game.Audio` sin que lo pidan.
 - **La lógica es C# plano; el MonoBehaviour es un adaptador delgado.** `GameFlow` (la FSM) no
   es MonoBehaviour: se prueba en EditMode sin escena ni frames. Igual para validadores,
   contadores y máquinas de estado de cada nivel.
@@ -247,6 +278,14 @@ antes de escribir la primera línea:
   `Game.Scaffolding`, que depende de `Game.Core` y no al revés. Quien resuelve id → asset es la
   capa de arriba, y todo se reproduce en una única escena reutilizable; `Playing` recibe
   `LevelId` + fase. Añadir una escena narrativa = crear un asset, no un estado y una rama.
+- **Lo que el texto nombra se ve entero y por encima del cuadro de diálogo** (acta D05,
+  13/09/2026): el cuadro ocupa el cuarto inferior de la pantalla, y un objeto bien colocado al
+  abrir se mete debajo en cuanto la cámara cierra el plano. Lo comprueba parada por parada
+  `NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo` sobre la lista `Verificadas`
+  de `NarrativeSequenceTests`. **Una escena entra en esa lista cuando su encuadre se revisó, no
+  antes** —`N2_Escena25_Cierre` sigue fuera a propósito—: una prueba que se salta lo que no
+  cumple no comprueba nada. Cuando objeto y encuadre no concuerdan **se mueve el objeto**: los
+  encuadres son el diseño registrado en los documentos de cámara.
 - **Interfaz inyectada donde hay un consumidor conocido; evento solo con varios oyentes.**
   No hay `EventBus` global.
 - **Solo tres singletons con `DontDestroyOnLoad`**: `GameFlowRunner`, `SceneLoader`, `AudioManager`.
