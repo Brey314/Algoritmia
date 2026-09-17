@@ -21,6 +21,7 @@ namespace Game.Architecture.Tests
             ("Game.Scaffolding", "Scaffolding"),
             ("Game.Levels.Fire", "Levels/Fire"),
             ("Game.Levels.Wheel", "Levels/Wheel"),
+            ("Game.Levels.River", "Levels/River"),
             ("Game.UI", "UI"),
             ("Game.Audio", "Audio")
         };
@@ -75,7 +76,12 @@ namespace Game.Architecture.Tests
         {
             var levels = RuntimeModules
                 .Select(module => module.Assembly)
-                .Where(name => name.StartsWith(LevelPrefix));
+                .Where(name => name.StartsWith(LevelPrefix))
+                .ToArray();
+
+            // Con los tres niveles en disco la exclusión se prueba de verdad (R01): cada uno
+            // contra los otros dos, no una pareja.
+            Assert.That(levels, Is.EquivalentTo(new[] { "Game.Levels.Fire", "Game.Levels.Wheel", "Game.Levels.River" }));
             foreach (var level in levels)
             {
                 var others = DependenciesOf(level).Where(name => name.StartsWith(LevelPrefix));

@@ -17,21 +17,42 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 > ⚠️ **Pregunta abierta 1 bloquea R02.** «Fase» significa dos cosas en el Nivel 3 y de ello
 > depende el formato de datos persistidos, que es **«preguntar primero»** (`SPEC.md` §Límites).
 
+> ✅ **16/09/2026 — los tres avisos de arriba están vencidos.** Los Slices 1 y 2 tienen el código
+> cerrado (R2); las pruebas corren con el Editor abierto por el corredor efímero `TestRunnerApi`
+> de `CLAUDE.md` §Comandos o por `unity test` con el Editor cerrado (R1); y la pregunta abierta 1
+> quedó resuelta: **tres fases** —base · amarre · mástil y vela—, la recolección no se persiste
+> (decisión de Santiago, registrada en `PhaseId.PhasesPerLevel`).
+
 ---
 
 ## Fase 0 — Cimientos del slice
 
-- [ ] **R01 · Assembly `Game.Levels.River` y exclusión con tres niveles** — `XS` · `EM`
-      RNF-15, RNF-16, INC-40 · depende de: Slice 2 W01
-- [ ] **R02 · Desbloqueo del Nivel 3 y granularidad de fase** — `S` · `EM`
+- [x] **R01 · Assembly `Game.Levels.River` y exclusión con tres niveles** — `XS` · `EM`
+      RNF-15, RNF-16, INC-40 · depende de: Slice 2 W01 — **16/09/2026.**
+      `Game.Levels.River.asmdef` (referencia única `Game.Core`) + `AssemblyInfo.cs` con los dos
+      `InternalsVisibleTo`, y `Game.Levels.River.Tests.asmdef` (EditMode). `AssemblyDependencyTest`
+      suma el tercer nivel y exige que sean exactamente tres antes de recorrer la exclusión.
+      El asmdef de PlayMode llega con R07, que es la primera tarea con escena.
+- [x] **R02 · Desbloqueo del Nivel 3 y granularidad de fase** — `S` · `EM`
       RF-03, RF-04, RF-41, RNF-09, RNF-14, CP-02, HU-11, CU-09, CU-10, INC-27, supuestos 2/9/11
-      · depende de: R01, Slice 2 W02 · **bloqueado por la pregunta abierta 1**
+      · depende de: R01, Slice 2 W02 — **16/09/2026.** Sin código de producción nuevo: W02 ya
+      dejó `PhasesPerLevel = {1, 3, 3}` y `LevelUnlockPolicy` genérica. Entran las pruebas que
+      nombran al Nivel 3 —`SaveStore_RF04_ConfirmarUnaFaseDelNivel3SobreviveAlCierre`,
+      `PlayerProfile_RF41_UnaFaseAprobadaNoSePierdeTrasUnaPruebaFallida`— y el «por qué no
+      cuatro» en `PhaseId`. El desbloqueo lo cubrían ya
+      `LevelUnlockPolicy_RF03_ElNivel3EsperaLasTresFasesDelNivel2` (EM) y
+      `LevelSummary_RF03_DevuelveAlMenuConNivel3Desbloqueado` (PM); RNF-09 sigue en
+      `SaveStore_RNF09_NoPersisteCampoAlgunoFueraDeLaListaCerrada`.
 
 ### ✅ Checkpoint R-A — Cimientos
-- [ ] Compila sin errores ni warnings nuevos (`check_compile_errors`)
-- [ ] Prueba de exclusión RNF-16 con **tres niveles reales**, corrida y **declarada**
-- [ ] El menú habilita el Nivel 3 solo tras completar el Nivel 2
-- [ ] **Pregunta abierta 1 resuelta con el usuario** — toca datos persistidos
+- [x] Compila sin errores ni warnings nuevos (`check_compile_errors`) — 16/09/2026
+- [x] Prueba de exclusión RNF-16 con **tres niveles reales**, corrida y **declarada** —
+      EditMode **224/224** el 16/09/2026 (corredor efímero, Editor abierto): las cuatro de
+      `AssemblyDependencyTest` en verde con `Fire`, `Wheel` y `River` en la tabla
+- [x] El menú habilita el Nivel 3 solo tras completar el Nivel 2 — regla probada en EM y PM
+      (ver R02); verlo jugando es de Santiago en la revisión
+- [x] **Pregunta abierta 1 resuelta con el usuario** — 16/09/2026: tres fases, sin guardado
+      al terminar la recolección
 - [ ] Revisado con el usuario
 
 ---

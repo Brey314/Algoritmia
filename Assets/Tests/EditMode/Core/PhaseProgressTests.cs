@@ -114,6 +114,49 @@ namespace Game.Core.Tests
         }
 
         [Test]
+        public void SaveStore_RF04_ConfirmarUnaFaseDelNivel3SobreviveAlCierre()
+        {
+            // R02: el Nivel 3 guarda en sus tres fases de ensamblaje —base, amarre, mástil y
+            // vela— y no al terminar la recolección (decisión del 16/09/2026, ver PhaseId).
+            var fileSystem = new FakeFileSystem();
+            var profile = NewProfile();
+            profile.Reach(LevelId.River);
+            profile.ConfirmPhase(new PhaseId(LevelId.River, 1), SomeIndicators);
+            new SaveStore(fileSystem, PortableRoot, FallbackRoot).Save(profile);
+
+            var reopened = new SaveStore(fileSystem, PortableRoot, FallbackRoot).Load("Ana");
+
+            Assert.That(reopened.IsPhaseConfirmed(new PhaseId(LevelId.River, 1)), Is.True);
+            Assert.That(reopened.IndicatorsFor(new PhaseId(LevelId.River, 1)),
+                Is.EqualTo(SomeIndicators));
+            Assert.That(reopened.NextPendingPhase(LevelId.River),
+                Is.EqualTo(new PhaseId(LevelId.River, 2)),
+                "al reabrir se retoma en el amarre, no en la recolección ni en la base");
+        }
+
+        [Test]
+        public void PlayerProfile_RF41_UnaFaseAprobadaNoSePierdeTrasUnaPruebaFallida()
+        {
+            // Base y amarre confirmados; la prueba de la balsa falla (no se confirma la 3) y el
+            // estudiante reinicia el nivel y vuelve a pasar el amarre con peores indicadores.
+            // Nada de eso desconfirma ni pisa lo aprobado (RF-41, RF-43, CP-02).
+            var profile = NewProfile();
+            profile.Reach(LevelId.River);
+            profile.ConfirmPhase(new PhaseId(LevelId.River, 1), SomeIndicators);
+            profile.ConfirmPhase(new PhaseId(LevelId.River, 2), SomeIndicators);
+
+            profile.ConfirmPhase(new PhaseId(LevelId.River, 2), new PerformanceIndicators(99, 0, 3, 2f));
+
+            Assert.That(profile.IsPhaseConfirmed(new PhaseId(LevelId.River, 1)), Is.True);
+            Assert.That(profile.IsPhaseConfirmed(new PhaseId(LevelId.River, 2)), Is.True);
+            Assert.That(profile.IndicatorsFor(new PhaseId(LevelId.River, 2)), Is.EqualTo(SomeIndicators));
+            Assert.That(profile.IsLevelComplete(LevelId.River), Is.False,
+                "sin mástil y vela el nivel no está completo");
+            Assert.That(profile.NextPendingPhase(LevelId.River),
+                Is.EqualTo(new PhaseId(LevelId.River, 3)));
+        }
+
+        [Test]
         public void PlayerProfile_CP02_UnaFaseConfirmadaNoSePierdeNunca()
         {
             var profile = NewProfile();
