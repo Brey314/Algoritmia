@@ -115,6 +115,25 @@ namespace Game.Scaffolding.Tests
         }
 
         [Test]
+        public void IllustrationFraming_RF05_ConUnSprite16a9ElAvisoUsaMediaPantallaEnX()
+        {
+            // El Nivel 3 no duplica el lienzo (Camara_Narrativa_N3.md §1): a zoom 1 el foco solo
+            // puede ser el centro, y a zoom 1.6 el rango en x es [0.312, 0.688].
+            var aspecto = IllustrationFraming.ScreenAspect;
+            var centro = new CameraFraming(new Vector2(0.5f, 0.5f), 1f);
+            var corrido = new CameraFraming(new Vector2(0.38f, 0.5f), 1f);
+            var enElRango = new CameraFraming(new Vector2(0.65f, 0.47f), 1.55f);
+            var fuera = new CameraFraming(new Vector2(0.70f, 0.47f), 1.55f);
+
+            Assert.That(IllustrationFraming.Warnings(centro, null, false, aspecto), Is.Empty);
+            Assert.That(IllustrationFraming.Warnings(corrido, null, false, aspecto), Has.Exactly(1).Contains("x=0.380"));
+            Assert.That(IllustrationFraming.Warnings(enElRango, null, false, aspecto), Is.Empty);
+            Assert.That(IllustrationFraming.Warnings(fuera, null, false, aspecto), Has.Exactly(1).Contains("x=0.700"));
+            Assert.That(IllustrationFraming.Warnings(corrido, null, false), Is.Empty,
+                "con el lienzo duplicado de los Niveles 1 y 2 ese mismo foco sí cabe");
+        }
+
+        [Test]
         public void IllustrationFraming_RF05_AvisaDelFocoQueSeRecortaEnSilencio()
         {
             // Los tres encuadres de Camara_Narrativa_N2.md §1 que no se veían como estaban escritos.

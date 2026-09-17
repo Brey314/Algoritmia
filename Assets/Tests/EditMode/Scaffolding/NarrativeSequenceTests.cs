@@ -70,6 +70,71 @@ namespace Game.Scaffolding.Tests
             Assert.That(delNivel2, Is.EquivalentTo(esperadas));
         }
 
+        [Test]
+        public void NarrativeSequence_RF05_ElNivel3TieneSusSeisSecuencias()
+        {
+            // Cinco escenas del guion (§7, §8.1, §8.4.1, §8.5, §9) en seis assets: el puente II
+            // cambia de ilustración a mitad —bosque y luego río, Camara_Narrativa_N3.md §4— y
+            // la ilustración es por secuencia, así que el corte al río es un asset encadenado.
+            var esperadas = new[]
+            {
+                "N3_PuenteII", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
+                "N3_Escena32_PrimerIntento", "N3_Escena33_Cruce", "N3_EscenaFinal"
+            };
+
+            var delNivel3 = TodasLasSecuencias()
+                .Where(sequence => sequence.Level == Game.Core.LevelId.River)
+                .Select(sequence => sequence.Id)
+                .ToArray();
+
+            Assert.That(delNivel3, Is.EquivalentTo(esperadas));
+        }
+
+        [Test]
+        public void NarrativeSequence_RF05_NingunEncuadreDelNivel3SeRecorta()
+        {
+            // Camara_Narrativa_N3.md §3 R1: con un sprite 16:9 sin duplicar el foco vive en
+            // [0.5/z, 1−0.5/z] en los dos ejes, y un valor fuera se recorta en silencio.
+            var recortados = TodasLasSecuencias()
+                .Where(sequence => sequence.Level == Game.Core.LevelId.River && sequence.Illustration != null)
+                .SelectMany(sequence =>
+                {
+                    var aspecto = sequence.Illustration.rect.width / sequence.Illustration.rect.height;
+                    return new[] { ("inicio", sequence.CameraStart) }
+                        .Concat(sequence.CameraKeys.Select(key => ($"línea {key.Line}", key.Framing)))
+                        .SelectMany(parada => IllustrationFraming.Warnings(parada.Item2, null, false, aspecto)
+                            .Select(aviso => $"{sequence.Id} · {parada.Item1}: {aviso}"));
+                })
+                .ToArray();
+
+            Assert.That(recortados, Is.Empty);
+        }
+
+        [Test]
+        public void NarrativeVisitPolicy_CP07_ElCruceYLaEscenaFinalNoSeOmitenLaPrimeraVez()
+        {
+            // RF-12, CP-07: el cierre reflexivo del río (§8.5) y la escena final (§9) se leen
+            // enteros la primera vez. Aquí «primera vez» ya tiene todas las fases confirmadas —se
+            // llega justo después de la última— y no hay nivel siguiente que desbloquear.
+            var perfil = Game.Core.PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
+            perfil.Reach(Game.Core.LevelId.River);
+            foreach (var fase in Game.Core.PhaseId.AllOf(Game.Core.LevelId.River))
+            {
+                perfil.ConfirmPhase(fase, default);
+            }
+
+            var cierres = TodasLasSecuencias()
+                .Where(sequence => sequence.Id == "N3_Escena33_Cruce" || sequence.Id == "N3_EscenaFinal")
+                .ToArray();
+
+            Assert.That(cierres, Has.Length.EqualTo(2));
+            foreach (var cierre in cierres)
+            {
+                Assert.That(cierre.IsReflectiveClosing, Is.True, $"{cierre.Id} se declara cierre reflexivo");
+                Assert.That(NarrativeVisitPolicy.AlreadySeen(perfil, cierre), Is.False, $"{cierre.Id} no ofrece omitir");
+            }
+        }
+
         /// <summary>
         /// Los objetos que la narrativa pinta sobre el entorno tienen que quedar **por encima**
         /// del cuadro de diálogo, que ocupa el cuarto inferior de la pantalla
@@ -105,7 +170,9 @@ namespace Game.Scaffolding.Tests
         {
             "N1_Apertura", "N1_AparicionGuia", "N1_Hallazgo", "N1_NacimientoDelFuego",
             "N2_PuenteI", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
-            "N2_Escena23_Construccion", "N2_Escena24_Regreso"
+            "N2_Escena23_Construccion", "N2_Escena24_Regreso",
+            "N3_PuenteII", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
+            "N3_Escena32_PrimerIntento", "N3_Escena33_Cruce", "N3_EscenaFinal"
         };
 
         /// <summary>Alto del cuadro de diálogo como fracción de la pantalla (RNF-03).</summary>

@@ -181,11 +181,21 @@ namespace Game.Scaffolding
         /// motor: el claro está vacío, sin troncos en cuadro un paneo parece una imagen congelada,
         /// y un plano que cruce el eje enseña un tronco y su gemelo a la vez.
         /// </remarks>
+        /// <summary>Proporción del lienzo duplicado de los Niveles 1 y 2 (3840×1080): media pantalla visible en x es 0.25 del sprite.</summary>
+        public const float DuplicatedCanvasAspect = 32f / 9f;
+
+        /// <summary>Proporción de la pantalla de referencia, 16:9.</summary>
+        public const float ScreenAspect = 16f / 9f;
+
         // Punto decimal siempre, sea cual sea la configuración regional: las pruebas y el documento los leen así.
-        public static IEnumerable<string> Warnings(CameraFraming framing, CameraFraming previous, bool mirroredForest)
+        // El ancho visible no es una constante del motor sino de la proporción del sprite: en el
+        // Nivel 3 el arte es 16:9 sin duplicar y a zoom 1 el foco solo puede ser el centro
+        // (Camara_Narrativa_N3.md §1); con la constante 0.25 el aviso se callaba justo ahí.
+        public static IEnumerable<string> Warnings(CameraFraming framing, CameraFraming previous, bool mirroredForest,
+            float imageAspect = DuplicatedCanvasAspect)
         {
             var zoom = Mathf.Max(framing.Zoom, 1f);
-            var halfWidth = 0.25f / zoom;
+            var halfWidth = 0.5f * ScreenAspect / Mathf.Max(imageAspect, ScreenAspect) / zoom;
             var halfHeight = 0.5f / zoom;
             var focus = framing.Focus;
 

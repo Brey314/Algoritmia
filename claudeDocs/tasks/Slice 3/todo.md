@@ -59,16 +59,45 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ## Fase 1 — Andamiaje del Nivel 3 (`andamiaje`)
 
-- [ ] **R03 · `HintPolicy` para recolección y ensamblaje** — `M` · `EM`
+- [x] **R03 · `HintPolicy` para recolección y ensamblaje** — `M` · `EM`
       RF-13, RF-10, RF-11, RNF-03, CP-06, HU-03, HU-04, CU-09, CU-10, INC-41 · depende de: R02
-- [ ] **R04 · Las cinco secuencias narrativas del N3** (una **condicional**) — `S` · `EM` + `PM`
+      — **16/09/2026.** `HintPolicy` no cambia: ya es genérica (qué cuenta como fallo lo decide
+      la escena, que solo llama `RegisterFailedAttempt`). Entra el contenido
+      `Assets/Game/Data/Guide/N3_Guia.asset` con **cuatro** pasos —`Recolectar` (cubre las
+      tareas 1 y 2), `Base`, `Amarre`, `MastilYVela`— y las cuatro pruebas del plan en
+      `HintPolicyTests`, que fijan sobre el asset lo que la pista no puede decir. La de
+      inventario se apoya en RNF-16: `Game.Scaffolding` no puede referenciar `Game.Levels.River`.
+- [x] **R04 · Las cinco secuencias narrativas del N3** (una **condicional**) — `S` · `EM` + `PM`
       RF-05, RF-06, RF-10, RF-12, RNF-01, RNF-18, CP-07, HU-02, INC-28, INC-39,
       guion §7, §8.1, §8.4.1, §8.5, §9 · depende de: R03
+      — **16/09/2026.** Cinco escenas en **seis** assets `N3_*.asset`: el puente II cambia de
+      ilustración a mitad (bosque del N2 → río) y la ilustración es por secuencia, así que
+      `N3_PuenteII` encadena con `N3_PuenteII_Rio`. Los 32 encuadres son los de
+      `docs/md/Camara_Narrativa_N3.md`, con sus suavizados (1.4 · 1.0 · 1.6 · 2.5 s) y la línea
+      larga de Algoritm en 3.1 partida en cinco (§7.1) y el recuento final en tres (§7.2).
+      `ConditionalNarrativeTrigger` (C# plano) dispara la 3.2 una sola vez tras el primer fallo.
+      `IllustrationFraming.Warnings` recibe ahora la proporción del sprite: con 16:9 sin duplicar
+      el rango en x es `0.5/z`, no `0.25/z`. Objetos provisionales: la carretilla del N2 en el
+      puente, `prop_n3_balsa_hundida` en la 3.2 y `prop_n3_balsa_cruzando` en la 3.3, colocados
+      **más arriba de lo que propone §6 del documento de cámara** para no quedar bajo el cuadro
+      de diálogo (regla de D05: se mueve el objeto, no el encuadre). Entornos: `env_n3_rio` y
+      `env_final_fogatas`, renombrados desde el motor. Sin sprites de la familia, igual que el N2.
+      `N3_EscenaFinal` se declara cierre reflexivo para que no sea omitible (CP-07); a dónde sale
+      lo decide R14. Las seis están registradas en `Narrative.unity` y el Nivel 3 abre con
+      `N3_PuenteII` desde `LevelSelect.unity` (script de editor efímero, ya borrado).
+      **Suite del 16/09/2026:** EditMode 234/234; PlayMode `Game.UI.PlayMode.Tests` 63/63 con
+      `NarrativeScene_RF05_ResuelveLasCincoSecuenciasDelNivel3SinRamas` en verde. Las hojas de
+      `docs/md/verificacion_encuadres_N3/` son el diseño y ya coinciden con los assets; se
+      rehacen desde el contenido cuando cambie un encuadre o entren los sprites definitivos.
 
 ### ✅ Checkpoint R-B — Andamiaje del Nivel 3
-- [ ] Las cinco escenas narrativas se recorren completas
-- [ ] La escena 3.2 aparece tras un fallo y **no aparece** si se acierta al primer intento
-- [ ] Ninguna pista del Nivel 3 resuelve la tarea (CP-06)
+- [x] Las cinco escenas narrativas se recorren completas — PlayMode, 16/09/2026 (seis assets)
+- [~] La escena 3.2 aparece tras un fallo y **no aparece** si se acierta al primer intento — la
+      **regla** está probada (`NarrativeTrigger_Guion841_…`, EM); conectarla a la prueba de la
+      balsa es de R10, que es donde existe el fallo
+- [~] Ninguna pista del Nivel 3 resuelve la tarea (CP-06) — probado sobre `N3_Guia.asset`
+      (materiales, ubicaciones y orden prohibidos en la pista); la lectura de los textos es de
+      Santiago en la revisión
 - [ ] Revisado con el usuario
 
 ---

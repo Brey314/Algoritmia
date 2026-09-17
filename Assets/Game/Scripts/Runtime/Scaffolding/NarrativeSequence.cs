@@ -89,6 +89,9 @@ namespace Game.Scaffolding
         private void OnValidate()
         {
             var forest = Level == LevelId.Wheel;
+            var aspect = Illustration != null && Illustration.rect.height > 0f
+                ? Illustration.rect.width / Illustration.rect.height
+                : IllustrationFraming.DuplicatedCanvasAspect;
             CameraFraming previous = null;
             var stops = new System.Collections.Generic.List<(string Name, CameraFraming Framing)> { ("inicio", CameraStart) };
             if (CameraKeys.Length == 0)
@@ -103,7 +106,7 @@ namespace Game.Scaffolding
 
             foreach (var (stop, framing) in stops)
             {
-                foreach (var warning in IllustrationFraming.Warnings(framing, previous, forest))
+                foreach (var warning in IllustrationFraming.Warnings(framing, previous, forest, aspect))
                 {
                     Debug.LogWarning($"{name} · {stop}: {warning}", this);
                 }

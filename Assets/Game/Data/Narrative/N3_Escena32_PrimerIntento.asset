@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe39808d68b138e4fb74e8e86cb55219, type: 3}
+  m_Name: N3_Escena32_PrimerIntento
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
+  <Id>k__BackingField: N3_Escena32_PrimerIntento
+  <Level>k__BackingField: 3
+  <Illustration>k__BackingField: {fileID: 21300000, guid: ae689a42caed1ac498f562cfb43fd845, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.47, y: 0.35}
+    <Zoom>k__BackingField: 1.7
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.47, y: 0.35}
+    <Zoom>k__BackingField: 1.7
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 1
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.51, y: 0.345}
+      <Zoom>k__BackingField: 1.78
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 2
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.505, y: 0.3}
+      <Zoom>k__BackingField: 1.95
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 3
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.48, y: 0.33}
+      <Zoom>k__BackingField: 1.7
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 4
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.47, y: 0.32}
+      <Zoom>k__BackingField: 2
+    <HardCut>k__BackingField: 0
+  <CameraSmoothingSeconds>k__BackingField: 1
+  <OpensFromBlack>k__BackingField: 1
+  <HardCutFadeSeconds>k__BackingField: 0.5
+  <Props>k__BackingField:
+  - <Art>k__BackingField: {fileID: 21300000, guid: 4f274fd1794c87a4389388fd0a1b7887, type: 3}
+    <Position>k__BackingField: {x: 0.49, y: 0.26}
+    <Size>k__BackingField: 0.1
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+  <IsReflectiveClosing>k__BackingField: 0
+  <NextPhase>k__BackingField: 3
+  <NextSequenceId>k__BackingField: 
+  <Lines>k__BackingField:
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: La familia empuja la balsa al agua y sube.
+  - <Speaker>k__BackingField: "PAP\u00C1"
+    <Text>k__BackingField: "\u00A1Vamos!"
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: La balsa gira y se hunde por un lado. La familia cae al agua, que en la orilla es poco profunda.
+  - <Speaker>k__BackingField: "MAM\u00C1"
+    <Text>k__BackingField: "\u00A1Algo est\u00E1 mal!"
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "No pasa nada. Esto se llama depurar. No hay que hacer todo otra vez: hay que encontrar la parte que fall\u00F3. \u00BFQu\u00E9 sali\u00F3 mal?"

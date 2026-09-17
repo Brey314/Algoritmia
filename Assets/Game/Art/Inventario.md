@@ -25,7 +25,7 @@ personajes `<sujeto>_anim_<accion>.anim` · todo lo demás `<sujeto>_<accion>.an
 piezas en una sola imagen por filas; se importan con `Sprite Mode: Multiple` y se cortan en
 Unity (§15.2). Los nombres de abajo son los de los sprites resultantes.
 
-Leyenda: **✓** en disco · **○** pendiente. Estados del tablero: `·` pendiente · `G` generado ·
+Leyenda: **✓** en disco · **◐** provisional en disco (sustituir conservando el nombre) · **○** pendiente. Estados del tablero: `·` pendiente · `G` generado ·
 `R` recortado · `I` importado · `A` animado · `✔` aprobado. Hoy **todo está en `·`**.
 
 ---
@@ -132,10 +132,13 @@ contenido cae en las mismas fracciones del lienzo, así que **ningún encuadre d
 `Camara_Narrativa_N1/N2` cambia de valor**—. Cinco conservan el prefijo viejo `entorno_` y hay que
 renombrarlos a `env_` **desde el motor** (tarjeta `D06-3`), que conserva el GUID y no toca escenas:
 `entorno_n1_apertura`, `entorno_n1_cueva_2x`, `entorno_n1_cueva_cenital`, `entorno_n2_laberinto`
-—`env_n2_bosque_claro` ya cumple—. Tres llegaron con nombre libre y todavía no los usa nadie:
-`Wheel/civilización_noche.png`, `River/rio_normal.png` y `River/civilización_final.png` (tildes y
-sin prefijo ni nivel: los tres incumplen §15.4; además entraron en `Sprite Mode: Multiple`, que
-para un fondo entero no aporta y hace que `LoadAssetAtPath<Sprite>` devuelva nulo).
+—`env_n2_bosque_claro` ya cumple—. Tres llegaron con nombre libre y en `Sprite Mode: Multiple`,
+que para un fondo entero no aporta y hace que `LoadAssetAtPath<Sprite>` devuelva nulo. **Dos ya
+están resueltos desde el motor (R04, 16/09/2026):** `River/rio_normal.png` es ahora
+`River/env_n3_rio.png` y `River/civilización_final.png` es `Narrative/env_final_fogatas.png`,
+los dos en `Single` y con su GUID intacto. Queda `Wheel/civilización_noche.png`, que sigue sin
+usarse. **Ojo:** el importador de fábrica trae `Multiple`; un sprite nuevo hay que pasarlo a
+`Single` a mano (los dos provisionales de `Props/River/` entraron así).
 
 ### `Environments/Fire/`
 
@@ -158,8 +161,7 @@ para un fondo entero no aporta y hace que `LoadAssetAtPath<Sprite>` devuelva nul
 
 | Archivo | Origen |
 |---|---|
-| ○ `env_n3_rio.png` | `C1` (Slice 3) — vista superior |
-| ○ `env_n3_rio_lateral.png` | `S16c` |
+| ✓ `env_n3_rio.png` | Entregado en D06 como `rio_normal.png` (1920×1080, vista lateral con la cascada). **Todo el Nivel 3 se juega y se narra sobre él** —`docs/md/Camara_Narrativa_N3.md` §4—, así que la vista superior de `C1` y el `_lateral` de `S16c` quedan sin uso salvo decisión contraria de Santiago. |
 | ○ `env_n3_espuma.png` | `S11a` — 4 frames |
 | ○ `env_n3_zona_inactiva.png`, `env_n3_zona_disponible.png` | `C6` |
 
@@ -179,7 +181,7 @@ para un fondo entero no aporta y hace que `LoadAssetAtPath<Sprite>` devuelva nul
 | ○ `env_apertura_entrada_noche.png` | `S16a` — boca de la cueva de noche |
 | ○ `env_puente1_amanecer.png` | `S16b` — boca de la cueva al amanecer |
 | ○ `env_puente1_recoleccion.png` | `S16b` — claro de la recolección |
-| ○ `env_final_fogatas.png` | `C10` (Slice 3) |
+| ✓ `env_final_fogatas.png` | Entregado en D06 como `River/civilización_final.png` (1920×1080, la aldea al atardecer); renombrado y movido aquí desde el motor el 16/09/2026. Escena final (§9). |
 
 ---
 
@@ -243,7 +245,7 @@ natural y a la vez lo válido del distractor (§8.2).
 |---|---|
 | ○ `prop_n3_troncos.png`, `_sogas`, `_tela`, `_mastil` | `C4` (Slice 3) |
 | ○ `prop_n3_balsa_base.png`, `_amarre`, `_vela` | `C7` |
-| ○ `prop_n3_balsa_hundida.png`, `_cruzando` | `C9` |
+| ◐ `prop_n3_balsa_hundida.png`, `_cruzando` | `C9` — **provisionales** (16/09/2026, dibujados por código con la paleta de §8.3: troncos ámbar, contorno `#3A1E18`, vela `#D6F0F5`). Los usan `N3_Escena32_PrimerIntento` y `N3_Escena33_Cruce`; el definitivo entra **sustituyendo el archivo con el mismo nombre**, sin tocar el asset. |
 
 `C4` genera además el icono de inventario de cada material, en la misma lámina.
 

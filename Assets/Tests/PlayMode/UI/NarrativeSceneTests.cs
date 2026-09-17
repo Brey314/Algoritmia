@@ -89,6 +89,36 @@ namespace Game.UI.Tests
         }
 
         [Test]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF05_ResuelveLasCincoSecuenciasDelNivel3SinRamas()
+        {
+            // Cinco escenas del guion en seis assets: el puente II corta del bosque al río a
+            // mitad de camino y la ilustración es por secuencia (R04, Camara_Narrativa_N3.md §4).
+            var ids = new[]
+            {
+                "N3_PuenteII", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
+                "N3_Escena32_PrimerIntento", "N3_Escena33_Cruce", "N3_EscenaFinal"
+            };
+            var primeras = new string[ids.Length];
+
+            for (var i = 0; i < ids.Length; i++)
+            {
+                var (controller, _) = await OpenNarrative(ids[i], LevelId.River);
+                primeras[i] = controller.BodyLabel.text;
+
+                foreach (var _ in SequenceNamed(controller, ids[i]).Lines)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                Assert.That(controller.Dialogue.IsFinished, Is.True, $"{ids[i]} se recorre entera");
+            }
+
+            Assert.That(primeras, Has.All.Not.Empty);
+            Assert.That(primeras.Distinct().Count(), Is.EqualTo(ids.Length));
+        }
+
+        [Test]
         [Timeout(30000)]
         public async Task NarrativeScene_RF05_LaPrimeraLineaEsLaDelAssetPedido()
         {
