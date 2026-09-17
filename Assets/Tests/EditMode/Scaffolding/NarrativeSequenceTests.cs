@@ -160,6 +160,32 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
+        /// Un objeto pintado sin ilustración no desaparece: <c>Image</c> dibuja su casilla en
+        /// blanco, así que un sprite que no resuelve sale en pantalla como un cuadrado blanco
+        /// encima del entorno (RNF-23).
+        /// </summary>
+        /// <remarks>
+        /// Se cuela solo: la referencia del asset apunta a un archivo que existe, y el `.meta` es
+        /// quien decide si dentro hay un sprite con ese id. Pasar una textura de `Single` a
+        /// `Multiple` —o escribir la referencia suponiendo `Single`— deja el asset compilando,
+        /// abriendo bien en el Inspector y pintando un cuadrado blanco al jugar. Lo vio Santiago
+        /// en la 2.4 el 17/09/2026.
+        /// </remarks>
+        [Test]
+        public void NarrativeSequence_RNF23_CadaObjetoPintadoTieneSuIlustracion()
+        {
+            var sinArte = TodasLasSecuencias()
+                .SelectMany(sequence => sequence.Props.Select((prop, indice) => (sequence, prop, indice)))
+                .Where(entrada => entrada.prop.Art == null)
+                .Select(entrada => FormattableString.Invariant(
+                    $"{entrada.sequence.Id} · objeto {entrada.indice} en ({entrada.prop.Position.x:0.000}, {entrada.prop.Position.y:0.000})"))
+                .ToArray();
+
+            Assert.That(sinArte, Is.Empty,
+                "un objeto sin sprite se pinta como un cuadrado blanco: " + string.Join(" · ", sinArte));
+        }
+
+        /// <summary>
         /// Las secuencias cuyos encuadres están verificados contra el cuadro de diálogo. No es
         /// «todas» a propósito: del Nivel 2 solo está implementado hasta el §6.3.1 del guion, y
         /// <c>N2_Escena25_Cierre</c> (§6.4) todavía tiene su único objeto medio tapado. Entra en la

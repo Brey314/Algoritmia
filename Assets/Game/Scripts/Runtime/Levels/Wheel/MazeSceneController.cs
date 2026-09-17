@@ -61,8 +61,20 @@ namespace Game.Levels.Wheel
         private RectTransform sequenceList;
 
         [SerializeField]
+        [Tooltip("Ventana de la lista: recorta lo que no cabe y es la zona válida para soltar. La lista se mueve dentro de ella.")]
+        private RectTransform sequenceViewport;
+
+        [SerializeField]
         [Tooltip("«Suelta un bloque aquí»: la casilla punteada al final de la lista.")]
         private RectTransform dropZone;
+
+        [SerializeField]
+        [Tooltip("Sube la lista una página. Solo aparece cuando la secuencia no cabe: el desplazamiento es por clic, nunca rueda ni arrastre (RNF-02, CT-06).")]
+        private Button scrollUpButton;
+
+        [SerializeField]
+        [Tooltip("Baja la lista una página.")]
+        private Button scrollDownButton;
 
         [SerializeField]
         [Tooltip("Cajón «Bloques»: el botón que lo abre y cierra.")]
@@ -125,9 +137,6 @@ namespace Game.Levels.Wheel
 
         [SerializeField] private float compactHeight = 64f;
 
-        /// <summary>Por debajo de esto el rótulo ya no se lee: es el suelo del estrechamiento.</summary>
-        private const float MinRowHeight = 44f;
-
         [SerializeField]
         [Tooltip("Cuánto crece el bloque en ejecución (1.04 = un 4 %). Acompaña al contorno: dos indicadores (RNF-19).")]
         private float highlightScale = 1.04f;
@@ -168,6 +177,12 @@ namespace Game.Levels.Wheel
         internal MazeLayout Layout => layout;
         internal bool IsPaletteOpen => paletteBody != null && paletteBody.activeSelf;
 
+        /// <summary>Cuánto se ha bajado la lista dentro de su ventana, en píxeles.</summary>
+        private float _scroll;
+
+        /// <summary>Que la próxima pintura mire al final: acaba de entrar un bloque.</summary>
+        private bool _scrollToEnd;
+
         /// <summary>Si las filas están comprimidas (rótulo + flecha) porque ya no caben desplegadas.</summary>
         internal bool IsCompact { get; private set; }
 
@@ -183,6 +198,10 @@ namespace Game.Levels.Wheel
         internal RectTransform Cart => cart;
         internal Image Environment => environment;
         internal RectTransform SequenceList => sequenceList;
+        internal RectTransform SequenceViewport => sequenceViewport;
+        internal RectTransform DropZone => dropZone;
+        internal Button ScrollUpButton => scrollUpButton;
+        internal Button ScrollDownButton => scrollDownButton;
         internal Button PaletteToggle => paletteToggle;
         internal Button ExecuteButton => executeButton;
         internal Button HelpButton => helpButton;
@@ -240,6 +259,8 @@ namespace Game.Levels.Wheel
             SetPalette(false);
 
             executeButton.onClick.AddListener(Execute);
+            scrollUpButton.onClick.AddListener(() => Scroll(-1f));
+            scrollDownButton.onClick.AddListener(() => Scroll(1f));
             // Pedir ayuda no es un intento: repite la instrucción vigente y no toca ningún
             // contador (RF-13, CP-06). La regla vive en HintPolicy; aquí solo se pulsa.
             helpButton.onClick.AddListener(() => Show(_hints.RequestHelp(), helpIcon, helpColor));
@@ -492,7 +513,7 @@ namespace Game.Levels.Wheel
             var padding = group != null ? group.padding.vertical : 0;
             var spacing = group != null ? group.spacing : 0f;
             var dropElement = dropZone != null ? dropZone.GetComponent<LayoutElement>() : null;
-            var listHeight = sequenceList.rect.height - padding - spacing * _sequence.Count;
+            var listHeight = sequenceViewport.rect.height - padding - spacing * _sequence.Count;
             IsCompact = _sequence.Count * expandedHeight + expandedHeight > listHeight;
             // La casilla «Suelta un bloque aquí» también se encoge cuando el sitio escasea.
             var dropHeight = IsCompact ? compactHeight : expandedHeight;
@@ -515,33 +536,46 @@ namespace Game.Levels.Wheel
                 _rows.Add(row);
             }
 
-            // ponytail: si ni comprimidas caben, las comprimidas se estrechan a partes iguales
-            // (la desplegada conserva su alto); con más de ~25 bloques un ScrollRect sin barra
-            // (rueda del ratón) es el paso siguiente.
-            var compactRows = _rows.ToList();
-            if (IsCompact && _expanded >= 0 && _expanded < _rows.Count)
-            {
-                compactRows.Remove(_rows[_expanded]);
-                available -= expandedHeight;
-            }
-
-            if (compactRows.Count > 0 && compactRows.Count * compactHeight > available)
-            {
-                var each = Mathf.Max(available / compactRows.Count, MinRowHeight);
-                foreach (var row in compactRows)
-                {
-                    var element = row.GetComponent<LayoutElement>();
-                    if (element != null)
-                    {
-                        element.preferredHeight = Mathf.Min(element.preferredHeight, each);
-                    }
-                }
-            }
-
             if (dropZone != null)
             {
                 dropZone.SetAsLastSibling();
             }
+
+            // Ni comprimidas caben a partir de unos ocho bloques. Antes se repartían el hueco a
+            // partes iguales y acababan de 26 px, una encima de otra y con el rótulo fuera de su
+            // marco; ahora **conservan su alto y la lista se desplaza** dentro de su ventana, que
+            // es lo que hace el mockup con su `overflow-y: auto`. Se recorre con dos botones y no
+            // con un ScrollRect: ese trae el arrastre de uGUI, y el esquema radicado es clic y
+            // clic sostenido (RNF-02, CT-06) — lo vigila
+            // `MazeScene_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido`.
+            LayoutRebuilder.ForceRebuildLayoutImmediate(sequenceList);
+            SetScroll(_scrollToEnd ? ScrollMax : _scroll);
+            _scrollToEnd = false;
+        }
+
+        /// <summary>Cuánto sobra de lista por debajo de la ventana. Cero = cabe entera.</summary>
+        private float ScrollMax => Mathf.Max(0f, sequenceList.rect.height - sequenceViewport.rect.height);
+
+        /// <summary>Una página menos una fila, para no perder el hilo entre página y página.</summary>
+        private float Page => Mathf.Max(sequenceViewport.rect.height - compactHeight, compactHeight);
+
+        private void Scroll(float pages) => SetScroll(_scroll + pages * Page);
+
+        /// <summary>
+        /// Deja la lista a esa altura dentro de su ventana y pone los dos botones acordes: el que
+        /// no tiene a dónde ir se apaga, y si la secuencia cabe entera no se muestra ninguno.
+        /// </summary>
+        private void SetScroll(float value)
+        {
+            var max = ScrollMax;
+            _scroll = Mathf.Clamp(value, 0f, max);
+            sequenceList.anchoredPosition = new Vector2(sequenceList.anchoredPosition.x, _scroll);
+
+            var desborda = max > 0.5f;
+            scrollUpButton.gameObject.SetActive(desborda);
+            scrollDownButton.gameObject.SetActive(desborda);
+            scrollUpButton.interactable = _scroll > 0.5f;
+            scrollDownButton.interactable = _scroll < max - 0.5f;
         }
 
         /// <summary>«→» sobre un bloque comprimido: se despliega para editarlo; el anterior se comprime.</summary>
@@ -656,7 +690,9 @@ namespace Game.Levels.Wheel
                 return;
             }
 
-            if (RectTransformUtility.RectangleContainsScreenPoint(sequenceList, screenPoint, UiCamera))
+            // La ventana y no la lista: la lista es más alta que su hueco cuando hay que
+            // desplazarla, y soltar sobre la parte recortada no es soltar sobre la lista.
+            if (RectTransformUtility.RectangleContainsScreenPoint(sequenceViewport, screenPoint, UiCamera))
             {
                 var index = IndexAt(screenPoint);
                 _sequence.Insert(index, _heldBlock);
@@ -690,6 +726,7 @@ namespace Game.Levels.Wheel
         {
             _sequence.Add(block);
             _indicators.RecordEdit();
+            _scrollToEnd = true;
             RefreshRows();
         }
 

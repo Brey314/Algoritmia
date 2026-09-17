@@ -235,6 +235,7 @@ namespace Game.Levels.Wheel.Tests
             var forest = await OpenForest();
             Canvas.ForceUpdateCanvases();
             await Awaitable.NextFrameAsync();
+            ElCursorLejos(forest);
 
             // El suelo del claro va del 5 % al 60 % de la altura de la pantalla, medido desde
             // abajo: por debajo queda el borde y por encima los troncos del fondo, que no se pisan.
@@ -696,8 +697,9 @@ namespace Game.Levels.Wheel.Tests
             var caja = EnPantalla(forest.CargoRect);
             var fila = EnPantalla(forest.LogRow);
             Assert.That(fila.xMin, Is.GreaterThan(caja.xMax), "los troncos quedan a la derecha de la caja");
-            Assert.That(Mathf.Abs(fila.yMin - caja.yMin), Is.LessThan(caja.height),
-                "y a su misma altura, no en otra parte de la pantalla");
+            // Dónde quedan exactamente —y que quepan en el cuadro— lo fija contra la escena 2.2
+            // ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22: aquí se
+            // mira la lectura de la pantalla, no la geometría heredada.
 
             var visibles = new[]
             {
@@ -708,17 +710,85 @@ namespace Game.Levels.Wheel.Tests
                 "la caja es lo que está más a la izquierda del todo");
         }
 
+        // Lo que la escena 2.2 dibuja al abrir, en fracciones de la ilustración
+        // (`N2_Escena22_ElPatron`: los cinco troncos y la caja sobre el primero). El bosque termina
+        // en el encuadre con el que ella abre, así que hereda también estas posiciones.
+        private static readonly Vector2 PrimerTroncoDeLa22 = new Vector2(0.2f, 0.457f);
+        private const float SeparacionDeLa22 = 0.0175f;
+        private const float AltoDelTroncoDeLa22 = 0.07f;
+        private static readonly Vector2 CajaColocadaDeLa22 = new Vector2(0.2f, 0.5089f);
+
         [Test]
         [Timeout(30000)]
-        public async Task ForestScene_RF25_LaCajaEsperaAlCuarentaPorCientoDeLaAlturaYNingunObjetoSeLeMonta()
+        public async Task ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            await Acopiar(forest);
+
+            // La cámara ya está en el encuadre de cierre. Lo que la 2.2 va a repetir sin moverse
+            // tiene que verse **entero**: lo que aquí queda fuera del cuadro aparece de la nada al
+            // cortar a la narrativa.
+            var pantalla = new Rect(0f, 0f, Screen.width, Screen.height);
+            var enCuadro = new List<(string Nombre, RectTransform Rect)> { ("la caja", forest.CargoRect) };
+            enCuadro.AddRange(forest.Row.Select((tronco, i) => ($"el tronco {i + 1}", tronco.rectTransform)));
+
+            var fuera = enCuadro
+                .Select(elemento => (elemento.Nombre, Borde: EnPantalla(elemento.Rect)))
+                .Where(elemento => elemento.Borde.xMin < pantalla.xMin || elemento.Borde.xMax > pantalla.xMax
+                                   || elemento.Borde.yMin < pantalla.yMin || elemento.Borde.yMax > pantalla.yMax)
+                .Select(elemento => $"{elemento.Nombre} {elemento.Borde}")
+                .ToArray();
+
+            Assert.That(fuera, Is.Empty, $"pantalla {pantalla}: " + string.Join(" · ", fuera));
+
+            // Y no basta con que se vean: cada uno cae en el punto de la ilustración que le da la
+            // 2.2, que es lo que hace que el corte a la narrativa no mueva nada.
+            var entorno = EnPantalla(forest.Environment.rectTransform);
+
+            Vector2 SobreLaIlustracion(Rect borde) => new Vector2(
+                (borde.center.x - entorno.xMin) / entorno.width,
+                (borde.center.y - entorno.yMin) / entorno.height);
+
+            for (var i = 0; i < forest.Row.Count; i++)
+            {
+                var borde = EnPantalla(forest.Row[i].rectTransform);
+                var esperado = PrimerTroncoDeLa22 + new Vector2(SeparacionDeLa22 * i, 0f);
+                Assert.That(SobreLaIlustracion(borde).x, Is.EqualTo(esperado.x).Within(0.005f),
+                    $"el tronco {i + 1} está donde lo pone la 2.2");
+                Assert.That(SobreLaIlustracion(borde).y, Is.EqualTo(esperado.y).Within(0.005f),
+                    $"el tronco {i + 1} está a la altura que le da la 2.2");
+                Assert.That(borde.height / entorno.height, Is.EqualTo(AltoDelTroncoDeLa22).Within(0.005f),
+                    $"el tronco {i + 1} se dibuja del tamaño que le da la 2.2");
+            }
+
+            forest.TakeCargo();
+            forest.DragCargoTo(Centro(forest.LogRow));
+            forest.ReleaseCargo();
+            Canvas.ForceUpdateCanvases();
+            Assume.That(forest.Cargo.IsPlaced, Is.True, "la caja quedó sobre los troncos");
+
+            var colocada = SobreLaIlustracion(EnPantalla(forest.CargoRect));
+            Assert.That(colocada.x, Is.EqualTo(CajaColocadaDeLa22.x).Within(0.005f),
+                "colocada, la caja queda donde la 2.2 la dibuja sobre el primer tronco");
+            Assert.That(colocada.y, Is.EqualTo(CajaColocadaDeLa22.y).Within(0.005f),
+                "y a la altura con la que ella la dibuja");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF25_LaCajaEsperaEnElSueloYNingunObjetoSeLeMonta()
         {
             var forest = await OpenForest();
             Canvas.ForceUpdateCanvases();
             await Awaitable.NextFrameAsync();
 
             var caja = EnPantalla(forest.CargoRect);
-            Assert.That(caja.center.y / Screen.height, Is.EqualTo(0.40f).Within(0.02f),
-                "la caja espera a un 40 % de la altura de la pantalla");
+            var suelo = EnPantalla(forest.FloorArea);
+            Assert.That(caja.xMin >= suelo.xMin && caja.xMax <= suelo.xMax
+                        && caja.yMin >= suelo.yMin && caja.yMax <= suelo.yMax, Is.True,
+                $"la caja espera entera sobre el suelo del claro: {caja} dentro de {suelo}");
 
             var montados = forest.Spawned
                 .Where(e => EnPantalla((RectTransform)e.Button.transform).Overlaps(caja))
@@ -749,6 +819,7 @@ namespace Game.Levels.Wheel.Tests
         public async Task ForestScene_RF22_LosObjetosMasAltosSeVenMasPequenos()
         {
             var forest = await OpenForest();
+            ElCursorLejos(forest);
 
             // El suelo sube hacia el fondo del claro: cuanto más arriba, más lejos y más pequeño.
             var porAltura = forest.Spawned
@@ -850,6 +921,15 @@ namespace Game.Levels.Wheel.Tests
         }
 
         private static Vector2 Centro(RectTransform rect) => EnPantalla(rect).center;
+
+        /// <summary>
+        /// Aparta el realce del cursor antes de medir. En el Editor el ratón puede quedarse
+        /// encima de la vista de juego, y un objeto con el cursor cerca crece hasta un 40 %
+        /// (RNF-02: es realce, no selección): sin esto, quien mida tamaños o bordes mide el
+        /// puntero de quien lanzó la corrida.
+        /// </summary>
+        private static void ElCursorLejos(ForestSceneController forest) =>
+            forest.Nudge(new Vector2(-10000f, -10000f), 0f);
 
         /// <summary>
         /// Espera con presupuesto en **segundos y no en cuadros**: en batchmode los cuadros corren

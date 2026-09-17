@@ -269,12 +269,20 @@ RF-45) y **sin texto dentro de la imagen**: el texto lo escribe Unity encima.
 | Archivo | Origen |
 |---|---|
 | ✓ `ui_lock.png` | T07 — candado del menú de niveles, segundo canal de RNF-19 |
+| ✓ `ui_pausa.png`, `ui_reanudar.png`, `ui_reiniciar.png` | Glifos del menú de pausa (mockup 6). **No son arte del proyecto**: son los iconos Phosphor `pause`, `play` y `arrow-counter-clockwise` que usa el mockup, rasterizados a 128 px en blanco y teñidos desde el Inspector — ver la nota de licencia abajo |
+| ✓ `ui_flecha.png` | Punta de flecha de los dos botones que desplazan la lista de la secuencia del Nivel 2 (se gira 180° para «bajar»). Dibujada para el proyecto |
 | ○ `ui_dialogo_marco.png`, `ui_dialogo_continuar.png`, `ui_dialogo_omitir.png` | `A10` (Slice 1), reutilizado por los cuatro slices |
 | ○ `ui_transicion_fundido.png`, `ui_cortinilla_tablilla.png` | `S02` — sistema de transición |
 | ○ `ui_estado_aceptado.png`, `ui_estado_devuelto.png` | `B10` (Slice 2) |
 | ○ `ui_ind_intentos.png`, `_errores`, `_pasos`, `_tiempo` | `D1` (Slice 4) — solo informe docente, RF-46 |
 | ○ `ui_teacherreport_maqueta.png` | `D2` |
 | ○ `ui_dialogo_eliminar.png` | `D3` |
+
+> **Licencia de los tres glifos de pausa (17/09/2026).** Salen de la familia **Phosphor Icons**
+> (MIT), la misma que dibuja los iconos del mockup. El cuerpo de `CreditsContent.asset` dice hoy
+> «entornos, objetos e interfaz: originales del proyecto», que con ellos deja de ser exacto:
+> decisión pendiente de Santiago —acreditarlos como se acreditan las tipografías (OFL) o
+> sustituirlos por glifos propios—.
 
 **`UI/Common/Animations/`** · ○ `ui_transicion_fundido.anim`, `ui_cortinilla.anim` (`S02`) ·
 ○ `ui_estado_aceptado.anim`, `ui_estado_devuelto.anim` (`S09a`)

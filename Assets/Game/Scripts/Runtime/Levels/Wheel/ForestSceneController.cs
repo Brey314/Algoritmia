@@ -18,6 +18,11 @@ namespace Game.Levels.Wheel
     /// categoría y cuándo termina la fase viven en <see cref="PatternSelection"/>, que es C# plano
     /// y se prueba en EditMode sin escena; la ayuda vive en <see cref="HintPolicy"/>.
     ///
+    /// **La caja y la fila de troncos cuelgan de la ilustración**, no del mundo: sus anclas son
+    /// fracciones del bosque, las mismas en las que los dibuja la escena 2.2. Colgadas del mundo
+    /// —como estaban hasta el 17/09/2026— eran píxeles de pantalla elegidos para el plano general,
+    /// y el acercamiento del cierre las echaba fuera del cuadro por el borde izquierdo.
+    ///
     /// **Los objetos no están puestos a mano en la escena**: se instancian del catálogo del asset,
     /// cada uno en la posición que ese mismo asset le da. Si estuvieran cableados uno a uno,
     /// añadir un distractor no cambiaría nada y <see cref="WheelLevelConfig"/> sería un adorno en
@@ -70,7 +75,7 @@ namespace Game.Levels.Wheel
         private Button helpButton;
 
         [SerializeField]
-        [Tooltip("La caja de alimentos. Lleva un CargoHandle: clic sostenido para agarrarla, soltar para dejarla (RF-25).")]
+        [Tooltip("La caja de alimentos. Cuelga de la ilustración, anclada en la fracción del bosque en la que espera. Lleva un CargoHandle: clic sostenido para agarrarla, soltar para dejarla (RF-25).")]
         private RectTransform cargo;
 
         [SerializeField]
@@ -78,11 +83,11 @@ namespace Game.Levels.Wheel
         private Button pushButton;
 
         [SerializeField]
-        [Tooltip("La fila de troncos alineados a la derecha de la caja. Aparece al completar el acopio y es donde se suelta la caja.")]
+        [Tooltip("La fila de troncos alineados. Cuelga de la ilustración, anclada donde la escena 2.2 los dibuja. Aparece al completar el acopio y es donde se suelta la caja.")]
         private RectTransform logRow;
 
         [SerializeField]
-        [Tooltip("El mundo: entorno, suelo, caja y fila. Es lo que la cámara acerca al completar el acopio; las tablillas quedan fuera.")]
+        [Tooltip("El mundo: el entorno —del que cuelgan la caja y la fila— y el suelo. Es lo que la cámara acerca al completar el acopio; las tablillas quedan fuera.")]
         private RectTransform world;
 
         [SerializeField]
@@ -181,6 +186,24 @@ namespace Game.Levels.Wheel
             pushButton.gameObject.SetActive(false);
             pushButton.onClick.AddListener(Push);
 
+            // Sin arte de entorno el hueco se apaga en vez de pintar un rectángulo de relleno: la
+            // pantalla de juego no lleva color de fondo, solo el entorno cuando exista (RNF-23).
+            // Con arte, **cubre** la pantalla sin deformarse a la resolución que traiga, en el
+            // plano general que declara el asset —el mismo con el que termina la escena 2.1—, y
+            // sustituir el archivo basta. Va **antes** del reparto: la caja cuelga de la
+            // ilustración, así que hasta que esta no está encuadrada la caja no está en su sitio
+            // y Despejar apartaría los objetos del suelo de un hueco equivocado.
+            if (environment != null)
+            {
+                environment.enabled = environment.sprite != null;
+                if (environment.sprite != null)
+                {
+                    environment.preserveAspect = false;
+                    IllustrationFraming.Apply(environment.rectTransform, environment.sprite.rect.size,
+                        config.PlayFraming);
+                }
+            }
+
             objectTemplate.gameObject.SetActive(false);
             inventorySlotTemplate.gameObject.SetActive(false);
 
@@ -196,22 +219,6 @@ namespace Game.Levels.Wheel
             // contador, así que usarla no acerca la pista ni la convierte en la respuesta
             // (RF-13, CP-06). La regla vive en HintPolicy; aquí solo se pulsa.
             helpButton.onClick.AddListener(() => Show(_hints.RequestHelp(), helpIcon, helpColor));
-
-            // Sin arte de entorno el hueco se apaga en vez de pintar un rectángulo de relleno: la
-            // pantalla de juego no lleva color de fondo, solo el entorno cuando exista (RNF-23).
-            // Con arte, **cubre** la pantalla sin deformarse a la resolución que traiga, en el
-            // plano general que declara el asset —el mismo con el que termina la escena 2.1—, y
-            // sustituir el archivo basta.
-            if (environment != null)
-            {
-                environment.enabled = environment.sprite != null;
-                if (environment.sprite != null)
-                {
-                    environment.preserveAspect = false;
-                    IllustrationFraming.Apply(environment.rectTransform, environment.sprite.rect.size,
-                        config.PlayFraming);
-                }
-            }
 
             logRow.gameObject.SetActive(false);
 
@@ -472,7 +479,12 @@ namespace Game.Levels.Wheel
 
             if (outcome.Accepted)
             {
-                cargo.anchoredPosition = ToAnchored(cargo, RowPoint(0f));
+                // Colocada, la caja se asienta en el punto de la ilustración en el que la escena
+                // 2.2 la dibuja al abrir (RF-05): el corte a la narrativa no la mueve. El punto es
+                // contenido del asset, como los dos encuadres, y no una cuenta sobre la fila.
+                cargo.anchorMin = config.CargoPlacedPosition;
+                cargo.anchorMax = config.CargoPlacedPosition;
+                cargo.anchoredPosition = Vector2.zero;
                 pushButton.interactable = _cargo.CanPush;
                 Show(outcome.Message, acceptedIcon, acceptedColor);
                 return;
@@ -533,21 +545,6 @@ namespace Game.Levels.Wheel
             {
                 Runner.GoTo(GameState.LevelSelect);
             }
-        }
-
-        /// <summary>
-        /// El centro de la caja, en píxeles de pantalla, a lo largo de la fila de troncos:
-        /// <c>0</c> es el arranque y <c>1</c> el final.
-        /// </summary>
-        private Vector2 RowPoint(float t)
-        {
-            var row = EnPantalla(logRow);
-            // El ancho **sin girar**: la caja rueda sobre sí misma y su envolvente en pantalla
-            // crece y encoge con el giro; medir con ella hacía temblar el avance.
-            var width = cargo.rect.width * Mathf.Abs(cargo.lossyScale.x);
-            var x = Mathf.Lerp(row.xMin + width / 2f, row.xMax - width / 2f, t);
-            // Encima de los troncos, no dentro: la caja va montada sobre la fila.
-            return new Vector2(x, row.yMax);
         }
 
         /// <summary>El <c>anchoredPosition</c> que deja el pivote del elemento en ese punto de pantalla.</summary>

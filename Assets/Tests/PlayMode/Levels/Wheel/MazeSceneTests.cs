@@ -331,6 +331,65 @@ namespace Game.Levels.Wheel.Tests
                 "uno desplegado a la vez");
         }
 
+        /// <summary>
+        /// Con más bloques de los que caben ni comprimidos, la lista **se desplaza**: las filas
+        /// conservan su alto y se recorren con los dos botones, que es el único esquema de entrada
+        /// que hay (RNF-02, CT-06: ni rueda ni arrastre). Antes se repartían el sitio a partes
+        /// iguales y acababan una encima de otra, con el rótulo saliéndose de su marco.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RNF03_ConMasBloquesDeLosQueCabenLaListaSeDesplazaSinEncogerLasFilas()
+        {
+            var maze = await OpenMaze();
+            for (var i = 0; i < 20; i++)
+            {
+                maze.AddBlock((i % 3) switch
+                {
+                    0 => InstructionBlock.Forward(i % 9 + 1),
+                    1 => InstructionBlock.Turn(),
+                    _ => InstructionBlock.Backward(2)
+                });
+            }
+
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            Canvas.ForceUpdateCanvases();
+
+            var ventana = EnPantalla(maze.SequenceViewport);
+            var filas = maze.Rows.Select(EnPantalla).ToArray();
+
+            Assert.That(filas.Select((fila, i) => (i, fila.height)).Where(par => par.height < 60f),
+                Is.Empty, "ninguna fila se encoge por debajo de lo legible");
+            for (var i = 0; i < filas.Length; i++)
+            {
+                for (var j = i + 1; j < filas.Length; j++)
+                {
+                    Assert.That(Solapan(filas[i], filas[j]), Is.False, $"Paso_{i} y Paso_{j} no se solapan");
+                }
+            }
+
+            Assert.That(maze.ScrollUpButton.gameObject.activeSelf, Is.True, "aparecen los botones de desplazamiento");
+            Assert.That(maze.ScrollDownButton.gameObject.activeSelf, Is.True);
+
+            // Al añadir, la lista se queda mirando el final: el bloque recién puesto y la casilla
+            // «Suelta un bloque aquí» están a la vista.
+            Assert.That(EnPantalla(maze.DropZone).yMin, Is.GreaterThanOrEqualTo(ventana.yMin - 1f),
+                "tras añadir se ve el final de la lista");
+
+            // Y con «subir» se llega al principio.
+            for (var i = 0; i < 20; i++)
+            {
+                maze.ScrollUpButton.onClick.Invoke();
+            }
+
+            Canvas.ForceUpdateCanvases();
+            var primera = EnPantalla(maze.Rows[0]);
+            Assert.That(primera.yMax, Is.LessThanOrEqualTo(ventana.yMax + 1f), "el primer bloque queda dentro de la ventana");
+            Assert.That(primera.yMin, Is.GreaterThanOrEqualTo(ventana.yMin - 1f));
+            Assert.That(maze.ScrollUpButton.interactable, Is.False, "arriba del todo, «subir» ya no tiene nada que hacer");
+        }
+
         [Test]
         [Timeout(30000)]
         public async Task MazeScene_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido()
@@ -404,7 +463,9 @@ namespace Game.Levels.Wheel.Tests
         [Description("Verificar en las capturas: el claro cenital entero y sin deformar en el panel izquierdo; " +
                      "carretilla en el hueco izquierdo mirando al este, refugio en el hueco derecho, piedras dentro del seto; " +
                      "a la derecha «Tu secuencia» con bloques encajados (contador, lado, rombo), el cajón «Bloques» abierto y «Ejecutar»; " +
-                     "con muchos bloques, filas comprimidas con flecha y una desplegada; el bloque en curso resaltado.")]
+                     "con muchos bloques, filas comprimidas con flecha y una desplegada; con más de los que caben, " +
+                     "las filas conservan su alto, la lista se recorta en su ventana y aparecen los dos botones de " +
+                     "desplazamiento junto al título; el bloque en curso resaltado.")]
         public async Task MazeScene_RNF20_CapturaDelLaberintoEnReposoConBloquesYEnEjecucion()
         {
             var maze = await OpenMaze();
@@ -430,6 +491,16 @@ namespace Game.Levels.Wheel.Tests
             Canvas.ForceUpdateCanvases();
             await Awaitable.NextFrameAsync();
             Capturar("Maze_03_comprimidos");
+
+            // Más bloques de los que caben ni comprimidos: la lista se desplaza dentro de su ventana.
+            for (var i = 0; i < 10; i++)
+            {
+                maze.AddBlock(i % 2 == 0 ? InstructionBlock.Forward(i % 9 + 1) : InstructionBlock.Turn());
+            }
+
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            Capturar("Maze_05_desplazada");
 
             maze.Execute();
             await Awaitable.WaitForSecondsAsync(Mathf.Max(maze.Layout.StepSeconds, 0.1f) * 2.2f);
