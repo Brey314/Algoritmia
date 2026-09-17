@@ -16,31 +16,31 @@ MonoBehaviour:
   <Level>k__BackingField: 2
   <Illustration>k__BackingField: {fileID: 21300000, guid: bbed55b5b972c6c44ac36e4f02bc21c2, type: 3}
   <CameraStart>k__BackingField:
-    <Focus>k__BackingField: {x: 0.232, y: 0.4}
+    <Focus>k__BackingField: {x: 0.232, y: 0.42}
     <Zoom>k__BackingField: 1.58
   <CameraEnd>k__BackingField:
-    <Focus>k__BackingField: {x: 0.296, y: 0.47}
+    <Focus>k__BackingField: {x: 0.296, y: 0.5}
     <Zoom>k__BackingField: 1.26
   <CameraKeys>k__BackingField:
   - <Line>k__BackingField: 1
     <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.168, y: 0.39}
-      <Zoom>k__BackingField: 1.8
+      <Focus>k__BackingField: {x: 0.168, y: 0.44}
+      <Zoom>k__BackingField: 1.95
   - <Line>k__BackingField: 2
     <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.276, y: 0.39}
-      <Zoom>k__BackingField: 1.8
+      <Focus>k__BackingField: {x: 0.276, y: 0.44}
+      <Zoom>k__BackingField: 1.95
   - <Line>k__BackingField: 3
     <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.312, y: 0.41}
+      <Focus>k__BackingField: {x: 0.312, y: 0.46}
       <Zoom>k__BackingField: 1.58
   - <Line>k__BackingField: 4
     <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.322, y: 0.39}
+      <Focus>k__BackingField: {x: 0.322, y: 0.45}
       <Zoom>k__BackingField: 1.78
   - <Line>k__BackingField: 5
     <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.296, y: 0.47}
+      <Focus>k__BackingField: {x: 0.296, y: 0.5}
       <Zoom>k__BackingField: 1.26
   <CameraSmoothingSeconds>k__BackingField: 1.3
   <OpensFromBlack>k__BackingField: 0
@@ -107,7 +107,7 @@ MonoBehaviour:
     <MotionSeconds>k__BackingField: 2.95
     <MotionDrop>k__BackingField: 0.074074075
   - <Art>k__BackingField: {fileID: 2076456876981602082, guid: 07e9eeb115364f740919f4b90b69013e, type: 3}
-    <Position>k__BackingField: {x: 0.168, y: 0.337}
+    <Position>k__BackingField: {x: 0.168, y: 0.372}
     <Size>k__BackingField: 0.1
     <RotationDegrees>k__BackingField: 15
     <Mirrored>k__BackingField: 1
@@ -117,7 +117,7 @@ MonoBehaviour:
     <MotionSeconds>k__BackingField: 1.8
     <MotionDrop>k__BackingField: 0
   - <Art>k__BackingField: {fileID: -5143368477329178737, guid: de76e98f2e2ca8a4fa94f21fdffd0297, type: 3}
-    <Position>k__BackingField: {x: 0.276, y: 0.337}
+    <Position>k__BackingField: {x: 0.276, y: 0.372}
     <Size>k__BackingField: 0.09
     <RotationDegrees>k__BackingField: -20
     <Mirrored>k__BackingField: 0

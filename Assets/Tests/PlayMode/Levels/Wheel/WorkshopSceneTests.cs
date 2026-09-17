@@ -57,11 +57,14 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(sprite.name, Is.EqualTo("env_n2_bosque_claro"),
                 "es el mismo entorno duplicado del Nivel 2: el taller es el claro este de la ilustración");
 
-            // Camara_Narrativa_N2.md §5.6: plano fijo (0.772, 0.470) a zoom 1.32, idéntico al último
-            // encuadre de la 2.3 — de la narrativa al juego no hay salto.
-            Assert.That(workshop.Config.PlayFraming.Focus.x, Is.EqualTo(0.772f).Within(0.001f));
-            Assert.That(workshop.Config.PlayFraming.Focus.y, Is.EqualTo(0.47f).Within(0.001f));
-            Assert.That(workshop.Config.PlayFraming.Zoom, Is.EqualTo(1.32f).Within(0.001f));
+            // Camara_Narrativa_N2.md §5.6: el claro este **entero** (16/09/2026). A zoom 1 la
+            // ilustración cubre el alto justo, así que se ve de arriba abajo; y el foco 0.75 es
+            // el máximo al oeste que cabe sin tocar el eje del espejo —un pelo más y saldrían un
+            // tronco y su gemelo (regla 3 del §3)—. Es el último encuadre de la 2.3, así que de
+            // la narrativa al juego no hay salto.
+            Assert.That(workshop.Config.PlayFraming.Zoom, Is.EqualTo(1f).Within(0.001f));
+            Assert.That(workshop.Config.PlayFraming.Focus.x, Is.EqualTo(0.75f).Within(0.001f));
+            Assert.That(workshop.Config.PlayFraming.Focus.y, Is.EqualTo(0.5f).Within(0.001f));
 
             // Cubre —ningún borde de la ventana queda sin pintar— y no deforma: recorta lo que
             // sobre. Vale a la resolución del arte de hoy y a la definitiva: solo cambia el archivo.

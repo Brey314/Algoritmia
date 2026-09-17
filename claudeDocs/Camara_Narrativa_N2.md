@@ -144,7 +144,18 @@ así que el paso de narrativa a juego no tiene salto.
 | `L2` | MAMA: algunas cosas se mueven mas facil... | **(0.258, 0.405)** | **1.60** | baja otra vez sobre los troncos redondos |
 | `L3` | NINO: Voy a probar todas. | **(0.228, 0.395)** | **1.68** | empujon corto, mas cerca del suelo |
 | `L4` | NINA: Solo lo que realmente funciona. | **(0.190, 0.425)** | **1.45** | llega a la caja: 'a un lado, la caja' |
-| `L5` | CHISPA: Selecciona... cuando tengas cinco | **(0.270, 0.500)** | **1.18** | ABRE al plano de juego (= frame exacto de la fase 1) |
+| `L5` | CHISPA: Selecciona... cuando tengas cinco | **(0.250, 0.500)** | **1.00** | ABRE al plano de juego (= frame exacto de la fase 1) |
+
+> **Cambio del 16/09/2026 [S] — las dos fases jugables muestran el entorno entero.** Los planos de
+> juego estaban a ×1.18 y ×1.32, y con el arte definitivo eso recorta la copa de los árboles por
+> arriba y los matorrales por abajo. Bajan a **zoom 1.00**, donde la ilustración cubre el alto justo
+> y se ve de arriba abajo. El foco no puede quedarse donde estaba: a zoom 1 el cuadro mide media
+> ilustración, así que **0.250 y 0.750 son los únicos valores que muestran un claro completo sin
+> tocar el eje del espejo** (regla 3 del §3) — un pelo más adentro y salen un tronco y su gemelo.
+> Arrastran con ellos las dos paradas que el diseño exige idénticas, `2.1·L5` y `2.3·L4d`: de la
+> narrativa al juego se sigue entrando sin salto. Los cierres (×1.58 y ×1.56) no cambian.
+
+---
 
 ### 5.3 · `Level2_Forest` — Fase 1 jugable
 
@@ -155,7 +166,7 @@ hacia la caja (1,2 s) deja la cámara exactamente en el encuadre con el que abre
 
 | # | Línea | Foco (x, y) | Zoom | Movimiento |
 |---|---|---|---|---|
-| `JUEGO` | Plano general fijo durante toda la recoleccion | **(0.270, 0.500)** | **1.18** | identico al final de 2.1: no hay salto |
+| `JUEGO` | Plano general fijo durante toda la recoleccion | **(0.250, 0.500)** | **1.00** | identico al final de 2.1: no hay salto. **El claro oeste entero** (16/09/2026) |
 | `CIERRE` | Al acopiar el quinto tronco | **(0.232, 0.420)** | **1.58** | zoom de 1.2s hacia la caja mientras los troncos vuelan |
 
 ### 5.4 · `N2_Escena22_ElPatron` — El patrón
@@ -195,7 +206,7 @@ El encuadre final es el de la fase 2.
 | `L4a` | CHISPA: Abre agujeros en los troncos cortos | **(0.694, 0.420)** | **1.95** | cierra sobre los dos troncos cortos |
 | `L4b` | CHISPA: luego unelos con el tronco largo | **(0.748, 0.420)** | **1.95** | paneo al este: el tronco largo |
 | `L4c` | CHISPA: coloca encima la tabla | **(0.800, 0.430)** | **1.88** | paneo al este: la tabla |
-| `L4d` | CHISPA: y sobre ella la caja. En ese orden. | **(0.772, 0.470)** | **1.32** | retrocede al banco completo (= frame de la fase 2) |
+| `L4d` | CHISPA: y sobre ella la caja. En ese orden. | **(0.750, 0.500)** | **1.00** | retrocede al banco completo (= frame de la fase 2) |
 
 ### 5.6 · Fase 2 jugable — Construcción
 
@@ -206,7 +217,7 @@ con el cierre de la fase 1: el nivel cierra sus dos fases con el mismo gesto.
 
 | # | Línea | Foco (x, y) | Zoom | Movimiento |
 |---|---|---|---|---|
-| `JUEGO` | Plano fijo del banco de trabajo | **(0.772, 0.470)** | **1.32** | identico al final de 2.3 |
+| `JUEGO` | Plano fijo del banco de trabajo | **(0.750, 0.500)** | **1.00** | identico al final de 2.3. **El claro este entero** (16/09/2026) |
 | `CIERRE` | Carretilla terminada | **(0.785, 0.445)** | **1.56** | empuje de 1.2s sobre la carretilla: rima con la fase 1 |
 
 ### 5.7 · `N2_Escena24_Regreso` — El regreso

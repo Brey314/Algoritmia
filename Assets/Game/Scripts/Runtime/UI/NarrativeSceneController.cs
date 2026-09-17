@@ -197,10 +197,17 @@ namespace Game.UI
 
             _keyIndex = index;
             _flashUntil = 0f;
-            // Avanzar a mitad de un fundido lo cancela: manda la línea que se está leyendo, y
+            // Avanzar a mitad de un corte lo cancela: manda la línea que se está leyendo, y
             // dejar el fundido vivo aplicaría a oscuras el encuadre de una parada ya pasada.
-            _cutRemaining = 0f;
-            _fade = 1f;
+            // El fundido de apertura no salta a ninguna parada, así que no hay nada viejo que
+            // aplicar —y cancelarlo aquí lo borraría entero: cuando la primera parada cae en la
+            // línea 0 llega en el cuadro siguiente a `Begin`, y la escena entraría de golpe.
+            if (_cutKey != null)
+            {
+                _cutRemaining = 0f;
+                _fade = 1f;
+            }
+
             if (index < 0)
             {
                 return;

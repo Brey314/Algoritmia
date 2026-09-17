@@ -323,6 +323,26 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task NarrativeScene_RF05_LaEscenaQueAbreEnNegroFundeAunqueSuPrimeraParadaSeaLaLinea0()
+        {
+            // El fundido de entrada y la primera parada llegan en el mismo cuadro. Cuando la
+            // parada lo cancelaba, la 1.2 entraba de golpe desde el negro en que la deja el
+            // apagón de Algoritm — justo el salto que el fundido viene a tapar. Las escenas 2.1
+            // y 2.3 no lo notaban porque su primera parada no cae en la línea 0.
+            var (controller, _) = await OpenNarrative("N1_Hallazgo");
+            var secuencia = SequenceNamed(controller, "N1_Hallazgo");
+            Assume.That(secuencia.OpensFromBlack, Is.True, "la escena abre en negro");
+            Assume.That(secuencia.CameraKeys[0].Line, Is.Zero, "y su primera parada cae en la línea 0");
+
+            Assert.That(controller.CutFade, Is.LessThan(1f),
+                "el fundido de entrada sigue vivo después del primer cuadro");
+
+            await EsperarSegundos(secuencia.HardCutFadeSeconds + 0.2f);
+            Assert.That(controller.CutFade, Is.EqualTo(1f), "y termina de entrar");
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task NarrativeScene_RF05_ElDestelloDuraSusSegundosYVuelveALaLuzAnterior()
         {
             var (controller, _) = await OpenNarrative("N1_Hallazgo");

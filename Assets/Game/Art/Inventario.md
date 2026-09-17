@@ -118,6 +118,25 @@ no programa ningún clip suyo. Ver «Puntos abiertos».
 
 ## `Environments/`
 
+**Cómo entran (16/09/2026).** `Game.EditorTools/ArtImportRules.cs` fuerza en todo
+`Assets/Game/Art/`: **sin comprimir** y `maxTextureSize` 4096. No es un gusto: comprimida, la
+ilustración plana enseña la rejilla de bloques de 4×4 —se ve en la pared de la cueva, y el Nivel 1
+la multiplica por la capa de oscuridad, que amplifica el error— y corre los colores. Sin comprimir
+las 44 texturas de `Art/` ocupan ~92 MB, muy por debajo de RNF-05. `ArtImport_RNF23_…` lo vigila.
+Un archivo nuevo entra ya bien: **sustituir la imagen basta**, la escala la calcula
+`IllustrationFraming` con el tamaño real del sprite.
+
+**Lo que hay en disco hoy** (entrega de entornos finales, acta D06): los de pantalla a 1920×1080 y
+las panorámicas a 3840×1080, en la misma composición que los provisionales —comprobado: el
+contenido cae en las mismas fracciones del lienzo, así que **ningún encuadre de
+`Camara_Narrativa_N1/N2` cambia de valor**—. Cinco conservan el prefijo viejo `entorno_` y hay que
+renombrarlos a `env_` **desde el motor** (tarjeta `D06-3`), que conserva el GUID y no toca escenas:
+`entorno_n1_apertura`, `entorno_n1_cueva_2x`, `entorno_n1_cueva_cenital`, `entorno_n2_laberinto`
+—`env_n2_bosque_claro` ya cumple—. Tres llegaron con nombre libre y todavía no los usa nadie:
+`Wheel/civilización_noche.png`, `River/rio_normal.png` y `River/civilización_final.png` (tildes y
+sin prefijo ni nivel: los tres incumplen §15.4; además entraron en `Sprite Mode: Multiple`, que
+para un fondo entero no aporta y hace que `LoadAssetAtPath<Sprite>` devuelva nulo).
+
 ### `Environments/Fire/`
 
 | Archivo | Origen |

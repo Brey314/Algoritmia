@@ -13,10 +13,11 @@ Presupuestos duros que se verifican, no se estiman (RNF-04..RNF-06): carga de es
 memoria < 2 GB, paquete < 500 MB.
 
 **Estado del código: no se transcribe aquí.** La única fuente es el `todo.md` del slice abierto
-(hoy `claudeDocs/tasks/Slice 1/todo.md`) más los documentos de resultados **que existan** a su lado
-—el Slice 1 tiene `Fase-N-Resultados.md` de las fases 0 a 3 y ninguno de la 5; el Slice 2 tiene uno
-solo, `Slice-2-Resultados.md`, de slice entero—: casillas, cifras de pruebas y checkpoints se leen
-ahí y no se duplican en este archivo — una copia se queda vieja en dos commits. Empezar leyéndolo.
+(desde el 16/09/2026 el abierto para código es `claudeDocs/tasks/Slice 3/todo.md`, con ninguna
+casilla marcada) más los documentos de resultados **que existan** a su lado —el Slice 1 tiene
+`Fase-N-Resultados.md` de las fases 0 a 3 y ninguno de la 5 ni de la 6; el Slice 2 tiene uno solo,
+`Slice-2-Resultados.md`, de slice entero; el Slice 3 todavía no tiene ninguno—: casillas, cifras
+de pruebas y checkpoints se leen ahí y no se duplican en este archivo — una copia se queda vieja en dos commits. Empezar leyéndolo.
 
 **Rider 2026.2.0.2 con el plugin «MCP Server Extension for Unity» (id 30357)**, instalados el
 06/09/2026 (vía winget). `mcp__rider__*` habla con el **Rider abierto** y con el proyecto cargado:
@@ -41,34 +42,40 @@ comunicación con el usuario en español.
 | `claudeDocs/Camara_Narrativa_N2.md` + `docs/md/Camara_Narrativa.md` | **La cámara narrativa del Nivel 2.** El de `claudeDocs/` es el **diseño** (50 encuadres validados contra 16:9); el de `docs/md/` es el **inventario de lo aplicado**: cada movimiento de cámara (foco, zoom, paradas por línea) con quién lo decidió —[S] Santiago / [C] Claude—. Los valores viven en `Assets/Game/Data/Narrative/N2_*.asset`; el documento explica el porqué, no sustituye al asset. Regla que evita el choque más común: para bajar la cámara al suelo hay que cerrar el plano (`y = 0.35` exige `zoom ≥ 1.43`). |
 | `docs/Camara_Narrativa_N1.md` + `docs/md/Camara_Narrativa_N1.md` | **La cámara y la luz del Nivel 1** (desde el 11/09/2026). El de `docs/` es el **diseño de Santiago** (35 encuadres, cada uno con su estado de luz) y se trata como los `.docx`: no se edita desde código. El de `docs/md/` es su inventario: qué quedó en los `N1_*.asset` y en el motor (`NarrativeLight`, `CameraKey.HardCut`, `FlashSeconds`, `LightStart`, shader `Algoritm/Oscuridad`), el mapa parada → línea del asset y las desviaciones con su porqué. Solo el Nivel 1 usa la capa de oscuridad; el Nivel 2 no cambia. |
 | `docs/md/verificacion_encuadres_N1/` + `_N2/` | **Las hojas de verificación de encuadres** (acta D05, 13/09/2026): un PNG por escena y por parada, **generado desde el contenido y no a mano**, con los objetos donde el asset los pone y la franja del cuadro de diálogo marcada en rojo. Se rehacen cuando el contenido cambia; los dos inventarios de cámara las citan como `claudeDocs/verificacion_encuadres_*` — la ruta real es `docs/md/`. |
-| `Assets/Game/Art/Inventario.md` | **El índice de sprites.** Qué archivo va en cada carpeta de `Assets/Game/Art/`, con la tarea que lo produce, la nomenclatura (`char_`, `prop_`, `env_`, `ui_`, `fx_`, `ref_`; niveles `n1`/`n2`/`n3`) y la convención de `.anim`. No decide nada: manda el tablero de arte `Tareas.xlsx` (163 piezas, tareas `S01..S16c`), **que no está en el repo**, y luego los `plan.md` y `Direccion_de_Arte.md`. |
+| `Assets/Game/Art/Inventario.md` | **El índice de sprites.** Qué archivo va en cada carpeta de `Assets/Game/Art/`, con la tarea que lo produce, la nomenclatura (`char_`, `prop_`, `env_`, `ui_`, `fx_`, `ref_`; niveles `n1`/`n2`/`n3`) y la convención de `.anim`. No decide nada: manda el tablero de arte `Tareas.xlsx` (163 piezas, tareas `S01..S16c`), **que no está en el repo**, y luego los `plan.md` y `Direccion_de_Arte.md`. **Del acta D06 (15/09/2026) quedan dos cosas pendientes sobre el arte:** los entornos ya recibidos siguen con el prefijo `entorno_` y hay que renombrarlos a `env_` **desde el motor** (`D06-3`), y los props definitivos del N1 y del N2 (`D06-1`, `D06-2`) entran **sustituyendo el archivo y conservando el nombre** — incorporarlos no toca escenas ni código. **Cómo entra una imagen (16/09/2026):** `Game.EditorTools/ArtImportRules.cs` fuerza en todo `Assets/Game/Art/` **sin comprimir** y `maxTextureSize` 4096 —comprimida, la ilustración plana enseña la rejilla de bloques de 4×4, y el N1 la multiplica por la capa de oscuridad—, y `ArtImport_RNF23_…` lo vigila; las 44 texturas ocupan así ~92 MB, lejos de RNF-05. Los tres entornos recién entregados con nombre libre (`Wheel/civilización_noche`, `River/rio_normal`, `River/civilización_final`) incumplen §15.4 y entraron en `Sprite Mode: Multiple`, que para un fondo entero hace que `LoadAssetAtPath<Sprite>` devuelva nulo. |
 | `claudeDocs/Mockups de interfaz Algoritmia.html` | **Los mockups de pantalla** (uno por superficie, numerados). Los `todo.md` y `Camara_Narrativa_N1.md` los citan por número («mockup 7 · Nivel 1 · encendido»); es la referencia de disposición de una escena antes de tocar el `.unity`. |
-| `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. Los cuatro slices están planeados y entre ellos cubren los 47 RF: `Slice 1` Golden Path y nivel fuego · `Slice 2` La Rueda · `Slice 3` El Río y cierre del juego · `Slice 4` progreso, informe docente y borrado de datos. **Se planean en orden y cada uno supone terminado el anterior**, pero desde el 10/09/2026 el Slice 1 y el Slice 2 corren en paralelo — ver «Dos slices a la vez» abajo. Ninguno rediscute `SPEC.md`. |
+| `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. Los cuatro slices están planeados y entre ellos cubren los 47 RF: `Slice 1` Golden Path y nivel fuego · `Slice 2` La Rueda · `Slice 3` El Río y cierre del juego · `Slice 4` progreso, informe docente y borrado de datos. **Se planean en orden y cada uno supone terminado el anterior**, pero desde el 10/09/2026 corren varios en paralelo — ver «Varios carriles a la vez» abajo. **Los `plan.md` no se reescriben:** el del Slice 3 es la rev. 1 del 30/08/2026 y sus avisos de precondición («los Slices 1 y 2 no están hechos», «`Assets/` sigue sin código», «no hay corredor de pruebas MCP») están vencidos; lo que sigue valiendo de ellos es qué pieza previa generaliza cada tarea. Ninguno rediscute `SPEC.md`. |
 | `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión ya hecha con markitdown. **Los cuatro `.docx` de hoy están convertidos** (14/09/2026). **Nunca editar ninguno de los dos desde código.** |
-| `docs/actas/OE*/Acta_*.md` | Actas de seguimiento: qué se decidió, cuándo y por qué. Una carpeta por objetivo específico —`OE2/` serie `O01..O03` (ago 2026), `OE3/` serie `D01..D05` (sep 2026, la abierta)— y dentro `Acta_<serie><NN>_AAAA-MM-DD.md` junto a su `.docx` (las dos últimas, `D04` y `D05`, solo tienen el `.md`). Son la trazabilidad de las decisiones; consultarlas cuando haga falta el *porqué* de un RF, no reabrirlas. **No hay tablero Kanban aparte**: el tablero vive en la §6 de cada acta («Compromisos y tablero Kanban»), con los compromisos nuevos y los movimientos al cierre. Ojo al leerlo hacia atrás: **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` en los movimientos posteriores—, así que una tarjeta se rastrea por su texto, no por su id. |
+| `docs/actas/OE*/Acta_*.md` | Actas de seguimiento: qué se decidió, cuándo y por qué. Una carpeta por objetivo específico —`OE2/` serie `O01..O03` (ago 2026), `OE3/` serie `D01..D06` (sep 2026, la abierta)— y dentro `Acta_<serie><NN>_AAAA-MM-DD.md` junto a su `.docx` (las tres últimas, `D04`, `D05` y `D06`, solo tienen el `.md`). Son la trazabilidad de las decisiones; consultarlas cuando haga falta el *porqué* de un RF, no reabrirlas. **No hay tablero Kanban aparte**: el tablero vive en la §6 de cada acta («Compromisos y tablero Kanban»), con los compromisos nuevos y los movimientos al cierre. Ojo al leerlo hacia atrás: **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` en los movimientos posteriores—, así que una tarjeta se rastrea por su texto, no por su id. |
 
 **Dónde empezar una sesión de código:** en la primera casilla sin marcar del `todo.md` del
-slice abierto más bajo, salvo que la sesión trabaje el carril paralelo del Slice 2.
+slice abierto más bajo, salvo que la sesión trabaje otro carril.
 
-**Dos slices a la vez (decisión del 10/09/2026).** La Fase 3 del Slice 1 (T12–T19, nivel fuego)
+**Varios carriles a la vez (decisión del 10/09/2026).** La Fase 3 del Slice 1 (T12–T19, nivel fuego)
 se cerró el 11/09/2026. El 12/09/2026 Santiago abrió en el Slice 1 la **Fase 5** (T20–T24,
 rediseño de la mecánica del Nivel 1: arrastrar hojas y piedras → deslizante de **fuerza** 0–10 →
 golpear → soplar; INC-47), que quedó hecha salvo la revisión con el usuario (Checkpoint E), y el
 15/09/2026 la **Fase 6** (T25–T27: primero **reunir** todo en el círculo del centro, luego la
 cámara al doble y **dos deslizantes**, fuerza y cercanía de las piedras; sin rótulo «Aún no»). Del
 Slice 1 quedan abiertos los **Checkpoints E y F** (revisión) y el **Checkpoint D** (recorridos,
-RNF-14, mediciones sobre la build portable). El Slice 2 sigue por su carril. **El reparto es por
-assembly, no por slice** — es lo único que evita que los dos carriles se pisen:
+RNF-14, mediciones sobre la build portable). El **código** del Slice 2 se cerró y se fusionó a
+`main` el 16/09/2026 (PR #74, acta D06 · tarjeta `D06-4`); de ese slice solo quedan casillas de
+build y de revisión. El **Slice 3 (El Río)** abrió el 16/09/2026 en la rama `feat/slice-3`, sin
+ninguna tarea cerrada: es el carril de código, y empieza por **R01** porque `R02` y todo lo que
+cuelga de él están bloqueados por su pregunta abierta 1 (qué significa «fase» en el Nivel 3), que
+decide el formato de los **datos persistidos** y por tanto es «preguntar primero». **El reparto es
+por assembly, no por slice** — es lo único que evita que los carriles se pisen:
 
 | Carril | Toca |
 |---|---|
 | **Slice 1 · Checkpoints D y E** | `Game.Levels.Fire`, `Game.Core`, escenas del N1, build portable |
-| **Slice 2** | `Game.Levels.Wheel`, `Game.Scaffolding` |
+| **Slice 2 · Checkpoint W-F** | `Game.Levels.Wheel`, `Game.Scaffolding` |
+| **Slice 3** | `Game.Levels.River` (aún sin crear), `Game.Core`, `Game.Scaffolding`, escenas del N3 |
 
-**El orden de las tarjetas y qué está abierto se lee en los dos `todo.md`, no aquí** — una copia
-de ese estado en este archivo se queda vieja en dos commits. La Fase 5 del Slice 2 (W15–W18)
-se cerró el 15/09/2026; del Checkpoint W-F quedan las mediciones sobre la build, la exclusión
-manual de RNF-16, PG-05 y la revisión. **Dos cruces que ahora comparten los dos carriles:** el
+**El orden de las tarjetas y qué está abierto se lee en los `todo.md`, no aquí** — una copia
+de ese estado en este archivo se queda vieja en dos commits. La Fase 5 del Slice 2 (W15–W18, más
+W19 el mismo día) se cerró el 15/09/2026; del Checkpoint W-F quedan las mediciones sobre la build,
+la exclusión manual de RNF-16, PG-05 y la revisión. **Dos cruces que ahora comparten los dos carriles:** el
 menú de pausa es el prefab `Assets/Game/Prefabs/UI/MenuPausa.prefab` (mockup 6: Reanudar ·
 Reiniciar · Volver al menú de niveles; `Time.timeScale = 0` mientras está abierto), instanciado
 en las cuatro escenas jugables —tocarlo cambia el N1 y el N2 a la vez—, y `LevelSummary` elige
@@ -125,7 +132,7 @@ graphify explain "HintPolicy"
 
 `GRAPH_REPORT.md` es el índice legible —empezar por su sección «Community Hubs»—; `graph.json` es
 el grafo para consumo de agente y `graph.html` la vista interactiva. Es una **foto**: la vigente es
-del 15/09/2026 sobre el commit `8de614f`, 3170 nodos y 6066 aristas en 269 comunidades. Se refresca
+del 15/09/2026 sobre el commit `863ef05`, 3300 nodos y 6315 aristas en 263 comunidades. Se refresca
 con `/graphify . --update` tras un bloque de trabajo —el incremental solo reextrae lo que cambió, y
 si lo cambiado es solo `.cs` no cuesta nada porque el AST no usa modelo—, y lo que el grafo señale
 se confirma en el código antes de citarlo: ubica, no sustituye a leer el archivo.
@@ -231,6 +238,17 @@ de empezar:
   `mcp__rider__get_unity_compilation_result` corren contra el Editor **abierto** (sin cerrar/reabrir)
   y habilitan el flujo test-first del plugin `unity-coding-skills`. `unity test` queda como
   respaldo para corridas limpias y CI.
+- **Con Rider caído y el Editor abierto** (lo que pasó el 15/09/2026) queda un tercer camino, el
+  único que no obliga a cerrar el Editor: un script `[InitializeOnLoad]` **dentro del proyecto**
+  (`Assets/UnityCodingSkills/Editor/`, con su `.asmdef` referenciando `UnityEditor.TestRunner` +
+  `nunit.framework.dll`) que re-registra `TestRunnerApi.RegisterCallbacks` tras cada recarga de
+  dominio y escribe `TestRunnerResults/<etiqueta>.txt` en `RunFinished`; se dispara por reflexión
+  desde un script del scratchpad con `mcp__coplay-mcp__execute_script` y se sondea el archivo con
+  un `until`-loop. El archivo de resultados es la única señal fiable: **durante una corrida
+  PlayMode el puente no responde** (`execute_script` y `get_unity_editor_state` expiran a los 60 s),
+  así que el estado se lee de `TestRunnerResults/<etiqueta>.running`. Antes de lanzar PlayMode,
+  dejar la escena activa limpia (`Boot`, sin cambios sin guardar) o el runner pide guardar. Todo
+  —scripts, asmdef y carpeta de resultados— se borra al terminar: no es código del juego.
 - **`coplay-mcp` solo responde con el Editor abierto Y ya inactivo.** Mientras compila o hace
   domain-reload devuelve `timed out` o `A task was canceled` — esperar a que quede inactivo y
   reintentar (regla de 10 s del skill `run-tests`). `list_unity_project_roots` responde aunque
@@ -268,8 +286,9 @@ antes de escribir la primera línea:
   Fuera de esa cadena cuelgan tres assemblies más: `Game.UI` (→ `Game.Core`, `Game.Scaffolding`,
   `UnityEngine.UI`) con los controladores de pantalla, donde va la mayor parte del código de hoy;
   `Game.Audio` (→ `Game.Core`); y `Game.EditorTools`, **solo Editor**, que no referencia ningún
-  `Game.*` (trae `PlayFromBoot` y `Sandbox/CharacterProbe*`, una maqueta de personaje que no es
-  código del juego). Hoy tienen código `Game.Core`, `Game.Scaffolding`, `Game.UI`, `Game.Levels.Fire`,
+  `Game.*` (trae `PlayFromBoot`, `ArtImportRules` —la regla de importación del arte— y
+  `Sandbox/CharacterProbe*`, una maqueta de personaje que no es código del juego).
+  Hoy tienen código `Game.Core`, `Game.Scaffolding`, `Game.UI`, `Game.Levels.Fire`,
   `Game.Levels.Wheel` y `Game.EditorTools`: `Game.Audio` es un `.asmdef` vacío a la espera de su
   fase —igual que su `.asmdef` de prueba—, y `Game.Reporting` todavía no existe en disco (llega
   en el Slice 4). **El sonido del juego está comprometido con otra persona** (acta D05, tarjeta
@@ -293,6 +312,11 @@ antes de escribir la primera línea:
 - **Interfaz inyectada donde hay un consumidor conocido; evento solo con varios oyentes.**
   No hay `EventBus` global.
 - **Solo tres singletons con `DontDestroyOnLoad`**: `GameFlowRunner`, `SceneLoader`, `AudioManager`.
+- **Los encuadres son fracciones del lienzo, no píxeles.** `IllustrationFraming`
+  (`Game.Scaffolding`) traduce foco `(x, y)` + `zoom` contra el tamaño real del sprite, y lo usan
+  por igual `NarrativeSceneController` y las tres escenas del Nivel 2. Por eso una entrega de arte
+  entra **sustituyendo el archivo**: si la composición se conserva, ningún valor de los documentos
+  de cámara cambia.
 - **Contenido fuera del código** (CT-05): todo texto visible y todo parámetro ajustable jugando
   vive en ScriptableObjects con `[field: SerializeField]` + `[Tooltip]`.
 - **Persistencia**: JSON por perfil en una carpeta `Datos/` junto al ejecutable — no
@@ -316,7 +340,9 @@ antes de escribir la primera línea:
   ["UNITY_INCLUDE_TESTS"]` y `nunit.framework.dll` en `precompiledReferences`; los de PlayMode
   son idénticos pero con `includePlatforms` vacío. `Game.Architecture.Tests` es la excepción: no
   referencia ningún `Game.*` porque lee los `.asmdef` del disco — así puede exigir el assembly
-  de un módulo que todavía no tiene código (RNF-15, RNF-16).
+  de un módulo que todavía no tiene código (RNF-15, RNF-16). Ahí vive también `ArtImportTest`
+  (RNF-23), que recorre por `AssetDatabase` los `.png` de `Art/` y avisa si una entrega nueva se
+  cuela comprimida o reducida.
 
 ## Invariantes pedagógicos — no son preferencias
 
