@@ -104,26 +104,59 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ## Fase 2 — Recolección (`nivel-rio`)
 
-- [ ] **R05 · `TaskList` — las cuatro tareas y su correspondencia exacta** — `S` · `EM`
+- [x] **R05 · `TaskList` — las cuatro tareas y su correspondencia exacta** — `S` · `EM`
       RF-36, RF-11, RF-43, RNF-03, RNF-19, CP-02, CP-03, **INC-30**, HU-11, CU-09 (FA-5a), CU-10,
-      supuesto 11, guion §8.1/§8.2 · depende de: R04
-      ⚠️ Prueba **negativa** obligatoria: la fase de base **no** marca tarea (R4 del plan)
-- [ ] **R06 · `Inventory`, `Collectible` y proximidad** — `M` · `EM`
-      RF-37, RF-38, RF-11, CT-05, RNF-18, CP-02, HU-11, CU-09 (FA-4a) · depende de: R05
-- [ ] **R07 · Escena `Level3_River` y movimiento con botones en pantalla** — `M` · `PM` `MCP`
+      supuesto 11, guion §8.1/§8.2 · depende de: R04 — **17/09/2026.** `RiverTask` (enum de las
+      cuatro tareas + la regla de cuándo se marca cada una) y `TaskList` (estado, **sin forma de
+      desmarcar**). Las cinco pruebas del plan en `TaskListTests`, con la negativa de INC-30
+      (`LaFaseDeBaseNoMarcaTareaPorSiSola`) y la de RF-43 comprobando por reflexión que la superficie
+      pública solo marca. Los textos viven en `N3_RiverLevelConfig.asset` (`TaskLabels`, §1.8.1) y
+      `RiverLevelConfigTests` los fija contra el guion.
+- [x] **R06 · `Inventory`, `Collectible` y proximidad** — `M` · `EM`
+      RF-37, RF-38, RF-11, CT-05, RNF-18, CP-02, HU-11, CU-09 (FA-4a) · depende de: R05 —
+      **17/09/2026.** `Collectible` (id, clase, nombre, arte, posición **en fracciones de la
+      ilustración**, `IsWithinReach` contra una posición inyectada), `Inventory` (capacidad = catálogo,
+      recoger no falla, el cuarto ya informa «tienes todo») y `RiverLevelConfig` con radio, velocidad,
+      orilla andable y textos. Las cuatro pruebas del plan en `InventoryTests` (+ `RiverWalk` y `BuildZone`
+      como regla pura). Sprites **provisionales** por código (`prop_n3_troncos/_sogas/_tela/_mastil`).
+- [x] **R07 · Escena `Level3_River` y movimiento con botones en pantalla** — `M` · `PM` `MCP`
       **RF-35**, RF-10, RF-13, RNF-02, RNF-03, CT-06, **INC-01**, supuesto 6, HU-11, CU-09,
-      guion §2.1/§8.2 · depende de: R06
-      ⚠️ Prueba sobre el **`.inputactions`**, no solo sobre el comportamiento: cero teclado
-- [ ] **R08 · Zona de construcción** — `S` · `PM` `MCP`
-      RF-39, RF-11, RF-04, CP-02, CP-03, HU-11, CU-09 (FA-6a) · depende de: R07
+      guion §2.1/§8.2 · depende de: R06 — **17/09/2026.** `RiverWalk` (C# plano: posición y límites
+      en fracciones, `Step` recorta), `DirectionPad` (una flecha = un botón uGUI con `IPointerDown/Up`,
+      **sin Input System**) y `RiverSceneController` (adaptador: plano fijo `(0.400, 0.410) ×1.50` de
+      `Camara_Narrativa_N3.md` §5.3, Mamá/materiales/zona colgados de la ilustración). Disposición del
+      mockup 11-12: lista arriba-izquierda, inventario 2×2 abajo-izquierda, flechas en cruz y «Recoger»
+      abajo-derecha, tablilla del guía arriba, pausa (prefab `MenuPausa`). Escena construida por script
+      de editor efímero y registrada en Build Settings (undécima). `RiverScene_INC01_…` inspecciona el
+      **`.inputactions`** (cero `<Keyboard>`) **y** que el assembly no referencie `Unity.InputSystem` ni
+      `UnityEngine.InputLegacyModule`. `Game.Levels.River.PlayMode.Tests.asmdef` creado.
+      `char_mama_cenital.png` provisional (una postura, sin animación).
+- [x] **R08 · Zona de construcción** — `S` · `PM` `MCP`
+      RF-39, RF-11, RF-04, CP-02, CP-03, HU-11, CU-09 (FA-6a) · depende de: R07 — **17/09/2026.**
+      `BuildZone` (C# plano): `Contains` por radio, `TryEnter` nombra lo que falta («sogas, tela y
+      mástil», nunca cuántos) y abre una sola vez. **Desviación respecto al plan:** al abrirse **no se
+      confirma ni guarda fase alguna** — la recolección no se persiste (decisión de R02); confirmar
+      base/amarre/mástil es del panel (R11). El panel es hoy un hueco (`Panel_Assembly`, solo título)
+      que se enciende y retira las flechas; R11 lo llena. `env_n3_zona_disponible.png` provisional.
+      **Suite del 17/09/2026:** EditMode **251/251**; PlayMode `Game.Levels.River.PlayMode.Tests`
+      **10/10** (8 de integración + 2 capturas `VisualVerification` en `TestScreenshots/RiverScene_*`).
 
 ### ✅ Checkpoint R-C — Recolección completa
-- [ ] Se recorre el mapa, se recogen los cuatro materiales y se entra a la zona de construcción
-- [ ] **Ninguna tecla mueve al personaje** — inspección del mapa de controles (RNF-02, INC-01)
-- [ ] Las tareas 1 y 2 quedan marcadas; las 3 y 4 siguen sin marcar
-- [ ] Lista de tareas e inventario visibles todo el tiempo y sin solaparse
-- [ ] Radio de proximidad de RF-37 validado jugando (pregunta abierta 3)
-- [ ] Revisado con el usuario
+- [x] Se recorre el mapa, se recogen los cuatro materiales y se entra a la zona de construcción —
+      `BuildZone_RF39_AbreElPanelSoloConLosCuatroMateriales` (PM, 17/09/2026)
+- [x] **Ninguna tecla mueve al personaje** — `RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles`
+      (asset de acciones + referencias del assembly). Queda `Assets/Settings/InputSystem_Actions.inputactions`,
+      la plantilla de Unity con WASD, que **nadie referencia**: borrarla o no es de R16 (cierre de RNF-02)
+- [x] Las tareas 1 y 2 quedan marcadas; las 3 y 4 siguen sin marcar — misma prueba de RF-39 (PM) y
+      `TaskList_INC30_…` (EM)
+- [x] Lista de tareas e inventario visibles todo el tiempo y sin solaparse —
+      `RiverScene_RNF03_ControlesListaEInventarioCabenEnPantallaYNoSeSolapan`. Ojo: el hueco del panel
+      de ensamblaje **tapa la lista** al abrirse (captura `RiverScene_RF39_ZonaAbierta`); R11 decide dónde va
+- [ ] Radio de proximidad de RF-37 validado jugando (pregunta abierta 3) — hoy `0.06` de la ilustración
+      (~170 px a 1920) y velocidad `0.25`/s en `N3_RiverLevelConfig.asset`; se ajusta sin recompilar
+- [ ] Revisado con el usuario — pregunta abierta 2: con el plano fijo de §5.3 **los cuatro materiales se
+      ven desde el arranque** (no hay paneo); el reparto obliga a recorrer la orilla igual
+      (`RiverLevelConfig_RF37_ElRepartoObligaARecorrerLaOrillaYCabeEnElPlanoFijo`)
 
 ---
 

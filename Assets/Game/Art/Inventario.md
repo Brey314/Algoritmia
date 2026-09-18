@@ -93,7 +93,7 @@ Los otros dos clips de los diez de `S06` son los barridos con muta, y viven en `
 
 | Archivo | Origen |
 |---|---|
-| ○ `char_mama_cenital.png` | `S10` — lámina del rig cenital |
+| ◐ `char_mama_cenital.png` | `S10` — lámina del rig cenital. **Provisional** (R07, 17/09/2026, dibujada por código con la paleta de §4.1: cabello, frente y hombros de leopardo vistos desde arriba, una sola postura). La usa `Level3_River.unity` (`Personaje_Mama`); la definitiva entra **sustituyendo el archivo con el mismo nombre**. |
 | ○ `char_mama_retrato_neutra.png` … `_animo.png` (6) | `S03a` |
 | ○ `char_mama_base_apose.png` | `A3` (Slice 1) — no está en el tablero |
 
@@ -163,7 +163,7 @@ usarse. **Ojo:** el importador de fábrica trae `Multiple`; un sprite nuevo hay 
 |---|---|
 | ✓ `env_n3_rio.png` | Entregado en D06 como `rio_normal.png` (1920×1080, vista lateral con la cascada). **Todo el Nivel 3 se juega y se narra sobre él** —`docs/md/Camara_Narrativa_N3.md` §4—, así que la vista superior de `C1` y el `_lateral` de `S16c` quedan sin uso salvo decisión contraria de Santiago. |
 | ○ `env_n3_espuma.png` | `S11a` — 4 frames |
-| ○ `env_n3_zona_inactiva.png`, `env_n3_zona_disponible.png` | `C6` |
+| ○ `env_n3_zona_inactiva.png` · ◐ `env_n3_zona_disponible.png` | `C6` — la `_disponible` es **provisional** (R08, 17/09/2026): anillo ámbar discontinuo dibujado por código; `Zona_Construccion` en `Level3_River.unity`. Hoy la zona no tiene estado inactivo: se ve igual desde el principio (RF-39). |
 
 **`Environments/River/Animations/`**
 
@@ -243,7 +243,7 @@ natural y a la vez lo válido del distractor (§8.2).
 
 | Archivo | Origen |
 |---|---|
-| ○ `prop_n3_troncos.png`, `_sogas`, `_tela`, `_mastil` | `C4` (Slice 3) |
+| ◐ `prop_n3_troncos.png`, `_sogas`, `_tela`, `_mastil` | `C4` (Slice 3) — **provisionales** (R06, 17/09/2026, por código, paleta de §8.3: ámbar para troncos, sogas y mástil; espuma `#D6F0F5` para la tela). Referenciados desde `N3_RiverLevelConfig.asset` (`Art` de cada material) y reutilizados como icono de inventario: sustituir el `.png` conservando el nombre basta. |
 | ○ `prop_n3_balsa_base.png`, `_amarre`, `_vela` | `C7` |
 | ◐ `prop_n3_balsa_hundida.png`, `_cruzando` | `C9` — **provisionales** (16/09/2026, dibujados por código con la paleta de §8.3: troncos ámbar, contorno `#3A1E18`, vela `#D6F0F5`). Los usan `N3_Escena32_PrimerIntento` y `N3_Escena33_Cruce`; el definitivo entra **sustituyendo el archivo con el mismo nombre**, sin tocar el asset. |
 
@@ -318,7 +318,7 @@ RF-45) y **sin texto dentro de la imagen**: el texto lo escribe Unity encima.
 |---|---|
 | ○ `ui_n3_dir_arriba_reposo.png`, `_presionado` (y `abajo`, `izquierda`, `derecha`) | `C3` (Slice 3) |
 | ○ `ui_n3_recoger_disponible.png`, `_no_disponible` | `C3` — materializa INC-01: el control es UI, no teclado (CT-06) |
-| ○ `ui_n3_lista_marco.png`, `ui_n3_casilla_*`, `ui_n3_inventario.png` | `C5` — única lista permanente del juego (INC-41) |
+| ○ `ui_n3_lista_marco.png`, `ui_n3_inventario.png` · ◐ `ui_n3_casilla_hecha.png` | `C5` — única lista permanente del juego (INC-41). La casilla hecha es **provisional** (R05, 17/09/2026): círculo verde con visto; la pendiente reutiliza `Common/ui_circulo.png`. Son las dos formas de RNF-19 en la lista de tareas. Marco de lista, inventario, flechas y «Recoger» usan hoy `Common/ui_panel`, `ui_boton` y `ui_flecha`. |
 | ○ `ui_n3_panel_marco.png`, `ui_n3_espacio_*` | `C8` |
 
 **`UI/River/Animations/`**

@@ -42,8 +42,8 @@ comunicación con el usuario en español.
 | `docs/Camara_Narrativa_N1.md` + `docs/md/Camara_Narrativa_N1.md` | **La cámara y la luz del Nivel 1** (desde el 11/09/2026). El de `docs/` es el **diseño de Santiago** (35 encuadres, cada uno con su estado de luz) y se trata como los `.docx`: no se edita desde código. El de `docs/md/` es su inventario: qué quedó en los `N1_*.asset` y en el motor (`NarrativeLight`, `CameraKey.HardCut`, `FlashSeconds`, `LightStart`, shader `Algoritm/Oscuridad`), el mapa parada → línea del asset y las desviaciones con su porqué. Solo el Nivel 1 usa la capa de oscuridad; el Nivel 2 no cambia. |
 | `docs/md/Camara_Narrativa_N3.md` | **La cámara del Nivel 3** (16/09/2026): 32 encuadres sobre dos sprites **16:9 sin duplicar** (`env_n3_rio`, `env_final_fogatas`), donde el rango del foco es `[0.5/z, 1−0.5/z]` en los dos ejes y a zoom 1 solo cabe el centro — el trabajo lo hace el zoom, no el paneo. Aplicado en los `N3_*.asset` por R04; sus hojas están en `docs/md/verificacion_encuadres_N3/`. Los objetos van **más altos** que en su §6 para no quedar bajo el cuadro de diálogo. |
 | `docs/md/verificacion_encuadres_N1/` + `_N2/` + `_N3/` | **Las hojas de verificación de encuadres** (acta D05, 13/09/2026): un PNG por escena y por parada, **generado desde el contenido y no a mano**, con los objetos donde el asset los pone y la franja del cuadro de diálogo marcada en rojo. Se rehacen cuando el contenido cambia; los dos inventarios de cámara las citan como `claudeDocs/verificacion_encuadres_*` — la ruta real es `docs/md/`. |
-| `Assets/Game/Art/Inventario.md` | **El índice de sprites.** Qué archivo va en cada carpeta de `Assets/Game/Art/`, con la tarea que lo produce, la nomenclatura (`char_`, `prop_`, `env_`, `ui_`, `fx_`, `ref_`; niveles `n1`/`n2`/`n3`) y la convención de `.anim`. No decide nada: manda el tablero de arte `Tareas.xlsx` (163 piezas, tareas `S01..S16c`), **que no está en el repo**, y luego los `plan.md` y `Direccion_de_Arte.md`. **Del acta D06 (15/09/2026) quedan dos cosas pendientes sobre el arte:** los entornos ya recibidos siguen con el prefijo `entorno_` y hay que renombrarlos a `env_` **desde el motor** (`D06-3`), y los props definitivos del N1 y del N2 (`D06-1`, `D06-2`) entran **sustituyendo el archivo y conservando el nombre** — incorporarlos no toca escenas ni código. **Cómo entra una imagen (16/09/2026):** `Game.EditorTools/ArtImportRules.cs` fuerza en todo `Assets/Game/Art/` **sin comprimir** y `maxTextureSize` 4096 —comprimida, la ilustración plana enseña la rejilla de bloques de 4×4, y el N1 la multiplica por la capa de oscuridad—, y `ArtImport_RNF23_…` lo vigila; las 46 texturas de hoy ocupan así del orden de 90 MB en memoria
-(15 MB en disco), lejos de RNF-05. El importador de fábrica trae `Sprite Mode: Multiple`, que para un fondo entero o un prop hace que `LoadAssetAtPath<Sprite>` devuelva nulo: cada imagen nueva se pasa a `Single` desde el motor (`TextureImporter.spriteImportMode`). Los dos entornos del N3 ya están renombrados y en `Single` (`River/env_n3_rio`, `Narrative/env_final_fogatas`, 16/09/2026); `Wheel/civilización_noche` sigue con nombre libre y sin uso. |
+| `Assets/Game/Art/Inventario.md` | **El índice de sprites.** Qué archivo va en cada carpeta de `Assets/Game/Art/`, con la tarea que lo produce, la nomenclatura (`char_`, `prop_`, `env_`, `ui_`, `fx_`, `ref_`; niveles `n1`/`n2`/`n3`) y la convención de `.anim`. No decide nada: manda el tablero de arte `Tareas.xlsx` (163 piezas, tareas `S01..S16c`), **que no está en el repo**, y luego los `plan.md` y `Direccion_de_Arte.md`. **Del acta D06 (15/09/2026) quedan dos cosas pendientes sobre el arte:** los entornos ya recibidos siguen con el prefijo `entorno_` y hay que renombrarlos a `env_` **desde el motor** (`D06-3`), y los props definitivos del N1 y del N2 (`D06-1`, `D06-2`) entran **sustituyendo el archivo y conservando el nombre** — incorporarlos no toca escenas ni código. **Cómo entra una imagen (16/09/2026):** `Game.EditorTools/ArtImportRules.cs` fuerza en todo `Assets/Game/Art/` **sin comprimir** y `maxTextureSize` 4096 —comprimida, la ilustración plana enseña la rejilla de bloques de 4×4, y el N1 la multiplica por la capa de oscuridad—, y `ArtImport_RNF23_…` lo vigila; las 57 texturas de hoy ocupan así del orden de 95 MB en memoria
+(17 MB en disco), lejos de RNF-05. El importador de fábrica trae `Sprite Mode: Multiple`, que para un fondo entero o un prop hace que `LoadAssetAtPath<Sprite>` devuelva nulo: cada imagen nueva se pasa a `Single` desde el motor (`TextureImporter.spriteImportMode`). Los dos entornos del N3 ya están renombrados y en `Single` (`River/env_n3_rio`, `Narrative/env_final_fogatas`, 16/09/2026); `Wheel/civilización_noche` sigue con nombre libre y sin uso. **No todo lo que entra por `Art/` es arte del proyecto (17/09/2026):** `Fonts/` trae Baloo 2 y Nunito (OFL) y los tres glifos del menú de pausa (`ui_pausa`, `ui_reanudar`, `ui_reiniciar`) son iconos **Phosphor** (MIT) rasterizados y teñidos desde el Inspector — el cuerpo de `CreditsContent.asset` dice «interfaz: originales del proyecto» y con ellos deja de ser exacto: acreditarlos o sustituirlos es **decisión pendiente de Santiago**, anotada en `Inventario.md`. |
 | `claudeDocs/Mockups de interfaz Algoritmia.html` | **Los mockups de pantalla** (uno por superficie, numerados). Los `todo.md` y `Camara_Narrativa_N1.md` los citan por número («mockup 7 · Nivel 1 · encendido»); es la referencia de disposición de una escena antes de tocar el `.unity`. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. Los cuatro slices están planeados y entre ellos cubren los 47 RF: `Slice 1` Golden Path y nivel fuego · `Slice 2` La Rueda · `Slice 3` El Río y cierre del juego · `Slice 4` progreso, informe docente y borrado de datos. **Se planean en orden y cada uno supone terminado el anterior**, pero desde el 10/09/2026 corren varios en paralelo — ver «Varios carriles a la vez» abajo. **Los `plan.md` no se reescriben:** el del Slice 3 es la rev. 1 del 30/08/2026 y sus avisos de precondición («los Slices 1 y 2 no están hechos», «`Assets/` sigue sin código», «no hay corredor de pruebas MCP») están vencidos; lo que sigue valiendo de ellos es qué pieza previa generaliza cada tarea. Ninguno rediscute `SPEC.md`. |
 | `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión ya hecha con markitdown. **Los cuatro `.docx` refundidos están convertidos** (14/09/2026); el trabajo de grado, no. **Nunca editar ninguno de los dos desde código.** |
@@ -63,7 +63,7 @@ RNF-14, mediciones sobre la build portable). El **código** del Slice 2 se cerr�
 `main` el 16/09/2026 (PR #74, acta D06 · tarjeta `D06-4`); de ese slice solo quedan casillas de
 build y de revisión. El **Slice 3 (El Río)** abrió el 16/09/2026 en la rama `feat/slice-3` y es
 el carril de código: **R01–R04 cerradas** ese mismo día (Fases 0 y 1, commits `660fd41` y
-`e3575bf`); la siguiente casilla abierta es **R05**. Su pregunta abierta 1 —qué significa «fase»
+`e3575bf`) y **R05–R08 el 17/09/2026** (Fase 2, recolección: `Level3_River.unity`); la siguiente casilla abierta es **R09**. Su pregunta abierta 1 —qué significa «fase»
 en el Nivel 3, que decidía el formato de los **datos persistidos**— quedó resuelta con Santiago:
 **tres fases** (base · amarre · mástil y vela, `PhaseId.PhasesPerLevel = { 1, 3, 3 }`) y la
 recolección **no se persiste**. De los checkpoints del slice, R-A y R-B quedan solo a falta de la
@@ -74,15 +74,22 @@ por assembly, no por slice** — es lo único que evita que los carriles se pise
 |---|---|
 | **Slice 1 · Checkpoints D y E** | `Game.Levels.Fire`, `Game.Core`, escenas del N1, build portable |
 | **Slice 2 · Checkpoint W-F** | `Game.Levels.Wheel`, `Game.Scaffolding` |
-| **Slice 3** | `Game.Levels.River` (creado en R01; hoy solo `.asmdef` + `AssemblyInfo`), `Game.Core`, `Game.Scaffolding`, escenas del N3 |
+| **Slice 3** | `Game.Levels.River` (con código desde R05–R08, 17/09/2026: recolección), `Game.Core`, `Game.Scaffolding`, escenas del N3 |
 
 **El orden de las tarjetas y qué está abierto se lee en los `todo.md`, no aquí** — una copia
 de ese estado en este archivo se queda vieja en dos commits. La Fase 5 del Slice 2 (W15–W18, más
 W19 el mismo día) se cerró el 15/09/2026; del Checkpoint W-F quedan las mediciones sobre la build,
-la exclusión manual de RNF-16, PG-05 y la revisión. **Dos cruces que ahora comparten los dos carriles:** el
+la exclusión manual de RNF-16, PG-05 y la revisión. **Tres cruces que comparten los carriles:** el
 menú de pausa es el prefab `Assets/Game/Prefabs/UI/MenuPausa.prefab` (mockup 6: Reanudar ·
 Reiniciar · Volver al menú de niveles; `Time.timeScale = 0` mientras está abierto), instanciado
-en las cuatro escenas jugables —tocarlo cambia el N1 y el N2 a la vez—, y `LevelSummary` elige
+en las cuatro escenas jugables —tocarlo cambia el N1 y el N2 a la vez, y desde el 17/09/2026
+arrastra también las tipografías y los glifos nuevos del mockup—; `NarrativeVisitPolicy`
+(`Game.Scaffolding`) decide si aparece el botón de omitir y **no hay registro de escenas
+vistas** —la lista persistida es cerrada (RNF-09)—, así que lo deriva del progreso: «ya vista»
+es haber **terminado el nivel** antes —su última fase confirmada—, no haber confirmado una
+fase cualquiera, y el cierre reflexivo usa `ReachedLevel` porque se llega a él justo después
+de confirmar la última (CP-07, RF-12). **Eso le impone un orden a quien cierre un nivel:
+primero el cierre reflexivo, después el desbloqueo**; y `LevelSummary` elige
 sus mensajes por nivel (`LevelSummaryMessages.Level`, un asset por nivel en
 `LevelSummaryController.messagesByLevel`) y compone el relato sumando **todas** las fases del
 nivel. En sentido contrario, W09 (12/09/2026) tocó
@@ -141,7 +148,8 @@ graphify explain "HintPolicy"
 `GRAPH_REPORT.md` es el índice legible —empezar por su sección «Community Hubs»—; `graph.json` es
 el grafo para consumo de agente y `graph.html` la vista interactiva. Es una **foto**: la vigente es
 del 15/09/2026 sobre el commit `863ef05`, 3300 nodos y 6315 aristas en 263 comunidades — **no
-incluye nada del Slice 3** (`Game.Levels.River`, los `N3_*.asset`, `ConditionalNarrativeTrigger`). Se refresca
+incluye nada posterior a ese commit**: ni el Slice 3 (`Game.Levels.River`, los `N3_*.asset`,
+`ConditionalNarrativeTrigger`) ni el rediseño de la pausa y el desplazamiento del laberinto. Se refresca
 con `/graphify . --update` tras un bloque de trabajo —el incremental solo reextrae lo que cambió, y
 si lo cambiado es solo `.cs` no cuesta nada porque el AST no usa modelo—, y lo que el grafo señale
 se confirma en el código antes de citarlo: ubica, no sustituye a leer el archivo.
@@ -241,8 +249,9 @@ de empezar:
   La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04 (carga < 10 s),
   RNF-05 (memoria < 2 GB) y RNF-06 (paquete < 500 MB), y junto al `.exe` nace `Datos/` en la
   primera ejecución (RNF-07, RNF-11). Entran las escenas listadas en `EditorBuildSettings` —la
-  lista crece con cada nivel—, con `Boot` de primera. Hoy son diez, `Level2_Forest` (entró en
-  `4f69140`), `Level2_Workshop` (W09, 12/09/2026) y `Level2_Maze` (W13, 13/09/2026) incluidas; las escenas nuevas se añaden desde
+  lista crece con cada nivel—, con `Boot` de primera. Hoy son once, `Level2_Forest` (entró en
+  `4f69140`), `Level2_Workshop` (W09, 12/09/2026), `Level2_Maze` (W13, 13/09/2026) y `Level3_River` (R07,
+  17/09/2026, la undécima) incluidas; las escenas nuevas se añaden desde
   el Editor (Build Settings o un script de editor efímero de la skill `edit-scene`), no a mano.
   `/[Bb]uild[s]?/` está en `.gitignore`: el ejecutable no se versiona.
 - **Con Rider abierto**, `mcp__rider__run_unity_tests` /
@@ -302,10 +311,14 @@ antes de escribir la primera línea:
   Hoy tienen código `Game.Core`, `Game.Scaffolding`, `Game.UI`, `Game.Levels.Fire`,
   `Game.Levels.Wheel` y `Game.EditorTools`: `Game.Audio` es un `.asmdef` vacío a la espera de su
   fase —igual que su `.asmdef` de prueba—, y `Game.Reporting` todavía no existe en disco (llega
-  en el Slice 4). **`Game.Levels.River` existe desde R01 pero solo con su `AssemblyInfo.cs`**: lo
-  hecho del Nivel 3 hasta hoy —contenido de guía, las seis secuencias narrativas y
-  `ConditionalNarrativeTrigger`— vive en `Game.Scaffolding` y en `Assets/Game/Data/`, porque es
-  andamiaje genérico; su código propio empieza en R05. **El sonido del juego está comprometido con otra persona** (acta D05, tarjeta
+  en el Slice 4). **`Game.Levels.River` tiene código desde R05–R08 (17/09/2026)**: la recolección
+  —`TaskList`, `Inventory`, `RiverWalk`, `BuildZone` en C# plano; `RiverSceneController` y
+  `DirectionPad` como adaptadores— y su asset `Data/River/N3_RiverLevelConfig.asset`. Referencia
+  `Game.Core`, `Game.Scaffolding` y `UnityEngine.UI`, **y a propósito no `Unity.InputSystem`**: las
+  flechas son botones uGUI con clic sostenido (`IPointerDown/Up`), y
+  `RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles` vigila que el assembly no gane
+  ni esa referencia ni la del módulo `Input` legado. Lo genérico del N3 —guía, secuencias,
+  `ConditionalNarrativeTrigger`— sigue en `Game.Scaffolding` y `Assets/Game/Data/`. **El sonido del juego está comprometido con otra persona** (acta D05, tarjeta
   `D05-2`, 27/09/2026): no llenar `Game.Audio` sin que lo pidan.
 - **La lógica es C# plano; el MonoBehaviour es un adaptador delgado.** `GameFlow` (la FSM) no
   es MonoBehaviour: se prueba en EditMode sin escena ni frames. Igual para validadores,
@@ -330,7 +343,9 @@ antes de escribir la primera línea:
   (`Game.Scaffolding`) traduce foco `(x, y)` + `zoom` contra el tamaño real del sprite, y lo usan
   por igual `NarrativeSceneController` y las tres escenas del Nivel 2. Por eso una entrega de arte
   entra **sustituyendo el archivo**: si la composición se conserva, ningún valor de los documentos
-  de cámara cambia.
+  de cámara cambia. **Y lo mismo vale para colocar un objeto sobre la ilustración**: va anclado
+  en fracciones del lienzo (`WheelLevelConfig.CargoPlacedPosition`), nunca en píxeles ni en una
+  posición de escena — en píxeles se sale del cuadro en cuanto la cámara cierra el plano.
 - **Contenido fuera del código** (CT-05): todo texto visible y todo parámetro ajustable jugando
   vive en ScriptableObjects con `[field: SerializeField]` + `[Tooltip]`.
 - **Persistencia**: JSON por perfil en una carpeta `Datos/` junto al ejecutable — no
@@ -342,8 +357,7 @@ antes de escribir la primera línea:
   a `public` solo para que lo alcance una prueba. **El assembly de PlayMode se llama
   `<Módulo>.PlayMode.Tests` y necesita su propia línea**: sin ella el `internal` no se ve desde
   PlayMode aunque la de EditMode esté puesta (`Fire` y `Wheel` tienen las dos; `Game.UI` solo la
-  de PlayMode; `River` trae las dos líneas desde R01 pero su `.asmdef` de pruebas PlayMode no
-  existe todavía —lo crea R07, la primera tarea del slice con escena—).
+  de PlayMode; `River` tiene las dos líneas y los dos `.asmdef` desde R07).
 - Raíz de código y assets: `Assets/Game/`, namespaces `Game.*` siguiendo la ruta bajo
   `Scripts/` y elidiendo `Runtime`. Tests en `Assets/Tests/{EditMode,PlayMode}/<Módulo>/`.
 - **El nombre de la prueba es la trazabilidad.** Patrón `<Sujeto>_<Requisito>_<QuéHace>` en
@@ -377,7 +391,9 @@ la pantalla de derrota.
 
 Otras reglas duras: Input System nuevo, nunca la clase `Input` legada; entrada limitada a clic
 y clic sostenido, sin excepciones — los controles de dirección del Nivel 3 son botones en pantalla
-accionados con clic, no teclado (CT-06, RNF-02); ningún dato por red (RNF-08,
+accionados con clic, no teclado (CT-06, RNF-02), y una lista que desborda se desplaza con **botones**
+y no con un `ScrollRect`, que trae el arrastre de uGUI y se pelea con el arrastrar y soltar de la
+mecánica (así se hizo la secuencia del laberinto del N2, 17/09/2026); ningún dato por red (RNF-08,
 RNF-10); nada de `.meta` escritos a mano. Todo RF necesita al menos un caso de prueba que lo
 nombre (CT-10).
 

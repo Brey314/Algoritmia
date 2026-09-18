@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b7eec80b25bea41854063d5c65df72, type: 3}
+  m_Name: N3_RiverLevelConfig
+  m_EditorClassIdentifier: Game.Levels.River::Game.Levels.River.RiverLevelConfig
+  <TaskLabels>k__BackingField:
+  - Recoger troncos
+  - Encontrar sogas
+  - Ensamblar la balsa
+  - "Colocar el m\xE1stil y la vela"
+  <ProximityRadius>k__BackingField: 0.06
+  <MoveSpeed>k__BackingField: 0.25
+  <StartPosition>k__BackingField: {x: 0.267, y: 0.477}
+  <WalkableArea>k__BackingField:
+    serializedVersion: 2
+    x: 0.1
+    y: 0.13
+    width: 0.33
+    height: 0.56
+  <BuildZonePosition>k__BackingField: {x: 0.4, y: 0.15}
+  <BuildZoneRadius>k__BackingField: 0.05
+  <PlayFraming>k__BackingField:
+    <Focus>k__BackingField: {x: 0.4, y: 0.41}
+    <Zoom>k__BackingField: 1.5
+  <CollectedFormat>k__BackingField: "{0}: al inventario. Mira la lista: \xBFqu\xE9
+    falta?"
+  <AllCollectedMessage>k__BackingField: Ya tienes todos los materiales. Ve a la zona
+    marcada junto al agua.
+  <MissingFormat>k__BackingField: "Para armar la balsa todav\xEDa falta: {0}. Sigue
+    buscando por la orilla."
+  <ZoneOpenedMessage>k__BackingField: "Tienes todo lo de la lista. Aqu\xED se arma
+    la balsa."
+  <Collectibles>k__BackingField:
+  - <Id>k__BackingField: troncos
+    <Kind>k__BackingField: 0
+    <DisplayName>k__BackingField: Troncos
+    <Art>k__BackingField: {fileID: 21300000, guid: 6dbea0a356c1fd64dabe5b4285e1ac1d, type: 3}
+    <Position>k__BackingField: {x: 0.415, y: 0.345}
+  - <Id>k__BackingField: sogas
+    <Kind>k__BackingField: 1
+    <DisplayName>k__BackingField: Sogas
+    <Art>k__BackingField: {fileID: 21300000, guid: 672d31955189c3b419df9af728e5d57c, type: 3}
+    <Position>k__BackingField: {x: 0.365, y: 0.56}
+  - <Id>k__BackingField: tela
+    <Kind>k__BackingField: 2
+    <DisplayName>k__BackingField: Tela
+    <Art>k__BackingField: {fileID: 21300000, guid: d66e8db05c7949f40b9a3727ffe7a848, type: 3}
+    <Position>k__BackingField: {x: 0.2, y: 0.44}
+  - <Id>k__BackingField: mastil
+    <Kind>k__BackingField: 3
+    <DisplayName>k__BackingField: "M\xE1stil"
+    <Art>k__BackingField: {fileID: 21300000, guid: b0907bcac12e6b347b4fdd4dc8f86c26, type: 3}
+    <Position>k__BackingField: {x: 0.33, y: 0.215}
