@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,9 +8,9 @@ using UnityEngine.UI;
 namespace Game.Levels.River
 {
     /// <summary>
-    /// La escena de la recolección del Nivel 3 — la orilla del río (RF-35..RF-39, RF-13). Mueve a
-    /// Mamá con los botones de dirección, ofrece «Recoger» cerca de un material, pinta la lista de
-    /// tareas y el inventario, y abre el ensamblaje al entrar a la zona con todo.
+    /// La escena del Nivel 3 — la orilla del río (RF-35..RF-39, RF-13). Mueve a Mamá con los
+    /// botones de dirección, ofrece «Recoger» cerca de un material, pinta la lista de tareas y
+    /// el inventario, y abre el ensamblaje al entrar a la zona con todo.
     /// </summary>
     /// <remarks>
     /// Adaptador delgado: aquí no hay ni una regla. Qué se marca, qué cabe, hasta dónde se anda
@@ -22,9 +23,10 @@ namespace Game.Levels.River
     /// mano: añadir uno o moverlo es editar contenido (RNF-18).
     ///
     /// **Aquí no se confirma ninguna fase.** La recolección no se persiste (decisión del
-    /// 16/09/2026, <c>PhaseId.PhasesPerLevel</c>); abrir la zona enciende el panel de ensamblaje,
-    /// que es quien confirmará base, amarre y mástil (R11). Por eso tampoco hay recolector de
-    /// indicadores todavía: los cuatro de RF-45 son por fase confirmada (R13).
+    /// 16/09/2026, <c>PhaseId.PhasesPerLevel</c>); abrir la zona enciende el
+    /// <see cref="AssemblyPanelController"/>, que es quien confirma base, amarre y mástil. Si el
+    /// flujo pide la fase 2 o la 3 (RNF-14), la orilla se salta: el inventario se da por completo
+    /// y el panel abre retomando.
     /// </remarks>
     public class RiverSceneController : MonoBehaviour
     {
@@ -69,12 +71,8 @@ namespace Game.Levels.River
         private RectTransform taskRowTemplate;
 
         [SerializeField]
-        [Tooltip("Inventario permanente: una casilla por material (RF-38).")]
-        private RectTransform inventoryArea;
-
-        [SerializeField]
-        [Tooltip("Casilla modelo del inventario. Permanece inactiva.")]
-        private Image inventorySlotTemplate;
+        [Tooltip("Inventario permanente: una casilla por clase de material (RF-38).")]
+        private InventoryView inventory;
 
         [SerializeField]
         [Tooltip("Lo que dice el guía ahora: instrucción, respuesta o pista (RF-11, RF-13).")]
@@ -89,8 +87,8 @@ namespace Game.Levels.River
         private Button helpButton;
 
         [SerializeField]
-        [Tooltip("El panel de ensamblaje. Se enciende al abrir la zona; su contenido llega con R11.")]
-        private GameObject assemblyPanel;
+        [Tooltip("El panel de ensamblaje. Se abre al entrar a la zona con todo, o directamente al retomar una fase (RNF-14).")]
+        private AssemblyPanelController assemblyPanel;
 
         [SerializeField]
         [Tooltip("Icono de tarea pendiente: forma abierta.")]
@@ -101,17 +99,20 @@ namespace Game.Levels.River
         private Sprite doneIcon;
 
         [SerializeField]
+        [Tooltip("Icono del paso devuelto: forma distinta de la de hecho (RNF-19).")]
+        private Sprite rejectedIcon;
+
+        [SerializeField]
         [Tooltip("Icono de la instrucción y la pista. Vacío deja el hueco sin icono.")]
         private Sprite helpIcon;
 
         [SerializeField] private Color pendingColor = new Color(0.42f, 0.32f, 0.28f);
         [SerializeField] private Color doneColor = new Color(0.20f, 0.40f, 0.22f);
+        [SerializeField] private Color rejectedColor = new Color(0.60f, 0.36f, 0.10f);
         [SerializeField] private Color helpColor = new Color(0.24f, 0.30f, 0.44f);
-        [SerializeField] private Color emptySlotColor = new Color(0.8784f, 0.8314f, 0.7529f);
 
         private readonly List<(Collectible Collectible, Image Image)> _spawned = new List<(Collectible, Image)>();
         private readonly List<(RiverTaskId Task, Text Label, Image Icon)> _rows = new List<(RiverTaskId, Text, Image)>();
-        private readonly List<Image> _slots = new List<Image>();
 
         private Inventory _inventory;
         private TaskList _tasks;
@@ -120,6 +121,9 @@ namespace Game.Levels.River
         private HintPolicy _hints;
         private Collectible _reachable;
         private bool _wasInsideZone;
+
+        /// <summary>El flujo del juego. Lo pone <c>Boot</c>; una prueba puede inyectar otro.</summary>
+        internal GameFlowRunner Runner { get; set; }
 
 #if UNITY_INCLUDE_TESTS
         internal RiverLevelConfig Config => config;
@@ -132,17 +136,20 @@ namespace Game.Levels.River
         internal Button HelpButton => helpButton;
         internal IReadOnlyList<(Collectible Collectible, Image Image)> Spawned => _spawned;
         internal IReadOnlyList<(RiverTaskId Task, Text Label, Image Icon)> Rows => _rows;
-        internal IReadOnlyList<Image> Slots => _slots;
+        internal IReadOnlyList<Image> Slots => inventory.Slots;
         internal RectTransform Player => player;
         internal RectTransform BuildZoneMarker => buildZoneMarker;
         internal RectTransform TaskArea => taskArea;
-        internal RectTransform InventoryArea => inventoryArea;
+        internal RectTransform InventoryArea => (RectTransform)inventory.transform;
         internal Image Environment => environment;
         internal Text MessageLabel => messageLabel;
         internal Image MessageIcon => messageIcon;
-        internal GameObject AssemblyPanel => assemblyPanel;
+        internal GameObject AssemblyPanel => assemblyPanel.gameObject;
+        internal AssemblyPanelController Assembly => assemblyPanel;
         internal Collectible Reachable => _reachable;
 #endif
+
+        private void Awake() => Runner ??= GameFlowRunner.Instance;
 
         private void Start()
         {
@@ -151,10 +158,11 @@ namespace Game.Levels.River
             _walk = new RiverWalk(config.StartPosition, config.WalkableArea, config.MoveSpeed);
             _zone = new BuildZone(config);
             _hints = new HintPolicy(StepNamed("Recolectar"));
+            assemblyPanel.Runner = Runner;
 
             // La ilustración cubre la pantalla sin deformarse en el plano fijo del asset —el
-            // último de la escena 3.1— y sustituir el archivo basta (RNF-23). Va antes de colgar
-            // nada de ella.
+            // cuadrante del bosque, sin río— y sustituir el archivo basta (RNF-23). Va antes de
+            // colgar nada de ella.
             environment.enabled = environment.sprite != null;
             if (environment.sprite != null)
             {
@@ -164,7 +172,6 @@ namespace Game.Levels.River
 
             collectibleTemplate.gameObject.SetActive(false);
             taskRowTemplate.gameObject.SetActive(false);
-            inventorySlotTemplate.gameObject.SetActive(false);
 
             foreach (var collectible in config.Collectibles)
             {
@@ -174,16 +181,25 @@ namespace Game.Levels.River
             Place(buildZoneMarker, config.BuildZonePosition);
             Place(player, _walk.Position);
             BuildTaskList();
-            BuildInventory();
+            inventory.Build(_inventory.Kinds.Select(kind => (kind, _inventory.Required(kind))));
 
             collectButton.onClick.AddListener(Collect);
             collectButton.gameObject.SetActive(false);
-            assemblyPanel.SetActive(false);
+            assemblyPanel.gameObject.SetActive(false);
 
             // Pedir ayuda no es un intento: repite la instrucción y no toca ningún contador
             // (RF-13, CP-06). La regla vive en HintPolicy; aquí solo se pulsa.
-            helpButton.onClick.AddListener(() => Show(_hints.RequestHelp(), helpIcon, helpColor));
-            Show(_hints.RequestHelp(), helpIcon, helpColor);
+            helpButton.onClick.AddListener(() =>
+                Show(_zone.IsOpen ? assemblyPanel.RequestHelp() : _hints.RequestHelp(), MessageTone.Help));
+
+            var phase = Runner != null && Runner.Flow.PlayingLevel == LevelId.River ? Runner.Flow.PlayingPhase : 1;
+            if (phase > 1)
+            {
+                ResumeAt((RaftPhase)phase);
+                return;
+            }
+
+            Show(_hints.RequestHelp(), MessageTone.Help);
             RefreshReach();
         }
 
@@ -234,12 +250,16 @@ namespace Game.Levels.River
             _spawned.Add((collectible, image));
         }
 
-        /// <summary>Ancla el elemento en una fracción de su padre —la ilustración— y lo deja ahí.</summary>
-        private static void Place(RectTransform rect, Vector2 fraction)
+        /// <summary>
+        /// Ancla el elemento en una fracción de su padre —la ilustración— y lo escala por su
+        /// profundidad: más abajo está más cerca y se ve más grande (regla del 20/09/2026).
+        /// </summary>
+        private void Place(RectTransform rect, Vector2 fraction)
         {
             rect.anchorMin = fraction;
             rect.anchorMax = fraction;
             rect.anchoredPosition = Vector2.zero;
+            rect.localScale = Vector3.one * config.DepthScaleAt(fraction.y);
         }
 
         /// <summary>«Recoger» aparece solo con un material al alcance; con varios, el más cercano.</summary>
@@ -256,8 +276,9 @@ namespace Game.Levels.River
         }
 
         /// <summary>
-        /// El clic en «Recoger»: el material deja la orilla, entra al inventario y, si tiene tarea
-        /// de recolección, la marca (RF-37, RF-36). Recoger no puede fallar (CP-02).
+        /// El clic en «Recoger»: el material deja la orilla, entra al inventario y, si con él su
+        /// clase queda completa y tiene tarea de recolección, la marca (RF-37, RF-36). Recoger no
+        /// puede fallar (CP-02).
         /// </summary>
         private void Collect()
         {
@@ -267,7 +288,7 @@ namespace Game.Levels.River
             {
                 if (!string.IsNullOrEmpty(outcome.Message))
                 {
-                    Show(outcome.Message, helpIcon, helpColor);
+                    Show(outcome.Message, MessageTone.Help);
                 }
 
                 return;
@@ -277,10 +298,17 @@ namespace Game.Levels.River
             // sin una sola cifra (CP-03).
             var entry = _spawned.First(spawned => spawned.Collectible == collectible);
             entry.Image.gameObject.SetActive(false);
-            Store(collectible);
-            _tasks.MarkCollected(collectible.Kind);
+            inventory.Show(collectible.Kind, collectible.Art, _inventory.Count(collectible.Kind));
+
+            // «Recoger troncos» se marca con el quinto tronco, no con el primero: la tarea es la
+            // clase completa (RF-36, decisión del 20/09/2026).
+            if (_inventory.Has(collectible.Kind))
+            {
+                _tasks.MarkCollected(collectible.Kind);
+            }
+
             RefreshTasks();
-            Show(outcome.Message, doneIcon, doneColor);
+            Show(outcome.Message, MessageTone.Done);
             RefreshReach();
         }
 
@@ -290,18 +318,42 @@ namespace Game.Levels.River
             var outcome = _zone.TryEnter(_inventory);
             if (!outcome.Accepted)
             {
-                Show(outcome.Message, helpIcon, helpColor);
+                Show(outcome.Message, MessageTone.Help);
                 return;
             }
 
-            OpenAssembly(outcome.Message);
+            Show(outcome.Message, MessageTone.Done);
+            OpenAssembly(RaftPhase.Base);
         }
 
         /// <summary>
-        /// Enciende el panel de ensamblaje y apaga los controles de la orilla. El panel es un
-        /// hueco hasta R11: lo que sí queda hecho es el cambio de tarea del guía.
+        /// Retomar en la fase 2 o 3 (RNF-14): la recolección ya se hizo en otra sesión, así que
+        /// el inventario se da por completo, la zona por abierta y el panel abre en esa fase.
         /// </summary>
-        private void OpenAssembly(string message)
+        private void ResumeAt(RaftPhase phase)
+        {
+            foreach (var (collectible, image) in _spawned)
+            {
+                _inventory.TryCollect(collectible);
+                image.gameObject.SetActive(false);
+                if (_inventory.Has(collectible.Kind))
+                {
+                    _tasks.MarkCollected(collectible.Kind);
+                }
+            }
+
+            for (var confirmed = RaftPhase.Base; confirmed < phase; confirmed++)
+            {
+                _tasks.MarkPhaseConfirmed((int)confirmed);
+            }
+
+            RefreshTasks();
+            _zone.TryEnter(_inventory);
+            OpenAssembly(phase);
+        }
+
+        /// <summary>Enciende el panel de ensamblaje y apaga los controles de la orilla.</summary>
+        private void OpenAssembly(RaftPhase phase)
         {
             foreach (var pad in pads)
             {
@@ -309,9 +361,18 @@ namespace Game.Levels.River
             }
 
             collectButton.gameObject.SetActive(false);
-            assemblyPanel.SetActive(true);
-            _hints.Activate(StepNamed("Base"));
-            Show(message, doneIcon, doneColor);
+            assemblyPanel.Open(_inventory, phase, config.PlayFraming, Show, PhaseConfirmed);
+            if (phase > RaftPhase.Base)
+            {
+                Show(assemblyPanel.RequestHelp(), MessageTone.Help);
+            }
+        }
+
+        /// <summary>Una fase confirmada marca su tarea —la base ninguna (INC-30)— y la lista lo muestra.</summary>
+        private void PhaseConfirmed(RaftPhase phase)
+        {
+            _tasks.MarkPhaseConfirmed((int)phase);
+            RefreshTasks();
         }
 
         /// <summary>Una fila por tarea del guion, con el texto del asset y su icono de pendiente.</summary>
@@ -349,39 +410,18 @@ namespace Game.Levels.River
             }
         }
 
-        /// <summary>Una casilla vacía por material del catálogo; se llenan en orden de recogida.</summary>
-        private void BuildInventory()
-        {
-            for (var index = 0; index < _inventory.Capacity; index++)
-            {
-                var slot = Instantiate(inventorySlotTemplate, inventoryArea);
-                slot.name = $"Casilla_{index + 1}";
-                slot.color = emptySlotColor;
-                slot.gameObject.SetActive(true);
-                _slots.Add(slot);
-            }
-        }
-
-        private void Store(Collectible collectible)
-        {
-            var index = _inventory.Items.Count - 1;
-            if (index < 0 || index >= _slots.Count)
-            {
-                return;
-            }
-
-            var slot = _slots[index];
-            slot.sprite = collectible.Art;
-            slot.preserveAspect = true;
-            slot.color = Color.white;
-        }
-
         /// <summary>
         /// Pinta la frase con sus dos indicadores. El color va en el icono y nunca en la tablilla
         /// ni en la frase (RNF-19, RNF-20), igual que en el Nivel 2.
         /// </summary>
-        private void Show(string message, Sprite icon, Color color)
+        private void Show(string message, MessageTone tone)
         {
+            var (icon, color) = tone switch
+            {
+                MessageTone.Done => (doneIcon, doneColor),
+                MessageTone.Rejected => (rejectedIcon, rejectedColor),
+                _ => (helpIcon, helpColor)
+            };
             messageLabel.text = message;
             messageIcon.sprite = icon;
             messageIcon.color = color;
@@ -390,7 +430,8 @@ namespace Game.Levels.River
 
         /// <summary>
         /// La tarea del guía por su id. El mapeo tarea del guía ↔ momento del nivel lo resuelve el
-        /// nivel: aquí «Recolectar» cubre las tareas 1 y 2 de la lista y «Base» abre con la zona.
+        /// nivel: aquí «Recolectar» cubre las tareas 1 y 2 de la lista; las del ensamblaje las
+        /// activa el panel.
         /// </summary>
         private GuideStep StepNamed(string id) =>
             guide != null ? guide.Steps.FirstOrDefault(step => step.Id == id) : null;

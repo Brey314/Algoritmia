@@ -243,8 +243,8 @@ natural y a la vez lo válido del distractor (§8.2).
 
 | Archivo | Origen |
 |---|---|
-| ◐ `prop_n3_troncos.png`, `_sogas`, `_tela`, `_mastil` | `C4` (Slice 3) — **provisionales** (R06, 17/09/2026, por código, paleta de §8.3: ámbar para troncos, sogas y mástil; espuma `#D6F0F5` para la tela). Referenciados desde `N3_RiverLevelConfig.asset` (`Art` de cada material) y reutilizados como icono de inventario: sustituir el `.png` conservando el nombre basta. |
-| ○ `prop_n3_balsa_base.png`, `_amarre`, `_vela` | `C7` |
+| ◐ `prop_n3_tronco.png`, `_sogas`, `_tela`, `_mastil` | `C4` (Slice 3) — **provisionales** (R06, 17/09/2026, por código, paleta de §8.3: ámbar para troncos, sogas y mástil; espuma `#D6F0F5` para la tela). Referenciados desde `N3_RiverLevelConfig.asset` (`Art` de cada material) y reutilizados como icono de inventario: sustituir el `.png` conservando el nombre basta. Desde el 20/09/2026 los troncos son **cinco hallazgos sueltos** con el mismo sprite `prop_n3_tronco` (un tronco, 512×128); `prop_n3_troncos.png` (el montón) quedó **sin uso**. |
+| ◐ `prop_n3_tronco.png`, `prop_n3_amarre.png`, `prop_n3_vela.png` (+ `prop_n3_mastil.png`) y sus `_silueta` | `C7` **rehecho como composición** (R11, decisión de Santiago del 20/09/2026): la balsa **no** son tres láminas de estado sino diecisiete espacios que se pintan uno a uno —silueta hasta que se llena, pieza después— con **ocho sprites**: cuatro piezas y cuatro siluetas dibujadas aparte. Los espacios, sus fracciones y el arte por clase viven en `N3_RaftAssemblyContent.asset`. **Provisionales** por código (Pillow, paleta de §8.3; la silueta es el alfa de la pieza relleno en `#3A1E18` al 30 % con contorno); el definitivo entra sustituyendo cada archivo con su nombre. `_balsa_base/_amarre/_vela` **no se generan**. |
 | ◐ `prop_n3_balsa_hundida.png`, `_cruzando` | `C9` — **provisionales** (16/09/2026, dibujados por código con la paleta de §8.3: troncos ámbar, contorno `#3A1E18`, vela `#D6F0F5`). Los usan `N3_Escena32_PrimerIntento` y `N3_Escena33_Cruce`; el definitivo entra **sustituyendo el archivo con el mismo nombre**, sin tocar el asset. |
 
 `C4` genera además el icono de inventario de cada material, en la misma lámina.
@@ -319,7 +319,7 @@ RF-45) y **sin texto dentro de la imagen**: el texto lo escribe Unity encima.
 | ○ `ui_n3_dir_arriba_reposo.png`, `_presionado` (y `abajo`, `izquierda`, `derecha`) | `C3` (Slice 3) |
 | ○ `ui_n3_recoger_disponible.png`, `_no_disponible` | `C3` — materializa INC-01: el control es UI, no teclado (CT-06) |
 | ○ `ui_n3_lista_marco.png`, `ui_n3_inventario.png` · ◐ `ui_n3_casilla_hecha.png` | `C5` — única lista permanente del juego (INC-41). La casilla hecha es **provisional** (R05, 17/09/2026): círculo verde con visto; la pendiente reutiliza `Common/ui_circulo.png`. Son las dos formas de RNF-19 en la lista de tareas. Marco de lista, inventario, flechas y «Recoger» usan hoy `Common/ui_panel`, `ui_boton` y `ui_flecha`. |
-| ○ `ui_n3_panel_marco.png`, `ui_n3_espacio_*` | `C8` |
+| ○ `ui_n3_panel_marco.png`, `ui_n3_espacio_*` | `C8` — **parcialmente sin uso** desde R11 (20/09/2026): el panel es una sombra negra al 30 % sobre la ilustración (sin marco) y los espacios vacío/correcto/incorrecto son la silueta de la pieza, la pieza, y la pieza con `Common/ui_alerta` encima (RNF-19). Si `C8` se genera, solo el marco tendría dónde ir. |
 
 **`UI/River/Animations/`**
 

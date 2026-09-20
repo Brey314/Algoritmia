@@ -101,7 +101,8 @@ namespace Game.Levels.River.Tests
 
                 var caja = EnPantalla(river.Player);
                 Assert.That(pantalla.Contains(caja.min) && pantalla.Contains(caja.max), Is.True,
-                    $"en el borde {direccion} Mamá sigue entera en cámara — {caja}");
+                    $"en el borde {direccion} Mamá sigue entera en cámara — {caja}; pantalla {pantalla}; " +
+                    $"ilustración {EnPantalla(river.Environment.rectTransform)}; mundo {EnPantalla((RectTransform)river.Environment.rectTransform.parent)}");
                 Assert.That(EnPantalla(river.Environment.rectTransform).Contains(caja.center), Is.True, "y sobre la ilustración");
             }
         }
@@ -141,10 +142,13 @@ namespace Game.Levels.River.Tests
                 .Select(c => c.name).ToArray();
 
             Assert.That(arrastrables, Is.Empty, "nada usa el arrastre de uGUI");
-            // Las cuatro flechas son el clic sostenido de RF-35; «BotonPausa» (prefab MenuPausa)
-            // atiende el pulsar solo para hundir su cara mientras dura el clic.
-            Assert.That(sostenidos, Is.EquivalentTo(new[] { "Flecha_Arriba", "Flecha_Abajo", "Flecha_Izquierda", "Flecha_Derecha", "BotonPausa" }),
-                "lo único que responde al clic sostenido son las flechas (y el botón de pausa, solo para pintarse)");
+            // Las cuatro flechas son el clic sostenido de RF-35; «BotonPausa» (prefab MenuPausa) y
+            // «Button_Help» (el «pista» circular de los niveles 1 y 2, con ButtonPressFeedback)
+            // atienden el pulsar solo para hundir su cara mientras dura el clic; y los espacios de
+            // la balsa —el modelo, en la orilla— son las asas del ensamblaje (RF-40).
+            Assert.That(sostenidos.Where(nombre => !nombre.StartsWith("Espacio")),
+                Is.EquivalentTo(new[] { "Flecha_Arriba", "Flecha_Abajo", "Flecha_Izquierda", "Flecha_Derecha", "BotonPausa", "Button_Help" }),
+                "lo único que responde al clic sostenido son las flechas, los dos botones que se hunden al pulsar y las asas de la balsa");
         }
 
         [Test]

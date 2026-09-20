@@ -11,11 +11,15 @@ namespace Game.Levels.River
     /// </summary>
     /// <remarks>
     /// Un asset por nivel, como <see cref="WheelLevelConfig"/>. **Todas las posiciones son
-    /// fracciones de la ilustración** (<c>Camara_Narrativa_N3.md</c> §6), no píxeles ni fracciones
-    /// de pantalla: la cámara de la recolección es un plano fijo (foco 0.400, 0.410 · zoom 1.50)
-    /// y lo que se ve es el recorte <c>foco ± 0.5/zoom</c>; lo que caiga fuera no aparece nunca,
-    /// y <see cref="OnValidate"/> lo avisa. El radio de proximidad y la velocidad son la pregunta
-    /// abierta 3 del plan: se ajustan jugando, sin recompilar.
+    /// fracciones de la ilustración**, no píxeles ni fracciones de pantalla: la cámara de la
+    /// recolección es un plano fijo —desde el 20/09/2026 el cuadrante del bosque, foco (0.20,
+    /// 0.20) · zoom 2.50, **sin río a la vista**; el río aparece con el empuje del ensamblaje— y
+    /// lo que se ve es el recorte <c>foco ± 0.5/zoom</c>; lo que caiga fuera no aparece nunca, y
+    /// <see cref="OnValidate"/> lo avisa. **El piso termina en <see cref="GroundTop"/>**: arriba
+    /// empiezan los arbustos y los troncos de los árboles, y nada se coloca ahí. La perspectiva
+    /// es por profundidad (<see cref="DepthScaleAt"/>): lo que está más abajo —más cerca— se ve
+    /// más grande, Mamá incluida. El radio de proximidad y la velocidad son la pregunta abierta 3
+    /// del plan: se ajustan jugando, sin recompilar.
     /// </remarks>
     [CreateAssetMenu(menuName = "Algoritm/Configuración del Nivel 3", fileName = "N3_RiverLevelConfig")]
     public class RiverLevelConfig : ScriptableObject
@@ -29,7 +33,7 @@ namespace Game.Levels.River
 
         [field: SerializeField]
         [field: Tooltip("A qué distancia de un material aparece «Recoger», en fracción de la ilustración (RF-37). Pregunta abierta 3: se valida jugando.")]
-        public float ProximityRadius { get; private set; } = 0.06f;
+        public float ProximityRadius { get; private set; } = 0.04f;
 
         [field: SerializeField]
         [field: Tooltip("Cuánto avanza Mamá por segundo con un botón sostenido, en fracción de la ilustración.")]
@@ -37,23 +41,35 @@ namespace Game.Levels.River
 
         [field: SerializeField]
         [field: Tooltip("Dónde empieza Mamá, en fracciones de la ilustración.")]
-        public Vector2 StartPosition { get; private set; } = new Vector2(0.267f, 0.477f);
+        public Vector2 StartPosition { get; private set; } = new Vector2(0.15f, 0.15f);
 
         [field: SerializeField]
-        [field: Tooltip("Por dónde se puede andar: la orilla izquierda, sin meterse al agua (x < 0.45). Tiene que caber en el recorte de PlayFraming con margen para que Mamá entre entera en cámara: ~0.03 en x y ~0.05 en y, porque la ilustración es más ancha que alta.")]
-        public Rect WalkableArea { get; private set; } = new Rect(0.10f, 0.13f, 0.33f, 0.56f);
+        [field: Tooltip("Por dónde se puede andar: el pasto del bosque, sin el seto de abajo a la izquierda, sin las raíces del árbol y sin pasar de donde termina el piso. Tiene que caber en el recorte de PlayFraming con margen para que Mamá entre entera en cámara.")]
+        public Rect WalkableArea { get; private set; } = new Rect(0.13f, 0.05f, 0.23f, 0.26f);
+
+        [field: SerializeField]
+        [field: Tooltip("Dónde termina el piso, en fracción del alto de la ilustración: arriba empiezan los arbustos. Medido en env_n3_rio (20/09/2026): el pasto llega a y de 0.34 a 0.40 según la columna.")]
+        public float GroundTop { get; private set; } = 0.36f;
+
+        [field: SerializeField]
+        [field: Tooltip("Escala de lo que está al borde inferior de la ilustración: lo más cerca de la cámara.")]
+        public float DepthScaleNear { get; private set; } = 1f;
+
+        [field: SerializeField]
+        [field: Tooltip("Escala de lo que está donde termina el piso: lo más lejos. Entre las dos se interpola por la altura.")]
+        public float DepthScaleFar { get; private set; } = 0.55f;
 
         [field: SerializeField]
         [field: Tooltip("Centro de la zona de construcción, al borde del agua (Camara_Narrativa_N3.md §6).")]
-        public Vector2 BuildZonePosition { get; private set; } = new Vector2(0.40f, 0.15f);
+        public Vector2 BuildZonePosition { get; private set; } = new Vector2(0.35f, 0.21f);
 
         [field: SerializeField]
         [field: Tooltip("Radio de la zona de construcción, en fracción de la ilustración.")]
-        public float BuildZoneRadius { get; private set; } = 0.05f;
+        public float BuildZoneRadius { get; private set; } = 0.04f;
 
         [field: SerializeField]
-        [field: Tooltip("Plano fijo de toda la recolección: el último encuadre de la escena 3.1, para que de la narrativa al juego no haya salto.")]
-        public CameraFraming PlayFraming { get; private set; } = new CameraFraming(new Vector2(0.4f, 0.41f), 1.5f);
+        [field: Tooltip("Plano fijo de toda la recolección: el cuadrante del bosque, sin río a la vista (decisión del 20/09/2026). El río entra con el empuje de cámara del ensamblaje.")]
+        public CameraFraming PlayFraming { get; private set; } = new CameraFraming(new Vector2(0.2f, 0.2f), 2.5f);
 
         [field: SerializeField, TextArea(2, 3)]
         [field: Tooltip("Lo que se dice al recoger un material. {0} es su nombre. Describe, no felicita (RF-17).")]
@@ -76,6 +92,14 @@ namespace Game.Levels.River
         [field: Tooltip("Los cuatro materiales y dónde está cada uno. Exactamente uno por clase (RF-38).")]
         public Collectible[] Collectibles { get; private set; } = Array.Empty<Collectible>();
 
+        /// <summary>
+        /// Cuánto se escala algo puesto a esa altura de la ilustración: lo de abajo está cerca y se
+        /// ve grande, lo de arriba —hasta donde termina el piso— lejos y pequeño. Vale para Mamá,
+        /// los materiales y la zona, que comparten el piso.
+        /// </summary>
+        public float DepthScaleAt(float y) =>
+            Mathf.Lerp(DepthScaleNear, DepthScaleFar, GroundTop > 0f ? Mathf.Clamp01(y / GroundTop) : 0f);
+
         /// <summary>El texto de una tarea, o vacío si el asset todavía no lo tiene (CP-02: sin frase, nunca sin partida).</summary>
         public string LabelFor(RiverTaskId task)
         {
@@ -97,6 +121,9 @@ namespace Game.Levels.River
             Rect walkableArea = default,
             Vector2 buildZonePosition = default,
             float buildZoneRadius = 0.05f,
+            float groundTop = 1f,
+            float depthScaleNear = 1f,
+            float depthScaleFar = 1f,
             string collectedFormat = "recogido {0}",
             string allCollectedMessage = "todo",
             string missingFormat = "falta {0}",
@@ -111,6 +138,9 @@ namespace Game.Levels.River
             config.WalkableArea = walkableArea == default ? new Rect(0f, 0f, 1f, 1f) : walkableArea;
             config.BuildZonePosition = buildZonePosition;
             config.BuildZoneRadius = buildZoneRadius;
+            config.GroundTop = groundTop;
+            config.DepthScaleNear = depthScaleNear;
+            config.DepthScaleFar = depthScaleFar;
             config.CollectedFormat = collectedFormat;
             config.AllCollectedMessage = allCollectedMessage;
             config.MissingFormat = missingFormat;
@@ -142,6 +172,15 @@ namespace Game.Levels.River
             foreach (var collectible in Collectibles)
             {
                 Warn(visible, collectible.Position, $"«{collectible.Id}»");
+                if (collectible.Position.y > GroundTop)
+                {
+                    Debug.LogWarning($"{name} · «{collectible.Id}» queda por encima de donde termina el piso ({GroundTop:0.00})", this);
+                }
+            }
+
+            if (WalkableArea.yMax > GroundTop)
+            {
+                Debug.LogWarning($"{name} · la orilla andable sube más allá del piso ({GroundTop:0.00})", this);
             }
         }
 

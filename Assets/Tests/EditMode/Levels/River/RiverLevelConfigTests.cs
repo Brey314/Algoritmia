@@ -1,4 +1,5 @@
 using System.Linq;
+using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
@@ -31,18 +32,51 @@ namespace Game.Levels.River.Tests
         }
 
         [Test]
-        public void RiverLevelConfig_RF38_ElAssetTraeExactamenteUnMaterialDeCadaClase()
+        public void RiverLevelConfig_RF38_ElAssetTraeCincoTroncosYUnoDeCadaOtraClase()
         {
             var config = Asset();
 
-            Assert.That(config.Collectibles, Has.Length.EqualTo(4));
-            Assert.That(config.Collectibles.Select(item => item.Kind), Is.EquivalentTo(new[]
+            // Cinco troncos sueltos por la orilla (decisión del 20/09/2026): todos hay que encontrarlos.
+            Assert.That(config.Collectibles.Count(item => item.Kind == MaterialKind.Logs), Is.EqualTo(5));
+            Assert.That(config.Collectibles.Where(item => item.Kind != MaterialKind.Logs).Select(item => item.Kind), Is.EquivalentTo(new[]
             {
-                MaterialKind.Logs, MaterialKind.Ropes, MaterialKind.Cloth, MaterialKind.Mast
+                MaterialKind.Ropes, MaterialKind.Cloth, MaterialKind.Mast
             }));
-            Assert.That(config.Collectibles.Select(item => item.Id).Distinct().Count(), Is.EqualTo(4), "ids únicos");
+            Assert.That(config.Collectibles.Select(item => item.Id).Distinct().Count(), Is.EqualTo(config.Collectibles.Length), "ids únicos");
+            Assert.That(config.Collectibles.Where(item => item.Kind == MaterialKind.Logs).Select(item => item.DisplayName).Distinct().Count(),
+                Is.EqualTo(1), "los troncos comparten nombre: en la zona se nombran una vez");
             Assert.That(config.Collectibles.Select(item => item.Art), Has.All.Not.Null, "cada uno con su ilustración (RNF-23)");
             Assert.That(config.Collectibles.Select(item => item.DisplayName), Has.All.Not.Empty, "y con nombre para decir qué falta");
+        }
+
+        [Test]
+        public void RiverLevelConfig_Guion82_ElPlanoDeRecoleccionMuestraSoloElBosqueSinElRio()
+        {
+            var config = Asset();
+            var half = 0.5f / config.PlayFraming.Zoom;
+
+            // El borde izquierdo del agua en env_n3_rio nunca baja de x ≈ 0.426 (medido el 20/09/2026):
+            // el recorte de la recolección termina antes, y el río solo entra con el empuje del ensamblaje.
+            Assert.That(config.PlayFraming.Focus.x + half, Is.LessThanOrEqualTo(0.42f), "el río queda fuera del plano de la recolección");
+            Assert.That(config.PlayFraming.Focus.y - half, Is.LessThanOrEqualTo(0.001f).And.GreaterThanOrEqualTo(-0.001f),
+                "el plano se apoya en el borde inferior: es el suelo del bosque");
+            Assert.That(IllustrationFraming.Warnings(config.PlayFraming, null, mirroredForest: false, IllustrationFraming.ScreenAspect),
+                Is.Empty, "y es un encuadre válido para 16:9");
+        }
+
+        [Test]
+        public void RiverLevelConfig_DA83_LoQueEstaMasAbajoSeVeMasGrandeYLoDeArribaMasPequeno()
+        {
+            var config = RiverLevelConfig.Create(System.Array.Empty<Collectible>(), groundTop: 0.4f, depthScaleNear: 1.2f, depthScaleFar: 0.6f);
+
+            Assert.That(config.DepthScaleAt(0f), Is.EqualTo(1.2f).Within(1e-5f), "al borde de abajo, lo más cerca");
+            Assert.That(config.DepthScaleAt(0.2f), Is.EqualTo(0.9f).Within(1e-5f), "a mitad del piso, a mitad de camino");
+            Assert.That(config.DepthScaleAt(0.4f), Is.EqualTo(0.6f).Within(1e-5f), "donde termina el piso, lo más lejos");
+            Assert.That(config.DepthScaleAt(0.9f), Is.EqualTo(0.6f).Within(1e-5f), "por encima del piso no sigue encogiendo");
+            Assert.That(config.DepthScaleAt(0.05f), Is.GreaterThan(config.DepthScaleAt(0.35f)), "más abajo, más grande");
+
+            var asset = Asset();
+            Assert.That(asset.DepthScaleNear, Is.GreaterThan(asset.DepthScaleFar), "el asset aplica la regla, no la anula (RNF-18)");
         }
 
         [Test]
@@ -67,8 +101,14 @@ namespace Game.Levels.River.Tests
             }
 
             Assert.That(config.WalkableArea.Contains(config.BuildZonePosition), Is.True, "y a la zona se llega andando");
-            Assert.That(config.Collectibles.Select(item => item.Position).Distinct().Count(), Is.EqualTo(4),
-                "no están todos en el mismo punto");
+
+            // El piso: nada se coloca donde empiezan los arbustos, y la orilla andable tampoco sube ahí.
+            Assert.That(config.GroundTop, Is.InRange(0.3f, 0.45f), "el piso termina donde lo mide la ilustración (env_n3_rio)");
+            Assert.That(config.WalkableArea.yMax, Is.LessThanOrEqualTo(config.GroundTop), "la orilla andable no pasa del piso");
+            Assert.That(config.Collectibles.Select(item => item.Position.y), Has.All.LessThanOrEqualTo(config.GroundTop), "todos los materiales están en el piso");
+            Assert.That(config.BuildZonePosition.y, Is.LessThanOrEqualTo(config.GroundTop));
+            Assert.That(config.Collectibles.Select(item => item.Position).Distinct().Count(), Is.EqualTo(config.Collectibles.Length),
+                "no están todos en el mismo punto: cada hallazgo tiene el suyo");
         }
     }
 }

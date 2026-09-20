@@ -33,9 +33,10 @@ namespace Game.Levels.River.Tests
                 river.CollectButton.onClick.Invoke();
 
                 Assert.That(image.gameObject.activeSelf, Is.False, $"«{collectible.Id}» deja la orilla");
-                Assert.That(river.Inventory.Has(collectible.Kind), Is.True, "y entra al inventario");
-                Assert.That(river.Slots.Count(slot => slot.sprite != null), Is.EqualTo(river.Inventory.Items.Count),
-                    "el inventario se llena en orden, una casilla por material");
+                Assert.That(river.Inventory.Count(collectible.Kind), Is.GreaterThan(0), "y entra al inventario");
+                Assert.That(river.Slots.Count(slot => slot.sprite != null),
+                    Is.EqualTo(river.Inventory.Items.Select(item => item.Kind).Distinct().Count()),
+                    "el inventario se llena por clase: una casilla por material, los troncos comparten la suya");
                 Assert.That(river.TaskArea.gameObject.activeInHierarchy && river.InventoryArea.gameObject.activeInHierarchy,
                     Is.True, "lista e inventario siguen visibles (RF-36, RF-38)");
                 Assert.That(river.MessageLabel.text, Does.Not.Match(@"\d"), "ninguna cifra en la retroalimentación (CP-03)");
@@ -64,18 +65,45 @@ namespace Game.Levels.River.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task RiverScene_DA83_MamaYLosMaterialesSeVenMasGrandesCuantoMasAbajoEstan()
+        {
+            var river = await RiverMovementTests.OpenRiver();
+            var config = river.Config;
+
+            var porAltura = river.Spawned.OrderBy(entry => entry.Collectible.Position.y).ToArray();
+            var escalas = porAltura.Select(entry => entry.Image.rectTransform.localScale.x).ToArray();
+            Assert.That(escalas, Is.Ordered.Descending, "los materiales más abajo (más cerca) se ven más grandes que los de arriba");
+            Assert.That(escalas.First(), Is.GreaterThan(escalas.Last()));
+            Assert.That(escalas.First(), Is.EqualTo(config.DepthScaleAt(porAltura.First().Collectible.Position.y)).Within(1e-4f),
+                "y la escala es la del asset para esa altura (RNF-18)");
+
+            WalkTo(river, new Vector2(config.StartPosition.x, config.WalkableArea.yMax));
+            var arriba = river.Player.localScale.x;
+            WalkTo(river, new Vector2(config.StartPosition.x, config.WalkableArea.yMin));
+            var abajo = river.Player.localScale.x;
+            Assert.That(abajo, Is.GreaterThan(arriba), "Mamá también: abajo se ve más grande que arriba");
+            Assert.That(abajo, Is.EqualTo(config.DepthScaleAt(river.Walk.Position.y)).Within(1e-4f), "con la escala del asset para su altura real");
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task BuildZone_CU09_SinTodosLosMaterialesIndicaCualesFaltanSinCifras()
         {
             var river = await RiverMovementTests.OpenRiver();
-            var troncos = river.Spawned.Single(entry => entry.Collectible.Kind == MaterialKind.Logs).Collectible;
-            WalkTo(river, troncos.Position);
-            river.CollectButton.onClick.Invoke();
+            // Se recogen los cinco troncos: la clase completa es lo que deja de pedirse en la zona.
+            foreach (var (tronco, _) in river.Spawned.Where(entry => entry.Collectible.Kind == MaterialKind.Logs).ToArray())
+            {
+                WalkTo(river, tronco.Position);
+                river.CollectButton.onClick.Invoke();
+            }
+
+            var troncos = river.Spawned.First(entry => entry.Collectible.Kind == MaterialKind.Logs).Collectible;
 
             WalkTo(river, river.Config.BuildZonePosition);
 
             Assert.That(river.Zone.IsOpen, Is.False, "sin todo no abre");
             Assert.That(river.AssemblyPanel.activeSelf, Is.False);
-            var faltan = river.Config.Collectibles.Where(item => item.Kind != MaterialKind.Logs).Select(item => item.DisplayName);
+            var faltan = river.Config.Collectibles.Where(item => item.Kind != MaterialKind.Logs).Select(item => item.DisplayName).Distinct();
             foreach (var nombre in faltan)
             {
                 Assert.That(river.MessageLabel.text, Does.Contain(nombre), $"nombra «{nombre}» entre lo que falta (CU-09 FA-6a)");

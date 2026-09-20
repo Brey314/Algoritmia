@@ -49,6 +49,33 @@ namespace Game.Levels.River.Tests
         }
 
         [Test]
+        public void Inventory_RF38_LosCincoTroncosLlenanUnaSolaCasillaYLaClaseSeCompletaConElUltimo()
+        {
+            var logs = Enumerable.Range(1, 5)
+                .Select(index => new Collectible($"tronco_{index}", MaterialKind.Logs, "Troncos", position: new Vector2(0.1f * index, 0.2f)))
+                .ToArray();
+            var config = RiverLevelConfig.Create(logs.Concat(new[] { Sogas, Tela, Mastil }).ToArray(), missingFormat: "falta {0}");
+            var sut = new Inventory(config);
+
+            Assert.That(sut.Capacity, Is.EqualTo(4), "una casilla por clase, no por pieza (RF-38)");
+            Assert.That(sut.Required(MaterialKind.Logs), Is.EqualTo(5));
+
+            foreach (var log in logs.Take(4))
+            {
+                sut.TryCollect(log);
+            }
+
+            Assert.That(sut.Count(MaterialKind.Logs), Is.EqualTo(4));
+            Assert.That(sut.Has(MaterialKind.Logs), Is.False, "con cuatro la clase no está completa: la tarea 1 no se marca todavía");
+            Assert.That(new BuildZone(config).TryEnter(sut).Message, Is.EqualTo("falta Troncos, Sogas, Tela y Mástil"),
+                "y en la zona los troncos se nombran una vez, sin cuántos (CP-03)");
+
+            sut.TryCollect(logs[4]);
+            Assert.That(sut.Has(MaterialKind.Logs), Is.True, "con el quinto sí");
+            Assert.That(sut.Missing.Select(item => item.Kind), Is.EqualTo(new[] { MaterialKind.Ropes, MaterialKind.Cloth, MaterialKind.Mast }));
+        }
+
+        [Test]
         public void Collectible_RF37_ElBotonRecogerSoloApareceDentroDelRadioDeProximidad()
         {
             var radio = Config().ProximityRadius;

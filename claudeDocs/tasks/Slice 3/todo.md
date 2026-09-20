@@ -154,9 +154,18 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       de ensamblaje **tapa la lista** al abrirse (captura `RiverScene_RF39_ZonaAbierta`); R11 decide dónde va
 - [ ] Radio de proximidad de RF-37 validado jugando (pregunta abierta 3) — hoy `0.06` de la ilustración
       (~170 px a 1920) y velocidad `0.25`/s en `N3_RiverLevelConfig.asset`; se ajusta sin recompilar
-- [ ] Revisado con el usuario — pregunta abierta 2: con el plano fijo de §5.3 **los cuatro materiales se
+- [ ] Revisado con el usuario — pregunta abierta 2: con el plano fijo **los ocho materiales se
       ven desde el arranque** (no hay paneo); el reparto obliga a recorrer la orilla igual
       (`RiverLevelConfig_RF37_ElRepartoObligaARecorrerLaOrillaYCabeEnElPlanoFijo`)
+- [x] **Plano de la recolección rehecho (20/09/2026, decisión de Santiago):** solo el bosque, sin río —
+      foco `(0.20, 0.20) ×2.5`, el cuadrante inferior izquierdo de `env_n3_rio`; el río entra con el
+      empuje del ensamblaje (`RiverLevelConfig_Guion82_ElPlanoDeRecoleccionMuestraSoloElBosqueSinElRio`).
+      **El piso termina en `GroundTop = 0.36`** (medido en la ilustración: el pasto llega a y ≈ 0.34–0.40
+      antes de los arbustos); orilla andable `x 0.13–0.36 · y 0.05–0.31`, sin el seto ni las raíces;
+      los ocho materiales, el arranque y la zona quedan en el piso. **Perspectiva por profundidad**
+      (`DepthScaleAt`: 1.0 abajo → 0.55 donde termina el piso) para Mamá, materiales y zona
+      (`RiverLevelConfig_DA83_…`, `RiverScene_DA83_…`). Radio de proximidad y de la zona a `0.04`
+      (a zoom 2.5 son ≈ 190 px). Botón de ayuda: el circular de los niveles 1 y 2 (`Boton_Pista`).
 
 ---
 
@@ -164,23 +173,74 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 > **R09 y R10 no dependen de R05..R08** y se pueden adelantar. Ver pregunta abierta 6.
 
-- [ ] **R09 · `RaftAssembly` — tres fases bloqueantes** — `M` · `EM`
+> **Decisiones de Santiago del 20/09/2026 que cambian R11 respecto al plan:** no hay modal. El
+> ensamblaje se arma **sobre el río**: la cámara empuja del plano de juego a `(0.50, 0.23) ×2.2`
+> —el río al 85 % del ancho, la orilla parte la pantalla (pasto a la izquierda, agua a la
+> derecha)—, con una sombra negra al 30 % sobre la ilustración y la balsa en la mitad. La balsa
+> son **cinco troncos** (los cinco hay que encontrarlos por la orilla; comparten una casilla que se
+> llena con cinco marcas), **diez amarres** (uno en cada extremo de cada tronco, de un solo rollo
+> de soga que se arrastra diez veces), el mástil (un tronco más largo: la trampa de la base) y la
+> vela. **Composición, no láminas:** diecisiete espacios pintados uno a uno con ocho sprites
+> (pieza + silueta dibujada aparte por clase) en lugar de las 34 láminas de estado. Colocar no
+> valida; el botón sí. Error = pieza equivocada o espacio vacío (guion §1.8.4).
+
+- [x] **R09 · `RaftAssembly` — tres fases bloqueantes** — `M` · `EM`
       RF-40, RF-41, RF-11, RF-17, RF-18, RNF-18, CP-02, CP-06, **INC-30**, HU-12, CU-10,
-      guion §8.3 · depende de: R01
-- [ ] **R10 · `RaftValidator` — prueba de balsa y depuración** — `M` · `EM`
+      guion §8.3 · depende de: R01 — **20/09/2026.** `RaftPhase`, `RaftSlot` (contenido: fase,
+      material que acepta, posición y tamaño en fracciones del área de la balsa, giro),
+      `RaftAssemblyContent` (espacios, arte por clase, amarres por rollo, encuadre, frases) y
+      `RaftAssembly` (C# plano: solo se ven los espacios de la fase activa y las consolidadas;
+      `Place` no valida; `TakeBack`; `Confirm` consolida o devuelve **solo** lo mal puesto; `Resume`
+      para RNF-14; `Rejections` solo para RF-45, sin límite). Las cinco pruebas del plan en
+      `RaftAssemblyTests` + `RNF14_Retomar…` + `RF38_ElRolloDeSoga…`.
+- [x] **R10 · `RaftValidator` — prueba de balsa y depuración** — `M` · `EM`
       RF-42, RF-43, RF-11, RF-17, RF-18, CP-02, CP-03, CP-06, HU-13, CU-10 (FA-6a, FA-6b),
-      guion §8.4 · depende de: R09
-- [ ] **R11 · Panel de ensamblaje en escena** — `M` · `PM` + `VV` `MCP`
+      guion §8.4 · depende de: R09 — **20/09/2026.** `RaftValidator.WrongSlots` (función pura:
+      vacío o con otra pieza) y `ValidationResult`. Las cinco pruebas del plan en
+      `RaftValidatorTests`, la de RF-17 y la de CP-06 leyendo el asset real, más
+      `RaftAssemblyContent_RF40_ElAssetTraeLaBalsa…` (5 + 10 + 2 espacios, arte y silueta por clase).
+- [x] **R11 · Panel de ensamblaje en escena** — `M` · `PM` + `VV` `MCP`
       RF-40, RF-41, RF-42, RF-43, RNF-02, RNF-03, RNF-19, RNF-21, CT-06, HU-12, HU-13,
-      CU-10 · depende de: R10, R08
-- [ ] **R12 · Escena 3.2, condicional al primer fallo** — `S` · `PM` `MCP`
-      RF-05, RF-06, RF-11, RF-12, CP-02, CP-07, guion §8.4.1 · depende de: R11
+      CU-10 · depende de: R10, R08 — **20/09/2026.** `AssemblyPanelController` (adaptador:
+      `Sombra_Ensamblaje` y `Area_Balsa` cuelgan de la ilustración; espacios instanciados de
+      `EspacioTemplate` con `RaftPieceHandle` e `Image_Alerta`; empuje de cámara con
+      `IllustrationFraming.ScaleAbout` como el taller; pulso de completado y hundimiento por giro,
+      continuos, RNF-21; `Button_Confirm` «Listo» → «Probar balsa»; confirma y guarda cada fase con
+      `PhaseId`). Arrastre **sin Input System ni arrastre de uGUI**: asas `IPointerDown/Up` en las
+      casillas y en los espacios, y `PointerTracker` (`IPointerMoveHandler` en el `Canvas`) para
+      seguir el cursor. `InventoryView` separado (casilla por clase, marcas para los troncos), y
+      `Inventory` ahora cuenta por clase (`Required`/`Count`/`Has` = clase completa).
+      `GameFlowRunner.PlayingScenes` gana `River 2` y `River 3` → la escena retoma en el panel.
+      Pruebas en `AssemblyPanelTests` (RF40, RNF19, RNF02, RNF03 de layout con la fase 3 abierta,
+      HU12 `VisualVerification` con tres capturas `TestScreenshots/AssemblyPanel_HU12_*`).
+- [x] **R12 · Escena 3.2, condicional al primer fallo** — `S` · `PM` `MCP`
+      RF-05, RF-06, RF-11, RF-12, CP-02, CP-07, guion §8.4.1 · depende de: R11 — **20/09/2026.**
+      `ConditionalNarrativeTrigger` cableado tras el hundimiento; para que «la escena narra, no
+      reinicia» el disparador y las piezas de la fase abierta viven en **estáticos del assembly**
+      (memoria de nivel: sobreviven a la recarga de la escena narrativa, no al proceso — RNF-09 no
+      admite «escenas vistas»). Pruebas en `ConditionalNarrativeTests` con un `GameFlowRunner` de
+      prueba y sin `SceneLoader`: las tres del plan.
+      **Suite del 20/09/2026 (Rider MCP, Game View fijada a 1920×1080 con
+      `PlayModeWindow.SetCustomRenderingResolution`):** EditMode **265/265** (todos los assemblies; tras el plano del bosque, `Game.Levels.River.Tests` **31/31**);
+      PlayMode `Game.Levels.River.PlayMode.Tests` **20/20** (17 de integración + 3 capturas
+      `AssemblyPanel_HU12_*`; la de `…PorRaycastYSueltaEnElEspacio` reproduce el camino real del clic —
+      la casilla no era objetivo de raycast y el arrastre no arrancaba jugando, corregido el 20/09/2026), `Game.Core.PlayMode.Tests` **8/8**, `Game.UI.PlayMode.Tests` **63/63** (excede el tiempo del puente MCP:
+      leer `TestResults.xml` en `persistentDataPath`). Ojo: con la Game View en otra
+      proporción (880×405, «Free Aspect») fallan `RiverScene_RF35_…` y `AssemblyPanel_RNF03_…` porque
+      el recorte 16:9 deja fuera el borde inferior — es el entorno, no el código.
 
 ### ✅ Checkpoint R-D — Ensamblaje completo
-- [ ] La balsa se construye por las tres fases y se prueba
-- [ ] Un fallo devuelve **solo** lo mal puesto y conserva las fases aprobadas (RF-43)
-- [ ] La escena 3.2 aparece tras el primer fallo y no aparece si se acierta de una
-- [ ] Ningún mensaje nombra la pieza correcta (CP-06)
+- [x] La balsa se construye por las tres fases y se prueba — `AssemblyPanel_RF40_…` (PM) y
+      `RaftAssembly_RF40_LasTresFases…` (EM)
+- [x] Un fallo devuelve **solo** lo mal puesto y conserva las fases aprobadas (RF-43) —
+      `RaftValidator_RF43_…` (EM) y `AssemblyPanel_RNF19_…` (PM)
+- [x] La escena 3.2 aparece tras el primer fallo y no aparece si se acierta de una —
+      `RiverScene_Guion841_…` (PM)
+- [x] Ningún mensaje nombra la pieza correcta (CP-06) — `RaftValidator_CP06_…` sobre el asset
+- [ ] Encuadre del ensamblaje validado jugando: `(0.50, 0.23) ×2.2` sale de medir el río en
+      `env_n3_rio` (≈ 38 % del ancho en el tramo bajo → 84 % de pantalla; la orilla a esa altura
+      pasa por x ≈ 0.50 y parte la pantalla en dos); se ajusta en
+      `N3_RaftAssemblyContent.asset` sin recompilar
 - [ ] Revisado con el usuario
 
 ---
