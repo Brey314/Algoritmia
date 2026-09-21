@@ -132,6 +132,10 @@ namespace Game.Scaffolding.Tests
             {
                 Assert.That(cierre.IsReflectiveClosing, Is.True, $"{cierre.Id} se declara cierre reflexivo");
                 Assert.That(NarrativeVisitPolicy.AlreadySeen(perfil, cierre), Is.False, $"{cierre.Id} no ofrece omitir");
+                // La escena final además sale a los créditos (INC-39): lleva las dos marcas, y es la
+                // de cierre reflexivo la que le niega el botón de omitir (R14).
+                Assert.That(cierre.EndsInCredits, Is.EqualTo(cierre.Id == "N3_EscenaFinal"),
+                    $"{cierre.Id}: solo la escena final sale a los créditos");
             }
         }
 

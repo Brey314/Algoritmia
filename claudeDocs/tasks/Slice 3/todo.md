@@ -247,23 +247,128 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ## Fase 4 — Cierre del nivel y del juego
 
-- [ ] **R13 · Emisión de los cuatro indicadores del N3** — `M` · `EM`
+- [x] **R13 · Emisión de los cuatro indicadores del N3** — `M` · `EM` (21/09/2026)
       RF-45, RF-04, RF-07, RNF-09, RNF-14, CP-03, CP-09, OE1 §3.6.1 (notas 1–5), INC-27,
       INC-30 · depende de: R12, Slice 2 W15
-- [ ] **R15 · Doble indicador y contraste en los estados de error del N3** — `S` · `VV` `MCP`
+      `RiverIndicatorCollector` (`Game.Levels.River`, implementa `ILevelReporter`): **un solo
+      recolector para las tres fases**, porque §3.6.1 define los indicadores del N3 sobre el nivel
+      entero —«pasos utilizados» son las confirmaciones aceptadas *sobre un máximo de tres*— y las
+      tres fases se juegan en el mismo panel; solo el tiempo es de cada fase y `Complete()` reinicia
+      el reloj al cerrarla. `RecordConfirmation(ValidationResult, devueltas)`: rechazo = intento;
+      aceptación = paso; error corregido = pieza devuelta en el intento anterior cuyo espacio ya no
+      aparece señalado en este (un espacio vacío no devuelve nada, así que llenarlo no corrige).
+      `PauseOpened`/`PauseClosed` (nota 1). **El reloj de la base arranca al abrir el ensamblaje**,
+      no en la orilla: la recolección no es fase persistida. `AssemblyPanelController` lo guarda en
+      la memoria de nivel (`s_indicators`, junto a `s_stash`) para que sobreviva a la escena 3.2 —a
+      la que sale con `PauseOpened()` y de la que vuelve con `PauseClosed()`—, lo registra en
+      `GameFlowRunner.ActiveReporter`, al retomar desde disco siembra las fases ya aceptadas como
+      pasos (`confirmedPhases`, RNF-14) y persiste `Complete()` donde antes iba `default`.
+      EditMode (`RiverIndicatorTests`, 8/8 el 21/09/2026 contra el Editor abierto):
+      `RiverIndicators_RF45_IntentosCuentaFasesRechazadasYPruebasFallidas`,
+      `_RF45_PasosUtilizadosNoSuperaTres`, `_RF45_RetomarEnUnaFaseCuentaLasConfirmadasAntes`,
+      `_RF45_ErrorCorregidoExigeRecolocacionCorrectaPosterior`,
+      `_RF07_LaPausaNoSumaTiempoDeResolucion`, `_OE1361_ElTiempoDeResolucionEsDeCadaFase`,
+      `_OE1361_ReiniciarElNivelNoBorraLosIndicadoresRegistrados`,
+      `_CP03_NingunIndicadorLlegaALaUIDelEstudiante` (barrido de reflexión sobre `Game.UI`).
+      Regresión: EditMode completo 275/275 y `Game.Levels.River.PlayMode.Tests` 20/20.
+- [x] **R15 · Doble indicador y contraste en los estados de error del N3** — `S` · `VV` `MCP` (21/09/2026)
       **RNF-19** (cierra su segunda mitad), RNF-20, RNF-21, CN-04, HU-13 · depende de: R11
-- [ ] **R16 · Cierre de RNF-02 y RNF-16 sobre el juego completo** — `S` · `PM` + `EM` `MCP`
+      `RiverAccessibilityTests` (PlayMode, corrido contra el Editor abierto por Rider, **4/4**, y la
+      suite del río **24/24**): `RiverLevel_RNF19_LosEstadosDeErrorSeLeenSinColor` (zona sin
+      materiales, colocación incorrecta y prueba de balsa fallida: icono ≠ al del acierto + texto sin
+      cifras en la tablilla, y el icono de alerta encendido sobre cada espacio señalado; tres
+      capturas), `_RNF19_LaListaDeTareasSeLeeEnEscalaDeGrises` (visto y círculo son sprites
+      distintos; captura **desaturada** por la propia prueba), `_RNF20_ContrasteSuficienteSobreElEscenarioClaro`
+      (WCAG texto/cara medido en escena y **exigiendo que ningún texto cuelgue de la ilustración**:
+      tablilla del guía 13,3:1 · tareas 6,3:1 · «Recoger», «Listo»/«Probar balsa» y los cinco
+      botones de la pausa ≥ 7,1:1) y `_RNF21_NingunaAnimacionDelNivel3TieneDestellos` (empuje de
+      cámara, pulso de fase confirmada y hundimiento muestreados cuadro a cuadro: nada se apaga,
+      la sombra no parpadea, ningún salto mayor que el que sigue el ojo; recoger no anima; tres
+      capturas). **El cruce (RF-44) no existe todavía: lo cubre R14.**
+      **Hallazgo real de RNF-19:** entrar a la zona sin los materiales se mostraba con tono `Help`,
+      cuyo icono está vacío en la escena (igual que en las tres del Nivel 2): solo palabras, sin
+      icono ni color. Es una acción rechazada (CU-09 FA-6a), no una pista: `RiverSceneController.Enter`
+      pasa a `MessageTone.Rejected` — icono de alerta más color, la frase no cambia (CP-02).
+      **Falso hallazgo de RNF-20, documentado en la prueba:** el botón de confirmar medía 3,9:1 en
+      las capturas porque se deshabilita en cada animación y vuelve con un `CrossFade` de 0,1 s; el
+      corredor va a ~1000 fps y capturaba a 3 ms del desvanecido. En juego real es ámbar sólido:
+      la prueba espera el desvanecido y exige el `CanvasRenderer` en blanco antes de medir.
+      Capturas en `%AppData%\LocalLow\DefaultCompany\My project\TestScreenshots\RiverLevel_*.png`,
+      revisadas.
+- [x] **R16 · Cierre de RNF-02 y RNF-16 sobre el juego completo** — `S` · `PM` + `EM` `MCP` (21/09/2026)
       **RNF-02**, **RNF-16**, CT-06, **INC-01** · depende de: R11
-- [ ] **R14 · Cruce, escena final y cierre del juego** — `M` · `EM` + `PM` `MCP`
+      **Hallazgo real:** nueve escenas —las cuatro jugables del N2 y N3 y las cinco de flujo con
+      módulo— usaban en su `InputSystemUIInputModule` el `DefaultInputActions` del paquete Input
+      System (teclado y mando incluidos), y el mapa de acciones del proyecto (Input System →
+      Project-wide Actions, que entra al ejecutable) era la plantilla `Assets/Settings/
+      InputSystem_Actions.inputactions` con 23 vinculaciones de teclado; solo `Level1_Cave` estaba
+      bien. Recableadas desde el motor las nueve a `Assets/Game/Input/ControlesJugables.inputactions`
+      (el setter de `actionsAsset` remapea Point/Click/RightClick/MiddleClick/ScrollWheel por
+      nombre; Move/Submit/Cancel quedan nulos: es lo que se quiere) y el proyecto apunta al mismo
+      asset (`EditorBuildSettings.asset`). Al mapa se le quitó la vinculación `<Mouse>/scroll`
+      —el criterio pide «ni rueda del ratón»; la acción sigue, sin binding—; quedan
+      `<Pointer>/position`, `<Mouse>/leftButton|rightButton|middleButton`,
+      `<Touchscreen>/primaryTouch/tap` y `<Pen>/tip`. La plantilla de `Assets/Settings/` sigue en
+      disco sin que nada la use: borrarla es decisión de Santiago. EditMode (`Game.Architecture.Tests`,
+      leen disco): `Architecture_RNF16_RetirarUnNivelNoAfectaALosOtrosDos` (por nivel: ningún
+      módulo de runtime lo tiene en su cierre de dependencias y ninguna escena ajena, de flujo ni
+      prefab compartido contiene guids de sus scripts — las tres combinaciones),
+      `Architecture_RNF02_NingunAssemblyUsaLaClaseInputLegada` (`activeInputHandler: 1` en
+      `ProjectSettings.asset` más barrido de `Input.GetKey|GetMouse|GetAxis|mousePosition…` en
+      `Scripts/`), `Architecture_INC01_ElMapaDeControlesNoTieneTecladoMandoNiRueda` y
+      `Architecture_RNF02_LasEscenasYElProyectoUsanSoloElMapaDeControlesDelJuego` (toda escena con
+      `m_ActionsAsset` y el proyecto → `ControlesJugables`; las cinco jugables llevan módulo).
+      PlayMode (`Core`, el asmdef ganó `Unity.InputSystem` y `UnityEngine.UI`):
+      `Controls_RNF02_LasCincoEscenasJugablesSoloAceptanClicYClicSostenido` carga las cinco de
+      verdad: módulo → `ControlesJugables`, vinculaciones solo de clic, puntero y clic cableados,
+      sin `PlayerInput`, sin `ScrollRect`; lo que cada nivel deja hundir o arrastrar sigue en su
+      propia `*_RNF02_*`. `unity test` (Editor cerrado): EditMode **282/282**; PlayMode
+      `Core` + todas las `RNF02`/`INC01` de los cinco niveles **17/17**; PlayMode completo como
+      regresión del recableado: **165/184**, 6 omitidos (visuales que piden Game View) y 13
+      fallos, todos de disposición o captura medidos contra la pantalla de 640×480 de batchmode
+      —los diez ya anotados en R14 más `ForestScene_RF26_LaCajaYLosTroncos…`,
+      `MazeScene_RNF03_ConMasBloques…` y `WorkshopScene_RNF03_NadaSeSale…`—; los dos recorridos
+      completos del N2 (RNF-13), que pasan por las nueve escenas recableadas, pasan. **Los trece
+      se repiten en el Editor con Rider antes del checkpoint R-E.**
+- [x] **R14 · Cruce, escena final y cierre del juego** — `M` · `EM` + `PM` `MCP` (21/09/2026)
       RF-44, RF-12, RF-45, RF-17, RF-08, RF-03, RNF-13, CP-03, CP-07, CP-10, HU-13, HU-14,
-      CU-10, INC-26, INC-37, **INC-39**, guion §8.5/§9 · depende de: R13, R15, R16
+      CU-10, INC-26, INC-37, **INC-39**, guion §8.5/§9 · depende de: R13, R15, R16 (R16 sigue
+      abierta: son pruebas de RNF-02/RNF-16, no código del cierre)
+      **El flujo lo deciden los assets, no una rama por nivel.** `GameFlow` acepta
+      `Narrative → Credits`. `NarrativeSequence.EndsInCredits` —marcado en `N3_EscenaFinal`, que
+      **sigue siendo** cierre reflexivo: esa es la marca que le niega «Omitir» la primera vez sin
+      tocar `NarrativeVisitPolicy`— y `NarrativeSceneController.Leave` lo atiende antes que al
+      resumen. `LevelSummaryMessages.ClosingSequenceId` (vacío = menú de niveles, como N1 y N2)
+      saca «Continuar» a la escena final; lo declara `N3_ResumenNivel.asset` (nuevo, creado desde
+      el motor, cableado en `LevelSummary.unity`). El cruce (RF-44) es `PropMotion.Drift` —el
+      mismo avance suavizado del rodado, sin giro ni caída— sobre la balsa de `N3_Escena33_Cruce`
+      (0,12 del ancho a la orilla derecha, 9 s, desde la línea 0): no hizo falta
+      `RiverCrossingSequence.cs`. `env_final_fogatas.png` ya era la ilustración de la escena final
+      y sus seis paradas cierran sobre la fogata central (0,5 · 0,35 de la lámina): ningún encuadre
+      cambió. EditMode: `GameFlow_INC39_TrasElResumenDelUltimoNivelLaEscenaFinalSaleALosCreditosYAlInicio`,
+      `LevelSummary_RF45_ElResumenDelNivel3NoContieneNingunDigito`,
+      `LevelSummary_RF12_NombraLaDescomposicionYLaDepuracion`, y
+      `NarrativeVisitPolicy_CP07_ElCruceYLaEscenaFinalNoSeOmitenLaPrimeraVez` exige ahora
+      `EndsInCredits` solo en la final. PlayMode (`GameEndingTests`, en `Levels/River` y no en
+      `Core` como decía el plan, porque el cruce lo dispara el panel de ensamblaje):
+      `GameEnding_INC39_RecorreLevelSummaryNarrativeCreditsYMainMenu` (Boot → N3 fase 3 → cruce →
+      resumen → escena final sin «Omitir» → créditos → «Volver» → inicio, perfil íntegro en disco) y
+      `GameEnding_RF44_LaPruebaSuperadaReproduceElCruceYElCierre` (balsa completa → cruce; la balsa
+      avanza sin girar; el cierre llega con las tres fases), **2/2**. Regresión con `unity test`
+      (batchmode, Editor cerrado): EditMode **279/279**; River PlayMode 17/26 y UI+Core 68/71 —
+      los diez que fallan son los visuales y de disposición que miden contra la Game View, que
+      batchmode abre a 640×480 y sin captura (`AssemblyPanel_RNF03`, `AssemblyPanel_HU12`,
+      `RiverScene_RF35_…Limites`, `RiverScene_RNF03`, `RiverLevel_RNF19/RNF20`,
+      `RiverScene_RF36/RF39`, `NarrativeScene_RNF01`): son los mismos que pasaron 24/24 a las
+      13:05 en el Editor. **Pendiente: repetir esos diez en el Editor con Rider** antes del
+      checkpoint R-E.
 
 ### ✅ Checkpoint R-E — Slice 3 completo
 - [ ] **Dos recorridos completos** del Nivel 3 sin incidencias (RNF-13)
 - [ ] Un recorrido **acertando al primer intento** (sin escena 3.2) y otro **fallando** (con ella)
 - [ ] Cierre forzado en cada fase confirmada → retoma donde iba (RNF-14)
-- [ ] **RNF-02 cerrado**: cinco escenas jugables inspeccionadas, cero teclado (INC-01)
-- [ ] **RNF-16 cerrado**: las tres combinaciones de exclusión
+- [x] **RNF-02 cerrado**: cinco escenas jugables inspeccionadas, cero teclado (INC-01) — R16, 21/09/2026
+- [x] **RNF-16 cerrado**: las tres combinaciones de exclusión — R16, 21/09/2026
 - [ ] Carga de `Level3_River` < 10 s y memoria < 2 GB, **medidas** (RNF-04, RNF-05)
 - [ ] Paquete < 500 MB con el arte de los **tres** slices (RNF-06) — última oportunidad de verlo
 - [ ] **PG-05** verificado sobre los tres niveles

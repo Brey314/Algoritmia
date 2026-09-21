@@ -7,6 +7,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -87,6 +88,47 @@ namespace Game.Architecture.Tests
                 var others = DependenciesOf(level).Where(name => name.StartsWith(LevelPrefix));
 
                 Assert.That(others, Is.Empty, $"{level} depende de otro nivel");
+            }
+        }
+
+        /// <summary>
+        /// Retirar un nivel deja los otros dos ejecutándose (RNF-16): ningún módulo de runtime
+        /// depende de él, y ninguna escena ajena ni prefab compartido referencia sus scripts — es
+        /// lo que haría que el menú de niveles, la pausa o el otro nivel dejaran de cargar. Las
+        /// tres combinaciones, no una pareja.
+        /// </summary>
+        [Test]
+        public void Architecture_RNF16_RetirarUnNivelNoAfectaALosOtrosDos()
+        {
+            var levels = new[]
+            {
+                ("Game.Levels.Fire", "Levels/Fire", "Level1_"),
+                ("Game.Levels.Wheel", "Levels/Wheel", "Level2_"),
+                ("Game.Levels.River", "Levels/River", "Level3_")
+            };
+            var root = $"{Application.dataPath}/Game";
+            var entryPoints = Directory.GetFiles(root, "*.unity", SearchOption.AllDirectories)
+                .Concat(Directory.GetFiles(root, "*.prefab", SearchOption.AllDirectories))
+                .ToArray();
+
+            foreach (var (assembly, path, scenePrefix) in levels)
+            {
+                var dependents = RuntimeModules
+                    .Select(module => module.Assembly)
+                    .Where(other => other != assembly && DependenciesOf(other).Contains(assembly));
+                Assert.That(dependents, Is.Empty, $"ningún módulo depende de {assembly}");
+
+                var scripts = Directory.GetFiles($"{Application.dataPath}/Game/Scripts/Runtime/{path}", "*.cs.meta", SearchOption.AllDirectories)
+                    .Select(meta => Regex.Match(File.ReadAllText(meta), @"guid: ([0-9a-f]{32})").Groups[1].Value)
+                    .ToArray();
+                Assume.That(scripts, Is.Not.Empty, $"{assembly} tiene scripts en disco");
+                Assume.That(entryPoints.Any(file => Path.GetFileName(file).StartsWith(scenePrefix)), $"{assembly} tiene escenas «{scenePrefix}*»");
+
+                var foreign = entryPoints
+                    .Where(file => !Path.GetFileName(file).StartsWith(scenePrefix))
+                    .Where(file => scripts.Any(File.ReadAllText(file).Contains))
+                    .Select(file => file.Substring(root.Length + 1));
+                Assert.That(foreign, Is.Empty, $"ninguna escena de otro nivel, de flujo ni prefab compartido referencia scripts de {assembly}");
             }
         }
 

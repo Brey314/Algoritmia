@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0265395da5e69f64c879e150d2411664, type: 3}
+  m_Name: N3_ResumenNivel
+  m_EditorClassIdentifier: Game.UI::Game.UI.LevelSummaryMessages
+  <Level>k__BackingField: 3
+  <Intro>k__BackingField: "Esto es lo que pas\u00F3 en el r\u00EDo:"
+  <Discovery>k__BackingField: "Descubriste que una balsa grande se arma por partes: primero la base, luego el amarre y al final el m\u00E1stil con la vela."
+  <TriedSeveralPositions>k__BackingField: Probaste piezas que no iban en su sitio y la balsa te lo dijo al hundirse.
+  <FoundRightAway>k__BackingField: "Pusiste cada pieza en su sitio y la balsa flot\u00F3 a la primera."
+  <CorrectedApproach>k__BackingField: "Cuando algo fall\u00F3, buscaste justo la parte rota y arreglaste solo esa."
+  <NoNeedToCorrect>k__BackingField: "No hizo falta rehacer nada: cada fase qued\u00F3 bien antes de seguir."
+  <SkillNamed>k__BackingField: "Eso se llama descomponer y depurar: partir un problema grande en partes peque\u00F1as y, cuando algo falla, buscar exactamente d\u00F3nde."
+  <ClosingSequenceId>k__BackingField: N3_EscenaFinal

@@ -106,14 +106,14 @@ namespace Game.Levels.River.Tests
         }
 
         /// <summary>Un runner de prueba con un perfil que tiene el Nivel 3 abierto y las fases anteriores confirmadas.</summary>
-        private static async Task<GameFlowRunner> StartAt(RaftPhase phase)
+        internal static async Task<GameFlowRunner> StartAt(RaftPhase phase, string nombre = Nombre)
         {
             var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
             await Awaitable.NextFrameAsync(); // GameFlowRunner.Start() navega solo a MainMenu
-            runner.Session.Delete(Nombre);
+            runner.Session.Delete(nombre);
 
             runner.GoTo(GameState.ProfileSelect);
-            var profile = PlayerProfile.Create(Nombre, Array.Empty<string>()).Profile;
+            var profile = PlayerProfile.Create(nombre, Array.Empty<string>()).Profile;
             profile.Reach(LevelId.River);
             for (var previous = RaftPhase.Base; previous < phase; previous++)
             {

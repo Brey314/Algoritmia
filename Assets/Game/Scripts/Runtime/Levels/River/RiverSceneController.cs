@@ -318,7 +318,10 @@ namespace Game.Levels.River
             var outcome = _zone.TryEnter(_inventory);
             if (!outcome.Accepted)
             {
-                Show(outcome.Message, MessageTone.Help);
+                // Es una acción rechazada, no una pista: lleva el icono de alerta además del
+                // color, como el objeto no válido del bosque (RNF-19, hallazgo de R15). Sin
+                // penalización: la frase nombra qué falta y se sale a seguir buscando (CP-02).
+                Show(outcome.Message, MessageTone.Rejected);
                 return;
             }
 

@@ -69,6 +69,10 @@ namespace Game.Scaffolding
         public bool IsReflectiveClosing { get; private set; }
 
         [field: SerializeField]
+        [field: Tooltip("Marca la escena final del juego (guion §9): al terminar sale a los créditos, no al resumen ni al menú (INC-39, RF-44). Va junto al cierre reflexivo, que es lo que le niega el botón de omitir la primera vez (CP-07).")]
+        public bool EndsInCredits { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Fase de este nivel a la que se entra al terminar la escena. 0 = ninguna: vuelve al menú.")]
         public int NextPhase { get; private set; }
 

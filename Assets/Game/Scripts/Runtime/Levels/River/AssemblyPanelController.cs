@@ -95,6 +95,7 @@ namespace Game.Levels.River
         // Memoria de nivel (véase el remarks): sobrevive a la recarga de la escena, no al proceso.
         private static ConditionalNarrativeTrigger s_firstFailure;
         private static (RaftPhase Phase, Dictionary<string, MaterialKind> Placed)? s_stash;
+        private static RiverIndicatorCollector s_indicators;
 
         private readonly Dictionary<string, (RaftSlot Slot, Image Image, Image Alert, RaftPieceHandle Handle)> _slots =
             new Dictionary<string, (RaftSlot, Image, Image, RaftPieceHandle)>();
@@ -102,6 +103,7 @@ namespace Game.Levels.River
         private readonly HashSet<string> _wrong = new HashSet<string>();
 
         private RaftAssembly _assembly;
+        private RiverIndicatorCollector _indicators;
         private HintPolicy _hints;
         private Inventory _inventory;
         private CameraFraming _from;
@@ -132,6 +134,7 @@ namespace Game.Levels.River
         {
             s_firstFailure = null;
             s_stash = null;
+            s_indicators = null;
         }
 #endif
 
@@ -166,10 +169,21 @@ namespace Game.Levels.River
                 // Empezar la base desde la orilla es empezar el nivel: la 3.2 vuelve a estar por ver.
                 s_firstFailure = null;
                 s_stash = null;
+                s_indicators = null;
             }
 
             s_firstFailure ??= new ConditionalNarrativeTrigger(content.FirstFailureSequenceId);
             RestoreStash(phase);
+
+            // Los indicadores de RF-45 son del nivel entero y sobreviven a la escena 3.2 como el
+            // resto de la memoria de nivel; al retomar desde disco, las fases ya aceptadas cuentan
+            // como pasos (RNF-14). De vuelta de una narrativa, el tiempo narrado no cuenta (nota 1).
+            _indicators = s_indicators ??= new RiverIndicatorCollector(() => Time.realtimeSinceStartup, (int)phase - 1);
+            _indicators.PauseClosed();
+            if (Runner != null)
+            {
+                Runner.ActiveReporter = _indicators; // RF-07: la pausa no suma tiempo de resolución.
+            }
 
             _hints = new HintPolicy(StepFor(phase));
             gameObject.SetActive(true);
@@ -283,7 +297,13 @@ namespace Game.Levels.River
             }
 
             var phase = _assembly.ActivePhase;
+            // Qué espacios tenían pieza antes de validar: los señalados de entre ellos son los que
+            // vuelven al inventario, y solo esos pueden ser un error corregido después (§3.6.1).
+            var placedBefore = _slots.Keys
+                .Where(id => _assembly.IsOpen(_slots[id].Slot) && _assembly.PlacedIn(id).HasValue)
+                .ToArray();
             var result = _assembly.Confirm();
+            _indicators.RecordConfirmation(result, result.WrongSlotIds.Where(placedBefore.Contains));
 
             if (result.Passed)
             {
@@ -367,6 +387,7 @@ namespace Game.Levels.River
             if (_assembly.IsComplete)
             {
                 s_stash = null;
+                s_indicators = null;
                 Leave(content.ClosingSequenceId);
                 return;
             }
@@ -413,6 +434,7 @@ namespace Game.Levels.River
                 s_stash = (_assembly.ActivePhase, _slots.Keys
                     .Where(id => _assembly.IsOpen(_slots[id].Slot) && _assembly.PlacedIn(id).HasValue)
                     .ToDictionary(id => id, id => _assembly.PlacedIn(id).Value));
+                _indicators.PauseOpened(); // La escena 3.2 no suma tiempo de resolución (§3.6.1 nota 1).
                 Leave(sequenceId);
             }
         }
@@ -432,18 +454,19 @@ namespace Game.Levels.River
         // --- persistencia y salida ---------------------------------------------------------------
 
         /// <summary>
-        /// Guarda la fase confirmada (RF-04). Los cuatro indicadores de RF-45 los emite R13; hasta
-        /// entonces se registra la fase con indicadores vacíos, que nunca ve el estudiante (CP-03).
+        /// Guarda la fase confirmada con sus cuatro indicadores (RF-04, RF-45), que nunca ve el
+        /// estudiante (CP-03). Cerrar el registro reinicia el reloj de la fase siguiente.
         /// </summary>
         private void Persist(RaftPhase phase)
         {
+            var indicators = _indicators.Complete();
             var profile = Runner?.Flow.ActiveProfile;
             if (profile == null)
             {
                 return;
             }
 
-            profile.ConfirmPhase(new PhaseId(LevelId.River, (int)phase), default);
+            profile.ConfirmPhase(new PhaseId(LevelId.River, (int)phase), indicators);
             Runner.Session.SaveActive();
         }
 

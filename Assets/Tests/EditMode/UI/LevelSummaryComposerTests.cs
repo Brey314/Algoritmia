@@ -116,6 +116,42 @@ namespace Game.UI.Tests
         }
 
         [Test]
+        [Category("Acceptance")]
+        public void LevelSummary_RF45_ElResumenDelNivel3NoContieneNingunDigito()
+        {
+            var messages = CargarMensajes(LevelId.River);
+            var fases = new[]
+            {
+                new[] { new PerformanceIndicators(0, 0, 1, 12f), new PerformanceIndicators(0, 0, 1, 30f), new PerformanceIndicators(0, 0, 1, 40f) },
+                new[] { new PerformanceIndicators(9, 3, 1, 120f), new PerformanceIndicators(4, 2, 1, 300f), new PerformanceIndicators(11, 6, 1, 900f) },
+                new[] { new PerformanceIndicators(0, 0, 1, 1f), new PerformanceIndicators(0, 0, 1, 1f), new PerformanceIndicators(1, 0, 1, 1f) },
+                new[] { new PerformanceIndicators(0, 0, 1, 1f), new PerformanceIndicators(0, 1, 1, 1f), new PerformanceIndicators(0, 0, 1, 1f) }
+            };
+
+            var textos = fases.Select(indicadores => LevelSummaryComposer.Compose(messages, indicadores))
+                .Concat(new[] { messages.Discovery, messages.SkillNamed });
+
+            Assert.That(textos, Has.All.Matches<string>(texto => !texto.Any(char.IsDigit)),
+                "RF-45/CP-03 (INC-26): el resumen del Nivel 3 no contiene ninguna cifra, sean cuales sean las tres fases");
+        }
+
+        [Test]
+        [Category("Acceptance")]
+        public void LevelSummary_RF12_NombraLaDescomposicionYLaDepuracion()
+        {
+            var cruce = string.Join(" ", CargarSecuenciaDeCierre("N3_Escena33_Cruce").Lines.Select(line => line.Text));
+            var mensajes = CargarMensajes(LevelId.River);
+
+            Assert.That(mensajes.SkillNamed, Does.Contain("descompon").IgnoreCase, "el resumen nombra la descomposición (RF-12)");
+            Assert.That(mensajes.SkillNamed, Does.Contain("depurar").IgnoreCase, "y la depuración");
+            Assert.That(cruce, Does.Contain("partes pequeñas").IgnoreCase,
+                "el cruce liga la descomposición a lo que el jugador hizo (guion §8.5, HU-14)");
+            Assert.That(cruce, Does.Contain("lo encontraron y lo arreglaron").IgnoreCase, "y la depuración");
+            Assert.That(mensajes.ClosingSequenceId, Is.EqualTo("N3_EscenaFinal"),
+                "y «Continuar» sale a la escena final del juego, no al menú (INC-39)");
+        }
+
+        [Test]
         public void LevelSummaryComposer_RF45_ElResumenDeUnNivelDeVariasFasesSumaLasFases()
         {
             var messages = CreateMessages();

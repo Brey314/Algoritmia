@@ -41,7 +41,8 @@ Desde el 10/09/2026 **corren varios en paralelo**, y **el reparto es por assembl
 
 - **El menú de pausa** (RF-07, HU-17) es el prefab `Assets/Game/Prefabs/UI/MenuPausa.prefab` (mockup 6: Reanudar ·
   Reiniciar · Volver al menú de niveles; `Time.timeScale = 0` mientras está abierto), instanciado
-  en las cuatro escenas jugables, y arrastra también las tipografías y los glifos del mockup.
+  en las **cinco** escenas jugables —`Level1_Cave`, `Level2_Forest`, `Level2_Maze`,
+  `Level2_Workshop`, `Level3_River`—, y arrastra también las tipografías y los glifos del mockup.
 - **`NarrativeVisitPolicy`** (`Game.Scaffolding`) decide si aparece el botón de omitir, y **no hay
   registro de escenas vistas** —la lista persistida es cerrada (RNF-09)—, así que lo deriva del
   progreso: «ya vista» es haber **terminado el nivel** antes —su última fase confirmada—, no haber
@@ -143,18 +144,22 @@ graphify explain "HintPolicy"
 
 `GRAPH_REPORT.md` es el índice legible —empezar por «Community Hubs»—; `graph.json` es el grafo
 para consumo de agente y `graph.html` la vista interactiva. Es una **foto**: la vigente es del
-19/09/2026 sobre el commit `3894426`, 3333 nodos y 6885 aristas en 186 comunidades. Lo que el
-grafo señale se confirma en el código antes de citarlo: ubica, no sustituye a leer el archivo. Se
-refresca con `/graphify . --update` tras un bloque de trabajo —el incremental solo reextrae lo que
-cambió, y si lo cambiado es solo `.cs` no cuesta nada porque el AST no usa modelo—. **Tres cosas
-que hay que rehacer a mano al reconstruirlo desde cero**, porque `/graphify .` a secas no las hace:
+20/09/2026 sobre el commit `3fe1e2a`, 202 archivos, 3750 nodos y 7826 aristas en 192 comunidades.
+**Esa foto no incluye los `docs/md/*.md`** (`manifest.json` lo confirma: cero entradas), así que
+una pregunta sobre un RF o una HU radicada **no** se le hace al grafo — se va al `.md` convertido.
+Lo que el grafo señale se confirma en el código antes de citarlo: ubica, no sustituye a leer el
+archivo. Se refresca con `/graphify . --update` tras un bloque de trabajo —el incremental solo
+reextrae lo que cambió, y si lo cambiado es solo `.cs` no cuesta nada porque el AST no usa modelo—.
+**Dos cosas que hay que rehacer a mano al reconstruirlo desde cero**, porque `/graphify .` a secas
+no las hace:
 
 1. `.graphifyignore` excluye `Packages/` (metía 527 nodos del árbol de dependencias de Unity sin
-   conectar con nada); **graphify además respeta el `.gitignore`**, así que los `docs/md/*.md` hay
-   que sumarlos al corpus explícitamente o el grafo se queda sin los documentos radicados.
-2. Las ilustraciones de `Art/` se dejan fuera a propósito: se extraen con visión, un subagente por
-   PNG, y sus nombres más `Inventario.md` ya dicen lo mismo.
-3. El AST crea un **nodo-stub por archivo** para cada símbolo externo (`…_cs_button`,
+   conectar con nada) y `Assets/Game/Art/**/*.png` (las ilustraciones se extraen con visión, un
+   subagente por PNG, y sus nombres más `Inventario.md` ya dicen lo mismo: sin esa línea un
+   `--update` cuesta un subagente por lámina). **Graphify además respeta el `.gitignore`**, así que
+   los `docs/md/*.md` hay que sumarlos al corpus explícitamente o el grafo se queda sin los
+   documentos radicados — que es justo lo que le pasa a la foto vigente.
+2. El AST crea un **nodo-stub por archivo** para cada símbolo externo (`…_cs_button`,
    `…_cs_recttransform`): unos 500 nodos de `UnityEngine`/`System`/NUnit que inflan el grado de los
    controladores. Se podan con esta regla, que no necesita lista de tipos: un stub sin
    `source_file` cuyo `label` **sí** existe como nodo con `source_file` se fusiona con él; si no
@@ -191,9 +196,11 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
   ```
   La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04, RNF-05 y RNF-06,
   y junto al `.exe` nace `Datos/` en la primera ejecución (RNF-07, RNF-11). Entran las escenas
-  listadas en `EditorBuildSettings`, con `Boot` de primera; la lista crece con cada nivel y las
-  escenas nuevas se añaden **desde el Editor** (Build Settings o un script de editor efímero de la
-  skill `edit-scene`), no a mano. `/[Bb]uild[s]?/` está en `.gitignore`.
+  listadas en `EditorBuildSettings` —hoy once: las cinco jugables más las seis de flujo (`Boot`,
+  `MainMenu`, `LevelSelect`, `Credits`, `Narrative`, `LevelSummary`)—, con `Boot` de primera; la
+  lista crece con cada nivel y las escenas nuevas se añaden **desde el Editor** (Build Settings o
+  un script de editor efímero de la skill `edit-scene`), no a mano. `/[Bb]uild[s]?/` está en
+  `.gitignore`.
 - **Con Rider abierto**, `mcp__rider__run_unity_tests` / `mcp__rider__get_unity_compilation_result`
   corren contra el Editor **abierto** (sin cerrar/reabrir) y habilitan el flujo test-first del
   plugin `unity-coding-skills`. Con Rider cerrado la sesión arranca con `ConnectionRefused`, que
@@ -220,7 +227,9 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
 - El MCP nativo de Unity (`com.unity.ai.assistant`) arranca solo, pero Unity lo marca **deprecado**
   y **no trae runner de tests** — no conectarlo.
 - Los `Assets/InitTestScene*.unity` son basura de corridas PlayMode interrumpidas: están en
-  `.gitignore`, no los referencia nadie y se borran sin mirar.
+  `.gitignore`, no los referencia nadie y se borran sin mirar. `Assets/Scenes/SampleScene.unity` y
+  `Assets/Settings/Scenes/URP2DSceneTemplate.unity` son de la plantilla 2D + URP: **sí** están
+  versionados, pero no entran al build ni los abre nada del juego.
 
 **Rutas siempre entre comillas.** La raíz del proyecto en este equipo es `C:\Dev\Algoritmia`
 (hasta el 19/09/2026 fue `C:\Users\benab\My project`). El `productName` de Unity **sigue siendo
@@ -308,6 +317,9 @@ antes de escribir la primera línea:
   `[assembly: InternalsVisibleTo("<Módulo>.Tests")]`. No subir un miembro a `public` solo para que
   lo alcance una prueba. **El assembly de PlayMode se llama `<Módulo>.PlayMode.Tests` y necesita su
   propia línea**: sin ella el `internal` no se ve desde PlayMode aunque la de EditMode esté puesta.
+  Hoy ese archivo solo existe en `Game.Levels.{Fire,Wheel,River}` y `Game.UI`; `Game.Core`,
+  `Game.Scaffolding` y `Game.Audio` se prueban por superficie pública, así que ahí no hay
+  `AssemblyInfo.cs` que buscar — y si una prueba nueva lo necesita, se crea.
 - Raíz de código y assets: `Assets/Game/`, namespaces `Game.*` siguiendo la ruta bajo `Scripts/` y
   elidiendo `Runtime`. Tests en `Assets/Tests/{EditMode,PlayMode}/<Módulo>/`.
 - **El nombre de la prueba es la trazabilidad.** Patrón `<Sujeto>_<Requisito>_<QuéHace>` en

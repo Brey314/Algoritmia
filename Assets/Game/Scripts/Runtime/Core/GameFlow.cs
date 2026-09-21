@@ -29,9 +29,12 @@ namespace Game.Core
                 },
                 // Narrative → Narrative es encadenar dos escenas del guion seguidas (la 2.2 con
                 // la 2.3): el asset declara la siguiente, el flujo solo la acepta (RF-05).
+                // Narrative → Credits es la escena final del juego (guion §9): tras el resumen
+                // del Nivel 3 el juego se cierra por los créditos y no por el menú (INC-39, RF-44).
                 [GameState.Narrative] = new[]
                 {
-                    GameState.Narrative, GameState.Playing, GameState.LevelSummary, GameState.LevelSelect
+                    GameState.Narrative, GameState.Playing, GameState.LevelSummary, GameState.LevelSelect,
+                    GameState.Credits
                 },
                 // Playing → Playing es reiniciar el nivel o entrar a la fase siguiente (RF-07).
                 [GameState.Playing] = new[]
