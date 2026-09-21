@@ -25,11 +25,11 @@ y no es un olvido:** CP-02 la prohíbe, junto con el límite de intentos y la pe
 | 3 | Selección de perfil | `MainMenu.unity` | RF-02, RF-03, RF-04, HU-01, CU-01 | ✓ `ProfileSelectController` |
 | 4 | Menú de niveles | `LevelSelect.unity` | RF-03, RNF-19 | ✓ `LevelSelectController` |
 | 5 | Escena narrativa | `Narrative.unity` | RF-05, RF-06 | ✓ `NarrativeSceneController`, parametrizada por `NarrativeSequence` |
-| 6 | Pausa | superposición | RF-07 | ○ no tiene estado propio en la FSM: va sobre `Playing` |
-| 7 | Nivel 1 · panel de encendido | `Level1_Cave.unity` | RF-14, RF-15, RF-19, RF-21 | ○ Slice 1 |
-| 8 | Nivel 2 · fase 1, selección por patrón | `Level2_Forest.unity` | RF-22..RF-26 | ○ Slice 2 |
-| 9 | Nivel 2 · fase 2, ensamblaje | `Level2_Workshop.unity` | RF-27..RF-29 | ○ Slice 2 |
-| 10 | Nivel 2 · fase 3, editor de secuencia | `Level2_Maze.unity` | RF-30..RF-33 | ○ Slice 2 |
+| 6 | Pausa | superposición — prefab `Assets/Game/Prefabs/UI/MenuPausa.prefab` en las cuatro escenas jugables | RF-07, HU-17, INC-25 | ✓ `PauseMenuController` (T16; W17 desde el 15/09/2026): no tiene estado propio en la FSM, va sobre `Playing` |
+| 7 | Nivel 1 · panel de encendido | `Level1_Cave.unity` | RF-14, RF-15, RF-19, RF-21 | ✓ `FirePanelController` (Fase 5 del Slice 1, INC-47) |
+| 8 | Nivel 2 · fase 1, selección por patrón | `Level2_Forest.unity` | RF-22..RF-26 | ✓ `ForestSceneController` (W06/W07) |
+| 9 | Nivel 2 · fase 2, ensamblaje | `Level2_Workshop.unity` | RF-27..RF-29 | ✓ `WorkshopSceneController` (W09, 12/09/2026), contenido en `N2_AssemblyContent.asset` |
+| 10 | Nivel 2 · fase 3, editor de secuencia | `Level2_Maze.unity` | RF-30..RF-34 | ✓ `MazeSceneController` (W13/W14, 13/09/2026), contenido en `N2_MazeLayout.asset` |
 | 11 | Nivel 3 · exploración cenital | `Level3_River.unity` | RF-35..RF-39 | ○ Slice 3 |
 | 12 | Nivel 3 · panel de ensamblaje | `Level3_River.unity` | RF-40, RF-42, RF-43 | ○ Slice 3 |
 | 13 | Resumen de fin de nivel | por nivel | RF-17, RF-45 | ○ `GameState.LevelSummary` ya existe |
@@ -57,12 +57,25 @@ botón de omitir —este último **solo en escenas ya vistas** (RF-06)—. Máxi
 globo y doce palabras por línea (§11.4).
 
 **6 · Pausa.** Es lo único que permanece en pantalla junto con la lista del Nivel 3 (§10.1).
-Reanudar, volver al menú de niveles. Sin ajustes de dificultad: no existen.
+Tablilla marfil sobre el velo carbón al 72 % con tres botones apilados: **Reanudar** (primario),
+**Reiniciar** (secundario, añadido el 15/09/2026 por decisión de Santiago: pide confirmación de una
+frase y repite **la fase activa**, INC-25) y **Volver al menú de niveles** (secundario). Sin ajustes
+de dificultad: no existen. Con la pausa abierta el tiempo se detiene (`Time.timeScale = 0`) y no
+suma al indicador de resolución (OE1 §3.6.1 nota 1).
 
-**7 · Nivel 1.** Deslizante de tres muescas (RF-15, `PG-06` abierto), botón «Golpear», botón
-«Soplar» —deshabilitado hasta que RF-19 lo permita, y la diferencia se lee por el candado
-grabado, no por el color— y el marco del área de registro. La progresión de luz del nivel es
-retroalimentación en sí misma (RF-21), pero **nunca es el único canal** (RNF-19).
+**7 · Nivel 1.** Desde el 15/09/2026 (Fase 6, INC-47) son **dos momentos**. *Reunir*: la cueva
+cenital a sangre con hojas, sílex y pedernal regados que se **arrastran** al centro; en pantalla
+solo la tablilla, «Pista» (que además dibuja el círculo de reunión, con el borde a la altura de la
+mitad del botón de abajo) y la pausa. *Encender*: la cámara al doble sobre la fogata —las hojas en
+anillo, sin encimarse, y las piedras en el centro—, deslizante vertical de **fuerza** con diez
+muescas (el asa va de azul a rojo y crece con la fuerza), deslizante horizontal de **cercanía de
+las piedras** con diez muescas entre la mitad de «Soplar» y la mitad de «Golpear» («Lejos» a la
+izquierda, «Cerca» a la derecha), botón «Golpear», botón «Soplar» —deshabilitado hasta que RF-19 lo
+permita, y la diferencia se lee por el candado, sin rótulo, no por el color—, botón de pista
+arriba a la izquierda y pausa arriba a la derecha. Una sola tablilla arriba
+muestra la instrucción y luego **el último mensaje** del registro (el historial ya no se ve). La
+progresión de luz del nivel es retroalimentación en sí misma (RF-21), pero **nunca es el único
+canal** (RNF-19).
 
 **8–10 · Nivel 2.** Fase 1: objetos del bosque, contador de acopio, iconos de aceptado y
 devuelto. Fase 2: seis piezas y el panel de ensamblaje. Fase 3: tablero cenital, editor con los
@@ -74,9 +87,13 @@ props, y materializan `INC-01` —el control es UI en pantalla, nunca teclado (R
 RNF-02)—. Lista de cuatro tareas en cuerda con nudos, **la única lista permanente del juego**
 (RF-36, `INC-41`), inventario de casillas circulares y panel de ensamblaje.
 
-**13 · Resumen de fin de nivel.** Lo que el estudiante descubrió, en palabras. **Sin intentos,
-sin errores, sin pasos, sin tiempo y sin puntaje** (CP-03, RF-17, RF-45): esas cifras existen,
-pero solo en el informe docente.
+**13 · Resumen de fin de nivel.** Mockups 13 y 13b, en código desde el 12/09/2026: tablilla
+centrada sobre arena con el avatar del guía y el título («Esto es lo que pasó en la cueva»), el
+hallazgo («Descubriste que el fuego necesita chispa y aire»), el relato en viñetas —una por frase
+que compone `LevelSummaryComposer`—, el recuadro verde con la habilidad nombrada («probar y
+ajustar», RF-12) y dos botones: «Volver al menú de niveles» y «Continuar». Todo en palabras:
+**sin intentos, sin errores, sin pasos, sin tiempo y sin puntaje** (CP-03, RF-17, RF-45); esas
+cifras existen, pero solo en el informe docente. Los textos viven en `LevelSummaryMessages.asset`.
 
 **15 · Informe docente.** El único sitio del juego donde hay números (RF-46): intentos, errores,
 pasos y tiempo, con su iconografía propia (`D1`).

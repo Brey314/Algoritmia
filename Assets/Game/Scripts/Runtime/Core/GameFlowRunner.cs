@@ -30,11 +30,23 @@ namespace Game.Core
                 // Una sola escena para las quince escenas narrativas del guion: el estado lleva
                 // el id de la secuencia y la escena la resuelve (RF-05, RNF-06).
                 [GameState.Narrative] = "Narrative",
-                // Hoy solo existe el Nivel 1. Cuando lleguen Rueda y Río (Slice 2/3), el mapeo de
-                // Playing será por LevelId, no una sola entrada.
-                [GameState.Playing] = "Level1_Cave",
+                // Playing no está aquí: su escena la elige la fase (véase PlayingScenes).
                 [GameState.LevelSummary] = "LevelSummary",
                 [GameState.Credits] = "Credits"
+            };
+
+        /// <summary>
+        /// Escena de cada fase jugable. Va aparte de <see cref="Scenes"/> porque
+        /// <see cref="GameState.Playing"/> no tiene una escena sino una por fase (RF-04): el
+        /// estado lleva nivel y fase, y son ellos los que eligen.
+        /// </summary>
+        private static readonly Dictionary<PhaseId, string> PlayingScenes =
+            new Dictionary<PhaseId, string>
+            {
+                [new PhaseId(LevelId.Fire, 1)] = "Level1_Cave",
+                [new PhaseId(LevelId.Wheel, 1)] = "Level2_Forest",
+                [new PhaseId(LevelId.Wheel, 2)] = "Level2_Workshop",
+                [new PhaseId(LevelId.Wheel, 3)] = "Level2_Maze"
             };
 
         public static GameFlowRunner Instance { get; private set; }
@@ -105,7 +117,12 @@ namespace Game.Core
 
         public bool StartNarrative(string sequenceId) => Apply(Flow.TryStartNarrative(sequenceId));
 
-        public bool StartPlaying(LevelId level, int phase) => Apply(Flow.TryStartPlaying(level, phase));
+        /// <summary>
+        /// Entra a jugar. La retoma de RNF-14 solo salta a una fase que tenga escena en
+        /// <see cref="PlayingScenes"/>: la FSM no sabe qué escenas existen, y este es quien sí.
+        /// </summary>
+        public bool StartPlaying(LevelId level, int phase) =>
+            Apply(Flow.TryStartPlaying(level, phase, PlayingScenes.ContainsKey));
 
         private bool Apply(bool transitioned)
         {
@@ -114,7 +131,7 @@ namespace Game.Core
                 return false;
             }
 
-            if (Scenes.TryGetValue(Flow.Current, out var sceneName))
+            if (TryResolveScene(out var sceneName))
             {
                 // Si la escena ya está activa, el cambio de estado es un intercambio de paneles
                 // dentro de ella —lo hace la UI— y no una recarga. Sin `SceneLoader` (una prueba
@@ -125,7 +142,11 @@ namespace Game.Core
                 // cambie (T16, RF-07) — es «Reiniciar» desde el menú de pausa, y sin esto la FSM
                 // aceptaba la transición sin que pasara nada. `Playing` es el único estado que se
                 // tiene a sí mismo como destino legal, así que esto no afecta a ningún otro caso.
-                var mustReload = Flow.Current == GameState.Playing;
+                //
+                // Y reentrar a `Narrative` también recarga: es encadenar dos escenas del guion
+                // (la 2.2 con la 2.3) en la misma escena parametrizada, y `Start` es quien lee
+                // el id nuevo (RF-05).
+                var mustReload = Flow.Current == GameState.Playing || Flow.Current == GameState.Narrative;
                 if ((sceneName != SceneManager.GetActiveScene().name || mustReload)
                     && SceneLoader.Instance != null)
                 {
@@ -134,10 +155,31 @@ namespace Game.Core
             }
             else
             {
-                Debug.LogWarning($"El estado {Flow.Current} todavía no tiene escena asociada.");
+                Debug.LogWarning($"El estado {Flow.Current} todavía no tiene escena asociada.", this);
+                // Una fase que todavía no tiene escena —la 3 del Nivel 2 mientras W13 no exista—
+                // no puede dejar al estudiante en una pantalla sin salida (RNF-13): se vuelve al
+                // menú de niveles en vez de quedarse en la escena anterior con la FSM en Playing.
+                if (Flow.Current == GameState.Playing)
+                {
+                    GoTo(GameState.LevelSelect);
+                }
             }
 
             return true;
+        }
+
+        /// <summary>La escena que aloja el estado actual, si ya existe alguna.</summary>
+        private bool TryResolveScene(out string sceneName)
+        {
+            if (Flow.Current != GameState.Playing)
+            {
+                return Scenes.TryGetValue(Flow.Current, out sceneName);
+            }
+
+            sceneName = null;
+            return Flow.PlayingLevel.HasValue
+                   && PlayingScenes.TryGetValue(
+                       new PhaseId(Flow.PlayingLevel.Value, Flow.PlayingPhase), out sceneName);
         }
     }
 }

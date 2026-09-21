@@ -1,21 +1,25 @@
 using Game.Core;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Game.UI
 {
     /// <summary>
-    /// El menú de pausa del Nivel 1 (HU-17): una capa sobre <see cref="GameState.Playing"/>, no un
-    /// estado nuevo. Continuar restituye el estado exacto sin tocar nada (RF-07); Reiniciar pide
-    /// confirmación de una frase y repite la fase desde cero sin perder progreso ya guardado
-    /// (RF-41, CP-02); Volver al menú principal sale del nivel.
+    /// El menú de pausa de las escenas jugables (HU-17, mockup 6): una capa sobre
+    /// <see cref="GameState.Playing"/>, no un estado nuevo. «Reanudar» restituye el estado exacto
+    /// sin tocar nada (RF-07); «Reiniciar» pide confirmación de una frase y repite **la fase
+    /// activa** desde cero sin perder progreso ya guardado (RF-41, CP-02, INC-25); «Volver al
+    /// menú de niveles» sale del nivel conservando lo confirmado.
     /// </summary>
     /// <remarks>
-    /// Vive en <c>Game.UI</c> y no en <c>Game.Levels.Fire</c>: es navegación general, como
+    /// Vive en <c>Game.UI</c> y no en un assembly de nivel: es navegación general, como
     /// <see cref="LevelSelectController"/> o <see cref="NarrativeSceneController"/>, no una regla
-    /// del nivel — así ningún assembly de nivel gana una dependencia nueva. El bloqueador de
-    /// pantalla completa del overlay intercepta el clic hacia el panel de abajo; este controlador
-    /// no toca <c>FirePanelController</c> en absoluto.
+    /// del nivel — así ningún assembly de nivel gana una dependencia nueva. Es el prefab
+    /// <c>MenuPausa</c>, el mismo en las cuatro escenas jugables (W17): el bloqueador de pantalla
+    /// completa del overlay intercepta el clic hacia el panel de abajo, y <c>Time.timeScale</c>
+    /// a cero detiene lo que se mueve —rodado, ejecución paso a paso— mientras está abierto.
+    /// Este controlador no toca ningún controlador de nivel.
     /// </remarks>
     public class PauseMenuController : MonoBehaviour
     {
@@ -24,7 +28,7 @@ namespace Game.UI
         [SerializeField] private GameObject baseButtons;
         [SerializeField] private Button continueButton;
         [SerializeField] private Button restartButton;
-        [SerializeField] private Button mainMenuButton;
+        [SerializeField, FormerlySerializedAs("mainMenuButton")] private Button levelSelectButton;
         [SerializeField] private GameObject confirmPanel;
         [SerializeField] private Button confirmRestartButton;
         [SerializeField] private Button cancelRestartButton;
@@ -37,7 +41,7 @@ namespace Game.UI
         internal GameObject BaseButtons => baseButtons;
         internal Button ContinueButton => continueButton;
         internal Button RestartButton => restartButton;
-        internal Button MainMenuButton => mainMenuButton;
+        internal Button LevelSelectButton => levelSelectButton;
         internal GameObject ConfirmPanel => confirmPanel;
         internal Button ConfirmRestartButton => confirmRestartButton;
         internal Button CancelRestartButton => cancelRestartButton;
@@ -52,24 +56,30 @@ namespace Game.UI
             restartButton.onClick.AddListener(RequestRestart);
             cancelRestartButton.onClick.AddListener(CancelRestart);
             confirmRestartButton.onClick.AddListener(ConfirmRestart);
-            mainMenuButton.onClick.AddListener(GoToMainMenu);
+            levelSelectButton.onClick.AddListener(GoToLevelSelect);
         }
+
+        /// <summary>La escena se descarga con la pausa abierta —«Reiniciar»—: el tiempo no puede quedarse detenido.</summary>
+        private void OnDestroy() => Time.timeScale = 1f;
 
         private void OpenPause()
         {
             Runner?.ActiveReporter?.PauseOpened(); // RF-07: desde aquí no cuenta el tiempo de resolución.
+            Time.timeScale = 0f; // HU-17: mientras está abierto, el nivel queda detenido.
             overlay.SetActive(true);
             baseButtons.SetActive(true);
             confirmPanel.SetActive(false);
         }
 
         /// <summary>
-        /// «Continuar» y «Volver al menú» (RF-07, HU-17): además de ocultar el overlay, cierra la
-        /// ventana de pausa abierta por <see cref="OpenPause"/> para el indicador de resolución.
+        /// «Reanudar» y «Volver al menú de niveles» (RF-07, HU-17): además de ocultar el overlay,
+        /// cierra la ventana de pausa abierta por <see cref="OpenPause"/> para el indicador de
+        /// resolución y devuelve el tiempo.
         /// </summary>
         private void ClosePause()
         {
             overlay.SetActive(false);
+            Time.timeScale = 1f;
             Runner?.ActiveReporter?.PauseClosed();
         }
 
@@ -98,7 +108,11 @@ namespace Game.UI
             PauseMenuPolicy.Restart(Runner);
         }
 
-        private void GoToMainMenu()
+        /// <summary>
+        /// «Volver al menú de niveles» (mockup 6). Lo confirmado sigue confirmado: salir no toca
+        /// el perfil (RF-41, CP-02), y no hay pantalla de derrota a la que ir.
+        /// </summary>
+        private void GoToLevelSelect()
         {
             if (!ScreenFlow.Ready(Runner, this))
             {
@@ -106,7 +120,7 @@ namespace Game.UI
             }
 
             ClosePause();
-            Runner.GoTo(GameState.MainMenu);
+            Runner.GoTo(GameState.LevelSelect);
         }
     }
 }

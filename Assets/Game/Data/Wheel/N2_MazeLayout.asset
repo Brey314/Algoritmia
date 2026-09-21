@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5bb246c297ad3e44b527a4a2a352a8a, type: 3}
+  m_Name: N2_MazeLayout
+  m_EditorClassIdentifier: Game.Levels.Wheel::Game.Levels.Wheel.MazeLayout
+  <Columns>k__BackingField: 16
+  <Rows>k__BackingField: 11
+  <StartCell>k__BackingField: {x: 0, y: 8}
+  <StartFacing>k__BackingField: 1
+  <GoalCell>k__BackingField: {x: 15, y: 2}
+  <ObstacleCount>k__BackingField: 24
+  <MinimumDetour>k__BackingField: 2
+  <Seed>k__BackingField: 0
+  <BoardMin>k__BackingField: {x: 0.128, y: 0.022}
+  <BoardMax>k__BackingField: {x: 0.897, y: 0.982}
+  <PieceSize>k__BackingField: 0.9
+  <CartArt>k__BackingField: {fileID: 21300000, guid: cd35a96ed36a9a849aa94c6ce80599b9, type: 3}
+  <ShelterArt>k__BackingField: {fileID: 0}
+  <ObstacleArt>k__BackingField:
+  - {fileID: 21300000, guid: 9f61e1d21ebe42f4fa51da23b13a8b36, type: 3}
+  <StepSeconds>k__BackingField: 0.6
+  <EmptySequenceMessage>k__BackingField: "A\xF1ade al menos un bloque a tu secuencia
+    antes de ejecutar."
+  <ReachedMessage>k__BackingField: "\xA1La carretilla lleg\xF3 al refugio! Los pasos,
+    en ese orden, funcionaron."
+  <StoppedMessage>k__BackingField: "La carretilla no lleg\xF3 al refugio. Mira d\xF3nde
+    se detuvo y corrige tu secuencia."
+  <ClosingSequenceId>k__BackingField: N2_Escena25_Cierre

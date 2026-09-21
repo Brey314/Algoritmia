@@ -1,22 +1,35 @@
 # Inconsistencias entre los documentos fuente
 
-Registro de los conflictos detectados entre los seis `.docx` de `docs/`, con la corrección
+Registro de los conflictos detectados entre los `.docx` de `docs/`, con la corrección
 aplicada a cada uno. Documento hermano de `SPEC.md`: aquí está **qué estaba mal en los
 documentos y cómo quedó**; allí está **qué implementa el código**.
 
-**Verificación vigente: 02/09/2026, rev. 7.** Los seis documentos se releyeron de principio a
-fin y se editaron directamente en la rev. 5. **Los hallazgos INC-01 … INC-42 están cerrados**;
-quedan **cuatro abiertos**: **INC-43** (el guion aún declara `PG-07` pendiente después de
-obtenerse la autorización), **INC-44** (el guía pasa a llamarse **Algoritm**), **INC-45** (el guía
-cambia de forma en cada nivel) e **INC-46** (la lista de tareas del Nivel 3 está descrita como dos
-objetos distintos). Los tres primeros se cierran editando los `.docx` a mano, cosa que el código
-nunca hace; **INC-46 se cierra dentro de `claudeDocs/`, pero exige una decisión**. Más dos
+**Los documentos se refundieron el 14/09/2026: de seis pasaron a cuatro.** OE1 es ahora
+`Solución OE1_Requerimientos.docx`, y `Solucion_OE2_Diseno_final.docx` absorbe en un solo archivo
+el guion (§1), los casos de uso (§2), las historias de usuario (§2 bis), las matrices de
+trazabilidad (§3) y la arquitectura (§4). El **trabajo de grado ya no está en `docs/`**; se
+recupera con `git show HEAD:"docs/Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx"`. Las citas por
+sección de este documento siguen valiendo con una traducción mecánica: «guion §N» → `Solucion_OE2`
+§1.N, «OE2 §4» → `Solucion_OE2` §5 (control de cambios).
+
+**Verificación vigente: 15/09/2026, rev. 10.** Los documentos refundidos se releyeron contra los
+hallazgos que seguían abiertos. **Los hallazgos INC-01 … INC-45 están cerrados**: la refundición
+del 14/09/2026 aplicó en los `.docx` las tres correcciones que esperaban edición manual —`PG-07`
+cerrado (INC-43), el guía renombrado a **Algoritm** (INC-44) y su forma cambiante por nivel
+(INC-45)—. Quedan **cinco abiertos**: **INC-46** (la lista de tareas del Nivel 3 está descrita
+como dos objetos distintos; se cierra dentro de `claudeDocs/`, pero exige una decisión),
+**INC-47** (la mecánica del Nivel 1 implementada mide fuerza, y los documentos refundidos
+**mantienen** el deslizante de posición), **INC-48** (la refundición reintrodujo el capítulo de
+arquitectura **anterior** a su alineación), **INC-49** (el menú de pausa implementado es el del
+mockup 6 y HU-17 conserva los rótulos viejos) e **INC-50** (el rodado del Nivel 2 se ve solo en la
+narrativa, no al pulsar «Empujar»). INC-47, INC-49 e INC-50 son el mismo caso: el código se
+adelantó al `.docx` por decisión de Santiago, y lo que falta es editar el documento. Más tres
 residuos menores, listados al final.
 
-> **Los hallazgos 44 y 45 no nacen de un conflicto entre documentos, sino de una decisión del
-> autor tomada el 02/09/2026.** Se registran aquí igual, porque el efecto es el mismo: los
-> `.docx` radicados dicen una cosa y el proyecto hace otra, y eso hay que dejarlo escrito antes
-> de que alguien lo descubra leyendo el guion.
+> **Los hallazgos 44 y 45 no nacieron de un conflicto entre documentos, sino de una decisión del
+> autor tomada el 02/09/2026.** Se registraron aquí igual, porque el efecto era el mismo: los
+> `.docx` radicados decían una cosa y el proyecto hacía otra. La refundición del 14/09/2026 los
+> alineó.
 
 > **Nota sobre esta revisión.** La rev. 4 dejaba veintitrés hallazgos abiertos. Entre esa
 > revisión y esta se corrigieron en los `.docx`: los nueve que la rev. 4 mantenía abiertos
@@ -32,14 +45,17 @@ residuos menores, listados al final.
 **Orden de precedencia.** Cuando dos documentos se contradecían ganó el de mayor prioridad y se
 corrigió el otro:
 
-| # | Documento | Qué gobierna |
+| # | Documento (tras la refundición del 14/09/2026) | Qué gobierna |
 |---|---|---|
-| 1 | `Trabajo_de_Grado_2026_ICONTEC_IEEE.docx` | Objetivos, KPI, alcance, marco jurídico, metodología |
-| 2 | `OE1_Requerimientos (3).docx` | Lineamientos CP/CT/CN, RF-01..RF-47, RNF-01..RNF-23 |
-| 3 | `Guion_Completo_Videojuego.docx` | Narrativa, mecánicas, parámetros y textos exactos |
-| 4 | `OE2_historias_completas.docx` | CU-01..CU-12, HU-01..HU-18, matrices |
-| 5 | `Historias_de_Usuario_HU01_HU18_v2.docx` | HU detalladas: flujos, criterios, reglas de negocio |
-| 6 | `arquitectura_videojuego_v2.docx` | Decisiones técnicas de implementación |
+| 1 | Trabajo de grado — **fuera de `docs/`**, en `git show HEAD:…` | Objetivos, KPI, alcance, marco jurídico, metodología |
+| 2 | `Solución OE1_Requerimientos.docx` | Lineamientos CP/CT/CN, RF-01..RF-47, RNF-01..RNF-23 |
+| 3 | `Solucion_OE2_Diseno_final.docx` §1 (guion) | Narrativa, mecánicas, parámetros y textos exactos |
+| 4 | `Solucion_OE2_Diseno_final.docx` §2–§3 | CU-01..CU-12, HU-01..HU-18, matrices |
+| 5 | `Historias_de_Usuario_HU01_HU18_v2 (1).docx` | HU detalladas: flujos, criterios, reglas de negocio |
+| 6 | `arquitectura_videojuego_v2 (2).docx` · `Solucion_OE2` §4 | Decisiones técnicas de implementación |
+
+Las filas 3 y 4 viven en el **mismo archivo**, así que un conflicto entre ellas ya no es un
+conflicto entre documentos: se corrige editándolo (ver «contradicciones internas», abajo).
 
 Las contradicciones **internas** a un mismo documento se corrigieron editándolo.
 
@@ -72,10 +88,14 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-40 | UI y Audio no tenían assembly en la lista de §9 | Arquitectura | **Cerrado** |
 | INC-41 | HU-02 generalizaba la lista de tareas a todos los niveles | HU, OE1 | **Cerrado** |
 | INC-42 | Norma de citación declarada distinta de la usada | Trabajo de grado | **Cerrado** |
-| INC-43 | `PG-07` sigue «Abierto» tras aprobarse la autorización | Guion | **Abierto** |
-| INC-44 | El guía se llama Algoritm; los documentos dicen «Chispa» | Guion, HU, OE1, OE2 | **Abierto** |
-| INC-45 | El guía cambia de forma por nivel; el guion fija una sola | Guion | **Abierto** |
+| INC-43 | `PG-07` sigue «Abierto» tras aprobarse la autorización | Guion | **Cerrado** (14/09/2026) |
+| INC-44 | El guía se llama Algoritm; los documentos decían «Chispa» | Guion, HU, OE1, OE2 | **Cerrado** (14/09/2026, residuo menor: una mención en la tabla E5) |
+| INC-45 | El guía cambia de forma por nivel; el guion fijaba una sola | Guion | **Cerrado** (14/09/2026) |
 | INC-46 | La lista de tareas del Nivel 3: cuerda con nudos contra panel de casillas | Dirección de arte, Slice 3 | **Abierto** |
+| INC-47 | La mecánica del Nivel 1 reúne los materiales en un círculo y luego mide fuerza y cercanía de las piedras en dos deslizantes; el guion y RF-15 fijan un deslizante de posición | Guion, OE1, HU | **Abierto** |
+| INC-48 | Dos arquitecturas contradictorias en `docs/`: la refundición trajo de vuelta el capítulo anterior a la alineación | OE2 §4, Arquitectura | **Abierto** (decisión tomada: gana la alineada) |
+| INC-49 | El menú de pausa implementado es el del mockup 6 (Reanudar · Reiniciar · Volver al menú de niveles); HU-17 dice «Continuar / Reiniciar nivel / Volver al menú principal» | HU, OE2 §3 | **Abierto** |
+| INC-50 | «Empujar» en el bosque no anima el rodado: sale a la escena 2.2, que lo cuenta; RF-26 y HU-08 lo describen dentro de la mecánica | OE1, HU, CU | **Abierto** |
 
 ---
 
@@ -240,7 +260,7 @@ La lista de assemblies de la arquitectura §9 incluye `Game.UI` y `Game.Audio`, 
 - **OE1 `RNF-03`** lleva la misma aclaración: «la limitación recae sobre la tarea activa, no
   sobre cuántas se muestran».
 
-### INC-43 · `PG-07` desactualizado en el guion — abierto
+### INC-43 · `PG-07` desactualizado en el guion — cerrado (14/09/2026)
 El guion §12 declara `PG-07` **Abierto**: «El uso de los personajes de la Familia Anonaky depende
 de una autorización aún no obtenida». La autorización **ya fue concedida por escrito**
 (confirmado el 30/08/2026), de modo que la fila quedó desactualizada.
@@ -254,19 +274,21 @@ con una IA tampoco. De ahí que se solicitara la autorización en vez de darla p
 manual—: en la tabla del guion §12, marcar `PG-07` como **Cerrado (30/08/2026)** y sustituir la
 acción requerida por la constancia de la autorización escrita.
 
-Mientras el `.docx` no se edite, gana lo que dice aquí: `PG-07` está cerrado. El reconocimiento
-expreso de los personajes en la pantalla de créditos sigue siendo **obligatorio** (CT-09,
-RNF-23), y la constancia escrita se archiva con los anexos del trabajo de grado.
+**Cerrado el 14/09/2026.** `Solucion_OE2_Diseno_final.docx` §1.2 declara `PG-07` como **«Cerrado
+(30/08/2026)»**, y su control de cambios (§5) registra la entrada del 14/09/2026 «Cierre PG-02 y
+PG-07». El reconocimiento expreso de los personajes en la pantalla de créditos sigue siendo
+**obligatorio** (CT-09, RNF-23), y la constancia escrita se archiva con los anexos del trabajo de
+grado.
 
-### INC-44 · El guía se llama **Algoritm**, no «Chispa» — abierto
+### INC-44 · El guía se llama **Algoritm**, no «Chispa» — cerrado (14/09/2026, residuo menor)
 
 **Decisión del 02/09/2026.** El nombre del guía era el punto abierto `PG-02` del guion §12
 —«Nombre provisional»—, de modo que fijarlo no contradice nada: lo cierra. El guía se llama
 **Algoritm**, y `PG-02` queda **cerrado**.
 
-**Qué dicen hoy los documentos.** «Chispa» aparece 48 veces en el guion —25 de ellas como
-acotación de diálogo `CHISPA:`—, 6 en las historias de usuario, 4 en OE2 y 1 en OE1. El trabajo
-de grado y el documento de arquitectura no lo nombran.
+**Qué decían los documentos antes de la refundición.** «Chispa» aparecía 48 veces en el guion
+—25 de ellas como acotación de diálogo `CHISPA:`—, 6 en las historias de usuario, 4 en OE2 y 1 en
+OE1. El trabajo de grado y el documento de arquitectura no lo nombraban.
 
 **El nombre no sale de la nada.** Los documentos fuente por nivel ya barajaban otros: el del
 Nivel 2 llamaba al guía **«Algorim»** y el del Nivel 3 lo alternaba entre «Bubo» y «Sabio»
@@ -297,17 +319,34 @@ junto con el rediseño de INC-45, no antes: son el mismo trabajo.
 
 **Nomenclatura:** `char_chispa_*` → `char_algoritm_n1_estrella.png`, `_n2_rueda`, `_n3_gota`.
 
+**Cerrado el 14/09/2026.** La refundición aplicó la sustitución en los `.docx`: en
+`Solucion_OE2_Diseno_final` la tabla de personajes (§1.1.1) dice «Algoritm(guía)», las
+acotaciones de diálogo son `ALGORITM:` y `PG-02` (§1.2) figura como **«Cerrado (Algorítm)
+(02/09/2026)»**. En `Solución OE1_Requerimientos.docx`, en las historias de usuario y en la
+arquitectura no queda ninguna mención del guía como «Chispa»: las apariciones de *chispa* que
+sobreviven son todas el **destello de las piedras** en minúscula, que es lo correcto.
+
+**Residuo menor — `INC-44-r`, una sola mención.** `Solucion_OE2_Diseno_final` §1.4.3, tabla de
+estados de la mecánica del Nivel 1, estado **E5**: «Pista del guía. **Chispa** formula una
+pregunta orientadora sin resolver la tarea». Debe decir «Algoritm». No afecta al código ni a
+ningún criterio de verificación.
+
+**Segundo residuo — `INC-44-r2`, contradicción interna del mismo archivo.** La tabla de
+personajes (§1.1.1) sigue cerrando la descripción con «Nombre provisional — ver punto abierto
+PG-02», mientras que §1.2 declara `PG-02` cerrado. Sobra la cláusula.
+
 ---
 
-### INC-45 · El guía cambia de forma en cada nivel — abierto
+### INC-45 · El guía cambia de forma en cada nivel — cerrado (14/09/2026)
 
 **Decisión del 02/09/2026.** Algoritm deja de tener una forma única: es **fuego en el Nivel 1,
 rueda en el Nivel 2 y agua en el Nivel 3**. Su cuerpo es el material del descubrimiento que el
 nivel acaba de nombrar.
 
-**Qué dice hoy el guion.** §1.1 lo describe como «pequeña figura luminosa con forma de estrella,
-del tamaño de una palma», y §4.4 repite «una silueta pequeña con forma de estrella». Leídas
-juntas, fijan **una sola forma para los tres niveles**. Ahí está el conflicto.
+**Qué decía el guion antes de la refundición.** §1.1 lo describía como «pequeña figura luminosa
+con forma de estrella, del tamaño de una palma», y §4.4 repetía «una silueta pequeña con forma de
+estrella». Leídas juntas, fijaban **una sola forma para los tres niveles**. Ahí estaba el
+conflicto.
 
 **Pero el guion ya empujaba en esta dirección**, y conviene no perderlo: en §4.4 el guía aparece
 «en el corazón de las llamas […] hecho de fuego **esta vez**», y se recoge en la fogata «como una
@@ -327,9 +366,17 @@ formas se leen como el mismo personaje, y CN-03 se cumple.
 | Guion | §5 y §7 (escenas puente) | Añadir la acotación de la muta: el guía cruza la escena con la forma del nivel que termina y aparece con la del que empieza |
 | Guion | §4.4 | **No se toca.** En el Nivel 1 el guía **es** una estrella de fuego; la acotación es correcta tal como está |
 
-**Impacto en la producción.** El asset `A1` del Slice 1 deja de ser uno y pasa a ser tres, y los
-Slices 2 y 3 dejan de poder reutilizarlo «tal cual» como declaran hoy sus secciones de assets. El
-trabajo está planeado en `claudeDocs/tasks/Sprites/plan.md`, tarea `S15`.
+**Cerrado el 14/09/2026.** `Solucion_OE2_Diseno_final` §1.1.1 describe ya la forma cambiante
+—«estrella de fuego en el Nivel 1, rueda en el 2 y gota de agua en el 3, con los rasgos
+invariables»— y §1.5 (escena puente I) trae la acotación de la muta: «el guía (Algoritm) cruza la
+escena con la forma del nivel que termina (fuego) y aparece con la del que empieza (rueda)». El
+control de cambios (§5) lo registra el 14/09/2026: «Ajuste a definición artistica diferente de
+Algoritm (Una forma por nivel)».
+
+**Impacto en la producción, que sigue pendiente.** El asset `A1` del Slice 1 deja de ser uno y
+pasa a ser tres, y los Slices 2 y 3 dejan de poder reutilizarlo «tal cual» como declaran hoy sus
+secciones de assets. El trabajo está planeado en `claudeDocs/tasks/Sprites/plan.md`, tarea `S15`.
+Cerrar el hallazgo en los documentos **no** produce los sprites.
 
 **Riesgo detectado, y contenido.** El cuerpo de la rueda usa `#C79A5E`, el acento del Nivel 2,
 que es la señal de «esto es interactivo». No infringe §4.2 —la prohibición recae sobre el
@@ -388,25 +435,153 @@ bibliografía) y la que dice el nombre del archivo (`…ICONTEC_IEEE.docx`).
 
 ---
 
+### INC-47 · La mecánica del Nivel 1 es de fuerza y disposición, no de posición — abierto
+
+**Decisión de Santiago, 12/09/2026** (tablero del Slice 1, Fase 5, T21–T23): el deslizante del
+panel de encendido **mide la fuerza del golpe** en diez muescas —efectivas la siete y la ocho,
+`N1_Config.asset`— y no la distancia en tres; las hojas, el sílex y el pedernal aparecen regados
+por la cueva y **se arrastran** hasta el punto del fuego. Un golpe solo es efectivo con fuerza
+correcta y las dos piedras cerca; «Soplar» se habilita al converger, pero el fuego solo nace si las
+hojas están amontonadas y cerca. Sin montón, el soplo se describe y no se penaliza (CP-02).
+
+**Qué dicen hoy los documentos.** Guion §4.3.1–§4.3.5 (deslizante de posición: Lejos / Cerca / Muy
+cerca; mensajes por distancia; E1 «deslizante en Lejos»), OE1 RF-15 («control deslizante de
+posición… tres distancias») y RF-16, HU-06.
+
+**Ampliación del 15/09/2026 (Fase 6, T25–T27).** La mecánica queda en **dos fases**: (1) reunir
+todas las hojas y las dos piedras en el círculo del centro de la pantalla —«Pista» lo dibuja; su
+radio llega a la mitad del botón de abajo— sin ninguna otra interfaz; (2) al reunirlo todo la
+cámara se acerca al doble, las hojas se acomodan solas en fogata y aparecen **dos deslizantes**:
+fuerza (0–10, efectiva 7–8) y **cercanía de las piedras** (0–10: de separadas la longitud de una
+hoja a una encima de otra; certero cuando se rozan encimadas unos cinco píxeles). Las piedras ya no
+se arrastran en el encendido y «Soplar» ya no puede fallar por hojas regadas. Sobre «Soplar» queda
+solo el candado, sin el rótulo «Aún no». Todo en `N1_Config.asset`, `N1_Guia.asset` (paso
+`Reunir`) y `N1_Mensajes.asset` (piedras separadas / encimadas).
+
+**Corrección pendiente.** Guion §4.3 (elementos, parámetros, comportamiento, mensajes, flujo y
+pista) y §4.4 («cambiaste de lugar» → «cambiaste la fuerza o la cercanía»), OE1 RF-15/RF-16, HU-06.
+El registro con historial (HU-06) pasa a una tablilla con **el último mensaje**; el historial
+completo sigue en `FireFeedbackLog.Entries` para el informe docente. En código ya está aplicado: los
+nombres de las pruebas conservan RF-15/RF-16 porque el requisito (hipótesis → experimento →
+resultado) es el mismo.
+
+### INC-48 · La refundición reintrodujo la arquitectura anterior a su alineación — abierto
+
+**El conflicto.** `docs/` tiene hoy **dos capítulos de arquitectura que se contradicen**:
+
+- `arquitectura_videojuego_v2 (2).docx` — la versión **alineada**. Su §12 enumera los catorce
+  cambios aplicados, incluidos los de INC-34, INC-38, INC-39 e INC-40.
+- `Solucion_OE2_Diseno_final.docx` **§4** — la versión **anterior** a esa alineación, tal cual
+  estaba antes de la rev. 5.
+
+Y lo que lo vuelve un hallazgo y no una redundancia: **el capítulo obsoleto está en el documento
+de mayor precedencia**. Quien siga la tabla de precedencia encuentra primero la arquitectura mala.
+
+**Qué reintroduce §4, punto por punto:**
+
+| §4 del documento refundido | Contra qué choca |
+| --- | --- |
+| «el progreso se persiste en `Application.persistentDataPath`» | RNF-07, RNF-11 · INC-34 · supuesto 1 de `SPEC.md` |
+| «las cinemáticas se empaquetan en StreamingAssets» + `CinematicsPlayer` | RF-05 (ilustraciones estáticas y diálogos), RNF-04, RNF-06 |
+| Ocho estados fijos: `Cinematica_Intro`, `Level_01`, `Cinematica_01`… | El Nivel 2 son **tres** escenas jugables encadenadas (RF-22, RF-27, RF-30) |
+| `EntityManager`: «jugador, **enemigos** y coleccionables» | No hay enemigos en este juego |
+| `EventBus` global para todo | Decisión acotada en `SPEC.md` §Comunicación |
+| Los módulos no incluyen `Game.UI` ni `Game.Audio` | INC-40 |
+| Ninguna decisión trazada a un RF/RNF | CT-10 |
+
+**Decisión (14/09/2026): gana `arquitectura_videojuego_v2 (2).docx`.** Es la versión alineada,
+es la que `SPEC.md` §Arquitectura adopta y es la que el código implementa. **Ni `SPEC.md` ni el
+código cambian por este hallazgo**: ya siguen la buena.
+
+**Corrección a aplicar en el `.docx`** —manual, el código nunca edita `docs/`—: sustituir §4 de
+`Solucion_OE2_Diseno_final.docx` por el contenido de `arquitectura_videojuego_v2 (2).docx`, o
+reducir §4 a una remisión a ese documento. Mientras no se haga, **gana lo que dice aquí**.
+
+**Por qué pasó, que es lo que conviene no repetir.** La refundición consolidó seis documentos en
+cuatro copiando capítulos enteros. Los capítulos §1 a §3 se tomaron de las versiones vigentes —su
+control de cambios del 30/08/2026 está ahí, e INC-01, INC-33, INC-35 e INC-37 aparecen
+aplicados—, pero §4 se tomó de un original sin alinear. **Al consolidar, verificar capítulo por
+capítulo contra el control de cambios, no contra el nombre del archivo.**
+
+---
+
+### INC-49 · El menú de pausa de HU-17 no es el del mockup 6 — abierto
+
+**Decisión de Santiago, 15/09/2026** (Slice 2, W17): el menú de pausa es el del **mockup 6** —
+«Reanudar», «Reiniciar» y «Volver al menú de niveles»—, el mismo prefab en las cuatro escenas
+jugables. «Reiniciar» repite **la fase activa** (INC-25) y «Volver al menú de niveles» sale a la
+selección de niveles, no al inicio.
+
+**Qué dicen hoy los documentos.** HU-17 (`Solucion_OE2_Diseno_final` §3 y
+`Historias_de_Usuario_HU01_HU18_v2`): «El menú de pausa ofrece Continuar, Reiniciar nivel y Volver
+al menú principal». RF-07 no fija los rótulos ni el destino.
+
+**Corrección pendiente.** HU-17, criterio de aceptación y flujos FA-01..FA-05: «Continuar» →
+«Reanudar», «Reiniciar nivel» → «Reiniciar» (la fase activa), «Volver al menú principal» → «Volver
+al menú de niveles». En código ya está aplicado (`PauseMenuController`, `MenuPausa.prefab`); las
+pruebas conservan HU-17 en el nombre porque la historia —detener, reanudar sin perder nada,
+reiniciar con confirmación— es la misma.
+
+### INC-50 · El rodado del Nivel 2 solo se ve en la narrativa — abierto
+
+**Decisión de Santiago, 15/09/2026** (Slice 2, W19): al pulsar «Empujar» la mecánica del bosque
+**no anima el rodado**; confirma la fase y sale a la escena 2.2, que es la que lo cuenta con
+`RollMotion`. Además la fila de troncos del bosque va **pegada** (centros a 0,889 del tamaño del
+tronco), igual que los props de esa escena, para que el corte entre las dos no se note.
+
+**Qué dicen hoy los documentos.** RF-26 y HU-08: «al accionar Empujar se reproduce la
+demostración del rodado»; CU-06 flujo principal, paso del empuje; guion §1.6.1.2 describe el
+rodado dentro de la mecánica.
+
+**Corrección pendiente.** RF-26, HU-08 y CU-06: «Empujar» cierra la fase y la demostración del
+rodado es la escena narrativa 2.2 (guion §1.6.1.3). El requisito de fondo —el estudiante ve rodar
+la caja sobre los troncos redondos— se sigue cumpliendo; cambia dónde.
+
 ## Residuos y puntos abiertos
 
 **Residuos menores** (no afectan al código ni a un criterio de verificación):
 
 1. **INC-24-r** — HU-17 y HU-18 no llevan el encabezado «Página 17/18 de 18». Se añaden
    insertando la fila de encabezado en el `.docx`.
+2. **INC-44-r** — `Solucion_OE2_Diseno_final` §1.4.3, estado **E5** de la tabla de la mecánica del
+   Nivel 1: «Chispa formula una pregunta orientadora» → «Algoritm».
+3. **INC-44-r2** — `Solucion_OE2_Diseno_final` §1.1.1, tabla de personajes: sobra «Nombre
+   provisional — ver punto abierto PG-02», porque §1.2 ya declara `PG-02` cerrado.
 
-**Puntos abiertos del guion (§12)** — son del guion, no conflictos entre documentos:
-`PG-01` (título del producto), `PG-05` (verificar en pruebas que el cambio de esquema de control
-entre niveles no confunde), `PG-06` (validar jugando los valores del Nivel 1). **`PG-02` (nombre
-del guía) está cerrado desde el 02/09/2026: se llama Algoritm** — el guion aún no lo refleja, ver
-INC-44. `PG-03` y `PG-04` están cerrados (redacción de `RF-16` y `RF-32`), y
-`PG-07` (autorización de los personajes) está **cerrado desde el 30/08/2026**: la autorización se
-concedió por escrito. El guion aún no lo refleja — ver INC-43.
+**Puntos abiertos del guion** —ahora `Solucion_OE2_Diseno_final` §1.2— son del guion, no
+conflictos entre documentos. Siguen **abiertos**: `PG-01` (título del producto), `PG-05`
+(verificar en pruebas que el cambio de esquema de control entre niveles no confunde) y `PG-06`
+(validar jugando los valores del Nivel 1). Están **cerrados y así consta ya en el `.docx`**:
+`PG-02` (el guía se llama **Algoritm**, 02/09/2026 — INC-44), `PG-03` y `PG-04` (redacción de
+`RF-16` y `RF-32`, 24/08/2026) y `PG-07` (autorización escrita de los personajes, 30/08/2026 —
+INC-43).
 
 ---
 
 ## Historial de revisiones
 
+- **rev. 10 (15/09/2026, segunda entrada)** — Fase 6 del Slice 1 y W19 del Slice 2. **INC-47** se
+  amplía (dos fases: reunir en el círculo y encender con dos deslizantes, fuerza y cercanía; sin
+  rótulo «Aún no»). Se abre **INC-50**: «Empujar» no anima el rodado en la mecánica del bosque; lo
+  cuenta la escena 2.2, y la fila de troncos va pegada como en ella.
+- **rev. 9 (15/09/2026)** — Cierre de la Fase 5 del Slice 2. Se abre **INC-49**: el menú de
+  pausa sigue el mockup 6 (Reanudar · Reiniciar · Volver al menú de niveles) y HU-17 todavía dice
+  «Continuar, Reiniciar nivel y Volver al menú principal». Decisión de Santiago el mismo día:
+  gana el mockup; se corrige HU-17.
+- **rev. 8 (14/09/2026, segunda entrada)** — Auditoría de `SPEC.md` contra los documentos
+  refundidos. Se abre **INC-48**: `Solucion_OE2_Diseno_final` §4 es el capítulo de arquitectura
+  **anterior** a la alineación, y está en el documento de mayor precedencia. Decisión tomada el
+  mismo día: gana `arquitectura_videojuego_v2 (2).docx`. Los capítulos §1 a §3 del documento
+  refundido sí están al día.
+- **rev. 8 (14/09/2026)** — **Refundición de los documentos fuente**: de seis `.docx` a cuatro
+  (`Solución OE1_Requerimientos.docx` y `Solucion_OE2_Diseno_final.docx`, que absorbe guion, casos
+  de uso, historias, matrices y arquitectura; el trabajo de grado sale de `docs/`). Verificados
+  contra los documentos nuevos, se cierran **INC-43**, **INC-44** e **INC-45**. Quedan abiertos
+  **INC-46** e **INC-47**; se abren los residuos menores `INC-44-r` y `INC-44-r2`. **INC-47 no se
+  cerró con la refundición**: los documentos nuevos mantienen el deslizante de posición
+  (`Solucion_OE2` §1.4.3 «Lejos / Cerca / Muy cerca», OE1 `RF-16` «en función de la distancia
+  seleccionada en el control de posición», HU-06 «control deslizante de posición»), mientras el
+  código implementa el deslizante de fuerza.
 - **rev. 7 (02/09/2026)** — Decisión del autor sobre el guía: se llama **Algoritm** (`PG-02`
   cerrado) y **cambia de forma en cada nivel** —fuego, rueda, agua—. Se abren **INC-44** e
   **INC-45**; ambos se cierran editando los `.docx` a mano. `claudeDocs/` ya está alineado.

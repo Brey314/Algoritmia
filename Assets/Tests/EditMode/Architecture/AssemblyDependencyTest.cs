@@ -20,6 +20,7 @@ namespace Game.Architecture.Tests
             ("Game.Core", "Core"),
             ("Game.Scaffolding", "Scaffolding"),
             ("Game.Levels.Fire", "Levels/Fire"),
+            ("Game.Levels.Wheel", "Levels/Wheel"),
             ("Game.UI", "UI"),
             ("Game.Audio", "Audio")
         };

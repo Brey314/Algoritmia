@@ -68,17 +68,21 @@ namespace Game.Core.Tests
         [Test]
         public void GameFlow_RF05_NarrativeSeParametrizaConLaSecuenciaYPlayingConNivelYFase()
         {
+            var perfil = NewProfile();
+            perfil.Reach(LevelId.Wheel);
             _sut.TryGoTo(GameState.MainMenu);
             _sut.TryGoTo(GameState.ProfileSelect);
-            _sut.TrySelectProfile(NewProfile());
+            _sut.TrySelectProfile(perfil);
 
             _sut.TryStartNarrative("n1_intro");
             Assert.That(_sut.Current, Is.EqualTo(GameState.Narrative));
             Assert.That(_sut.NarrativeSequenceId, Is.EqualTo("n1_intro"));
 
-            _sut.TryStartPlaying(LevelId.Fire, phase: 2);
+            // El Nivel 2 es el que tiene una fase 2: el Nivel 1 se resuelve en una sola fase, y
+            // pedirle una segunda se rechaza (PhaseId).
+            _sut.TryStartPlaying(LevelId.Wheel, phase: 2);
             Assert.That(_sut.Current, Is.EqualTo(GameState.Playing));
-            Assert.That(_sut.PlayingLevel, Is.EqualTo(LevelId.Fire));
+            Assert.That(_sut.PlayingLevel, Is.EqualTo(LevelId.Wheel));
             Assert.That(_sut.PlayingPhase, Is.EqualTo(2));
         }
 
@@ -102,6 +106,71 @@ namespace Game.Core.Tests
             Assert.That(_sut.TryStartPlaying(LevelId.Fire, 1), Is.True);
             Assert.That(_sut.Current, Is.EqualTo(GameState.Playing));
             Assert.That(_sut.TryGoTo(GameState.MainMenu), Is.True); // Pausa → volver al inicio.
+        }
+
+        [Test]
+        public void GameFlow_RF05_DosEscenasNarrativasSeEncadenanSinPasarPorElMenu()
+        {
+            _sut.TryGoTo(GameState.MainMenu);
+            _sut.TryGoTo(GameState.ProfileSelect);
+            _sut.TrySelectProfile(NewProfile());
+            _sut.TryStartNarrative("N2_Escena22_ElPatron");
+
+            // La 2.2 y la 2.3 van seguidas en el guion: el asset declara la siguiente y el flujo
+            // la acepta como otra entrada a Narrative, con el id nuevo.
+            Assert.That(_sut.TryStartNarrative("N2_Escena23_Construccion"), Is.True);
+            Assert.That(_sut.Current, Is.EqualTo(GameState.Narrative));
+            Assert.That(_sut.NarrativeSequenceId, Is.EqualTo("N2_Escena23_Construccion"));
+        }
+
+        [Test]
+        public void GameFlow_RNF14_EntrarAUnaFaseYaConfirmadaRetomaEnLaPrimeraPendiente()
+        {
+            var perfil = NewProfile();
+            perfil.Reach(LevelId.Wheel);
+            perfil.ConfirmPhase(new PhaseId(LevelId.Wheel, 1), default);
+            _sut.TryGoTo(GameState.MainMenu);
+            _sut.TryGoTo(GameState.ProfileSelect);
+            _sut.TrySelectProfile(perfil);
+
+            // La apertura del nivel siempre pide la fase 1; con la 1 en disco se retoma en la 2,
+            // que es lo que RNF-14 llama «desde la última fase confirmada».
+            Assert.That(_sut.TryStartPlaying(LevelId.Wheel, 1), Is.True);
+            Assert.That(_sut.PlayingPhase, Is.EqualTo(2), "retoma en la primera fase pendiente");
+
+            // Reiniciar la fase en curso, que no está confirmada, la repite tal cual (RF-07).
+            Assert.That(_sut.TryStartPlaying(LevelId.Wheel, 2), Is.True);
+            Assert.That(_sut.PlayingPhase, Is.EqualTo(2));
+
+            // Con el nivel completo no hay pendiente: se juega la pedida, repetir es legítimo.
+            perfil.ConfirmPhase(new PhaseId(LevelId.Wheel, 2), default);
+            perfil.ConfirmPhase(new PhaseId(LevelId.Wheel, 3), default);
+            Assert.That(_sut.TryStartPlaying(LevelId.Wheel, 1), Is.True);
+            Assert.That(_sut.PlayingPhase, Is.EqualTo(1));
+
+            // Una fase que el nivel no tiene se rechaza sin cambiar de estado.
+            Assert.That(_sut.TryStartPlaying(LevelId.Wheel, 4), Is.False);
+        }
+
+        [Test]
+        public void GameFlow_RNF14_SiLaFasePendienteNoEsJugableTodaviaSeJuegaLaPedida()
+        {
+            // Visto el 12/09/2026: con la 1 y la 2 del Nivel 2 en disco, terminar la escena 2.1
+            // saltaba a la fase 3 —que no tiene escena hasta W13— y el estudiante caía al menú
+            // «sin continuar». La retoma solo salta a una fase que se pueda jugar.
+            var perfil = NewProfile();
+            perfil.Reach(LevelId.Wheel);
+            perfil.ConfirmPhase(new PhaseId(LevelId.Wheel, 1), default);
+            perfil.ConfirmPhase(new PhaseId(LevelId.Wheel, 2), default);
+            _sut.TryGoTo(GameState.MainMenu);
+            _sut.TryGoTo(GameState.ProfileSelect);
+            _sut.TrySelectProfile(perfil);
+
+            Assert.That(_sut.TryStartPlaying(LevelId.Wheel, 1, fase => fase.Phase <= 2), Is.True);
+            Assert.That(_sut.PlayingPhase, Is.EqualTo(1), "la pendiente no es jugable: se repite la pedida");
+
+            Assert.That(_sut.TryStartPlaying(LevelId.Wheel, 1, fase => true), Is.True);
+            Assert.That(_sut.PlayingPhase, Is.EqualTo(3), "y cuando exista, se retoma en ella");
         }
     }
 }

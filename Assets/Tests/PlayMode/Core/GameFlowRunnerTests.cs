@@ -57,6 +57,45 @@ namespace Game.Core.Tests
             Assert.That((bool)probe, Is.True);
         }
 
+        [Test]
+        [Timeout(20000)]
+        public async Task GameFlowRunner_RF22_JugarLaFase1DelNivel2CargaLaEscenaDelBosque()
+        {
+            var runner = await BootToMainMenu();
+            runner.GoTo(GameState.ProfileSelect);
+            var profile = PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
+            profile.Reach(LevelId.Wheel);
+            runner.SelectProfile(profile);
+
+            var started = runner.StartPlaying(LevelId.Wheel, 1);
+
+            Assert.That(started, Is.True, "el perfil llega al Nivel 2, así que la fase 1 se puede jugar");
+            // Sin esta correspondencia `Playing` no tenía escena y el aviso de GameFlowRunner era
+            // todo lo que ocurría: el estudiante se quedaba en la escena narrativa (RNF-13).
+            await WaitUntil(() => SceneManager.GetActiveScene().name == "Level2_Forest");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task GameFlowRunner_RNF14_ConLasDosPrimerasFasesConfirmadasEntrarAlNivel2RetomaEnElLaberinto()
+        {
+            var runner = await BootToMainMenu();
+            runner.GoTo(GameState.ProfileSelect);
+            var profile = PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
+            profile.Reach(LevelId.Wheel);
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 1), default);
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 2), default);
+            runner.SelectProfile(profile);
+
+            // La apertura del nivel pide la fase 1. La pendiente es la 3 y desde W13 (13/09/2026)
+            // tiene escena: se retoma ahí, no se repite el bosque. Hasta W13 esta misma prueba
+            // esperaba la fase 1, porque sin escena para la 3 se repetía la pedida.
+            Assert.That(runner.StartPlaying(LevelId.Wheel, 1), Is.True);
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Playing));
+            Assert.That(runner.Flow.PlayingPhase, Is.EqualTo(3));
+            await WaitUntil(() => SceneManager.GetActiveScene().name == "Level2_Maze");
+        }
+
         private static async Task<GameFlowRunner> BootToMainMenu()
         {
             SceneManager.LoadScene("Boot");
