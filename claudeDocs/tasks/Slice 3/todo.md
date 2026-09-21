@@ -364,17 +364,49 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       checkpoint R-E.
 
 ### ✅ Checkpoint R-E — Slice 3 completo
-- [ ] **Dos recorridos completos** del Nivel 3 sin incidencias (RNF-13)
-- [ ] Un recorrido **acertando al primer intento** (sin escena 3.2) y otro **fallando** (con ella)
-- [ ] Cierre forzado en cada fase confirmada → retoma donde iba (RNF-14)
+- [x] **Dos recorridos completos** del Nivel 3 sin incidencias (RNF-13) — 21/09/2026,
+      `RiverLevelJourneyTests` (desde `Boot` con perfil real: puente II → llegada → orilla →
+      recolección → zona → base → amarre → mástil y vela → prueba → cruce → resumen → escena
+      final → créditos → inicio; narrativas línea a línea con «Continuar»; comprueba en disco las
+      tres fases, intentos y errores corregidos de la fase 3 y el tiempo de la base):
+      `RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio_{AcertandoAlPrimerIntento,FallandoLaPrueba}`,
+      **2/2** con `unity test` (Editor cerrado). El clic manual sobre el ejecutable sigue siendo de Santiago.
+- [x] Un recorrido **acertando al primer intento** (sin escena 3.2) y otro **fallando** (con ella) —
+      son los dos casos de arriba: el que falla cruza mástil y vela, ve la 3.2, vuelve a la fase 3 con
+      la escena recargada y las piezas devueltas, y corrige (Intentos = 1, Errores corregidos > 0)
+- [x] Cierre forzado en cada fase confirmada → retoma donde iba (RNF-14) —
+      `RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba_{TrasLaBase,TrasElAmarre}`
+      (guarda, destruye runner y cargador, arranca de nuevo desde `Boot`, carga el perfil de disco y
+      pide la fase 1: el flujo retoma en la pendiente, el panel abre en ella con las anteriores
+      consolidadas y la recolección dada por hecha), **2/2**. Tras la fase 3 el nivel está completo y
+      repetir la pedida es legítimo (`GameFlow_RNF14_…`)
 - [x] **RNF-02 cerrado**: cinco escenas jugables inspeccionadas, cero teclado (INC-01) — R16, 21/09/2026
 - [x] **RNF-16 cerrado**: las tres combinaciones de exclusión — R16, 21/09/2026
-- [ ] Carga de `Level3_River` < 10 s y memoria < 2 GB, **medidas** (RNF-04, RNF-05)
-- [ ] Paquete < 500 MB con el arte de los **tres** slices (RNF-06) — última oportunidad de verlo
-- [ ] **PG-05** verificado sobre los tres niveles
-- [ ] RF-35..RF-44 tienen cada uno al menos una prueba que los nombra (CT-10)
-- [ ] **Golden Path del juego entero**, de la pantalla de inicio a los créditos, en 20–40 minutos
-- [ ] Revisado con el usuario antes de abrir el Slice 4
+- [x] Carga de `Level3_River` < 10 s y memoria < 2 GB, **medidas** (RNF-04, RNF-05) — 21/09/2026,
+      `RiverLevel_RNF04_LaEscenaDelNivel3CargaEnMenosDeDiezSegundos`: **1,36 s** por
+      `SceneLoader.LastLoadSeconds`; `RiverLevel_RNF05_LaMemoriaQuedaBajoDosGigasConElNivel3Cargado`:
+      **1 226 MB reservados / 785 MB asignados** con el panel de ensamblaje abierto. Medidas en el
+      Editor batchmode, que carga más que el ejecutable: son cota superior
+- [x] Paquete < 500 MB con el arte de los **tres** slices (RNF-06) — 21/09/2026, `unity build
+      --target StandaloneWindows64` con las once escenas: **217 MB** (`Algoritmia_Data` 150 MB,
+      `UnityPlayer.dll` 36 MB, `DirectML.dll` 14 MB). Incluye la carpeta
+      `My project_BurstDebugInformation_DoNotShip` (1 MB), que se quita del entregable a mano. El
+      ejecutable **no se corrió** en esta sesión: `Datos/` junto al `.exe` (RNF-07/RNF-11) sigue
+      siendo comprobación de Santiago. **Ojo:** la build dejó `SENTIS_ANALYTICS_ENABLED` en los
+      símbolos de `Standalone` y `UnityConnectSettings.m_Enabled: 1` (revertidos), y mete
+      `DirectML.dll` + `D3D12/` —los paquetes de IA del Editor entrando al ejecutable—; quitarlos
+      del `manifest.json` es «preguntar primero» (RNF-08/RNF-10): decisión de Santiago
+- [ ] **PG-05** verificado sobre los tres niveles — observación en la sesión con estudiantes, no una
+      aserción: queda para Santiago
+- [x] RF-35..RF-44 tienen cada uno al menos una prueba que los nombra (CT-10) — barrido sobre
+      `Assets/Tests` el 21/09/2026: RF-35 (3), RF-36 (4), RF-37 (3), RF-38 (4), RF-39 (4), RF-40 (4),
+      RF-41 (3), RF-42 (1), RF-43 (3), RF-44 (1)
+- [ ] **Golden Path del juego entero**, de la pantalla de inicio a los créditos, en 20–40 minutos —
+      el recorrido está automatizado por tramos (`LevelSummaryTests` N1, `WheelLevelJourneyTests` N2,
+      `RiverLevelJourneyTests` N3 + cierre) pero el tiempo lo mide una persona jugando: de Santiago
+- [ ] Revisado con el usuario antes de abrir el Slice 4 — pendiente también en R-A..R-D. Antes de la
+      revisión: repetir en el Editor con Rider (Game View 1920×1080) los trece de disposición/captura
+      que batchmode no puede correr (ver R14 y R16)
 
 ---
 
