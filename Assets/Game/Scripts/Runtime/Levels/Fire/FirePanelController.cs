@@ -1,4 +1,5 @@
 using System;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
@@ -77,6 +78,10 @@ namespace Game.Levels.Fire
         [Tooltip("Botón «Pista» (mockup 7, arriba a la izquierda): repite la instrucción del paso (RF-13) y, al reunir, dibuja el círculo.")]
         private Button hintButton;
 
+        [SerializeField]
+        [Tooltip("Las piezas de sonido del nivel (N1_Sonidos). Puede quedar sin asignar: el nivel se juega igual en silencio — el audio refuerza, nunca informa solo (§2.4).")]
+        private FireSounds sounds;
+
         private FireAttempt _attempt;
         private FireFeedbackLog _log;
         private FireIndicatorCollector _indicators;
@@ -137,6 +142,7 @@ namespace Game.Levels.Fire
         internal StoneSpacing Spacing => _spacing;
         internal CaveLightingController Lighting => lighting;
         internal Button HintButton => hintButton;
+        internal FireSounds Sounds => sounds;
 #endif
 
         private RectTransform Floor => (RectTransform)fireSpot.parent;
@@ -178,7 +184,14 @@ namespace Game.Levels.Fire
 
             foreach (var piece in pieces)
             {
+                piece.PickedUp += Piece_PickedUp;
                 piece.Dropped += Piece_Dropped;
+            }
+
+            // La cueva ya sonaba en la escena 1.2: pedir el mismo ambiente la deja seguir sin costura.
+            if (sounds != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayAmbient(sounds.CaveAmbient);
             }
 
             // Reuniendo solo hay piezas, tablilla y «Pista»: la interfaz del encendido llega con
@@ -193,7 +206,33 @@ namespace Game.Levels.Fire
             RefreshLighting();
         }
 
-        private void Piece_Dropped(DraggablePiece _) => TryFinishGathering();
+        /// <summary>Una hoja suena mientras se la lleva (clic sostenido, RNF-02); las piedras no.</summary>
+        private void Piece_PickedUp(DraggablePiece piece)
+        {
+            if (piece.Kind == PieceKind.Leaf && sounds != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayHeld(sounds.LeafDrag);
+            }
+        }
+
+        private void Piece_Dropped(DraggablePiece _)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.StopHeld();
+            }
+
+            TryFinishGathering();
+        }
+
+        /// <summary>Dispara una pieza de sonido, si hay gestor y hay pieza. Sin gestor (escena abierta sin pasar por Boot) no suena nada y el nivel sigue.</summary>
+        private static void Play(AudioClip clip, float pitchJitter = 0f, float volume = 1f)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySfx(clip, pitchJitter, volume);
+            }
+        }
 
         /// <summary>Si ya está todo dentro del círculo, pasa al encendido. Lo llaman las piezas al soltarse y las pruebas.</summary>
         internal void TryFinishGathering()
@@ -215,6 +254,7 @@ namespace Game.Levels.Fire
         {
             IsTransitioning = true;
             gatherRing.gameObject.SetActive(false);
+            Play(sounds?.Gathered); // todo reunido: el paso al encendido suena una vez
             foreach (var piece in pieces)
             {
                 piece.enabled = false; // ya no se arrastran: desde aquí las piedras las mueve el deslizante
@@ -351,6 +391,26 @@ namespace Game.Levels.Fire
             var outcome = _attempt.Strike(SelectedForce, _spacing.Classify(SelectedSpacing));
             _indicators.RecordStrike(outcome);
             _log.Record(outcome, _attempt.ConsecutiveFailures);
+
+            // «Por qué no» un sonido de fallo: un golpe sin chispa suena a lo que pasó —separadas,
+            // las piedras no chocan y no se oye nada; en contacto chocan, más fuerte cuanto más
+            // encimadas, y nada más—, nunca a pitido de error ni a acorde de derrota (Dirección de
+            // sonido §2.1, CP-02). El efectivo añade la chispa que cae en las hojas (guion §4.3.3).
+            // Quien ponga aquí un sonido para el fallo reintroduce la penalización que el proyecto
+            // prohíbe.
+            if (sounds != null)
+            {
+                var contact = _spacing.Contact(SelectedSpacing);
+                if (contact > 0f)
+                {
+                    Play(sounds.Strike, sounds.StrikePitchJitter, Mathf.Lerp(sounds.StrikeMinVolume, 1f, contact));
+                }
+
+                if (outcome.Effective)
+                {
+                    Play(sounds.Spark);
+                }
+            }
             if (outcome.Effective)
             {
                 _hints.RegisterSuccessfulAttempt();
@@ -412,6 +472,7 @@ namespace Game.Levels.Fire
 
             _log.RecordBlowSuccess();
             logView.Show(_log.Entries);
+            Play(sounds?.Blow);
             _ = ResolveAsync();
         }
 
@@ -437,6 +498,14 @@ namespace Game.Levels.Fire
             // frecuencia, y un `Mathf.PingPong` o cualquier oscilación los produciría. Las hojas
             // amontonadas se tiñen de fuego; el sprite de fuego real es arte pendiente (A7).
             const float duration = 0.6f;
+            // La hoguera entra como capa sobre la cueva, que sigue sonando, y ya no se va (§8,
+            // amb_n1_cueva_fuego): crece en sus segundos sin golpe inicial (RNF-21), y la escena de
+            // cierre pide los dos mismos clips.
+            if (sounds != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayAmbientLayer(sounds.FireAmbient, sounds.FireAmbientFadeSeconds);
+            }
+
             var leaves = Array.ConvertAll(
                 Array.FindAll(pieces, piece => piece.Kind == PieceKind.Leaf), piece => piece.GetComponent<Image>());
             var starts = Array.ConvertAll(leaves, image => image != null ? image.color : Color.white);

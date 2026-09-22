@@ -617,6 +617,7 @@ MonoBehaviour:
   lighting: {fileID: 358587720}
   guide: {fileID: 11400000, guid: eda218b25137c9f4eb022c64400c79a0, type: 2}
   hintButton: {fileID: 1336748154}
+  sounds: {fileID: 11400000, guid: 1418d061b3f3c3f4abebaf88824ed4fd, type: 2}
 --- !u!114 &235248249
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3069,7 +3070,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1196985607}
   - component: {fileID: 1196985606}
-  - component: {fileID: 1196985605}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3077,14 +3077,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &1196985605
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1196985604}
-  m_Enabled: 1
 --- !u!20 &1196985606
 Camera:
   m_ObjectHideFlags: 0

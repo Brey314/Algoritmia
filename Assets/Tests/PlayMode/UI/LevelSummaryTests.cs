@@ -25,7 +25,7 @@ namespace Game.UI.Tests
 
         // N1_Config (Fase 5): el deslizante mide fuerza, 7 cae en la franja efectiva.
         private const float VeryClosePosition = 7f; // fuerza efectiva (N1_Config, Fase 5)
-        private const float EffectiveSpacing = 2f; // las piedras se rozan (N1_Config, Fase 6)
+        private const float EffectiveSpacing = 5f; // la única muesca efectiva (N1_Config)
         private const int MinimumEffectiveStrikes = 3;
 
         [TearDown]

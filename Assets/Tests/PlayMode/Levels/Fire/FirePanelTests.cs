@@ -22,14 +22,14 @@ namespace Game.Levels.Fire.Tests
     {
         private const string SceneName = "Level1_Cave";
 
-        // N1_Config (Fases 5 y 6): fuerza efectiva 7–8 de 10, mínimo de golpes efectivos = 3;
-        // cercanía de diez muescas, efectiva la dos (las piedras se rozan encimadas ~5 px).
+        // N1_Config (Fases 5 y 6, 21/09/2026): fuerza efectiva 7–8 de 10, mínimo de golpes
+        // efectivos = 3; cercanía de diez muescas, efectiva solo la cinco (encimadas 30 px).
         private const int MinimumEffectiveStrikes = 3;
         private const int SoftForce = 2;
         private const int HardForce = 10;
         private const int EffectiveForce = 7;
         private const int FarSpacing = 0;
-        private const int EffectiveSpacing = 2;
+        private const int EffectiveSpacing = 5;
         private const int CloseSpacing = 10;
 
         [TearDown]
@@ -548,7 +548,7 @@ namespace Game.Levels.Fire.Tests
         // --- helpers -----------------------------------------------------------------------
 
         /// <summary>Reúne todas las piezas en el punto del fuego y espera el acercamiento (T25).</summary>
-        private static async Task Reunir(FirePanelController controller)
+        internal static async Task Reunir(FirePanelController controller)
         {
             foreach (var piece in controller.Pieces)
             {
@@ -571,7 +571,7 @@ namespace Game.Levels.Fire.Tests
         private static PointerEventData Pointer(Vector2 position, Vector2 pressPosition) =>
             new PointerEventData(EventSystem.current) { position = position, pressPosition = pressPosition };
 
-        private static async Task<FirePanelController> LoadPanel()
+        internal static async Task<FirePanelController> LoadPanel()
         {
             var load = SceneManager.LoadSceneAsync(SceneName, LoadSceneMode.Single);
             while (load is { isDone: false })
@@ -653,11 +653,11 @@ namespace Game.Levels.Fire.Tests
             return true;
         }
 
-        private static void Click(Button button) =>
+        internal static void Click(Button button) =>
             ExecuteEvents.Execute(button.gameObject, new PointerEventData(EventSystem.current),
                 ExecuteEvents.pointerClickHandler);
 
-        private static void ClickTimes(Button button, int times)
+        internal static void ClickTimes(Button button, int times)
         {
             for (var i = 0; i < times; i++)
             {

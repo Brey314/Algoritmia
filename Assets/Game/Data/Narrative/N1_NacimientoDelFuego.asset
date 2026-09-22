@@ -15,6 +15,8 @@ MonoBehaviour:
   <Id>k__BackingField: N1_NacimientoDelFuego
   <Level>k__BackingField: 1
   <Illustration>k__BackingField: {fileID: 21300000, guid: 13d0c3738f9d71047b289efb92c892c4, type: 3}
+  <Ambient>k__BackingField: {fileID: 8300000, guid: fc958f01575f8f94db4079d9063c54cd, type: 3}
+  <AmbientLayer>k__BackingField: {fileID: 8300000, guid: 6423a3675fa942f4fb8d62abf58bb65e, type: 3}
   <CameraStart>k__BackingField:
     <Focus>k__BackingField: {x: 0.215, y: 0.375}
     <Zoom>k__BackingField: 1.85
@@ -208,35 +210,69 @@ MonoBehaviour:
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Una llama naranja y dorada crece despacio desde las hojas: temblorosa al principio, luego más firme, más alta."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "La cueva entera se llena de luz y calor en segundos."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Papá se queda quieto, arrodillado, mirando las llamas, con las manos temblorosas."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "NIÑOS"
     <Text>k__BackingField: "¡PAPÁAAA! ¡LO LOGRASTE!"
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Los niños salen corriendo y se lanzan encima de él. Mamá llega detrás, riendo y llorando al mismo tiempo."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Papá los abraza a todos mientras el fuego crepita."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "La cueva oscura se convierte en el lugar más cálido del mundo."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "PAPÁ"
     <Text>k__BackingField: "Las piedras tenían razón. Eran especiales."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "En el corazón de las llamas aparece una silueta pequeña con forma de estrella."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Es Algoritm, brillando más que nunca, hecho de fuego esta vez."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "ALGORITM"
     <Text>k__BackingField: "¿Ven? Yo no traje la luz. Solo les mostré dónde buscar. El resto lo hizo papá."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "NIÑA"
     <Text>k__BackingField: "Papá, ¡tú eres como Algoritm!"
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Papá se ríe bajito y la abraza más fuerte."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "ALGORITM"
     <Text>k__BackingField: "Y algo más. La primera vez no funcionó, ni la segunda. Cambiaste la fuerza, volviste a probar y miraste qué pasaba cada vez."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "ALGORITM"
     <Text>k__BackingField: "Eso tiene nombre: se llama iterar. Probar, mirar el resultado y ajustar."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Algoritm parpadea tres veces y se recoge dentro de la fogata, como una brasa que sigue viva."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Esa noche la familia duerme caliente y unida."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0

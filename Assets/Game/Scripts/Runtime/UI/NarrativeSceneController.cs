@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
@@ -143,6 +144,14 @@ namespace Game.UI
             EnsureDarkness();
             ApplyLight();
             PlaceProps(_sequence);
+            // El ambiente es contenido de la secuencia, como la ilustración: el mismo clip que
+            // dejó la escena anterior sigue sonando; otro entra por fundido cruzado (§3.3).
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayAmbient(_sequence.Ambient);
+                AudioManager.Instance.PlayAmbientLayer(_sequence.AmbientLayer);
+            }
+
             // RF-06 e INC-28: el botón de omitir no existe en la primera visita, no basta con
             // deshabilitarlo — la escena de cierre es donde el guía nombra lo aprendido.
             skipButton.gameObject.SetActive(Dialogue.CanSkip);
@@ -556,6 +565,24 @@ namespace Game.UI
             speakerLabel.gameObject.SetActive(!line.IsStageDirection);
             bodyLabel.text = line.Text;
             PlayMotions(Dialogue.Index);
+
+            // Lo que dice el texto se oye cuando se lee, igual que los objetos se mueven cuando se
+            // leen. Los silencios del guion son piezas con disparador (§5) y cortan en seco.
+            var audio = AudioManager.Instance;
+            if (audio != null)
+            {
+                if (line.Silence != SilenceCut.None)
+                {
+                    audio.CutToSilence(keepAmbient: line.Silence == SilenceCut.Music);
+                }
+
+                if (line.Ambient != null)
+                {
+                    audio.PlayAmbient(line.Ambient); // la familia entra en la cueva: cambia el fondo
+                }
+
+                audio.PlaySfx(line.Sound);
+            }
         }
 
         /// <summary>

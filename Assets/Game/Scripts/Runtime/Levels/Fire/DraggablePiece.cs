@@ -26,6 +26,9 @@ namespace Game.Levels.Fire
         private RectTransform _floor;
         private Vector2 _grabOffset;
 
+        /// <summary>Se tomó la pieza del suelo: empieza el arrastre.</summary>
+        public event Action<DraggablePiece> PickedUp;
+
         /// <summary>Se soltó la pieza tras arrastrarla. Es cuando el panel mira si ya está todo reunido.</summary>
         public event Action<DraggablePiece> Dropped;
 
@@ -43,6 +46,7 @@ namespace Game.Levels.Fire
         {
             _grabOffset = Rect.anchoredPosition - Local(eventData);
             Rect.SetAsLastSibling(); // lo que se arrastra va encima
+            OnPickedUp();
         }
 
         public void OnDrag(PointerEventData eventData) => MoveTo(Local(eventData) + _grabOffset);
@@ -61,6 +65,8 @@ namespace Game.Levels.Fire
                 Mathf.Clamp(position.x, -half.x, half.x),
                 Mathf.Clamp(position.y, -half.y, half.y));
         }
+
+        private void OnPickedUp() => PickedUp?.Invoke(this);
 
         private void OnDropped() => Dropped?.Invoke(this);
 

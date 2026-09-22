@@ -33,6 +33,14 @@ namespace Game.Scaffolding
         public Sprite Illustration { get; private set; }
 
         [field: SerializeField]
+        [field: Tooltip("Ambiente de la escena, en bucle (Dirección de sonido §8). Entra con fundido cruzado; si es el mismo de la escena anterior sigue sonando sin costura. Vacío = el que sonara se va.")]
+        public AudioClip Ambient { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("Segundo ambiente superpuesto al anterior, en bucle: la hoguera sobre la cueva en la escena 1.3. Vacío = ninguno.")]
+        public AudioClip AmbientLayer { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Encuadre de la cámara al abrir la escena.")]
         public CameraFraming CameraStart { get; private set; } = new CameraFraming();
 
