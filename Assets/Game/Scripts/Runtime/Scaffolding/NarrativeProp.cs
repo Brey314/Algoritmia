@@ -53,6 +53,10 @@ namespace Game.Scaffolding
         public bool Mirrored { get; private set; }
 
         [field: SerializeField]
+        [field: Tooltip("Si se asigna, el objeto se anima con este controlador: la llama (prop_n1_fuego_normal). La ilustración sigue siendo su primer cuadro, para que se vea algo antes del primer fotograma (RNF-23).")]
+        public RuntimeAnimatorController FrameAnimation { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Qué hace el objeto cuando llega su línea: nada, rodar, que lo levanten y ruede, que lo levanten y se quede (la piedra), o deslizarse sin girar (la balsa).")]
         public PropMotion Motion { get; private set; } = PropMotion.None;
 

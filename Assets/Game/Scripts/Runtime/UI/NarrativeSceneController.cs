@@ -415,6 +415,13 @@ namespace Game.UI
                 image.sprite = prop.Art;
                 image.preserveAspect = true;
                 image.raycastTarget = false;
+                if (prop.FrameAnimation != null)
+                {
+                    // Los cuadros se intercambian con una curva PPtr sobre Image.m_Sprite, que la
+                    // Animation legacy no reproduce: el objeto animado exige Animator.
+                    go.AddComponent<Animator>().runtimeAnimatorController = prop.FrameAnimation;
+                }
+
                 _props.Add((prop, rect));
             }
         }

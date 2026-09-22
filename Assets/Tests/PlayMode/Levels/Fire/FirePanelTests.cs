@@ -134,19 +134,14 @@ namespace Game.Levels.Fire.Tests
             Assert.That(controller.Pieces, Has.All.Matches<DraggablePiece>(piece => !piece.enabled),
                 "las piezas ya no se arrastran");
 
-            // Las hojas quedan juntas como para una fogata, pero ninguna encima de otra.
-            var hojas = controller.Pieces.Where(piece => piece.Kind == PieceKind.Leaf).ToArray();
-            var ancho = hojas[0].Width;
+            // Las hojas sueltas se funden en el montón visto desde arriba, que queda en el punto del fuego.
             var spot = controller.FireSpot.anchoredPosition;
-            for (var i = 0; i < hojas.Length; i++)
-            {
-                Assert.That(Vector2.Distance(hojas[i].Position, spot), Is.LessThan(ancho * 1.5f), $"hoja {i} pegada al punto del fuego");
-                for (var j = i + 1; j < hojas.Length; j++)
-                {
-                    Assert.That(Vector2.Distance(hojas[i].Position, hojas[j].Position), Is.GreaterThanOrEqualTo(ancho - 0.5f),
-                        $"hojas {i} y {j} se tocan pero no se enciman");
-                }
-            }
+            Assert.That(controller.Pieces.Where(piece => piece.Kind == PieceKind.Leaf),
+                Has.All.Matches<DraggablePiece>(piece => !piece.gameObject.activeSelf), "las hojas sueltas ya no se ven");
+            Assert.That(controller.LeafPile.gameObject.activeSelf, Is.True, "en su lugar está el montón (prop_n1_monton_hojas_cenital)");
+            Assert.That(Vector2.Distance(controller.LeafPile.rectTransform.anchoredPosition, spot),
+                Is.LessThan(controller.LeafPile.rectTransform.rect.width / 2f), "sobre el punto del fuego");
+            Assert.That(controller.LeafPile.color.a, Is.EqualTo(1f).Within(0.001f), "y ya del todo visible");
 
             // Y las piedras, a la distancia de la muesca, una a cada lado del centro.
             var silex = controller.Pieces.Single(piece => piece.Kind == PieceKind.Silex).Position;
@@ -464,7 +459,7 @@ namespace Game.Levels.Fire.Tests
         [Timeout(20000)]
         [Category("VisualVerification")]
         [Description("Tras ejecutar esta prueba, revisar la captura: la cámara está al doble sobre la " +
-                     "fogata; las hojas quedan juntas sin encimarse y las piedras en el centro; el botón " +
+                     "fogata; se ve el montón de hojas desde arriba con las piedras en el centro; el botón " +
                      "«Soplar» atenuado muestra solo el candado, sin rótulo; el deslizante de cercanía va " +
                      "de la mitad de «Soplar» a la mitad de «Golpear»; el contraste de la tablilla y de " +
                      "los controles es suficiente (≥ 4.5:1, RNF-20).")]
@@ -484,7 +479,7 @@ namespace Game.Levels.Fire.Tests
             var (controller, runner) = await LoadPanelWithProfile(NewProfile());
 
             await ConvergeAndBlow(controller);
-            var llego = await WaitUntilAsync(() => runner.Flow.Current == GameState.Narrative, 5f);
+            var llego = await WaitUntilAsync(() => runner.Flow.Current == GameState.Narrative, 8f); // N1_Config.IgnitionSeconds + margen
 
             Assert.That(llego, Is.True, "el flujo no llegó a Narrative tras soplar");
             Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N1_NacimientoDelFuego"));
@@ -543,6 +538,63 @@ namespace Game.Levels.Fire.Tests
                 "y nunca sale del suelo por el lado");
             Assert.That(Mathf.Abs(rect.anchoredPosition.y), Is.LessThanOrEqualTo(suelo.rect.height / 2f + 0.5f),
                 "ni por abajo");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task FirePanel_RF14_LasPiezasAparecenGiradasAlAzarYCadaHojaEsUnMonton()
+        {
+            var controller = await LoadPanel();
+
+            var giros = controller.Pieces
+                .Select(piece => ((RectTransform)piece.transform).localEulerAngles.z)
+                .Distinct()
+                .Count();
+            Assert.That(giros, Is.GreaterThan(1), "no todas las piezas caen en la misma postura");
+            var hojas = controller.Pieces.Where(piece => piece.Kind == PieceKind.Leaf).ToArray();
+            Assert.That(hojas, Has.All.Matches<DraggablePiece>(hoja => hoja.GetComponent<LeafPile>() != null),
+                "cada hoja del suelo es un montón");
+            Assert.That(hojas, Has.All.Matches<DraggablePiece>(hoja =>
+                    hoja.GetComponentsInChildren<Image>().Length == hoja.GetComponent<LeafPile>().Leaves),
+                "con tantas hojas dibujadas como diga el montón");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task FirePanel_RNF02_TomarUnaPiezaLaLevantaYSoltarlaLaPosa()
+        {
+            var controller = await LoadPanel();
+            var hoja = Array.Find(controller.Pieces, piece => piece.Kind == PieceKind.Leaf);
+            var rect = (RectTransform)hoja.transform;
+            var origen = RectTransformUtility.WorldToScreenPoint(null, rect.position);
+
+            ExecuteEvents.Execute(hoja.gameObject, Pointer(origen, origen), ExecuteEvents.beginDragHandler);
+            var levantada = await WaitUntilAsync(() => Mathf.Approximately(rect.localScale.x, hoja.LiftScale), 2f);
+            Assert.That(levantada, Is.True, "al tomarla crece hasta LiftScale");
+
+            ExecuteEvents.Execute(hoja.gameObject, Pointer(origen, origen), ExecuteEvents.endDragHandler);
+            var posada = await WaitUntilAsync(() => Mathf.Approximately(rect.localScale.x, 1f), 2f);
+            Assert.That(posada, Is.True, "al soltarla vuelve a su tamaño");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RF20_AlSoplarPrendeLaLlamaCenitalSobreElMonton()
+        {
+            var (controller, _) = await LoadPanelWithProfile(NewProfile());
+
+            await ConvergeAndBlow(controller);
+            await Awaitable.NextFrameAsync();
+
+            var llama = controller.FireFlame;
+            Assert.That(llama.gameObject.activeSelf, Is.True, "la llama aparece al soplar");
+            Assert.That(llama.runtimeAnimatorController.name, Is.EqualTo("prop_n1_fuego_cenital"),
+                "y es el clip visto desde arriba");
+            Assert.That(llama.transform.GetSiblingIndex(), Is.EqualTo(llama.transform.parent.childCount - 1),
+                "encima del montón y de las piedras");
+            Assert.That(controller.LeafPile.gameObject.activeSelf, Is.True, "sobre el montón, que sigue ahí");
+            Assert.That(controller.BurnMask.sizeDelta.x, Is.GreaterThan(0f), "y las hojas empiezan a quemarse desde el centro");
         }
 
         // --- helpers -----------------------------------------------------------------------

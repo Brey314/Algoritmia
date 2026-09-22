@@ -414,6 +414,25 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task NarrativeScene_RF20_ElCierreDelFuegoPintaElMontonConLaLlamaAnimada()
+        {
+            var (controller, _) = await OpenNarrative("N1_NacimientoDelFuego", LevelId.Fire);
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            // Lo que dice el texto se ve: «una llama... crece despacio desde las hojas».
+            Assert.That(controller.Props.Select(p => p.Prop.Art.name), Has.Some.EqualTo("prop_n1_monton_hojas"),
+                "el montón de hojas visto de lado está pintado");
+            var llama = controller.Props
+                .Select(p => p.Rect.GetComponent<Animator>())
+                .FirstOrDefault(animator => animator != null);
+            Assert.That(llama, Is.Not.Null, "hay un objeto animado");
+            Assert.That(llama.runtimeAnimatorController.name, Is.EqualTo("prop_n1_fuego_normal"),
+                "y es la llama vista de lado (prop_n1_fuego_normal)");
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task NarrativeScene_RF05_LaEscena21MuestraLosObjetosRepartidosPorElSuelo()
         {
             var (controller, _) = await OpenNarrative("N2_Escena21_Bosque", LevelId.Wheel);

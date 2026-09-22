@@ -41,14 +41,18 @@ Desde el 10/09/2026 **corren varios en paralelo**, y **el reparto es por assembl
 El Slice 3 cerró su código el 21/09/2026 (Checkpoint R-E y `Slice-3-Resultados.md`) y **ya está en
 `main`** (PR #80); con él quedan implementados `RF-01..RF-44` y el carril de slices abierto es el
 Slice 4, que todavía no tiene una sola casilla marcada ni `Game.Reporting` en disco. La rama de
-trabajo de hoy es `feat/implementación-de-props-y-sonidos`: un commit por delante de `main`
-(`2cbe287`, audio del N1 y sprites definitivos parciales), **sin fusionar**. No es un slice sino el
-carril de arte y sonido —toca `Assets/Game/Art/`, `Game.Audio` y `Game.Levels.Fire`—, así que se
-pisa con el Slice 1. Lo de «parciales»:
-`Assets/Game/Art/Props/Fire/Animations/Fuego cenital/` trae **338 cuadros** sueltos (por LFS,
-4,8 MB) sin `.anim` ni `.controller` y con nombres fuera de la nomenclatura de
-`Direccion_de_Arte.md` (`fuego_cenital_nivel_1_0000.png`, no `prop_n1_…`): están en disco y no los
-usa nadie todavía.
+trabajo de hoy es `feat/implementación-de-props-y-sonidos`: **dos commits por delante de `main`**
+(`2cbe287` audio del N1 y sprites definitivos parciales · `dc51804` clips de animación del fuego),
+**sin fusionar**. No es un slice sino el carril de arte y sonido —toca `Assets/Game/Art/`,
+`Game.Audio` y `Game.Levels.Fire`—, así que se pisa con el Slice 1. Lo de «parciales»: las dos
+secuencias del fuego del N1 ya son clips reproducibles —`prop_n1_fuego_normal.anim` (2,667 s) y
+`prop_n1_fuego_cenital.anim` (5,633 s), a 30 fps y en bucle, cada uno con su `.controller` al
+lado— y desde el 22/09/2026 **están cableados**: el cenital en `Level1_Cave` (objeto `Fuego`, que
+`FirePanelController` activa al soplar sobre el montón `MontonHojas`) y el normal en
+`N1_NacimientoDelFuego` como `NarrativeProp.FrameAnimation`, el único objeto narrativo animado.
+Los **34** cuadros que sobreviven en `…/Animations/Fuego {normal,cenital}/` conservan los nombres
+de entrega (`fuego_cenital_nivel_1_0000.png`, no el `prop_n1_…` de `Direccion_de_Arte.md`) y los
+referencia la curva del `.anim`: renombrarlos es trabajo del motor.
 
 **Tres cosas que los carriles comparten** — tocar cualquiera cambia más de un nivel a la vez:
 
@@ -335,7 +339,14 @@ antes de escribir la primera línea:
   enseña la rejilla de bloques de 4×4, y el N1 la multiplica por la capa de oscuridad— y
   `ArtImport_RNF23_…` lo vigila. El importador de fábrica trae `Sprite Mode: Multiple`, que para un
   fondo entero o un prop hace que `LoadAssetAtPath<Sprite>` devuelva **nulo**: cada imagen nueva se
-  pasa a `Single` desde el motor (`TextureImporter.spriteImportMode`). **Cómo entra un sonido:**
+  pasa a `Single` desde el motor (`TextureImporter.spriteImportMode`). **Cómo entra una secuencia
+  de cuadros:** un `.anim` con curva `PPtr` sobre `Image.m_Sprite` más un `.controller` por clip —
+  la `Animation` legacy (la que usa `ui_pulso_pista`) **no reproduce curvas PPtr**, así que el
+  intercambio de sprites exige `Animator`. Una clave por **dibujo distinto**, no por archivo: las
+  entregas vienen exportadas a 30 fps pero animadas a seises u ochos, y una clave por archivo
+  multiplica las texturas cargadas (en el fuego del N1, 249 archivos = 34 dibujos: 1469 MB → 235 MB,
+  RNF-05 y RNF-06). La temporización vive en el `.anim`, así que **no se regenera contando
+  archivos**. **Cómo entra un sonido:**
   `AudioImportRules.cs` aplica la tabla §4.3 de la dirección de sonido por prefijo del nombre
   —`mus_` streaming estéreo, `amb_` streaming mono, el resto efecto: hasta 2 s PCM precargado, más
   largo Vorbis en memoria— y `AudioImport_RNF06_…` lo vigila; un `.wav` sin prefijo cuenta como

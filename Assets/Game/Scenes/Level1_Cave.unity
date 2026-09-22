@@ -523,6 +523,8 @@ RectTransform:
   - {fileID: 1410201373}
   - {fileID: 1196298525}
   - {fileID: 697478508}
+  - {fileID: 1503960317}
+  - {fileID: 1644066242}
   m_Father: {fileID: 235248247}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -614,6 +616,8 @@ MonoBehaviour:
   - {fileID: 461087102}
   - {fileID: 1599131866}
   - {fileID: 411121206}
+  leafPile: {fileID: 1503960318}
+  fireFlame: {fileID: 1644066243}
   lighting: {fileID: 358587720}
   guide: {fileID: 11400000, guid: eda218b25137c9f4eb022c64400c79a0, type: 2}
   hintButton: {fileID: 1336748154}
@@ -747,6 +751,7 @@ GameObject:
   - component: {fileID: 348002165}
   - component: {fileID: 348002164}
   - component: {fileID: 348002163}
+  - component: {fileID: 348002166}
   m_Layer: 5
   m_Name: Hoja_3
   m_TagString: Untagged
@@ -786,6 +791,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.DraggablePiece
   <Kind>k__BackingField: 0
+  <LiftScale>k__BackingField: 1.12
+  <LiftTiltDegrees>k__BackingField: 8
+  <LiftSeconds>k__BackingField: 0.12
 --- !u!114 &348002164
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -824,6 +832,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 348002161}
   m_CullTransparentMesh: 1
+--- !u!114 &348002166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 348002161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a93d4d2b9a610124a93da0548de5f123, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.LeafPile
+  <Leaves>k__BackingField: 3
+  <Spread>k__BackingField: 0.28
 --- !u!1 &356296773
 GameObject:
   m_ObjectHideFlags: 0
@@ -1213,6 +1235,7 @@ GameObject:
   - component: {fileID: 415339645}
   - component: {fileID: 415339644}
   - component: {fileID: 415339643}
+  - component: {fileID: 415339646}
   m_Layer: 5
   m_Name: Hoja_1
   m_TagString: Untagged
@@ -1252,6 +1275,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.DraggablePiece
   <Kind>k__BackingField: 0
+  <LiftScale>k__BackingField: 1.12
+  <LiftTiltDegrees>k__BackingField: 8
+  <LiftSeconds>k__BackingField: 0.12
 --- !u!114 &415339644
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1290,6 +1316,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 415339641}
   m_CullTransparentMesh: 1
+--- !u!114 &415339646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 415339641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a93d4d2b9a610124a93da0548de5f123, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.LeafPile
+  <Leaves>k__BackingField: 3
+  <Spread>k__BackingField: 0.28
 --- !u!1 &461087102
 GameObject:
   m_ObjectHideFlags: 0
@@ -1509,6 +1549,7 @@ GameObject:
   - component: {fileID: 600777231}
   - component: {fileID: 600777230}
   - component: {fileID: 600777229}
+  - component: {fileID: 600777232}
   m_Layer: 5
   m_Name: Hoja_2
   m_TagString: Untagged
@@ -1548,6 +1589,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.DraggablePiece
   <Kind>k__BackingField: 0
+  <LiftScale>k__BackingField: 1.12
+  <LiftTiltDegrees>k__BackingField: 8
+  <LiftSeconds>k__BackingField: 0.12
 --- !u!114 &600777230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1586,6 +1630,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 600777227}
   m_CullTransparentMesh: 1
+--- !u!114 &600777232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600777227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a93d4d2b9a610124a93da0548de5f123, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.LeafPile
+  <Leaves>k__BackingField: 3
+  <Spread>k__BackingField: 0.28
 --- !u!1 &622055191
 GameObject:
   m_ObjectHideFlags: 0
@@ -1750,6 +1808,7 @@ GameObject:
   - component: {fileID: 687542004}
   - component: {fileID: 687542003}
   - component: {fileID: 687542002}
+  - component: {fileID: 687542005}
   m_Layer: 5
   m_Name: Hoja_4
   m_TagString: Untagged
@@ -1789,6 +1848,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.DraggablePiece
   <Kind>k__BackingField: 0
+  <LiftScale>k__BackingField: 1.12
+  <LiftTiltDegrees>k__BackingField: 8
+  <LiftSeconds>k__BackingField: 0.12
 --- !u!114 &687542003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1827,6 +1889,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 687542000}
   m_CullTransparentMesh: 1
+--- !u!114 &687542005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687542000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a93d4d2b9a610124a93da0548de5f123, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.LeafPile
+  <Leaves>k__BackingField: 3
+  <Spread>k__BackingField: 0.28
 --- !u!1 &697478507
 GameObject:
   m_ObjectHideFlags: 0
@@ -1878,6 +1954,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.DraggablePiece
   <Kind>k__BackingField: 2
+  <LiftScale>k__BackingField: 1.12
+  <LiftTiltDegrees>k__BackingField: 8
+  <LiftSeconds>k__BackingField: 0.12
 --- !u!114 &697478510
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3022,6 +3101,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.DraggablePiece
   <Kind>k__BackingField: 1
+  <LiftScale>k__BackingField: 1.12
+  <LiftTiltDegrees>k__BackingField: 8
+  <LiftSeconds>k__BackingField: 0.12
 --- !u!114 &1196298527
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3751,6 +3833,7 @@ GameObject:
   - component: {fileID: 1410201376}
   - component: {fileID: 1410201375}
   - component: {fileID: 1410201374}
+  - component: {fileID: 1410201377}
   m_Layer: 5
   m_Name: Hoja_5
   m_TagString: Untagged
@@ -3790,6 +3873,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.DraggablePiece
   <Kind>k__BackingField: 0
+  <LiftScale>k__BackingField: 1.12
+  <LiftTiltDegrees>k__BackingField: 8
+  <LiftSeconds>k__BackingField: 0.12
 --- !u!114 &1410201375
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3828,6 +3914,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1410201372}
   m_CullTransparentMesh: 1
+--- !u!114 &1410201377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1410201372}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a93d4d2b9a610124a93da0548de5f123, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.LeafPile
+  <Leaves>k__BackingField: 3
+  <Spread>k__BackingField: 0.28
 --- !u!1 &1488482101
 GameObject:
   m_ObjectHideFlags: 0
@@ -4012,6 +4112,81 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1502626905}
+  m_CullTransparentMesh: 1
+--- !u!1 &1503960316
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1503960317}
+  - component: {fileID: 1503960319}
+  - component: {fileID: 1503960318}
+  m_Layer: 5
+  m_Name: MontonHojas
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1503960317
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503960316}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 215745271}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -30}
+  m_SizeDelta: {x: 300, y: 300}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1503960318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503960316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: cd84f0e0094f9f24ab3b24959bf0b3e4, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1503960319
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503960316}
   m_CullTransparentMesh: 1
 --- !u!1 &1518679177
 GameObject:
@@ -4521,6 +4696,104 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1630261688}
+  m_CullTransparentMesh: 1
+--- !u!1 &1644066241
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1644066242}
+  - component: {fileID: 1644066245}
+  - component: {fileID: 1644066244}
+  - component: {fileID: 1644066243}
+  m_Layer: 5
+  m_Name: Fuego
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &1644066242
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1644066241}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 215745271}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 12, y: 60}
+  m_SizeDelta: {x: 600, y: 334}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!95 &1644066243
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1644066241}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 39377c2f36462324bac17ddde2fd5833, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1644066244
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1644066241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 88c756fdf99d4124f9e997942c623a83, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1644066245
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1644066241}
   m_CullTransparentMesh: 1
 --- !u!1 &1683851124
 GameObject:
