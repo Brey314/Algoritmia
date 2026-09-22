@@ -197,10 +197,17 @@ namespace Game.UI
 
             _keyIndex = index;
             _flashUntil = 0f;
-            // Avanzar a mitad de un fundido lo cancela: manda la línea que se está leyendo, y
+            // Avanzar a mitad de un corte lo cancela: manda la línea que se está leyendo, y
             // dejar el fundido vivo aplicaría a oscuras el encuadre de una parada ya pasada.
-            _cutRemaining = 0f;
-            _fade = 1f;
+            // El fundido de apertura no salta a ninguna parada, así que no hay nada viejo que
+            // aplicar —y cancelarlo aquí lo borraría entero: cuando la primera parada cae en la
+            // línea 0 llega en el cuadro siguiente a `Begin`, y la escena entraría de golpe.
+            if (_cutKey != null)
+            {
+                _cutRemaining = 0f;
+                _fade = 1f;
+            }
+
             if (index < 0)
             {
                 return;
@@ -428,10 +435,11 @@ namespace Game.UI
         {
             var image = illustration.sprite.rect.size;
             var origin = rect.anchoredPosition;
-            var lifted = prop.Motion != PropMotion.Roll;
-            var rolls = prop.Motion != PropMotion.LiftAndStay;
+            var drifts = prop.Motion == PropMotion.Drift;
+            var lifted = !drifts && prop.Motion != PropMotion.Roll;
+            var rolls = !drifts && prop.Motion != PropMotion.LiftAndStay;
             var lift = image.y * 0.12f;
-            var distance = rolls ? image.x * prop.MotionDistance : 0f;
+            var distance = rolls || drifts ? image.x * prop.MotionDistance : 0f;
             // La caída del final del rodado, si la hay: baja lo que diga el asset y avanza una
             // caja más, igual que en el bosque, donde la caja aterriza justo pasada la fila.
             var drop = rolls ? image.y * prop.MotionDrop : 0f;
@@ -455,8 +463,10 @@ namespace Game.UI
                     // **El mismo rodado que el bosque**: RollMotion decide avance, giro y caída.
                     var roll = RollMotion.Evaluate(ground, rollShare);
                     var x = distance * roll.Along + overshoot * roll.Fall;
-                    var y = height - drop * roll.Drop;
-                    var spin = rolls ? roll.Spin + roll.Tilt : Mathf.Sin(ground * Mathf.PI) * 12f;
+                    // La balsa que cruza (RF-44) se desliza: el mismo avance suavizado, sin giro
+                    // ni caída, y baja o sube lo que diga el asset.
+                    var y = drifts ? -image.y * prop.MotionDrop * roll.Along : height - drop * roll.Drop;
+                    var spin = drifts ? 0f : rolls ? roll.Spin + roll.Tilt : Mathf.Sin(ground * Mathf.PI) * 12f;
 
                     rect.anchoredPosition = origin + new Vector2(x, y);
                     rect.localRotation = Quaternion.Euler(0f, 0f, prop.RotationDegrees + spin);
@@ -551,8 +561,9 @@ namespace Game.UI
         /// <summary>
         /// Sale de la escena por donde diga la secuencia: a jugar la fase que declara
         /// (<see cref="NarrativeSequence.NextPhase"/>), al resumen de fin de nivel si es el cierre
-        /// reflexivo (<see cref="NarrativeSequence.IsReflectiveClosing"/>, T18, HU-14 paso 6), o al
-        /// menú de niveles en cualquier otro caso.
+        /// reflexivo (<see cref="NarrativeSequence.IsReflectiveClosing"/>, T18, HU-14 paso 6), a los
+        /// créditos si es la escena final del juego (<see cref="NarrativeSequence.EndsInCredits"/>,
+        /// INC-39), o al menú de niveles en cualquier otro caso.
         /// </summary>
         /// <remarks>
         /// **La rama es una y sirve para las quince escenas**, porque quien decide es el asset y
@@ -575,6 +586,14 @@ namespace Game.UI
 
             if (_sequence != null && _sequence.NextPhase > 0
                 && Runner.StartPlaying(_sequence.Level, _sequence.NextPhase))
+            {
+                return;
+            }
+
+            // La escena final del juego sale a los créditos (INC-39, guion §9). Va antes del
+            // cierre reflexivo porque el asset lleva las dos marcas: la segunda es la que le niega
+            // el botón de omitir la primera vez (NarrativeVisitPolicy, CP-07).
+            if (_sequence != null && _sequence.EndsInCredits && Runner.GoTo(GameState.Credits))
             {
                 return;
             }

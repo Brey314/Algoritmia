@@ -89,6 +89,36 @@ namespace Game.UI.Tests
         }
 
         [Test]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF05_ResuelveLasCincoSecuenciasDelNivel3SinRamas()
+        {
+            // Cinco escenas del guion en seis assets: el puente II corta del bosque al río a
+            // mitad de camino y la ilustración es por secuencia (R04, Camara_Narrativa_N3.md §4).
+            var ids = new[]
+            {
+                "N3_PuenteII", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
+                "N3_Escena32_PrimerIntento", "N3_Escena33_Cruce", "N3_EscenaFinal"
+            };
+            var primeras = new string[ids.Length];
+
+            for (var i = 0; i < ids.Length; i++)
+            {
+                var (controller, _) = await OpenNarrative(ids[i], LevelId.River);
+                primeras[i] = controller.BodyLabel.text;
+
+                foreach (var _ in SequenceNamed(controller, ids[i]).Lines)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                Assert.That(controller.Dialogue.IsFinished, Is.True, $"{ids[i]} se recorre entera");
+            }
+
+            Assert.That(primeras, Has.All.Not.Empty);
+            Assert.That(primeras.Distinct().Count(), Is.EqualTo(ids.Length));
+        }
+
+        [Test]
         [Timeout(30000)]
         public async Task NarrativeScene_RF05_LaPrimeraLineaEsLaDelAssetPedido()
         {
@@ -319,6 +349,26 @@ namespace Game.UI.Tests
             Assert.That(controller.CutFade, Is.EqualTo(1f), "y volvió del fundido");
             Assert.That(controller.CameraCurrent.Focus, Is.EqualTo(corte.Framing.Focus), "la cámara saltó");
             Assert.That(controller.LightCurrent.Ambient, Is.EqualTo(corte.Light.Ambient), "y la luz también");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF05_LaEscenaQueAbreEnNegroFundeAunqueSuPrimeraParadaSeaLaLinea0()
+        {
+            // El fundido de entrada y la primera parada llegan en el mismo cuadro. Cuando la
+            // parada lo cancelaba, la 1.2 entraba de golpe desde el negro en que la deja el
+            // apagón de Algoritm — justo el salto que el fundido viene a tapar. Las escenas 2.1
+            // y 2.3 no lo notaban porque su primera parada no cae en la línea 0.
+            var (controller, _) = await OpenNarrative("N1_Hallazgo");
+            var secuencia = SequenceNamed(controller, "N1_Hallazgo");
+            Assume.That(secuencia.OpensFromBlack, Is.True, "la escena abre en negro");
+            Assume.That(secuencia.CameraKeys[0].Line, Is.Zero, "y su primera parada cae en la línea 0");
+
+            Assert.That(controller.CutFade, Is.LessThan(1f),
+                "el fundido de entrada sigue vivo después del primer cuadro");
+
+            await EsperarSegundos(secuencia.HardCutFadeSeconds + 0.2f);
+            Assert.That(controller.CutFade, Is.EqualTo(1f), "y termina de entrar");
         }
 
         [Test]

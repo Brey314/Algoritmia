@@ -47,5 +47,9 @@ namespace Game.UI
         [field: Tooltip("La habilidad nombrada, en el recuadro verde (mockup 13b; RF-12, CP-07).")]
         public string SkillNamed { get; private set; } =
             "Eso se llama probar y ajustar: es lo mismo que hace quien arma un plan paso a paso.";
+
+        [field: SerializeField]
+        [field: Tooltip("Secuencia narrativa a la que sale «Continuar». Vacío = menú de niveles. El Nivel 3 declara la escena final del juego (INC-39, guion §9).")]
+        public string ClosingSequenceId { get; private set; }
     }
 }

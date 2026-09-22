@@ -3,3 +3,8 @@
 # (16% del grafo) en dos islas cuyo hub se llamaba literalmente "dependencies",
 # sin conectar con nada. Que paquetes hay instalados lo responde manifest.json.
 Packages/
+
+# Las ilustraciones se extraen con vision — un subagente por PNG — y sus nombres
+# mas Inventario.md ya dicen lo mismo (regla 2 de CLAUDE.md). Fuera del grafo:
+# sin esta linea un --update de 64 laminas cuesta 64 subagentes de vision.
+Assets/Game/Art/**/*.png

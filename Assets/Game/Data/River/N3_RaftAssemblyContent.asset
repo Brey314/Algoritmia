@@ -1,0 +1,151 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee186c110c18a404ba56b3362a87eea2, type: 3}
+  m_Name: N3_RaftAssemblyContent
+  m_EditorClassIdentifier: Game.Levels.River::Game.Levels.River.RaftAssemblyContent
+  <Slots>k__BackingField:
+  - <Id>k__BackingField: tronco_1
+    <Phase>k__BackingField: 1
+    <Accepts>k__BackingField: 0
+    <Position>k__BackingField: {x: 0.5, y: 0.09}
+    <Size>k__BackingField: {x: 0.84, y: 0.1}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: tronco_2
+    <Phase>k__BackingField: 1
+    <Accepts>k__BackingField: 0
+    <Position>k__BackingField: {x: 0.5, y: 0.18}
+    <Size>k__BackingField: {x: 0.84, y: 0.1}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: tronco_3
+    <Phase>k__BackingField: 1
+    <Accepts>k__BackingField: 0
+    <Position>k__BackingField: {x: 0.5, y: 0.27}
+    <Size>k__BackingField: {x: 0.84, y: 0.1}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: tronco_4
+    <Phase>k__BackingField: 1
+    <Accepts>k__BackingField: 0
+    <Position>k__BackingField: {x: 0.5, y: 0.36}
+    <Size>k__BackingField: {x: 0.84, y: 0.1}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: tronco_5
+    <Phase>k__BackingField: 1
+    <Accepts>k__BackingField: 0
+    <Position>k__BackingField: {x: 0.5, y: 0.45}
+    <Size>k__BackingField: {x: 0.84, y: 0.1}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: amarre_1_izq
+    <Phase>k__BackingField: 2
+    <Accepts>k__BackingField: 1
+    <Position>k__BackingField: {x: 0.22, y: 0.09}
+    <Size>k__BackingField: {x: 0.09, y: 0.09}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: amarre_1_der
+    <Phase>k__BackingField: 2
+    <Accepts>k__BackingField: 1
+    <Position>k__BackingField: {x: 0.78, y: 0.09}
+    <Size>k__BackingField: {x: 0.09, y: 0.09}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: amarre_2_izq
+    <Phase>k__BackingField: 2
+    <Accepts>k__BackingField: 1
+    <Position>k__BackingField: {x: 0.22, y: 0.18}
+    <Size>k__BackingField: {x: 0.09, y: 0.09}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: amarre_2_der
+    <Phase>k__BackingField: 2
+    <Accepts>k__BackingField: 1
+    <Position>k__BackingField: {x: 0.78, y: 0.18}
+    <Size>k__BackingField: {x: 0.09, y: 0.09}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: amarre_3_izq
+    <Phase>k__BackingField: 2
+    <Accepts>k__BackingField: 1
+    <Position>k__BackingField: {x: 0.22, y: 0.27}
+    <Size>k__BackingField: {x: 0.09, y: 0.09}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: amarre_3_der
+    <Phase>k__BackingField: 2
+    <Accepts>k__BackingField: 1
+    <Position>k__BackingField: {x: 0.78, y: 0.27}
+    <Size>k__BackingField: {x: 0.09, y: 0.09}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: amarre_4_izq
+    <Phase>k__BackingField: 2
+    <Accepts>k__BackingField: 1
+    <Position>k__BackingField: {x: 0.22, y: 0.36}
+    <Size>k__BackingField: {x: 0.09, y: 0.09}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: amarre_4_der
+    <Phase>k__BackingField: 2
+    <Accepts>k__BackingField: 1
+    <Position>k__BackingField: {x: 0.78, y: 0.36}
+    <Size>k__BackingField: {x: 0.09, y: 0.09}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: amarre_5_izq
+    <Phase>k__BackingField: 2
+    <Accepts>k__BackingField: 1
+    <Position>k__BackingField: {x: 0.22, y: 0.45}
+    <Size>k__BackingField: {x: 0.09, y: 0.09}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: amarre_5_der
+    <Phase>k__BackingField: 2
+    <Accepts>k__BackingField: 1
+    <Position>k__BackingField: {x: 0.78, y: 0.45}
+    <Size>k__BackingField: {x: 0.09, y: 0.09}
+    <Rotation>k__BackingField: 0
+  - <Id>k__BackingField: mastil
+    <Phase>k__BackingField: 3
+    <Accepts>k__BackingField: 3
+    <Position>k__BackingField: {x: 0.5, y: 0.68}
+    <Size>k__BackingField: {x: 0.45, y: 0.45}
+    <Rotation>k__BackingField: 45
+  - <Id>k__BackingField: vela
+    <Phase>k__BackingField: 3
+    <Accepts>k__BackingField: 2
+    <Position>k__BackingField: {x: 0.7, y: 0.72}
+    <Size>k__BackingField: {x: 0.34, y: 0.36}
+    <Rotation>k__BackingField: 0
+  <Art>k__BackingField:
+  - <Kind>k__BackingField: 0
+    <Placed>k__BackingField: {fileID: 21300000, guid: c8bd1a75a5468034a8c323fd0de0756f, type: 3}
+    <Silhouette>k__BackingField: {fileID: 21300000, guid: 2e420a1550b13ff4d90a28dcca9a35ec, type: 3}
+  - <Kind>k__BackingField: 1
+    <Placed>k__BackingField: {fileID: 21300000, guid: 3b7498ef2f701eb408c78c6324a5f41c, type: 3}
+    <Silhouette>k__BackingField: {fileID: 21300000, guid: 03e00374d27457c4d995d7c2fea5599a, type: 3}
+  - <Kind>k__BackingField: 2
+    <Placed>k__BackingField: {fileID: 21300000, guid: 2d4b6c60ae492304eb1c2dd47707f975, type: 3}
+    <Silhouette>k__BackingField: {fileID: 21300000, guid: 0a529b8e32574f44ba81aaac24cd0eba, type: 3}
+  - <Kind>k__BackingField: 3
+    <Placed>k__BackingField: {fileID: 21300000, guid: b0907bcac12e6b347b4fdd4dc8f86c26, type: 3}
+    <Silhouette>k__BackingField: {fileID: 21300000, guid: 212e534d08b3fb545aefeabb43fde71b, type: 3}
+  <KnotsPerRope>k__BackingField: 10
+  <AssemblyFraming>k__BackingField:
+    <Focus>k__BackingField: {x: 0.5, y: 0.23}
+    <Zoom>k__BackingField: 2.2
+  <PushSeconds>k__BackingField: 1
+  <RaftPosition>k__BackingField: {x: 0.5, y: 0.23}
+  <RaftSize>k__BackingField: 0.28
+  <SinkSeconds>k__BackingField: 0.6
+  <FirstFailureSequenceId>k__BackingField: N3_Escena32_PrimerIntento
+  <ClosingSequenceId>k__BackingField: N3_Escena33_Cruce
+  <ConfirmLabel>k__BackingField: Listo
+  <TestLabel>k__BackingField: Probar balsa
+  <PlacedMessage>k__BackingField: "Puesto. Cuando toda esta parte est\u00E9, pulsa el bot\u00F3n."
+  <TakenBackMessage>k__BackingField: La pieza vuelve al inventario.
+  <MissedMessage>k__BackingField: "Cay\u00F3 fuera de la balsa: la pieza vuelve al inventario."
+  <OccupiedMessage>k__BackingField: "Ese espacio ya tiene algo. Busca uno vac\u00EDo."
+  <PhaseRejectedMessage>k__BackingField: "Algo de esta parte no encaja. Mira lo marcado: \u00BFesa pieza va ah\u00ED?"
+  <BaseConfirmedMessage>k__BackingField: "La base qued\u00F3 firme. Ahora hay que sujetarla para que no se abra."
+  <LashingConfirmedMessage>k__BackingField: La balsa ya no se abre. Falta lo que atrapa el viento.
+  <TestFailedMessage>k__BackingField: "La balsa se volte\u00F3. Mira el espacio marcado: \u00BFqu\u00E9 deber\u00EDa ir ah\u00ED?"
+  <TestPassedMessage>k__BackingField: "La balsa flota derecha. \u00A1A cruzar!"

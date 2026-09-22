@@ -25,7 +25,7 @@ personajes `<sujeto>_anim_<accion>.anim` · todo lo demás `<sujeto>_<accion>.an
 piezas en una sola imagen por filas; se importan con `Sprite Mode: Multiple` y se cortan en
 Unity (§15.2). Los nombres de abajo son los de los sprites resultantes.
 
-Leyenda: **✓** en disco · **○** pendiente. Estados del tablero: `·` pendiente · `G` generado ·
+Leyenda: **✓** en disco · **◐** provisional en disco (sustituir conservando el nombre) · **○** pendiente. Estados del tablero: `·` pendiente · `G` generado ·
 `R` recortado · `I` importado · `A` animado · `✔` aprobado. Hoy **todo está en `·`**.
 
 ---
@@ -93,7 +93,7 @@ Los otros dos clips de los diez de `S06` son los barridos con muta, y viven en `
 
 | Archivo | Origen |
 |---|---|
-| ○ `char_mama_cenital.png` | `S10` — lámina del rig cenital |
+| ◐ `char_mama_cenital.png` | `S10` — lámina del rig cenital. **Provisional** (R07, 17/09/2026, dibujada por código con la paleta de §4.1: cabello, frente y hombros de leopardo vistos desde arriba, una sola postura). La usa `Level3_River.unity` (`Personaje_Mama`); la definitiva entra **sustituyendo el archivo con el mismo nombre**. |
 | ○ `char_mama_retrato_neutra.png` … `_animo.png` (6) | `S03a` |
 | ○ `char_mama_base_apose.png` | `A3` (Slice 1) — no está en el tablero |
 
@@ -118,6 +118,28 @@ no programa ningún clip suyo. Ver «Puntos abiertos».
 
 ## `Environments/`
 
+**Cómo entran (16/09/2026).** `Game.EditorTools/ArtImportRules.cs` fuerza en todo
+`Assets/Game/Art/`: **sin comprimir** y `maxTextureSize` 4096. No es un gusto: comprimida, la
+ilustración plana enseña la rejilla de bloques de 4×4 —se ve en la pared de la cueva, y el Nivel 1
+la multiplica por la capa de oscuridad, que amplifica el error— y corre los colores. Sin comprimir
+las 44 texturas de `Art/` ocupan ~92 MB, muy por debajo de RNF-05. `ArtImport_RNF23_…` lo vigila.
+Un archivo nuevo entra ya bien: **sustituir la imagen basta**, la escala la calcula
+`IllustrationFraming` con el tamaño real del sprite.
+
+**Lo que hay en disco hoy** (entrega de entornos finales, acta D06): los de pantalla a 1920×1080 y
+las panorámicas a 3840×1080, en la misma composición que los provisionales —comprobado: el
+contenido cae en las mismas fracciones del lienzo, así que **ningún encuadre de
+`Camara_Narrativa_N1/N2` cambia de valor**—. Cinco conservan el prefijo viejo `entorno_` y hay que
+renombrarlos a `env_` **desde el motor** (tarjeta `D06-3`), que conserva el GUID y no toca escenas:
+`entorno_n1_apertura`, `entorno_n1_cueva_2x`, `entorno_n1_cueva_cenital`, `entorno_n2_laberinto`
+—`env_n2_bosque_claro` ya cumple—. Tres llegaron con nombre libre y en `Sprite Mode: Multiple`,
+que para un fondo entero no aporta y hace que `LoadAssetAtPath<Sprite>` devuelva nulo. **Dos ya
+están resueltos desde el motor (R04, 16/09/2026):** `River/rio_normal.png` es ahora
+`River/env_n3_rio.png` y `River/civilización_final.png` es `Narrative/env_final_fogatas.png`,
+los dos en `Single` y con su GUID intacto. Queda `Wheel/civilización_noche.png`, que sigue sin
+usarse. **Ojo:** el importador de fábrica trae `Multiple`; un sprite nuevo hay que pasarlo a
+`Single` a mano (los dos provisionales de `Props/River/` entraron así).
+
 ### `Environments/Fire/`
 
 | Archivo | Origen |
@@ -139,10 +161,9 @@ no programa ningún clip suyo. Ver «Puntos abiertos».
 
 | Archivo | Origen |
 |---|---|
-| ○ `env_n3_rio.png` | `C1` (Slice 3) — vista superior |
-| ○ `env_n3_rio_lateral.png` | `S16c` |
+| ✓ `env_n3_rio.png` | Entregado en D06 como `rio_normal.png` (1920×1080, vista lateral con la cascada). **Todo el Nivel 3 se juega y se narra sobre él** —`docs/md/Camara_Narrativa_N3.md` §4—, así que la vista superior de `C1` y el `_lateral` de `S16c` quedan sin uso salvo decisión contraria de Santiago. |
 | ○ `env_n3_espuma.png` | `S11a` — 4 frames |
-| ○ `env_n3_zona_inactiva.png`, `env_n3_zona_disponible.png` | `C6` |
+| ○ `env_n3_zona_inactiva.png` · ◐ `env_n3_zona_disponible.png` | `C6` — la `_disponible` es **provisional** (R08, 17/09/2026): anillo ámbar discontinuo dibujado por código; `Zona_Construccion` en `Level3_River.unity`. Hoy la zona no tiene estado inactivo: se ve igual desde el principio (RF-39). |
 
 **`Environments/River/Animations/`**
 
@@ -160,7 +181,7 @@ no programa ningún clip suyo. Ver «Puntos abiertos».
 | ○ `env_apertura_entrada_noche.png` | `S16a` — boca de la cueva de noche |
 | ○ `env_puente1_amanecer.png` | `S16b` — boca de la cueva al amanecer |
 | ○ `env_puente1_recoleccion.png` | `S16b` — claro de la recolección |
-| ○ `env_final_fogatas.png` | `C10` (Slice 3) |
+| ✓ `env_final_fogatas.png` | Entregado en D06 como `River/civilización_final.png` (1920×1080, la aldea al atardecer); renombrado y movido aquí desde el motor el 16/09/2026. Escena final (§9). |
 
 ---
 
@@ -222,9 +243,9 @@ natural y a la vez lo válido del distractor (§8.2).
 
 | Archivo | Origen |
 |---|---|
-| ○ `prop_n3_troncos.png`, `_sogas`, `_tela`, `_mastil` | `C4` (Slice 3) |
-| ○ `prop_n3_balsa_base.png`, `_amarre`, `_vela` | `C7` |
-| ○ `prop_n3_balsa_hundida.png`, `_cruzando` | `C9` |
+| ◐ `prop_n3_tronco.png`, `_sogas`, `_tela`, `_mastil` | `C4` (Slice 3) — **provisionales** (R06, 17/09/2026, por código, paleta de §8.3: ámbar para troncos, sogas y mástil; espuma `#D6F0F5` para la tela). Referenciados desde `N3_RiverLevelConfig.asset` (`Art` de cada material) y reutilizados como icono de inventario: sustituir el `.png` conservando el nombre basta. Desde el 20/09/2026 los troncos son **cinco hallazgos sueltos** con el mismo sprite `prop_n3_tronco` (un tronco, 512×128); `prop_n3_troncos.png` (el montón) quedó **sin uso**. |
+| ◐ `prop_n3_tronco.png`, `prop_n3_amarre.png`, `prop_n3_vela.png` (+ `prop_n3_mastil.png`) y sus `_silueta` | `C7` **rehecho como composición** (R11, decisión de Santiago del 20/09/2026): la balsa **no** son tres láminas de estado sino diecisiete espacios que se pintan uno a uno —silueta hasta que se llena, pieza después— con **ocho sprites**: cuatro piezas y cuatro siluetas dibujadas aparte. Los espacios, sus fracciones y el arte por clase viven en `N3_RaftAssemblyContent.asset`. **Provisionales** por código (Pillow, paleta de §8.3; la silueta es el alfa de la pieza relleno en `#3A1E18` al 30 % con contorno); el definitivo entra sustituyendo cada archivo con su nombre. `_balsa_base/_amarre/_vela` **no se generan**. |
+| ◐ `prop_n3_balsa_hundida.png`, `_cruzando` | `C9` — **provisionales** (16/09/2026, dibujados por código con la paleta de §8.3: troncos ámbar, contorno `#3A1E18`, vela `#D6F0F5`). Los usan `N3_Escena32_PrimerIntento` y `N3_Escena33_Cruce`; el definitivo entra **sustituyendo el archivo con el mismo nombre**, sin tocar el asset. |
 
 `C4` genera además el icono de inventario de cada material, en la misma lámina.
 
@@ -248,12 +269,20 @@ RF-45) y **sin texto dentro de la imagen**: el texto lo escribe Unity encima.
 | Archivo | Origen |
 |---|---|
 | ✓ `ui_lock.png` | T07 — candado del menú de niveles, segundo canal de RNF-19 |
+| ✓ `ui_pausa.png`, `ui_reanudar.png`, `ui_reiniciar.png` | Glifos del menú de pausa (mockup 6). **No son arte del proyecto**: son los iconos Phosphor `pause`, `play` y `arrow-counter-clockwise` que usa el mockup, rasterizados a 128 px en blanco y teñidos desde el Inspector — ver la nota de licencia abajo |
+| ✓ `ui_flecha.png` | Punta de flecha de los dos botones que desplazan la lista de la secuencia del Nivel 2 (se gira 180° para «bajar»). Dibujada para el proyecto |
 | ○ `ui_dialogo_marco.png`, `ui_dialogo_continuar.png`, `ui_dialogo_omitir.png` | `A10` (Slice 1), reutilizado por los cuatro slices |
 | ○ `ui_transicion_fundido.png`, `ui_cortinilla_tablilla.png` | `S02` — sistema de transición |
 | ○ `ui_estado_aceptado.png`, `ui_estado_devuelto.png` | `B10` (Slice 2) |
 | ○ `ui_ind_intentos.png`, `_errores`, `_pasos`, `_tiempo` | `D1` (Slice 4) — solo informe docente, RF-46 |
 | ○ `ui_teacherreport_maqueta.png` | `D2` |
 | ○ `ui_dialogo_eliminar.png` | `D3` |
+
+> **Licencia de los tres glifos de pausa (17/09/2026).** Salen de la familia **Phosphor Icons**
+> (MIT), la misma que dibuja los iconos del mockup. El cuerpo de `CreditsContent.asset` dice hoy
+> «entornos, objetos e interfaz: originales del proyecto», que con ellos deja de ser exacto:
+> decisión pendiente de Santiago —acreditarlos como se acreditan las tipografías (OFL) o
+> sustituirlos por glifos propios—.
 
 **`UI/Common/Animations/`** · ○ `ui_transicion_fundido.anim`, `ui_cortinilla.anim` (`S02`) ·
 ○ `ui_estado_aceptado.anim`, `ui_estado_devuelto.anim` (`S09a`)
@@ -289,8 +318,8 @@ RF-45) y **sin texto dentro de la imagen**: el texto lo escribe Unity encima.
 |---|---|
 | ○ `ui_n3_dir_arriba_reposo.png`, `_presionado` (y `abajo`, `izquierda`, `derecha`) | `C3` (Slice 3) |
 | ○ `ui_n3_recoger_disponible.png`, `_no_disponible` | `C3` — materializa INC-01: el control es UI, no teclado (CT-06) |
-| ○ `ui_n3_lista_marco.png`, `ui_n3_casilla_*`, `ui_n3_inventario.png` | `C5` — única lista permanente del juego (INC-41) |
-| ○ `ui_n3_panel_marco.png`, `ui_n3_espacio_*` | `C8` |
+| ○ `ui_n3_lista_marco.png`, `ui_n3_inventario.png` · ◐ `ui_n3_casilla_hecha.png` | `C5` — única lista permanente del juego (INC-41). La casilla hecha es **provisional** (R05, 17/09/2026): círculo verde con visto; la pendiente reutiliza `Common/ui_circulo.png`. Son las dos formas de RNF-19 en la lista de tareas. Marco de lista, inventario, flechas y «Recoger» usan hoy `Common/ui_panel`, `ui_boton` y `ui_flecha`. |
+| ○ `ui_n3_panel_marco.png`, `ui_n3_espacio_*` | `C8` — **parcialmente sin uso** desde R11 (20/09/2026): el panel es una sombra negra al 30 % sobre la ilustración (sin marco) y los espacios vacío/correcto/incorrecto son la silueta de la pieza, la pieza, y la pieza con `Common/ui_alerta` encima (RNF-19). Si `C8` se genera, solo el marco tendría dónde ir. |
 
 **`UI/River/Animations/`**
 

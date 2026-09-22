@@ -780,6 +780,17 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       la regla está probada (`CartState_RF31_…`); la verificación jugando es de Santiago
 - [x] «Ejecutar» responde a **clic simple**, no a doble clic (PG-04, RNF-02)
 - [x] Ninguna retroalimentación nombra el bloque a corregir (CP-06)
+- [ ] **Decisión de Santiago (16/09/2026): el tablero deja franja lavanda arriba y abajo.**
+      Con el arte definitivo se nota. `MazeSceneController.FitEnvironment` **encaja** la
+      ilustración entera en `Panel_World` (escala mínima, a propósito: el tablero se juega
+      completo). `Panel_World` mide 1296×1080 y la ilustración 1920×1080 → escala 0,675 →
+      1296×729, y quedan **175 px** del color de fondo del panel (0.43, 0.41, 0.55) arriba y
+      abajo. No es del arte nuevo: con el provisional salía la misma escala. Cubrir en vez de
+      encajar **no** sirve —el seto ocupa x[0.128, 0.897] de la ilustración, o sea 1476 px, y no
+      cabe en 1296—. Tres salidas: (a) pintar `Panel_World` del verde del borde de la ilustración
+      (≈ 0.37, 0.37, 0.11) y que la franja se lea como pradera —una línea, reversible—;
+      (b) ensanchar `Panel_World` a ≥ 1533 px y montar el panel de secuencia encima (cambia el
+      mockup 10); (c) pedir el tablero con el seto en 16:9 hasta los bordes.
 - [ ] Revisado con el usuario
 
 ---

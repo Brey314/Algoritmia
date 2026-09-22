@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2991c473d81d30c47962fa1639427b06, type: 3}
+  m_Name: N3_Guia
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.GuideContent
+  <Level>k__BackingField: 3
+  <Steps>k__BackingField:
+  - <Id>k__BackingField: Recolectar
+    <Instruction>k__BackingField: "Recorre la orilla y recoge lo que la balsa necesita. La lista te dice qu\u00E9 falta."
+    <Hint>k__BackingField: "Mira la lista: \u00BFqu\u00E9 sigue sin marcar? \u00BFPor d\u00F3nde no has pasado todav\u00EDa?"
+  - <Id>k__BackingField: Base
+    <Instruction>k__BackingField: "Arma la base de la balsa: arrastra las piezas a sus espacios y pulsa \u00ABListo\u00BB."
+    <Hint>k__BackingField: "\u00BFQu\u00E9 parte de la balsa toca el agua y sostiene todo lo dem\u00E1s?"
+  - <Id>k__BackingField: Amarre
+    <Instruction>k__BackingField: "Ahora sujeta la base: coloca lo que la mantiene unida y pulsa \u00ABListo\u00BB."
+    <Hint>k__BackingField: "Si la balsa se abriera al navegar, \u00BFqu\u00E9 le faltar\u00EDa para quedarse junta?"
+  - <Id>k__BackingField: MastilYVela
+    <Instruction>k__BackingField: "Coloca lo que atrapa el viento y pulsa \u00ABProbar balsa\u00BB."
+    <Hint>k__BackingField: "El viento tiene que empujar la balsa. \u00BFQu\u00E9 lo atrapa y qu\u00E9 lo sostiene en alto?"

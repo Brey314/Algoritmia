@@ -69,6 +69,10 @@ namespace Game.Scaffolding
         public bool IsReflectiveClosing { get; private set; }
 
         [field: SerializeField]
+        [field: Tooltip("Marca la escena final del juego (guion §9): al terminar sale a los créditos, no al resumen ni al menú (INC-39, RF-44). Va junto al cierre reflexivo, que es lo que le niega el botón de omitir la primera vez (CP-07).")]
+        public bool EndsInCredits { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Fase de este nivel a la que se entra al terminar la escena. 0 = ninguna: vuelve al menú.")]
         public int NextPhase { get; private set; }
 
@@ -89,6 +93,9 @@ namespace Game.Scaffolding
         private void OnValidate()
         {
             var forest = Level == LevelId.Wheel;
+            var aspect = Illustration != null && Illustration.rect.height > 0f
+                ? Illustration.rect.width / Illustration.rect.height
+                : IllustrationFraming.DuplicatedCanvasAspect;
             CameraFraming previous = null;
             var stops = new System.Collections.Generic.List<(string Name, CameraFraming Framing)> { ("inicio", CameraStart) };
             if (CameraKeys.Length == 0)
@@ -103,7 +110,7 @@ namespace Game.Scaffolding
 
             foreach (var (stop, framing) in stops)
             {
-                foreach (var warning in IllustrationFraming.Warnings(framing, previous, forest))
+                foreach (var warning in IllustrationFraming.Warnings(framing, previous, forest, aspect))
                 {
                     Debug.LogWarning($"{name} · {stop}: {warning}", this);
                 }

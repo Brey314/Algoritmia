@@ -15,7 +15,8 @@ namespace Game.UI
     /// Adaptador delgado: el texto lo compone <see cref="LevelSummaryComposer"/> a partir de los
     /// indicadores de **todas** las fases del nivel —una en el Nivel 1, tres en el Nivel 2—;
     /// aquí solo se reparte en la tablilla —título, hallazgo, viñetas del relato y la habilidad
-    /// nombrada— y se cablean los dos botones, que hoy salen al mismo sitio.
+    /// nombrada— y se cablean los dos botones, que salen al mismo sitio: el menú de niveles o,
+    /// tras el último nivel, la escena final del juego (INC-39). Lo decide el asset de mensajes.
     /// </remarks>
     public class LevelSummaryController : MonoBehaviour
     {
@@ -47,6 +48,7 @@ namespace Game.UI
         [SerializeField] private Button menuButton;
 
         private readonly List<Text> _bullets = new List<Text>();
+        private LevelSummaryMessages _messages;
 
         internal GameFlowRunner Runner { get; set; }
 
@@ -104,6 +106,8 @@ namespace Game.UI
                 return;
             }
 
+            _messages = messages;
+
             // El compositor devuelve la apertura y las frases del relato separadas por línea en
             // blanco: la primera es el título, el resto son las viñetas.
             var phases = PhaseId.AllOf(level).Select(profile.IndicatorsFor);
@@ -139,6 +143,14 @@ namespace Game.UI
         private void Continue()
         {
             if (!ScreenFlow.Ready(Runner, this))
+            {
+                return;
+            }
+
+            // Tras el último nivel el juego se cierra por la escena final y los créditos
+            // (INC-39, guion §9); lo declara el asset de mensajes, no una rama por nivel aquí.
+            if (_messages != null && !string.IsNullOrEmpty(_messages.ClosingSequenceId)
+                && Runner.StartNarrative(_messages.ClosingSequenceId))
             {
                 return;
             }

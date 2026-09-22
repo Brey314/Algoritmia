@@ -97,6 +97,10 @@ namespace Game.Levels.Wheel
         public CameraFraming CompletionFraming { get; private set; } = new CameraFraming();
 
         [field: SerializeField]
+        [field: Tooltip("Dónde queda la caja al colocarla sobre los troncos, en fracciones de la ilustración: es el punto en el que la escena 2.2 la dibuja al abrir.")]
+        public Vector2 CargoPlacedPosition { get; private set; } = new Vector2(0.2f, 0.5089f);
+
+        [field: SerializeField]
         [field: Tooltip("Los objetos que se reparten por el bosque, válidos y distractores.")]
         public ForestObject[] ForestObjects { get; private set; } = Array.Empty<ForestObject>();
 

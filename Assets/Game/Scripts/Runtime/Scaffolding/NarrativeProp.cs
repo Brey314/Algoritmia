@@ -15,7 +15,9 @@ namespace Game.Scaffolding
         /// <summary>Alguien lo levanta, lo suelta y rueda.</summary>
         LiftAndRoll,
         /// <summary>Alguien lo levanta, lo suelta y se queda donde cae: no rueda.</summary>
-        LiftAndStay
+        LiftAndStay,
+        /// <summary>Se desliza sin girar lo que digan distancia y caída: la balsa que cruza el río (RF-44).</summary>
+        Drift
     }
 
     /// <summary>
@@ -51,7 +53,7 @@ namespace Game.Scaffolding
         public bool Mirrored { get; private set; }
 
         [field: SerializeField]
-        [field: Tooltip("Qué hace el objeto cuando llega su línea: nada, rodar, que lo levanten y ruede, o que lo levanten y se quede (la piedra).")]
+        [field: Tooltip("Qué hace el objeto cuando llega su línea: nada, rodar, que lo levanten y ruede, que lo levanten y se quede (la piedra), o deslizarse sin girar (la balsa).")]
         public PropMotion Motion { get; private set; } = PropMotion.None;
 
         [field: SerializeField]
@@ -67,7 +69,7 @@ namespace Game.Scaffolding
         public float MotionSeconds { get; private set; } = 1.6f;
 
         [field: SerializeField]
-        [field: Tooltip("Cuánto cae al pasar el último tronco, como fracción del alto de la ilustración. Cero: no cae. Es la caída de la caja al final del rodado.")]
+        [field: Tooltip("Cuánto cae al pasar el último tronco, como fracción del alto de la ilustración. Cero: no cae. Es la caída de la caja al final del rodado. Al deslizarse es cuánto baja en total (negativo: sube).")]
         public float MotionDrop { get; private set; }
 
         /// <summary>Requerido por la serialización de Unity.</summary>

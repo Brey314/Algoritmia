@@ -20,6 +20,14 @@ namespace Game.Core
         /// ensambla la balsa en tres fases (RF-40, INC-30) aunque muestre cuatro tareas: son
         /// cosas distintas y la tabla cuenta fases.
         /// </summary>
+        /// <remarks>
+        /// Por qué no cuatro en el Nivel 3 (R02, decisión de Santiago del 16/09/2026): el plan
+        /// del Slice 3 proponía guardar también al terminar la recolección, pero OE1 §3.6.1
+        /// cuenta «Pasos utilizados» sobre un máximo de tres —base, amarre, mástil y vela— y
+        /// un cuarto registro obligaría a excluirlo del informe docente. La recolección no se
+        /// persiste: un cierre forzado en ella la vuelve a empezar, igual que la fase 1 del
+        /// Nivel 2 (RNF-14).
+        /// </remarks>
         private static readonly int[] PhasesPerLevel = { 1, 3, 3 };
 
         /// <summary>Nivel al que pertenece la fase.</summary>

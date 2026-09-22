@@ -46,7 +46,13 @@ namespace Game.Core
                 [new PhaseId(LevelId.Fire, 1)] = "Level1_Cave",
                 [new PhaseId(LevelId.Wheel, 1)] = "Level2_Forest",
                 [new PhaseId(LevelId.Wheel, 2)] = "Level2_Workshop",
-                [new PhaseId(LevelId.Wheel, 3)] = "Level2_Maze"
+                [new PhaseId(LevelId.Wheel, 3)] = "Level2_Maze",
+                // El Nivel 3 se juega entero en una escena: la recolección no es fase
+                // persistida (R02) y abre con la fase 1, la base (R07, 17/09/2026). Las fases
+                // 2 y 3 abren la misma escena directamente en el ensamblaje (RNF-14, R11).
+                [new PhaseId(LevelId.River, 1)] = "Level3_River",
+                [new PhaseId(LevelId.River, 2)] = "Level3_River",
+                [new PhaseId(LevelId.River, 3)] = "Level3_River"
             };
 
         public static GameFlowRunner Instance { get; private set; }

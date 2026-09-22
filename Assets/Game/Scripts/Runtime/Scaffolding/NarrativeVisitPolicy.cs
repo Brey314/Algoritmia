@@ -10,8 +10,8 @@ namespace Game.Scaffolding
     /// No hay un registro de escenas vistas y no puede haberlo: lo que se persiste es una lista
     /// cerrada —nombre, nivel alcanzado, fases confirmadas y los cuatro indicadores (RNF-09,
     /// INC-27)— y ampliarla sería cambiar un entregable ya radicado. Así que «ya vista» se
-    /// **deriva del progreso**: si el perfil confirmó alguna fase del nivel, ya pasó por sus
-    /// escenas antes y el botón de omitir tiene sentido.
+    /// **deriva del progreso**: si el perfil ya **terminó** el nivel —su última fase está
+    /// confirmada—, pasó por sus escenas antes y el botón de omitir tiene sentido.
     ///
     /// La consecuencia buscada es la de HU-14: la primera vuelta se lee entera —es donde el guía
     /// nombra la habilidad practicada (RF-12, CP-07)— y solo quien repite puede saltar.
@@ -40,7 +40,13 @@ namespace Game.Scaffolding
                 return profile.ReachedLevel > sequence.Level;
             }
 
-            return profile.ConfirmedPhases.Any(phase => phase.Level == sequence.Level);
+            // Confirmar una fase **no** es haber visto lo que viene después de ella: al salir del
+            // bosque con la fase 1 recién confirmada, la 2.2 se ve por primera vez y ofrecía
+            // omitir (lo vio Santiago el 17/09/2026). «Ya vista» es haber terminado el nivel antes,
+            // y eso lo dice su última fase confirmada: lo aprobado no se pierde (RF-41), así que en
+            // las vueltas siguientes sigue ahí. Sale de la lista cerrada sin ampliarla (RNF-09).
+            var ultima = PhaseId.PhaseCountOf(sequence.Level);
+            return profile.ConfirmedPhases.Any(phase => phase.Level == sequence.Level && phase.Phase == ultima);
         }
     }
 }

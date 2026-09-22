@@ -96,6 +96,26 @@ namespace Game.Core.Tests
         }
 
         [Test]
+        public void GameFlow_INC39_TrasElResumenDelUltimoNivelLaEscenaFinalSaleALosCreditosYAlInicio()
+        {
+            _sut.TryGoTo(GameState.MainMenu);
+            _sut.TryGoTo(GameState.ProfileSelect);
+            var profile = NewProfile();
+            profile.Reach(LevelId.River);
+            _sut.TrySelectProfile(profile);
+            _sut.TryStartPlaying(LevelId.River, 3);
+            Assume.That(_sut.TryStartNarrative("N3_Escena33_Cruce"), Is.True);
+            Assume.That(_sut.TryGoTo(GameState.LevelSummary), Is.True);
+
+            Assert.That(_sut.TryStartNarrative("N3_EscenaFinal"), Is.True,
+                "el resumen del Nivel 3 sale a la escena final del juego (guion §9)");
+            Assert.That(_sut.TryGoTo(GameState.Credits), Is.True,
+                "y la escena final, a los créditos (RF-44, RF-08)");
+            Assert.That(_sut.TryGoTo(GameState.MainMenu), Is.True,
+                "que vuelven al inicio: ningún estado final irrecuperable (RNF-13)");
+        }
+
+        [Test]
         public void GameFlow_RF07_ReiniciarElNivelVuelveAPlayingSinPasarPorNingunaDerrota()
         {
             _sut.TryGoTo(GameState.MainMenu);

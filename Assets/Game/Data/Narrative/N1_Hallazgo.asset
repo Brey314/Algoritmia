@@ -30,7 +30,7 @@ MonoBehaviour:
       <Center>k__BackingField: {x: 0.5, y: 0.5}
       <Radius>k__BackingField: 0
       <Ambient>k__BackingField: 0.08
-      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0.0
     <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 2
@@ -41,7 +41,7 @@ MonoBehaviour:
       <Center>k__BackingField: {x: 0.5, y: 0.5}
       <Radius>k__BackingField: 0
       <Ambient>k__BackingField: 0.07
-      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0.0
     <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 5
@@ -52,7 +52,7 @@ MonoBehaviour:
       <Center>k__BackingField: {x: 0.5, y: 0.5}
       <Radius>k__BackingField: 0
       <Ambient>k__BackingField: 0.03
-      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0.0
     <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 6
@@ -74,7 +74,7 @@ MonoBehaviour:
       <Center>k__BackingField: {x: 0.5, y: 0.5}
       <Radius>k__BackingField: 0
       <Ambient>k__BackingField: 0.04
-      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0.0
     <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 8
@@ -96,7 +96,7 @@ MonoBehaviour:
       <Center>k__BackingField: {x: 0.5, y: 0.5}
       <Radius>k__BackingField: 0
       <Ambient>k__BackingField: 0.08
-      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0.0
     <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 12
@@ -107,7 +107,7 @@ MonoBehaviour:
       <Center>k__BackingField: {x: 0.5, y: 0.5}
       <Radius>k__BackingField: 0
       <Ambient>k__BackingField: 0.08
-      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0.0
     <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 14
@@ -118,7 +118,7 @@ MonoBehaviour:
       <Center>k__BackingField: {x: 0.5, y: 0.5}
       <Radius>k__BackingField: 0
       <Ambient>k__BackingField: 0.06
-      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0.0
     <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 16
@@ -129,17 +129,17 @@ MonoBehaviour:
       <Center>k__BackingField: {x: 0.213, y: 0.345}
       <Radius>k__BackingField: 0.16
       <Ambient>k__BackingField: 0.05
-      <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+      <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0.0
     <HardCut>k__BackingField: 0
   <LightStart>k__BackingField:
     <Center>k__BackingField: {x: 0.5, y: 0.5}
     <Radius>k__BackingField: 0
     <Ambient>k__BackingField: 0.08
-    <Tint>k__BackingField: {r: 1.0, g: 0.9, b: 0.72, a: 1}
+    <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
     <FlashSeconds>k__BackingField: 0.0
   <CameraSmoothingSeconds>k__BackingField: 2.0
-  <OpensFromBlack>k__BackingField: 0
+  <OpensFromBlack>k__BackingField: 1
   <HardCutFadeSeconds>k__BackingField: 0.5
   <Props>k__BackingField:
   - <Art>k__BackingField: {fileID: 21300000, guid: 8901e2732ad71f04f90af0c7dc82af0f, type: 3}

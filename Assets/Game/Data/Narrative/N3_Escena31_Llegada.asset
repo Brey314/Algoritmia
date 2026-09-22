@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe39808d68b138e4fb74e8e86cb55219, type: 3}
+  m_Name: N3_Escena31_Llegada
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
+  <Id>k__BackingField: N3_Escena31_Llegada
+  <Level>k__BackingField: 3
+  <Illustration>k__BackingField: {fileID: 21300000, guid: ae689a42caed1ac498f562cfb43fd845, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.5, y: 0.5}
+    <Zoom>k__BackingField: 1
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.5, y: 0.5}
+    <Zoom>k__BackingField: 1
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 1
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.5, y: 0.47}
+      <Zoom>k__BackingField: 1.18
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 2
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.61, y: 0.455}
+      <Zoom>k__BackingField: 1.3
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 3
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.48, y: 0.43}
+      <Zoom>k__BackingField: 1.45
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 4
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.42, y: 0.38}
+      <Zoom>k__BackingField: 1.6
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 5
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.345, y: 0.37}
+      <Zoom>k__BackingField: 1.7
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 6
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.315, y: 0.48}
+      <Zoom>k__BackingField: 1.95
+    <HardCut>k__BackingField: 0
+  - <Line>k__BackingField: 7
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.4, y: 0.41}
+      <Zoom>k__BackingField: 1.5
+    <HardCut>k__BackingField: 0
+  <CameraSmoothingSeconds>k__BackingField: 1.4
+  <OpensFromBlack>k__BackingField: 0
+  <HardCutFadeSeconds>k__BackingField: 0.5
+  <Props>k__BackingField: []
+  <IsReflectiveClosing>k__BackingField: 0
+  <NextPhase>k__BackingField: 1
+  <NextSequenceId>k__BackingField: 
+  <Lines>k__BackingField:
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "\u00A1Alto, viajeros! Este r\u00EDo no es sencillo. Para cruzarlo necesitamos pensar bien."
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "Primero, descompongamos el problema: \u00BFcu\u00E1ntas cosas necesitamos para cruzar?"
+  - <Speaker>k__BackingField: "NI\u00D1O"
+    <Text>k__BackingField: "\u00A1Mmm\u2026 llegar al otro lado!"
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "S\u00ED, ese es el objetivo grande. Pero div\u00EDdelo en partes m\u00E1s peque\u00F1as."
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "\u00BFQu\u00E9 necesitamos? Una balsa."
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "\u00BFQu\u00E9 necesita la balsa? Troncos, sogas y una tela por vela."
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "\u00BFD\u00F3nde est\u00E1n? En el bosque. \u00A1Ya tenemos nuestra lista!"
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: "En pantalla aparece la lista de tareas, que permanecer\u00E1 visible durante todo el nivel."

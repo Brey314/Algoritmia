@@ -164,6 +164,86 @@ namespace Game.Scaffolding.Tests
                 Is.EquivalentTo(prohibido.Keys), "las tres fases del Nivel 2 están cubiertas");
         }
 
+        // --- el Nivel 3: recolección y ensamblaje por fases (R03) --------------------------
+        // El andamiaje no cambia: HintPolicy ya es genérica. Lo que el nivel aporta es contenido
+        // (N3_Guia.asset) y estas pruebas fijan lo que ese contenido no puede decir (CP-06).
+
+        private static readonly string[] MaterialesDelNivel3 = { "tronco", "soga", "tela", "mástil", "mastil" };
+
+        private static readonly string[] Ubicaciones =
+            { "izquierda", "derecha", "arriba", "abajo", "norte", "sur", "junto a", "al lado", "detrás", "cerca de" };
+
+        [Test]
+        public void HintPolicy_RF13_PistaDeRecoleccionNoNombraLaUbicacionDelMaterial()
+        {
+            var recolectar = PasosDelNivel(LevelId.River).Single(paso => paso.Id == "Recolectar");
+
+            // Orienta hacia dónde mirar sin decir dónde está ni qué objeto exacto falta ubicar.
+            var nombra = MaterialesDelNivel3.Concat(Ubicaciones)
+                .Where(termino => Menciona(recolectar.Hint, termino))
+                .ToArray();
+
+            Assert.That(nombra, Is.Empty, $"la pista de recolección resuelve: «{recolectar.Hint}»");
+        }
+
+        [Test]
+        public void HintPolicy_CP06_PistaDeEnsamblajeNoDiceQuePiezaVaEnQueEspacio()
+        {
+            var fases = new[] { "Base", "Amarre", "MastilYVela" };
+            var prohibido = MaterialesDelNivel3.Concat(Ubicaciones).Concat(new[] { "centro", "primero", "luego" });
+
+            var resuelven = PasosDelNivel(LevelId.River)
+                .Where(paso => fases.Contains(paso.Id))
+                .SelectMany(paso => prohibido
+                    .Where(termino => Menciona(paso.Hint, termino))
+                    .Select(termino => $"{paso.Id} nombra «{termino}»: «{paso.Hint}»"))
+                .ToArray();
+
+            Assert.That(resuelven, Is.Empty, "la pista describe la fase, no la solución");
+            Assert.That(PasosDelNivel(LevelId.River).Select(paso => paso.Id), Is.SupersetOf(fases),
+                "las tres fases de ensamblaje tienen andamiaje (RF-40)");
+        }
+
+        [Test]
+        public void HintPolicy_RF13_AyudaADemandaNoAlteraElInventario()
+        {
+            // El inventario (R06) vive en Game.Levels.River, que Game.Scaffolding no puede
+            // referenciar (RNF-16, AssemblyDependencyTest): HintPolicy no lo alcanza por
+            // construcción. Lo que sí puede alterar —su propio contador— tampoco lo toca.
+            var pasos = PasosDelNivel(LevelId.River).ToArray();
+            var sut = new HintPolicy(pasos[0]);
+
+            foreach (var paso in pasos)
+            {
+                sut.Activate(paso);
+                sut.RegisterFailedAttempt();
+                sut.RequestHelp();
+                sut.RequestHelp();
+
+                Assert.That(sut.RequestHelp(), Is.EqualTo(paso.Instruction), $"repite la instrucción de {paso.Id}");
+                Assert.That(sut.ConsecutiveFailures, Is.EqualTo(1), $"pedir ayuda en {paso.Id} no cuenta como intento");
+            }
+        }
+
+        [Test]
+        public void RiverLevel_RNF03_LaListaDeCuatroTareasNoImplicaCuatroTareasActivas()
+        {
+            // RF-36 muestra cuatro tareas todo el nivel; el andamiaje sigue las fases de la
+            // mecánica: una de recolección —cubre las tareas 1 y 2— y las tres del ensamblaje.
+            // Son cosas distintas (INC-41): la lista se ve entera, la tarea activa es una.
+            var pasos = PasosDelNivel(LevelId.River).ToArray();
+
+            Assert.That(pasos.Select(paso => paso.Id),
+                Is.EquivalentTo(new[] { "Recolectar", "Base", "Amarre", "MastilYVela" }));
+
+            var sut = new HintPolicy(pasos[0]);
+            foreach (var paso in pasos)
+            {
+                sut.Activate(paso);
+                Assert.That(sut.ActiveStep, Is.SameAs(paso), "solo una tarea está activa a la vez");
+            }
+        }
+
         // --- contenido de los assets, no de la clase ---------------------------------------
         // Los textos viven fuera del código (CT-05, RNF-18), así que CP-06 y RNF-01 hay que
         // verificarlos sobre el asset. Mismo criterio que en NarrativeSequenceTests.
