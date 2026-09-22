@@ -38,9 +38,17 @@ Desde el 10/09/2026 **corren varios en paralelo**, y **el reparto es por assembl
 | **Slice 3** | `Game.Levels.River`, `Game.Core`, `Game.Scaffolding`, escenas del N3 |
 | **Slice 4** | `Game.Reporting` (aún sin crear), `Game.Core`, `Game.UI` |
 
-El Slice 3 cerró su código el 21/09/2026 (Checkpoint R-E y `Slice-3-Resultados.md`) y vive en la
-rama `feat/slice-3`, **sin fusionar a `main`**; con él quedan implementados `RF-01..RF-44` y el
-carril abierto es el Slice 4.
+El Slice 3 cerró su código el 21/09/2026 (Checkpoint R-E y `Slice-3-Resultados.md`) y **ya está en
+`main`** (PR #80); con él quedan implementados `RF-01..RF-44` y el carril de slices abierto es el
+Slice 4, que todavía no tiene una sola casilla marcada ni `Game.Reporting` en disco. La rama de
+trabajo de hoy es `feat/implementación-de-props-y-sonidos`: un commit por delante de `main`
+(`2cbe287`, audio del N1 y sprites definitivos parciales), **sin fusionar**. No es un slice sino el
+carril de arte y sonido —toca `Assets/Game/Art/`, `Game.Audio` y `Game.Levels.Fire`—, así que se
+pisa con el Slice 1. Lo de «parciales»:
+`Assets/Game/Art/Props/Fire/Animations/Fuego cenital/` trae **338 cuadros** sueltos (por LFS,
+4,8 MB) sin `.anim` ni `.controller` y con nombres fuera de la nomenclatura de
+`Direccion_de_Arte.md` (`fuego_cenital_nivel_1_0000.png`, no `prop_n1_…`): están en disco y no los
+usa nadie todavía.
 
 **Tres cosas que los carriles comparten** — tocar cualquiera cambia más de un nivel a la vez:
 
@@ -78,7 +86,7 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
 | `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. `INC-01`..`INC-45` están cerrados; **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`)— rigen para todo texto y asset nuevo. Quedan **abiertos** `INC-46` (tareas del Nivel 3), `INC-47` (la mecánica del Nivel 1 reúne los materiales en un círculo y luego mide fuerza y cercanía en dos deslizantes, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF), `INC-48` (el §4 del documento refundido es la arquitectura vieja), `INC-49` (el menú de pausa es el del mockup 6 y HU-17 aún dice «Continuar / Reiniciar nivel / Volver al menú principal») e `INC-50` («Empujar» en el bosque no anima el rodado, sale a la escena 2.2 que lo cuenta; RF-26/HU-08 lo describen dentro de la mecánica). |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
-| `claudeDocs/Direccion_de_Musica_y_Sonido.md` | **La ley del audio.** Hermano de la dirección de arte: cinco pilares (ningún sonido de fallo, §2.1, es CP-02 en el oído), cuatro buses bajo `AudioManager`, nomenclatura `mus_`/`amb_`/`sfx_`, los tres silencios del guion como piezas con disparador (§5) y el inventario de 104 piezas por nivel. Lo entregado hasta hoy son nueve, todas del Nivel 1, y **no hay música ni blip de diálogo** (`PS-01..PS-05` siguen abiertos). Su rev. 2 (§19) dice qué está aplicado. |
+| `claudeDocs/Direccion_de_Musica_y_Sonido.md` | **La ley del audio.** Hermano de la dirección de arte: cinco pilares (ningún sonido de fallo, §2.1, es CP-02 en el oído), cuatro buses bajo `AudioManager`, nomenclatura `mus_`/`amb_`/`sfx_`, los tres silencios del guion como piezas con disparador (§5) y el inventario de 104 piezas por nivel. **Cableadas hay nueve, todas del Nivel 1**; en `Assets/Game/Audio/` hay además diez piezas entregadas de los Niveles 2 y 3 y globales (PR #81) que **ningún asset referencia todavía** —estar en disco no es estar aplicado—, y **no hay música ni blip de diálogo** (`PS-01..PS-05` siguen abiertos). Su rev. 2 (§19) dice qué está aplicado. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
 | `claudeDocs/Camara_Narrativa_N2.md` · `docs/Camara_Narrativa_N1.md` | **Los diseños de cámara que quedan en disco.** El del N1 es de Santiago (35 encuadres, cada uno con su estado de luz) y se trata como los `.docx`: no se edita desde código; solo el N1 usa la capa de oscuridad. El del N2 son 50 encuadres validados contra 16:9 — regla que evita el choque más común: para bajar la cámara al suelo hay que cerrar el plano (`y = 0.35` exige `zoom ≥ 1.43`). **El diseño del N3 ya no está en el equipo** (era `docs/md/Camara_Narrativa_N3.md`): 32 encuadres sobre dos sprites 16:9 **sin duplicar**, con el foco acotado a `[0.5/z, 1−0.5/z]` en los dos ejes —a zoom 1 solo cabe el centro, así que el trabajo lo hace el zoom y no el paneo—; lo aplicado sobrevive solo en los `N3_*.asset`. En los tres niveles los valores viven en los `N*_*.asset`: el documento explica el porqué, no sustituye al asset. |
 | ~~`docs/md/Camara_Narrativa*.md` · `docs/md/verificacion_encuadres_N1|N2|N3/`~~ | **Perdidos: no están en este equipo** (20/09/2026). Eran los inventarios de lo aplicado escritos a mano —qué quedó en cada asset y en el motor, con quién lo decidió [S] Santiago / [C] Claude— y las hojas de verificación de encuadres (un PNG por parada, generado desde el contenido, con la franja del cuadro de diálogo en rojo). Estaban en `.gitignore`, así que no hay copia en git. Las hojas **sí** se rehacen generándolas desde el contenido; los inventarios no. Mientras no se rehagan, la única fuente de lo aplicado es el `N*_*.asset`, y los enlaces a `claudeDocs/verificacion_encuadres_*` que aparecen en otros documentos no resuelven. |
@@ -150,23 +158,22 @@ graphify explain "HintPolicy"
 
 `GRAPH_REPORT.md` es el índice legible —empezar por «Community Hubs»—; `graph.json` es el grafo
 para consumo de agente y `graph.html` la vista interactiva. Es una **foto**: la vigente es del
-21/09/2026, 210 archivos, 3946 nodos y 8063 aristas en 233 comunidades.
-**Esa foto no incluye los `docs/md/*.md`** (`manifest.json` lo confirma: cero entradas), así que
-una pregunta sobre un RF o una HU radicada **no** se le hace al grafo — se va al `.md` convertido.
+21/09/2026, 220 archivos, 3819 nodos y 8600 aristas en 221 comunidades.
+**Los `docs/md/*.md` sí están en el grafo —315 nodos— pero congelados**: los extrajo una corrida
+vieja y `manifest.json` no los sigue (cero entradas, porque graphify respeta el `.gitignore`), así
+que ningún `--update` los vuelve a leer. Sirven para **ubicar** un RF o una HU radicada; el texto
+que se cita sale siempre del `.md` convertido, que es el que está al día.
 Lo que el grafo señale se confirma en el código antes de citarlo: ubica, no sustituye a leer el
 archivo. Se refresca con `/graphify . --update` tras un bloque de trabajo —el incremental solo
 reextrae lo que cambió, y si lo cambiado es solo `.cs` no cuesta nada porque el AST no usa modelo—.
-**Tres cosas que hay que rehacer a mano al reconstruirlo desde cero**, porque `/graphify .` a secas
+**Dos cosas que hay que rehacer a mano al reconstruirlo desde cero**, porque `/graphify .` a secas
 no las hace:
 
-1. `.graphifyignore` excluye `Packages/` (metía 527 nodos del árbol de dependencias de Unity sin
-   conectar con nada) y `Assets/Game/Art/**/*.png` (las ilustraciones se extraen con visión, un
-   subagente por PNG, y sus nombres más `Inventario.md` ya dicen lo mismo: sin esa línea un
-   `--update` cuesta un subagente por lámina), y `Assets/Game/Audio/**` porque los `.wav` se
-   detectan como **vídeo** y el pipeline los manda a Whisper: quince transcripciones de efectos de
-   sonido que no producen texto. **Graphify además respeta el `.gitignore`**, así que los
-   `docs/md/*.md` hay que sumarlos al corpus explícitamente o el grafo se queda sin los documentos
-   radicados — que es justo lo que le pasa a la foto vigente.
+1. **Graphify respeta el `.gitignore`**, así que los `docs/md/*.md` hay que sumarlos al corpus
+   explícitamente o el grafo se queda sin los documentos radicados — que es justo lo que le pasa a
+   la foto vigente. (Las exclusiones sí sobreviven a un clon: `.graphifyignore` está **versionado**
+   desde `2cbe287` y sus comentarios explican cada línea —`Packages/`, `Assets/Game/Art/**/*.png`,
+   `Assets/Game/Audio/**`—; leerlo antes de tocarlo, no reescribirlo de memoria.)
 2. El AST crea un **nodo-stub por archivo** para cada símbolo externo (`…_cs_button`,
    `…_cs_recttransform`): unos 500 nodos de `UnityEngine`/`System`/NUnit que inflan el grado de los
    controladores. Se podan con esta regla, que no necesita lista de tipos: un stub sin
