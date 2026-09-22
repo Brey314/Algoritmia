@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
@@ -55,6 +56,10 @@ namespace Game.Levels.Fire
         private RectTransform fireSpot;
 
         [SerializeField]
+        [Tooltip("Interfaz que las piezas no deben tapar al aparecer: la tablilla, «Pista» y el botón de pausa. El círculo de reunión se excluye solo.")]
+        private RectTransform[] keepClear = Array.Empty<RectTransform>();
+
+        [SerializeField]
         [Tooltip("Contorno de la zona de reunión (T25). Se dibuja al pedir ayuda; su tamaño lo fija el panel a partir del botón de abajo.")]
         private Image gatherRing;
 
@@ -75,8 +80,8 @@ namespace Game.Levels.Fire
         private Animator fireFlame;
 
         [SerializeField]
-        [Tooltip("Círculo (Mask con ui_circulo) hijo del montón, centrado donde cae la llama: al crecer descubre la copia en brasa de las hojas, que así se queman desde el centro hacia fuera.")]
-        private RectTransform burnMask;
+        [Tooltip("El quemado del montón (BurnReveal en MontonHojas): al soplar crece despacio desde donde cae la llama hasta N1_Config.BurnExtent y ahí se queda.")]
+        private BurnReveal burn;
 
         [SerializeField]
         [Tooltip("Iluminación progresiva del escenario (RF-21, prioridad Baja). Puede quedar sin " +
@@ -146,12 +151,13 @@ namespace Game.Levels.Fire
         internal FeedbackLogView LogView => logView;
         internal DraggablePiece[] Pieces => pieces;
         internal RectTransform FireSpot => fireSpot;
+        internal RectTransform[] KeepClear => keepClear;
         internal Image GatherRing => gatherRing;
         internal RectTransform[] Environment => environment;
         internal GameObject[] IgnitionUi => ignitionUi;
         internal Image LeafPile => leafPile;
         internal Animator FireFlame => fireFlame;
-        internal RectTransform BurnMask => burnMask;
+        internal BurnReveal Burn => burn;
         internal FireAttempt Attempt => _attempt;
         internal FireFeedbackLog Log => _log;
         internal FireIndicatorCollector Indicators => _indicators;
@@ -191,6 +197,8 @@ namespace Game.Levels.Fire
             // Lo más lejos que se separan las piedras es la longitud de una hoja (T26).
             _spacing = new StoneSpacing(config, WidthOf(PieceKind.Silex), WidthOf(PieceKind.Leaf));
 
+            ScatterPieces();
+
             strikeButton.onClick.AddListener(Strike);
             blowButton.onClick.AddListener(Blow);
             if (hintButton != null)
@@ -215,7 +223,7 @@ namespace Game.Levels.Fire
             gatherRing.gameObject.SetActive(false);
             leafPile.gameObject.SetActive(false);
             fireFlame.gameObject.SetActive(false);
-            burnMask.sizeDelta = Vector2.zero; // nada quemado hasta que nace el fuego
+            burn.Extent = 0f; // nada quemado hasta que nace el fuego
             foreach (var element in ignitionUi)
             {
                 element.SetActive(false);
@@ -223,6 +231,37 @@ namespace Game.Levels.Fire
 
             RefreshBlow();
             RefreshLighting();
+        }
+
+        /// <summary>
+        /// Reparte las piezas por el suelo al azar, fuera de la interfaz y del círculo de reunión
+        /// (pedido de Santiago, 22/09/2026): la posición que trae la escena es solo el punto de partida.
+        /// </summary>
+        private void ScatterPieces()
+        {
+            Canvas.ForceUpdateCanvases(); // los rects anclados de la interfaz valen desde el primer cuadro
+            var blocked = new List<Rect>(Array.ConvertAll(keepClear, InFloorSpace));
+            var spot = fireSpot.anchoredPosition;
+            var radius = GatherRadius;
+            blocked.Add(new Rect(spot.x - radius, spot.y - radius, 2f * radius, 2f * radius));
+
+            // El montón de hojas dibuja fuera de su rect (LeafPile): la huella lleva margen.
+            var sizes = Array.ConvertAll(pieces, piece => piece.Width * 1.6f);
+            var positions = FloorScatter.Place(Floor.rect, blocked, sizes, new System.Random());
+            for (var i = 0; i < pieces.Length; i++)
+            {
+                pieces[i].MoveTo(positions[i]);
+            }
+        }
+
+        /// <summary>El rect de un elemento de interfaz en el espacio del suelo, donde viven las posiciones de las piezas.</summary>
+        private Rect InFloorSpace(RectTransform ui)
+        {
+            var corners = new Vector3[4];
+            ui.GetWorldCorners(corners);
+            var min = Floor.InverseTransformPoint(corners[0]);
+            var max = Floor.InverseTransformPoint(corners[2]);
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
         }
 
         /// <summary>Una hoja suena mientras se la lleva (clic sostenido, RNF-02); las piedras no.</summary>
@@ -526,17 +565,13 @@ namespace Game.Levels.Fire
             fireFlame.transform.SetAsLastSibling();
             fireFlame.gameObject.SetActive(true);
 
-            // Las hojas se queman desde donde cayó la llama: el círculo-máscara descubre la copia en
-            // brasa del montón y crece hasta tapar la esquina más lejana. Un solo crecimiento, sin
-            // oscilar (RNF-21).
-            var reach = leafPile.rectTransform.rect.size / 2f
-                        + new Vector2(Mathf.Abs(burnMask.anchoredPosition.x), Mathf.Abs(burnMask.anchoredPosition.y));
-            var burnDiameter = 2f * reach.magnitude;
+            // Las hojas se queman desde donde cayó la llama, despacio y solo hasta donde diga la
+            // configuración; después el quemado se queda quieto. Un solo crecimiento, sin oscilar (RNF-21).
             var startLighting = lighting != null ? lighting.Progress : 1f;
             for (var elapsed = 0f; elapsed < duration; elapsed += Time.deltaTime)
             {
                 var t = elapsed / duration;
-                burnMask.sizeDelta = Vector2.one * (burnDiameter * t);
+                burn.Extent = config.BurnExtent * t;
 
                 // Un solo barrido combinado con el fuego: la iluminación completa llega en la
                 // resolución (guion E7), no antes (E4 solo sube un escalón por golpe efectivo).
@@ -544,7 +579,7 @@ namespace Game.Levels.Fire
                 await Awaitable.NextFrameAsync(destroyCancellationToken);
             }
 
-            burnMask.sizeDelta = Vector2.one * burnDiameter;
+            burn.Extent = config.BurnExtent;
             lighting?.SetProgress(1f);
         }
 

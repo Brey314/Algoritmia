@@ -57,6 +57,10 @@ namespace Game.Scaffolding
         public RuntimeAnimatorController FrameAnimation { get; private set; }
 
         [field: SerializeField]
+        [field: Tooltip("Qué parte del objeto se ve quemada desde su centro, como fracción de su ancho (0 = nada): el montón de hojas bajo la llama.")]
+        public float BurnExtent { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Qué hace el objeto cuando llega su línea: nada, rodar, que lo levanten y ruede, que lo levanten y se quede (la piedra), o deslizarse sin girar (la balsa).")]
         public PropMotion Motion { get; private set; } = PropMotion.None;
 

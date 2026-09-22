@@ -607,6 +607,10 @@ MonoBehaviour:
   - {fileID: 1196298526}
   - {fileID: 697478509}
   fireSpot: {fileID: 1748866336}
+  keepClear:
+  - {fileID: 1593115421}
+  - {fileID: 1336748152}
+  - {fileID: 6608162390918024428}
   gatherRing: {fileID: 356296775}
   environment:
   - {fileID: 358587717}
@@ -618,6 +622,7 @@ MonoBehaviour:
   - {fileID: 411121206}
   leafPile: {fileID: 1503960318}
   fireFlame: {fileID: 1644066243}
+  burn: {fileID: 1503960320}
   lighting: {fileID: 358587720}
   guide: {fileID: 11400000, guid: eda218b25137c9f4eb022c64400c79a0, type: 2}
   hintButton: {fileID: 1336748154}
@@ -3009,7 +3014,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 205, y: 270}
   m_SizeDelta: {x: 240, y: 52}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!114 &1191020466
@@ -4124,6 +4129,7 @@ GameObject:
   - component: {fileID: 1503960317}
   - component: {fileID: 1503960319}
   - component: {fileID: 1503960318}
+  - component: {fileID: 1503960320}
   m_Layer: 5
   m_Name: MontonHojas
   m_TagString: Untagged
@@ -4188,6 +4194,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1503960316}
   m_CullTransparentMesh: 1
+--- !u!114 &1503960320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1503960316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65894e515ae019c44ba38b83d26eea3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.BurnReveal
+  <EmberColor>k__BackingField: {r: 0.45, g: 0.16, b: 0.06, a: 1}
+  <Origin>k__BackingField: {x: 0, y: 30}
 --- !u!1 &1518679177
 GameObject:
   m_ObjectHideFlags: 0
@@ -5606,6 +5626,11 @@ PrefabInstance:
 --- !u!224 &6608162390918024427 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 258978673627642814, guid: 42f596015cd6491439867b5c8a1bb4bd, type: 3}
+  m_PrefabInstance: {fileID: 6608162390918024426}
+  m_PrefabAsset: {fileID: 0}
+--- !u!224 &6608162390918024428 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 7852578616002312390, guid: 42f596015cd6491439867b5c8a1bb4bd, type: 3}
   m_PrefabInstance: {fileID: 6608162390918024426}
   m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807

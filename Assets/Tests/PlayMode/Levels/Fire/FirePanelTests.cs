@@ -560,6 +560,29 @@ namespace Game.Levels.Fire.Tests
         }
 
         [Test]
+        [Timeout(30000)]
+        public async Task FirePanel_RF14_LasPiezasAparecenAlAzarFueraDeLaInterfazYDelCirculo()
+        {
+            var controller = await LoadPanel();
+            Assume.That(controller.KeepClear, Is.Not.Empty, "la escena cablea qué interfaz respetar");
+            var suelo = (RectTransform)controller.FireSpot.parent;
+            var interfaz = controller.KeepClear.Select(ui => EnElSuelo(ui, suelo)).ToArray();
+            var spot = controller.FireSpot.anchoredPosition;
+
+            foreach (var piece in controller.Pieces)
+            {
+                var rect = new Rect(piece.Position - Vector2.one * piece.Width / 2f, Vector2.one * piece.Width);
+                Assert.That(interfaz, Has.None.Matches<Rect>(zona => zona.Overlaps(rect)), $"{piece.name} no queda bajo la interfaz");
+                Assert.That(Vector2.Distance(piece.Position, spot), Is.GreaterThan(controller.GatherRadius),
+                    $"{piece.name} empieza fuera del círculo de reunión");
+            }
+
+            var primera = controller.Pieces.Select(piece => piece.Position).ToArray();
+            controller = await LoadPanel();
+            Assert.That(controller.Pieces.Select(piece => piece.Position), Is.Not.EqualTo(primera), "y cada partida reparte distinto");
+        }
+
+        [Test]
         [Timeout(20000)]
         public async Task FirePanel_RNF02_TomarUnaPiezaLaLevantaYSoltarlaLaPosa()
         {
@@ -594,7 +617,7 @@ namespace Game.Levels.Fire.Tests
             Assert.That(llama.transform.GetSiblingIndex(), Is.EqualTo(llama.transform.parent.childCount - 1),
                 "encima del montón y de las piedras");
             Assert.That(controller.LeafPile.gameObject.activeSelf, Is.True, "sobre el montón, que sigue ahí");
-            Assert.That(controller.BurnMask.sizeDelta.x, Is.GreaterThan(0f), "y las hojas empiezan a quemarse desde el centro");
+            Assert.That(controller.Burn.Extent, Is.GreaterThan(0f), "y las hojas empiezan a quemarse desde el centro");
         }
 
         // --- helpers -----------------------------------------------------------------------
@@ -615,6 +638,15 @@ namespace Game.Levels.Fire.Tests
 
             Assume.That(controller.IsGathering, Is.False, "el panel pasó al encendido");
             await Awaitable.NextFrameAsync(); // deja correr Awake/Start de la interfaz recién activada
+        }
+
+        private static Rect EnElSuelo(RectTransform ui, RectTransform suelo)
+        {
+            var esquinas = new Vector3[4];
+            ui.GetWorldCorners(esquinas);
+            var min = suelo.InverseTransformPoint(esquinas[0]);
+            var max = suelo.InverseTransformPoint(esquinas[2]);
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
         }
 
         private static float ScreenX(RectTransform rect) =>

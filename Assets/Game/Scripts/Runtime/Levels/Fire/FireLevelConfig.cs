@@ -50,6 +50,10 @@ namespace Game.Levels.Fire
         public float IgnitionSeconds { get; set; } = 3.5f;
 
         [field: SerializeField]
+        [field: Tooltip("Hasta dónde llega el quemado del montón al nacer el fuego, como fracción de su ancho (0.5 = un círculo de medio montón). Crece durante IgnitionSeconds y ahí se queda.")]
+        public float BurnExtent { get; set; } = 0.5f;
+
+        [field: SerializeField]
         [field: Tooltip("Golpes efectivos necesarios para habilitar el soplo.")]
         public int MinimumEffectiveStrikes { get; set; } = 3;
 

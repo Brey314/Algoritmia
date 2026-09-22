@@ -423,6 +423,8 @@ namespace Game.UI.Tests
             // Lo que dice el texto se ve: «una llama... crece despacio desde las hojas».
             Assert.That(controller.Props.Select(p => p.Prop.Art.name), Has.Some.EqualTo("prop_n1_monton_hojas"),
                 "el montón de hojas visto de lado está pintado");
+            var monton = controller.Props.First(p => p.Prop.Art.name == "prop_n1_monton_hojas");
+            Assert.That(monton.Rect.GetComponent<BurnReveal>(), Is.Not.Null, "y se ve quemado bajo la llama");
             var llama = controller.Props
                 .Select(p => p.Rect.GetComponent<Animator>())
                 .FirstOrDefault(animator => animator != null);

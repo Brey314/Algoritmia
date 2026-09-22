@@ -422,6 +422,11 @@ namespace Game.UI
                     go.AddComponent<Animator>().runtimeAnimatorController = prop.FrameAnimation;
                 }
 
+                if (prop.BurnExtent > 0f)
+                {
+                    go.AddComponent<BurnReveal>().Extent = prop.BurnExtent; // quemado quieto: la escena ya es después del fuego
+                }
+
                 _props.Add((prop, rect));
             }
         }
