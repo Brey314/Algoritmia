@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Audio;
 using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
@@ -213,6 +214,255 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(maze.MessageLabel.text, Is.EqualTo(maze.Layout.StoppedMessage));
             Assert.That(maze.MessageLabel.text, Does.Not.Match(@"\d"), "sin cifras (CP-03)");
             Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo(SceneName), "el escenario no se recargó (CU-08 FA-6a)");
+        }
+
+        /// <summary>
+        /// La carretilla suena mientras recorre la secuencia —también en el intento que choca y
+        /// vuelve, que se oye como rueda y nunca como error (RF-33, §2.1, CP-02)— y calla al
+        /// terminar; debajo sigue el bosque de día.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RF32_LaCarretillaSuenaMientrasRecorreLaSecuenciaYCallaAlTerminar()
+        {
+            var audio = new GameObject("TestAudio").AddComponent<AudioManager>();
+            try
+            {
+                var maze = await OpenMaze();
+                var sounds = maze.Sounds;
+                Assume.That(sounds, Is.Not.Null, "Level2_Maze tiene N2_Sonidos asignado");
+                Assert.That(audio.AmbientClip, Is.SameAs(sounds.ForestAmbient), "el bosque de día de fondo");
+
+                // Girar a la izquierda y avanzar topa con el seto: se intenta y se vuelve.
+                maze.AddBlock(InstructionBlock.Turn(TurnDirection.Left));
+                maze.AddBlock(InstructionBlock.Forward(1));
+                maze.Execute();
+
+                Assert.That(audio.HeldClip, Is.SameAs(sounds.CartMove), "la carretilla rueda mientras recorre la secuencia");
+
+                await Esperar(() => !maze.IsExecuting);
+
+                Assert.That(audio.HeldClip, Is.Null, "y calla al terminar");
+                Assert.That(audio.AmbientClip, Is.SameAs(sounds.ForestAmbient), "el bosque sigue debajo");
+            }
+            finally
+            {
+                Object.DestroyImmediate(audio.gameObject);
+            }
+        }
+
+        /// <summary>
+        /// El Nivel 2 dura un día y el laberinto es al atardecer: la luz del asset tiñe el entorno
+        /// y todo lo que cuelga de él —la carretilla, el refugio, los obstáculos—, para que nada
+        /// quede pintado a mediodía sobre un fondo de tarde.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RF30_ElLaberintoEsAlAtardecer()
+        {
+            var maze = await OpenMaze();
+            var luz = maze.Layout.LightTint;
+
+            Assert.That(luz.r, Is.GreaterThan(luz.b), "N2_MazeLayout trae luz de atardecer, cálida");
+            Assert.That(maze.Environment.color, Is.EqualTo(luz), "el entorno se tiñe");
+            Assert.That(maze.Cart.GetComponent<Image>().color, Is.EqualTo(luz), "y la carretilla con él");
+            Assert.That(maze.Pieces.Select(pieza => pieza.GetComponent<Image>())
+                    .Where(imagen => imagen != null && imagen.sprite != null)
+                    .Select(imagen => imagen.color),
+                Has.All.EqualTo(luz), "y el refugio y los obstáculos dibujados");
+        }
+
+        /// <summary>
+        /// La cuadrícula de la matriz se dibuja dentro del seto: una línea por frontera entre las
+        /// casillas del interior, ninguna sobre el seto, y detrás de piedras y carretilla.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RF31_LaCuadriculaDeLaMatrizSeDibujaDentroDelSeto()
+        {
+            var maze = await OpenMaze();
+            var cuadricula = maze.Environment.rectTransform.Find("Cuadricula");
+
+            Assert.That(cuadricula, Is.Not.Null, "el entorno trae la cuadrícula");
+            Assert.That(cuadricula.GetSiblingIndex(), Is.Zero, "detrás de todo lo que se pinta encima");
+            Assert.That(cuadricula.childCount, Is.EqualTo(maze.Grid.Columns - 1 + maze.Grid.Rows - 1),
+                "una línea por frontera interior, en columnas y en filas");
+
+            var tablero = (RectTransform)cuadricula;
+            Assert.That(tablero.anchorMin, Is.EqualTo(maze.Layout.BoardMin), "la cuadrícula ocupa el tablero de la matriz");
+            Assert.That(tablero.anchorMax, Is.EqualTo(maze.Layout.BoardMax));
+
+            // En fracciones del tablero: el anillo exterior, una casilla, es el seto.
+            var dentroMin = new Vector2(1f / maze.Grid.Columns, 1f / maze.Grid.Rows);
+            var dentroMax = Vector2.one - dentroMin;
+            foreach (RectTransform linea in cuadricula)
+            {
+                foreach (var ancla in new[] { linea.anchorMin, linea.anchorMax })
+                {
+                    Assert.That(ancla.x, Is.InRange(dentroMin.x - 1e-4f, dentroMax.x + 1e-4f), $"{linea.name} no pisa el seto");
+                    Assert.That(ancla.y, Is.InRange(dentroMin.y - 1e-4f, dentroMax.y + 1e-4f), $"{linea.name} no pisa el seto");
+                }
+
+                Assert.That(linea.GetComponent<Image>().raycastTarget, Is.False, $"{linea.name} no recibe clics");
+            }
+        }
+
+        /// <summary>
+        /// La salida no se marca con un cuadro de color —se lee en el entorno, en el hueco del
+        /// seto—; el panel que rodea al entorno continúa su borde con la misma luz; y el entorno
+        /// lleva su contraste y saturación en una copia del material, no en el asset compartido.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RF30_LaSalidaSeLeeEnElEntornoYElPanelLoContinua()
+        {
+            var maze = await OpenMaze();
+            var layout = maze.Layout;
+            var refugio = maze.Pieces.First(pieza => pieza.name == "Refugio").GetComponent<Image>();
+
+            Assume.That(layout.ShelterArt, Is.Null, "hoy el refugio no tiene ilustración propia");
+            Assert.That(refugio.enabled, Is.False, "sin ilustración, la casilla de llegada no se pinta de color");
+
+            var panel = maze.Environment.rectTransform.parent.GetComponent<Image>();
+            var esperado = layout.BackdropColor * layout.LightTint;
+            Assert.That(panel.color.r, Is.EqualTo(esperado.r).Within(0.002f), "el panel continúa el borde del entorno");
+            Assert.That(panel.color.g, Is.EqualTo(esperado.g).Within(0.002f));
+            Assert.That(panel.color.b, Is.EqualTo(esperado.b).Within(0.002f));
+            Assert.That(panel.color.b, Is.LessThan(panel.color.r), "y ya no es azul");
+
+            Assert.That(maze.Environment.material, Is.Not.SameAs(layout.EnvironmentMaterial), "una copia por escena");
+            Assert.That(maze.Environment.material.GetFloat("_Contrast"), Is.EqualTo(layout.Contrast), "con el contraste del asset");
+            Assert.That(maze.Environment.material.GetFloat("_Saturation"), Is.EqualTo(layout.Saturation), "y su saturación");
+            Assert.That(layout.Contrast, Is.GreaterThan(1f), "que sube el contraste");
+            Assert.That(layout.Saturation, Is.LessThan(1f), "y le quita naranja al suelo");
+        }
+
+        /// <summary>
+        /// Soltar un bloque deja la lista abajo del todo, con «Suelta un bloque aquí» a la vista; y
+        /// abrir el cajón también, aunque se hubiera subido a mirar el principio.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RNF03_AlSoltarUnBloqueYAlAbrirElCajonLaSecuenciaQuedaAbajoDelTodo()
+        {
+            var maze = await OpenMaze();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            for (var i = 0; i < 12; i++)
+            {
+                maze.TakeFromPalette(InstructionBlock.Default(i % 2 == 0 ? BlockKind.Forward : BlockKind.Turn));
+                maze.Drop(EnPantalla(maze.SequenceViewport).center);
+            }
+
+            Canvas.ForceUpdateCanvases();
+            Assume.That(maze.ScrollDownButton.gameObject.activeSelf, Is.True, "doce bloques ya no caben");
+            Assert.That(maze.ScrollDownButton.interactable, Is.False, "tras soltar, la lista está abajo del todo");
+            Assert.That(EnPantalla(maze.DropZone).yMin, Is.GreaterThanOrEqualTo(EnPantalla(maze.SequenceViewport).yMin - 1f),
+                "con la casilla de soltar a la vista");
+
+            for (var i = 0; i < 20 && maze.ScrollUpButton.interactable; i++)
+            {
+                maze.ScrollUpButton.onClick.Invoke();
+            }
+
+            Assume.That(maze.ScrollDownButton.interactable, Is.True, "se subió a mirar el principio");
+            maze.TogglePalette();
+            Canvas.ForceUpdateCanvases();
+
+            Assert.That(maze.IsPaletteOpen, Is.True);
+            Assert.That(maze.ScrollDownButton.interactable, Is.False, "al abrir el cajón, la secuencia vuelve abajo del todo");
+        }
+
+        /// <summary>
+        /// La barra de la derecha acompaña a «▲» y «▼» y se puede pulsar: un clic abajo lleva al
+        /// final y uno arriba al principio. Se pulsa, no se arrastra: no trae el arrastre de uGUI
+        /// (RNF-02, CT-06).
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RNF02_LaBarraDeDesplazamientoSePulsaPeroNoSeArrastra()
+        {
+            var maze = await OpenMaze();
+            Assert.That(maze.ScrollBar.gameObject.activeSelf, Is.False, "sin desborde no hay barra");
+
+            for (var i = 0; i < 16; i++)
+            {
+                maze.AddBlock(InstructionBlock.Forward(1));
+            }
+
+            Canvas.ForceUpdateCanvases();
+            Assert.That(maze.ScrollBar.gameObject.activeSelf, Is.True, "con desborde aparece la barra");
+            Assert.That(maze.ScrollThumb.anchorMin.y, Is.EqualTo(0f).Within(0.01f), "abajo del todo, el tirador toca el fondo");
+            var alto = maze.ScrollThumb.anchorMax.y - maze.ScrollThumb.anchorMin.y;
+            Assert.That(alto, Is.GreaterThan(0f).And.LessThan(1f), "y mide la parte visible de la lista");
+
+            var antes = maze.ScrollThumb.anchorMax.y;
+            maze.ScrollUpButton.onClick.Invoke();
+            Assert.That(maze.ScrollThumb.anchorMax.y, Is.GreaterThan(antes), "«▲» sube el tirador");
+
+            var barra = EnPantalla(maze.ScrollBar);
+            Pulsar(maze.ScrollBar, new Vector2(barra.center.x, barra.yMax - 1f));
+            Assert.That(maze.ScrollUpButton.interactable, Is.False, "un clic arriba de la barra lleva al principio");
+            Assert.That(maze.ScrollThumb.anchorMax.y, Is.EqualTo(1f).Within(0.01f));
+
+            Pulsar(maze.ScrollBar, new Vector2(barra.center.x, barra.yMin + 1f));
+            Assert.That(maze.ScrollDownButton.interactable, Is.False, "y uno abajo, al final");
+            Assert.That(maze.ScrollThumb.anchorMin.y, Is.EqualTo(0f).Within(0.01f));
+
+            Assert.That(maze.ScrollBar.GetComponent<Image>().raycastTarget, Is.True, "la barra recibe el clic");
+            Assert.That(maze.ScrollBar.GetComponentsInChildren<ScrollRect>(true), Is.Empty, "no es un ScrollRect");
+            Assert.That(maze.ScrollBar.GetComponentsInChildren<Scrollbar>(true), Is.Empty, "ni un Scrollbar de uGUI");
+            Assert.That(maze.ScrollBar.GetComponentsInChildren<IDragHandler>(true), Is.Empty, "ni nada que se arrastre");
+            Assert.That(maze.ScrollThumb.GetComponent<Image>().raycastTarget, Is.False, "el tirador no se agarra");
+        }
+
+        /// <summary>
+        /// Solo el bloque seleccionado lleva la papelera —el mismo icono que borra un perfil—, a
+        /// la derecha de su fila; pulsarla lo retira de la secuencia y no deja otra papelera a la
+        /// vista (RF-34).
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RF34_ElBloqueSeleccionadoMuestraLaPapeleraYEstaLoRetira()
+        {
+            var maze = await OpenMaze();
+            maze.AddBlock(InstructionBlock.Forward(1));
+            maze.AddBlock(InstructionBlock.Turn());
+            maze.AddBlock(InstructionBlock.Backward(2));
+            Assert.That(Papeleras(maze), Is.Empty, "sin bloque seleccionado no hay papelera");
+
+            maze.Expand(1);
+            Canvas.ForceUpdateCanvases();
+            var papeleras = Papeleras(maze);
+            Assert.That(papeleras, Has.Length.EqualTo(1), "el bloque seleccionado, y solo él, muestra su papelera");
+            var papelera = papeleras[0];
+            Assert.That(papelera.transform.parent, Is.SameAs(maze.Rows[1]), "en la fila seleccionada");
+            Assert.That(papelera.image.sprite, Is.SameAs(maze.Layout.DeleteIcon), "con el icono del asset");
+            Assert.That(maze.Layout.DeleteIcon.name, Is.EqualTo("ui_papelera"), "el mismo que borra un perfil");
+            Assert.That(EnPantalla((RectTransform)papelera.transform).xMin, Is.GreaterThan(EnPantalla(maze.Rows[1]).xMax),
+                "a la derecha de la fila, fuera de ella");
+            Assert.That(Solapan(EnPantalla((RectTransform)papelera.transform), EnPantalla(maze.ScrollBar)), Is.False,
+                "sin pisar la barra de desplazamiento");
+
+            papelera.onClick.Invoke();
+
+            Assert.That(maze.Sequence.Blocks, Is.EqualTo(new[] { InstructionBlock.Forward(1), InstructionBlock.Backward(2) }),
+                "la papelera retira ese bloque y deja los demás en su orden");
+            Assert.That(Papeleras(maze), Is.Empty, "y no queda otra papelera a la vista");
+        }
+
+        private static Button[] Papeleras(MazeSceneController maze) =>
+            maze.Rows.Select(fila => fila.Find("Eliminar"))
+                .Where(papelera => papelera != null && papelera.gameObject.activeInHierarchy)
+                .Select(papelera => papelera.GetComponent<Button>())
+                .ToArray();
+
+        /// <summary>Un clic simple sobre el gráfico, en ese punto de la pantalla, por el sistema de eventos.</summary>
+        private static void Pulsar(RectTransform objetivo, Vector2 punto)
+        {
+            var pointer = new PointerEventData(EventSystem.current) { position = punto };
+            ExecuteEvents.Execute(objetivo.gameObject, pointer, ExecuteEvents.pointerClickHandler);
         }
 
         [Test]

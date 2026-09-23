@@ -156,7 +156,7 @@ namespace Game.Core
                 if ((sceneName != SceneManager.GetActiveScene().name || mustReload)
                     && SceneLoader.Instance != null)
                 {
-                    SceneLoader.Instance.Load(sceneName);
+                    SceneLoader.Instance.Load(sceneName, FadesBetween(SceneManager.GetActiveScene().name, sceneName));
                 }
             }
             else
@@ -175,6 +175,18 @@ namespace Game.Core
         }
 
         /// <summary>La escena que aloja el estado actual, si ya existe alguna.</summary>
+        /// <summary>
+        /// Se funde a negro al pasar de la historia al juego y de vuelta —narrativa ↔ mecánica— y
+        /// entre dos narrativas encadenadas. Los menús cortan en seco: ahí no hay escena que cerrar.
+        /// </summary>
+        internal static bool FadesBetween(string from, string to)
+        {
+            var fromStory = from == Scenes[GameState.Narrative];
+            var toStory = to == Scenes[GameState.Narrative];
+            return (fromStory && (toStory || PlayingScenes.ContainsValue(to)))
+                   || (toStory && PlayingScenes.ContainsValue(from));
+        }
+
         private bool TryResolveScene(out string sceneName)
         {
             if (Flow.Current != GameState.Playing)

@@ -16,7 +16,7 @@ namespace Game.Levels.Fire.Tests
             Assert.That(sut.EffectiveForceMin, Is.EqualTo(7), "fuerza efectiva mínima propuesta");
             Assert.That(sut.EffectiveForceMax, Is.EqualTo(8), "fuerza efectiva máxima propuesta");
             Assert.That(sut.SpacingLevels, Is.EqualTo(10), "muescas del deslizante de cercanía (Fase 6)");
-            Assert.That(sut.EffectiveOverlap, Is.EqualTo(5f), "las piedras se rozan encimadas unos cinco píxeles");
+            Assert.That(sut.EffectiveOverlap, Is.EqualTo(30f), "solo la muesca cinco: piedras de 72 px encimadas 30 px");
             Assert.That(sut.OverlapTolerance, Is.EqualTo(4f), "con este margen a cada lado");
             Assert.That(sut.GatherZoom, Is.EqualTo(2f), "la cámara se acerca al doble al reunir");
             Assert.That(sut.GatherSeconds, Is.EqualTo(0.8f), "en menos de un segundo");

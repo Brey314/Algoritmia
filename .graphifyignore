@@ -8,3 +8,8 @@ Packages/
 # mas Inventario.md ya dicen lo mismo (regla 2 de CLAUDE.md). Fuera del grafo:
 # sin esta linea un --update de 64 laminas cuesta 64 subagentes de vision.
 Assets/Game/Art/**/*.png
+
+# Los .wav se detectan como "video" y el pipeline los mandaria a Whisper: quince
+# transcripciones de efectos de sonido (fogata, piedras, salpicadura) que no
+# producen texto util. Que sonidos hay lo dice el nombre del archivo.
+Assets/Game/Audio/**

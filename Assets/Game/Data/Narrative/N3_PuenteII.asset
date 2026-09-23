@@ -14,48 +14,101 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
   <Id>k__BackingField: N3_PuenteII
   <Level>k__BackingField: 3
-  <Illustration>k__BackingField: {fileID: 21300000, guid: bbed55b5b972c6c44ac36e4f02bc21c2, type: 3}
+  <Illustration>k__BackingField: {fileID: 21300000, guid: 13d0c3738f9d71047b289efb92c892c4, type: 3}
+  <Ambient>k__BackingField: {fileID: 8300000, guid: fc958f01575f8f94db4079d9063c54cd, type: 3}
+  <AmbientLayer>k__BackingField: {fileID: 8300000, guid: 6423a3675fa942f4fb8d62abf58bb65e, type: 3}
   <CameraStart>k__BackingField:
-    <Focus>k__BackingField: {x: 0.8, y: 0.47}
-    <Zoom>k__BackingField: 1.52
+    <Focus>k__BackingField: {x: 0.19, y: 0.43}
+    <Zoom>k__BackingField: 1.5
   <CameraEnd>k__BackingField:
-    <Focus>k__BackingField: {x: 0.8, y: 0.47}
-    <Zoom>k__BackingField: 1.52
+    <Focus>k__BackingField: {x: 0.2, y: 0.45}
+    <Zoom>k__BackingField: 1.3
   <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 0
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.19, y: 0.43}
+      <Zoom>k__BackingField: 1.5
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.2, y: 0.36}
+      <Radius>k__BackingField: 0.7
+      <Ambient>k__BackingField: 0.45
+      <Tint>k__BackingField: {r: 1, g: 0.62, b: 0.42, a: 1}
+      <FlashSeconds>k__BackingField: 0
+    <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 1
     <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.81, y: 0.49}
-      <Zoom>k__BackingField: 1.42
+      <Focus>k__BackingField: {x: 0.2, y: 0.45}
+      <Zoom>k__BackingField: 1.3
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.2, y: 0.36}
+      <Radius>k__BackingField: 0.7
+      <Ambient>k__BackingField: 0.45
+      <Tint>k__BackingField: {r: 1, g: 0.62, b: 0.42, a: 1}
+      <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
-  - <Line>k__BackingField: 2
-    <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.832, y: 0.585}
-      <Zoom>k__BackingField: 1.62
-    <HardCut>k__BackingField: 0
-  - <Line>k__BackingField: 4
-    <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.845, y: 0.62}
-      <Zoom>k__BackingField: 1.78
-    <HardCut>k__BackingField: 0
+  <LightStart>k__BackingField:
+    <Center>k__BackingField: {x: 0.2, y: 0.36}
+    <Radius>k__BackingField: 0.7
+    <Ambient>k__BackingField: 0.45
+    <Tint>k__BackingField: {r: 1, g: 0.62, b: 0.42, a: 1}
+    <FlashSeconds>k__BackingField: 0
   <CameraSmoothingSeconds>k__BackingField: 1.4
   <OpensFromBlack>k__BackingField: 0
   <HardCutFadeSeconds>k__BackingField: 0.5
-  <Props>k__BackingField: []
+  <Props>k__BackingField:
+  - <Art>k__BackingField: {fileID: 21300000, guid: 593e385bffbadc342ad780722e8a8274, type: 3}
+    <Position>k__BackingField: {x: 0.213, y: 0.36}
+    <Size>k__BackingField: 0.14
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0.5
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+    <LandSound>k__BackingField: {fileID: 0}
+  - <Art>k__BackingField: {fileID: 21300000, guid: 3d326d88ed3a12a49b0303acf8680cb1, type: 3}
+    <Position>k__BackingField: {x: 0.215, y: 0.418}
+    <Size>k__BackingField: 0.22
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 9100000, guid: d9fab704c80f0db4890c5ad7c386284c, type: 2}
+    <BurnExtent>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+    <LandSound>k__BackingField: {fileID: 0}
+  - <Art>k__BackingField: {fileID: 21300000, guid: 730e4e910b1eebf42bde323e156e0bff, type: 3}
+    <Position>k__BackingField: {x: 0.16, y: 0.37}
+    <Size>k__BackingField: 0.2
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+    <LandSound>k__BackingField: {fileID: 0}
   <IsReflectiveClosing>k__BackingField: 0
+  <EndsInCredits>k__BackingField: 0
   <NextPhase>k__BackingField: 0
-  <NextSequenceId>k__BackingField: N3_PuenteII_Rio
+  <NextSequenceId>k__BackingField: N3_PuenteII_Horizonte
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "La familia celebra en el refugio. La carretilla est\u00E1 cargada con alimentos y piedras."
+    <Text>k__BackingField: "La familia celebra en el refugio. La carretilla est\xE1
+      cargada con alimentos y piedras."
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "\u00A1Lo lograron! La rueda los ayud\u00F3 a traer todo hasta aqu\u00ED. Pero hay algo que deben saber\u2026"
-  - <Speaker>k__BackingField: 
-    <Text>k__BackingField: "La c\u00E1mara se desplaza hacia el horizonte. A lo lejos se ven las fogatas de la civilizaci\u00F3n."
-  - <Speaker>k__BackingField: "NI\u00D1A"
-    <Text>k__BackingField: "\u00BFQu\u00E9 es eso?"
-  - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "Otros como ustedes. M\u00E1s adelante. Un lugar donde ya saben cultivar, construir y vivir juntos."
-  - <Speaker>k__BackingField: "PAP\u00C1"
-    <Text>k__BackingField: "\u00BFPodemos llegar?"
-  - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "El camino existe\u2026 pero hay un problema."
+    <Text>k__BackingField: "\xA1Lo lograron! La rueda los ayud\xF3 a traer todo hasta
+      aqu\xED. Pero hay algo que deben saber\u2026"
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0

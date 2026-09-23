@@ -112,6 +112,43 @@ namespace Game.Levels.Wheel.Tests
         }
 
         [Test]
+        public void ForestObjectNudge_RF22_AvisaQueEmpiezaAApartarseUnaSolaVezPorAcercamiento()
+        {
+            // Es el momento en que suena el objeto: una vez por acercamiento, no una por
+            // fotograma, o un cursor quieto encima haría sonar al tronco sesenta veces por segundo.
+            var sut = new ForestObjectNudge(Rodante(), Centro, Suelo);
+
+            var alEntrar = sut.Step(CursorPegado, Dt);
+            var avisosQuedandose = Enumerable.Range(0, 10).Count(_ => sut.Step(CursorPegado, Dt));
+            sut.Step(CursorLejos, Dt);
+            var alVolver = sut.Step(CursorPegado, Dt);
+
+            Assert.That(alEntrar, Is.True, "el cursor lo alcanza: empieza a apartarse");
+            Assert.That(avisosQuedandose, Is.Zero, "quedarse cerca no vuelve a avisar");
+            Assert.That(alVolver, Is.True, "irse y volver es otro acercamiento");
+        }
+
+        [Test]
+        public void ForestObjectNudge_RF22_LaHojaDejaDeMoverseAlPosarse()
+        {
+            // Lo que calla el bucle de hojarasca: mientras vuela se mueve, y posada ya no.
+            var sut = new ForestObjectNudge(Voladora(), Centro, Suelo);
+            for (var frame = 0; frame < 6; frame++)
+            {
+                sut.Step(CursorPegado, Dt);
+            }
+
+            var enElAire = sut.IsMoving;
+            for (var frame = 0; frame < UnSegundo * 4; frame++)
+            {
+                sut.Step(CursorLejos, Dt);
+            }
+
+            Assert.That(enElAire, Is.True, "recién empujada, la hoja se mueve");
+            Assert.That(sut.IsMoving, Is.False, "y al posarse se queda quieta");
+        }
+
+        [Test]
         public void ForestObjectNudge_RNF03_NingunObjetoSeSaleDelAreaJugable()
         {
             var sut = new ForestObjectNudge(Rodante(), new Vector2(0.9f, 0.5f), Suelo);

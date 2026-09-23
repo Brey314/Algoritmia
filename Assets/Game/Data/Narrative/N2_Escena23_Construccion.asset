@@ -15,6 +15,8 @@ MonoBehaviour:
   <Id>k__BackingField: N2_Escena23_Construccion
   <Level>k__BackingField: 2
   <Illustration>k__BackingField: {fileID: 21300000, guid: bbed55b5b972c6c44ac36e4f02bc21c2, type: 3}
+  <Ambient>k__BackingField: {fileID: 8300000, guid: 51f096eb5872f6043bba5cee8f269d2c, type: 3}
+  <AmbientLayer>k__BackingField: {fileID: 0}
   <CameraStart>k__BackingField:
     <Focus>k__BackingField: {x: 0.7, y: 0.45}
     <Zoom>k__BackingField: 1.62
@@ -26,30 +28,85 @@ MonoBehaviour:
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.745, y: 0.455}
       <Zoom>k__BackingField: 1.52
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
+    <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 2
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.762, y: 0.435}
       <Zoom>k__BackingField: 1.78
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
+    <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 3
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.775, y: 0.47}
       <Zoom>k__BackingField: 1.35
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
+    <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 4
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.694, y: 0.42}
       <Zoom>k__BackingField: 1.95
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
+    <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 5
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.748, y: 0.42}
       <Zoom>k__BackingField: 1.95
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
+    <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 6
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.8, y: 0.43}
       <Zoom>k__BackingField: 1.88
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
+    <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 7
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.75, y: 0.5}
       <Zoom>k__BackingField: 1
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
+    <HardCut>k__BackingField: 0
+  <LightStart>k__BackingField:
+    <Center>k__BackingField: {x: 0.5, y: 0.5}
+    <Radius>k__BackingField: 0
+    <Ambient>k__BackingField: 1
+    <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+    <FlashSeconds>k__BackingField: 0
   <CameraSmoothingSeconds>k__BackingField: 1.3
   <OpensFromBlack>k__BackingField: 1
   <HardCutFadeSeconds>k__BackingField: 0.5
@@ -59,6 +116,8 @@ MonoBehaviour:
     <Size>k__BackingField: 0.12
     <RotationDegrees>k__BackingField: 0
     <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
     <Motion>k__BackingField: 0
     <MotionLine>k__BackingField: 0
     <MotionDistance>k__BackingField: 0
@@ -69,6 +128,8 @@ MonoBehaviour:
     <Size>k__BackingField: 0.12
     <RotationDegrees>k__BackingField: 0
     <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
     <Motion>k__BackingField: 0
     <MotionLine>k__BackingField: 0
     <MotionDistance>k__BackingField: 0
@@ -79,6 +140,8 @@ MonoBehaviour:
     <Size>k__BackingField: 0.17
     <RotationDegrees>k__BackingField: 0
     <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
     <Motion>k__BackingField: 0
     <MotionLine>k__BackingField: 0
     <MotionDistance>k__BackingField: 0
@@ -89,6 +152,8 @@ MonoBehaviour:
     <Size>k__BackingField: 0.11
     <RotationDegrees>k__BackingField: 0
     <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
     <Motion>k__BackingField: 0
     <MotionLine>k__BackingField: 0
     <MotionDistance>k__BackingField: 0
@@ -99,6 +164,8 @@ MonoBehaviour:
     <Size>k__BackingField: 0.16
     <RotationDegrees>k__BackingField: 0
     <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
     <Motion>k__BackingField: 0
     <MotionLine>k__BackingField: 0
     <MotionDistance>k__BackingField: 0
@@ -109,27 +176,56 @@ MonoBehaviour:
     <Size>k__BackingField: 0.11
     <RotationDegrees>k__BackingField: 0
     <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
     <Motion>k__BackingField: 0
     <MotionLine>k__BackingField: 0
     <MotionDistance>k__BackingField: 0
     <MotionSeconds>k__BackingField: 1.6
     <MotionDrop>k__BackingField: 0
   <IsReflectiveClosing>k__BackingField: 0
+  <EndsInCredits>k__BackingField: 0
   <NextPhase>k__BackingField: 2
+  <NextSequenceId>k__BackingField: 
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: "NI\xD1A"
     <Text>k__BackingField: Si hacemos algo redondo... podemos usarlo.
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "PAP\xC1"
     <Text>k__BackingField: Construyamos uno.
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "NI\xD1O"
     <Text>k__BackingField: "\xA1Probemos!"
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "MAM\xC1"
     <Text>k__BackingField: Paso a paso... podemos lograrlo.
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: ALGORITM
     <Text>k__BackingField: Abre agujeros en el centro de los troncos cortos.
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: ALGORITM
     <Text>k__BackingField: "Luego \xFAnelos con el tronco largo."
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: ALGORITM
     <Text>k__BackingField: Coloca encima la tabla.
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "Y sobre ella, la caja de alimentos. En ese orden: cada paso necesita que el anterior est\xE9 hecho."
+    <Text>k__BackingField: "Y sobre ella, la caja de alimentos. En ese orden: cada
+      paso necesita que el anterior est\xE9 hecho."
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0

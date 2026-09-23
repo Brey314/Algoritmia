@@ -16,9 +16,11 @@ MonoBehaviour:
   <EffectiveForceMin>k__BackingField: 7
   <EffectiveForceMax>k__BackingField: 8
   <SpacingLevels>k__BackingField: 10
-  <EffectiveOverlap>k__BackingField: 5
+  <EffectiveOverlap>k__BackingField: 30
   <OverlapTolerance>k__BackingField: 4
   <GatherZoom>k__BackingField: 2
   <GatherSeconds>k__BackingField: 0.8
+  <IgnitionSeconds>k__BackingField: 3.5
+  <BurnExtent>k__BackingField: 0.5
   <MinimumEffectiveStrikes>k__BackingField: 3
   <AttemptsBeforeHint>k__BackingField: 3

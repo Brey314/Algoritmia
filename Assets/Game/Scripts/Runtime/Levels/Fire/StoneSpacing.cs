@@ -36,6 +36,12 @@ namespace Game.Levels.Fire
         /// <summary>Cuánto se enciman en esa muesca. Negativo: hay hueco entre ellas.</summary>
         public float Overlap(int notch) => _stoneWidth - Distance(notch);
 
+        /// <summary>
+        /// Cuánto se tocan, de 0 (hay hueco: no chocan) a 1 (una encima de la otra). Es lo que
+        /// gradúa el golpe que se oye: más encimadas, más fuerte.
+        /// </summary>
+        public float Contact(int notch) => Mathf.Clamp01(Overlap(notch) / _stoneWidth);
+
         /// <summary>Dónde cae la muesca respecto del roce que hace chispa.</summary>
         public SpacingBand Classify(int notch)
         {

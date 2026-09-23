@@ -1,1 +1,16 @@
-{}
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__rider__.*|mcp__coplay-mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -d \"$CLAUDE_PROJECT_DIR/Temp\" ] && touch \"$CLAUDE_PROJECT_DIR/Temp/claude-active\"; exit 0",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
@@ -37,6 +38,10 @@ namespace Game.Levels.Wheel
         [SerializeField]
         [Tooltip("Contenido del guía del Nivel 2. La fase 1 activa su primera tarea, «Seleccionar».")]
         private GuideContent guide;
+
+        [SerializeField]
+        [Tooltip("Sonidos del Nivel 2: el bosque de día, lo que suena al apartarse cada objeto y el acopio de los troncos. Vacío = el bosque se juega en silencio.")]
+        private WheelSounds sounds;
 
         [SerializeField]
         [Tooltip("El suelo: la mitad inferior de la pantalla, donde caen los objetos.")]
@@ -133,6 +138,9 @@ namespace Game.Levels.Wheel
         private WheelIndicatorCollector _indicators;
         private Canvas _canvas;
 
+        /// <summary>Si suena el bucle de las hojas: alguna planta sigue moviéndose.</summary>
+        private bool _leavesRustling;
+
         /// <summary>El flujo del juego. Lo pone <c>Boot</c>; una prueba puede inyectar otro.</summary>
         internal GameFlowRunner Runner { get; set; }
 
@@ -157,6 +165,7 @@ namespace Game.Levels.Wheel
         internal Image MessageIcon => messageIcon;
         internal Button HelpButton => helpButton;
         internal WheelLevelConfig Config => config;
+        internal WheelSounds Sounds => sounds;
 #endif
 
         private void Awake() => Runner ??= GameFlowRunner.Instance;
@@ -173,6 +182,13 @@ namespace Game.Levels.Wheel
             }
 
             _canvas = floorArea.GetComponentInParent<Canvas>();
+
+            if (sounds != null && AudioManager.Instance != null)
+            {
+                // El mismo clip que piden las escenas 2.1 y 2.2: el gestor no lo reinicia y el
+                // bosque sigue sonando sin costura al pasar de la narrativa a la mecánica.
+                AudioManager.Instance.PlayAmbient(sounds.ForestAmbient);
+            }
 
             // La caja se agarra al pulsar y se suelta al soltar: pulsar y soltar, no arrastrar
             // (RF-25, RNF-02). Dónde va mientras se sostiene lo decide Update leyendo el ratón.
@@ -575,6 +591,7 @@ namespace Game.Levels.Wheel
                 return;
             }
 
+            var leavesMoving = false;
             foreach (var (forestObject, button, nudge) in _spawned)
             {
                 if (!button.gameObject.activeSelf)
@@ -585,11 +602,67 @@ namespace Game.Levels.Wheel
                 var position = forestObject.FloorPosition;
                 if (nudge != null)
                 {
-                    nudge.Step(cursor, deltaTime);
+                    if (nudge.Step(cursor, deltaTime))
+                    {
+                        PlayNudge(forestObject.Category);
+                    }
+
                     position = nudge.Position;
+                    leavesMoving |= forestObject.Category == ForestObjectCategory.Plant && nudge.IsMoving;
                 }
 
                 Place((RectTransform)button.transform, position, forestObject.Mirrored, cursor);
+            }
+
+            RustleLeaves(leavesMoving);
+        }
+
+        /// <summary>
+        /// El cursor acaba de alcanzar un objeto: suena a lo que es, una vez. El tronco suena a
+        /// tronco que rueda y la piedra y la herramienta a piedra —lo que no rueda—: es el patrón
+        /// de RF-23 dicho con el oído, como el movimiento lo dice con la vista (§2.4: nunca solo).
+        /// </summary>
+        private void PlayNudge(ForestObjectCategory category)
+        {
+            if (sounds != null)
+            {
+                Play(sounds.NudgeClipFor(category), sounds.NudgePitchJitter);
+            }
+        }
+
+        /// <summary>Un efecto, una vez; sin gestor (escena abierta sin <c>Boot</c>) no suena nada.</summary>
+        private static void Play(AudioClip clip, float pitchJitter = 0f)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySfx(clip, pitchJitter);
+            }
+        }
+
+        /// <summary>
+        /// Las hojas suenan mientras alguna sigue en el aire o deslizándose, y callan al posarse.
+        /// </summary>
+        /// <remarks>
+        /// **Bucle y no disparo**: la hoja es lo único del bosque cuyo movimiento dura —un arco
+        /// lento de vuelta al suelo— y su pieza son seis segundos de hojarasca. Disparada una vez
+        /// por acercamiento sonaría mucho más que la hoja misma y se amontonaría con el siguiente.
+        /// Va por el canal de clic sostenido del gestor, el mismo que usa la hoja del Nivel 1.
+        /// </remarks>
+        private void RustleLeaves(bool moving)
+        {
+            if (moving == _leavesRustling || sounds == null || AudioManager.Instance == null)
+            {
+                return;
+            }
+
+            _leavesRustling = moving;
+            if (moving)
+            {
+                AudioManager.Instance.PlayHeld(sounds.LeafNudge);
+            }
+            else
+            {
+                AudioManager.Instance.StopHeld();
             }
         }
 
@@ -667,6 +740,7 @@ namespace Game.Levels.Wheel
                 // desempeño (CP-02, CP-03).
                 button.gameObject.SetActive(false);
                 Store(forestObject);
+                Play(sounds?.LogCollected);
                 _hints.RegisterSuccessfulAttempt();
                 _indicators.RecordAccepted();
                 Show(outcome.Message, acceptedIcon, acceptedColor);
@@ -735,6 +809,7 @@ namespace Game.Levels.Wheel
             try
             {
                 await Awaitable.NextFrameAsync(destroyCancellationToken);
+                Play(sounds?.AllLogsCollected); // los cinco reunidos: suena al echar a volar
 
                 foreach (var (_, button, _) in _spawned)
                 {

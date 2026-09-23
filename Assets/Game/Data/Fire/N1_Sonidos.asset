@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0233a22b4fda3e540adf6046cea06359, type: 3}
+  m_Name: N1_Sonidos
+  m_EditorClassIdentifier: Game.Levels.Fire::Game.Levels.Fire.FireSounds
+  <CaveAmbient>k__BackingField: {fileID: 8300000, guid: fc958f01575f8f94db4079d9063c54cd, type: 3}
+  <FireAmbient>k__BackingField: {fileID: 8300000, guid: 6423a3675fa942f4fb8d62abf58bb65e, type: 3}
+  <FireAmbientFadeSeconds>k__BackingField: 3
+  <LeafDrag>k__BackingField: {fileID: 8300000, guid: b068359dff2e23e4cb60169ae4229221, type: 3}
+  <Gathered>k__BackingField: {fileID: 8300000, guid: b109a9290639d8341be16070d1a66a98, type: 3}
+  <Strike>k__BackingField: {fileID: 8300000, guid: 317832ad07b1a5646804b950b40d77ad, type: 3}
+  <StrikeMinVolume>k__BackingField: 0.3
+  <StrikePitchJitter>k__BackingField: 0.06
+  <Spark>k__BackingField: {fileID: 8300000, guid: 5ecd04152a6629249b578368fb50bfee, type: 3}
+  <Blow>k__BackingField: {fileID: 8300000, guid: f0c0207d5422dcd42aa81f0f18b1ae65, type: 3}

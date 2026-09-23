@@ -106,12 +106,23 @@ namespace Game.Levels.Wheel
         /// </summary>
         private const float BounceRetention = 0.6f;
 
+        /// <summary>
+        /// Por debajo de esta rapidez, en fracción del suelo por segundo, el objeto se lee quieto:
+        /// es lo que calla el bucle de las hojas cuando se posan. Sin umbral no callaría nunca,
+        /// porque la resistencia divide la velocidad y no la deja en cero.
+        /// </summary>
+        private const float StillSpeed = 0.005f;
+
         private readonly NudgeSettings _settings;
         private readonly Vector2 _home;
         private readonly Rect _bounds;
 
-        /// <summary>La piedra vuelca una sola vez por acercamiento: esto es lo que la rearma.</summary>
-        private bool _armed = true;
+        /// <summary>
+        /// Si el cursor estaba dentro del radio el fotograma anterior. La piedra vuelca una sola
+        /// vez por acercamiento —salir del radio es lo que la rearma— y el sonido de cada objeto
+        /// suena también una sola vez por acercamiento.
+        /// </summary>
+        private bool _wasInside;
 
         public ForestObjectNudge(NudgeSettings settings, Vector2 home, Rect bounds)
         {
@@ -128,12 +139,21 @@ namespace Game.Levels.Wheel
         /// <summary>Dónde está ahora mismo, en fracción del suelo.</summary>
         public Vector2 Position => _home + Offset;
 
+        /// <summary>Si todavía se mueve: la hoja en su arco, el tronco rodando.</summary>
+        public bool IsMoving => Velocity.sqrMagnitude > StillSpeed * StillSpeed;
+
         /// <summary>Avanza un fotograma con el cursor donde esté.</summary>
-        public void Step(Vector2 cursor, float deltaTime)
+        /// <returns>
+        /// Si el cursor acaba de entrar en el radio: el momento en que el objeto empieza a
+        /// apartarse, que es cuando suena (una vez por acercamiento, no una por fotograma).
+        /// </returns>
+        public bool Step(Vector2 cursor, float deltaTime)
         {
             var away = Position - cursor;
             var distance = away.magnitude;
             var inside = distance < _settings.Radius;
+            var entered = inside && !_wasInside;
+            _wasInside = inside;
 
             // Si el cursor cae justo encima no hay dirección que calcular; se aparta a la derecha
             // en vez de dividir por cero y mandar el objeto a NaN, de donde no vuelve.
@@ -141,8 +161,8 @@ namespace Game.Levels.Wheel
 
             if (_settings.StepSize > 0f)
             {
-                StepInCorners(inside, direction);
-                return;
+                StepInCorners(entered, direction);
+                return entered;
             }
 
             if (inside)
@@ -172,6 +192,7 @@ namespace Game.Levels.Wheel
             }
 
             Confine();
+            return entered;
         }
 
         /// <summary>
@@ -182,21 +203,14 @@ namespace Game.Levels.Wheel
         /// siguiente y ahí se queda por mucho que el cursor insista, y hay que retirarlo y volver
         /// para que vuelque otra vez. Esa negativa **es** la mitad del patrón que enseña RF-23.
         /// </remarks>
-        private void StepInCorners(bool inside, Vector2 direction)
+        private void StepInCorners(bool entered, Vector2 direction)
         {
-            if (!inside)
-            {
-                _armed = true;
-                return;
-            }
-
-            if (!_armed)
+            if (!entered)
             {
                 return;
             }
 
             Offset += direction * _settings.StepSize;
-            _armed = false;
             Confine();
         }
 

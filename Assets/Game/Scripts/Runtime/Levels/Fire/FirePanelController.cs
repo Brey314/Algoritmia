@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
@@ -9,17 +11,18 @@ namespace Game.Levels.Fire
     /// <summary>
     /// El panel de encendido del Nivel 1 (RF-14, guion §4.3.1), en dos fases (Fase 6, 15/09/2026):
     /// **reunir** —arrastrar hojas, sílex y pedernal al círculo del centro; «Pista» dibuja el
-    /// círculo— y **encender** —la cámara se acerca, las hojas se acomodan en fogata y aparecen
-    /// los deslizantes de fuerza y de cercanía de las piedras con «Golpear» y «Soplar»—. Traduce
-    /// los clics a <see cref="FireAttempt"/> / <see cref="FireFeedbackLog"/> y el estado a la UI.
+    /// círculo— y **encender** —la cámara se acerca, las hojas sueltas se funden en el montón visto
+    /// desde arriba y aparecen los deslizantes de fuerza y de cercanía de las piedras con «Golpear»
+    /// y «Soplar»—. Traduce los clics a <see cref="FireAttempt"/> / <see cref="FireFeedbackLog"/> y
+    /// el estado a la UI.
     /// </summary>
     /// <remarks>
     /// Adaptador delgado: **no contiene ninguna regla del juego**. Si está todo reunido lo dice
     /// <see cref="FireArrangement"/>; dónde van las piedras y si chocan, <see cref="StoneSpacing"/>;
     /// los deslizantes representan la hipótesis y no producen efecto hasta «Golpear» (RF-15); el
     /// resultado de cada golpe lo decide <see cref="FireAttempt"/> (T12) y el mensaje
-    /// <see cref="FireFeedbackLog"/> (T13). Al converger y accionar «Soplar», anima el nacimiento
-    /// del fuego y encadena a la escena narrativa de cierre (T15, RF-20).
+    /// <see cref="FireFeedbackLog"/> (T13). Al converger y accionar «Soplar», prende la llama
+    /// cenital sobre el montón y encadena a la escena narrativa de cierre (T15, RF-20).
     /// </remarks>
     public class FirePanelController : MonoBehaviour
     {
@@ -53,6 +56,10 @@ namespace Game.Levels.Fire
         private RectTransform fireSpot;
 
         [SerializeField]
+        [Tooltip("Interfaz que las piezas no deben tapar al aparecer: la tablilla, «Pista» y el botón de pausa. El círculo de reunión se excluye solo.")]
+        private RectTransform[] keepClear = Array.Empty<RectTransform>();
+
+        [SerializeField]
         [Tooltip("Contorno de la zona de reunión (T25). Se dibuja al pedir ayuda; su tamaño lo fija el panel a partir del botón de abajo.")]
         private Image gatherRing;
 
@@ -63,6 +70,18 @@ namespace Game.Levels.Fire
         [SerializeField]
         [Tooltip("La interfaz del encendido —deslizantes, etiquetas, «Golpear» y «Soplar»—, oculta mientras se reúnen los materiales (T25).")]
         private GameObject[] ignitionUi = Array.Empty<GameObject>();
+
+        [SerializeField]
+        [Tooltip("El montón de hojas visto desde arriba (prop_n1_monton_hojas_cenital), hermano de las piezas: reemplaza a las hojas sueltas al armar la fogata y se quema desde el centro al nacer el fuego. Oculto mientras se reúne.")]
+        private Image leafPile;
+
+        [SerializeField]
+        [Tooltip("La llama cenital (prop_n1_fuego_cenital) sobre el montón: su Animator arranca al soplar y sigue en bucle hasta la escena de cierre. Oculta hasta entonces.")]
+        private Animator fireFlame;
+
+        [SerializeField]
+        [Tooltip("El quemado del montón (BurnReveal en MontonHojas): al soplar crece despacio desde donde cae la llama hasta N1_Config.BurnExtent y ahí se queda.")]
+        private BurnReveal burn;
 
         [SerializeField]
         [Tooltip("Iluminación progresiva del escenario (RF-21, prioridad Baja). Puede quedar sin " +
@@ -76,6 +95,10 @@ namespace Game.Levels.Fire
         [SerializeField]
         [Tooltip("Botón «Pista» (mockup 7, arriba a la izquierda): repite la instrucción del paso (RF-13) y, al reunir, dibuja el círculo.")]
         private Button hintButton;
+
+        [SerializeField]
+        [Tooltip("Las piezas de sonido del nivel (N1_Sonidos). Puede quedar sin asignar: el nivel se juega igual en silencio — el audio refuerza, nunca informa solo (§2.4).")]
+        private FireSounds sounds;
 
         private FireAttempt _attempt;
         private FireFeedbackLog _log;
@@ -128,15 +151,20 @@ namespace Game.Levels.Fire
         internal FeedbackLogView LogView => logView;
         internal DraggablePiece[] Pieces => pieces;
         internal RectTransform FireSpot => fireSpot;
+        internal RectTransform[] KeepClear => keepClear;
         internal Image GatherRing => gatherRing;
         internal RectTransform[] Environment => environment;
         internal GameObject[] IgnitionUi => ignitionUi;
+        internal Image LeafPile => leafPile;
+        internal Animator FireFlame => fireFlame;
+        internal BurnReveal Burn => burn;
         internal FireAttempt Attempt => _attempt;
         internal FireFeedbackLog Log => _log;
         internal FireIndicatorCollector Indicators => _indicators;
         internal StoneSpacing Spacing => _spacing;
         internal CaveLightingController Lighting => lighting;
         internal Button HintButton => hintButton;
+        internal FireSounds Sounds => sounds;
 #endif
 
         private RectTransform Floor => (RectTransform)fireSpot.parent;
@@ -169,6 +197,8 @@ namespace Game.Levels.Fire
             // Lo más lejos que se separan las piedras es la longitud de una hoja (T26).
             _spacing = new StoneSpacing(config, WidthOf(PieceKind.Silex), WidthOf(PieceKind.Leaf));
 
+            ScatterPieces();
+
             strikeButton.onClick.AddListener(Strike);
             blowButton.onClick.AddListener(Blow);
             if (hintButton != null)
@@ -178,12 +208,22 @@ namespace Game.Levels.Fire
 
             foreach (var piece in pieces)
             {
+                piece.PickedUp += Piece_PickedUp;
                 piece.Dropped += Piece_Dropped;
+            }
+
+            // La cueva ya sonaba en la escena 1.2: pedir el mismo ambiente la deja seguir sin costura.
+            if (sounds != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayAmbient(sounds.CaveAmbient);
             }
 
             // Reuniendo solo hay piezas, tablilla y «Pista»: la interfaz del encendido llega con
             // el acercamiento (T25). El círculo se dibuja al pedir ayuda.
             gatherRing.gameObject.SetActive(false);
+            leafPile.gameObject.SetActive(false);
+            fireFlame.gameObject.SetActive(false);
+            burn.Extent = 0f; // nada quemado hasta que nace el fuego
             foreach (var element in ignitionUi)
             {
                 element.SetActive(false);
@@ -193,7 +233,64 @@ namespace Game.Levels.Fire
             RefreshLighting();
         }
 
-        private void Piece_Dropped(DraggablePiece _) => TryFinishGathering();
+        /// <summary>
+        /// Reparte las piezas por el suelo al azar, fuera de la interfaz y del círculo de reunión
+        /// (pedido de Santiago, 22/09/2026): la posición que trae la escena es solo el punto de partida.
+        /// </summary>
+        private void ScatterPieces()
+        {
+            Canvas.ForceUpdateCanvases(); // los rects anclados de la interfaz valen desde el primer cuadro
+            var blocked = new List<Rect>(Array.ConvertAll(keepClear, InFloorSpace));
+            var spot = fireSpot.anchoredPosition;
+            var radius = GatherRadius;
+            blocked.Add(new Rect(spot.x - radius, spot.y - radius, 2f * radius, 2f * radius));
+
+            // El montón de hojas dibuja fuera de su rect (LeafPile): la huella lleva margen.
+            var sizes = Array.ConvertAll(pieces, piece => piece.Width * 1.6f);
+            var positions = FloorScatter.Place(Floor.rect, blocked, sizes, new System.Random());
+            for (var i = 0; i < pieces.Length; i++)
+            {
+                pieces[i].MoveTo(positions[i]);
+            }
+        }
+
+        /// <summary>El rect de un elemento de interfaz en el espacio del suelo, donde viven las posiciones de las piezas.</summary>
+        private Rect InFloorSpace(RectTransform ui)
+        {
+            var corners = new Vector3[4];
+            ui.GetWorldCorners(corners);
+            var min = Floor.InverseTransformPoint(corners[0]);
+            var max = Floor.InverseTransformPoint(corners[2]);
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        }
+
+        /// <summary>Una hoja suena mientras se la lleva (clic sostenido, RNF-02); las piedras no.</summary>
+        private void Piece_PickedUp(DraggablePiece piece)
+        {
+            if (piece.Kind == PieceKind.Leaf && sounds != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayHeld(sounds.LeafDrag);
+            }
+        }
+
+        private void Piece_Dropped(DraggablePiece _)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.StopHeld();
+            }
+
+            TryFinishGathering();
+        }
+
+        /// <summary>Dispara una pieza de sonido, si hay gestor y hay pieza. Sin gestor (escena abierta sin pasar por Boot) no suena nada y el nivel sigue.</summary>
+        private static void Play(AudioClip clip, float pitchJitter = 0f, float volume = 1f)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySfx(clip, pitchJitter, volume);
+            }
+        }
 
         /// <summary>Si ya está todo dentro del círculo, pasa al encendido. Lo llaman las piezas al soltarse y las pruebas.</summary>
         internal void TryFinishGathering()
@@ -208,17 +305,25 @@ namespace Game.Levels.Fire
 
         /// <summary>
         /// El paso de reunir a encender (T25): las piezas dejan de arrastrarse, la cámara se
-        /// acerca al entorno, las hojas se acomodan en fogata —juntas, no encimadas— y las
-        /// piedras donde diga el deslizante; al terminar aparece la interfaz del encendido.
+        /// acerca al entorno, las hojas sueltas convergen al punto del fuego mientras sobre ellas
+        /// entra por fundido el montón visto desde arriba, y las piedras van donde diga el
+        /// deslizante; al terminar, las hojas sueltas ya no están y aparece la interfaz del encendido.
         /// </summary>
         private async Awaitable EnterIgnitionAsync()
         {
             IsTransitioning = true;
             gatherRing.gameObject.SetActive(false);
+            Play(sounds?.Gathered); // todo reunido: el paso al encendido suena una vez
             foreach (var piece in pieces)
             {
                 piece.enabled = false; // ya no se arrastran: desde aquí las piedras las mueve el deslizante
             }
+
+            // El montón entra encima de las hojas que llegan; las piedras irán encima de él (PlaceStones).
+            var pileColor = leafPile.color;
+            leafPile.color = new Color(pileColor.r, pileColor.g, pileColor.b, 0f);
+            leafPile.rectTransform.SetAsLastSibling();
+            leafPile.gameObject.SetActive(true);
 
             var starts = Array.ConvertAll(pieces, piece => piece.Position);
             var targets = CampfireLayout();
@@ -236,6 +341,7 @@ namespace Game.Levels.Fire
                         pieces[i].MoveTo(Vector2.Lerp(starts[i], targets[i], t));
                     }
 
+                    leafPile.color = new Color(pileColor.r, pileColor.g, pileColor.b, t);
                     await Awaitable.NextFrameAsync(destroyCancellationToken);
                 }
             }
@@ -248,8 +354,13 @@ namespace Game.Levels.Fire
             for (var i = 0; i < pieces.Length; i++)
             {
                 pieces[i].MoveTo(targets[i]);
+                if (pieces[i].Kind == PieceKind.Leaf)
+                {
+                    pieces[i].gameObject.SetActive(false); // las hojas sueltas ya son el montón
+                }
             }
 
+            leafPile.color = pileColor;
             IsGathering = false;
             IsTransitioning = false;
             foreach (var element in ignitionUi)
@@ -275,38 +386,19 @@ namespace Game.Levels.Fire
         }
 
         /// <summary>
-        /// Dónde acaba cada pieza al encender: las hojas en anillo alrededor del punto del fuego,
-        /// tangentes entre sí —juntas, no una encima de otra—, y las piedras en el centro, a la
-        /// distancia que marque el deslizante.
+        /// Dónde acaba cada pieza al encender: las hojas en el punto del fuego —desaparecen bajo
+        /// el montón— y las piedras en el centro, a la distancia que marque el deslizante.
         /// </summary>
         private Vector2[] CampfireLayout()
         {
             var spot = fireSpot.anchoredPosition;
-            var leaves = Array.FindAll(pieces, piece => piece.Kind == PieceKind.Leaf).Length;
-            var leafWidth = WidthOf(PieceKind.Leaf);
-            // Radio con el que dos hojas vecinas del anillo se tocan sin encimarse.
-            var ringRadius = leaves > 1 ? leafWidth / (2f * Mathf.Sin(Mathf.PI / leaves)) : 0f;
             var distance = _spacing.Distance(SelectedSpacing);
-
-            var targets = new Vector2[pieces.Length];
-            var leaf = 0;
-            for (var i = 0; i < pieces.Length; i++)
+            return Array.ConvertAll(pieces, piece => piece.Kind switch
             {
-                targets[i] = pieces[i].Kind switch
-                {
-                    PieceKind.Silex => spot + new Vector2(-distance / 2f, 0f),
-                    PieceKind.Pedernal => spot + new Vector2(distance / 2f, 0f),
-                    _ => spot + ringRadius * Direction(leaf++, leaves)
-                };
-            }
-
-            return targets;
-        }
-
-        private static Vector2 Direction(int index, int count)
-        {
-            var angle = Mathf.PI / 2f + 2f * Mathf.PI * index / count; // la primera hoja arriba
-            return new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
+                PieceKind.Silex => spot + new Vector2(-distance / 2f, 0f),
+                PieceKind.Pedernal => spot + new Vector2(distance / 2f, 0f),
+                _ => spot
+            });
         }
 
         /// <summary>El sílex y el pedernal a la distancia de la muesca, uno a cada lado del punto del fuego (T26).</summary>
@@ -351,6 +443,26 @@ namespace Game.Levels.Fire
             var outcome = _attempt.Strike(SelectedForce, _spacing.Classify(SelectedSpacing));
             _indicators.RecordStrike(outcome);
             _log.Record(outcome, _attempt.ConsecutiveFailures);
+
+            // «Por qué no» un sonido de fallo: un golpe sin chispa suena a lo que pasó —separadas,
+            // las piedras no chocan y no se oye nada; en contacto chocan, más fuerte cuanto más
+            // encimadas, y nada más—, nunca a pitido de error ni a acorde de derrota (Dirección de
+            // sonido §2.1, CP-02). El efectivo añade la chispa que cae en las hojas (guion §4.3.3).
+            // Quien ponga aquí un sonido para el fallo reintroduce la penalización que el proyecto
+            // prohíbe.
+            if (sounds != null)
+            {
+                var contact = _spacing.Contact(SelectedSpacing);
+                if (contact > 0f)
+                {
+                    Play(sounds.Strike, sounds.StrikePitchJitter, Mathf.Lerp(sounds.StrikeMinVolume, 1f, contact));
+                }
+
+                if (outcome.Effective)
+                {
+                    Play(sounds.Spark);
+                }
+            }
             if (outcome.Effective)
             {
                 _hints.RegisterSuccessfulAttempt();
@@ -412,6 +524,7 @@ namespace Game.Levels.Fire
 
             _log.RecordBlowSuccess();
             logView.Show(_log.Entries);
+            Play(sounds?.Blow);
             _ = ResolveAsync();
         }
 
@@ -430,28 +543,35 @@ namespace Game.Levels.Fire
             CompleteLevel();
         }
 
-        /// <summary>Nacimiento del fuego: un barrido de color, guion §4.3.5 E7.</summary>
+        /// <summary>
+        /// Nacimiento del fuego (guion §4.3.5 E7): la llama cenital prende sobre el montón y las
+        /// hojas se queman desde el centro hacia fuera en <see cref="FireLevelConfig.IgnitionSeconds"/>.
+        /// </summary>
         private async Awaitable PlayIgnitionAsync()
         {
             // Un único barrido, en una sola dirección: RNF-21 prohíbe destellos de alta
-            // frecuencia, y un `Mathf.PingPong` o cualquier oscilación los produciría. Las hojas
-            // amontonadas se tiñen de fuego; el sprite de fuego real es arte pendiente (A7).
-            const float duration = 0.6f;
-            var leaves = Array.ConvertAll(
-                Array.FindAll(pieces, piece => piece.Kind == PieceKind.Leaf), piece => piece.GetComponent<Image>());
-            var starts = Array.ConvertAll(leaves, image => image != null ? image.color : Color.white);
-            var fire = new Color(0.91f, 0.40f, 0.10f);
+            // frecuencia, y un `Mathf.PingPong` o cualquier oscilación los produciría.
+            var duration = Mathf.Max(config.IgnitionSeconds, 0f);
+            // La hoguera entra como capa sobre la cueva, que sigue sonando, y ya no se va (§8,
+            // amb_n1_cueva_fuego): crece en sus segundos sin golpe inicial (RNF-21), y la escena de
+            // cierre pide los dos mismos clips.
+            if (sounds != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayAmbientLayer(sounds.FireAmbient, sounds.FireAmbientFadeSeconds);
+            }
+
+            // La llama es el clip prop_n1_fuego_cenital: el Animator arranca en su primer cuadro al
+            // activarse y sigue en bucle hasta el cambio de escena. Va encima de todo, piedras incluidas.
+            fireFlame.transform.SetAsLastSibling();
+            fireFlame.gameObject.SetActive(true);
+
+            // Las hojas se queman desde donde cayó la llama, despacio y solo hasta donde diga la
+            // configuración; después el quemado se queda quieto. Un solo crecimiento, sin oscilar (RNF-21).
             var startLighting = lighting != null ? lighting.Progress : 1f;
             for (var elapsed = 0f; elapsed < duration; elapsed += Time.deltaTime)
             {
                 var t = elapsed / duration;
-                for (var i = 0; i < leaves.Length; i++)
-                {
-                    if (leaves[i] != null)
-                    {
-                        leaves[i].color = Color.Lerp(starts[i], fire, t);
-                    }
-                }
+                burn.Extent = config.BurnExtent * t;
 
                 // Un solo barrido combinado con el fuego: la iluminación completa llega en la
                 // resolución (guion E7), no antes (E4 solo sube un escalón por golpe efectivo).
@@ -459,14 +579,7 @@ namespace Game.Levels.Fire
                 await Awaitable.NextFrameAsync(destroyCancellationToken);
             }
 
-            foreach (var leaf in leaves)
-            {
-                if (leaf != null)
-                {
-                    leaf.color = fire;
-                }
-            }
-
+            burn.Extent = config.BurnExtent;
             lighting?.SetProgress(1f);
         }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using NUnit.Framework;
@@ -61,11 +62,11 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(60000)]
-        public async Task NarrativeScene_RF05_ResuelveLasSeisSecuenciasDelNivel2SinRamas()
+        public async Task NarrativeScene_RF05_ResuelveLasSieteSecuenciasDelNivel2SinRamas()
         {
             var ids = new[]
             {
-                "N2_PuenteI", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
+                "N2_PuenteI", "N2_PuenteI_Bosque", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
                 "N2_Escena23_Construccion", "N2_Escena24_Regreso", "N2_Escena25_Cierre"
             };
             var primeras = new string[ids.Length];
@@ -92,11 +93,11 @@ namespace Game.UI.Tests
         [Timeout(60000)]
         public async Task NarrativeScene_RF05_ResuelveLasCincoSecuenciasDelNivel3SinRamas()
         {
-            // Cinco escenas del guion en seis assets: el puente II corta del bosque al río a
-            // mitad de camino y la ilustración es por secuencia (R04, Camara_Narrativa_N3.md §4).
+            // Cinco escenas del guion en siete assets: el puente II corta dos veces —del refugio
+            // en la cueva al horizonte y de ahí al río— y la ilustración es por secuencia (R04).
             var ids = new[]
             {
-                "N3_PuenteII", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
+                "N3_PuenteII", "N3_PuenteII_Horizonte", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
                 "N3_Escena32_PrimerIntento", "N3_Escena33_Cruce", "N3_EscenaFinal"
             };
             var primeras = new string[ids.Length];
@@ -234,14 +235,28 @@ namespace Game.UI.Tests
             // Hasta el 15/09/2026 `N2_PuenteI` no declaraba salida y caía al menú: el Nivel 2
             // abría en la 2.1 y el puente no se veía nunca. Desde el Checkpoint W-F el nivel abre
             // con el puente y este encadena con la 2.1 por su asset (RF-05, Camara_Narrativa_N2 §5).
+            // Desde el 23/09/2026 el puente son dos assets: el amanecer junto a la cueva y, desde
+            // «La familia sale a recolectar», el bosque.
             var (controller, runner) = await OpenNarrative("N2_PuenteI", LevelId.Wheel);
-            var lineas = SequenceNamed(controller, "N2_PuenteI").Lines.Length;
+            var vistas = new System.Collections.Generic.List<string>();
 
-            for (var i = 0; i < lineas; i++)
+            while (runner.Flow.Current == GameState.Narrative && runner.Flow.NarrativeSequenceId != "N2_Escena21_Bosque" && vistas.Count < 3)
             {
-                Click(controller.AdvanceButton);
+                var id = runner.Flow.NarrativeSequenceId;
+                vistas.Add(id);
+                foreach (var _ in SequenceNamed(controller, id).Lines)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                if (runner.Flow.Current == GameState.Narrative)
+                {
+                    controller.Begin(); // la escena se recarga con el id nuevo
+                    await Awaitable.NextFrameAsync();
+                }
             }
 
+            Assert.That(vistas, Is.EqualTo(new[] { "N2_PuenteI", "N2_PuenteI_Bosque" }), "el amanecer y luego el bosque");
             Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Narrative), "el puente no sale al menú");
             Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N2_Escena21_Bosque"), "encadena con la 2.1");
         }
@@ -414,6 +429,27 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task NarrativeScene_RF20_ElCierreDelFuegoPintaElMontonConLaLlamaAnimada()
+        {
+            var (controller, _) = await OpenNarrative("N1_NacimientoDelFuego", LevelId.Fire);
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            // Lo que dice el texto se ve: «una llama... crece despacio desde las hojas».
+            Assert.That(controller.Props.Select(p => p.Prop.Art.name), Has.Some.EqualTo("prop_n1_monton_hojas"),
+                "el montón de hojas visto de lado está pintado");
+            var monton = controller.Props.First(p => p.Prop.Art.name == "prop_n1_monton_hojas");
+            Assert.That(monton.Rect.GetComponent<BurnReveal>(), Is.Not.Null, "y se ve quemado bajo la llama");
+            var llama = controller.Props
+                .Select(p => p.Rect.GetComponent<Animator>())
+                .FirstOrDefault(animator => animator != null);
+            Assert.That(llama, Is.Not.Null, "hay un objeto animado");
+            Assert.That(llama.runtimeAnimatorController.name, Is.EqualTo("prop_n1_fuego_normal"),
+                "y es la llama vista de lado (prop_n1_fuego_normal)");
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task NarrativeScene_RF05_LaEscena21MuestraLosObjetosRepartidosPorElSuelo()
         {
             var (controller, _) = await OpenNarrative("N2_Escena21_Bosque", LevelId.Wheel);
@@ -543,12 +579,65 @@ namespace Game.UI.Tests
         }
 
         /// <summary>
+        /// Lo que se ve en la 2.2 se oye cuando pasa: cada objeto suena **al tocar el suelo**, no
+        /// al empezar su línea. La caja, al terminar de caer pasado el último tronco; el tronco y la
+        /// piedra, cuando los sueltan, a mitad de su movimiento.
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF26_LaEscena22SuenaCuandoCadaObjetoTocaElSuelo()
+        {
+            var audio = new GameObject("TestAudio").AddComponent<AudioManager>();
+            try
+            {
+                var (controller, _) = await OpenNarrative("N2_Escena22_ElPatron", LevelId.Wheel);
+                var secuencia = SequenceNamed(controller, "N2_Escena22_ElPatron");
+                var caja = controller.Props.First(p => p.Prop.MotionDrop > 0f);
+                var tronco = controller.Props.First(p => p.Prop.MotionLine == 1 && p.Prop.Motion == PropMotion.LiftAndRoll);
+                var piedra = controller.Props.First(p => p.Prop.MotionLine == 2 && p.Prop.Motion == PropMotion.LiftAndStay);
+                Assert.That(caja.Prop.LandSound.name, Is.EqualTo("sfx_n2_piedra_cae"), "la caja cae con piedra_cae");
+                Assert.That(tronco.Prop.LandSound.name, Is.EqualTo("sfx_n2_troncos"), "el tronco cae con troncos");
+                Assert.That(piedra.Prop.LandSound.name, Is.EqualTo("sfx_n2_piedra_cae"), "la piedra cae con piedra_cae");
+                Assert.That(secuencia.Lines[1].Sound, Is.Null, "la línea del niño no suena al aparecer: suena el tronco al caer");
+                Assert.That(secuencia.Lines[2].Sound, Is.Null, "ni la de papá: suena la piedra al caer");
+
+                await Suena(audio, caja.Prop, alCaer: 1f);
+
+                Click(controller.AdvanceButton);
+                await Suena(audio, tronco.Prop, alCaer: 0.5f);
+
+                Click(controller.AdvanceButton);
+                await Suena(audio, piedra.Prop, alCaer: 0.5f);
+            }
+            finally
+            {
+                Object.DestroyImmediate(audio.gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Que el objeto no suene antes de caer y suene una vez al caer. <paramref name="alCaer"/>
+        /// es la fracción de su movimiento en la que toca el suelo.
+        /// </summary>
+        private static async Task Suena(AudioManager audio, NarrativeProp prop, float alCaer)
+        {
+            var antes = audio.SfxCount;
+            await EsperarSegundos(prop.MotionSeconds * alCaer * 0.6f);
+            Assert.That(audio.SfxCount, Is.EqualTo(antes), $"{prop.LandSound.name} no suena antes de caer");
+
+            await EsperarSegundos(prop.MotionSeconds * alCaer * 0.4f + 0.25f);
+            Assert.That(audio.SfxCount, Is.EqualTo(antes + 1), $"{prop.LandSound.name} suena una vez al caer");
+            Assert.That(audio.LastSfx, Is.SameAs(prop.LandSound));
+        }
+
+        /// <summary>
         /// Recorre las seis escenas del Nivel 2 parada por parada, con la cámara y los movimientos
         /// ya asentados, y guarda una captura y un informe de dónde queda cada objeto pintado
         /// respecto a la pantalla y al cuadro de diálogo. Es la hoja de verificación de
         /// <c>Camara_Narrativa_N2.md</c> §10 sobre el motor real, no sobre recortes.
         /// </summary>
         [TestCase("N2_PuenteI")]
+        [TestCase("N2_PuenteI_Bosque")]
         [TestCase("N2_Escena21_Bosque")]
         [TestCase("N2_Escena22_ElPatron")]
         [TestCase("N2_Escena23_Construccion")]
@@ -674,6 +763,7 @@ namespace Game.UI.Tests
         /// lo que pasaba en la 2.2 con el tronco del niño y la piedra de papá (12/09/2026).
         /// </summary>
         [TestCase("N2_PuenteI")]
+        [TestCase("N2_PuenteI_Bosque")]
         [TestCase("N2_Escena21_Bosque")]
         [TestCase("N2_Escena22_ElPatron")]
         [TestCase("N2_Escena23_Construccion")]

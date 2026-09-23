@@ -43,7 +43,7 @@ namespace Game.Levels.Fire.Tests
             var (controller, _) = await LoadPanelWithProfile(NewProfile());
             await Reunir(controller);
             controller.ForceSlider.value = 7; // fuerza efectiva (N1_Config, Fase 5)
-            controller.SpacingSlider.value = 2; // las piedras se rozan (N1_Config, Fase 6)
+            controller.SpacingSlider.value = 5; // la única muesca efectiva (N1_Config)
 
             Click(controller.StrikeButton);
             await Awaitable.NextFrameAsync();

@@ -54,11 +54,11 @@ namespace Game.Scaffolding.Tests
         }
 
         [Test]
-        public void NarrativeSequence_RF05_ElNivel2TieneSusSeisSecuencias()
+        public void NarrativeSequence_RF05_ElNivel2TieneSusSieteSecuencias()
         {
             var esperadas = new[]
             {
-                "N2_PuenteI", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
+                "N2_PuenteI", "N2_PuenteI_Bosque", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
                 "N2_Escena23_Construccion", "N2_Escena24_Regreso", "N2_Escena25_Cierre"
             };
 
@@ -70,15 +70,39 @@ namespace Game.Scaffolding.Tests
             Assert.That(delNivel2, Is.EquivalentTo(esperadas));
         }
 
+        /// <summary>
+        /// El Nivel 2 dura un día entero y la luz lo cuenta: amanece junto a la cueva (azul),
+        /// recolectar y armar es de tarde (sin tinte), la vuelta al refugio es al atardecer (cálido)
+        /// y el cierre es de noche, donde solo el fuego alumbra de lleno. El laberinto lleva su
+        /// propio tinte de atardecer en <c>N2_MazeLayout</c>.
+        /// </summary>
         [Test]
-        public void NarrativeSequence_RF05_ElNivel3TieneSusSeisSecuencias()
+        public void NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche()
         {
-            // Cinco escenas del guion (§7, §8.1, §8.4.1, §8.5, §9) en seis assets: el puente II
-            // cambia de ilustración a mitad —bosque y luego río, Camara_Narrativa_N3.md §4— y
-            // la ilustración es por secuencia, así que el corte al río es un asset encadenado.
+            var secuencias = TodasLasSecuencias().ToDictionary(sequence => sequence.Id);
+            var amanecer = secuencias["N2_PuenteI"].LightStart;
+            var tarde = secuencias["N2_Escena21_Bosque"].LightStart;
+            var atardecer = secuencias["N2_Escena24_Regreso"].LightStart;
+            var noche = secuencias["N2_Escena25_Cierre"].LightStart;
+
+            Assert.That(amanecer.Tint.b, Is.GreaterThan(amanecer.Tint.r), "amanece: luz azulada");
+            Assert.That(tarde.Tint, Is.EqualTo(Color.white), "la tarde no lleva tinte");
+            Assert.That(tarde.Ambient, Is.EqualTo(1f), "ni oscurece");
+            Assert.That(atardecer.Tint.r, Is.GreaterThan(atardecer.Tint.b), "atardece: luz cálida");
+            Assert.That(noche.Ambient, Is.LessThan(atardecer.Ambient), "de noche lo que no alumbra el fuego se oscurece");
+            Assert.That(noche.Radius, Is.GreaterThan(0f), "y el fuego sí alumbra");
+        }
+
+        [Test]
+        public void NarrativeSequence_RF05_ElNivel3TieneSusSieteSecuencias()
+        {
+            // Cinco escenas del guion (§7, §8.1, §8.4.1, §8.5, §9) en siete assets: el puente II
+            // cambia dos veces de ilustración —el refugio en la cueva, el horizonte con las
+            // fogatas y el río— y la ilustración es por secuencia, así que cada corte es un
+            // asset encadenado.
             var esperadas = new[]
             {
-                "N3_PuenteII", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
+                "N3_PuenteII", "N3_PuenteII_Horizonte", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
                 "N3_Escena32_PrimerIntento", "N3_Escena33_Cruce", "N3_EscenaFinal"
             };
 
@@ -191,17 +215,15 @@ namespace Game.Scaffolding.Tests
 
         /// <summary>
         /// Las secuencias cuyos encuadres están verificados contra el cuadro de diálogo. No es
-        /// «todas» a propósito: del Nivel 2 solo está implementado hasta el §6.3.1 del guion, y
-        /// <c>N2_Escena25_Cierre</c> (§6.4) todavía tiene su único objeto medio tapado. Entra en la
-        /// lista cuando se revise su encuadre, no antes: una prueba que se salta lo que no cumple
-        /// no comprueba nada.
+        /// «todas» a propósito: una escena entra en la lista cuando se revisa su encuadre, no
+        /// antes; una prueba que se salta lo que no cumple no comprueba nada.
         /// </summary>
         private static readonly string[] Verificadas =
         {
             "N1_Apertura", "N1_AparicionGuia", "N1_Hallazgo", "N1_NacimientoDelFuego",
-            "N2_PuenteI", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
-            "N2_Escena23_Construccion", "N2_Escena24_Regreso",
-            "N3_PuenteII", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
+            "N2_PuenteI", "N2_PuenteI_Bosque", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
+            "N2_Escena23_Construccion", "N2_Escena24_Regreso", "N2_Escena25_Cierre",
+            "N3_PuenteII", "N3_PuenteII_Horizonte", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
             "N3_Escena32_PrimerIntento", "N3_Escena33_Cruce", "N3_EscenaFinal"
         };
 

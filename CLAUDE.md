@@ -36,6 +36,26 @@ Desde el 10/09/2026 **corren varios en paralelo**, y **el reparto es por assembl
 | **Slice 1** | `Game.Levels.Fire`, `Game.Core`, escenas del N1, build portable |
 | **Slice 2** | `Game.Levels.Wheel`, `Game.Scaffolding` |
 | **Slice 3** | `Game.Levels.River`, `Game.Core`, `Game.Scaffolding`, escenas del N3 |
+| **Slice 4** | `Game.Reporting` (aún sin crear), `Game.Core`, `Game.UI` |
+
+El Slice 3 cerró su código el 21/09/2026 (Checkpoint R-E y `Slice-3-Resultados.md`) y **ya está en
+`main`** (PR #80); con él quedan implementados `RF-01..RF-44` y el carril de slices abierto es el
+Slice 4, que todavía no tiene una sola casilla marcada ni `Game.Reporting` en disco. La rama de
+trabajo de hoy es `feat/implementación-de-props-y-sonidos`, **por delante de `main` y sin
+fusionar** (cuántos commits lo dice `git log main..HEAD`, no este archivo). No es un slice sino el carril de arte y sonido —toca `Assets/Game/Art/`,
+`Game.Audio` y `Game.Levels.Fire`—, así que se pisa con el Slice 1. Lo de «parciales»: las dos
+secuencias del fuego del N1 ya son clips reproducibles —`prop_n1_fuego_normal.anim` (2,667 s) y
+`prop_n1_fuego_cenital.anim` (5,633 s), a 30 fps y en bucle, cada uno con su `.controller` al
+lado— y desde el 22/09/2026 **están cableados**: el cenital en `Level1_Cave` (objeto `Fuego`, que
+`FirePanelController` activa al soplar sobre el montón `MontonHojas`) y el normal en
+`N1_NacimientoDelFuego` como `NarrativeProp.FrameAnimation`, el único objeto narrativo animado.
+Los **34** cuadros que sobreviven en `…/Animations/Fuego {normal,cenital}/` conservan los nombres
+de entrega (`fuego_cenital_nivel_1_0000.png`, no el `prop_n1_…` de `Direccion_de_Arte.md`) y los
+referencia la curva del `.anim`: renombrarlos es trabajo del motor. El montón no se tiñe al
+prender: lo quema `BurnReveal` (`Game.Scaffolding`, máscara circular construida en memoria que
+crece hasta `N1_Config.BurnExtent` en la cueva y nace quieta en el cierre vía
+`NarrativeProp.BurnExtent`), y las piezas del suelo las reparte al azar `FloorScatter` (C# plano,
+`Game.Levels.Fire`) sin pisar la interfaz marcada como `keepClear` en la escena.
 
 **Tres cosas que los carriles comparten** — tocar cualquiera cambia más de un nivel a la vez:
 
@@ -53,14 +73,28 @@ Desde el 10/09/2026 **corren varios en paralelo**, y **el reparto es por assembl
   compone el relato sumando **todas** las fases del nivel.
 - **`GameFlow`** acepta `Narrative → Narrative` y **retoma en la primera fase pendiente que tenga
   escena** cuando se pide una ya confirmada (RNF-14); sin fase pendiente jugable repite la pedida, y
-  `GameFlowRunner` cae al menú si una fase no tiene escena.
+  `GameFlowRunner` cae al menú si una fase no tiene escena. Al pasar de una narrativa a una
+  mecánica, de una mecánica a una narrativa o entre dos narrativas encadenadas, `SceneLoader`
+  **funde a negro y de vuelta** (`FadeSeconds`, 0,4 s por mitad, tiempo sin escalar); la regla
+  vive en `GameFlowRunner.FadesBetween` y los menús cortan en seco. El negro se pinta con `OnGUI`
+  porque `Game.Core` no referencia uGUI.
 
 **Encadenar escenas narrativas es editar un asset, nunca tocar el controlador:**
 `NarrativeSequence.NextSequenceId` las enlaza. **La ilustración es por secuencia**, así que cambiar
 de fondo a mitad de escena son dos assets encadenados y no una rama — por eso las «cinco escenas»
-del Nivel 3 viven en **seis** `N3_*.asset`. Lo que depende del juego —la escena 3.2, que solo
+del Nivel 3 viven en **siete** `N3_*.asset` (el puente II pasa de la cueva al horizonte y de ahí al río). Lo que depende del juego —la escena 3.2, que solo
 aparece tras el primer fallo— lo decide `ConditionalNarrativeTrigger` (C# plano,
 `Game.Scaffolding`), tampoco un `if` en el controlador.
+
+**El Nivel 2 dura un día y lo cuenta la luz, no el arte.** En las narrativas lo hace
+`NarrativeLight` (tinte y fondo del shader `fx_oscuridad`, que multiplica la ilustración):
+amanecer azulado en `N2_PuenteI`, tarde sin tinte en la recolección y el armado, atardecer en la
+2.4, y noche junto al fuego en la 2.5 y en el arranque de `N3_PuenteII`. En el laberinto, que no
+tiene esa capa, lo hace `MazeLayout.LightTint`, que tiñe el entorno y todo lo que cuelga de él.
+Lo vigilan `NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche` y
+`MazeScene_RF30_ElLaberintoEsAlAtardecer`. Las ilustraciones de 3840 de ancho (`entorno_n1_apertura`,
+el bosque del N2) tienen una costura en x = 0,5 que ningún encuadre debe cruzar: lo avisa
+`IllustrationFraming.Warnings` en el `OnValidate` de la secuencia.
 
 **Cuántas fases tiene cada nivel** lo fija `PhaseId.PhasesPerLevel = { 1, 3, 3 }` — el Nivel 3 son
 tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **Al consumir
@@ -73,6 +107,7 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
 | `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. `INC-01`..`INC-45` están cerrados; **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`)— rigen para todo texto y asset nuevo. Quedan **abiertos** `INC-46` (tareas del Nivel 3), `INC-47` (la mecánica del Nivel 1 reúne los materiales en un círculo y luego mide fuerza y cercanía en dos deslizantes, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF), `INC-48` (el §4 del documento refundido es la arquitectura vieja), `INC-49` (el menú de pausa es el del mockup 6 y HU-17 aún dice «Continuar / Reiniciar nivel / Volver al menú principal») e `INC-50` («Empujar» en el bosque no anima el rodado, sale a la escena 2.2 que lo cuenta; RF-26/HU-08 lo describen dentro de la mecánica). |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
+| `claudeDocs/Direccion_de_Musica_y_Sonido.md` | **La ley del audio.** Hermano de la dirección de arte: cinco pilares (ningún sonido de fallo, §2.1, es CP-02 en el oído), cuatro buses bajo `AudioManager`, nomenclatura `mus_`/`amb_`/`sfx_`, los tres silencios del guion como piezas con disparador (§5) y el inventario de 104 piezas por nivel. **Cableadas están las nueve del Nivel 1, cuatro del Nivel 2 y las dos globales** (`N2_Sonidos`, rev. 3); las otras cuatro piezas entregadas en PR #81 —las tres del Nivel 3 y `amb_n2_noche_intemperie`— **no las referencia ningún asset todavía** —estar en disco no es estar aplicado—, y **no hay música ni blip de diálogo** (`PS-01..PS-05` siguen abiertos). Su §19 (rev. 2 el N1, rev. 3 el N2) dice qué está aplicado. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
 | `claudeDocs/Camara_Narrativa_N2.md` · `docs/Camara_Narrativa_N1.md` | **Los diseños de cámara que quedan en disco.** El del N1 es de Santiago (35 encuadres, cada uno con su estado de luz) y se trata como los `.docx`: no se edita desde código; solo el N1 usa la capa de oscuridad. El del N2 son 50 encuadres validados contra 16:9 — regla que evita el choque más común: para bajar la cámara al suelo hay que cerrar el plano (`y = 0.35` exige `zoom ≥ 1.43`). **El diseño del N3 ya no está en el equipo** (era `docs/md/Camara_Narrativa_N3.md`): 32 encuadres sobre dos sprites 16:9 **sin duplicar**, con el foco acotado a `[0.5/z, 1−0.5/z]` en los dos ejes —a zoom 1 solo cabe el centro, así que el trabajo lo hace el zoom y no el paneo—; lo aplicado sobrevive solo en los `N3_*.asset`. En los tres niveles los valores viven en los `N*_*.asset`: el documento explica el porqué, no sustituye al asset. |
 | ~~`docs/md/Camara_Narrativa*.md` · `docs/md/verificacion_encuadres_N1|N2|N3/`~~ | **Perdidos: no están en este equipo** (20/09/2026). Eran los inventarios de lo aplicado escritos a mano —qué quedó en cada asset y en el motor, con quién lo decidió [S] Santiago / [C] Claude— y las hojas de verificación de encuadres (un PNG por parada, generado desde el contenido, con la franja del cuadro de diálogo en rojo). Estaban en `.gitignore`, así que no hay copia en git. Las hojas **sí** se rehacen generándolas desde el contenido; los inventarios no. Mientras no se rehagan, la única fuente de lo aplicado es el `N*_*.asset`, y los enlaces a `claudeDocs/verificacion_encuadres_*` que aparecen en otros documentos no resuelven. |
@@ -80,7 +115,7 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | `claudeDocs/Mockups de interfaz Algoritmia.html` | **Los mockups de pantalla**, numerados desde el 2 (no hay mockup 1). Los `todo.md` y los documentos de cámara los citan por número («mockup 7 · Nivel 1 · encendido»); es la referencia de disposición de una escena antes de tocar el `.unity`. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. **Los `plan.md` no se reescriben**, así que sus avisos de precondición («los Slices 1 y 2 no están hechos», «`Assets/` sigue sin código») están vencidos; lo que sigue valiendo de ellos es qué pieza previa generaliza cada tarea. Ninguno rediscute `SPEC.md`. |
 | `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión con markitdown. **Nunca editar ninguno de los dos desde código.** |
-| ~~`docs/actas/OE*/Acta_*.md`~~ | **Perdidas: tampoco están en este equipo** (20/09/2026) y estaban en `.gitignore`. Eran las actas de seguimiento —qué se decidió, cuándo y por qué—, una carpeta por objetivo específico (`OE2/` serie `O01..O03`, `OE3/` serie `D01..D06`), y **el tablero Kanban vivía en su §6**, no en un archivo aparte: hoy no hay tablero fuera de los `todo.md`. Si reaparecen, al leerlas hacia atrás **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` después—, así que una tarjeta se rastrea por su texto y no por su id. Sin ellas, el *porqué* de un RF se busca en los `.docx` y en `INCONSISTENCIAS.md`. |
+| `docs/actas/OE3/Acta_D0N_*.md` | **Las actas de seguimiento, rehechas** (`D01` 02/09 … `D07` 19/09/2026): qué se decidió, cuándo y por qué, y **el tablero Kanban vive en su §6**, no en un archivo aparte. Siguen en `.gitignore` —existen en este equipo y no en un clon—, así que se perdieron una vez y pueden volver a perderse. La serie `OE2/` (`O01..O03`) **no** se rehizo: al leer hacia atrás **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` después—, así que una tarjeta se rastrea por su texto y no por su id, y el *porqué* de lo decidido antes del 02/09 se busca en los `.docx` y en `INCONSISTENCIAS.md`. |
 
 `SPEC.md` es la fuente de verdad para cualquier duda de alcance o diseño; este archivo no la
 repite. Si algo del código contradice a `SPEC.md`, gana `SPEC.md` o se corrige el documento
@@ -144,21 +179,22 @@ graphify explain "HintPolicy"
 
 `GRAPH_REPORT.md` es el índice legible —empezar por «Community Hubs»—; `graph.json` es el grafo
 para consumo de agente y `graph.html` la vista interactiva. Es una **foto**: la vigente es del
-20/09/2026 sobre el commit `3fe1e2a`, 202 archivos, 3750 nodos y 7826 aristas en 192 comunidades.
-**Esa foto no incluye los `docs/md/*.md`** (`manifest.json` lo confirma: cero entradas), así que
-una pregunta sobre un RF o una HU radicada **no** se le hace al grafo — se va al `.md` convertido.
+21/09/2026, 220 archivos, 3819 nodos y 8600 aristas en 221 comunidades.
+**Los `docs/md/*.md` sí están en el grafo —315 nodos— pero congelados**: los extrajo una corrida
+vieja y `manifest.json` no los sigue (cero entradas, porque graphify respeta el `.gitignore`), así
+que ningún `--update` los vuelve a leer. Sirven para **ubicar** un RF o una HU radicada; el texto
+que se cita sale siempre del `.md` convertido, que es el que está al día.
 Lo que el grafo señale se confirma en el código antes de citarlo: ubica, no sustituye a leer el
 archivo. Se refresca con `/graphify . --update` tras un bloque de trabajo —el incremental solo
 reextrae lo que cambió, y si lo cambiado es solo `.cs` no cuesta nada porque el AST no usa modelo—.
 **Dos cosas que hay que rehacer a mano al reconstruirlo desde cero**, porque `/graphify .` a secas
 no las hace:
 
-1. `.graphifyignore` excluye `Packages/` (metía 527 nodos del árbol de dependencias de Unity sin
-   conectar con nada) y `Assets/Game/Art/**/*.png` (las ilustraciones se extraen con visión, un
-   subagente por PNG, y sus nombres más `Inventario.md` ya dicen lo mismo: sin esa línea un
-   `--update` cuesta un subagente por lámina). **Graphify además respeta el `.gitignore`**, así que
-   los `docs/md/*.md` hay que sumarlos al corpus explícitamente o el grafo se queda sin los
-   documentos radicados — que es justo lo que le pasa a la foto vigente.
+1. **Graphify respeta el `.gitignore`**, así que los `docs/md/*.md` hay que sumarlos al corpus
+   explícitamente o el grafo se queda sin los documentos radicados — que es justo lo que le pasa a
+   la foto vigente. (Las exclusiones sí sobreviven a un clon: `.graphifyignore` está **versionado**
+   desde `2cbe287` y sus comentarios explican cada línea —`Packages/`, `Assets/Game/Art/**/*.png`,
+   `Assets/Game/Audio/**`—; leerlo antes de tocarlo, no reescribirlo de memoria.)
 2. El AST crea un **nodo-stub por archivo** para cada símbolo externo (`…_cs_button`,
    `…_cs_recttransform`): unos 500 nodos de `UnityEngine`/`System`/NUnit que inflan el grado de los
    controladores. Se podan con esta regla, que no necesita lista de tipos: un stub sin
@@ -216,6 +252,30 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
 - **`coplay-mcp` solo responde con el Editor abierto Y ya inactivo.** Mientras compila o hace
   domain-reload devuelve `timed out` o `A task was canceled` — esperar y reintentar (regla de 10 s
   del skill `run-tests`). `get_unity_editor_state` es la sonda real de «¿el puente está vivo?».
+- **Norma: el aviso de guardar no debe aparecer mientras trabaja Claude.** El aviso «Scene(s) Have
+  Been Modified» es **modal**: bloquea el hilo principal y con él al puente, así que ninguna
+  herramienta MCP puede pulsarlo y todo expira como si el Editor estuviera cargando. Lo abren el
+  Test Runner (en su segundo paso, antes de cualquier callback), abrir otra escena y entrar a Play.
+  Guardar a mano antes **no basta**, por dos causas medidas el 23/09/2026: `execute_script` de
+  coplay **marca la escena activa como modificada al terminar**, aunque el script solo lea o acabe
+  de guardarla, y recompilar tras cambiar los campos serializados de un componente de una escena
+  abierta la ensucia también — y `mcp__rider__run_unity_tests` compila dentro de la misma llamada.
+  Lo resuelve `ClaudeSceneAutosave` (`Game.EditorTools`) con el hook `PreToolUse` de
+  `.claude/settings.json`: el hook toca `Temp/claude-active` antes de cada herramienta
+  `mcp__rider__*` / `mcp__coplay-mcp__*`, y durante los 2 minutos siguientes el script guarda toda
+  escena que se ensucie. **Solo actúa cuando lo lanza Claude** (decisión de Santiago): lo que ya
+  estaba sucio con Claude inactivo es de una persona y no se toca hasta que alguien lo guarde.
+  Límite conocido: una edición humana hecha *durante* esos 2 minutos se guarda con lo demás. Una
+  sesión abierta antes de que existiera el hook no lo carga hasta reiniciarse o abrir `/hooks`, y
+  sin hook el script no hace nada. Si aun así aparece el aviso, el
+  rescate es `~/.claude/scripts/unity-dialog.ps1` (**fuera del repo**, solo en este equipo): sin
+  argumentos lista título, texto y botones del diálogo; con `-Click Save` lo pulsa, y se niega si hay
+  más de un diálogo o el título no coincide con `-TitleLike` (`*Modified*`). **Pulsar requiere la
+  confirmación de Santiago en ese momento**, tras decirle qué diálogo es y qué escena se guardaría:
+  guarda todo lo modificado, incluido lo que quizá no debía quedar en el `.unity`.
+  ```
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$HOME/.claude/scripts/unity-dialog.ps1"
+  ```
 - **Si un MCP no responde, el Editor está cerrado, cargando, o el puente caído: eso NO es que la
   suite pase**, y hay que decirlo.
 - Play Mode a mano: `mcp__coplay-mcp__play_game` / `stop_game`. Pulsar Play siempre arranca en
@@ -237,12 +297,12 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
 no se llame así — no es un residuo que corregir. Los `.docx` traen espacios y paréntesis en el
 nombre: sin comillas, cualquier comando de shell falla o toca el archivo equivocado.
 
-`docs/md/` y `graphify-out/` están en `.gitignore`: existen en este equipo pero no en un clon
-limpio, y se rehacen —las conversiones con markitdown, el grafo con `/graphify`—. **Lo que
-estaba ignorado y escrito a mano ya se perdió una vez** (las actas y los inventarios de cámara,
-20/09/2026): cualquier documento nuevo que no salga de un `.docx` ni de un generador va a
-`claudeDocs/`, que sí se versiona. Rescatar o rehacer lo perdido es **decisión pendiente de
-Santiago**.
+`docs/md/`, `graphify-out/`, `docs/actas/` y `claudeDocs/tasks/Sprites/` están en `.gitignore`:
+existen en este equipo pero no en un clon limpio. Los dos primeros se rehacen solos —las
+conversiones con markitdown, el grafo con `/graphify`—; los otros dos están **escritos a mano y ya
+se perdieron una vez** (20/09/2026). Las actas se rehicieron; los inventarios de cámara no. Por eso
+cualquier documento nuevo que no salga de un `.docx` ni de un generador va a `claudeDocs/`, que sí
+se versiona. Sacar las actas del `.gitignore` es **decisión pendiente de Santiago**.
 
 ## Workflow: plugin unity-coding-skills
 
@@ -263,13 +323,21 @@ antes de escribir la primera línea:
 - **Un assembly (`.asmdef`) por módulo**, dependencias en un solo sentido: `Game.Core` →
   `Game.Scaffolding` → `Game.Levels.{Fire,Wheel,River}` → `Game.Reporting`. **Ningún nivel
   referencia a otro nivel** — eso es lo que hace ejecutable la prueba de exclusión de RNF-16.
-  Fuera de esa cadena cuelgan tres assemblies más: `Game.UI` (→ `Game.Core`, `Game.Scaffolding`,
+  `Game.Scaffolding` referencia además `UnityEngine.UI` (desde `8ec5120`, por `BurnReveal`).
+  Fuera de esa cadena cuelgan tres assemblies más: `Game.Audio` (→ `Game.Core`) con
+  `AudioManager`, el tercer singleton; `Game.UI` (→ `Game.Core`, `Game.Scaffolding`, `Game.Audio`,
   `UnityEngine.UI`) con los controladores de pantalla, donde va la mayor parte del código de hoy;
-  `Game.Audio` (→ `Game.Core`); y `Game.EditorTools`, **solo Editor**, que no referencia ningún
-  `Game.*` (trae `PlayFromBoot`, `ArtImportRules` y `Sandbox/CharacterProbe*`, que no es código del
-  juego). `Game.Reporting` llega en el Slice 4 y todavía no existe en disco. **El sonido está
-  comprometido con otra persona** (acta D05, tarjeta `D05-2`): no llenar `Game.Audio` sin que lo
-  pidan.
+  y `Game.EditorTools`, **solo Editor**, que no referencia ningún `Game.*` (trae `PlayFromBoot`,
+  `ArtImportRules`, `AudioImportRules`, `ClaudeSceneAutosave` y `Sandbox/CharacterProbe*`, que no es código del juego).
+  **Un nivel que suena referencia `Game.Audio`** —hoy `Game.Levels.Fire` y `Game.Levels.Wheel`— y **no llama al
+  gestor con clips propios sino con los de su ScriptableObject** (`FireSounds` → `N1_Sonidos`,
+  `WheelSounds` → `N2_Sonidos`, CT-05); las escenas narrativas no tocan código: el ambiente es un campo de `NarrativeSequence` y
+  el efecto y el silencio son campos de `DialogueLine`. `AudioManager.Instance` puede ser nulo
+  (escena abierta sin pasar por `Boot`, pruebas): todo consumidor lo comprueba y el juego sigue
+  en silencio, porque el audio refuerza y nunca informa solo (§2.4). `Game.Reporting` llega en el
+  Slice 4 y todavía no existe en disco. **El sonido sigue comprometido con otra persona** (actas
+  D05/D07, tarjetas `D05-2`/`D07-2`): los Niveles 2 y 3 y la música son suyos; lo del Nivel 1 se
+  incorporó el 21/09/2026 y lo del Nivel 2 el 23/09/2026, las dos veces a petición de Santiago.
 - **`Game.Levels.River` a propósito no referencia `Unity.InputSystem`**: las flechas son botones
   uGUI con clic sostenido (`IPointerDown/Up`), y
   `RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles` vigila que el assembly no gane
@@ -300,7 +368,8 @@ antes de escribir la primera línea:
   cámara.
 - **Interfaz inyectada donde hay un consumidor conocido; evento solo con varios oyentes.** No hay
   `EventBus` global.
-- **Solo tres singletons con `DontDestroyOnLoad`**: `GameFlowRunner`, `SceneLoader`, `AudioManager`.
+- **Solo tres singletons con `DontDestroyOnLoad`**: `GameFlowRunner`, `SceneLoader`, `AudioManager`
+  — los tres son componentes del objeto `Persistent` de `Boot`.
 - **Contenido fuera del código** (CT-05): todo texto visible y todo parámetro ajustable jugando
   vive en ScriptableObjects con `[field: SerializeField]` + `[Tooltip]`.
 - **Persistencia**: JSON por perfil en una carpeta `Datos/` junto al ejecutable — no
@@ -312,14 +381,31 @@ antes de escribir la primera línea:
   enseña la rejilla de bloques de 4×4, y el N1 la multiplica por la capa de oscuridad— y
   `ArtImport_RNF23_…` lo vigila. El importador de fábrica trae `Sprite Mode: Multiple`, que para un
   fondo entero o un prop hace que `LoadAssetAtPath<Sprite>` devuelva **nulo**: cada imagen nueva se
-  pasa a `Single` desde el motor (`TextureImporter.spriteImportMode`).
+  pasa a `Single` desde el motor (`TextureImporter.spriteImportMode`). **Cómo entra una secuencia
+  de cuadros:** un `.anim` con curva `PPtr` sobre `Image.m_Sprite` más un `.controller` por clip —
+  la `Animation` legacy (la que usa `ui_pulso_pista`) **no reproduce curvas PPtr**, así que el
+  intercambio de sprites exige `Animator`. Una clave por **dibujo distinto**, no por archivo: las
+  entregas vienen exportadas a 30 fps pero animadas a seises u ochos, y una clave por archivo
+  multiplica las texturas cargadas (en el fuego del N1, 249 archivos = 34 dibujos: 1469 MB → 235 MB,
+  RNF-05 y RNF-06). La temporización vive en el `.anim`, así que **no se regenera contando
+  archivos**. **Cómo entra un sonido:**
+  `AudioImportRules.cs` aplica la tabla §4.3 de la dirección de sonido por prefijo del nombre
+  —`mus_` streaming estéreo, `amb_` streaming mono, el resto efecto: hasta 2 s PCM precargado, más
+  largo Vorbis en memoria— y `AudioImport_RNF06_…` lo vigila; un `.wav` sin prefijo cuenta como
+  efecto, así que ninguna pieza queda sin regla. Los nombres siguen §4.1 (`sfx_n1_golpe`, sin
+  tildes ni mayúsculas) y se renombran **desde el motor** (`AssetDatabase.RenameAsset`) para
+  conservar el GUID. Las piezas viven en `Assets/Game/Audio/{Global,Level 1,Level 2,Level 3}/`
+  (PR #81, 21/09/2026) y la regla las alcanza en cualquier subcarpeta. **Mover un `.wav` por el
+  Explorador sin su `.meta` le cambia el GUID** y deja mudo todo asset que lo referenciaba
+  (`N1_Sonidos`, los `N1_*.asset`): se mueve desde el Editor o se mueve el `.meta` con él.
 - **Probar sin ampliar la superficie pública**: un `AssemblyInfo.cs` en la raíz del módulo con
   `[assembly: InternalsVisibleTo("<Módulo>.Tests")]`. No subir un miembro a `public` solo para que
   lo alcance una prueba. **El assembly de PlayMode se llama `<Módulo>.PlayMode.Tests` y necesita su
   propia línea**: sin ella el `internal` no se ve desde PlayMode aunque la de EditMode esté puesta.
-  Hoy ese archivo solo existe en `Game.Levels.{Fire,Wheel,River}` y `Game.UI`; `Game.Core`,
-  `Game.Scaffolding` y `Game.Audio` se prueban por superficie pública, así que ahí no hay
-  `AssemblyInfo.cs` que buscar — y si una prueba nueva lo necesita, se crea.
+  Hoy ese archivo existe en `Game.Levels.{Fire,Wheel,River}`, `Game.UI` y `Game.Audio` —este
+  último abre además sus internos a `Game.Levels.{Fire,Wheel}.PlayMode.Tests`, que comprueban **qué**
+  clip sonó tras cada golpe—; `Game.Core` y `Game.Scaffolding` se prueban por superficie pública,
+  así que ahí no hay `AssemblyInfo.cs` que buscar — y si una prueba nueva lo necesita, se crea.
 - Raíz de código y assets: `Assets/Game/`, namespaces `Game.*` siguiendo la ruta bajo `Scripts/` y
   elidiendo `Runtime`. Tests en `Assets/Tests/{EditMode,PlayMode}/<Módulo>/`.
 - **El nombre de la prueba es la trazabilidad.** Patrón `<Sujeto>_<Requisito>_<QuéHace>` en

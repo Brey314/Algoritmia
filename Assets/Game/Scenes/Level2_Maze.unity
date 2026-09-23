@@ -543,10 +543,10 @@ RectTransform:
   - {fileID: 458233402}
   m_Father: {fileID: 2034772490}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &341287495
 MonoBehaviour:
@@ -883,10 +883,10 @@ RectTransform:
   - {fileID: 2049170021}
   m_Father: {fileID: 538353605}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 56, y: 56}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &513946986
 MonoBehaviour:
@@ -1104,10 +1104,10 @@ RectTransform:
   - {fileID: 513946985}
   m_Father: {fileID: 2034772490}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &538353606
 MonoBehaviour:
@@ -1966,10 +1966,10 @@ RectTransform:
   - {fileID: 1267000790}
   m_Father: {fileID: 538353605}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 56, y: 56}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &789636669
 MonoBehaviour:
@@ -4305,6 +4305,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Levels.Wheel::Game.Levels.Wheel.MazeSceneController
   layout: {fileID: 11400000, guid: f2835663151d77f44bcbb19485f43201, type: 2}
   guide: {fileID: 11400000, guid: e094a236128841f4f9747c8bb6a6c22f, type: 2}
+  sounds: {fileID: 11400000, guid: 9609bbd3191a5d542bf57d7db89931c0, type: 2}
   environment: {fileID: 1971254299}
   cellTemplate: {fileID: 1497290959}
   cart: {fileID: 836488297}

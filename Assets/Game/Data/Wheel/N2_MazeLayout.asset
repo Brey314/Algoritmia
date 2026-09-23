@@ -24,9 +24,17 @@ MonoBehaviour:
   <BoardMax>k__BackingField: {x: 0.897, y: 0.982}
   <PieceSize>k__BackingField: 0.9
   <CartArt>k__BackingField: {fileID: 21300000, guid: cd35a96ed36a9a849aa94c6ce80599b9, type: 3}
+  <DeleteIcon>k__BackingField: {fileID: 21300000, guid: 2b4e81306d758394cac6b7a82b591622, type: 3}
   <ShelterArt>k__BackingField: {fileID: 0}
   <ObstacleArt>k__BackingField:
   - {fileID: 21300000, guid: 9f61e1d21ebe42f4fa51da23b13a8b36, type: 3}
+  <LightTint>k__BackingField: {r: 1, g: 0.95, b: 0.9, a: 1}
+  <EnvironmentMaterial>k__BackingField: {fileID: 2100000, guid: b2f3acb5d580bfa41b1663be8def3b51, type: 2}
+  <Contrast>k__BackingField: 1.1
+  <Saturation>k__BackingField: 0.75
+  <BackdropColor>k__BackingField: {r: 0.45, g: 0.45, b: 0.16, a: 1}
+  <GridColor>k__BackingField: {r: 0.16, g: 0.1, b: 0.08, a: 0.22}
+  <GridThickness>k__BackingField: 3
   <StepSeconds>k__BackingField: 0.6
   <EmptySequenceMessage>k__BackingField: "A\xF1ade al menos un bloque a tu secuencia
     antes de ejecutar."

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
@@ -43,6 +44,10 @@ namespace Game.Levels.Wheel
         [SerializeField]
         [Tooltip("Contenido del guía del Nivel 2. La fase 3 activa su tercera tarea, «Programar».")]
         private GuideContent guide;
+
+        [SerializeField]
+        [Tooltip("Sonidos del Nivel 2. El bosque de día de fondo y la carretilla mientras recorre la secuencia; vacío = silencio.")]
+        private WheelSounds sounds;
 
         [SerializeField]
         [Tooltip("El entorno cenital. Cabe entero en su panel sin deformarse; la matriz cuelga de él (RNF-23).")]
@@ -158,6 +163,24 @@ namespace Game.Levels.Wheel
         private WheelIndicatorCollector _indicators;
         private Canvas _canvas;
         private RectTransform _held;
+        private Material _environmentMaterial;
+        private RectTransform _scrollTrack;
+        private RectTransform _scrollThumb;
+
+        /// <summary>Ancho de la barra de desplazamiento, en unidades del lienzo.</summary>
+        private const float ScrollBarWidth = 10f;
+
+        /// <summary>Separación entre la barra y el borde derecho de la ventana.</summary>
+        private const float ScrollBarMargin = 6f;
+
+        /// <summary>Lo que sobresale a la derecha la bolita del lado de «Retroceder»: tampoco puede pisar la barra.</summary>
+        private const float SideKnobOverhang = 24f;
+
+        /// <summary>Lado de la papelera del bloque seleccionado, en unidades del lienzo.</summary>
+        private const float DeleteButtonSize = 36f;
+
+        /// <summary>Separación entre la bolita de «Retroceder» y la papelera.</summary>
+        private const float DeleteButtonGap = 6f;
         private InstructionBlock _heldBlock;
         private int _expanded = -1;
 
@@ -208,6 +231,9 @@ namespace Game.Levels.Wheel
         internal Text MessageLabel => messageLabel;
         internal Image MessageIcon => messageIcon;
         internal RectTransform Held => _held;
+        internal RectTransform ScrollBar => _scrollTrack;
+        internal RectTransform ScrollThumb => _scrollThumb;
+        internal WheelSounds Sounds => sounds;
         internal IEnumerable<RectTransform> PaletteBlocks => paletteRowA.Cast<Transform>().Concat(paletteRowB.Cast<Transform>())
             .Select(child => (RectTransform)child)
             .Where(child => child.gameObject.activeSelf);
@@ -230,6 +256,12 @@ namespace Game.Levels.Wheel
 
             _canvas = environment.GetComponentInParent<Canvas>();
 
+            if (sounds != null && AudioManager.Instance != null)
+            {
+                // El bosque de día sigue de fondo: el mismo clip que la escena anterior, sin costura.
+                AudioManager.Instance.PlayAmbient(sounds.ForestAmbient);
+            }
+
             FitEnvironment();
             cellTemplate.gameObject.SetActive(false);
             blockTemplate.gameObject.SetActive(false);
@@ -241,7 +273,12 @@ namespace Game.Levels.Wheel
                 Spawn($"Obstaculo_{obstacle.x}_{obstacle.y}", obstacle, art, new Color(0.35f, 0.32f, 0.42f));
             }
 
-            Spawn("Refugio", _grid.Goal, layout.ShelterArt, attentionColor);
+            // El refugio no se marca con un cuadro de color: la salida ya se lee en el entorno, el
+            // hueco del seto. La casilla existe —es la meta de la matriz— pero solo se pinta si el
+            // asset trae su ilustración.
+            var shelter = Spawn("Refugio", _grid.Goal, layout.ShelterArt, attentionColor);
+            shelter.enabled = layout.ShelterArt != null;
+            DrawGrid();
             PlaceCart(_grid.Start);
             cart.SetAsLastSibling();
 
@@ -265,8 +302,57 @@ namespace Game.Levels.Wheel
             // contador (RF-13, CP-06). La regla vive en HintPolicy; aquí solo se pulsa.
             helpButton.onClick.AddListener(() => Show(_hints.RequestHelp(), helpIcon, helpColor));
 
+            BuildScrollBar();
             RefreshRows();
             Show(_hints.RequestHelp(), helpIcon, helpColor);
+        }
+
+        /// <summary>
+        /// La barra de desplazamiento a la derecha de la secuencia: dice cuánto hay y por dónde va
+        /// la lista, se mueve con «▲» y «▼», y un clic sobre ella lleva la lista a ese punto.
+        /// </summary>
+        /// <remarks>
+        /// **Se pulsa, no se arrastra.** Una barra arrastrable es un <c>ScrollRect</c> con otro
+        /// nombre: trae el arrastre de uGUI, que se pelea con el clic sostenido de los bloques y
+        /// amplía el esquema de control radicado (RNF-02, CT-06). Por eso el clic llega por
+        /// <see cref="ClickRelay"/>, que no implementa ningún manejador de arrastre.
+        /// </remarks>
+        private void BuildScrollBar()
+        {
+            _scrollTrack = new GameObject("Barra_Desplazamiento", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(LayoutElement))
+                .GetComponent<RectTransform>();
+            _scrollTrack.SetParent(sequenceViewport, false);
+            _scrollTrack.GetComponent<LayoutElement>().ignoreLayout = true;
+            _scrollTrack.anchorMin = new Vector2(1f, 0f);
+            _scrollTrack.anchorMax = new Vector2(1f, 1f);
+            _scrollTrack.pivot = new Vector2(1f, 0.5f);
+            _scrollTrack.sizeDelta = new Vector2(ScrollBarWidth, -2f * ScrollBarMargin);
+            _scrollTrack.anchoredPosition = new Vector2(-ScrollBarMargin, 0f);
+            var track = _scrollTrack.GetComponent<Image>();
+            track.color = new Color(softCharcoalColor.r, softCharcoalColor.g, softCharcoalColor.b, 0.18f);
+
+            _scrollThumb = new GameObject("Barra_Posicion", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image))
+                .GetComponent<RectTransform>();
+            _scrollThumb.SetParent(_scrollTrack, false);
+            _scrollThumb.offsetMin = _scrollThumb.offsetMax = Vector2.zero;
+            var thumb = _scrollThumb.GetComponent<Image>();
+            thumb.raycastTarget = false;
+            thumb.color = softCharcoalColor;
+
+            // Las filas dejan libre, a su derecha, la columna de la papelera y la franja de la barra:
+            // sin esto la bolita del lado de «Retroceder», que sobresale de su fila, y la papelera
+            // del bloque seleccionado quedarían encima de la barra.
+            var group = sequenceList.GetComponent<VerticalLayoutGroup>();
+            if (group != null)
+            {
+                group.padding.right += Mathf.RoundToInt(ScrollBarWidth + 2f * ScrollBarMargin
+                                                        + SideKnobOverhang + DeleteButtonGap + DeleteButtonSize);
+            }
+
+            // La barra se puede pulsar: un clic lleva la lista a ese punto. Clic simple y nada más,
+            // sin arrastre (RNF-02, CT-06): el tirador no se agarra.
+            track.raycastTarget = true;
+            _scrollTrack.gameObject.AddComponent<ClickRelay>().Clicked += ScrollToPoint;
         }
 
         /// <summary>
@@ -278,6 +364,27 @@ namespace Game.Levels.Wheel
         {
             environment.enabled = environment.sprite != null;
             environment.preserveAspect = false;
+            environment.color = layout.LightTint;
+            if (layout.EnvironmentMaterial != null)
+            {
+                // Una copia por escena: tocar el contraste del asset compartido lo dejaría cambiado
+                // en disco al salir de Play.
+                _environmentMaterial = new Material(layout.EnvironmentMaterial);
+                _environmentMaterial.SetFloat(ContrastId, layout.Contrast);
+                _environmentMaterial.SetFloat(SaturationId, layout.Saturation);
+                environment.material = _environmentMaterial;
+            }
+
+            // Lo que la ilustración no llena —arriba y abajo, porque cabe entera sin recortar— se
+            // pinta del color de su borde y con la misma luz: el panel parece la continuación del
+            // entorno y no un marco de otro color.
+            var backdrop = environment.rectTransform.parent.GetComponent<Image>();
+            if (backdrop != null)
+            {
+                var color = layout.BackdropColor * layout.LightTint;
+                color.a = 1f;
+                backdrop.color = color;
+            }
             var image = environment.sprite != null ? environment.sprite.rect.size : new Vector2(16f, 9f);
             var viewport = ((RectTransform)environment.rectTransform.parent).rect.size;
             var scale = Mathf.Min(viewport.x / image.x, viewport.y / image.y);
@@ -304,6 +411,72 @@ namespace Game.Levels.Wheel
             return new Vector2(span.x / _grid.Columns, span.y / _grid.Rows) * layout.PieceSize;
         }
 
+        private static readonly int ContrastId = Shader.PropertyToID("_Contrast");
+        private static readonly int SaturationId = Shader.PropertyToID("_Saturation");
+
+        private void OnDestroy()
+        {
+            if (_environmentMaterial != null)
+            {
+                Destroy(_environmentMaterial);
+            }
+        }
+
+        /// <summary>
+        /// La cuadrícula de la matriz, dentro del seto: una línea en cada frontera entre casillas
+        /// del interior. Se ve dónde acaba un «Avanzar» antes de ejecutarlo, que es lo que el
+        /// estudiante tiene que prever al escribir la secuencia (RF-31).
+        /// </summary>
+        /// <remarks>
+        /// **Solo el interior**: el anillo exterior de la matriz es el seto, y una rejilla encima
+        /// del seto se leería como camino. Las líneas cuelgan del entorno en fracciones del tablero
+        /// —igual que las piezas— y van detrás de todo lo demás.
+        /// </remarks>
+        private void DrawGrid()
+        {
+            if (layout.GridColor.a <= 0f || layout.GridThickness <= 0f)
+            {
+                return;
+            }
+
+            // El contenedor ocupa el tablero y no el entorno entero: es una pieza más colgada de
+            // la ilustración, y como tal cabe dentro de ella y de la pantalla.
+            var grid = new GameObject("Cuadricula", typeof(RectTransform)).GetComponent<RectTransform>();
+            grid.SetParent(environment.rectTransform, false);
+            grid.anchorMin = layout.BoardMin;
+            grid.anchorMax = layout.BoardMax;
+            grid.offsetMin = grid.offsetMax = Vector2.zero;
+            grid.SetAsFirstSibling();
+
+            // Fronteras en fracciones del tablero.
+            Vector2 Boundary(int column, int row) =>
+                new Vector2((float)column / _grid.Columns, (float)row / _grid.Rows);
+
+            for (var column = 1; column < _grid.Columns; column++)
+            {
+                Line(grid, $"Columna_{column}", Boundary(column, 1), Boundary(column, _grid.Rows - 1), vertical: true);
+            }
+
+            for (var row = 1; row < _grid.Rows; row++)
+            {
+                Line(grid, $"Fila_{row}", Boundary(1, row), Boundary(_grid.Columns - 1, row), vertical: false);
+            }
+        }
+
+        private void Line(RectTransform parent, string name, Vector2 from, Vector2 to, bool vertical)
+        {
+            var line = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image)).GetComponent<Image>();
+            line.raycastTarget = false;
+            line.color = layout.GridColor;
+            var rect = line.rectTransform;
+            rect.SetParent(parent, false);
+            rect.anchorMin = from;
+            rect.anchorMax = to;
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = vertical ? new Vector2(layout.GridThickness, 0f) : new Vector2(0f, layout.GridThickness);
+        }
+
         /// <summary>Cuelga un elemento del entorno en el centro de una casilla, como los props de la narrativa.</summary>
         private void Hang(RectTransform rect, Vector2Int cell)
         {
@@ -319,7 +492,7 @@ namespace Game.Levels.Wheel
             var image = Instantiate(cellTemplate, environment.rectTransform);
             image.name = name;
             image.sprite = art;
-            image.color = art != null ? Color.white : fallback;
+            image.color = art != null ? layout.LightTint : fallback; // la misma luz que el entorno
             image.preserveAspect = true;
             image.raycastTarget = false;
             Hang(image.rectTransform, cell);
@@ -334,7 +507,7 @@ namespace Game.Levels.Wheel
             if (image != null && layout.CartArt != null)
             {
                 image.sprite = layout.CartArt;
-                image.color = Color.white;
+                image.color = layout.LightTint;
             }
 
             cart.localRotation = Rotation(state.Facing);
@@ -533,6 +706,11 @@ namespace Game.Levels.Wheel
                 var handle = row.GetComponent<CargoHandle>();
                 handle.Taken += () => TakeFromSequence(index);
                 handle.Released += Drop;
+                if (i == _expanded)
+                {
+                    AddDeleteButton(row, i); // solo el bloque seleccionado lleva su papelera
+                }
+
                 _rows.Add(row);
             }
 
@@ -576,6 +754,77 @@ namespace Game.Levels.Wheel
             scrollDownButton.gameObject.SetActive(desborda);
             scrollUpButton.interactable = _scroll > 0.5f;
             scrollDownButton.interactable = _scroll < max - 0.5f;
+
+            if (_scrollTrack != null)
+            {
+                // La barra dice qué parte de la lista se ve: su alto es la fracción visible y su
+                // posición, cuánto se ha bajado. Sin desborde no hay nada que indicar.
+                _scrollTrack.gameObject.SetActive(desborda);
+                var total = Mathf.Max(sequenceList.rect.height, 1f);
+                var top = 1f - _scroll / total;
+                var bottom = 1f - (_scroll + sequenceViewport.rect.height) / total;
+                _scrollThumb.anchorMin = new Vector2(0f, Mathf.Clamp01(bottom));
+                _scrollThumb.anchorMax = new Vector2(1f, Mathf.Clamp01(top));
+            }
+        }
+
+        /// <summary>
+        /// Clic sobre la barra: la lista se desplaza para que la parte visible quede centrada en el
+        /// punto pulsado. Arriba del todo es el principio; abajo del todo, el final.
+        /// </summary>
+        internal void ScrollToPoint(Vector2 screenPoint)
+        {
+            if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(_scrollTrack, screenPoint, UiCamera, out var local))
+            {
+                return;
+            }
+
+            var rect = _scrollTrack.rect;
+            var fromTop = rect.height > 0f ? Mathf.Clamp01((rect.yMax - local.y) / rect.height) : 0f;
+            SetScroll(fromTop * sequenceList.rect.height - sequenceViewport.rect.height / 2f);
+        }
+
+        /// <summary>
+        /// La papelera del bloque seleccionado: a la derecha de su fila, fuera de ella, más allá
+        /// de la bolita de «Retroceder». Un clic lo retira de la secuencia (RF-34).
+        /// </summary>
+        /// <remarks>
+        /// Es el mismo icono que borra un perfil, y aquí no pide confirmación: retirar un bloque no
+        /// pierde nada que no se recupere soltándolo otra vez desde el cajón, y editar la
+        /// secuencia no debe costar (CP-02). Es un <c>Button</c> y no parte del agarre del bloque:
+        /// el clic sobre ella no lo toma.
+        /// </remarks>
+        private void AddDeleteButton(RectTransform row, int index)
+        {
+            var button = new GameObject("Eliminar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button))
+                .GetComponent<Button>();
+            var rect = (RectTransform)button.transform;
+            rect.SetParent(row, false);
+            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0.5f);
+            rect.pivot = new Vector2(0f, 0.5f);
+            rect.sizeDelta = Vector2.one * DeleteButtonSize;
+            rect.anchoredPosition = new Vector2(SideKnobOverhang + DeleteButtonGap, 0f);
+
+            var image = button.image;
+            image.sprite = layout.DeleteIcon;
+            image.preserveAspect = true;
+            image.color = charcoalColor;
+            button.targetGraphic = image;
+            button.onClick.AddListener(() => DeleteBlock(index));
+        }
+
+        /// <summary>Retira de la secuencia el bloque de esa fila.</summary>
+        internal void DeleteBlock(int index)
+        {
+            if (IsExecuting || index < 0 || index >= _sequence.Count)
+            {
+                return;
+            }
+
+            _sequence.RemoveAt(index);
+            _indicators.RecordEdit(); // Retirar un bloque (§3.6.1, fase 3).
+            _expanded = -1;
+            RefreshRows();
         }
 
         /// <summary>«→» sobre un bloque comprimido: se despliega para editarlo; el anterior se comprime.</summary>
@@ -629,7 +878,10 @@ namespace Game.Levels.Wheel
 
             if (_grid != null)
             {
-                // El cajón abierto le quita alto a la lista: las filas se recomprimen.
+                // El cajón abierto le quita alto a la lista: las filas se recomprimen. Y la lista
+                // queda abajo del todo, con la casilla «Suelta un bloque aquí» a la vista: abrir el
+                // cajón es ir a añadir un bloque, y el sitio donde soltarlo tiene que verse.
+                _scrollToEnd = true;
                 RefreshRows();
             }
         }
@@ -698,6 +950,7 @@ namespace Game.Levels.Wheel
                 _sequence.Insert(index, _heldBlock);
                 _indicators.RecordEdit(); // Enganchar —o reordenar— un bloque (§3.6.1, fase 3).
                 _expanded = index;
+                _scrollToEnd = true; // la lista baja sola: lo siguiente se suelta al final
             }
 
             Destroy(_held.gameObject);
@@ -766,6 +1019,11 @@ namespace Game.Levels.Wheel
 
             try
             {
+                // La carretilla suena mientras recorre la secuencia, también en el intento que
+                // choca y vuelve: la depuración se oye como rueda, nunca como error (RF-33, §2.1,
+                // CP-02). **En bucle y no un disparo por paso**: la pieza dura 1,8 s y los pasos
+                // 0,6, así que por paso se amontonarían tres ruedas a la vez.
+                PlayCart(true);
                 foreach (var step in result.Steps)
                 {
                     Highlight(step.Index);
@@ -790,6 +1048,7 @@ namespace Game.Levels.Wheel
                     await Awaitable.WaitForSecondsAsync(seconds / 2f, destroyCancellationToken);
                 }
 
+                PlayCart(false);
                 if (result.ReachedGoal)
                 {
                     Highlight(-1);
@@ -816,6 +1075,24 @@ namespace Game.Levels.Wheel
 
             IsExecuting = false;
             executeButton.interactable = true;
+        }
+
+        /// <summary>Arranca o calla la rueda de la carretilla.</summary>
+        private void PlayCart(bool rolling)
+        {
+            if (sounds == null || AudioManager.Instance == null)
+            {
+                return;
+            }
+
+            if (rolling)
+            {
+                AudioManager.Instance.PlayHeld(sounds.CartMove);
+            }
+            else
+            {
+                AudioManager.Instance.StopHeld();
+            }
         }
 
         private async Awaitable Slide(Vector2Int from, Vector2Int to, float seconds, float fraction, bool reverse = false)

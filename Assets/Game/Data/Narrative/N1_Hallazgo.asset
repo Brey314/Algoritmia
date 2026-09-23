@@ -15,6 +15,7 @@ MonoBehaviour:
   <Id>k__BackingField: N1_Hallazgo
   <Level>k__BackingField: 1
   <Illustration>k__BackingField: {fileID: 21300000, guid: 13d0c3738f9d71047b289efb92c892c4, type: 3}
+  <Ambient>k__BackingField: {fileID: 8300000, guid: fc958f01575f8f94db4079d9063c54cd, type: 3}
   <CameraStart>k__BackingField:
     <Focus>k__BackingField: {x: 0.208, y: 0.39}
     <Zoom>k__BackingField: 1.78
@@ -197,37 +198,73 @@ MonoBehaviour:
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: "NIÑA"
     <Text>k__BackingField: "¿Se fue?"
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "PAPÁ"
     <Text>k__BackingField: "Sí. Pero nos dejó algo."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "El niño se arrodilla y busca con las manos hasta encontrar las dos piedras. Son frías y pesadas."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "NIÑO"
     <Text>k__BackingField: "Dijo que eran especiales. ¿Por qué serán especiales unas piedras?"
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "La niña las toca también. Pasa los dedos por los bordes afilados del sílex."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Las golpea una contra otra, muy despacio, como si les preguntara algo. Nada. Las golpea más fuerte."
+    <Sound>k__BackingField: {fileID: 8300000, guid: 317832ad07b1a5646804b950b40d77ad, type: 3}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "¡CLIC! Un destello pequeñísimo, apenas un instante de luz que se apaga antes de que los ojos alcancen a verlo. Pero todos lo sienten."
+    <Sound>k__BackingField: {fileID: 8300000, guid: 5ecd04152a6629249b578368fb50bfee, type: 3}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "NIÑA"
     <Text>k__BackingField: "¿Lo viste?"
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "NIÑO"
     <Text>k__BackingField: "¡Sí! ¡Otra vez, otra vez!"
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Papá, que ha estado escuchando en silencio, se pone de pie despacio."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "PAPÁ"
     <Text>k__BackingField: "Esperen. Estas piedras pueden ser peligrosas si no sabemos usarlas bien."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "PAPÁ"
     <Text>k__BackingField: "Ustedes dos quédense con mamá, bien atrás. Yo lo intento."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "El niño quiere protestar, pero mamá lo toma del hombro con suavidad."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "MAMÁ"
     <Text>k__BackingField: "Papá sabe lo que hace."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Papá se arrodilla en el centro de la cueva, busca a tientas un montón de hojas secas y ramitas finas."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Las amontona con cuidado en el suelo."
+    <Sound>k__BackingField: {fileID: 8300000, guid: b068359dff2e23e4cb60169ae4229221, type: 3}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "ALGORITM"
     <Text>k__BackingField: "Tienes las piedras y tienes las hojas. Sabes que algo puede pasar entre las tres cosas."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: "ALGORITM"
     <Text>k__BackingField: "Lo que no sabes todavía es cómo. ¿Desde dónde vas a intentarlo?"
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0

@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe39808d68b138e4fb74e8e86cb55219, type: 3}
+  m_Name: N3_PuenteII_Horizonte
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.NarrativeSequence
+  <Id>k__BackingField: N3_PuenteII_Horizonte
+  <Level>k__BackingField: 3
+  <Illustration>k__BackingField: {fileID: -3983581246391492765, guid: b4a0ce2d76bcbb441bbff35c84d55ed9, type: 3}
+  <Ambient>k__BackingField: {fileID: 8300000, guid: fc958f01575f8f94db4079d9063c54cd, type: 3}
+  <AmbientLayer>k__BackingField: {fileID: 8300000, guid: 6423a3675fa942f4fb8d62abf58bb65e, type: 3}
+  <CameraStart>k__BackingField:
+    <Focus>k__BackingField: {x: 0.5, y: 0.5}
+    <Zoom>k__BackingField: 1
+  <CameraEnd>k__BackingField:
+    <Focus>k__BackingField: {x: 0.5, y: 0.45}
+    <Zoom>k__BackingField: 1.35
+  <CameraKeys>k__BackingField:
+  - <Line>k__BackingField: 0
+    <Framing>k__BackingField:
+      <Focus>k__BackingField: {x: 0.5, y: 0.45}
+      <Zoom>k__BackingField: 1.35
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
+    <HardCut>k__BackingField: 0
+  <LightStart>k__BackingField:
+    <Center>k__BackingField: {x: 0.5, y: 0.5}
+    <Radius>k__BackingField: 0
+    <Ambient>k__BackingField: 1
+    <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+    <FlashSeconds>k__BackingField: 0
+  <CameraSmoothingSeconds>k__BackingField: 1.4
+  <OpensFromBlack>k__BackingField: 0
+  <HardCutFadeSeconds>k__BackingField: 0.5
+  <Props>k__BackingField: []
+  <IsReflectiveClosing>k__BackingField: 0
+  <EndsInCredits>k__BackingField: 0
+  <NextPhase>k__BackingField: 0
+  <NextSequenceId>k__BackingField: N3_PuenteII_Rio
+  <Lines>k__BackingField:
+  - <Speaker>k__BackingField: 
+    <Text>k__BackingField: "La c\xE1mara se desplaza hacia el horizonte. A lo lejos
+      se ven las fogatas de la civilizaci\xF3n."
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
+  - <Speaker>k__BackingField: "NI\xD1A"
+    <Text>k__BackingField: "\xBFQu\xE9 es eso?"
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "Otros como ustedes. M\xE1s adelante. Un lugar donde ya
+      saben cultivar, construir y vivir juntos."
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
+  - <Speaker>k__BackingField: "PAP\xC1"
+    <Text>k__BackingField: "\xBFPodemos llegar?"
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
+  - <Speaker>k__BackingField: ALGORITM
+    <Text>k__BackingField: "El camino existe\u2026 pero hay un problema."
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0

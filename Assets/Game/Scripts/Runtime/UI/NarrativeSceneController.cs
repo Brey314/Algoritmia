@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
@@ -143,6 +144,14 @@ namespace Game.UI
             EnsureDarkness();
             ApplyLight();
             PlaceProps(_sequence);
+            // El ambiente es contenido de la secuencia, como la ilustración: el mismo clip que
+            // dejó la escena anterior sigue sonando; otro entra por fundido cruzado (§3.3).
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayAmbient(_sequence.Ambient);
+                AudioManager.Instance.PlayAmbientLayer(_sequence.AmbientLayer);
+            }
+
             // RF-06 e INC-28: el botón de omitir no existe en la primera visita, no basta con
             // deshabilitarlo — la escena de cierre es donde el guía nombra lo aprendido.
             skipButton.gameObject.SetActive(Dialogue.CanSkip);
@@ -406,6 +415,18 @@ namespace Game.UI
                 image.sprite = prop.Art;
                 image.preserveAspect = true;
                 image.raycastTarget = false;
+                if (prop.FrameAnimation != null)
+                {
+                    // Los cuadros se intercambian con una curva PPtr sobre Image.m_Sprite, que la
+                    // Animation legacy no reproduce: el objeto animado exige Animator.
+                    go.AddComponent<Animator>().runtimeAnimatorController = prop.FrameAnimation;
+                }
+
+                if (prop.BurnExtent > 0f)
+                {
+                    go.AddComponent<BurnReveal>().Extent = prop.BurnExtent; // quemado quieto: la escena ya es después del fuego
+                }
+
                 _props.Add((prop, rect));
             }
         }
@@ -447,6 +468,10 @@ namespace Game.UI
             var rollShare = drop > 0f ? 0.8f : 1f;
             var seconds = Mathf.Max(prop.MotionSeconds, 0.01f);
             var elapsed = 0f;
+            // Lo que se ve se oye cuando pasa: lo que alguien levanta toca el suelo al soltarlo, a
+            // mitad del movimiento; lo que rueda y cae, al final.
+            var landsAt = lifted ? 0.5f : 1f;
+            var landed = false;
 
             try
             {
@@ -454,6 +479,14 @@ namespace Game.UI
                 {
                     elapsed += Time.deltaTime;
                     var t = Mathf.Clamp01(elapsed / seconds);
+                    if (!landed && t >= landsAt)
+                    {
+                        landed = true;
+                        if (AudioManager.Instance != null)
+                        {
+                            AudioManager.Instance.PlaySfx(prop.LandSound);
+                        }
+                    }
 
                     // Mitad del tiempo para subir y caer si lo levantan; el resto, rodar o quedarse.
                     var air = lifted ? Mathf.Clamp01(t / 0.5f) : 1f;
@@ -556,6 +589,24 @@ namespace Game.UI
             speakerLabel.gameObject.SetActive(!line.IsStageDirection);
             bodyLabel.text = line.Text;
             PlayMotions(Dialogue.Index);
+
+            // Lo que dice el texto se oye cuando se lee, igual que los objetos se mueven cuando se
+            // leen. Los silencios del guion son piezas con disparador (§5) y cortan en seco.
+            var audio = AudioManager.Instance;
+            if (audio != null)
+            {
+                if (line.Silence != SilenceCut.None)
+                {
+                    audio.CutToSilence(keepAmbient: line.Silence == SilenceCut.Music);
+                }
+
+                if (line.Ambient != null)
+                {
+                    audio.PlayAmbient(line.Ambient); // la familia entra en la cueva: cambia el fondo
+                }
+
+                audio.PlaySfx(line.Sound);
+            }
         }
 
         /// <summary>

@@ -15,6 +15,7 @@ MonoBehaviour:
   <Id>k__BackingField: N1_Apertura
   <Level>k__BackingField: 1
   <Illustration>k__BackingField: {fileID: 21300000, guid: 5fc69f51e25b4692be5400f31481c31e, type: 3}
+  <Ambient>k__BackingField: {fileID: 8300000, guid: c034363be57ca7241ad4b1ca139b0bc5, type: 3}
   <CameraStart>k__BackingField:
     <Focus>k__BackingField: {x: 0.78, y: 0.52}
     <Zoom>k__BackingField: 1.22
@@ -82,19 +83,34 @@ MonoBehaviour:
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: Noche helada, sin luna. La familia camina a la intemperie.
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Se escuchan animales y sonidos extra\xF1os. En el horizonte
       se distingue la silueta de una cueva."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: Algo se acerca entre la maleza. La familia corre hacia
       la cueva y entra.
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: Avanzan hacia el fondo. Los pasos resuenan contra la piedra.
+    <Sound>k__BackingField: {fileID: 8300000, guid: 225c86bd68f0ddc4b826b68ba8c72eac, type: 3}
+    <Silence>k__BackingField: 0
+    <Ambient>k__BackingField: {fileID: 8300000, guid: fc958f01575f8f94db4079d9063c54cd, type: 3}
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "La luz de la entrada desaparece detr\xE1s de ellos. Es
       como si alguien apagara el mundo."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Un paso m\xE1s. Otro. Ya no hay nada: ni sombras, ni
       colores, ni formas."
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: Solo oscuridad.
+    <Sound>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 2
