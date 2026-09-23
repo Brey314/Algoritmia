@@ -96,6 +96,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-48 | Dos arquitecturas contradictorias en `docs/`: la refundición trajo de vuelta el capítulo anterior a la alineación | OE2 §4, Arquitectura | **Abierto** (decisión tomada: gana la alineada) |
 | INC-49 | El menú de pausa implementado es el del mockup 6 (Reanudar · Reiniciar · Volver al menú de niveles); HU-17 dice «Continuar / Reiniciar nivel / Volver al menú principal» | HU, OE2 §3 | **Abierto** |
 | INC-50 | «Empujar» en el bosque no anima el rodado: sale a la escena 2.2, que lo cuenta; RF-26 y HU-08 lo describen dentro de la mecánica | OE1, HU, CU | **Abierto** |
+| INC-51 | El cierre del Nivel 3 nunca ofrece omitir; HU-14 FA-01 lo pide a quien repite el nivel | HU | **Abierto** (decisión tomada: se acepta) |
 
 ---
 
@@ -537,6 +538,30 @@ rodado dentro de la mecánica.
 rodado es la escena narrativa 2.2 (guion §1.6.1.3). El requisito de fondo —el estudiante ve rodar
 la caja sobre los troncos redondos— se sigue cumpliendo; cambia dónde.
 
+### INC-51 · El cierre del Nivel 3 no se puede omitir al repetirlo — abierto
+
+**Decisión de Santiago, 23/09/2026**: se acepta. En el Nivel 3 el cierre reflexivo
+(`N3_Escena33_Cruce`) y la escena final (`N3_EscenaFinal`) **se leen enteros siempre**, también
+cuando el estudiante repite el nivel.
+
+**Por qué no hay otra salida sin ampliar lo persistido.** No existe registro de escenas vistas
+(RNF-09, INC-28): `NarrativeVisitPolicy` deriva «ya visto» del progreso. Para un cierre reflexivo
+la señal es que el nivel siguiente ya esté desbloqueado (`ReachedLevel > sequence.Level`), porque
+se llega a él justo después de confirmar la última fase. El Nivel 3 no tiene nivel siguiente
+—`LevelId` termina en `River` y `LevelUnlockPolicy.UnlockAfterCompleting` no alcanza más allá—,
+así que la primera vuelta y las siguientes dejan **el mismo perfil** en disco y no se pueden
+distinguir. La alternativa sin tocar el disco —anotar en memoria de sesión si el nivel ya estaba
+completo al entrar a jugarlo— cumpliría FA-01 solo dentro de una misma sesión, no tras cerrar y
+reabrir el juego.
+
+**Qué dicen hoy los documentos.** HU-14 FA-01: «El estudiante ya había completado este nivel antes
+y vuelve a jugarlo → la escena de cierre muestra el botón de omitir». Vale para los Niveles 1 y 2,
+no para el 3.
+
+**Corrección pendiente.** HU-14 FA-01: añadir que en el último nivel la escena de cierre y la
+escena final se reproducen siempre enteras. RF-06 no cambia: habla de «una escena ya vista» y no
+obliga a reconocer todas.
+
 ## Residuos y puntos abiertos
 
 **Residuos menores** (no afectan al código ni a un criterio de verificación):
@@ -560,6 +585,9 @@ INC-43).
 
 ## Historial de revisiones
 
+- **rev. 11 (23/09/2026)** — Se abre **INC-51**: el cierre reflexivo y la escena final del Nivel 3
+  no ofrecen omitir ni al repetir el nivel, porque sin nivel siguiente la primera vuelta y las
+  demás dejan el mismo perfil. Decisión de Santiago el mismo día: se acepta; se corrige HU-14 FA-01.
 - **rev. 10 (15/09/2026, segunda entrada)** — Fase 6 del Slice 1 y W19 del Slice 2. **INC-47** se
   amplía (dos fases: reunir en el círculo y encender con dos deslizantes, fuerza y cercanía; sin
   rótulo «Aún no»). Se abre **INC-50**: «Empujar» no anima el rodado en la mecánica del bosque; lo

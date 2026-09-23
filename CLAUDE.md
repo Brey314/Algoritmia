@@ -40,10 +40,11 @@ Desde el 10/09/2026 **corren varios en paralelo**, y **el reparto es por assembl
 
 El Slice 3 cerró su código el 21/09/2026 (Checkpoint R-E y `Slice-3-Resultados.md`) y **ya está en
 `main`** (PR #80); con él quedan implementados `RF-01..RF-44` y el carril de slices abierto es el
-Slice 4, que todavía no tiene una sola casilla marcada ni `Game.Reporting` en disco. La rama de
-trabajo de hoy es `feat/implementación-de-props-y-sonidos`, **por delante de `main` y sin
-fusionar** (cuántos commits lo dice `git log main..HEAD`, no este archivo). No es un slice sino el carril de arte y sonido —toca `Assets/Game/Art/`,
-`Game.Audio` y `Game.Levels.Fire`—, así que se pisa con el Slice 1. Lo de «parciales»: las dos
+Slice 4, que todavía no tiene una sola casilla marcada ni `Game.Reporting` en disco. La rama
+`feat/implementación-de-props-y-sonidos` **ya está en `main`** (PR #82, 23/09/2026); lo que hizo,
+archivo por archivo, está en `claudeDocs/tasks/Slice 3/Props-y-Sonidos-Resultados.md`. No es un
+slice sino el carril de arte y sonido —toca `Assets/Game/Art/`, `Assets/Game/Audio/`, `Game.Audio`,
+`Game.Levels.Fire` y `Game.Levels.Wheel`—, así que se pisa con los Slices 1 y 2. Lo de «parciales»: las dos
 secuencias del fuego del N1 ya son clips reproducibles —`prop_n1_fuego_normal.anim` (2,667 s) y
 `prop_n1_fuego_cenital.anim` (5,633 s), a 30 fps y en bucle, cada uno con su `.controller` al
 lado— y desde el 22/09/2026 **están cableados**: el cenital en `Level1_Cave` (objeto `Fuego`, que
@@ -105,7 +106,7 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | Archivo | Qué contiene |
 |---|---|
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
-| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. `INC-01`..`INC-45` están cerrados; **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`)— rigen para todo texto y asset nuevo. Quedan **abiertos** `INC-46` (tareas del Nivel 3), `INC-47` (la mecánica del Nivel 1 reúne los materiales en un círculo y luego mide fuerza y cercanía en dos deslizantes, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF), `INC-48` (el §4 del documento refundido es la arquitectura vieja), `INC-49` (el menú de pausa es el del mockup 6 y HU-17 aún dice «Continuar / Reiniciar nivel / Volver al menú principal») e `INC-50` («Empujar» en el bosque no anima el rodado, sale a la escena 2.2 que lo cuenta; RF-26/HU-08 lo describen dentro de la mecánica). |
+| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. `INC-01`..`INC-45` están cerrados; **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`)— rigen para todo texto y asset nuevo. Quedan **abiertos** `INC-46` (tareas del Nivel 3), `INC-47` (la mecánica del Nivel 1 reúne los materiales en un círculo y luego mide fuerza y cercanía en dos deslizantes, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF), `INC-48` (el §4 del documento refundido es la arquitectura vieja), `INC-49` (el menú de pausa es el del mockup 6 y HU-17 aún dice «Continuar / Reiniciar nivel / Volver al menú principal»), `INC-50` («Empujar» en el bosque no anima el rodado, sale a la escena 2.2 que lo cuenta; RF-26/HU-08 lo describen dentro de la mecánica) e `INC-51` (el cierre del Nivel 3 no se puede omitir ni al repetirlo: sin nivel siguiente, la primera vuelta y las demás dejan el mismo perfil; HU-14 FA-01 aún lo pide). |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
 | `claudeDocs/Direccion_de_Musica_y_Sonido.md` | **La ley del audio.** Hermano de la dirección de arte: cinco pilares (ningún sonido de fallo, §2.1, es CP-02 en el oído), cuatro buses bajo `AudioManager`, nomenclatura `mus_`/`amb_`/`sfx_`, los tres silencios del guion como piezas con disparador (§5) y el inventario de 104 piezas por nivel. **Cableadas están las nueve del Nivel 1, cuatro del Nivel 2 y las dos globales** (`N2_Sonidos`, rev. 3); las otras cuatro piezas entregadas en PR #81 —las tres del Nivel 3 y `amb_n2_noche_intemperie`— **no las referencia ningún asset todavía** —estar en disco no es estar aplicado—, y **no hay música ni blip de diálogo** (`PS-01..PS-05` siguen abiertos). Su §19 (rev. 2 el N1, rev. 3 el N2) dice qué está aplicado. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
@@ -179,7 +180,7 @@ graphify explain "HintPolicy"
 
 `GRAPH_REPORT.md` es el índice legible —empezar por «Community Hubs»—; `graph.json` es el grafo
 para consumo de agente y `graph.html` la vista interactiva. Es una **foto**: la vigente es del
-21/09/2026, 220 archivos, 3819 nodos y 8600 aristas en 221 comunidades.
+23/09/2026, 224 archivos, 3829 nodos y 7868 aristas en 230 comunidades.
 **Los `docs/md/*.md` sí están en el grafo —315 nodos— pero congelados**: los extrajo una corrida
 vieja y `manifest.json` no los sigue (cero entradas, porque graphify respeta el `.gitignore`), así
 que ningún `--update` los vuelve a leer. Sirven para **ubicar** un RF o una HU radicada; el texto
