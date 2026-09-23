@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
@@ -43,6 +44,10 @@ namespace Game.Levels.Wheel
         [SerializeField]
         [Tooltip("Contenido del guía del Nivel 2. La fase 2 activa su segunda tarea, «Construir».")]
         private GuideContent guide;
+
+        [SerializeField]
+        [Tooltip("Sonidos del Nivel 2: el bosque de día de fondo, el encaje al perforar, los martillazos al encajar cada pieza y el terminado. Vacío = silencio.")]
+        private WheelSounds sounds;
 
         [SerializeField]
         [Tooltip("El mundo: el entorno y todo lo que cuelga de él. Es lo que la cámara empuja al terminar; las tablillas quedan fuera.")]
@@ -129,6 +134,7 @@ namespace Game.Levels.Wheel
         internal Text MessageLabel => messageLabel;
         internal Image MessageIcon => messageIcon;
         internal AssemblyContent Config => config;
+        internal WheelSounds Sounds => sounds;
 #endif
 
         private void Awake() => Runner ??= GameFlowRunner.Instance;
@@ -144,6 +150,12 @@ namespace Game.Levels.Wheel
             }
 
             _canvas = world.GetComponentInParent<Canvas>();
+
+            if (sounds != null && AudioManager.Instance != null)
+            {
+                // El bosque de día sigue de fondo: el mismo clip que la escena anterior, sin costura.
+                AudioManager.Instance.PlayAmbient(sounds.ForestAmbient);
+            }
 
             // El entorno primero: Apply deja al elemento con el tamaño nativo de la imagen y lo
             // escala, y es sobre ese tamaño sobre el que se miden las piezas que cuelgan de él.
@@ -274,6 +286,7 @@ namespace Game.Levels.Wheel
             }
 
             _indicators.RecordAccepted(); // Perforar es un paso de ensamblaje ejecutado en orden.
+            Play(sounds?.Drilled); // con «Mecanizar» o con el martillo: el mismo encaje
             if (drilled.HasValue && _pieces.TryGetValue(drilled.Value, out var entry))
             {
                 // La rueda **es** el mismo tronco con el agujero: se cambia la ilustración en su
@@ -378,6 +391,7 @@ namespace Game.Levels.Wheel
             {
                 rect.gameObject.SetActive(false);
                 ShowAssembly(piece);
+                _ = HammerAsync();
                 _hints.RegisterSuccessfulAttempt();
                 _indicators.RecordAccepted();
                 Show(outcome.Message, acceptedIcon, acceptedColor);
@@ -520,8 +534,53 @@ namespace Game.Levels.Wheel
                 return; // La escena se descargó a mitad del empuje: no hay nada que confirmar.
             }
 
+            // Después de los martillazos, que suenan durante el empuje: la carretilla está hecha.
+            // El gestor sobrevive al cambio de escena, así que la pieza termina ya en la narrativa.
+            Play(sounds?.CartBuilt);
             IsCompleting = false;
             ConfirmPhase2AndLeave();
+        }
+
+        /// <summary>
+        /// Una pieza encaja en la carretilla: varios martillazos seguidos, como quien la clava.
+        /// </summary>
+        /// <remarks>
+        /// En su propia tarea y no en <see cref="Release"/>: la pieza encaja al instante y el
+        /// jugador puede seguir mientras suenan. Con la caja, el último golpe cae dentro del
+        /// empuje de cámara de <see cref="CompleteAsync"/>, antes del sonido de terminado.
+        /// </remarks>
+        private async Awaitable HammerAsync()
+        {
+            if (sounds == null)
+            {
+                return;
+            }
+
+            try
+            {
+                for (var hit = 0; hit < sounds.AssemblyHits; hit++)
+                {
+                    if (hit > 0)
+                    {
+                        await Awaitable.WaitForSecondsAsync(sounds.AssemblyHitSeconds, destroyCancellationToken);
+                    }
+
+                    Play(sounds.AssemblyHammer);
+                }
+            }
+            catch (System.OperationCanceledException)
+            {
+                // La escena se descargó entre dos golpes: los que faltan ya no tienen dónde sonar.
+            }
+        }
+
+        /// <summary>Un efecto, una vez; sin gestor (escena abierta sin <c>Boot</c>) no suena nada.</summary>
+        private static void Play(AudioClip clip)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySfx(clip);
+            }
         }
 
         /// <summary>

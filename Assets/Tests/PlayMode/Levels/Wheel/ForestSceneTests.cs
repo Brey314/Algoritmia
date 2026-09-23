@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Audio;
 using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
@@ -461,6 +462,120 @@ namespace Game.Levels.Wheel.Tests
                 .ToArray();
 
             Assert.That(fugados, Is.Empty, string.Join(" · ", fugados));
+        }
+
+        /// <summary>
+        /// Qué suena en el bosque (Direccion_de_Musica_y_Sonido.md §8 y §12): el bosque de día de
+        /// fondo, y cada objeto que el cursor aparta suena a lo que es —el tronco a tronco, la
+        /// piedra y la herramienta a piedra, la planta a hojas mientras vuela—. Se comprueba
+        /// **qué** pieza sonó, no cómo suena.
+        /// </summary>
+        /// <remarks>
+        /// Todo va sin ceder cuadros entre el empujón y la aserción: en el Editor el ratón real
+        /// también empuja objetos en <c>Update</c> y podría hacer sonar otro entre medias.
+        /// </remarks>
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF22_ElBosqueSuenaDeFondoYCadaObjetoSuenaALoQueEsAlApartarse()
+        {
+            var audio = new GameObject("TestAudio").AddComponent<AudioManager>();
+            try
+            {
+                var forest = await OpenForest();
+                var sounds = forest.Sounds;
+                Assume.That(sounds, Is.Not.Null, "Level2_Forest tiene N2_Sonidos asignado");
+                Assert.That(audio.AmbientClip, Is.SameAs(sounds.ForestAmbient),
+                    "el bosque de día suena desde que abre la fase (amb_n2_bosque_dia)");
+
+                Canvas.ForceUpdateCanvases();
+                ElCursorLejos(forest);
+
+                foreach (var (categoria, esperado) in new[]
+                         {
+                             (ForestObjectCategory.RoundLog, sounds.LogNudge),
+                             (ForestObjectCategory.Stone, sounds.StoneNudge),
+                             (ForestObjectCategory.Tool, sounds.StoneNudge)
+                         })
+                {
+                    forest.Nudge(Aislado(forest, categoria), 1f / 60f);
+                    Assert.That(audio.LastSfx, Is.SameAs(esperado), $"apartar {categoria} suena a {esperado.name}");
+                    ElCursorLejos(forest);
+                }
+
+                forest.Nudge(Aislado(forest, ForestObjectCategory.Plant), 1f / 60f);
+                Assert.That(audio.HeldClip, Is.SameAs(sounds.LeafNudge), "la hoja suena mientras vuela");
+
+                for (var frame = 0; frame < 60 * 6; frame++)
+                {
+                    forest.Nudge(new Vector2(-10000f, -10000f), 1f / 60f);
+                }
+
+                Assert.That(audio.HeldClip, Is.Null, "y calla al posarse");
+            }
+            finally
+            {
+                Object.DestroyImmediate(audio.gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Cada tronco que llega al acopio suena a encaje, y los cinco reunidos suenan una vez a
+        /// pieza tomada cuando echan a volar hacia la fila. Un distractor no suena a nada de eso.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RF24_CadaTroncoAcopiadoSuenaAEncajeYLosCincoReunidosAPiezaTomada()
+        {
+            var audio = new GameObject("TestAudio").AddComponent<AudioManager>();
+            try
+            {
+                var forest = await OpenForest();
+                var sounds = forest.Sounds;
+                Assume.That(sounds, Is.Not.Null, "Level2_Forest tiene N2_Sonidos asignado");
+                var troncos = forest.Spawned.Where(entrada => entrada.Object.Category == ForestObjectCategory.RoundLog).ToArray();
+
+                troncos[0].Button.onClick.Invoke();
+                Assert.That(audio.LastSfx, Is.SameAs(sounds.LogCollected), "el tronco encaja en el acopio");
+                Assert.That(audio.LastSfx.name, Is.EqualTo("sfx_encaje_pieza"));
+
+                var antes = audio.SfxCount;
+                forest.Spawned.First(entrada => entrada.Object.Category == ForestObjectCategory.Stone).Button.onClick.Invoke();
+                Assert.That(audio.SfxCount, Is.EqualTo(antes), "el distractor rechazado no suena a encaje ni a nada (CP-02)");
+
+                foreach (var tronco in troncos.Skip(1))
+                {
+                    tronco.Button.onClick.Invoke();
+                }
+
+                await Esperar(() => audio.LastSfx == sounds.AllLogsCollected, 5f);
+                Assert.That(audio.LastSfx.name, Is.EqualTo("sfx_n1_pieza_tomar"), "los cinco reunidos suenan a pieza tomada");
+            }
+            finally
+            {
+                Object.DestroyImmediate(audio.gameObject);
+            }
+        }
+
+        /// <summary>
+        /// El punto de pantalla sobre un objeto de esa categoría sin vecinos al alcance del
+        /// cursor: así el empujón solo lo alcanza a él y lo que suena es suyo.
+        /// </summary>
+        /// <remarks>
+        /// Se apunta a su posición en el suelo según el modelo del empujón, no al centro del
+        /// dibujo: el reparto aparta el dibujo de las tablillas con <c>anchoredPosition</c> y el
+        /// empujón mide desde la fracción del asset.
+        /// </remarks>
+        private static Vector2 Aislado(ForestSceneController forest, ForestObjectCategory categoria)
+        {
+            var alcance = forest.Config.Nudges.Max(ajuste => ajuste.Radius);
+            var aislado = forest.Spawned.FirstOrDefault(entrada =>
+                entrada.Object.Category == categoria && entrada.Nudge != null &&
+                forest.Spawned.All(otro => otro.Object == entrada.Object || otro.Nudge == null ||
+                                           Vector2.Distance(otro.Nudge.Position, entrada.Nudge.Position) > alcance));
+            Assume.That(aislado.Button, Is.Not.Null, $"el catálogo tiene algún {categoria} sin vecinos al alcance");
+
+            var suelo = EnPantalla(forest.FloorArea);
+            return suelo.min + Vector2.Scale(suelo.size, aislado.Nudge.Position);
         }
 
         // --- W07: la caja y el rodado ------------------------------------------------------------

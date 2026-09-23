@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Audio;
 using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
@@ -213,6 +214,41 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(maze.MessageLabel.text, Is.EqualTo(maze.Layout.StoppedMessage));
             Assert.That(maze.MessageLabel.text, Does.Not.Match(@"\d"), "sin cifras (CP-03)");
             Assert.That(SceneManager.GetActiveScene().name, Is.EqualTo(SceneName), "el escenario no se recargó (CU-08 FA-6a)");
+        }
+
+        /// <summary>
+        /// La carretilla suena mientras recorre la secuencia —también en el intento que choca y
+        /// vuelve, que se oye como rueda y nunca como error (RF-33, §2.1, CP-02)— y calla al
+        /// terminar; debajo sigue el bosque de día.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RF32_LaCarretillaSuenaMientrasRecorreLaSecuenciaYCallaAlTerminar()
+        {
+            var audio = new GameObject("TestAudio").AddComponent<AudioManager>();
+            try
+            {
+                var maze = await OpenMaze();
+                var sounds = maze.Sounds;
+                Assume.That(sounds, Is.Not.Null, "Level2_Maze tiene N2_Sonidos asignado");
+                Assert.That(audio.AmbientClip, Is.SameAs(sounds.ForestAmbient), "el bosque de día de fondo");
+
+                // Girar a la izquierda y avanzar topa con el seto: se intenta y se vuelve.
+                maze.AddBlock(InstructionBlock.Turn(TurnDirection.Left));
+                maze.AddBlock(InstructionBlock.Forward(1));
+                maze.Execute();
+
+                Assert.That(audio.HeldClip, Is.SameAs(sounds.CartMove), "la carretilla rueda mientras recorre la secuencia");
+
+                await Esperar(() => !maze.IsExecuting);
+
+                Assert.That(audio.HeldClip, Is.Null, "y calla al terminar");
+                Assert.That(audio.AmbientClip, Is.SameAs(sounds.ForestAmbient), "el bosque sigue debajo");
+            }
+            finally
+            {
+                Object.DestroyImmediate(audio.gameObject);
+            }
         }
 
         [Test]

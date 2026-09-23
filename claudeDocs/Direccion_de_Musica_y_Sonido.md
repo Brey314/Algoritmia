@@ -564,6 +564,37 @@ Igual que §18 del arte: se dejan escritas, no se toman por cuenta propia.
 
 ## 19. Historial
 
+- **rev. 3 (23/09/2026)** — Nivel 2, a petición de Santiago, con cuatro de las piezas entregadas en
+  PR #81 y una del Nivel 1. El nivel lleva `N2_Sonidos.asset` (`WheelSounds`), que referencian las
+  tres escenas jugables. Aplicado: `amb_n2_bosque_dia` suena de fondo en el puente I, en las
+  escenas 2.1 a 2.4 y en **las tres fases**, sin costura entre ellas. Eso se aparta de §8, que lo
+  pone solo en la fase 1: `amb_n2_taller_claro` no se ha entregado, y la fase 3 no tenía ambiente
+  propio. La 2.5 queda sin ambiente hasta que llegue `amb_n2_refugio_fogata`. El apartarse de los
+  objetos del bosque al pasar el cursor suena a lo que es, una vez por acercamiento:
+  `sfx_n2_troncos` el tronco, `sfx_n2_piedra_cae` la piedra **y la herramienta**, y la planta
+  reutiliza `sfx_n1_hojas_acomodo` **en bucle mientras vuela**, porque son 6 s y el vuelo dura
+  menos. `sfx_n2_carretilla` suena en bucle mientras la carretilla recorre la secuencia del
+  laberinto, también en el intento que choca y vuelve (§2.1). Una sola pieza hace lo que §12.3
+  reparte entre `sfx_n2_paso_avanzar`/`_retroceder`/`_girar`/`_retroceso_bloqueado`, que siguen
+  sin entregar. Ninguna de las piezas de §12 con su nombre está entregada todavía.
+  **Segunda tanda, el mismo día:**
+  - Las globales hacen de piezas de §12 que no se han entregado. `sfx_encaje_pieza` suena por cada
+    tronco acopiado (en lugar de `sfx_n2_objeto_valido`) y al perforar, con «Mecanizar» o con el
+    martillo (en lugar de `sfx_n2_mecanizar`).
+  - `sfx_n1_pieza_tomar` suena cuando los cinco troncos quedan reunidos y cuando la carretilla
+    está terminada (en lugar de `sfx_n2_carretilla_lista`).
+  - `sfx_martillo_madera` suena tres veces seguidas, separadas por 0,3 s, cuando una pieza encaja
+    en la carretilla (en lugar de `sfx_n2_eje_insertado`, `_tabla_colocada` y `_caja_colocada`).
+  - En la escena 2.2 cada objeto suena **al tocar el suelo** (`NarrativeProp.LandSound`), no al
+    empezar su línea. El tronco que suelta el niño suena con `sfx_n2_troncos` y la piedra que
+    suelta papá con `sfx_n2_piedra_cae`, las dos a mitad de su movimiento, cuando caen. La caja
+    suena con `sfx_n2_piedra_cae` al terminar de caer tras el rodado. No hay pieza propia para
+    esa caída, y `sfx_n2_rodado` tampoco se ha entregado.
+  - La 2.5 y el arranque del puente II ocurren en el refugio, que es la cueva del Nivel 1 con la
+    hoguera. Suenan `amb_n1_cueva_oscura` con `amb_n1_cueva_fuego` encima, igual que en la 1.3,
+    en lugar de `amb_n2_refugio_fogata`, que no se ha entregado. El horizonte
+    (`N3_PuenteII_Horizonte`) se mira desde la boca de la cueva y conserva los dos ambientes sin
+    costura.
 - **rev. 2 (21/09/2026)** — Primera incorporación al juego (compromiso `D05-2`/`D07-2`), Nivel 1
   completo con las nueve piezas entregadas. `AudioManager` (`Game.Audio`) con los cuatro buses de
   §3, los fundidos de §3.3 y los cortes secos de §5; el contenido va en assets (CT-05): cada

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using NUnit.Framework;
@@ -92,11 +93,11 @@ namespace Game.UI.Tests
         [Timeout(60000)]
         public async Task NarrativeScene_RF05_ResuelveLasCincoSecuenciasDelNivel3SinRamas()
         {
-            // Cinco escenas del guion en seis assets: el puente II corta del bosque al río a
-            // mitad de camino y la ilustración es por secuencia (R04, Camara_Narrativa_N3.md §4).
+            // Cinco escenas del guion en siete assets: el puente II corta dos veces —del refugio
+            // en la cueva al horizonte y de ahí al río— y la ilustración es por secuencia (R04).
             var ids = new[]
             {
-                "N3_PuenteII", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
+                "N3_PuenteII", "N3_PuenteII_Horizonte", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
                 "N3_Escena32_PrimerIntento", "N3_Escena33_Cruce", "N3_EscenaFinal"
             };
             var primeras = new string[ids.Length];
@@ -561,6 +562,58 @@ namespace Game.UI.Tests
             await EsperarSegundos(piedra.Prop.MotionSeconds * 0.75f + 0.2f);
             Assert.That(piedra.Rect.anchoredPosition, Is.EqualTo(piedraAlEmpezar).Using<Vector2>((a, b) => Vector2.Distance(a, b) < 0.5f ? 0 : 1),
                 "pero cae donde estaba: lo anguloso no rueda (RF-23)");
+        }
+
+        /// <summary>
+        /// Lo que se ve en la 2.2 se oye cuando pasa: cada objeto suena **al tocar el suelo**, no
+        /// al empezar su línea. La caja, al terminar de caer pasado el último tronco; el tronco y la
+        /// piedra, cuando los sueltan, a mitad de su movimiento.
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF26_LaEscena22SuenaCuandoCadaObjetoTocaElSuelo()
+        {
+            var audio = new GameObject("TestAudio").AddComponent<AudioManager>();
+            try
+            {
+                var (controller, _) = await OpenNarrative("N2_Escena22_ElPatron", LevelId.Wheel);
+                var secuencia = SequenceNamed(controller, "N2_Escena22_ElPatron");
+                var caja = controller.Props.First(p => p.Prop.MotionDrop > 0f);
+                var tronco = controller.Props.First(p => p.Prop.MotionLine == 1 && p.Prop.Motion == PropMotion.LiftAndRoll);
+                var piedra = controller.Props.First(p => p.Prop.MotionLine == 2 && p.Prop.Motion == PropMotion.LiftAndStay);
+                Assert.That(caja.Prop.LandSound.name, Is.EqualTo("sfx_n2_piedra_cae"), "la caja cae con piedra_cae");
+                Assert.That(tronco.Prop.LandSound.name, Is.EqualTo("sfx_n2_troncos"), "el tronco cae con troncos");
+                Assert.That(piedra.Prop.LandSound.name, Is.EqualTo("sfx_n2_piedra_cae"), "la piedra cae con piedra_cae");
+                Assert.That(secuencia.Lines[1].Sound, Is.Null, "la línea del niño no suena al aparecer: suena el tronco al caer");
+                Assert.That(secuencia.Lines[2].Sound, Is.Null, "ni la de papá: suena la piedra al caer");
+
+                await Suena(audio, caja.Prop, alCaer: 1f);
+
+                Click(controller.AdvanceButton);
+                await Suena(audio, tronco.Prop, alCaer: 0.5f);
+
+                Click(controller.AdvanceButton);
+                await Suena(audio, piedra.Prop, alCaer: 0.5f);
+            }
+            finally
+            {
+                Object.DestroyImmediate(audio.gameObject);
+            }
+        }
+
+        /// <summary>
+        /// Que el objeto no suene antes de caer y suene una vez al caer. <paramref name="alCaer"/>
+        /// es la fracción de su movimiento en la que toca el suelo.
+        /// </summary>
+        private static async Task Suena(AudioManager audio, NarrativeProp prop, float alCaer)
+        {
+            var antes = audio.SfxCount;
+            await EsperarSegundos(prop.MotionSeconds * alCaer * 0.6f);
+            Assert.That(audio.SfxCount, Is.EqualTo(antes), $"{prop.LandSound.name} no suena antes de caer");
+
+            await EsperarSegundos(prop.MotionSeconds * alCaer * 0.4f + 0.25f);
+            Assert.That(audio.SfxCount, Is.EqualTo(antes + 1), $"{prop.LandSound.name} suena una vez al caer");
+            Assert.That(audio.LastSfx, Is.SameAs(prop.LandSound));
         }
 
         /// <summary>

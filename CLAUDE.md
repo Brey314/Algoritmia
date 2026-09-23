@@ -41,9 +41,8 @@ Desde el 10/09/2026 **corren varios en paralelo**, y **el reparto es por assembl
 El Slice 3 cerró su código el 21/09/2026 (Checkpoint R-E y `Slice-3-Resultados.md`) y **ya está en
 `main`** (PR #80); con él quedan implementados `RF-01..RF-44` y el carril de slices abierto es el
 Slice 4, que todavía no tiene una sola casilla marcada ni `Game.Reporting` en disco. La rama de
-trabajo de hoy es `feat/implementación-de-props-y-sonidos`: **dos commits por delante de `main`**
-(`2cbe287` audio del N1 y sprites definitivos parciales · `dc51804` clips de animación del fuego),
-**sin fusionar**. No es un slice sino el carril de arte y sonido —toca `Assets/Game/Art/`,
+trabajo de hoy es `feat/implementación-de-props-y-sonidos`, **por delante de `main` y sin
+fusionar** (cuántos commits lo dice `git log main..HEAD`, no este archivo). No es un slice sino el carril de arte y sonido —toca `Assets/Game/Art/`,
 `Game.Audio` y `Game.Levels.Fire`—, así que se pisa con el Slice 1. Lo de «parciales»: las dos
 secuencias del fuego del N1 ya son clips reproducibles —`prop_n1_fuego_normal.anim` (2,667 s) y
 `prop_n1_fuego_cenital.anim` (5,633 s), a 30 fps y en bucle, cada uno con su `.controller` al
@@ -52,7 +51,11 @@ lado— y desde el 22/09/2026 **están cableados**: el cenital en `Level1_Cave` 
 `N1_NacimientoDelFuego` como `NarrativeProp.FrameAnimation`, el único objeto narrativo animado.
 Los **34** cuadros que sobreviven en `…/Animations/Fuego {normal,cenital}/` conservan los nombres
 de entrega (`fuego_cenital_nivel_1_0000.png`, no el `prop_n1_…` de `Direccion_de_Arte.md`) y los
-referencia la curva del `.anim`: renombrarlos es trabajo del motor.
+referencia la curva del `.anim`: renombrarlos es trabajo del motor. El montón no se tiñe al
+prender: lo quema `BurnReveal` (`Game.Scaffolding`, máscara circular construida en memoria que
+crece hasta `N1_Config.BurnExtent` en la cueva y nace quieta en el cierre vía
+`NarrativeProp.BurnExtent`), y las piezas del suelo las reparte al azar `FloorScatter` (C# plano,
+`Game.Levels.Fire`) sin pisar la interfaz marcada como `keepClear` en la escena.
 
 **Tres cosas que los carriles comparten** — tocar cualquiera cambia más de un nivel a la vez:
 
@@ -75,7 +78,7 @@ referencia la curva del `.anim`: renombrarlos es trabajo del motor.
 **Encadenar escenas narrativas es editar un asset, nunca tocar el controlador:**
 `NarrativeSequence.NextSequenceId` las enlaza. **La ilustración es por secuencia**, así que cambiar
 de fondo a mitad de escena son dos assets encadenados y no una rama — por eso las «cinco escenas»
-del Nivel 3 viven en **seis** `N3_*.asset`. Lo que depende del juego —la escena 3.2, que solo
+del Nivel 3 viven en **siete** `N3_*.asset` (el puente II pasa de la cueva al horizonte y de ahí al río). Lo que depende del juego —la escena 3.2, que solo
 aparece tras el primer fallo— lo decide `ConditionalNarrativeTrigger` (C# plano,
 `Game.Scaffolding`), tampoco un `if` en el controlador.
 
@@ -90,7 +93,7 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
 | `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. `INC-01`..`INC-45` están cerrados; **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`)— rigen para todo texto y asset nuevo. Quedan **abiertos** `INC-46` (tareas del Nivel 3), `INC-47` (la mecánica del Nivel 1 reúne los materiales en un círculo y luego mide fuerza y cercanía en dos deslizantes, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF), `INC-48` (el §4 del documento refundido es la arquitectura vieja), `INC-49` (el menú de pausa es el del mockup 6 y HU-17 aún dice «Continuar / Reiniciar nivel / Volver al menú principal») e `INC-50` («Empujar» en el bosque no anima el rodado, sale a la escena 2.2 que lo cuenta; RF-26/HU-08 lo describen dentro de la mecánica). |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
-| `claudeDocs/Direccion_de_Musica_y_Sonido.md` | **La ley del audio.** Hermano de la dirección de arte: cinco pilares (ningún sonido de fallo, §2.1, es CP-02 en el oído), cuatro buses bajo `AudioManager`, nomenclatura `mus_`/`amb_`/`sfx_`, los tres silencios del guion como piezas con disparador (§5) y el inventario de 104 piezas por nivel. **Cableadas hay nueve, todas del Nivel 1**; en `Assets/Game/Audio/` hay además diez piezas entregadas de los Niveles 2 y 3 y globales (PR #81) que **ningún asset referencia todavía** —estar en disco no es estar aplicado—, y **no hay música ni blip de diálogo** (`PS-01..PS-05` siguen abiertos). Su rev. 2 (§19) dice qué está aplicado. |
+| `claudeDocs/Direccion_de_Musica_y_Sonido.md` | **La ley del audio.** Hermano de la dirección de arte: cinco pilares (ningún sonido de fallo, §2.1, es CP-02 en el oído), cuatro buses bajo `AudioManager`, nomenclatura `mus_`/`amb_`/`sfx_`, los tres silencios del guion como piezas con disparador (§5) y el inventario de 104 piezas por nivel. **Cableadas están las nueve del Nivel 1, cuatro del Nivel 2 y las dos globales** (`N2_Sonidos`, rev. 3); las otras cuatro piezas entregadas en PR #81 —las tres del Nivel 3 y `amb_n2_noche_intemperie`— **no las referencia ningún asset todavía** —estar en disco no es estar aplicado—, y **no hay música ni blip de diálogo** (`PS-01..PS-05` siguen abiertos). Su §19 (rev. 2 el N1, rev. 3 el N2) dice qué está aplicado. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
 | `claudeDocs/Camara_Narrativa_N2.md` · `docs/Camara_Narrativa_N1.md` | **Los diseños de cámara que quedan en disco.** El del N1 es de Santiago (35 encuadres, cada uno con su estado de luz) y se trata como los `.docx`: no se edita desde código; solo el N1 usa la capa de oscuridad. El del N2 son 50 encuadres validados contra 16:9 — regla que evita el choque más común: para bajar la cámara al suelo hay que cerrar el plano (`y = 0.35` exige `zoom ≥ 1.43`). **El diseño del N3 ya no está en el equipo** (era `docs/md/Camara_Narrativa_N3.md`): 32 encuadres sobre dos sprites 16:9 **sin duplicar**, con el foco acotado a `[0.5/z, 1−0.5/z]` en los dos ejes —a zoom 1 solo cabe el centro, así que el trabajo lo hace el zoom y no el paneo—; lo aplicado sobrevive solo en los `N3_*.asset`. En los tres niveles los valores viven en los `N*_*.asset`: el documento explica el porqué, no sustituye al asset. |
 | ~~`docs/md/Camara_Narrativa*.md` · `docs/md/verificacion_encuadres_N1|N2|N3/`~~ | **Perdidos: no están en este equipo** (20/09/2026). Eran los inventarios de lo aplicado escritos a mano —qué quedó en cada asset y en el motor, con quién lo decidió [S] Santiago / [C] Claude— y las hojas de verificación de encuadres (un PNG por parada, generado desde el contenido, con la franja del cuadro de diálogo en rojo). Estaban en `.gitignore`, así que no hay copia en git. Las hojas **sí** se rehacen generándolas desde el contenido; los inventarios no. Mientras no se rehagan, la única fuente de lo aplicado es el `N*_*.asset`, y los enlaces a `claudeDocs/verificacion_encuadres_*` que aparecen en otros documentos no resuelven. |
@@ -282,20 +285,21 @@ antes de escribir la primera línea:
 - **Un assembly (`.asmdef`) por módulo**, dependencias en un solo sentido: `Game.Core` →
   `Game.Scaffolding` → `Game.Levels.{Fire,Wheel,River}` → `Game.Reporting`. **Ningún nivel
   referencia a otro nivel** — eso es lo que hace ejecutable la prueba de exclusión de RNF-16.
+  `Game.Scaffolding` referencia además `UnityEngine.UI` (desde `8ec5120`, por `BurnReveal`).
   Fuera de esa cadena cuelgan tres assemblies más: `Game.Audio` (→ `Game.Core`) con
   `AudioManager`, el tercer singleton; `Game.UI` (→ `Game.Core`, `Game.Scaffolding`, `Game.Audio`,
   `UnityEngine.UI`) con los controladores de pantalla, donde va la mayor parte del código de hoy;
   y `Game.EditorTools`, **solo Editor**, que no referencia ningún `Game.*` (trae `PlayFromBoot`,
   `ArtImportRules`, `AudioImportRules` y `Sandbox/CharacterProbe*`, que no es código del juego).
-  **Un nivel que suena referencia `Game.Audio`** —hoy solo `Game.Levels.Fire`— y **no llama al
+  **Un nivel que suena referencia `Game.Audio`** —hoy `Game.Levels.Fire` y `Game.Levels.Wheel`— y **no llama al
   gestor con clips propios sino con los de su ScriptableObject** (`FireSounds` → `N1_Sonidos`,
-  CT-05); las escenas narrativas no tocan código: el ambiente es un campo de `NarrativeSequence` y
+  `WheelSounds` → `N2_Sonidos`, CT-05); las escenas narrativas no tocan código: el ambiente es un campo de `NarrativeSequence` y
   el efecto y el silencio son campos de `DialogueLine`. `AudioManager.Instance` puede ser nulo
   (escena abierta sin pasar por `Boot`, pruebas): todo consumidor lo comprueba y el juego sigue
   en silencio, porque el audio refuerza y nunca informa solo (§2.4). `Game.Reporting` llega en el
   Slice 4 y todavía no existe en disco. **El sonido sigue comprometido con otra persona** (actas
   D05/D07, tarjetas `D05-2`/`D07-2`): los Niveles 2 y 3 y la música son suyos; lo del Nivel 1 se
-  incorporó el 21/09/2026 a petición de Santiago.
+  incorporó el 21/09/2026 y lo del Nivel 2 el 23/09/2026, las dos veces a petición de Santiago.
 - **`Game.Levels.River` a propósito no referencia `Unity.InputSystem`**: las flechas son botones
   uGUI con clic sostenido (`IPointerDown/Up`), y
   `RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles` vigila que el assembly no gane
@@ -361,7 +365,7 @@ antes de escribir la primera línea:
   lo alcance una prueba. **El assembly de PlayMode se llama `<Módulo>.PlayMode.Tests` y necesita su
   propia línea**: sin ella el `internal` no se ve desde PlayMode aunque la de EditMode esté puesta.
   Hoy ese archivo existe en `Game.Levels.{Fire,Wheel,River}`, `Game.UI` y `Game.Audio` —este
-  último abre además sus internos a `Game.Levels.Fire.PlayMode.Tests`, que comprueba **qué**
+  último abre además sus internos a `Game.Levels.{Fire,Wheel}.PlayMode.Tests`, que comprueban **qué**
   clip sonó tras cada golpe—; `Game.Core` y `Game.Scaffolding` se prueban por superficie pública,
   así que ahí no hay `AssemblyInfo.cs` que buscar — y si una prueba nueva lo necesita, se crea.
 - Raíz de código y assets: `Assets/Game/`, namespaces `Game.*` siguiendo la ruta bajo `Scripts/` y

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Audio;
 using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
@@ -284,6 +285,52 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(escalador.referenceResolution, Is.EqualTo(new Vector2(1920f, 1080f)));
         }
 
+        /// <summary>
+        /// Qué suena en el taller: perforar —con «Mecanizar» o con el martillo— suena a encaje;
+        /// cada pieza que encaja en la carretilla, a tres martillazos seguidos; y la carretilla
+        /// terminada, a pieza tomada al acabar el empuje de cámara.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task WorkshopScene_RF29_PerforarSuenaAEncajeCadaPiezaATresMartillazosYElFinalAPiezaTomada()
+        {
+            var audio = new GameObject("TestAudio").AddComponent<AudioManager>();
+            try
+            {
+                var workshop = await OpenWorkshop();
+                var sounds = workshop.Sounds;
+                Assume.That(sounds, Is.Not.Null, "Level2_Workshop tiene N2_Sonidos asignado");
+
+                workshop.Select(WorkshopPiece.ShortLogA);
+                workshop.MachineButton.onClick.Invoke();
+                Assert.That(audio.LastSfx, Is.SameAs(sounds.Drilled), "«Mecanizar» suena a encaje");
+                Assert.That(audio.LastSfx.name, Is.EqualTo("sfx_encaje_pieza"));
+
+                var antes = audio.SfxCount;
+                workshop.Select(WorkshopPiece.ShortLogB);
+                await Arrastrar(workshop, WorkshopPiece.Tool, workshop.Pieces[WorkshopPiece.ShortLogB].Rect);
+                Assert.That(audio.SfxCount - antes, Is.EqualTo(1), "el martillo sobre el tronco perfora y suena una vez");
+                Assert.That(audio.LastSfx, Is.SameAs(sounds.Drilled), "a encaje, como el botón");
+
+                antes = audio.SfxCount;
+                await Arrastrar(workshop, WorkshopPiece.LongLog, workshop.Pieces[WorkshopPiece.ShortLogA].Rect);
+                await Esperar(() => audio.SfxCount - antes >= sounds.AssemblyHits, 5f);
+                await EsperarSegundos(sounds.AssemblyHitSeconds * 2f);
+                Assert.That(audio.SfxCount - antes, Is.EqualTo(3), "el eje encaja con tres martillazos, ni uno más");
+                Assert.That(audio.LastSfx.name, Is.EqualTo("sfx_martillo_madera"));
+
+                await Arrastrar(workshop, WorkshopPiece.Plank, workshop.AssemblyImage.rectTransform);
+                await Arrastrar(workshop, WorkshopPiece.Cargo, workshop.AssemblyImage.rectTransform);
+                await Esperar(() => !workshop.IsCompleting, 10f);
+                Assert.That(audio.LastSfx, Is.SameAs(sounds.CartBuilt), "la carretilla terminada suena al final, después de los martillazos");
+                Assert.That(audio.LastSfx.name, Is.EqualTo("sfx_n1_pieza_tomar"));
+            }
+            finally
+            {
+                Object.DestroyImmediate(audio.gameObject);
+            }
+        }
+
         [Test]
         [Timeout(60000)]
         public async Task WorkshopScene_RF29_LaSecuenciaCompletaConfirmaYGuardaLaFase2()
@@ -469,6 +516,15 @@ namespace Game.Levels.Wheel.Tests
             // al cursor de verdad, que está fuera de la ventana de juego (visto el 12/09/2026).
             workshop.Release(pieza);
             await Awaitable.NextFrameAsync();
+        }
+
+        private static async Task EsperarSegundos(float segundos)
+        {
+            var fin = Time.realtimeSinceStartup + segundos;
+            while (Time.realtimeSinceStartup < fin)
+            {
+                await Awaitable.NextFrameAsync();
+            }
         }
 
         private static async Task Esperar(Func<bool> condicion, float segundos = 20f)

@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Scaffolding
 {
@@ -79,6 +80,11 @@ namespace Game.Scaffolding
         [field: SerializeField]
         [field: Tooltip("Cuánto cae al pasar el último tronco, como fracción del alto de la ilustración. Cero: no cae. Es la caída de la caja al final del rodado. Al deslizarse es cuánto baja en total (negativo: sube).")]
         public float MotionDrop { get; private set; }
+
+        [field: FormerlySerializedAs("<MotionEndSound>k__BackingField")]
+        [field: SerializeField]
+        [field: Tooltip("Efecto que suena una vez cuando el objeto toca el suelo: al soltarlo, si alguien lo levanta (el tronco, la piedra); al terminar de caer, si rueda y cae (la caja). Vacío = nada.")]
+        public AudioClip LandSound { get; private set; }
 
         /// <summary>Requerido por la serialización de Unity.</summary>
         private NarrativeProp()

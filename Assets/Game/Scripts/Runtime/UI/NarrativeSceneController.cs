@@ -468,6 +468,10 @@ namespace Game.UI
             var rollShare = drop > 0f ? 0.8f : 1f;
             var seconds = Mathf.Max(prop.MotionSeconds, 0.01f);
             var elapsed = 0f;
+            // Lo que se ve se oye cuando pasa: lo que alguien levanta toca el suelo al soltarlo, a
+            // mitad del movimiento; lo que rueda y cae, al final.
+            var landsAt = lifted ? 0.5f : 1f;
+            var landed = false;
 
             try
             {
@@ -475,6 +479,14 @@ namespace Game.UI
                 {
                     elapsed += Time.deltaTime;
                     var t = Mathf.Clamp01(elapsed / seconds);
+                    if (!landed && t >= landsAt)
+                    {
+                        landed = true;
+                        if (AudioManager.Instance != null)
+                        {
+                            AudioManager.Instance.PlaySfx(prop.LandSound);
+                        }
+                    }
 
                     // Mitad del tiempo para subir y caer si lo levantan; el resto, rodar o quedarse.
                     var air = lifted ? Mathf.Clamp01(t / 0.5f) : 1f;

@@ -72,6 +72,9 @@ namespace Game.Audio
         /// <summary>El último efecto disparado. Las pruebas comprueban con él **qué** sonó, no cómo.</summary>
         internal AudioClip LastSfx { get; private set; }
 
+        /// <summary>Cuántos efectos se han disparado: cuenta golpes repetidos del mismo clip, que <see cref="LastSfx"/> no distingue.</summary>
+        internal int SfxCount { get; private set; }
+
         /// <summary>El efecto de clic sostenido que suena ahora mismo; nulo si ninguno.</summary>
         internal AudioClip HeldClip { get; private set; }
 
@@ -160,6 +163,7 @@ namespace Game.Audio
             _sfx.pitch = 1f + Random.Range(-pitchJitter, pitchJitter);
             _sfx.PlayOneShot(clip, SfxVolume * Mathf.Clamp01(volume));
             LastSfx = clip;
+            SfxCount++;
         }
 
         /// <summary>

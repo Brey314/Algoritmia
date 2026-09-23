@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d26f9b742dfc4ff4fbabf193d89973c8, type: 3}
+  m_Name: N2_Sonidos
+  m_EditorClassIdentifier: Game.Levels.Wheel::Game.Levels.Wheel.WheelSounds
+  <ForestAmbient>k__BackingField: {fileID: 8300000, guid: 51f096eb5872f6043bba5cee8f269d2c, type: 3}
+  <LogNudge>k__BackingField: {fileID: 8300000, guid: e6df6782b58e25644b418a894a6f8500, type: 3}
+  <StoneNudge>k__BackingField: {fileID: 8300000, guid: e8c46275d8e1010428116e49d9b18cfc, type: 3}
+  <LeafNudge>k__BackingField: {fileID: 8300000, guid: b068359dff2e23e4cb60169ae4229221, type: 3}
+  <NudgePitchJitter>k__BackingField: 0.06
+  <CartMove>k__BackingField: {fileID: 8300000, guid: 80fecbf121fe4744cbbe436f74d61868, type: 3}
+  <LogCollected>k__BackingField: {fileID: 8300000, guid: 583387d738313f14da1936acfc03b383, type: 3}
+  <AllLogsCollected>k__BackingField: {fileID: 8300000, guid: b109a9290639d8341be16070d1a66a98, type: 3}
+  <Drilled>k__BackingField: {fileID: 8300000, guid: 583387d738313f14da1936acfc03b383, type: 3}
+  <AssemblyHammer>k__BackingField: {fileID: 8300000, guid: 9a7f8431b83aba94aa6abb1384c7536e, type: 3}
+  <AssemblyHits>k__BackingField: 3
+  <AssemblyHitSeconds>k__BackingField: 0.3
+  <CartBuilt>k__BackingField: {fileID: 8300000, guid: b109a9290639d8341be16070d1a66a98, type: 3}

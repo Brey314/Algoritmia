@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
@@ -43,6 +44,10 @@ namespace Game.Levels.Wheel
         [SerializeField]
         [Tooltip("Contenido del guía del Nivel 2. La fase 3 activa su tercera tarea, «Programar».")]
         private GuideContent guide;
+
+        [SerializeField]
+        [Tooltip("Sonidos del Nivel 2. El bosque de día de fondo y la carretilla mientras recorre la secuencia; vacío = silencio.")]
+        private WheelSounds sounds;
 
         [SerializeField]
         [Tooltip("El entorno cenital. Cabe entero en su panel sin deformarse; la matriz cuelga de él (RNF-23).")]
@@ -208,6 +213,7 @@ namespace Game.Levels.Wheel
         internal Text MessageLabel => messageLabel;
         internal Image MessageIcon => messageIcon;
         internal RectTransform Held => _held;
+        internal WheelSounds Sounds => sounds;
         internal IEnumerable<RectTransform> PaletteBlocks => paletteRowA.Cast<Transform>().Concat(paletteRowB.Cast<Transform>())
             .Select(child => (RectTransform)child)
             .Where(child => child.gameObject.activeSelf);
@@ -229,6 +235,12 @@ namespace Game.Levels.Wheel
             }
 
             _canvas = environment.GetComponentInParent<Canvas>();
+
+            if (sounds != null && AudioManager.Instance != null)
+            {
+                // El bosque de día sigue de fondo: el mismo clip que la escena anterior, sin costura.
+                AudioManager.Instance.PlayAmbient(sounds.ForestAmbient);
+            }
 
             FitEnvironment();
             cellTemplate.gameObject.SetActive(false);
@@ -766,6 +778,11 @@ namespace Game.Levels.Wheel
 
             try
             {
+                // La carretilla suena mientras recorre la secuencia, también en el intento que
+                // choca y vuelve: la depuración se oye como rueda, nunca como error (RF-33, §2.1,
+                // CP-02). **En bucle y no un disparo por paso**: la pieza dura 1,8 s y los pasos
+                // 0,6, así que por paso se amontonarían tres ruedas a la vez.
+                PlayCart(true);
                 foreach (var step in result.Steps)
                 {
                     Highlight(step.Index);
@@ -790,6 +807,7 @@ namespace Game.Levels.Wheel
                     await Awaitable.WaitForSecondsAsync(seconds / 2f, destroyCancellationToken);
                 }
 
+                PlayCart(false);
                 if (result.ReachedGoal)
                 {
                     Highlight(-1);
@@ -816,6 +834,24 @@ namespace Game.Levels.Wheel
 
             IsExecuting = false;
             executeButton.interactable = true;
+        }
+
+        /// <summary>Arranca o calla la rueda de la carretilla.</summary>
+        private void PlayCart(bool rolling)
+        {
+            if (sounds == null || AudioManager.Instance == null)
+            {
+                return;
+            }
+
+            if (rolling)
+            {
+                AudioManager.Instance.PlayHeld(sounds.CartMove);
+            }
+            else
+            {
+                AudioManager.Instance.StopHeld();
+            }
         }
 
         private async Awaitable Slide(Vector2Int from, Vector2Int to, float seconds, float fraction, bool reverse = false)
