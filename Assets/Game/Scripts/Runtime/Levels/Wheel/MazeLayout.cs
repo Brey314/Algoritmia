@@ -73,12 +73,47 @@ namespace Game.Levels.Wheel
         public Sprite CartArt { get; private set; }
 
         [field: SerializeField]
+        [field: Tooltip("La papelera que aparece junto al bloque seleccionado de la secuencia para retirarlo (RF-34). El mismo icono que borra un perfil: ui_papelera.")]
+        public Sprite DeleteIcon { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("El refugio. Vacío deja un cuadro.")]
         public Sprite ShelterArt { get; private set; }
 
         [field: SerializeField]
         [field: Tooltip("Piedras, curvas y pendientes (RF-30): cada obstáculo toma una al azar. Vacío deja cuadros.")]
         public Sprite[] ObstacleArt { get; private set; } = Array.Empty<Sprite>();
+
+        [field: SerializeField]
+        [field: Tooltip("La luz de la hora del día: tiñe el entorno y todo lo que cuelga de él. El Nivel 2 dura un día entero y la fase 3 es al atardecer. Blanco = sin tinte.")]
+        public Color LightTint { get; private set; } = Color.white;
+
+        [field: SerializeField]
+        [field: Tooltip("Material con el shader «Algoritm/UI Contraste» (fx_contraste). Vacío = el entorno sin contraste añadido.")]
+        public Material EnvironmentMaterial { get; private set; }
+
+        [field: SerializeField]
+        [field: Range(0.5f, 2f)]
+        [field: Tooltip("Contraste del entorno: separa suelo, piedras y setos. 1 = como viene el arte.")]
+        public float Contrast { get; private set; } = 1f;
+
+        [field: SerializeField]
+        [field: Range(0f, 2f)]
+        [field: Tooltip("Saturación del entorno: por debajo de 1 le quita color al arte (el suelo del laberinto es anaranjado de origen). 1 = como viene.")]
+        public float Saturation { get; private set; } = 1f;
+
+        [field: SerializeField]
+        [field: Tooltip("Color del panel que rodea al entorno cuando la ilustración no lo llena. Se tiñe con la luz del momento, como el entorno, para que parezca su continuación.")]
+        public Color BackdropColor { get; private set; } = Color.black;
+
+        [field: SerializeField]
+        [field: Tooltip("Color de las líneas de la cuadrícula de la matriz dentro del seto. Transparente = sin cuadrícula.")]
+        public Color GridColor { get; private set; } = new Color(0f, 0f, 0f, 0.2f);
+
+        [field: SerializeField]
+        [field: Min(0f)]
+        [field: Tooltip("Grosor de las líneas de la cuadrícula, en píxeles de la ilustración.")]
+        public float GridThickness { get; private set; } = 3f;
 
         [field: SerializeField]
         [field: Tooltip("Pausa entre pasos al ejecutar, para que el movimiento sea legible (RF-32).")]

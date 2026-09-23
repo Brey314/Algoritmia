@@ -54,11 +54,11 @@ namespace Game.Scaffolding.Tests
         }
 
         [Test]
-        public void NarrativeSequence_RF05_ElNivel2TieneSusSeisSecuencias()
+        public void NarrativeSequence_RF05_ElNivel2TieneSusSieteSecuencias()
         {
             var esperadas = new[]
             {
-                "N2_PuenteI", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
+                "N2_PuenteI", "N2_PuenteI_Bosque", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
                 "N2_Escena23_Construccion", "N2_Escena24_Regreso", "N2_Escena25_Cierre"
             };
 
@@ -68,6 +68,29 @@ namespace Game.Scaffolding.Tests
                 .ToArray();
 
             Assert.That(delNivel2, Is.EquivalentTo(esperadas));
+        }
+
+        /// <summary>
+        /// El Nivel 2 dura un día entero y la luz lo cuenta: amanece junto a la cueva (azul),
+        /// recolectar y armar es de tarde (sin tinte), la vuelta al refugio es al atardecer (cálido)
+        /// y el cierre es de noche, donde solo el fuego alumbra de lleno. El laberinto lleva su
+        /// propio tinte de atardecer en <c>N2_MazeLayout</c>.
+        /// </summary>
+        [Test]
+        public void NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche()
+        {
+            var secuencias = TodasLasSecuencias().ToDictionary(sequence => sequence.Id);
+            var amanecer = secuencias["N2_PuenteI"].LightStart;
+            var tarde = secuencias["N2_Escena21_Bosque"].LightStart;
+            var atardecer = secuencias["N2_Escena24_Regreso"].LightStart;
+            var noche = secuencias["N2_Escena25_Cierre"].LightStart;
+
+            Assert.That(amanecer.Tint.b, Is.GreaterThan(amanecer.Tint.r), "amanece: luz azulada");
+            Assert.That(tarde.Tint, Is.EqualTo(Color.white), "la tarde no lleva tinte");
+            Assert.That(tarde.Ambient, Is.EqualTo(1f), "ni oscurece");
+            Assert.That(atardecer.Tint.r, Is.GreaterThan(atardecer.Tint.b), "atardece: luz cálida");
+            Assert.That(noche.Ambient, Is.LessThan(atardecer.Ambient), "de noche lo que no alumbra el fuego se oscurece");
+            Assert.That(noche.Radius, Is.GreaterThan(0f), "y el fuego sí alumbra");
         }
 
         [Test]
@@ -198,7 +221,7 @@ namespace Game.Scaffolding.Tests
         private static readonly string[] Verificadas =
         {
             "N1_Apertura", "N1_AparicionGuia", "N1_Hallazgo", "N1_NacimientoDelFuego",
-            "N2_PuenteI", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
+            "N2_PuenteI", "N2_PuenteI_Bosque", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
             "N2_Escena23_Construccion", "N2_Escena24_Regreso", "N2_Escena25_Cierre",
             "N3_PuenteII", "N3_PuenteII_Horizonte", "N3_PuenteII_Rio", "N3_Escena31_Llegada",
             "N3_Escena32_PrimerIntento", "N3_Escena33_Cruce", "N3_EscenaFinal"

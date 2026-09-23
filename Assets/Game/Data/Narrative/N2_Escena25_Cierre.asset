@@ -31,18 +31,18 @@ MonoBehaviour:
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.2, y: 0.36}
       <Radius>k__BackingField: 0.7
-      <Ambient>k__BackingField: 0.7
+      <Ambient>k__BackingField: 0.45
       <Tint>k__BackingField: {r: 1, g: 0.62, b: 0.42, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 1
     <Framing>k__BackingField:
-      <Focus>k__BackingField: {x: 0.17, y: 0.42}
+      <Focus>k__BackingField: {x: 0.17, y: 0.4}
       <Zoom>k__BackingField: 1.75
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.2, y: 0.36}
       <Radius>k__BackingField: 0.7
-      <Ambient>k__BackingField: 0.7
+      <Ambient>k__BackingField: 0.45
       <Tint>k__BackingField: {r: 1, g: 0.62, b: 0.42, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
@@ -53,14 +53,14 @@ MonoBehaviour:
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.2, y: 0.36}
       <Radius>k__BackingField: 0.7
-      <Ambient>k__BackingField: 0.7
+      <Ambient>k__BackingField: 0.45
       <Tint>k__BackingField: {r: 1, g: 0.62, b: 0.42, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
   <LightStart>k__BackingField:
     <Center>k__BackingField: {x: 0.2, y: 0.36}
     <Radius>k__BackingField: 0.7
-    <Ambient>k__BackingField: 0.7
+    <Ambient>k__BackingField: 0.45
     <Tint>k__BackingField: {r: 1, g: 0.62, b: 0.42, a: 1}
     <FlashSeconds>k__BackingField: 0
   <CameraSmoothingSeconds>k__BackingField: 2.5

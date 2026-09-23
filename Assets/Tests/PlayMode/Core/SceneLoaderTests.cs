@@ -39,6 +39,42 @@ namespace Game.Core.Tests
         }
 
         /// <summary>
+        /// Con fundido, la pantalla se va a negro **antes** de cargar y vuelve **después**: la
+        /// escena nueva nunca aparece de golpe ni la vieja se corta sin cerrar.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task SceneLoader_RF05_ConFundidoCargaEnNegroYVuelveALaImagen()
+        {
+            var sut = new GameObject(nameof(SceneLoader)).AddComponent<SceneLoader>();
+            sut.FadeSeconds = 0.2f;
+
+            sut.Load("MainMenu", fade: true);
+            Assert.That(sut.IsFading, Is.True, "el fundido arranca al pedir la carga");
+
+            await WaitUntil(() => sut.FadeAlpha >= 1f || sut.LastLoadSeconds > 0f);
+            Assert.That(sut.LastLoadSeconds, Is.EqualTo(0f), "la pantalla llega a negro antes de que cargue la escena");
+
+            await WaitUntil(() => sut.LastLoadSeconds > 0f);
+            Assert.That(sut.FadeAlpha, Is.GreaterThan(0f), "la escena carga con la pantalla todavía en negro");
+
+            await WaitUntil(() => !sut.IsFading);
+            Assert.That(sut.FadeAlpha, Is.EqualTo(0f), "y al terminar la imagen vuelve entera");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task SceneLoader_RF05_SinFundidoNoOscureceNada()
+        {
+            var sut = new GameObject(nameof(SceneLoader)).AddComponent<SceneLoader>();
+
+            sut.Load("MainMenu");
+            Assert.That(sut.IsFading, Is.False);
+            await WaitUntil(() => sut.LastLoadSeconds > 0f);
+            Assert.That(sut.FadeAlpha, Is.EqualTo(0f), "los menús cortan en seco");
+        }
+
+        /// <summary>
         /// Espera a que se cumpla la condición, no a un número fijo de frames: cuántos hacen
         /// falta depende de lo que tarde en cargar la escena, y eso cambia con el equipo.
         /// </summary>

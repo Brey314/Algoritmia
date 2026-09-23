@@ -73,7 +73,11 @@ crece hasta `N1_Config.BurnExtent` en la cueva y nace quieta en el cierre vía
   compone el relato sumando **todas** las fases del nivel.
 - **`GameFlow`** acepta `Narrative → Narrative` y **retoma en la primera fase pendiente que tenga
   escena** cuando se pide una ya confirmada (RNF-14); sin fase pendiente jugable repite la pedida, y
-  `GameFlowRunner` cae al menú si una fase no tiene escena.
+  `GameFlowRunner` cae al menú si una fase no tiene escena. Al pasar de una narrativa a una
+  mecánica, de una mecánica a una narrativa o entre dos narrativas encadenadas, `SceneLoader`
+  **funde a negro y de vuelta** (`FadeSeconds`, 0,4 s por mitad, tiempo sin escalar); la regla
+  vive en `GameFlowRunner.FadesBetween` y los menús cortan en seco. El negro se pinta con `OnGUI`
+  porque `Game.Core` no referencia uGUI.
 
 **Encadenar escenas narrativas es editar un asset, nunca tocar el controlador:**
 `NarrativeSequence.NextSequenceId` las enlaza. **La ilustración es por secuencia**, así que cambiar
@@ -81,6 +85,16 @@ de fondo a mitad de escena son dos assets encadenados y no una rama — por eso 
 del Nivel 3 viven en **siete** `N3_*.asset` (el puente II pasa de la cueva al horizonte y de ahí al río). Lo que depende del juego —la escena 3.2, que solo
 aparece tras el primer fallo— lo decide `ConditionalNarrativeTrigger` (C# plano,
 `Game.Scaffolding`), tampoco un `if` en el controlador.
+
+**El Nivel 2 dura un día y lo cuenta la luz, no el arte.** En las narrativas lo hace
+`NarrativeLight` (tinte y fondo del shader `fx_oscuridad`, que multiplica la ilustración):
+amanecer azulado en `N2_PuenteI`, tarde sin tinte en la recolección y el armado, atardecer en la
+2.4, y noche junto al fuego en la 2.5 y en el arranque de `N3_PuenteII`. En el laberinto, que no
+tiene esa capa, lo hace `MazeLayout.LightTint`, que tiñe el entorno y todo lo que cuelga de él.
+Lo vigilan `NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche` y
+`MazeScene_RF30_ElLaberintoEsAlAtardecer`. Las ilustraciones de 3840 de ancho (`entorno_n1_apertura`,
+el bosque del N2) tienen una costura en x = 0,5 que ningún encuadre debe cruzar: lo avisa
+`IllustrationFraming.Warnings` en el `OnValidate` de la secuencia.
 
 **Cuántas fases tiene cada nivel** lo fija `PhaseId.PhasesPerLevel = { 1, 3, 3 }` — el Nivel 3 son
 tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **Al consumir
@@ -238,6 +252,30 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
 - **`coplay-mcp` solo responde con el Editor abierto Y ya inactivo.** Mientras compila o hace
   domain-reload devuelve `timed out` o `A task was canceled` — esperar y reintentar (regla de 10 s
   del skill `run-tests`). `get_unity_editor_state` es la sonda real de «¿el puente está vivo?».
+- **Norma: el aviso de guardar no debe aparecer mientras trabaja Claude.** El aviso «Scene(s) Have
+  Been Modified» es **modal**: bloquea el hilo principal y con él al puente, así que ninguna
+  herramienta MCP puede pulsarlo y todo expira como si el Editor estuviera cargando. Lo abren el
+  Test Runner (en su segundo paso, antes de cualquier callback), abrir otra escena y entrar a Play.
+  Guardar a mano antes **no basta**, por dos causas medidas el 23/09/2026: `execute_script` de
+  coplay **marca la escena activa como modificada al terminar**, aunque el script solo lea o acabe
+  de guardarla, y recompilar tras cambiar los campos serializados de un componente de una escena
+  abierta la ensucia también — y `mcp__rider__run_unity_tests` compila dentro de la misma llamada.
+  Lo resuelve `ClaudeSceneAutosave` (`Game.EditorTools`) con el hook `PreToolUse` de
+  `.claude/settings.json`: el hook toca `Temp/claude-active` antes de cada herramienta
+  `mcp__rider__*` / `mcp__coplay-mcp__*`, y durante los 2 minutos siguientes el script guarda toda
+  escena que se ensucie. **Solo actúa cuando lo lanza Claude** (decisión de Santiago): lo que ya
+  estaba sucio con Claude inactivo es de una persona y no se toca hasta que alguien lo guarde.
+  Límite conocido: una edición humana hecha *durante* esos 2 minutos se guarda con lo demás. Una
+  sesión abierta antes de que existiera el hook no lo carga hasta reiniciarse o abrir `/hooks`, y
+  sin hook el script no hace nada. Si aun así aparece el aviso, el
+  rescate es `~/.claude/scripts/unity-dialog.ps1` (**fuera del repo**, solo en este equipo): sin
+  argumentos lista título, texto y botones del diálogo; con `-Click Save` lo pulsa, y se niega si hay
+  más de un diálogo o el título no coincide con `-TitleLike` (`*Modified*`). **Pulsar requiere la
+  confirmación de Santiago en ese momento**, tras decirle qué diálogo es y qué escena se guardaría:
+  guarda todo lo modificado, incluido lo que quizá no debía quedar en el `.unity`.
+  ```
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$HOME/.claude/scripts/unity-dialog.ps1"
+  ```
 - **Si un MCP no responde, el Editor está cerrado, cargando, o el puente caído: eso NO es que la
   suite pase**, y hay que decirlo.
 - Play Mode a mano: `mcp__coplay-mcp__play_game` / `stop_game`. Pulsar Play siempre arranca en
@@ -290,7 +328,7 @@ antes de escribir la primera línea:
   `AudioManager`, el tercer singleton; `Game.UI` (→ `Game.Core`, `Game.Scaffolding`, `Game.Audio`,
   `UnityEngine.UI`) con los controladores de pantalla, donde va la mayor parte del código de hoy;
   y `Game.EditorTools`, **solo Editor**, que no referencia ningún `Game.*` (trae `PlayFromBoot`,
-  `ArtImportRules`, `AudioImportRules` y `Sandbox/CharacterProbe*`, que no es código del juego).
+  `ArtImportRules`, `AudioImportRules`, `ClaudeSceneAutosave` y `Sandbox/CharacterProbe*`, que no es código del juego).
   **Un nivel que suena referencia `Game.Audio`** —hoy `Game.Levels.Fire` y `Game.Levels.Wheel`— y **no llama al
   gestor con clips propios sino con los de su ScriptableObject** (`FireSounds` → `N1_Sonidos`,
   `WheelSounds` → `N2_Sonidos`, CT-05); las escenas narrativas no tocan código: el ambiente es un campo de `NarrativeSequence` y

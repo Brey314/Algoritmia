@@ -62,11 +62,11 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(60000)]
-        public async Task NarrativeScene_RF05_ResuelveLasSeisSecuenciasDelNivel2SinRamas()
+        public async Task NarrativeScene_RF05_ResuelveLasSieteSecuenciasDelNivel2SinRamas()
         {
             var ids = new[]
             {
-                "N2_PuenteI", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
+                "N2_PuenteI", "N2_PuenteI_Bosque", "N2_Escena21_Bosque", "N2_Escena22_ElPatron",
                 "N2_Escena23_Construccion", "N2_Escena24_Regreso", "N2_Escena25_Cierre"
             };
             var primeras = new string[ids.Length];
@@ -235,14 +235,28 @@ namespace Game.UI.Tests
             // Hasta el 15/09/2026 `N2_PuenteI` no declaraba salida y caía al menú: el Nivel 2
             // abría en la 2.1 y el puente no se veía nunca. Desde el Checkpoint W-F el nivel abre
             // con el puente y este encadena con la 2.1 por su asset (RF-05, Camara_Narrativa_N2 §5).
+            // Desde el 23/09/2026 el puente son dos assets: el amanecer junto a la cueva y, desde
+            // «La familia sale a recolectar», el bosque.
             var (controller, runner) = await OpenNarrative("N2_PuenteI", LevelId.Wheel);
-            var lineas = SequenceNamed(controller, "N2_PuenteI").Lines.Length;
+            var vistas = new System.Collections.Generic.List<string>();
 
-            for (var i = 0; i < lineas; i++)
+            while (runner.Flow.Current == GameState.Narrative && runner.Flow.NarrativeSequenceId != "N2_Escena21_Bosque" && vistas.Count < 3)
             {
-                Click(controller.AdvanceButton);
+                var id = runner.Flow.NarrativeSequenceId;
+                vistas.Add(id);
+                foreach (var _ in SequenceNamed(controller, id).Lines)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                if (runner.Flow.Current == GameState.Narrative)
+                {
+                    controller.Begin(); // la escena se recarga con el id nuevo
+                    await Awaitable.NextFrameAsync();
+                }
             }
 
+            Assert.That(vistas, Is.EqualTo(new[] { "N2_PuenteI", "N2_PuenteI_Bosque" }), "el amanecer y luego el bosque");
             Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Narrative), "el puente no sale al menú");
             Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N2_Escena21_Bosque"), "encadena con la 2.1");
         }
@@ -623,6 +637,7 @@ namespace Game.UI.Tests
         /// <c>Camara_Narrativa_N2.md</c> §10 sobre el motor real, no sobre recortes.
         /// </summary>
         [TestCase("N2_PuenteI")]
+        [TestCase("N2_PuenteI_Bosque")]
         [TestCase("N2_Escena21_Bosque")]
         [TestCase("N2_Escena22_ElPatron")]
         [TestCase("N2_Escena23_Construccion")]
@@ -748,6 +763,7 @@ namespace Game.UI.Tests
         /// lo que pasaba en la 2.2 con el tronco del niño y la piedra de papá (12/09/2026).
         /// </summary>
         [TestCase("N2_PuenteI")]
+        [TestCase("N2_PuenteI_Bosque")]
         [TestCase("N2_Escena21_Bosque")]
         [TestCase("N2_Escena22_ElPatron")]
         [TestCase("N2_Escena23_Construccion")]

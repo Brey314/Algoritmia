@@ -590,6 +590,9 @@ Igual que §18 del arte: se dejan escritas, no se toman por cuenta propia.
     suelta papá con `sfx_n2_piedra_cae`, las dos a mitad de su movimiento, cuando caen. La caja
     suena con `sfx_n2_piedra_cae` al terminar de caer tras el rodado. No hay pieza propia para
     esa caída, y `sfx_n2_rodado` tampoco se ha entregado.
+  - El puente I arranca al amanecer junto a la cueva (`entorno_n1_apertura`), con las brasas de la
+    noche. Suena `amb_n2_bosque_dia` con `amb_n1_cueva_fuego` encima, y la capa del fuego se va
+    al pasar a `N2_PuenteI_Bosque` en «La familia sale a recolectar».
   - La 2.5 y el arranque del puente II ocurren en el refugio, que es la cueva del Nivel 1 con la
     hoguera. Suenan `amb_n1_cueva_oscura` con `amb_n1_cueva_fuego` encima, igual que en la 1.3,
     en lugar de `amb_n2_refugio_fogata`, que no se ha entregado. El horizonte
