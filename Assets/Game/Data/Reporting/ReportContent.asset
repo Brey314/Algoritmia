@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94eb598ce378646499ee833df1136fa6, type: 3}
+  m_Name: ReportContent
+  m_EditorClassIdentifier: Game.Reporting::Game.Reporting.ReportContent
+  <LevelOneLabel>k__BackingField: Nivel 1
+  <LevelTwoLabel>k__BackingField: Nivel 2
+  <LevelThreeLabel>k__BackingField: Nivel 3
+  <PhaseLabelFormat>k__BackingField: Fase {0}
+  <AttemptsLabel>k__BackingField: Intentos
+  <CorrectedErrorsLabel>k__BackingField: Errores corregidos
+  <StepsUsedLabel>k__BackingField: Pasos utilizados
+  <ResolutionTimeLabel>k__BackingField: "Tiempo de resoluci\xF3n"
+  <NoDataLabel>k__BackingField: Sin datos
+  <NoProfilesLabel>k__BackingField: "Todav\xEDa no hay perfiles registrados en este
+    equipo."

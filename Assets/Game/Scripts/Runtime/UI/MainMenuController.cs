@@ -16,6 +16,7 @@ namespace Game.UI
         [SerializeField] private Text titleLabel;
         [SerializeField] private Button playButton;
         [SerializeField] private Button creditsButton;
+        [SerializeField] private Button teacherReportButton;
         [SerializeField] private Button exitButton;
 
         [Header("Paneles de la pantalla de inicio")]
@@ -54,6 +55,7 @@ namespace Game.UI
 
             playButton.onClick.AddListener(OpenProfilePanel);
             creditsButton.onClick.AddListener(OpenCredits);
+            teacherReportButton.onClick.AddListener(OpenTeacherReport);
             exitButton.onClick.AddListener(Exit);
         }
 
@@ -79,6 +81,18 @@ namespace Game.UI
             }
 
             Runner.GoTo(GameState.Credits);
+        }
+
+        private void OpenTeacherReport()
+        {
+            if (!ScreenFlow.Ready(Runner, this))
+            {
+                return;
+            }
+
+            // RF-46: el informe se alcanza desde el menú principal, nunca desde dentro de una
+            // partida — no hay ruta a este botón fuera de esta pantalla.
+            Runner.GoTo(GameState.TeacherReport);
         }
 
         private void Exit()

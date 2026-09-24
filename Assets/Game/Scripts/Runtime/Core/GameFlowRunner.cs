@@ -32,7 +32,8 @@ namespace Game.Core
                 [GameState.Narrative] = "Narrative",
                 // Playing no está aquí: su escena la elige la fase (véase PlayingScenes).
                 [GameState.LevelSummary] = "LevelSummary",
-                [GameState.Credits] = "Credits"
+                [GameState.Credits] = "Credits",
+                [GameState.TeacherReport] = "TeacherReport"
             };
 
         /// <summary>
@@ -78,16 +79,20 @@ namespace Game.Core
         /// </summary>
         public ProfileSession Session => _session ??= BuildSession();
 
-        private ProfileSession BuildSession()
-        {
-            // La carpeta portable «Datos/» va junto al ejecutable (RNF-07, RNF-11); en el Editor,
-            // eso es la raíz del proyecto. Si no es escribible, SaveStore cae a la ruta del
-            // sistema y lo expone (INC-34).
-            var portableRoot = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Datos"))
-                .Replace('\\', '/');
-            return new ProfileSession(Flow,
-                new SaveStore(new DiskFileSystem(), portableRoot, Application.persistentDataPath));
-        }
+        /// <summary>
+        /// La carpeta portable «Datos/» junto al ejecutable (RNF-07, RNF-11); en el Editor, la raíz
+        /// del proyecto. Expuesta para que <c>Game.Reporting.ProfileRepository</c> (RF-46) lea el
+        /// mismo par de rutas que <see cref="Session"/>, sin que <c>Game.Core</c> tenga que conocer
+        /// ese tipo — lo construye quien sí puede verlo (<c>Game.UI</c>).
+        /// </summary>
+        public string PortableRoot => Path.GetFullPath(Path.Combine(Application.dataPath, "..", "Datos"))
+            .Replace('\\', '/');
+
+        /// <summary>Ruta de respaldo si la portable no es escribible (INC-34).</summary>
+        public string FallbackRoot => Application.persistentDataPath;
+
+        private ProfileSession BuildSession() =>
+            new ProfileSession(Flow, new SaveStore(new DiskFileSystem(), PortableRoot, FallbackRoot));
 
         private void Awake()
         {
