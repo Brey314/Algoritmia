@@ -97,6 +97,8 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-49 | El menú de pausa implementado es el del mockup 6 (Reanudar · Reiniciar · Volver al menú de niveles); HU-17 dice «Continuar / Reiniciar nivel / Volver al menú principal» | HU, OE2 §3 | **Abierto** |
 | INC-50 | «Empujar» en el bosque no anima el rodado: sale a la escena 2.2, que lo cuenta; RF-26 y HU-08 lo describen dentro de la mecánica | OE1, HU, CU | **Abierto** |
 | INC-51 | El cierre del Nivel 3 nunca ofrece omitir; HU-14 FA-01 lo pide a quien repite el nivel | HU | **Abierto** (decisión tomada: se acepta) |
+| INC-52 | El Algoritm entregado es una llama con brazos, piernas y franja de colores; §7.6 pide una estrella sin extremidades | Dirección de arte, Interfaces | **Abierto** (se usa el arte entregado) |
+| INC-53 | Los personajes se animan por recorte con `Image` de uGUI; §13.1 fija rigging con el paquete 2D Animation | Dirección de arte | **Abierto** (decisión técnica: el rigging no cabe en un Canvas overlay) |
 
 ---
 
@@ -562,6 +564,48 @@ no para el 3.
 escena final se reproducen siempre enteras. RF-06 no cambia: habla de «una escena ya vista» y no
 obliga a reconocer todas.
 
+### INC-52 · El Algoritm entregado no es la estrella de §7.6 — abierto
+
+**Qué llegó (24/09/2026).** Santiago entregó los sprites base de la familia y de Algoritm
+(`…/assets a postproduccion/familia/`). Algoritm es una **llama** con cara, **brazos y piernas de
+palo, manos** y una franja de colores en la base. Se usa tal cual como la forma del Nivel 1
+(`char_algoritm_n1_fuego_reposo.png`), dentro del botón de ayuda de las cinco mecánicas y como
+personaje en las narrativas.
+
+**Qué dicen los documentos.** `Direccion_de_Arte.md` §7.6 e `Interfaces.md` §4.3: «estrella de
+cinco puntas», «Extremidades: **Ninguna**», ojos de «dos óvalos negros», contorno `#E2571F` de 8 px
+y una silueta que «se cuenta hasta cinco». El guion (§1.1.1, tras INC-45) sigue diciendo «estrella
+de fuego en el Nivel 1».
+
+**Formas de rueda y gota.** No hay arte. Los archivos `char_algoritm_n2_rueda_reposo.png` y
+`char_algoritm_n3_gota_reposo.png` son **provisionales**: el fuego recoloreado en madera y en agua,
+para que cada nivel muestre un guía distinto. El definitivo entra **sustituyendo el archivo con el
+mismo nombre**, sin tocar escenas, prefabs ni assets.
+
+**Corrección pendiente.** Decidir si §7.6 e `Interfaces.md` §4.3 pasan a describir el guía
+entregado —llama con extremidades en el N1, y el mismo cuerpo en rueda y gota— o si el arte vuelve
+a la estrella. Mientras tanto, el código no depende de la forma: todo lo que muestra al guía
+referencia esos tres archivos.
+
+### INC-53 · Los personajes se animan por recorte en uGUI, no con 2D Animation — abierto
+
+**Decisión técnica, 24/09/2026.** `Direccion_de_Arte.md` §13.1 pide «rigging 2D en Unity (paquete
+2D Animation) sobre los sprites base en A-pose». No cabe: las once escenas son uGUI en un Canvas
+*Screen Space Overlay*, y `SpriteSkin` solo deforma un `SpriteRenderer`, que queda **debajo** del
+Canvas, tapado por la ilustración. Pasar las escenas a *Screen Space Camera* rompe supuestos del
+código y de las pruebas, como `AssemblyPanelController.DragTo` y los `EnPantalla` con cámara nula.
+
+**Qué se hizo.** Cada miembro de la familia se corta en cinco partes —torso, dos brazos, dos
+piernas— que son `Image` hijas con el pivote en la articulación (`char_<x>_parte_<parte>.png`), y
+un `Animator` las gira y desplaza. Hay un clip por acción (`char_<x>_anim_<accion>.anim`, 21 por
+personaje) y un controlador por personaje. El componente es `CharacterRig` (`Game.Scaffolding`), y
+lo usan igual la narrativa y las cinco mecánicas. Algoritm es una sola `Image`, para que
+sustituirlo sea cambiar un archivo. Se mantiene lo que §13.1 busca: animación sobre el sprite
+base, sin hojas de fotogramas; y §13.2–§13.3: respiración de reposo, sin saltos, caídas ni derrota.
+
+**Corrección pendiente.** §13.1: «rigging por recorte con `Image` de uGUI (`CharacterRig`) sobre
+los sprites base en A-pose», con la razón.
+
 ## Residuos y puntos abiertos
 
 **Residuos menores** (no afectan al código ni a un criterio de verificación):
@@ -584,6 +628,11 @@ INC-43).
 ---
 
 ## Historial de revisiones
+
+- **rev. 12 (24/09/2026)** — Entran los personajes animados. Se abren **INC-52**: el Algoritm
+  entregado es una llama con extremidades y §7.6 pide una estrella sin ellas; se usa el arte
+  entregado, con rueda y gota provisionales. Se abre **INC-53**: la animación es por recorte con
+  `Image` de uGUI porque el rigging de 2D Animation no se dibuja sobre un Canvas overlay.
 
 - **rev. 11 (23/09/2026)** — Se abre **INC-51**: el cierre reflexivo y la escena final del Nivel 3
   no ofrecen omitir ni al repetir el nivel, porque sin nivel siguiente la primera vuelta y las

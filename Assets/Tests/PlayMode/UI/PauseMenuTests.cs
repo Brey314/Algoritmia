@@ -280,7 +280,9 @@ namespace Game.UI.Tests
             RectTransform ultima = null;
             foreach (RectTransform pieza in suelo)
             {
-                if (pieza.name != "PuntoDeFuego" && pieza.name != "AnilloReunion")
+                // Solo lo que se arrastra: el montón y la llama también cuelgan de «Suelo» y soltar
+                // sobre la llama no reúne nada (la prueba quedaba sin concluir desde el 22/09/2026).
+                if (pieza.GetComponent<IEndDragHandler>() != null)
                 {
                     pieza.anchoredPosition = punto.anchoredPosition;
                     ultima = pieza;

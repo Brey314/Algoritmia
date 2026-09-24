@@ -86,6 +86,18 @@ namespace Game.Scaffolding
         [field: Tooltip("Efecto que suena una vez cuando el objeto toca el suelo: al soltarlo, si alguien lo levanta (el tronco, la piedra); al terminar de caer, si rueda y cae (la caja). Vacío = nada.")]
         public AudioClip LandSound { get; private set; }
 
+        [field: SerializeField]
+        [field: Tooltip("Si se asigna, el objeto es un personaje: en su casilla se pinta este rig animado (Prefabs/Characters) y la ilustración queda de reserva, sin dibujarse. En un personaje, la ilustración es su retrato.")]
+        public CharacterRig Actor { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("Qué hace el personaje al abrir la escena, antes de su primer paso: de pie (Idle), o Hidden si todavía no ha aparecido (Algoritm).")]
+        public ActorAction ActorStart { get; private set; } = ActorAction.Idle;
+
+        [field: SerializeField]
+        [field: Tooltip("Lo que hace el personaje línea a línea: una acción y, si se mueve, a dónde. Entre pasos mantiene lo último; si dice la línea y está de pie, gesticula.")]
+        public ActorBeat[] Beats { get; private set; } = Array.Empty<ActorBeat>();
+
         /// <summary>Requerido por la serialización de Unity.</summary>
         private NarrativeProp()
         {
@@ -98,6 +110,14 @@ namespace Game.Scaffolding
             MotionDistance = distance;
             MotionSeconds = seconds;
             MotionDrop = drop;
+            return this;
+        }
+
+        public NarrativeProp WithActor(CharacterRig actor, ActorAction start, params ActorBeat[] beats)
+        {
+            Actor = actor;
+            ActorStart = start;
+            Beats = beats ?? Array.Empty<ActorBeat>();
             return this;
         }
 

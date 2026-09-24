@@ -241,17 +241,20 @@ namespace Game.Scaffolding.Tests
             }
 
             var imagen = sequence.Illustration.rect.size;
-            var encuadres = new[] { ("inicio", sequence.CameraStart) }
-                .Concat(sequence.CameraKeys.Select(key => ($"línea {key.Line}", key.Framing)));
+            var encuadres = new[] { ("inicio", 0, sequence.CameraStart) }
+                .Concat(sequence.CameraKeys.Select(key => ($"línea {key.Line}", key.Line, key.Framing)))
+                .ToArray();
 
-            foreach (var (parada, framing) in encuadres)
+            for (var k = 0; k < encuadres.Length; k++)
             foreach (var prop in sequence.Props)
+            foreach (var posicion in Posiciones(sequence, prop, encuadres, k))
             {
+                var (parada, _, framing) = encuadres[k];
                 // La misma geometría que aplica el controlador: el objeto cuelga de la
                 // ilustración, así que hereda su escala y su desplazamiento.
                 var tamano = IllustrationFraming.CoverSize(imagen, Ventana, framing.Zoom);
                 var centro = IllustrationFraming.Offset(tamano, Ventana, framing.Focus)
-                             + (prop.Position - new Vector2(0.5f, 0.5f)) * tamano;
+                             + (posicion - new Vector2(0.5f, 0.5f)) * tamano;
                 var medioAlto = tamano.y * prop.Size / 2f;
                 var medioAncho = medioAlto; // preserveAspect sobre sprites cuadrados
                 var abajo = 0.5f + (centro.y - medioAlto) / Ventana.y;
@@ -265,7 +268,48 @@ namespace Game.Scaffolding.Tests
                 }
 
                 yield return FormattableString.Invariant(
-                    $"{sequence.Id} · {parada}: «{prop.Art?.name}» baja hasta y={abajo:0.000} y el cuadro de diálogo llega a {CuadroDeDialogo:0.00}");
+                    $"{sequence.Id} · {parada}: «{prop.Actor?.name ?? prop.Art?.name}» en ({posicion.x:0.000}, {posicion.y:0.000}) baja hasta y={abajo:0.000} y el cuadro de diálogo llega a {CuadroDeDialogo:0.00}");
+            }
+        }
+
+        /// <summary>
+        /// Dónde está el objeto mientras dura una parada de la cámara. Un objeto quieto, en su
+        /// posición. Un personaje, en todos los sitios por los que pasa entre esa parada y la
+        /// siguiente —de dónde sale y a dónde llega en cada línea—, salvo en las líneas en que no
+        /// se ve: la cámara no se mueve mientras camina, así que llegar debajo del cuadro también
+        /// es quedar tapado.
+        /// </summary>
+        private static IEnumerable<Vector2> Posiciones(NarrativeSequence sequence, NarrativeProp prop,
+            (string, int Line, CameraFraming)[] encuadres, int k)
+        {
+            if (prop.Actor == null)
+            {
+                yield return prop.Position;
+                yield break;
+            }
+
+            var desde = encuadres[k].Line;
+            var hasta = k + 1 < encuadres.Length ? encuadres[k + 1].Line - 1 : sequence.Lines.Length - 1;
+            for (var linea = desde; linea <= Mathf.Max(desde, hasta); linea++)
+            {
+                var cue = ActorTimeline.Cue(prop, linea, speaking: false);
+                var oculto = cue.During == ActorAction.Hidden
+                             || (cue.During == ActorAction.Vanish && ActorTimeline.BeatAt(prop, linea) == null);
+                if (oculto)
+                {
+                    continue;
+                }
+
+                yield return cue.From;
+                yield return cue.To;
+
+                // Quien va de camino termina su camino aunque el texto avance: bajo esta parada
+                // puede estar todavía entre el origen y el destino de un paso anterior.
+                var enCurso = ActorTimeline.BeatAt(prop, linea) == null ? ActorTimeline.WalkUnderway(prop, linea) : null;
+                if (enCurso != null)
+                {
+                    yield return ActorTimeline.PositionBefore(prop, enCurso.Line);
+                }
             }
         }
 

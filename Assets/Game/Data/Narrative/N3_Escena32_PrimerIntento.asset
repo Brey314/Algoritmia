@@ -15,6 +15,8 @@ MonoBehaviour:
   <Id>k__BackingField: N3_Escena32_PrimerIntento
   <Level>k__BackingField: 3
   <Illustration>k__BackingField: {fileID: 21300000, guid: ae689a42caed1ac498f562cfb43fd845, type: 3}
+  <Ambient>k__BackingField: {fileID: 0}
+  <AmbientLayer>k__BackingField: {fileID: 0}
   <CameraStart>k__BackingField:
     <Focus>k__BackingField: {x: 0.47, y: 0.35}
     <Zoom>k__BackingField: 1.7
@@ -26,47 +28,278 @@ MonoBehaviour:
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.51, y: 0.345}
       <Zoom>k__BackingField: 1.78
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 2
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.505, y: 0.3}
       <Zoom>k__BackingField: 1.95
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 3
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.48, y: 0.33}
       <Zoom>k__BackingField: 1.7
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
   - <Line>k__BackingField: 4
     <Framing>k__BackingField:
       <Focus>k__BackingField: {x: 0.47, y: 0.32}
       <Zoom>k__BackingField: 2
+    <Light>k__BackingField:
+      <Center>k__BackingField: {x: 0.5, y: 0.5}
+      <Radius>k__BackingField: 0
+      <Ambient>k__BackingField: 1
+      <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+      <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
+  <LightStart>k__BackingField:
+    <Center>k__BackingField: {x: 0.5, y: 0.5}
+    <Radius>k__BackingField: 0
+    <Ambient>k__BackingField: 1
+    <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+    <FlashSeconds>k__BackingField: 0
   <CameraSmoothingSeconds>k__BackingField: 1
   <OpensFromBlack>k__BackingField: 1
   <HardCutFadeSeconds>k__BackingField: 0.5
   <Props>k__BackingField:
   - <Art>k__BackingField: {fileID: 21300000, guid: 4f274fd1794c87a4389388fd0a1b7887, type: 3}
-    <Position>k__BackingField: {x: 0.49, y: 0.26}
-    <Size>k__BackingField: 0.1
+    <Position>k__BackingField: {x: 0.55, y: 0.343}
+    <Size>k__BackingField: 0.26
     <RotationDegrees>k__BackingField: 0
     <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
     <Motion>k__BackingField: 0
     <MotionLine>k__BackingField: 0
     <MotionDistance>k__BackingField: 0
     <MotionSeconds>k__BackingField: 1.6
     <MotionDrop>k__BackingField: 0
+    <LandSound>k__BackingField: {fileID: 0}
+    <Actor>k__BackingField: {fileID: 0}
+    <ActorStart>k__BackingField: 0
+    <Beats>k__BackingField: []
+  - <Art>k__BackingField: {fileID: 21300000, guid: 8f21db6f6119dfb45947752a1fa80a19, type: 3}
+    <Position>k__BackingField: {x: 0.29, y: 0.4111}
+    <Size>k__BackingField: 0.1792
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0.15
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+    <LandSound>k__BackingField: {fileID: 0}
+    <Actor>k__BackingField: {fileID: 4856857524079811693, guid: 292a2af82e9618a4a8571c0ba5344e6a, type: 3}
+    <ActorStart>k__BackingField: 0
+    <Beats>k__BackingField:
+    - <Line>k__BackingField: 0
+      <Action>k__BackingField: 11
+      <Moves>k__BackingField: 1
+      <Destination>k__BackingField: {x: 0.495, y: 0.4421}
+      <Seconds>k__BackingField: 2.8
+      <Arrival>k__BackingField: 0
+    - <Line>k__BackingField: 2
+      <Action>k__BackingField: 17
+      <Moves>k__BackingField: 1
+      <Destination>k__BackingField: {x: 0.685, y: 0.3681}
+      <Seconds>k__BackingField: 0.6
+      <Arrival>k__BackingField: 17
+    - <Line>k__BackingField: 3
+      <Action>k__BackingField: 13
+      <Moves>k__BackingField: 1
+      <Destination>k__BackingField: {x: 0.685, y: 0.3681}
+      <Seconds>k__BackingField: 1.2
+      <Arrival>k__BackingField: 0
+    - <Line>k__BackingField: 4
+      <Action>k__BackingField: 15
+      <Moves>k__BackingField: 0
+      <Destination>k__BackingField: {x: 0, y: 0}
+      <Seconds>k__BackingField: 0
+      <Arrival>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 21300000, guid: f0a9b4f8c87bf2243a5ea3fa44d9ec0d, type: 3}
+    <Position>k__BackingField: {x: 0.33, y: 0.3928}
+    <Size>k__BackingField: 0.1948
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0.15
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+    <LandSound>k__BackingField: {fileID: 0}
+    <Actor>k__BackingField: {fileID: 8612951356872757514, guid: 53a0ad01bc40e1b42be23176238414c3, type: 3}
+    <ActorStart>k__BackingField: 0
+    <Beats>k__BackingField:
+    - <Line>k__BackingField: 0
+      <Action>k__BackingField: 11
+      <Moves>k__BackingField: 1
+      <Destination>k__BackingField: {x: 0.54, y: 0.4348}
+      <Seconds>k__BackingField: 2.6
+      <Arrival>k__BackingField: 0
+    - <Line>k__BackingField: 1
+      <Action>k__BackingField: 15
+      <Moves>k__BackingField: 1
+      <Destination>k__BackingField: {x: 0.54, y: 0.4348}
+      <Seconds>k__BackingField: 1.2
+      <Arrival>k__BackingField: 0
+    - <Line>k__BackingField: 2
+      <Action>k__BackingField: 17
+      <Moves>k__BackingField: 1
+      <Destination>k__BackingField: {x: 0.56, y: 0.3248}
+      <Seconds>k__BackingField: 0.6
+      <Arrival>k__BackingField: 17
+    - <Line>k__BackingField: 4
+      <Action>k__BackingField: 15
+      <Moves>k__BackingField: 0
+      <Destination>k__BackingField: {x: 0, y: 0}
+      <Seconds>k__BackingField: 0
+      <Arrival>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 21300000, guid: 1596f2479651a6543b5d24335c4ac340, type: 3}
+    <Position>k__BackingField: {x: 0.36, y: 0.3397}
+    <Size>k__BackingField: 0.1169
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0.15
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+    <LandSound>k__BackingField: {fileID: 0}
+    <Actor>k__BackingField: {fileID: 6891089095391609466, guid: eaba461d187757d489344e98a731c61a, type: 3}
+    <ActorStart>k__BackingField: 0
+    <Beats>k__BackingField:
+    - <Line>k__BackingField: 0
+      <Action>k__BackingField: 11
+      <Moves>k__BackingField: 1
+      <Destination>k__BackingField: {x: 0.566, y: 0.3877}
+      <Seconds>k__BackingField: 2.4
+      <Arrival>k__BackingField: 0
+    - <Line>k__BackingField: 2
+      <Action>k__BackingField: 17
+      <Moves>k__BackingField: 1
+      <Destination>k__BackingField: {x: 0.607, y: 0.2717}
+      <Seconds>k__BackingField: 0.6
+      <Arrival>k__BackingField: 17
+    - <Line>k__BackingField: 4
+      <Action>k__BackingField: 15
+      <Moves>k__BackingField: 0
+      <Destination>k__BackingField: {x: 0, y: 0}
+      <Seconds>k__BackingField: 0
+      <Arrival>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 21300000, guid: 19df714a131467f4db89973933e2d398, type: 3}
+    <Position>k__BackingField: {x: 0.39, y: 0.3247}
+    <Size>k__BackingField: 0.1169
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0.15
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+    <LandSound>k__BackingField: {fileID: 0}
+    <Actor>k__BackingField: {fileID: 832422384234550645, guid: f79b469f8bde6ff408c6c0f17e02ef28, type: 3}
+    <ActorStart>k__BackingField: 0
+    <Beats>k__BackingField:
+    - <Line>k__BackingField: 0
+      <Action>k__BackingField: 11
+      <Moves>k__BackingField: 1
+      <Destination>k__BackingField: {x: 0.588, y: 0.3737}
+      <Seconds>k__BackingField: 2.2
+      <Arrival>k__BackingField: 0
+    - <Line>k__BackingField: 1
+      <Action>k__BackingField: 14
+      <Moves>k__BackingField: 0
+      <Destination>k__BackingField: {x: 0, y: 0}
+      <Seconds>k__BackingField: 0
+      <Arrival>k__BackingField: 0
+    - <Line>k__BackingField: 2
+      <Action>k__BackingField: 17
+      <Moves>k__BackingField: 1
+      <Destination>k__BackingField: {x: 0.655, y: 0.2897}
+      <Seconds>k__BackingField: 0.6
+      <Arrival>k__BackingField: 17
+    - <Line>k__BackingField: 4
+      <Action>k__BackingField: 15
+      <Moves>k__BackingField: 0
+      <Destination>k__BackingField: {x: 0, y: 0}
+      <Seconds>k__BackingField: 0
+      <Arrival>k__BackingField: 0
+  - <Art>k__BackingField: {fileID: 21300000, guid: 453601f6a14886944ad968e1ae03f6d4, type: 3}
+    <Position>k__BackingField: {x: 0.39, y: 0.485}
+    <Size>k__BackingField: 0.0773
+    <RotationDegrees>k__BackingField: 0
+    <Mirrored>k__BackingField: 0
+    <FrameAnimation>k__BackingField: {fileID: 0}
+    <BurnExtent>k__BackingField: 0
+    <Motion>k__BackingField: 0
+    <MotionLine>k__BackingField: 0
+    <MotionDistance>k__BackingField: 0.15
+    <MotionSeconds>k__BackingField: 1.6
+    <MotionDrop>k__BackingField: 0
+    <LandSound>k__BackingField: {fileID: 0}
+    <Actor>k__BackingField: {fileID: 5825635248465612300, guid: 620e6cbb4f567a34da8aa5d4aa420ed7, type: 3}
+    <ActorStart>k__BackingField: 1
+    <Beats>k__BackingField:
+    - <Line>k__BackingField: 4
+      <Action>k__BackingField: 19
+      <Moves>k__BackingField: 1
+      <Destination>k__BackingField: {x: 0.4, y: 0.47}
+      <Seconds>k__BackingField: 1
+      <Arrival>k__BackingField: 0
   <IsReflectiveClosing>k__BackingField: 0
+  <EndsInCredits>k__BackingField: 0
   <NextPhase>k__BackingField: 3
   <NextSequenceId>k__BackingField: 
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: La familia empuja la balsa al agua y sube.
-  - <Speaker>k__BackingField: "PAP\u00C1"
-    <Text>k__BackingField: "\u00A1Vamos!"
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
+  - <Speaker>k__BackingField: "PAP\xC1"
+    <Text>k__BackingField: "\xA1Vamos!"
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: La balsa gira y se hunde por un lado. La familia cae al agua, que en la orilla es poco profunda.
-  - <Speaker>k__BackingField: "MAM\u00C1"
-    <Text>k__BackingField: "\u00A1Algo est\u00E1 mal!"
+    <Text>k__BackingField: La balsa gira y se hunde por un lado. La familia cae al
+      agua, que en la orilla es poco profunda.
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
+  - <Speaker>k__BackingField: "MAM\xC1"
+    <Text>k__BackingField: "\xA1Algo est\xE1 mal!"
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: ALGORITM
-    <Text>k__BackingField: "No pasa nada. Esto se llama depurar. No hay que hacer todo otra vez: hay que encontrar la parte que fall\u00F3. \u00BFQu\u00E9 sali\u00F3 mal?"
+    <Text>k__BackingField: "No pasa nada. Esto se llama depurar. No hay que hacer
+      todo otra vez: hay que encontrar la parte que fall\xF3. \xBFQu\xE9 sali\xF3
+      mal?"
+    <Sound>k__BackingField: {fileID: 0}
+    <Ambient>k__BackingField: {fileID: 0}
+    <Silence>k__BackingField: 0

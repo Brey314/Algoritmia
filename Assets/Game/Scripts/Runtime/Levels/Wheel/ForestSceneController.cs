@@ -119,6 +119,23 @@ namespace Game.Levels.Wheel
         [SerializeField] private Color rejectedColor = new Color(0.60f, 0.36f, 0.10f);
         [SerializeField] private Color helpColor = new Color(0.24f, 0.30f, 0.44f);
 
+        [SerializeField]
+        [Tooltip("La Niña, que juega la fase, junto a la caja: señala el tronco que elige, hace «ánimo» tras un distractor y empuja la caja al tomarla (Dirección de arte §13.3). Vacío = el bosque se juega sin personaje.")]
+        private CharacterRig player;
+
+        [SerializeField]
+        [Tooltip("Mamá, el Niño y Papá, pequeños al fondo en la línea de árboles. Miran y celebran al completar el acopio.")]
+        private CharacterRig[] family = new CharacterRig[0];
+
+        /// <summary>Segundos que la Niña señala lo que eligió: los 0,6 s de §13.3 más el fundido de vuelta.</summary>
+        private const float PointSeconds = 0.8f;
+
+        /// <summary>Segundos del «ánimo» tras un intento sin éxito (§13.3).</summary>
+        private const float EncourageSeconds = 0.9f;
+
+        /// <summary>Segundos de la celebración del acopio (§13.3); coincide con el acercamiento de la cámara.</summary>
+        private const float CelebrateSeconds = 1.2f;
+
         private readonly List<(ForestObject Object, Button Button, ForestObjectNudge Nudge)> _spawned =
             new List<(ForestObject, Button, ForestObjectNudge)>();
 
@@ -166,6 +183,8 @@ namespace Game.Levels.Wheel
         internal Button HelpButton => helpButton;
         internal WheelLevelConfig Config => config;
         internal WheelSounds Sounds => sounds;
+        internal CharacterRig Player => player;
+        internal IReadOnlyList<CharacterRig> Family => family;
 #endif
 
         private void Awake() => Runner ??= GameFlowRunner.Instance;
@@ -461,6 +480,7 @@ namespace Game.Levels.Wheel
 
             // Mientras se sostiene, la caja pasa por encima de todo lo demás.
             cargo.SetAsLastSibling();
+            Act(ActorAction.Push); // hasta soltar el clic
         }
 
         /// <summary>La caja sigue al cursor mientras se sostiene el clic; si no, no se mueve.</summary>
@@ -503,10 +523,14 @@ namespace Game.Levels.Wheel
                 cargo.anchoredPosition = Vector2.zero;
                 pushButton.interactable = _cargo.CanPush;
                 Show(outcome.Message, acceptedIcon, acceptedColor);
+                Act(ActorAction.Idle);
                 return;
             }
 
             Show(outcome.Message, rejectedIcon, rejectedColor);
+            // Soltarla fuera de los troncos es un intento sin éxito: «ánimo», nunca un gesto de
+            // desánimo (§7.3, CP-02).
+            Act(ActorAction.Encourage, EncourageSeconds);
         }
 
         /// <summary>
@@ -747,9 +771,12 @@ namespace Game.Levels.Wheel
 
                 if (_selection.IsComplete)
                 {
+                    Celebrate();
                     _ = TransitionAsync();
+                    return;
                 }
 
+                Act(ActorAction.Point, PointSeconds); // la Niña señala el tronco que eligió
                 return;
             }
 
@@ -761,6 +788,11 @@ namespace Game.Levels.Wheel
             // El distractor se queda donde estaba: rechazar no retira nada ni cierra ningún
             // camino, y no existe la penalización (CP-02, RF-18).
             _indicators.RecordRejected(); // Intentos de la fase 1: selecciones de un objeto no válido (§3.6.1).
+
+            // Tras un distractor la Niña hace «ánimo» —puño arriba— y nunca un gesto de derrota o
+            // desánimo: equivocarse de objeto es parte de mirar, no algo que reprochar (§7.3, CP-02).
+            Act(ActorAction.Encourage, EncourageSeconds);
+
             var hint = _hints.RegisterFailedAttempt();
             if (hint != null)
             {
@@ -903,6 +935,40 @@ namespace Game.Levels.Wheel
             messageIcon.sprite = icon;
             messageIcon.color = color;
             messageIcon.enabled = icon != null;
+        }
+
+        /// <summary>
+        /// La Niña hace la acción: sin segundos se queda en ella; con segundos es un gesto y
+        /// vuelve sola al reposo. Sin personaje en la escena no pasa nada: el gesto es adorno.
+        /// </summary>
+        private void Act(ActorAction action, float seconds = 0f)
+        {
+            if (player == null)
+            {
+                return;
+            }
+
+            if (seconds > 0f)
+            {
+                player.PlayFor(action, seconds);
+            }
+            else
+            {
+                player.Play(action);
+            }
+        }
+
+        /// <summary>Los cinco troncos reunidos: celebran la Niña y la familia del fondo.</summary>
+        private void Celebrate()
+        {
+            Act(ActorAction.Celebrate, CelebrateSeconds);
+            foreach (var member in family)
+            {
+                if (member != null)
+                {
+                    member.PlayFor(ActorAction.Celebrate, CelebrateSeconds);
+                }
+            }
         }
 
         private void RefreshCounter() => counterLabel.text = _selection.CounterText;

@@ -1,0 +1,403 @@
+fileFormatVersion: 2
+guid: 193b472184679c143b04dd434ace83a2
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 8133609345272353272
+    second: char_nino_parte_pierna_der_0
+  - first:
+      213: -6215130083875745200
+    second: char_nino_parte_pierna_der_1
+  - first:
+      213: -5169914775342302195
+    second: char_nino_parte_pierna_der_2
+  - first:
+      213: -8644024281022876684
+    second: char_nino_parte_pierna_der_3
+  - first:
+      213: 95854460369854087
+    second: char_nino_parte_pierna_der_4
+  - first:
+      213: 7651169413128526798
+    second: char_nino_parte_pierna_der_5
+  - first:
+      213: -5586952262144131612
+    second: char_nino_parte_pierna_der_6
+  - first:
+      213: 1763468518102751351
+    second: char_nino_parte_pierna_der_7
+  - first:
+      213: 8706449937694238399
+    second: char_nino_parte_pierna_der_8
+  - first:
+      213: -3016341683074411204
+    second: char_nino_parte_pierna_der_9
+  - first:
+      213: -183680709018939679
+    second: char_nino_parte_pierna_der_10
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 4096
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: char_nino_parte_pierna_der_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 117
+        width: 18
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8f191c61b9260e070800000000000000
+      internalID: 8133609345272353272
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_nino_parte_pierna_der_1
+      rect:
+        serializedVersion: 2
+        x: 13
+        y: 8
+        width: 43
+        height: 163
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0521ebd2e1c6fb9a0800000000000000
+      internalID: -6215130083875745200
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_nino_parte_pierna_der_2
+      rect:
+        serializedVersion: 2
+        x: 55
+        y: 7
+        width: 6
+        height: 164
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0cbda837e5c048b0800000000000000
+      internalID: -5169914775342302195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_nino_parte_pierna_der_3
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 0
+        width: 65
+        height: 171
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4f3b7c3e6b14a0880800000000000000
+      internalID: -8644024281022876684
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_nino_parte_pierna_der_4
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 1
+        width: 8
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78e5b74bf1b845100800000000000000
+      internalID: 95854460369854087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_nino_parte_pierna_der_5
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 6
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ecb1cd92b0a6e2a60800000000000000
+      internalID: 7651169413128526798
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_nino_parte_pierna_der_6
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 0
+        width: 8
+        height: 81
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4ed75ddb4882772b0800000000000000
+      internalID: -5586952262144131612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_nino_parte_pierna_der_7
+      rect:
+        serializedVersion: 2
+        x: 110
+        y: 0
+        width: 8
+        height: 76
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77859122649197810800000000000000
+      internalID: 1763468518102751351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_nino_parte_pierna_der_8
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 1
+        width: 24
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fb6acfee61683d870800000000000000
+      internalID: 8706449937694238399
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_nino_parte_pierna_der_9
+      rect:
+        serializedVersion: 2
+        x: 140
+        y: 6
+        width: 11
+        height: 51
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c355523783dc326d0800000000000000
+      internalID: -3016341683074411204
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: char_nino_parte_pierna_der_10
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 11
+        width: 19
+        height: 42
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ee85da4e5f637df0800000000000000
+      internalID: -183680709018939679
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      char_nino_parte_pierna_der_0: 8133609345272353272
+      char_nino_parte_pierna_der_1: -6215130083875745200
+      char_nino_parte_pierna_der_10: -183680709018939679
+      char_nino_parte_pierna_der_2: -5169914775342302195
+      char_nino_parte_pierna_der_3: -8644024281022876684
+      char_nino_parte_pierna_der_4: 95854460369854087
+      char_nino_parte_pierna_der_5: 7651169413128526798
+      char_nino_parte_pierna_der_6: -5586952262144131612
+      char_nino_parte_pierna_der_7: 1763468518102751351
+      char_nino_parte_pierna_der_8: 8706449937694238399
+      char_nino_parte_pierna_der_9: -3016341683074411204
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -109,6 +109,7 @@ namespace Game.Levels.River
         private CameraFraming _from;
         private Action<string, MessageTone> _show;
         private Action<RaftPhase> _phaseConfirmed;
+        private Action<ActorAction> _react;
         private Image _ghost;
         private MaterialKind? _held;
         private bool _handlesAttached;
@@ -150,15 +151,17 @@ namespace Game.Levels.River
 
         /// <summary>
         /// Abre el panel con el inventario completo, en la fase que toque, y empuja la cámara al
-        /// plano del ensamblaje. Con una fase mayor que la base, retoma (RNF-14).
+        /// plano del ensamblaje. Con una fase mayor que la base, retoma (RNF-14). Los personajes
+        /// son de la escena: el panel solo dice cuándo celebran y cuándo animan (<paramref name="react"/>).
         /// </summary>
         internal void Open(Inventory inventoryModel, RaftPhase phase, CameraFraming from,
-            Action<string, MessageTone> show, Action<RaftPhase> phaseConfirmed)
+            Action<string, MessageTone> show, Action<RaftPhase> phaseConfirmed, Action<ActorAction> react)
         {
             _inventory = inventoryModel;
             _from = from;
             _show = show;
             _phaseConfirmed = phaseConfirmed;
+            _react = react;
             _assembly = new RaftAssembly(content, RaftAssembly.SupplyFrom(inventoryModel, content));
             if (phase > RaftPhase.Base)
             {
@@ -321,6 +324,10 @@ namespace Game.Levels.River
             var message = hint ?? result.Message;
             var tone = hint != null ? MessageTone.Help : MessageTone.Rejected;
 
+            // Tras un intento sin éxito —también cuando la balsa se hunde— la familia anima y
+            // nunca hace un gesto de derrota: el hundimiento es el guion, no un castigo (CP-02, §7.3).
+            _react?.Invoke(ActorAction.Encourage);
+
             if (phase == RaftPhase.MastAndSail)
             {
                 _ = SinkAsync(message, tone);
@@ -369,6 +376,7 @@ namespace Game.Levels.River
             IsBusy = true;
             RefreshAll();
             _show(message, MessageTone.Done);
+            _react?.Invoke(ActorAction.Celebrate);
 
             try
             {

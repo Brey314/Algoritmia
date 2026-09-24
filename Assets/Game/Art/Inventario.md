@@ -32,87 +32,58 @@ Leyenda: **✓** en disco · **◐** provisional en disco (sustituir conservando
 
 ## `Characters/`
 
-Seis retratos por personaje (`S03a`, `S03b`): `neutra`, `alegre`, `sorpresa`, `concentracion`,
-`duda`, `animo`. **No hay tristeza ni enfado**: un intento sin éxito produce `animo`, nunca una
-expresión negativa (§7.3, CP-02). Los clips son rigging 2D sobre el sprite en A-pose (§13.1),
-no hojas de fotogramas, y **no existen saltar, caer, aterrizar ni derrota** (CT-06, RNF-02, CP-02).
+**Cómo se animan (24/09/2026, INC-53).** Por **recorte**, no con el rig de 2D Animation que pide
+§13.1: las escenas son uGUI en un Canvas overlay y `SpriteSkin` no deforma una `Image`. Cada
+miembro de la familia está cortado en cinco partes —`torso`, `brazo_izq`, `brazo_der`,
+`pierna_izq`, `pierna_der`, con izquierda y derecha **de pantalla**—. Son `Image` hijas con el
+pivote en la articulación, sobre un lienzo de 1024 × 1024, el de los sprites base: la figura
+ocupa y 77..947. Un `Animator` las gira y desplaza con un clip por acción; el componente es
+`CharacterRig` (`Game.Scaffolding`) y los prefabs están en `Assets/Game/Prefabs/Characters/`. Las
+partes salen de los sprites base entregados el 24/09/2026 (`…/assets a postproduccion/familia/`),
+limpios de restos de croma verde en el pelo. **Para sustituirlas por arte definitivo, se reemplaza
+cada `.png` conservando el nombre**; si cambia la silueta, hay que rehacer el prefab, porque el
+tamaño y el pivote de cada parte viven en él.
+
+Retratos: solo existe `neutra`, un recorte de la cabeza de 320², que es el que usa el cuadro de
+diálogo. Las otras cinco expresiones de `S03a`/`S03b` siguen pendientes, y hoy ninguna línea pide
+una expresión. **No hay tristeza ni enfado**: tras un intento sin éxito el personaje hace «ánimo»
+(§7.3, CP-02). **No existen saltar, caer, aterrizar ni derrota** (CT-06, RNF-02, CP-02).
+
+**Clips (21 por miembro de la familia).** `char_<x>_anim_<accion>.anim`, uno por estado del
+`Animator`, cuyo nombre es el de `ActorAction`: `idle`, `caminar`, `correr`, `hablar`, `golpear`,
+`martillar`, `soplar`, `recoger`, `arrodillarse`, `cargar`, `empujar`, `senalar`, `observar`,
+`celebrar`, `animo`, `abrazar`, `sorpresa`, `dormir`, `oculto`, `aparicion` y `apagado`. Los genera
+un constructor efímero con un tempo por personaje: Papá, amplio y lento; el Niño, rápido (§7.4). El
+controlador `char_<x>.controller` está al lado.
 
 ### `Characters/Algoritm/` — el guía, en los tres niveles (CN-03)
 
-| Archivo | Origen |
+| Archivo | Estado |
 |---|---|
-| ○ `char_algoritm_n1_estrella_reposo.png`, `_girando`, `_atenuado` | `S15` |
-| ○ `char_algoritm_n2_rueda_reposo.png`, `_girando`, `_atenuado` | `S15` |
-| ○ `char_algoritm_n3_gota_reposo.png`, `_girando`, `_atenuado` | `S15` |
-| ○ `char_algoritm_n1_retrato_neutra.png` … `_animo.png` (6) | `S03b` |
-| ○ `char_algoritm_n2_retrato_neutra.png` … `_animo.png` (6) | `S03b` |
-| ○ `char_algoritm_n3_retrato_neutra.png` … `_animo.png` (6) | `S03b` |
+| ✓ `char_algoritm_n1_fuego_reposo.png` | Arte entregado (24/09/2026), recortado a cuadrado de 768². Es una llama con extremidades: ver **INC-52** |
+| ◐ `char_algoritm_n2_rueda_reposo.png` | **Provisional**: el fuego recoloreado en madera. El definitivo entra sustituyendo el archivo |
+| ◐ `char_algoritm_n3_gota_reposo.png` | **Provisional**: el fuego recoloreado en agua. Ídem |
+| ○ `_girando`, `_atenuado`, `char_algoritm_n*_retrato_*` | `S15`/`S03b`. Hoy el retrato del guía **es** el sprite de su forma |
 
-Un cuerpo por nivel, mismo núcleo de identidad (§7.6). Solo muta en los barridos `TR-05` y
-`TR-09`, nunca a la vista dentro de una escena jugable.
+Una sola `Image` por forma y ningún recorte, para que sustituir el archivo baste. Los tres prefabs
+`Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` comparten `Animations/char_algoritm.controller`
+y sus clips `char_algoritm_anim_{flotar,hablar,senalar,girar,celebrar,animo,oculto,aparicion,apagado}`.
+El mismo sprite va dentro del botón de ayuda circular de las cinco mecánicas.
 
-**`Characters/Algoritm/Animations/`** — `S06`
+### `Characters/Father/` · `Mother/` · `Girl/` · `Boy/`
 
-| Archivo | Nota |
-|---|---|
-| ○ `char_algoritm_n1_anim_flotar.anim`, `n2`, `n3` | flotación y giro, ciclo 2 s |
-| ○ `char_algoritm_n1_anim_pulso.anim`, `n2`, `n3` | pulso de pista; es el guía quien la ofrece (CP-06) |
-| ○ `char_algoritm_n1_anim_aparicion.anim` | escena 1.1 |
-| ○ `char_algoritm_n3_anim_apagado.anim` | escena final |
+| Carpeta | Partes (✓) | Retrato (✓) | Prefab |
+|---|---|---|---|
+| `Father/` — Papá, jugable en el N1 | `char_papa_parte_*.png` | `char_papa_retrato_neutra.png` | `Papa` |
+| `Mother/` — Mamá, jugable en el N3 | `char_mama_parte_*.png` | `char_mama_retrato_neutra.png` | `Mama` |
+| `Girl/` — la Niña, jugable en el N2 | `char_nina_parte_*.png` | `char_nina_retrato_neutra.png` | `Nina` (habla también como «NIÑOS») |
+| `Boy/` — el Niño, acompaña | `char_nino_parte_*.png` | `char_nino_retrato_neutra.png` | `Nino` (habla también como «NIÑOS») |
 
-Los otros dos clips de los diez de `S06` son los barridos con muta, y viven en `FX/Animations/`.
-
-### `Characters/Father/` — Papá, jugable en el Nivel 1 (CN-02)
-
-| Archivo | Origen |
-|---|---|
-| ○ `char_papa_base_apose.png` | `S04` / `A2` |
-| ○ `char_papa_retrato_neutra.png` … `_animo.png` (6) | `S03a` |
-
-**`Characters/Father/Animations/`**
-
-| Archivo | Origen |
-|---|---|
-| ○ `char_papa_anim_idle.anim`, `char_papa_anim_animo.anim` | `S04` — clips universales |
-| ○ `char_papa_anim_reubicar.anim`, `_golpear`, `_soplar`, `_celebrar` | `S05` |
-
-### `Characters/Girl/` — la Niña, jugable en el Nivel 2
-
-| Archivo | Origen |
-|---|---|
-| ○ `char_nina_base_apose.png` | `S08` / `A4` |
-| ○ `char_nina_retrato_neutra.png` … `_animo.png` (6) | `S03a` |
-
-**`Characters/Girl/Animations/`** — `S08`
-
-| Archivo |
-|---|
-| ○ `char_nina_anim_idle.anim`, `_senalar`, `_observar`, `_celebrar`, `_animo` |
-
-### `Characters/Mother/` — Mamá, jugable en el Nivel 3
-
-| Archivo | Origen |
-|---|---|
-| ◐ `char_mama_cenital.png` | `S10` — lámina del rig cenital. **Provisional** (R07, 17/09/2026, dibujada por código con la paleta de §4.1: cabello, frente y hombros de leopardo vistos desde arriba, una sola postura). La usa `Level3_River.unity` (`Personaje_Mama`); la definitiva entra **sustituyendo el archivo con el mismo nombre**. |
-| ○ `char_mama_retrato_neutra.png` … `_animo.png` (6) | `S03a` |
-| ○ `char_mama_base_apose.png` | `A3` (Slice 1) — no está en el tablero |
-
-**`Characters/Mother/Animations/`** — `S10`
-
-| Archivo |
-|---|
-| ○ `char_mama_anim_caminar_norte.anim`, `_sur`, `_este`, `_oeste` |
-| ○ `char_mama_anim_idle.anim`, `_recoger`, `_celebrar`, `_animo` |
-
-### `Characters/Boy/` — el Niño, acompaña, no jugable
-
-| Archivo | Origen |
-|---|---|
-| ○ `char_nino_retrato_neutra.png` … `_animo.png` (6) | `S03a` |
-| ○ `char_nino_base_apose.png` | `A5` (Slice 1) — no está en el tablero |
-
-**`Characters/Boy/Animations/`** — vacío. §13.3 pide idle para todos los personajes; el tablero
-no programa ningún clip suyo. Ver «Puntos abiertos».
+`Mother/char_mama_cenital.png` (R07, provisional) **ya no se ve**: en el río, `Personaje_Mama`
+lleva dentro el rig frontal de Mamá y su `Image` raíz queda de reserva. Los clips
+`char_mama_anim_caminar_{norte,sur,este,oeste}` del tablero no existen: se camina con uno solo, que
+se voltea a izquierda o derecha. `char_*_base_apose.png` no entra al proyecto: las partes lo
+recomponen.
 
 ---
 
@@ -387,8 +358,8 @@ de `S06`, como manda §10.2— y la convención de nombres de los `.anim`.
 6. **Tres efectos de `§12.2` no están en el tablero:** salpicadura de agua, recolección de objeto
    y reto resuelto. El de recolección puede estar cubierto por
    `prop_n3_material_recogida.anim` (`S10`), los otros dos no.
-7. **`Characters/Boy/Animations/` está vacío:** §13.3 pide idle para todos los personajes y el
-   tablero no programa ningún clip del Niño.
+7. ~~`Characters/Boy/Animations/` está vacío~~ — resuelto el 24/09/2026: el Niño tiene los mismos
+   21 clips que el resto de la familia.
 8. **El tablero salta de `S12` a `S15`:** no hay `S13` ni `S14`. Verificar si faltan o si son
    tareas que no producen archivos.
 9. Los tramos escritos con `…` (`prop_n2_piedra_a` … `_d`, `ui_n3_casilla_*`, `ui_n3_espacio_*`)

@@ -105,6 +105,27 @@ namespace Game.Levels.Wheel
         [Tooltip("Cuánto crece el tronco resaltado (1.1 = un 10 %). Acompaña al contorno: dos indicadores (RNF-19).")]
         private float selectedScale = 1.1f;
 
+        [SerializeField]
+        [Tooltip("La Niña, que arma la carretilla: señala el tronco elegido, martilla al perforar y al encajar cada pieza, y anima tras un paso fuera de orden. Cuelga del entorno, detrás del banco. Vacío = el taller funciona sin personaje.")]
+        private CharacterRig player;
+
+        [SerializeField]
+        [Tooltip("Papá, que martilla con ella cada pieza que encaja en la carretilla. Vacío = martilla ella sola.")]
+        private CharacterRig helper;
+
+        [SerializeField]
+        [Tooltip("El resto de la familia detrás del banco (Mamá y el Niño): miran y celebran la carretilla terminada.")]
+        private CharacterRig[] onlookers = System.Array.Empty<CharacterRig>();
+
+        /// <summary>Segundos que la Niña señala el tronco elegido (Dirección de arte §13.3, 0,6 s).</summary>
+        private const float PointSeconds = 0.6f;
+
+        /// <summary>Segundos del ánimo tras un paso fuera de orden (Dirección de arte §13.3, 0,9 s).</summary>
+        private const float EncourageSeconds = 0.9f;
+
+        /// <summary>Segundos de martilleo por golpe: un ciclo del clip, para que golpes seguidos no lo corten.</summary>
+        private const float HammerSeconds = 0.7f;
+
         private static readonly PhaseId Phase2 = new PhaseId(LevelId.Wheel, 2);
 
         private readonly Dictionary<WorkshopPiece, (RectTransform Rect, Image Image, Outline Outline)> _pieces =
@@ -135,6 +156,9 @@ namespace Game.Levels.Wheel
         internal Image MessageIcon => messageIcon;
         internal AssemblyContent Config => config;
         internal WheelSounds Sounds => sounds;
+        internal CharacterRig Player => player;
+        internal CharacterRig Helper => helper;
+        internal IReadOnlyList<CharacterRig> Onlookers => onlookers;
 #endif
 
         private void Awake() => Runner ??= GameFlowRunner.Instance;
@@ -262,6 +286,7 @@ namespace Game.Levels.Wheel
 
             Highlight(_assembly.Selected);
             RefreshMachine();
+            Act(player, ActorAction.Point, PointSeconds);
             Show(outcome.Message, helpIcon, helpColor);
         }
 
@@ -281,12 +306,14 @@ namespace Game.Levels.Wheel
             if (!outcome.Accepted)
             {
                 _indicators.RecordRejected(); // Intentos de la fase 2: acciones fuera de secuencia (§3.6.1).
+                Encourage();
                 Show(outcome.Message, rejectedIcon, rejectedColor);
                 return;
             }
 
             _indicators.RecordAccepted(); // Perforar es un paso de ensamblaje ejecutado en orden.
             Play(sounds?.Drilled); // con «Mecanizar» o con el martillo: el mismo encaje
+            Act(player, ActorAction.Hammer, HammerSeconds);
             if (drilled.HasValue && _pieces.TryGetValue(drilled.Value, out var entry))
             {
                 // La rueda **es** el mismo tronco con el agujero: se cambia la ilustración en su
@@ -416,6 +443,7 @@ namespace Game.Levels.Wheel
             }
 
             _indicators.RecordRejected(); // Intentos de la fase 2: acciones fuera de secuencia (§3.6.1).
+            Encourage();
             var hint = _hints.RegisterFailedAttempt();
             if (hint != null)
             {
@@ -512,6 +540,15 @@ namespace Game.Levels.Wheel
         private async Awaitable CompleteAsync()
         {
             IsCompleting = true;
+
+            // Toda la familia celebra y se queda celebrando hasta salir: sin vuelta al reposo.
+            Act(player, ActorAction.Celebrate);
+            Act(helper, ActorAction.Celebrate);
+            foreach (var rig in onlookers)
+            {
+                Act(rig, ActorAction.Celebrate);
+            }
+
             var seconds = Mathf.Max(config.CompletionSeconds, 0f);
             var elapsed = 0f;
             var (pivot, zoom) = IllustrationFraming.ScaleAbout(
@@ -551,8 +588,10 @@ namespace Game.Levels.Wheel
         /// </remarks>
         private async Awaitable HammerAsync()
         {
+            // Sin N2_Sonidos no hay ritmo que seguir: el gesto de un golpe, sin sonido.
             if (sounds == null)
             {
+                HammerBlow();
                 return;
             }
 
@@ -566,11 +605,55 @@ namespace Game.Levels.Wheel
                     }
 
                     Play(sounds.AssemblyHammer);
+                    HammerBlow();
                 }
             }
             catch (System.OperationCanceledException)
             {
                 // La escena se descargó entre dos golpes: los que faltan ya no tienen dónde sonar.
+            }
+        }
+
+        /// <summary>
+        /// Un martillazo en el cuerpo: la Niña martilla y Papá con ella. Con la carretilla ya
+        /// terminada no, porque la familia está celebrando y un golpe más cortaría el festejo.
+        /// </summary>
+        private void HammerBlow()
+        {
+            if (_assembly.IsComplete)
+            {
+                return;
+            }
+
+            Act(player, ActorAction.Hammer, HammerSeconds);
+            Act(helper, ActorAction.Hammer, HammerSeconds);
+        }
+
+        /// <summary>
+        /// Tras un paso fuera de orden la Niña **anima** (puño arriba), nunca un gesto de derrota
+        /// ni de desánimo: equivocarse de orden es parte de armar, no un castigo (CP-02, Dirección
+        /// de arte §7.3).
+        /// </summary>
+        private void Encourage() => Act(player, ActorAction.Encourage, EncourageSeconds);
+
+        /// <summary>
+        /// Un gesto del personaje: dura <paramref name="seconds"/> y vuelve solo al reposo, o se
+        /// queda si no se dan. Sin personaje en la escena el taller sigue igual.
+        /// </summary>
+        private static void Act(CharacterRig rig, ActorAction action, float seconds = 0f)
+        {
+            if (rig == null)
+            {
+                return;
+            }
+
+            if (seconds > 0f)
+            {
+                rig.PlayFor(action, seconds);
+            }
+            else
+            {
+                rig.Play(action);
             }
         }
 

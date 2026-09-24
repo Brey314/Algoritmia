@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Game.Audio;
 using Game.Core;
+using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -1005,6 +1006,145 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(forest.Environment.raycastTarget, Is.False, "y no se traga los clics del suelo");
         }
 
+        // --- los personajes y la ayuda con la forma de Algoritm (Dirección de arte §13.3, §7.6) ----
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_DA133_LaNinaSenalaElTroncoQueEligeYVuelveAlReposo()
+        {
+            var forest = await OpenForest();
+            var nina = Nina(forest);
+            Assert.That(nina.Current, Is.EqualTo(ActorAction.Idle), "la fase abre con la Niña en reposo");
+
+            Pulsar(forest, ForestObjectCategory.RoundLog, 1);
+            Assert.That(nina.Current, Is.EqualTo(ActorAction.Point), "señala el tronco que eligió");
+
+            // Es un gesto y no una pose: si se quedara señalando, el siguiente clic no se leería.
+            await Esperar(() => nina.Current == ActorAction.Idle, 3f);
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_DA133_TrasCadaDistractorLaNinaHaceAnimoYNuncaOtroGesto()
+        {
+            var forest = await OpenForest();
+            var nina = Nina(forest);
+
+            // Tres rechazos seguidos: el tercero ya trae la pista (RF-13) y el gesto no cambia.
+            for (var intento = 1; intento <= 3; intento++)
+            {
+                Pulsar(forest, ForestObjectCategory.Stone, 1);
+                Assert.That(nina.Current, Is.EqualTo(ActorAction.Encourage),
+                    $"rechazo {intento}: «ánimo», nunca derrota ni desánimo (§7.3, CP-02)");
+            }
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_DA133_LaNinaEmpujaLaCajaMientrasLaSostiene()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            var nina = Nina(forest);
+            var fuera = Centro((RectTransform)forest.HelpButton.transform);
+            await Acopiar(forest);
+
+            forest.TakeCargo();
+            Assert.That(nina.Current, Is.EqualTo(ActorAction.Push), "al tomar la caja, la Niña la empuja");
+
+            forest.DragCargoTo(fuera);
+            forest.ReleaseCargo();
+            Assert.That(nina.Current, Is.EqualTo(ActorAction.Encourage),
+                "suelta fuera de los troncos: «ánimo», sin regañar (CP-02)");
+
+            forest.TakeCargo();
+            forest.DragCargoTo(Centro(forest.LogRow));
+            forest.ReleaseCargo();
+            Assume.That(forest.Cargo.IsPlaced, Is.True, "la caja quedó sobre los troncos");
+            Assert.That(nina.Current, Is.EqualTo(ActorAction.Idle), "colocada, deja de empujar");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_DA133_AlCompletarElAcopioCelebranLaNinaYLaFamilia()
+        {
+            var forest = await OpenForest();
+            var nina = Nina(forest);
+            Assert.That(forest.Family.Count, Is.EqualTo(3), "Mamá, el Niño y Papá esperan al fondo");
+            Assert.That(forest.Family.All(rig => rig != null), Is.True, "los tres cableados al controlador");
+
+            Pulsar(forest, ForestObjectCategory.RoundLog, forest.Config.RequiredLogs);
+            Assume.That(forest.Selection.IsComplete, Is.True, "el acopio está completo");
+
+            Assert.That(nina.Current, Is.EqualTo(ActorAction.Celebrate), "la Niña celebra los cinco troncos");
+            Assert.That(forest.Family.Select(rig => rig.Current), Has.All.EqualTo(ActorAction.Celebrate),
+                "y la familia con ella");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RNF02_LosPersonajesNoLeQuitanElClicANingunObjeto()
+        {
+            var forest = await OpenForest();
+
+            // Apilados, solo el de encima recibe el clic: un personaje que captara rayos le robaría
+            // el clic al tronco o a la caja que tiene delante, y el bosque solo se juega pulsando.
+            var captan = Personajes(forest)
+                .SelectMany(rig => rig.GetComponentsInChildren<Graphic>(true)
+                    .Where(grafico => grafico.raycastTarget)
+                    .Select(grafico => $"{rig.name}/{grafico.name}"))
+                .ToArray();
+
+            Assert.That(captan, Is.Empty, string.Join(" · ", captan));
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RNF03_LosPersonajesSeVenEnterosYNoQuedanBajoLaInterfaz()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            var pantalla = new Rect(0f, 0f, Screen.width, Screen.height);
+            var interfaz = new (string Nombre, Rect Caja)[]
+            {
+                ("el acopio", EnPantalla((RectTransform)forest.Slots[0].transform.parent)),
+                ("el contador", EnPantalla((RectTransform)forest.CounterLabel.transform)),
+                ("la ayuda", EnPantalla((RectTransform)forest.HelpButton.transform)),
+                ("«Empujar»", EnPantalla((RectTransform)forest.PushButton.transform)),
+                ("la tablilla del guía", EnPantalla((RectTransform)forest.MessageLabel.transform.parent))
+            };
+
+            foreach (var rig in Personajes(forest))
+            {
+                var caja = EnPantalla((RectTransform)rig.transform);
+                Assert.That(pantalla.Contains(caja.min) && pantalla.Contains(caja.max), Is.True,
+                    $"{rig.name} se ve entero — {caja} dentro de {pantalla}");
+
+                var tapan = interfaz.Where(panel => panel.Caja.Overlaps(caja)).Select(panel => panel.Nombre).ToArray();
+                Assert.That(tapan, Is.Empty, $"{rig.name} {caja} queda bajo {string.Join(", ", tapan)}");
+            }
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_DA76_ElBotonDeAyudaMuestraAAlgoritmConSuFormaDeRueda()
+        {
+            var forest = await OpenForest();
+            var algoritm = forest.HelpButton.GetComponentsInChildren<Image>(true)
+                .FirstOrDefault(imagen => imagen.name == "Algoritm");
+
+            Assert.That(algoritm != null, Is.True, "el círculo de la ayuda lleva dentro a Algoritm");
+            // Por nombre y no por referencia: el arte definitivo entra sustituyendo el archivo y
+            // conservando su .meta, así que lo que no cambia es el nombre (Art/Inventario.md).
+            Assert.That(algoritm.sprite != null ? algoritm.sprite.name : null,
+                Is.EqualTo("char_algoritm_n2_rueda_reposo"), "con la forma del guía en el Nivel 2: la rueda (§7.6)");
+            Assert.That(algoritm.isActiveAndEnabled, Is.True, "y se ve");
+            Assert.That(algoritm.preserveAspect, Is.True, "sin deformarse dentro del círculo");
+        }
+
         /// <summary>Acopia los cinco troncos y deja la caja colocada sobre ellos.</summary>
         private static async Task Colocar(ForestSceneController forest)
         {
@@ -1036,6 +1176,23 @@ namespace Game.Levels.Wheel.Tests
         }
 
         private static Vector2 Centro(RectTransform rect) => EnPantalla(rect).center;
+
+        /// <summary>
+        /// La Niña de la escena. Con <c>!=</c> de Unity y no <c>Is.Not.Null</c>: en el Editor un
+        /// campo sin asignar devuelve un nulo falso que NUnit toma por objeto.
+        /// </summary>
+        private static CharacterRig Nina(ForestSceneController forest)
+        {
+            Assert.That(forest.Player != null, Is.True, "la Niña está en el bosque, cableada al controlador");
+            return forest.Player;
+        }
+
+        /// <summary>La Niña y la familia del fondo.</summary>
+        private static IEnumerable<CharacterRig> Personajes(ForestSceneController forest)
+        {
+            Assert.That(forest.Family.All(rig => rig != null), Is.True, "la familia está cableada al controlador");
+            return forest.Family.Prepend(Nina(forest));
+        }
 
         /// <summary>
         /// Aparta el realce del cursor antes de medir. En el Editor el ratón puede quedarse

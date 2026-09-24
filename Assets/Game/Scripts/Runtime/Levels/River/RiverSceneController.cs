@@ -47,6 +47,14 @@ namespace Game.Levels.River
         private RectTransform player;
 
         [SerializeField]
+        [Tooltip("Mamá animada: el rig hijo de «Personaje_Mama», estirado a su casilla. La raíz la mueve y la escala la profundidad; el rig solo pone el gesto.")]
+        private CharacterRig playerRig;
+
+        [SerializeField]
+        [Tooltip("Papá, la Niña y el Niño, esperando junto a la zona de construcción. Celebran cada fase aprobada y animan tras un intento sin éxito.")]
+        private CharacterRig[] family = new CharacterRig[0];
+
+        [SerializeField]
         [Tooltip("Material modelo que se clona una vez por entrada del catálogo. Permanece inactivo.")]
         private Image collectibleTemplate;
 
@@ -111,6 +119,11 @@ namespace Game.Levels.River
         [SerializeField] private Color rejectedColor = new Color(0.60f, 0.36f, 0.10f);
         [SerializeField] private Color helpColor = new Color(0.24f, 0.30f, 0.44f);
 
+        // Duraciones del set de animaciones (Dirección de arte §13.3): recoger, celebrar y ánimo.
+        private const float PickUpSeconds = 0.5f;
+        private const float CelebrateSeconds = 1.2f;
+        private const float EncourageSeconds = 0.9f;
+
         private readonly List<(Collectible Collectible, Image Image)> _spawned = new List<(Collectible, Image)>();
         private readonly List<(RiverTaskId Task, Text Label, Image Icon)> _rows = new List<(RiverTaskId, Text, Image)>();
 
@@ -138,6 +151,8 @@ namespace Game.Levels.River
         internal IReadOnlyList<(RiverTaskId Task, Text Label, Image Icon)> Rows => _rows;
         internal IReadOnlyList<Image> Slots => inventory.Slots;
         internal RectTransform Player => player;
+        internal CharacterRig PlayerRig => playerRig;
+        internal IReadOnlyList<CharacterRig> Family => family;
         internal RectTransform BuildZoneMarker => buildZoneMarker;
         internal RectTransform TaskArea => taskArea;
         internal RectTransform InventoryArea => (RectTransform)inventory.transform;
@@ -221,8 +236,12 @@ namespace Game.Levels.River
                 return; // Con el ensamblaje abierto ya no se anda por la orilla.
             }
 
+            var before = _walk.Position;
             _walk.Step(direction, deltaTime);
             Place(player, _walk.Position);
+            // Antes de atender la zona: al abrirse, el ensamblaje la deja en reposo y un paso
+            // posterior la dejaría andando quieta.
+            Animate(_walk.Position != before, direction);
             RefreshReach();
 
             // La zona se atiende al **entrar**, no cada cuadro: si no, el «todavía falta» se
@@ -234,6 +253,51 @@ namespace Game.Levels.River
             }
 
             _wasInsideZone = inside;
+        }
+
+        /// <summary>
+        /// El paso de Mamá: anda mientras se desplaza y vuelve al reposo al parar, también contra
+        /// el borde de la orilla. Un gesto en curso —recoger, el ánimo— no lo corta el paso: el
+        /// gesto vuelve al reposo y de ahí, si sigue andando, al paso.
+        /// </summary>
+        private void Animate(bool moving, Vector2 direction)
+        {
+            if (playerRig == null)
+            {
+                return;
+            }
+
+            if (moving && direction.x != 0f)
+            {
+                // Voltea el lienzo del rig, nunca la raíz: la escala de «Personaje_Mama» es su
+                // profundidad y la vigila una prueba (DA83).
+                playerRig.Mirrored = direction.x < 0f;
+            }
+
+            if (moving && playerRig.Current == ActorAction.Idle)
+            {
+                playerRig.Play(ActorAction.Walk);
+            }
+            else if (!moving && playerRig.Current == ActorAction.Walk)
+            {
+                playerRig.Play(ActorAction.Idle);
+            }
+        }
+
+        /// <summary>
+        /// Mamá y la familia reaccionan a la vez y vuelven solos al reposo: celebran lo aprobado
+        /// y animan tras un intento sin éxito, las dos únicas reacciones del nivel.
+        /// </summary>
+        private void React(ActorAction action)
+        {
+            var seconds = action == ActorAction.Celebrate ? CelebrateSeconds : EncourageSeconds;
+            foreach (var rig in family.Append(playerRig))
+            {
+                if (rig != null)
+                {
+                    rig.PlayFor(action, seconds);
+                }
+            }
         }
 
         /// <summary>Deja un material en la orilla, en el punto de la ilustración que le da el asset.</summary>
@@ -299,6 +363,10 @@ namespace Game.Levels.River
             var entry = _spawned.First(spawned => spawned.Collectible == collectible);
             entry.Image.gameObject.SetActive(false);
             inventory.Show(collectible.Kind, collectible.Art, _inventory.Count(collectible.Kind));
+            if (playerRig != null)
+            {
+                playerRig.PlayFor(ActorAction.PickUp, PickUpSeconds);
+            }
 
             // «Recoger troncos» se marca con el quinto tronco, no con el primero: la tarea es la
             // clase completa (RF-36, decisión del 20/09/2026).
@@ -321,7 +389,9 @@ namespace Game.Levels.River
                 // Es una acción rechazada, no una pista: lleva el icono de alerta además del
                 // color, como el objeto no válido del bosque (RNF-19, hallazgo de R15). Sin
                 // penalización: la frase nombra qué falta y se sale a seguir buscando (CP-02).
+                // Por lo mismo la familia anima y nadie hace un gesto de derrota (§7.3).
                 Show(outcome.Message, MessageTone.Rejected);
+                React(ActorAction.Encourage);
                 return;
             }
 
@@ -364,7 +434,12 @@ namespace Game.Levels.River
             }
 
             collectButton.gameObject.SetActive(false);
-            assemblyPanel.Open(_inventory, phase, config.PlayFraming, Show, PhaseConfirmed);
+            if (playerRig != null)
+            {
+                playerRig.Play(ActorAction.Idle); // ya no se anda por la orilla
+            }
+
+            assemblyPanel.Open(_inventory, phase, config.PlayFraming, Show, PhaseConfirmed, React);
             if (phase > RaftPhase.Base)
             {
                 Show(assemblyPanel.RequestHelp(), MessageTone.Help);

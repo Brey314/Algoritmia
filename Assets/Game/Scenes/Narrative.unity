@@ -1086,7 +1086,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8784314, g: 0.83137256, b: 0.7529412, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1716,6 +1716,17 @@ MonoBehaviour:
   advanceButton: {fileID: 682189463}
   skipButton: {fileID: 405499314}
   darknessMaterial: {fileID: 2100000, guid: 26dd0a3317e10974785b86fce79a841c, type: 2}
+  portraitFrame: {fileID: 709575473}
+  portrait: {fileID: 1106553280}
+  cast:
+  - {fileID: 8612951356872757514, guid: 53a0ad01bc40e1b42be23176238414c3, type: 3}
+  - {fileID: 4856857524079811693, guid: 292a2af82e9618a4a8571c0ba5344e6a, type: 3}
+  - {fileID: 6891089095391609466, guid: eaba461d187757d489344e98a731c61a, type: 3}
+  - {fileID: 832422384234550645, guid: f79b469f8bde6ff408c6c0f17e02ef28, type: 3}
+  guideByLevel:
+  - {fileID: 1454302656961861907, guid: 0848e043beb260145b6955038b8e5266, type: 3}
+  - {fileID: 6041154823210184738, guid: 1ad09a67f6c1b6f4ebeb76a8d3da7b4e, type: 3}
+  - {fileID: 5825635248465612300, guid: 620e6cbb4f567a34da8aa5d4aa420ed7, type: 3}
 --- !u!4 &1749848855
 Transform:
   m_ObjectHideFlags: 0
