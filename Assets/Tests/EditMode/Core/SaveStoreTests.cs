@@ -70,6 +70,37 @@ namespace Game.Core.Tests
             }));
         }
 
+        /// <summary>
+        /// Slice 4 P11: el barrido de RNF-09 solo se puede cerrar con el proyecto completo — un
+        /// perfil que jugó los tres niveles, no solo dos.
+        /// </summary>
+        [Test]
+        public void SaveStore_RNF09_ElJsonDeUnPerfilCompletoNoTieneCampoFueraDeLaListaCerrada()
+        {
+            var sut = CreateStore();
+            var profile = ProfileWithProgress();
+            profile.Reach(LevelId.River);
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 1), new PerformanceIndicators(2, 1, 4, 40f));
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 2), new PerformanceIndicators(1, 0, 6, 55f));
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 3), new PerformanceIndicators(3, 2, 9, 88f));
+            profile.ConfirmPhase(new PhaseId(LevelId.River, 1), new PerformanceIndicators(0, 0, 1, 12f));
+            profile.ConfirmPhase(new PhaseId(LevelId.River, 2), new PerformanceIndicators(1, 0, 2, 23f));
+            profile.ConfirmPhase(new PhaseId(LevelId.River, 3), new PerformanceIndicators(2, 0, 3, 9f));
+            sut.Save(profile);
+
+            var keys = Regex.Matches(_fileSystem.Files.Values.Single(), "\"([A-Za-z]+)\":")
+                .Cast<Match>()
+                .Select(match => match.Groups[1].Value)
+                .Distinct();
+
+            Assert.That(keys, Is.EquivalentTo(new[]
+            {
+                "name", "reachedLevel", "phases",
+                "level", "phase",
+                "attempts", "correctedErrors", "stepsUsed", "resolutionSeconds"
+            }));
+        }
+
         [Test]
         public void SaveStore_INC34_CaeALaRutaDeRespaldoSiDatosNoEsEscribible()
         {

@@ -192,5 +192,76 @@ namespace Game.Core.Tests
             Assert.That(_sut.TryStartPlaying(LevelId.Wheel, 1, fase => true), Is.True);
             Assert.That(_sut.PlayingPhase, Is.EqualTo(3), "y cuando exista, se retoma en ella");
         }
+
+        [Test]
+        public void GameFlow_RF46_TeacherReportSeAlcanzaDesdeElInicioYVuelveAEl()
+        {
+            _sut.TryGoTo(GameState.MainMenu);
+
+            Assert.That(_sut.TryGoTo(GameState.TeacherReport), Is.True);
+            Assert.That(_sut.TryGoTo(GameState.MainMenu), Is.True);
+        }
+
+        /// <summary>
+        /// CP-03: la pantalla de cifras solo se alcanza desde el menú principal, nunca desde
+        /// dentro de una partida — si un estado de juego pudiera pedirla, el estudiante llegaría
+        /// a ver una cifra de desempeño (RF-46, prueba de exclusión de P06).
+        /// </summary>
+        [Test]
+        public void TeacherReport_CP03_NingunaRutaDelEstudianteAlcanzaLaPantallaDeCifras()
+        {
+            var estadosDeJuego = Enum.GetValues(typeof(GameState)).Cast<GameState>()
+                .Where(estado => estado != GameState.MainMenu && estado != GameState.Boot);
+
+            foreach (var estado in estadosDeJuego)
+            {
+                var flujo = new GameFlow();
+                flujo.TryGoTo(GameState.MainMenu);
+
+                // Alcanzar cada estado por el camino legal más corto que exista desde MainMenu,
+                // y desde ahí intentar TeacherReport: nunca debería aceptarse fuera de MainMenu.
+                switch (estado)
+                {
+                    case GameState.ProfileSelect:
+                        flujo.TryGoTo(GameState.ProfileSelect);
+                        break;
+                    case GameState.LevelSelect:
+                        flujo.TryGoTo(GameState.ProfileSelect);
+                        flujo.TrySelectProfile(NewProfile());
+                        break;
+                    case GameState.Narrative:
+                        flujo.TryGoTo(GameState.ProfileSelect);
+                        flujo.TrySelectProfile(NewProfile());
+                        flujo.TryStartNarrative("n1_intro");
+                        break;
+                    case GameState.Playing:
+                        flujo.TryGoTo(GameState.ProfileSelect);
+                        flujo.TrySelectProfile(NewProfile());
+                        flujo.TryStartPlaying(LevelId.Fire, 1);
+                        break;
+                    case GameState.LevelSummary:
+                        flujo.TryGoTo(GameState.ProfileSelect);
+                        flujo.TrySelectProfile(NewProfile());
+                        flujo.TryStartPlaying(LevelId.Fire, 1);
+                        flujo.TryGoTo(GameState.LevelSummary);
+                        break;
+                    case GameState.Credits:
+                        flujo.TryGoTo(GameState.Credits);
+                        break;
+                    case GameState.TeacherReport:
+                        flujo.TryGoTo(GameState.TeacherReport);
+                        break;
+                }
+
+                Assume.That(flujo.Current, Is.EqualTo(estado), $"la prueba no llegó a {estado}: arreglo roto");
+                if (estado == GameState.TeacherReport)
+                {
+                    continue; // el propio informe, no una ruta del estudiante hacia él.
+                }
+
+                Assert.That(flujo.TryGoTo(GameState.TeacherReport), Is.False,
+                    $"CP-03: {estado} no puede alcanzar la pantalla de cifras del docente");
+            }
+        }
     }
 }

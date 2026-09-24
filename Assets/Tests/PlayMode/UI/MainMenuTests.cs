@@ -19,7 +19,7 @@ namespace Game.UI.Tests
     public class MainMenuTests
     {
         private const string SceneName = "MainMenu";
-        private static readonly string[] Options = { "Jugar", "Créditos", "Salir" };
+        private static readonly string[] Options = { "Jugar", "Créditos", "Progreso del equipo", "Salir" };
 
         /// <summary>Aviso de <c>ScreenFlow</c> cuando la pantalla no tiene con qué navegar.</summary>
         private static readonly Regex MissingFlow = new Regex("sin pasar por");
@@ -47,6 +47,16 @@ namespace Game.UI.Tests
             Assert.That(Options.Select(label => FindOption(label) is { } button
                                                && IsReachableByRaycast(button)),
                 Has.All.True);
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_RF46_OfreceLaOpcionDeProgresoDelDocente()
+        {
+            await LoadMainMenu();
+
+            // Junto a Jugar y Créditos, no dentro de una partida (RF-46, RF-01).
+            Assert.That(FindOption("Progreso del equipo"), Is.Not.Null);
         }
 
         [Test]
@@ -95,8 +105,10 @@ namespace Game.UI.Tests
             var sut = Object.FindAnyObjectByType<MainMenuController>();
             // «Salir» no puede cerrar el reproductor a mitad de la suite.
             sut.Quit = () => { };
-            // Sin GameFlowRunner —la escena se cargó sin pasar por Boot— «Jugar» y «Créditos»
-            // avisan y no navegan; «Salir» sigue cerrando, que no necesita flujo.
+            // Sin GameFlowRunner —la escena se cargó sin pasar por Boot— «Jugar», «Créditos» y
+            // «Progreso del equipo» avisan y no navegan; «Salir» sigue cerrando, que no
+            // necesita flujo.
+            LogAssert.Expect(LogType.Warning, MissingFlow);
             LogAssert.Expect(LogType.Warning, MissingFlow);
             LogAssert.Expect(LogType.Warning, MissingFlow);
 

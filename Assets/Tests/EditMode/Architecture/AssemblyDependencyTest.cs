@@ -24,7 +24,8 @@ namespace Game.Architecture.Tests
             ("Game.Levels.Wheel", "Levels/Wheel"),
             ("Game.Levels.River", "Levels/River"),
             ("Game.UI", "UI"),
-            ("Game.Audio", "Audio")
+            ("Game.Audio", "Audio"),
+            ("Game.Reporting", "Reporting")
         };
 
         private const string LevelPrefix = "Game.Levels.";
@@ -129,6 +130,34 @@ namespace Game.Architecture.Tests
                     .Where(file => scripts.Any(File.ReadAllText(file).Contains))
                     .Select(file => file.Substring(root.Length + 1));
                 Assert.That(foreign, Is.Empty, $"ninguna escena de otro nivel, de flujo ni prefab compartido referencia scripts de {assembly}");
+            }
+        }
+
+        /// <summary>
+        /// Game.Reporting solo referencia a Game.Core (Slice 4 P01): si referenciara un nivel,
+        /// retirarlo rompería el informe docente y esta prueba es la que lo impediría notar tarde.
+        /// </summary>
+        [Test]
+        public void Architecture_RNF16_ReportingNoReferenciaANingunAssemblyDeNivel()
+        {
+            Assert.That(_definitions["Game.Reporting"].references, Is.EqualTo(new[] { "Game.Core" }));
+
+            var actual = DependenciesOf("Game.Reporting");
+            Assert.That(actual.Where(name => name.StartsWith(LevelPrefix)), Is.Empty);
+            Assert.That(actual, Does.Not.Contain("Game.UI"));
+            Assert.That(actual, Does.Not.Contain("Game.Audio"));
+        }
+
+        /// <summary>Prueba explícita de RNF-16 para el informe docente, no solo razonamiento.</summary>
+        [Test]
+        public void Architecture_RNF16_RetirarUnNivelNoRompeElInformeDocente()
+        {
+            var levels = new[] { "Game.Levels.Fire", "Game.Levels.Wheel", "Game.Levels.River" };
+            var reportingDependencies = DependenciesOf("Game.Reporting");
+
+            foreach (var level in levels)
+            {
+                Assert.That(reportingDependencies, Does.Not.Contain(level), $"Game.Reporting depende de {level}");
             }
         }
 
