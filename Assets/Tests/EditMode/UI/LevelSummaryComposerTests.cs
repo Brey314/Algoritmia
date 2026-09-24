@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Game.Core;
 using Game.Scaffolding;
 using NUnit.Framework;
@@ -44,6 +47,21 @@ namespace Game.UI.Tests
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Select(AssetDatabase.LoadAssetAtPath<LevelSummaryMessages>)
                 .Single(messages => messages != null && messages.Level == level);
+
+        /// <summary>Las siete líneas de texto visible del asset: lo que el barrido de P02 recorre.</summary>
+        private static IEnumerable<string> LineasVisibles(LevelSummaryMessages m) => new[]
+        {
+            m.Intro, m.Discovery, m.TriedSeveralPositions, m.FoundRightAway,
+            m.CorrectedApproach, m.NoNeedToCorrect, m.SkillNamed
+        };
+
+        /// <summary>Palabras que convierten una descripción en un veredicto (RF-17, CP-03): la lista
+        /// no busca sinónimos exhaustivos, busca que nadie cuele un adjetivo de desempeño.</summary>
+        private static readonly string[] JuiciosDeValor =
+        {
+            "excelente", "perfecto", "genial", "increíble", "fantástico", "pésimo",
+            "malo", "mal hecho", "torpe", "lento", "rápido", "bien hecho", "muy bien"
+        };
 
         [Test]
         [Category("Acceptance")]
@@ -192,6 +210,76 @@ namespace Game.UI.Tests
             Assert.That(actual, Does.Not.Contain(messages.TriedSeveralPositions),
                 "sin intentos fallidos no puede aparecer la variante de «probaste varias posiciones»");
             Assert.That(actual, Does.Contain(messages.FoundRightAway));
+        }
+
+        /// <summary>
+        /// Barrido transversal de Slice 4 (P02): los tres niveles a la vez, sobre el asset real que
+        /// juega el estudiante y no sobre un doble — es donde HU-14 ya coló una cifra (INC-26).
+        /// </summary>
+        [Test]
+        public void LevelSummary_RF45_NingunResumenDeLosTresNivelesContieneUnDigito()
+        {
+            foreach (var nivel in new[] { LevelId.Fire, LevelId.Wheel, LevelId.River })
+            {
+                var lineas = LineasVisibles(CargarMensajes(nivel));
+                Assert.That(lineas, Has.All.Matches<string>(texto => !texto.Any(char.IsDigit)),
+                    $"RF-45/CP-03: el resumen del nivel {nivel} no puede contener ninguna cifra");
+            }
+        }
+
+        [Test]
+        public void LevelSummary_RF17_NingunResumenEmiteJuicioDeValor()
+        {
+            foreach (var nivel in new[] { LevelId.Fire, LevelId.Wheel, LevelId.River })
+            {
+                var lineas = LineasVisibles(CargarMensajes(nivel));
+                foreach (var texto in lineas)
+                {
+                    foreach (var juicio in JuiciosDeValor)
+                    {
+                        Assert.That(texto.ToLowerInvariant(), Does.Not.Contain(juicio),
+                            $"RF-17/CP-03: el resumen del nivel {nivel} describe, no califica («{juicio}» en «{texto}»)");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// CP-03: las cifras solo existen en TeacherReport (RF-46). Un nombre de clase es lo que
+        /// impide que alguien reintroduzca un marcador de puntaje sin que nadie lo note.
+        /// </summary>
+        [Test]
+        public void LevelSummary_CP03_NoExisteClaseDePuntajeEnElProyecto()
+        {
+            var root = Path.Combine(Application.dataPath, "Game", "Scripts");
+            var declaraciones = Directory.GetFiles(root, "*.cs", SearchOption.AllDirectories)
+                .SelectMany(file => Regex.Matches(File.ReadAllText(file), @"\b(?:class|struct)\s+(\w+)")
+                    .Select(match => match.Groups[1].Value));
+
+            var prohibidas = declaraciones.Where(nombre =>
+                nombre.IndexOf("Score", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                nombre.IndexOf("Points", StringComparison.OrdinalIgnoreCase) >= 0);
+
+            Assert.That(prohibidas, Is.Empty,
+                "CP-03: el estudiante no ve cifras de desempeño; no puede existir un tipo de puntaje aunque nadie lo muestre todavía");
+        }
+
+        [Test]
+        public void LevelSummaryContent_RNF01_NingunaOracionSupera20Palabras()
+        {
+            foreach (var nivel in new[] { LevelId.Fire, LevelId.Wheel, LevelId.River })
+            {
+                foreach (var texto in LineasVisibles(CargarMensajes(nivel)))
+                {
+                    var oraciones = texto.Split(new[] { '.', '!', '?', ':' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var oracion in oraciones)
+                    {
+                        var palabras = oracion.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                        Assert.That(palabras.Length, Is.LessThanOrEqualTo(20),
+                            $"RNF-01 en nivel {nivel}: «{oracion.Trim()}» tiene {palabras.Length} palabras");
+                    }
+                }
+            }
         }
     }
 }
