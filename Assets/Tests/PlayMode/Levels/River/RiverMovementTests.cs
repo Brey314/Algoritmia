@@ -1,6 +1,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -51,6 +52,60 @@ namespace Game.Levels.River.Tests
                 "cuatro flechas, una por dirección (RF-35)");
             Assert.That(river.Pads.All(pad => pad.GetComponent<Button>() != null && pad.isActiveAndEnabled), Is.True,
                 "cada flecha es un botón en pantalla, alcanzable por raycast");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task RiverScene_DA133_MamaCaminaMientrasSeSostieneUnaFlechaYReposaAlSoltarla()
+        {
+            var river = await OpenRiver();
+            var mama = river.PlayerRig;
+
+            Assert.That(mama, Is.Not.Null, "Mamá es un personaje animado");
+            Assert.That(mama.transform.parent, Is.SameAs(river.Player), "hijo de la casilla que el controlador mueve y escala");
+            Assert.That(mama.Current, Is.EqualTo(ActorAction.Idle), "abre en reposo");
+
+            // Primero a la derecha: desde el arranque hay orilla de sobra y no choca con el borde,
+            // donde dejaría de moverse y volvería al reposo.
+            foreach (var (direccion, espejo) in new[] { (Vector2.right, false), (Vector2.left, true) })
+            {
+                var flecha = river.Pads.Single(pad => pad.Direction == direccion);
+                flecha.OnPointerDown(new PointerEventData(EventSystem.current));
+                await Awaitable.NextFrameAsync();
+                await Awaitable.NextFrameAsync();
+
+                Assert.That(mama.Current, Is.EqualTo(ActorAction.Walk), $"con «{flecha.name}» sostenida, camina (§13.3)");
+                Assert.That(mama.Mirrored, Is.EqualTo(espejo), "mira hacia donde va");
+                Assert.That(river.Player.localScale.x, Is.EqualTo(river.Config.DepthScaleAt(river.Walk.Position.y)).Within(1e-4f),
+                    "el espejo es del lienzo del rig: la raíz conserva la escala de su profundidad (DA83)");
+
+                flecha.OnPointerUp(new PointerEventData(EventSystem.current));
+                await Awaitable.NextFrameAsync();
+
+                Assert.That(mama.Current, Is.EqualTo(ActorAction.Idle), $"al soltar «{flecha.name}» vuelve al reposo");
+            }
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task RiverScene_DA76_ElBotonDeAyudaMuestraAAlgoritmEnSuFormaDeGota()
+        {
+            var river = await OpenRiver();
+            Canvas.ForceUpdateCanvases();
+            var algoritm = river.HelpButton.GetComponentsInChildren<Image>(true).SingleOrDefault(image => image.name == "Algoritm");
+
+            Assert.That(algoritm, Is.Not.Null, "el círculo de la ayuda lleva a Algoritm dentro (mockup 7, HintIcon)");
+            Assert.That(algoritm.sprite, Is.Not.Null);
+            Assert.That(algoritm.sprite.name, Is.EqualTo("char_algoritm_n3_gota_reposo"), "en el Nivel 3 el guía es la gota (INC-45)");
+            Assert.That(algoritm.isActiveAndEnabled, Is.True, "y se ve");
+            Assert.That(algoritm.preserveAspect, Is.True, "sin deformarse");
+            Assert.That(algoritm.raycastTarget, Is.False, "no le roba el clic al botón");
+            Assert.That(algoritm.transform.parent, Is.SameAs(river.HelpButton.transform.GetChild(0)),
+                "cuelga de la cara que se hunde al pulsar, así que se hunde con ella");
+
+            var boton = EnPantalla((RectTransform)river.HelpButton.transform);
+            var guia = EnPantalla(algoritm.rectTransform);
+            Assert.That(boton.Contains(guia.min) && boton.Contains(guia.max), Is.True, $"dentro del círculo — {guia} en {boton}");
         }
 
         [Test]
@@ -206,6 +261,23 @@ namespace Game.Levels.River.Tests
             Assert.That(river, Is.Not.Null, $"la escena «{SceneName}» trae su controlador");
             Assert.That(river.Spawned, Is.Not.Empty, "la orilla ya se repartió");
             return river;
+        }
+
+        /// <summary>
+        /// Tras un intento sin éxito solo hay ánimo (CP-02, §7.3): cuadro a cuadro, cada personaje
+        /// anima o ya volvió al reposo, y al final todos reposan. Ningún otro gesto aparece entre medias.
+        /// </summary>
+        internal static async Task AssertSoloAnimo(CharacterRig[] personajes, float segundos = 3f)
+        {
+            var limite = Time.realtimeSinceStartup + segundos;
+            while (personajes.Any(rig => rig.Current != ActorAction.Idle) && Time.realtimeSinceStartup < limite)
+            {
+                Assert.That(personajes.All(rig => rig.Current is ActorAction.Encourage or ActorAction.Idle), Is.True,
+                    $"solo ánimo o reposo — {string.Join(", ", personajes.Select(rig => $"{rig.name}: {rig.Current}"))}");
+                await Awaitable.NextFrameAsync();
+            }
+
+            Assert.That(personajes.Select(rig => rig.Current), Is.All.EqualTo(ActorAction.Idle), "el ánimo no se queda puesto: vuelven solos al reposo");
         }
 
         internal static Rect EnPantalla(RectTransform rect)

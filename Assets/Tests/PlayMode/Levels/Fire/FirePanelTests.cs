@@ -620,7 +620,182 @@ namespace Game.Levels.Fire.Tests
             Assert.That(controller.Burn.Extent, Is.GreaterThan(0f), "y las hojas empiezan a quemarse desde el centro");
         }
 
+        // --- personajes (Dirección de arte §13.3) y la pista con Algoritm (§7.6) ---------------
+
+        [Test]
+        [Timeout(20000)]
+        public async Task FireLevel_DA133_LaFamiliaEsperaAtrasQuietaYElNinoObserva()
+        {
+            var controller = await LoadPanel();
+            var suelo = controller.FireSpot.parent;
+            var papa = Papa(controller);
+
+            Assert.That(controller.Family, Has.Length.EqualTo(3), "Mamá, la Niña y el Niño");
+            Assert.That(controller.Family, Has.All.Not.Null);
+            Assert.That(controller.Family, Does.Contain(controller.Restless), "el inquieto es de la familia");
+            Assert.That(controller.Family.Where(member => member != controller.Restless),
+                Has.All.Matches<CharacterRig>(member => member.Current == ActorAction.Idle), "quietos, bien atrás (guion §1.4.2)");
+            Assert.That(controller.Restless.Current, Is.EqualTo(ActorAction.Observe), "salvo el Niño, que observa (§7.4)");
+            Assert.That(controller.Family.Append(papa), Has.None.Matches<CharacterRig>(rig => rig.transform.IsChildOf(suelo)),
+                "ninguno dentro del suelo, que es de las piezas");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task FireLevel_DA133_NingunPersonajeQuedaBajoLaInterfazNiLeQuitaElClic()
+        {
+            var controller = await LoadPanel();
+            var suelo = (RectTransform)controller.FireSpot.parent;
+            var personajes = controller.Family.Append(Papa(controller)).ToArray();
+            var interfaz = new[] { RectNamed("Mensaje"), (RectTransform)controller.HintButton.transform, RectNamed("BotonPausa") };
+            Canvas.ForceUpdateCanvases();
+
+            Assert.That(personajes.SelectMany(rig => rig.GetComponentsInChildren<Graphic>(true)),
+                Has.None.Matches<Graphic>(graphic => graphic.raycastTarget), "ningún personaje le quita el clic a una pieza o a un botón");
+            Assert.That(controller.KeepClear, Is.SupersetOf(personajes.Select(rig => (RectTransform)rig.transform)),
+                "las piezas no aparecen encima de ellos");
+            AssertNingunoSeSolapa(personajes, interfaz, suelo, "al reunir");
+
+            await Reunir(controller);
+            Canvas.ForceUpdateCanvases();
+
+            var encendido = interfaz
+                .Concat(controller.IgnitionUi.Select(ui => (RectTransform)ui.transform))
+                .Append(controller.LeafPile.rectTransform);
+            AssertNingunoSeSolapa(personajes, encendido, suelo, "al encender");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task FireLevel_DA133_PapaRecogeAlTomarUnaPiezaYVuelveAlReposo()
+        {
+            var controller = await LoadPanel();
+            var papa = Papa(controller);
+            var hoja = Array.Find(controller.Pieces, piece => piece.Kind == PieceKind.Leaf);
+            var origen = RectTransformUtility.WorldToScreenPoint(null, hoja.transform.position);
+
+            ExecuteEvents.Execute(hoja.gameObject, Pointer(origen, origen), ExecuteEvents.beginDragHandler);
+            ExecuteEvents.Execute(hoja.gameObject, Pointer(origen, origen), ExecuteEvents.endDragHandler);
+            var gestos = await GestosHastaElReposo(papa, 4f);
+
+            Assert.That(gestos, Is.EqualTo(new[] { ActorAction.PickUp, ActorAction.Idle }),
+                "al tomar una pieza Papá la recoge y después vuelve al reposo");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_DA133_PapaGolpeaAlPulsarGolpearYVuelveAlReposo()
+        {
+            var controller = await LoadPanel();
+            var papa = Papa(controller);
+            await Reunir(controller);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+
+            Click(controller.StrikeButton);
+            var gestos = await GestosHastaElReposo(papa, 3f);
+
+            Assume.That(controller.Attempt.EffectiveStrikes, Is.EqualTo(1), "el golpe saltó chispa");
+            Assert.That(gestos, Is.EqualTo(new[] { ActorAction.Strike, ActorAction.Idle }),
+                "Papá golpea las piedras y, con chispa, vuelve al reposo");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_CP02_TrasUnGolpeSinChispaPapaSeAnimaYNuncaHaceUnGestoDeDerrota()
+        {
+            var controller = await LoadPanel();
+            var papa = Papa(controller);
+            await Reunir(controller);
+            controller.ForceSlider.value = SoftForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+
+            Click(controller.StrikeButton);
+            var gestos = await GestosHastaElReposo(papa, 4f);
+
+            Assume.That(controller.Attempt.EffectiveStrikes, Is.Zero, "el golpe no saltó chispa");
+            Assert.That(gestos, Is.EqualTo(new[] { ActorAction.Strike, ActorAction.Encourage, ActorAction.Idle }),
+                "golpea, se anima —puño arriba— y vuelve al reposo: ningún otro gesto (§7.3)");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_DA133_PapaSoplaYSeQuedaArrodilladoMirandoElFuego()
+        {
+            var controller = await LoadPanel();
+            var papa = Papa(controller);
+
+            await ConvergeAndBlow(controller);
+            var alSoplar = papa.Current;
+            var arrodillado = await WaitUntilAsync(() => papa.Current == ActorAction.Kneel, 3f);
+
+            Assert.That(alSoplar, Is.EqualTo(ActorAction.Blow), "Papá sopla sobre el montón");
+            Assert.That(arrodillado, Is.True, "y se queda arrodillado mientras nace el fuego (guion §1.4.4)");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task FirePanel_DA76_LaPistaMuestraAAlgoritmConSuFormaDeFuego()
+        {
+            var controller = await LoadPanel();
+            var boton = (RectTransform)controller.HintButton.transform;
+
+            var algoritm = boton.GetComponentsInChildren<Image>(true)
+                .SingleOrDefault(image => image.sprite != null && image.sprite.name == "char_algoritm_n1_fuego_reposo");
+
+            Assert.That(algoritm, Is.Not.Null, "dentro del círculo va el sprite de Algoritm del Nivel 1");
+            Assert.That(algoritm.transform, Is.Not.SameAs(boton), "como imagen hija: el marco sigue siendo el círculo");
+            Assert.That(algoritm.preserveAspect, Is.True, "sin deformarse");
+            Assert.That(algoritm.raycastTarget, Is.False, "sin quitarle el clic al botón");
+            Assert.That(IsWithin(algoritm.rectTransform, boton), Is.True, "y sin salirse del círculo");
+            Assert.That(ReachableByRaycast(boton), Is.True, "que sigue alcanzable");
+        }
+
         // --- helpers -----------------------------------------------------------------------
+
+        private static CharacterRig Papa(FirePanelController controller)
+        {
+            Assert.That(controller.Player, Is.Not.Null, "la escena cablea a Papá en el panel");
+            return controller.Player;
+        }
+
+        /// <summary>
+        /// Lo que hace el personaje, sin repetir, cuadro a cuadro hasta volver al reposo o hasta que
+        /// venza el tiempo real: la secuencia entera y no solo el final, que es lo que prueba que no
+        /// hubo ningún otro gesto entre medias.
+        /// </summary>
+        private static async Task<List<ActorAction>> GestosHastaElReposo(CharacterRig rig, float timeoutSeconds)
+        {
+            var gestos = new List<ActorAction> { rig.Current };
+            var deadline = Time.realtimeSinceStartup + timeoutSeconds;
+            while (rig.Current != ActorAction.Idle && Time.realtimeSinceStartup < deadline)
+            {
+                await Awaitable.NextFrameAsync();
+                if (gestos[^1] != rig.Current)
+                {
+                    gestos.Add(rig.Current);
+                }
+            }
+
+            return gestos;
+        }
+
+        private static void AssertNingunoSeSolapa(
+            IEnumerable<CharacterRig> personajes, IEnumerable<RectTransform> interfaz, RectTransform suelo, string momento)
+        {
+            var zonas = interfaz.ToArray();
+            foreach (var rig in personajes)
+            {
+                var casilla = EnElSuelo((RectTransform)rig.transform, suelo);
+                foreach (var ui in zonas)
+                {
+                    Assert.That(casilla.Overlaps(EnElSuelo(ui, suelo)), Is.False, $"{momento}: {rig.name} queda bajo {ui.name}");
+                }
+            }
+        }
 
         /// <summary>Reúne todas las piezas en el punto del fuego y espera el acercamiento (T25).</summary>
         internal static async Task Reunir(FirePanelController controller)

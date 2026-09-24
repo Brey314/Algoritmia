@@ -118,6 +118,14 @@ namespace Game.Levels.Wheel
         private Button helpButton;
 
         [SerializeField]
+        [Tooltip("La Niña, que programa: de pie junto a la salida, mira el tablero. Señala al ejecutar, celebra si la carretilla llega y se anima si no. Hija del entorno, sin raycast; vacío = sin personaje.")]
+        private CharacterRig player;
+
+        [SerializeField]
+        [Tooltip("Papá, Mamá y el Niño esperando en el refugio: celebran cuando la carretilla llega. Hijos del entorno, sin raycast.")]
+        private CharacterRig[] family = System.Array.Empty<CharacterRig>();
+
+        [SerializeField]
         [Tooltip("Lo que dice el guía ahora: instrucción, resultado de la ejecución o pista (RF-11, RF-13).")]
         private Text messageLabel;
 
@@ -181,6 +189,12 @@ namespace Game.Levels.Wheel
 
         /// <summary>Separación entre la bolita de «Retroceder» y la papelera.</summary>
         private const float DeleteButtonGap = 6f;
+
+        /// <summary>Lo que dura la Niña señalando al pulsar «Ejecutar» (Dirección de arte §13.3).</summary>
+        private const float PointSeconds = 0.6f;
+
+        /// <summary>Lo que dura el ánimo tras un intento que no llega (§13.3).</summary>
+        private const float EncourageSeconds = 0.9f;
         private InstructionBlock _heldBlock;
         private int _expanded = -1;
 
@@ -228,6 +242,8 @@ namespace Game.Levels.Wheel
         internal Button PaletteToggle => paletteToggle;
         internal Button ExecuteButton => executeButton;
         internal Button HelpButton => helpButton;
+        internal CharacterRig Player => player;
+        internal IReadOnlyList<CharacterRig> Family => family;
         internal Text MessageLabel => messageLabel;
         internal Image MessageIcon => messageIcon;
         internal RectTransform Held => _held;
@@ -281,6 +297,14 @@ namespace Game.Levels.Wheel
             DrawGrid();
             PlaceCart(_grid.Start);
             cart.SetAsLastSibling();
+
+            // Los personajes cuelgan del entorno pero **no** se tiñen con su luz de atardecer: la
+            // luz ambiente es solo del decorado y la piel nunca cambia de tono (Dirección de arte
+            // §4.2, §5.4). El rig no tiene Image en la raíz, así que la prueba del atardecer no los mira.
+            if (player != null)
+            {
+                player.Play(ActorAction.Observe);
+            }
 
             foreach (var kind in Labels.Keys)
             {
@@ -1003,6 +1027,7 @@ namespace Game.Levels.Wheel
             var result = SequenceExecutor.Execute(_sequence, _grid);
             // Intentos = ejecuciones que no llegan; Pasos = bloques de la que llegó (§3.6.1, fase 3).
             _indicators.RecordExecution(result.ReachedGoal, _sequence.Count);
+            Gesture(ActorAction.Point, PointSeconds); // la Niña pone en marcha lo que escribió
             _ = ExecuteAsync(result);
         }
 
@@ -1054,6 +1079,7 @@ namespace Game.Levels.Wheel
                     Highlight(-1);
                     _hints.RegisterSuccessfulAttempt();
                     Show(layout.ReachedMessage, acceptedIcon, acceptedColor);
+                    Celebrate();
                     await Awaitable.WaitForSecondsAsync(seconds, destroyCancellationToken);
                     IsExecuting = false;
                     ConfirmPhase3AndLeave();
@@ -1065,6 +1091,9 @@ namespace Game.Levels.Wheel
                 Highlight(result.StoppedAtStep >= 0 ? result.StoppedAtStep : result.Steps.Count - 1);
                 var hint = _hints.RegisterFailedAttempt();
                 Show(hint ?? layout.StoppedMessage, hint != null ? helpIcon : rejectedIcon, hint != null ? helpColor : rejectedColor);
+                // Ánimo y nunca un gesto de derrota: que la carretilla no llegue es depurar, no
+                // perder (CP-02, RF-33). Después la Niña vuelve a mirar el tablero para corregir.
+                Gesture(ActorAction.Encourage, EncourageSeconds);
                 await Awaitable.WaitForSecondsAsync(seconds, destroyCancellationToken);
                 PlaceCart(_grid.Start);
             }
@@ -1075,6 +1104,32 @@ namespace Game.Levels.Wheel
 
             IsExecuting = false;
             executeButton.interactable = true;
+        }
+
+        /// <summary>La Niña hace el gesto unos segundos y vuelve sola a mirar el tablero.</summary>
+        private void Gesture(ActorAction action, float seconds)
+        {
+            if (player != null)
+            {
+                player.PlayFor(action, seconds, ActorAction.Observe);
+            }
+        }
+
+        /// <summary>La carretilla llegó: la Niña y la familia del refugio celebran.</summary>
+        private void Celebrate()
+        {
+            if (player != null)
+            {
+                player.Play(ActorAction.Celebrate);
+            }
+
+            foreach (var member in family)
+            {
+                if (member != null)
+                {
+                    member.Play(ActorAction.Celebrate);
+                }
+            }
         }
 
         /// <summary>Arranca o calla la rueda de la carretilla.</summary>

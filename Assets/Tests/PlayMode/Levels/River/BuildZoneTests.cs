@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -119,6 +120,44 @@ namespace Game.Levels.River.Tests
             river.CollectButton.onClick.Invoke();
             Assert.That(river.Inventory.Has(MaterialKind.Ropes), Is.True);
             Assert.That(river.Pads.All(pad => pad.gameObject.activeSelf), Is.True, "las flechas siguen ahí");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task RiverScene_DA133_MamaRecogeAlPulsarRecogerYVuelveSolaAlReposo()
+        {
+            var river = await RiverMovementTests.OpenRiver();
+            var (material, _) = river.Spawned.First();
+            WalkTo(river, material.Position);
+
+            river.CollectButton.onClick.Invoke();
+
+            Assert.That(river.PlayerRig.Current, Is.EqualTo(ActorAction.PickUp), "recoger se ve: Mamá se agacha y lo levanta (§13.3)");
+
+            var limite = Time.realtimeSinceStartup + 3f;
+            while (river.PlayerRig.Current != ActorAction.Idle && Time.realtimeSinceStartup < limite)
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            Assert.That(river.PlayerRig.Current, Is.EqualTo(ActorAction.Idle), "y vuelve sola al reposo: el gesto no se queda puesto");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task BuildZone_DA133_EntrarSinTodoLosMaterialesDaAnimoYNingunGestoDeDerrota()
+        {
+            var river = await RiverMovementTests.OpenRiver();
+            var todos = river.Family.Append(river.PlayerRig).ToArray();
+            Assert.That(river.Family.Count, Is.EqualTo(3), "Papá, la Niña y el Niño esperan junto a la zona");
+            Assert.That(todos, Has.None.Null);
+
+            WalkTo(river, river.Config.BuildZonePosition);
+            Assume.That(river.Zone.IsOpen, Is.False, "sin nada recogido la zona no abre");
+
+            Assert.That(todos.Select(rig => rig.Current), Is.All.EqualTo(ActorAction.Encourage),
+                "Mamá y la familia animan: faltar algo no es una derrota (CP-02, §7.3)");
+            await RiverMovementTests.AssertSoloAnimo(todos);
         }
 
         /// <summary>Lleva a Mamá hasta ese punto de la ilustración a pasos, como haría un jugador sosteniendo las flechas.</summary>

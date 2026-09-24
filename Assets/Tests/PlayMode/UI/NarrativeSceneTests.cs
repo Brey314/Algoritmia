@@ -820,6 +820,194 @@ namespace Game.UI.Tests
             }
         }
 
+        /// <summary>
+        /// Cuando habla alguien, el cuadro de diálogo lleva su retrato; en una acotación, que no
+        /// tiene hablante, no hay retrato (Interfaces §1.1.5, mockup 5).
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF05_ElRetratoEsElDeQuienHablaYNoHayEnLasAcotaciones()
+        {
+            var (controller, _) = await OpenNarrative("N1_Hallazgo", LevelId.Fire);
+            var secuencia = SequenceNamed(controller, "N1_Hallazgo");
+
+            for (var linea = 0; linea < secuencia.Lines.Length; linea++)
+            {
+                if (linea > 0)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                var hablante = secuencia.Lines[linea].Speaker;
+                if (secuencia.Lines[linea].IsStageDirection)
+                {
+                    Assert.That(controller.PortraitFrame.activeSelf, Is.False, $"L{linea}: una acotación no lleva retrato");
+                    continue;
+                }
+
+                Assert.That(controller.PortraitFrame.activeSelf, Is.True, $"L{linea}: habla {hablante} y se ve su retrato");
+                Assert.That(controller.Portrait.sprite, Is.Not.Null, $"L{linea}: el retrato de {hablante} tiene sprite");
+                var enEscena = controller.Actors.Where(actor => actor.Rig.Speaks(hablante)).Select(actor => actor.Rig.Portrait).ToArray();
+                if (enEscena.Length > 0)
+                {
+                    Assert.That(enEscena, Has.Member(controller.Portrait.sprite), $"L{linea}: es el retrato de {hablante}, que está en escena");
+                }
+            }
+        }
+
+        /// <summary>
+        /// En cada línea, cada personaje hace exactamente lo que dice su paso —o lo que mantiene del
+        /// anterior, o gesticula si la dice él— y sale de donde debe: lo que el texto cuenta se ve
+        /// cuando se lee (RF-05). Recorre las dieciocho escenas.
+        /// </summary>
+        [TestCase("N1_Apertura", LevelId.Fire)]
+        [TestCase("N1_AparicionGuia", LevelId.Fire)]
+        [TestCase("N1_Hallazgo", LevelId.Fire)]
+        [TestCase("N1_NacimientoDelFuego", LevelId.Fire)]
+        [TestCase("N2_PuenteI", LevelId.Wheel)]
+        [TestCase("N2_PuenteI_Bosque", LevelId.Wheel)]
+        [TestCase("N2_Escena21_Bosque", LevelId.Wheel)]
+        [TestCase("N2_Escena22_ElPatron", LevelId.Wheel)]
+        [TestCase("N2_Escena23_Construccion", LevelId.Wheel)]
+        [TestCase("N2_Escena24_Regreso", LevelId.Wheel)]
+        [TestCase("N2_Escena25_Cierre", LevelId.Wheel)]
+        [TestCase("N3_PuenteII", LevelId.River)]
+        [TestCase("N3_PuenteII_Horizonte", LevelId.River)]
+        [TestCase("N3_PuenteII_Rio", LevelId.River)]
+        [TestCase("N3_Escena31_Llegada", LevelId.River)]
+        [TestCase("N3_Escena32_PrimerIntento", LevelId.River)]
+        [TestCase("N3_Escena33_Cruce", LevelId.River)]
+        [TestCase("N3_EscenaFinal", LevelId.River)]
+        [Timeout(240000)]
+        public async Task NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(string id, LevelId nivel)
+        {
+            var (controller, _) = await OpenNarrative(id, nivel);
+            var secuencia = SequenceNamed(controller, id);
+            Assert.That(controller.Actors, Is.Not.Empty, $"{id}: la familia o el guía están en la escena");
+
+            for (var linea = 0; linea < secuencia.Lines.Length; linea++)
+            {
+                if (linea > 0)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                var hablante = secuencia.Lines[linea].Speaker;
+                foreach (var (prop, rect, rig, _) in controller.Actors)
+                {
+                    var cue = ActorTimeline.Cue(prop, linea, rig.Speaks(hablante));
+                    Assert.That(rig.Current, Is.EqualTo(cue.During), $"{id} L{linea}: lo que hace «{prop.Actor.name}»");
+                    if (!cue.Moves)
+                    {
+                        // Quien camina ya dio su primer paso en este mismo cuadro; quien no, está donde llegó.
+                        Assert.That(Vector2.Distance(rect.anchorMin, cue.From), Is.LessThan(0.0001f),
+                            $"{id} L{linea}: «{prop.Actor.name}» está donde llegó");
+                    }
+                }
+
+                // Quien camina termina su camino aunque el texto avance; para comprobar la línea
+                // siguiente desde un estado conocido, se espera a que todos lleguen.
+                var inicio = Time.realtimeSinceStartup;
+                while (controller.Actors.Any(actor => actor.Walking) && Time.realtimeSinceStartup - inicio < 15f)
+                {
+                    await Awaitable.NextFrameAsync();
+                }
+
+                foreach (var (prop, rect, rig, walking) in controller.Actors)
+                {
+                    var cue = ActorTimeline.Cue(prop, linea, rig.Speaks(hablante));
+                    Assert.That(walking, Is.False, $"{id} L{linea}: «{prop.Actor.name}» llegó");
+                    Assert.That(Vector2.Distance(rect.anchorMin, cue.To), Is.LessThan(0.0001f), $"{id} L{linea}: «{prop.Actor.name}» llegó a su sitio");
+                    Assert.That(rig.Current, Is.EqualTo(cue.Moves ? cue.After : cue.During), $"{id} L{linea}: y hace lo de la llegada");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Una captura por línea de cada escena, con la cámara asentada y los personajes ya en su
+        /// sitio, para revisar que se ve lo que el guion cuenta (en persistentDataPath/TestScreenshots).
+        /// </summary>
+        [TestCase("N1_Apertura", LevelId.Fire)]
+        [TestCase("N1_AparicionGuia", LevelId.Fire)]
+        [TestCase("N1_Hallazgo", LevelId.Fire)]
+        [TestCase("N1_NacimientoDelFuego", LevelId.Fire)]
+        [TestCase("N2_PuenteI", LevelId.Wheel)]
+        [TestCase("N2_PuenteI_Bosque", LevelId.Wheel)]
+        [TestCase("N2_Escena21_Bosque", LevelId.Wheel)]
+        [TestCase("N2_Escena22_ElPatron", LevelId.Wheel)]
+        [TestCase("N2_Escena23_Construccion", LevelId.Wheel)]
+        [TestCase("N2_Escena24_Regreso", LevelId.Wheel)]
+        [TestCase("N2_Escena25_Cierre", LevelId.Wheel)]
+        [TestCase("N3_PuenteII", LevelId.River)]
+        [TestCase("N3_PuenteII_Horizonte", LevelId.River)]
+        [TestCase("N3_PuenteII_Rio", LevelId.River)]
+        [TestCase("N3_Escena31_Llegada", LevelId.River)]
+        [TestCase("N3_Escena32_PrimerIntento", LevelId.River)]
+        [TestCase("N3_Escena33_Cruce", LevelId.River)]
+        [TestCase("N3_EscenaFinal", LevelId.River)]
+        [Timeout(240000)]
+        [Category("VisualVerification")]
+        [Description("Verificar en las capturas Personajes_*: cada personaje se ve entero, con los pies en el suelo " +
+                     "pintado y por encima del cuadro de diálogo; hace lo que su línea cuenta; la escala entre adultos, " +
+                     "niños y Algoritm es coherente; y nadie tapa lo que el texto nombra.")]
+        public async Task NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(string id, LevelId nivel)
+        {
+            var (controller, _) = await OpenNarrative(id, nivel);
+            var secuencia = SequenceNamed(controller, id);
+            for (var linea = 0; linea < secuencia.Lines.Length; linea++)
+            {
+                if (linea > 0)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                // Sin exigir que la cámara se deslice: la apertura del Nivel 1 cierra con un corte seco.
+                var inicio = Time.realtimeSinceStartup;
+                while (Time.realtimeSinceStartup - inicio < 15f
+                       && (controller.Actors.Any(actor => actor.Walking)
+                           || Vector2.Distance(controller.CameraCurrent.Focus, controller.CameraTarget.Focus) > 0.0015f
+                           || Mathf.Abs(controller.CameraCurrent.Zoom - controller.CameraTarget.Zoom) > 0.004f))
+                {
+                    await Awaitable.NextFrameAsync();
+                }
+
+                await EsperarSegundos(0.4f); // medio ciclo del gesto: que la pose se lea
+                Capturar($"Personajes_{id}_L{linea:00}");
+            }
+        }
+
+        /// <summary>
+        /// Quien va de camino termina su camino aunque el texto avance —la familia cruza con la
+        /// balsa, que sigue deslizándose sola— y al llegar hace lo que mantiene en la línea que se
+        /// esté leyendo.
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF05_QuienCaminaTerminaSuCaminoAunqueElTextoAvance()
+        {
+            var (controller, _) = await OpenNarrative("N3_Escena33_Cruce", LevelId.River);
+            var secuencia = SequenceNamed(controller, "N3_Escena33_Cruce");
+            var viajeros = controller.Actors.Where(actor => actor.Walking && ActorTimeline.BeatAt(actor.Prop, 1) == null).ToArray();
+            Assume.That(viajeros, Is.Not.Empty, "alguien cruza en la línea 0 sin paso nuevo en la 1");
+
+            Click(controller.AdvanceButton);
+            await Awaitable.NextFrameAsync();
+            foreach (var (prop, rect, _, walking) in viajeros)
+            {
+                Assert.That(walking, Is.True, $"«{prop.Actor.name}» sigue cruzando al avanzar el texto");
+                Assert.That(Vector2.Distance(rect.anchorMin, ActorTimeline.PositionAfter(prop, 0)), Is.GreaterThan(0.0001f),
+                    "y no saltó al final");
+            }
+
+            var paso = viajeros[0].Prop.Beats.First(beat => beat.Line == 0);
+            await EsperarSegundos(paso.Seconds + 0.3f);
+            var (llegado, rectLlegado, rig, sigue) = controller.Actors.First(actor => actor.Prop == viajeros[0].Prop);
+            var ahora = ActorTimeline.Cue(llegado, 1, rig.Speaks(secuencia.Lines[1].Speaker));
+            Assert.That(sigue, Is.False, "llegó");
+            Assert.That(Vector2.Distance(rectLlegado.anchorMin, paso.Destination), Is.LessThan(0.0001f), "a su sitio");
+            Assert.That(rig.Current, Is.EqualTo(ahora.During), "y hace lo de la línea que se está leyendo");
+        }
+
         /// <summary>Guarda una captura si hay Game View. En batchmode no la hay y se sigue sin ella.</summary>
         private static void Capturar(string nombre)
         {

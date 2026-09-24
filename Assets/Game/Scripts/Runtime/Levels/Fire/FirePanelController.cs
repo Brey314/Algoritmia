@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
@@ -100,11 +101,31 @@ namespace Game.Levels.Fire
         [Tooltip("Las piezas de sonido del nivel (N1_Sonidos). Puede quedar sin asignar: el nivel se juega igual en silencio — el audio refuerza, nunca informa solo (§2.4).")]
         private FireSounds sounds;
 
+        [SerializeField]
+        [Tooltip("Papá, el que juega (guion §1.4.3): no se desplaza, hace lo que hace el estudiante —recoge al tomar una pieza, golpea, sopla y se arrodilla ante el fuego—. Puede quedar sin asignar: el nivel se juega igual.")]
+        private CharacterRig player;
+
+        [SerializeField]
+        [Tooltip("Mamá, la Niña y el Niño, «bien atrás» (guion §1.4.2): miran sin moverse de su sitio. Nunca dentro de «Suelo», que las pruebas recorren pieza a pieza.")]
+        private CharacterRig[] family = Array.Empty<CharacterRig>();
+
+        [SerializeField]
+        [Tooltip("De la familia, el que no se está quieto (el Niño, Dirección de arte §7.4): observa en vez de reposar.")]
+        private CharacterRig restless;
+
+        // Lo que dura una pasada de cada gesto de Papá: el largo de su clip en char_papa.controller
+        // (Dirección de arte §13.3). Se cambian con el clip, no para ajustar el juego.
+        private const float PickUpSeconds = 1.61f;
+        private const float StrikeSeconds = 0.69f;
+        private const float EncourageSeconds = 1.035f;
+        private const float BlowSeconds = 1.035f;
+
         private FireAttempt _attempt;
         private FireFeedbackLog _log;
         private FireIndicatorCollector _indicators;
         private HintPolicy _hints;
         private StoneSpacing _spacing;
+        private CancellationTokenSource _playerRest;
 
         /// <summary>El flujo del juego. Sin él (escena abierta sin pasar por Boot) no se navega.</summary>
         internal GameFlowRunner Runner { get; set; }
@@ -165,6 +186,9 @@ namespace Game.Levels.Fire
         internal CaveLightingController Lighting => lighting;
         internal Button HintButton => hintButton;
         internal FireSounds Sounds => sounds;
+        internal CharacterRig Player => player;
+        internal CharacterRig[] Family => family;
+        internal CharacterRig Restless => restless;
 #endif
 
         private RectTransform Floor => (RectTransform)fireSpot.parent;
@@ -231,6 +255,15 @@ namespace Game.Levels.Fire
 
             RefreshBlow();
             RefreshLighting();
+
+            // La familia espera atrás sin moverse; el Niño, inquieto, observa (§7.4).
+            foreach (var member in family)
+            {
+                if (member != null)
+                {
+                    member.Play(member == restless ? ActorAction.Observe : ActorAction.Idle);
+                }
+            }
         }
 
         /// <summary>
@@ -267,6 +300,7 @@ namespace Game.Levels.Fire
         /// <summary>Una hoja suena mientras se la lleva (clic sostenido, RNF-02); las piedras no.</summary>
         private void Piece_PickedUp(DraggablePiece piece)
         {
+            Act(ActorAction.PickUp, PickUpSeconds); // Papá amontona lo que el estudiante toma (guion §1.4.2)
             if (piece.Kind == PieceKind.Leaf && sounds != null && AudioManager.Instance != null)
             {
                 AudioManager.Instance.PlayHeld(sounds.LeafDrag);
@@ -463,8 +497,12 @@ namespace Game.Levels.Fire
                     Play(sounds.Spark);
                 }
             }
+            // Papá golpea siempre. «Por qué no» un gesto de fallo tras un golpe sin chispa: se anima
+            // —puño arriba— y vuelve al reposo, porque cabeza gacha u hombros caídos serían la
+            // pantalla de derrota en pequeño (Dirección de arte §7.3, CP-02).
             if (outcome.Effective)
             {
+                Act(ActorAction.Strike, StrikeSeconds);
                 _hints.RegisterSuccessfulAttempt();
                 if (outcome.EffectiveStrikes == config.MinimumEffectiveStrikes)
                 {
@@ -473,6 +511,7 @@ namespace Game.Levels.Fire
             }
             else
             {
+                Act(ActorAction.Strike, StrikeSeconds, ActorAction.Encourage, EncourageSeconds);
                 _log.RecordGuide(_hints.RegisterFailedAttempt()); // pista solo al tercer fallo seguido
             }
 
@@ -525,7 +564,47 @@ namespace Game.Levels.Fire
             _log.RecordBlowSuccess();
             logView.Show(_log.Entries);
             Play(sounds?.Blow);
+            // Sopla y se queda arrodillado mirando nacer el fuego (guion §1.4.4); la celebración
+            // es de la escena de cierre.
+            Act(ActorAction.Blow, BlowSeconds, ActorAction.Kneel);
             _ = ResolveAsync();
+        }
+
+        /// <summary>
+        /// Papá hace <paramref name="action"/> lo que dura su clip y pasa a <paramref name="then"/>,
+        /// que se queda puesto; con <paramref name="thenSeconds"/> positivo también eso termina y
+        /// vuelve al reposo. Un gesto nuevo cancela lo pendiente del anterior. Sin Papá en la
+        /// escena no hace nada: el nivel se juega igual.
+        /// </summary>
+        private void Act(ActorAction action, float seconds, ActorAction then = ActorAction.Idle, float thenSeconds = 0f)
+        {
+            if (player == null)
+            {
+                return;
+            }
+
+            _playerRest?.Cancel();
+            _playerRest = null;
+            player.PlayFor(action, seconds, then);
+            if (thenSeconds > 0f)
+            {
+                _playerRest = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+                _ = RestAfterAsync(seconds + thenSeconds, _playerRest.Token);
+            }
+        }
+
+        private async Awaitable RestAfterAsync(float seconds, CancellationToken token)
+        {
+            try
+            {
+                await Awaitable.WaitForSecondsAsync(seconds, token);
+            }
+            catch (OperationCanceledException)
+            {
+                return; // otro gesto ocupó su lugar, o el panel se destruyó
+            }
+
+            player.Play(ActorAction.Idle);
         }
 
         /// <summary>Anima la convergencia y, al terminar, marca el nivel completado (RF-20).</summary>

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
@@ -198,6 +199,45 @@ namespace Game.Levels.River.Tests
             await FillPhase(panel, RaftPhase.MastAndSail);
             await Awaitable.EndOfFrameAsync();
             CaptureScreenshot("AssemblyPanel_HU12_MastilYVela");
+        }
+
+        [Test]
+        [Timeout(60000)]
+        public async Task AssemblyPanel_DA133_AlAprobarUnaFaseMamaYLaFamiliaCelebran()
+        {
+            var (river, panel) = await OpenAssembly();
+            var todos = river.Family.Append(river.PlayerRig).ToArray();
+            Assert.That(todos.Select(rig => rig.Current), Is.All.EqualTo(ActorAction.Idle), "esperan en reposo mientras se arma");
+
+            await FillPhase(panel, RaftPhase.Base);
+            panel.ConfirmButton.onClick.Invoke();
+
+            Assert.That(todos.Select(rig => rig.Current), Is.All.EqualTo(ActorAction.Celebrate), "la fase aprobada se celebra (§13.3, RF-41)");
+            await WaitIdle(panel);
+        }
+
+        [Test]
+        [Timeout(60000)]
+        public async Task AssemblyPanel_DA133_CuandoLaBalsaSeHundeLaFamiliaAnimaYNingunoHaceOtroGesto()
+        {
+            var (river, panel) = await OpenAssembly();
+            await FillPhase(panel, RaftPhase.Base);
+            await Confirm(panel);
+            await FillPhase(panel, RaftPhase.Lashing);
+            await Confirm(panel);
+            // Mástil y vela cruzados: la balsa no pasa la prueba y se hunde (guion §1.8.4).
+            var mastil = panel.Slots.Values.Single(entry => entry.Slot.Accepts == MaterialKind.Mast);
+            var vela = panel.Slots.Values.Single(entry => entry.Slot.Accepts == MaterialKind.Cloth);
+            await Drag(panel, MaterialKind.Cloth, mastil.Image.rectTransform);
+            await Drag(panel, MaterialKind.Mast, vela.Image.rectTransform);
+
+            panel.ConfirmButton.onClick.Invoke();
+
+            var todos = river.Family.Append(river.PlayerRig).ToArray();
+            Assert.That(panel.IsBusy, Is.True, "la balsa se hunde");
+            Assert.That(todos.Select(rig => rig.Current), Is.All.EqualTo(ActorAction.Encourage),
+                "el intento sin éxito se anima, nunca con un gesto de derrota (CP-02, §7.3)");
+            await RiverMovementTests.AssertSoloAnimo(todos);
         }
 
         // --- utilería ---------------------------------------------------------------------------

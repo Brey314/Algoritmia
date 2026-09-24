@@ -35,6 +35,11 @@ namespace Game.Scaffolding
             // Esto le impone un orden a quien cierre el nivel (T18 en el N1, W16 en el N2):
             // primero el cierre reflexivo, después el desbloqueo. Al revés, el botón de omitir
             // aparecería en la primera vuelta.
+            //
+            // El Nivel 3 no tiene nivel siguiente, así que su cierre y la escena final nunca
+            // cuentan como vistos: se leen enteros también al repetirlo. Es aceptado (INC-51), no
+            // un descuido: sin ampliar lo persistido, la primera vuelta y las demás dejan el mismo
+            // perfil.
             if (sequence.IsReflectiveClosing)
             {
                 return profile.ReachedLevel > sequence.Level;

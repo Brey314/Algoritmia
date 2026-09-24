@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
@@ -40,6 +41,22 @@ namespace Game.UI
         [Tooltip("Material con el shader Algoritm/Oscuridad (fx_oscuridad). La capa se crea al arrancar, a pantalla completa, justo encima de la ilustración. Sin él no hay oscuridad.")]
         private Material darknessMaterial;
 
+        [SerializeField]
+        [Tooltip("El marco del retrato en el cuadro de diálogo (Retrato). Se oculta en las acotaciones, que no tienen hablante.")]
+        private GameObject portraitFrame;
+
+        [SerializeField]
+        [Tooltip("La imagen del retrato dentro del marco (Retrato/Fondo/Arte).")]
+        private Image portrait;
+
+        [SerializeField]
+        [Tooltip("La familia: de aquí sale el retrato de quien habla cuando no está en la escena (una voz fuera de cuadro).")]
+        private CharacterRig[] cast = Array.Empty<CharacterRig>();
+
+        [SerializeField]
+        [Tooltip("Algoritm en la forma de cada nivel, en orden: fuego (N1), rueda (N2), gota (N3). Su retrato cuando habla sin estar en la escena.")]
+        private CharacterRig[] guideByLevel = Array.Empty<CharacterRig>();
+
         internal GameFlowRunner Runner { get; set; }
 
         /// <summary>El avance de la escena en curso. <c>null</c> si no se pudo resolver.</summary>
@@ -79,7 +96,14 @@ namespace Game.UI
         private readonly List<(NarrativeProp Prop, RectTransform Rect)> _props =
             new List<(NarrativeProp, RectTransform)>();
 
+        /// <summary>Los personajes de la escena: su declaración, su casilla y su rig.</summary>
+        private readonly List<Actor> _actors = new List<Actor>();
+
 #if UNITY_INCLUDE_TESTS
+        internal IReadOnlyList<(NarrativeProp Prop, RectTransform Rect, CharacterRig Rig, bool Walking)> Actors =>
+            _actors.ConvertAll(actor => (actor.Prop, actor.Rect, actor.Rig, actor.Moving != null));
+        internal Image Portrait => portrait;
+        internal GameObject PortraitFrame => portraitFrame;
         internal Text BodyLabel => bodyLabel;
         internal Text SpeakerLabel => speakerLabel;
         internal Button AdvanceButton => advanceButton;
@@ -390,6 +414,7 @@ namespace Game.UI
             }
 
             _props.Clear();
+            _actors.Clear();
             if (illustration.sprite == null)
             {
                 return;
@@ -427,8 +452,146 @@ namespace Game.UI
                     go.AddComponent<BurnReveal>().Extent = prop.BurnExtent; // quemado quieto: la escena ya es después del fuego
                 }
 
+                if (prop.Actor != null)
+                {
+                    PlaceActor(prop, rect, image);
+                }
+
                 _props.Add((prop, rect));
             }
+        }
+
+        /// <summary>
+        /// Un personaje ocupa la casilla de su objeto: el rig se estira sobre ella y la imagen del
+        /// objeto queda sin dibujar. La casilla sigue siendo la que se mueve, así que el personaje
+        /// hereda el paneo y el zoom igual que una piedra.
+        /// </summary>
+        private void PlaceActor(NarrativeProp prop, RectTransform rect, Image image)
+        {
+            image.enabled = false; // de reserva: es su retrato, lo que se vería si faltara el rig
+            var rig = Instantiate(prop.Actor, rect);
+            rig.name = "Actor";
+            var rigRect = (RectTransform)rig.transform;
+            rigRect.anchorMin = Vector2.zero;
+            rigRect.anchorMax = Vector2.one;
+            rigRect.offsetMin = rigRect.offsetMax = Vector2.zero;
+            rig.Play(prop.ActorStart);
+            _actors.Add(new Actor(prop, rect, rig));
+        }
+
+        /// <summary>
+        /// Lo que cada personaje hace en la línea que acaba de aparecer, según sus pasos: lo que
+        /// cuenta el texto se ve cuando se lee.
+        /// </summary>
+        /// <remarks>
+        /// Quien va de camino **termina su camino** aunque el texto avance: la familia que cruza
+        /// sobre la balsa llega con ella, que sigue deslizándose sola. Solo un paso nuevo en la
+        /// línea lo interrumpe, y entonces salta a donde tenía que llegar antes de empezarlo, para
+        /// que ningún paso arranque desde la mitad de otro.
+        /// </remarks>
+        private void PlayActors(int line, string speaker)
+        {
+            foreach (var actor in _actors)
+            {
+                if (actor.Moving != null && ActorTimeline.BeatAt(actor.Prop, line) == null)
+                {
+                    continue; // al llegar hará lo de la línea en que llegue (WalkAsync)
+                }
+
+                StopWalking(actor);
+                var cue = ActorTimeline.Cue(actor.Prop, line, actor.Rig.Speaks(speaker));
+                SetAnchor(actor.Rect, cue.From);
+                actor.Rig.Play(cue.During);
+                if (cue.Moves)
+                {
+                    actor.Moving = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+                    _ = WalkAsync(actor, cue, actor.Moving.Token);
+                }
+            }
+        }
+
+        private static void StopWalking(Actor actor)
+        {
+            actor.Moving?.Cancel();
+            actor.Moving?.Dispose();
+            actor.Moving = null;
+        }
+
+        /// <summary>
+        /// El desplazamiento de un paso: la casilla viaja en fracciones de la ilustración, con
+        /// arranque y llegada suaves y sin cambios de color (RNF-21). Al llegar hace lo que toca en
+        /// la línea que se esté leyendo entonces: la llegada si sigue la suya; si el texto ya
+        /// avanzó, lo que mantiene —o dice su línea si es suya—.
+        /// </summary>
+        private async Awaitable WalkAsync(Actor actor, ActorCue cue, CancellationToken token)
+        {
+            var seconds = Mathf.Max(cue.Seconds, 0.01f);
+            var elapsed = 0f;
+            try
+            {
+                while (elapsed < seconds)
+                {
+                    elapsed += Time.deltaTime;
+                    SetAnchor(actor.Rect, Vector2.Lerp(cue.From, cue.To, Mathf.SmoothStep(0f, 1f, elapsed / seconds)));
+                    await Awaitable.NextFrameAsync(token);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return; // un paso nuevo lo interrumpió y ya lo colocó donde tenía que llegar
+            }
+
+            SetAnchor(actor.Rect, cue.To);
+            StopWalking(actor);
+            var now = ActorTimeline.Cue(actor.Prop, Dialogue.Index, actor.Rig.Speaks(Dialogue.Current?.Speaker));
+            actor.Rig.Play(now.Moves ? now.After : now.During);
+        }
+
+        private static void SetAnchor(RectTransform rect, Vector2 position)
+        {
+            rect.anchorMin = position;
+            rect.anchorMax = position;
+        }
+
+        /// <summary>
+        /// El retrato de quien dice la línea: el personaje que está en la escena, o si solo se oye
+        /// su voz, el de la familia o el de Algoritm con la forma del nivel. Las acotaciones no
+        /// llevan hablante ni retrato.
+        /// </summary>
+        private void ShowPortrait(DialogueLine line)
+        {
+            if (portraitFrame == null || portrait == null)
+            {
+                return;
+            }
+
+            var sprite = line.IsStageDirection ? null : PortraitOf(line.Speaker);
+            portraitFrame.SetActive(sprite != null);
+            portrait.sprite = sprite;
+            portrait.color = Color.white;
+        }
+
+        private Sprite PortraitOf(string speaker)
+        {
+            foreach (var actor in _actors)
+            {
+                if (actor.Rig.Speaks(speaker) && actor.Rig.Portrait != null)
+                {
+                    return actor.Rig.Portrait;
+                }
+            }
+
+            foreach (var rig in cast)
+            {
+                if (rig != null && rig.Speaks(speaker))
+                {
+                    return rig.Portrait;
+                }
+            }
+
+            var level = (int)_sequence.Level - 1;
+            var guide = level >= 0 && level < guideByLevel.Length ? guideByLevel[level] : null;
+            return guide != null && guide.Speaks(speaker) ? guide.Portrait : null;
         }
 
         /// <summary>
@@ -588,7 +751,9 @@ namespace Game.UI
             // La acotación —lo que en el guion va en cursiva— no lleva nombre de hablante.
             speakerLabel.gameObject.SetActive(!line.IsStageDirection);
             bodyLabel.text = line.Text;
+            ShowPortrait(line);
             PlayMotions(Dialogue.Index);
+            PlayActors(Dialogue.Index, line.Speaker);
 
             // Lo que dice el texto se oye cuando se lee, igual que los objetos se mueven cuando se
             // leen. Los silencios del guion son piezas con disparador (§5) y cortan en seco.
@@ -656,6 +821,22 @@ namespace Game.UI
             }
 
             Runner.GoTo(GameState.LevelSelect);
+        }
+
+        /// <summary>Un personaje pintado: su declaración, su casilla, su rig y el paso que está dando.</summary>
+        private sealed class Actor
+        {
+            public Actor(NarrativeProp prop, RectTransform rect, CharacterRig rig)
+            {
+                Prop = prop;
+                Rect = rect;
+                Rig = rig;
+            }
+
+            public NarrativeProp Prop { get; }
+            public RectTransform Rect { get; }
+            public CharacterRig Rig { get; }
+            public CancellationTokenSource Moving { get; set; }
         }
     }
 }

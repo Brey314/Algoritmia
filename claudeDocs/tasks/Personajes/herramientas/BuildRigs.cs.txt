@@ -1,0 +1,536 @@
+// Constructor efímero (no es código del juego): importa los sprites de personajes, arma los
+// prefabs recortados y genera un clip .anim por acción y un .controller por personaje.
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Game.Scaffolding;
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEngine;
+using UnityEngine.UI;
+
+public static class ClaudeBuildRigs
+{
+    [Serializable] public class RigData { public CharData[] chars; }
+    [Serializable] public class CharData { public string id; public PartData[] parts; }
+    [Serializable] public class PartData { public string name; public int[] bbox; public int[] pivot; }
+
+    private const string Data = @"C:\Users\benab\AppData\Local\Temp\claude\c--Dev-Algoritmia\e5cf3a85-2b80-4fd5-abad-7dde7043c902\scratchpad\rig\out\rigdata.txt";
+    private const string Art = "Assets/Game/Art/Characters";
+    private const string Prefabs = "Assets/Game/Prefabs/Characters";
+    private const float U = 1024f;
+
+    // Carpeta, nombre del prefab, nombres con que habla, tempo (>1 más lento), amplitud.
+    private static readonly Dictionary<string, (string Folder, string Prefab, string[] Speakers, float Tempo, float Amp)> Family =
+        new Dictionary<string, (string, string, string[], float, float)>
+        {
+            ["papa"] = ("Father", "Papa", new[] { "PAPÁ" }, 1.15f, 1.1f),
+            ["mama"] = ("Mother", "Mama", new[] { "MAMÁ" }, 1.0f, 0.9f),
+            ["nina"] = ("Girl", "Nina", new[] { "NIÑA", "NIÑOS" }, 0.95f, 1.0f),
+            ["nino"] = ("Boy", "Nino", new[] { "NIÑO", "NIÑOS" }, 0.8f, 1.2f),
+        };
+
+    /// <summary>Con «clips», solo reescribe las curvas de los clips existentes: prefabs y controladores intactos.</summary>
+    private static bool _clipsOnly;
+
+    public static string Execute(string mode)
+    {
+        _clipsOnly = mode == "clips";
+        var log = new List<string>();
+        AssetDatabase.Refresh();
+        ImportSprites(log);
+        Directory.CreateDirectory(Prefabs);
+        var data = new RigData
+        {
+            chars = File.ReadAllLines(Data)
+                .Where(line => line.Trim().Length > 0)
+                .Select(line => line.Split(' '))
+                .GroupBy(f => f[0])
+                .Select(g => new CharData
+                {
+                    id = g.Key,
+                    parts = g.Select(f => new PartData
+                    {
+                        name = f[1],
+                        bbox = f.Skip(2).Take(4).Select(int.Parse).ToArray(),
+                        pivot = f.Skip(6).Take(2).Select(int.Parse).ToArray(),
+                    }).ToArray(),
+                }).ToArray(),
+        };
+
+        foreach (var c in data.chars)
+        {
+            BuildHuman(c, log);
+        }
+
+        var guideController = BuildGuideController(log);
+        if (_clipsOnly)
+        {
+            AssetDatabase.SaveAssets();
+            return string.Join(" | ", log);
+        }
+
+        BuildGuide("Algoritm_Fuego", "char_algoritm_n1_fuego_reposo", guideController, log);
+        BuildGuide("Algoritm_Rueda", "char_algoritm_n2_rueda_reposo", guideController, log);
+        BuildGuide("Algoritm_Gota", "char_algoritm_n3_gota_reposo", guideController, log);
+        AssetDatabase.SaveAssets();
+        return string.Join("\n", log);
+    }
+
+    // ---------------------------------------------------------------- sprites
+
+    private static void ImportSprites(List<string> log)
+    {
+        foreach (var guid in AssetDatabase.FindAssets("t:Texture2D", new[] { Art }))
+        {
+            var path = AssetDatabase.GUIDToAssetPath(guid);
+            if (path.EndsWith("char_mama_cenital.png"))
+            {
+                continue;
+            }
+
+            var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.alphaIsTransparency = true;
+            importer.mipmapEnabled = false;
+            importer.SaveAndReimport();
+        }
+
+        log.Add("sprites en Single");
+    }
+
+    private static Sprite SpriteAt(string folder, string file) =>
+        AssetDatabase.LoadAssetAtPath<Sprite>($"{Art}/{folder}/{file}.png")
+        ?? throw new InvalidOperationException($"sin sprite {folder}/{file}");
+
+    // ---------------------------------------------------------------- jerarquía
+
+    private static RectTransform Node(string name, Transform parent)
+    {
+        var go = new GameObject(name, typeof(RectTransform));
+        var rect = (RectTransform)go.transform;
+        rect.SetParent(parent, false);
+        return rect;
+    }
+
+    private static void Stretch(RectTransform rect, Vector2 pivot)
+    {
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.pivot = pivot;
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+    }
+
+    /// <summary>Una parte en su caja del lienzo de 1024, con el pivote en su articulación.</summary>
+    private static RectTransform Part(string name, Transform parent, Sprite sprite, PartData p)
+    {
+        var rect = Node(name, parent);
+        var x0 = p.bbox[0]; var y0 = p.bbox[1]; var x1 = p.bbox[2]; var y1 = p.bbox[3];
+        rect.anchorMin = new Vector2(x0 / U, 1f - y1 / U);
+        rect.anchorMax = new Vector2(x1 / U, 1f - y0 / U);
+        rect.pivot = new Vector2((p.pivot[0] - x0) / (float)(x1 - x0), (y1 - p.pivot[1]) / (float)(y1 - y0));
+        rect.offsetMin = rect.offsetMax = Vector2.zero;
+        rect.gameObject.AddComponent<CanvasRenderer>();
+        var image = rect.gameObject.AddComponent<Image>();
+        image.sprite = sprite;
+        image.raycastTarget = false; // nunca roba un clic a las piezas (RNF-02)
+        return rect;
+    }
+
+    private static (GameObject Root, RectTransform Stage) Root(string name)
+    {
+        var root = new GameObject(name, typeof(RectTransform));
+        var rect = (RectTransform)root.transform;
+        rect.sizeDelta = new Vector2(300f, 300f);
+        var stage = Node("Lienzo", rect);
+        stage.anchorMin = stage.anchorMax = stage.pivot = new Vector2(0.5f, 0.5f);
+        stage.sizeDelta = new Vector2(U, U);
+        stage.gameObject.AddComponent<CanvasGroup>().blocksRaycasts = false;
+        return (root, stage);
+    }
+
+    private static void Finish(GameObject root, RectTransform stage, AnimatorController controller, string[] speakers, Sprite portrait, string path)
+    {
+        var animator = root.AddComponent<Animator>();
+        animator.runtimeAnimatorController = controller;
+        animator.updateMode = AnimatorUpdateMode.Normal; // se congela con la pausa (RF-07)
+        animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
+        var rig = root.AddComponent<CharacterRig>();
+        var so = new SerializedObject(rig);
+        so.FindProperty("animator").objectReferenceValue = animator;
+        so.FindProperty("stage").objectReferenceValue = stage;
+        so.FindProperty("<Portrait>k__BackingField").objectReferenceValue = portrait;
+        var names = so.FindProperty("<SpeakerNames>k__BackingField");
+        names.arraySize = speakers.Length;
+        for (var i = 0; i < speakers.Length; i++)
+        {
+            names.GetArrayElementAtIndex(i).stringValue = speakers[i];
+        }
+
+        so.ApplyModifiedPropertiesWithoutUndo();
+        PrefabUtility.SaveAsPrefabAsset(root, path);
+        UnityEngine.Object.DestroyImmediate(root);
+    }
+
+    // ---------------------------------------------------------------- familia
+
+    private static void BuildHuman(CharData c, List<string> log)
+    {
+        var (folder, prefab, speakers, tempo, amp) = Family[c.id];
+        var parts = c.parts.ToDictionary(p => p.name);
+        var (root, stage) = Root(prefab);
+
+        // El cuerpo gira y se aplasta desde los pies; el tronco (torso y brazos) baja al agacharse.
+        var body = Node("Cuerpo", stage);
+        Stretch(body, new Vector2(0.5f, 1f - 947f / U));
+        Part("PiernaIzq", body, SpriteAt(folder, $"char_{c.id}_parte_pierna_izq"), parts["pierna_izq"]);
+        Part("PiernaDer", body, SpriteAt(folder, $"char_{c.id}_parte_pierna_der"), parts["pierna_der"]);
+        var trunk = Node("Tronco", body);
+        Stretch(trunk, new Vector2(0.5f, 1f - parts["torso"].pivot[1] / U));
+        Part("BrazoIzq", trunk, SpriteAt(folder, $"char_{c.id}_parte_brazo_izq"), parts["brazo_izq"]);
+        Part("BrazoDer", trunk, SpriteAt(folder, $"char_{c.id}_parte_brazo_der"), parts["brazo_der"]);
+        Part("Torso", trunk, SpriteAt(folder, $"char_{c.id}_parte_torso"), parts["torso"]);
+
+        var leg = 947f - parts["pierna_izq"].pivot[1]; // de la cadera al suelo, en unidades del lienzo
+        var clips = HumanClips(c.id, tempo, amp, leg);
+        if (_clipsOnly)
+        {
+            foreach (var spec in clips) Clip($"{Art}/{folder}/Animations", spec);
+            UnityEngine.Object.DestroyImmediate(root);
+            log.Add($"{prefab}: {clips.Count} clips reescritos");
+            return;
+        }
+
+        var controller = Controller($"{Art}/{folder}/Animations", $"char_{c.id}", clips, log);
+        Finish(root, stage, controller, speakers, SpriteAt(folder, $"char_{c.id}_retrato_neutra"), $"{Prefabs}/{prefab}.prefab");
+        log.Add($"{prefab}: {clips.Count} clips");
+    }
+
+    private const string C = "Lienzo/Cuerpo";
+    private const string T = C + "/Tronco";
+    private const string LA = T + "/BrazoIzq";
+    private const string RA = T + "/BrazoDer";
+    private const string LL = C + "/PiernaIzq";
+    private const string RL = C + "/PiernaDer";
+    private const string Rot = "localEulerAnglesRaw.z";
+    private const string PosY = "m_AnchoredPosition.y";
+    private const string ScaleY = "m_LocalScale.y";
+    private const string ScaleX = "m_LocalScale.x";
+
+    private sealed class Spec
+    {
+        public string Action; public string File; public float Length; public bool Loop = true;
+        public readonly List<(string Path, Type Type, string Prop, float[] Keys)> Curves = new List<(string, Type, string, float[])>();
+
+        public Spec Add(string path, string prop, params float[] timeValue)
+        {
+            var type = prop == "m_Alpha" ? typeof(CanvasGroup) : typeof(RectTransform);
+            Curves.Add((path, type, prop, timeValue));
+            return this;
+        }
+    }
+
+    private static Spec S(string action, string file, float length, bool loop = true) =>
+        new Spec { Action = action, File = file, Length = length, Loop = loop };
+
+    /// <summary>
+    /// Agachado a una profundidad: el tronco baja y las piernas se acortan desde la cadera sin
+    /// despegar el pie del suelo (la pierna baja lo mismo y escala (L−d)/L).
+    /// </summary>
+    private static Spec Crouch(Spec s, float leg, float depth, float t0, float t1)
+    {
+        var ratio = (leg - depth) / leg;
+        s.Add(T, PosY, t0, -depth, t1, -depth);
+        foreach (var l in new[] { LL, RL })
+        {
+            s.Add(l, PosY, t0, -depth, t1, -depth);
+            s.Add(l, ScaleY, t0, ratio, t1, ratio);
+        }
+
+        return s;
+    }
+
+    private static List<Spec> HumanClips(string id, float k, float a, float leg)
+    {
+        string N(string accion) => $"char_{id}_anim_{accion}";
+        var lift = 0.14f * leg;
+        var list = new List<Spec>();
+
+        // Reposo: respiración de ~2 px en ciclo de 3 s (§13.2).
+        list.Add(S("Idle", N("idle"), 3f * k)
+            .Add(C, ScaleY, 0, 1f, 1.5f * k, 1.008f, 3f * k, 1f)
+            .Add(LA, Rot, 0, 0, 1.5f * k, -1.5f * a, 3f * k, 0)
+            .Add(RA, Rot, 0, 0, 1.5f * k, 1.5f * a, 3f * k, 0));
+
+        Spec Walk(string action, string file, float period, float amp, float armSwing)
+        {
+            var p = period;
+            return S(action, file, p)
+                .Add(LL, PosY, 0, 0, 0.25f * p, lift * amp, 0.5f * p, 0, p, 0)
+                .Add(RL, PosY, 0, 0, 0.5f * p, 0, 0.75f * p, lift * amp, p, 0)
+                .Add(LL, Rot, 0, 0, 0.25f * p, -4f * amp, 0.5f * p, 0, p, 0)
+                .Add(RL, Rot, 0, 0, 0.5f * p, 0, 0.75f * p, 4f * amp, p, 0)
+                .Add(C, PosY, 0, 0, 0.25f * p, 10f * amp, 0.5f * p, 0, 0.75f * p, 10f * amp, p, 0)
+                .Add(C, Rot, 0, 0, 0.25f * p, -2f * amp, 0.5f * p, 0, 0.75f * p, 2f * amp, p, 0)
+                .Add(LA, Rot, 0, 0, 0.25f * p, armSwing, 0.5f * p, 0, 0.75f * p, -armSwing, p, 0)
+                .Add(RA, Rot, 0, 0, 0.25f * p, armSwing, 0.5f * p, 0, 0.75f * p, -armSwing, p, 0);
+        }
+
+        list.Add(Walk("Walk", N("caminar"), 0.8f * k, a, 8f * a));
+        list.Add(Walk("Run", N("correr"), 0.5f * k, 1.6f * a, 20f * a));
+
+        list.Add(S("Talk", N("hablar"), 1.6f * k)
+            .Add(C, ScaleY, 0, 1f, 0.4f * k, 1.012f, 0.8f * k, 1f, 1.2f * k, 1.012f, 1.6f * k, 1f)
+            .Add(C, Rot, 0, 0, 0.8f * k, 1.5f, 1.6f * k, 0)
+            .Add(RA, Rot, 0, 0, 0.4f * k, 28f * a, 0.8f * k, 18f * a, 1.2f * k, 30f * a, 1.6f * k, 0));
+
+        // Golpear piedras delante del pecho: separa, choca, vuelve (§13.3, 0,6 s).
+        list.Add(S("Strike", N("golpear"), 0.6f * k)
+            .Add(LA, Rot, 0, 40f, 0.2f * k, 18f, 0.3f * k, 60f, 0.6f * k, 40f)
+            .Add(RA, Rot, 0, -40f, 0.2f * k, -18f, 0.3f * k, -60f, 0.6f * k, -40f)
+            .Add(T, PosY, 0, 0, 0.3f * k, -8f, 0.6f * k, 0));
+
+        list.Add(S("Hammer", N("martillar"), 0.7f * k)
+            .Add(RA, Rot, 0, 0, 0.3f * k, 125f, 0.45f * k, 112f, 0.55f * k, -15f, 0.7f * k, 0)
+            .Add(LA, Rot, 0, 20f, 0.7f * k, 20f)
+            .Add(C, Rot, 0, 0, 0.55f * k, -2f, 0.7f * k, 0));
+
+        // Soplar agachado sobre el montón (§13.3, 0,9 s).
+        list.Add(Crouch(S("Blow", N("soplar"), 0.9f * k), leg, 0.3f * leg, 0, 0.9f * k)
+            .Add(C, ScaleY, 0, 1f, 0.45f * k, 0.95f, 0.9f * k, 1f)
+            .Add(LA, Rot, 0, 35f, 0.9f * k, 35f)
+            .Add(RA, Rot, 0, -35f, 0.9f * k, -35f));
+
+        // Recoger: se agacha, alcanza el suelo, se levanta con lo recogido (§13.3).
+        var d = 0.35f * leg;
+        var r = (leg - d) / leg;
+        var pick = S("PickUp", N("recoger"), 1.4f * k)
+            .Add(T, PosY, 0, 0, 0.4f * k, -d, 0.7f * k, -d, 1.1f * k, 0, 1.4f * k, 0)
+            .Add(RA, Rot, 0, 0, 0.4f * k, -25f, 0.7f * k, -25f, 1.1f * k, 40f, 1.4f * k, 0)
+            .Add(LA, Rot, 0, 0, 0.4f * k, 20f, 0.7f * k, 20f, 1.1f * k, -10f, 1.4f * k, 0);
+        foreach (var l in new[] { LL, RL })
+        {
+            pick.Add(l, PosY, 0, 0, 0.4f * k, -d, 0.7f * k, -d, 1.1f * k, 0, 1.4f * k, 0);
+            pick.Add(l, ScaleY, 0, 1f, 0.4f * k, r, 0.7f * k, r, 1.1f * k, 1f, 1.4f * k, 1f);
+        }
+
+        list.Add(pick);
+
+        // Arrodillado: la cadera baja casi hasta el suelo y las rodillas se abren; de frente es lo
+        // que se lee como «de rodillas» (acortar las piernas sin más parecía estar de pie).
+        list.Add(Crouch(S("Kneel", N("arrodillarse"), 3f * k), leg, 0.62f * leg, 0, 3f * k)
+            .Add(LL, Rot, 0, -14f, 3f * k, -14f)
+            .Add(RL, Rot, 0, 14f, 3f * k, 14f)
+            .Add(C, ScaleY, 0, 1f, 1.5f * k, 1.008f, 3f * k, 1f)
+            .Add(LA, Rot, 0, 22f, 3f * k, 22f)
+            .Add(RA, Rot, 0, -22f, 3f * k, -22f));
+
+        // Cargar: brazos sobre la cabeza sosteniendo, y el paso de caminar.
+        var carry = Walk("Carry", N("cargar"), 0.95f * k, 0.8f * a, 0);
+        carry.Curves.RemoveAll(cv => cv.Path == LA || cv.Path == RA);
+        // Brazos en V por encima de los hombros: rectos hacia arriba quedarían tras la cabeza,
+        // porque los brazos se dibujan detrás del torso.
+        carry.Add(LA, Rot, 0, -118f, 0.47f * k, -114f, 0.95f * k, -118f)
+             .Add(RA, Rot, 0, 118f, 0.47f * k, 114f, 0.95f * k, 118f);
+        list.Add(carry);
+
+        // Empujar: inclinado, las dos manos juntas delante, y el paso.
+        var push = Walk("Push", N("empujar"), 0.9f * k, 0.8f * a, 0);
+        push.Curves.RemoveAll(cv => cv.Path == LA || cv.Path == RA || (cv.Path == C && cv.Prop == Rot));
+        push.Add(LA, Rot, 0, 60f, 0.9f * k, 60f)
+            .Add(RA, Rot, 0, -60f, 0.9f * k, -60f)
+            .Add(C, Rot, 0, -4f, 0.45f * k, -5f, 0.9f * k, -4f);
+        list.Add(push);
+
+        // Señalar: el brazo casi horizontal, hacia lo que tiene delante; en diagonal hacia arriba
+        // parecía saludar o señalar el cielo aunque el objeto estuviera en el suelo.
+        list.Add(S("Point", N("senalar"), 1.2f * k)
+            .Add(RA, Rot, 0, 42f, 0.6f * k, 36f, 1.2f * k, 42f)
+            .Add(C, Rot, 0, -3f, 1.2f * k, -3f));
+
+        list.Add(S("Observe", N("observar"), 2f * k)
+            .Add(C, Rot, 0, 5f, 1f * k, 8f, 2f * k, 5f)
+            .Add(LA, Rot, 0, 34f, 2f * k, 34f)
+            .Add(RA, Rot, 0, -34f, 2f * k, -34f));
+
+        // Celebrar sin despegar los pies: brazos arriba y rebote de squash (§13.2 ≤ 15 %).
+        var bounce = 0.03f * a;
+        list.Add(S("Celebrate", N("celebrar"), 1.2f * k)
+            .Add(LA, Rot, 0, -104f, 0.3f * k, -86f, 0.6f * k, -104f, 0.9f * k, -86f, 1.2f * k, -104f)
+            .Add(RA, Rot, 0, 104f, 0.3f * k, 86f, 0.6f * k, 104f, 0.9f * k, 86f, 1.2f * k, 104f)
+            .Add(C, ScaleY, 0, 1f, 0.15f * k, 1f - bounce, 0.3f * k, 1f + bounce, 0.6f * k, 1f,
+                0.75f * k, 1f - bounce, 0.9f * k, 1f + bounce, 1.2f * k, 1f));
+
+        // Ánimo: puño arriba, nunca un gesto de desánimo (§7.3, CP-02; §13.3, 0,9 s).
+        list.Add(S("Encourage", N("animo"), 0.9f * k)
+            .Add(RA, Rot, 0, 120f, 0.45f * k, 100f, 0.9f * k, 120f)
+            .Add(C, ScaleY, 0, 1f, 0.45f * k, 1.02f, 0.9f * k, 1f));
+
+        // Abrazar: brazos abiertos a la altura del pecho, meciéndose. Cerrarlos hacia dentro los
+        // escondía detrás del torso, que se dibuja delante de ellos.
+        list.Add(S("Hug", N("abrazar"), 2f * k)
+            .Add(LA, Rot, 0, -58f, 1f * k, -50f, 2f * k, -58f)
+            .Add(RA, Rot, 0, 58f, 1f * k, 50f, 2f * k, 58f)
+            .Add(C, Rot, 0, -2.5f, 1f * k, 2.5f, 2f * k, -2.5f));
+
+        list.Add(S("Surprise", N("sorpresa"), 1f * k)
+            .Add(LA, Rot, 0, -35f, 1f * k, -35f)
+            .Add(RA, Rot, 0, 35f, 1f * k, 35f)
+            .Add(C, ScaleY, 0, 1.03f, 0.5f * k, 1.035f, 1f * k, 1.03f));
+
+        // Dormir: sentado casi en el suelo, recostado de lado y respirando despacio. Tumbado del
+        // todo, con los ojos abiertos del sprite, se leería como caído (CP-02).
+        list.Add(Crouch(S("Sleep", N("dormir"), 4f * k), leg, 0.66f * leg, 0, 4f * k)
+            .Add(LL, Rot, 0, -16f, 4f * k, -16f)
+            .Add(RL, Rot, 0, 16f, 4f * k, 16f)
+            .Add(T, Rot, 0, 16f, 2f * k, 17.5f, 4f * k, 16f)
+            .Add(C, ScaleY, 0, 1f, 2f * k, 1.025f, 4f * k, 1f)
+            .Add(LA, Rot, 0, 12f, 4f * k, 12f)
+            .Add(RA, Rot, 0, -38f, 4f * k, -38f));
+
+        AddVisibility(list, N);
+        return list;
+    }
+
+    /// <summary>Oculto, aparecer y apagarse: alfa del lienzo y escala del cuerpo. Parpadeos lentos (RNF-21).</summary>
+    private static void AddVisibility(List<Spec> list, Func<string, string> n)
+    {
+        list.Add(S("Hidden", n("oculto"), 1f).Add("Lienzo", "m_Alpha", 0, 0f, 1f, 0f));
+        list.Add(S("Appear", n("aparicion"), 1f, loop: false)
+            .Add("Lienzo", "m_Alpha", 0, 0f, 0.5f, 1f, 1f, 1f)
+            .Add(C, ScaleX, 0, 0.3f, 0.7f, 1.06f, 1f, 1f)
+            .Add(C, ScaleY, 0, 0.3f, 0.7f, 1.06f, 1f, 1f));
+        list.Add(S("Vanish", n("apagado"), 1.6f, loop: false)
+            .Add("Lienzo", "m_Alpha", 0, 1f, 0.3f, 0.35f, 0.6f, 1f, 0.9f, 0.35f, 1.2f, 1f, 1.6f, 0f)
+            .Add(C, ScaleX, 0, 1f, 1.2f, 1f, 1.6f, 0.6f)
+            .Add(C, ScaleY, 0, 1f, 1.2f, 1f, 1.6f, 0.6f));
+    }
+
+    // ---------------------------------------------------------------- Algoritm
+
+    private static AnimatorController BuildGuideController(List<string> log)
+    {
+        string N(string accion) => $"char_algoritm_anim_{accion}";
+        var list = new List<Spec>
+        {
+            // Flota y se mece: ciclo de 2 s (§13.3).
+            S("Idle", N("flotar"), 2f)
+                .Add(C, PosY, 0, 0, 1f, 24f, 2f, 0)
+                .Add(C, Rot, 0, -3f, 1f, 3f, 2f, -3f),
+            S("Talk", N("hablar"), 1f)
+                .Add(C, PosY, 0, 0, 0.5f, 18f, 1f, 0)
+                .Add(C, ScaleX, 0, 1f, 0.25f, 1.05f, 0.5f, 1f, 0.75f, 1.05f, 1f, 1f)
+                .Add(C, ScaleY, 0, 1f, 0.25f, 1.05f, 0.5f, 1f, 0.75f, 1.05f, 1f, 1f),
+            S("Point", N("senalar"), 1.2f)
+                .Add(C, Rot, 0, -10f, 0.6f, -14f, 1.2f, -10f)
+                .Add(C, PosY, 0, 10f, 0.6f, 24f, 1.2f, 10f),
+            // Gira como un trompo feliz (§1.4.1).
+            S("Spin", N("girar"), 1f)
+                .Add(C, Rot, 0, 0f, 1f, -360f)
+                .Add(C, PosY, 0, 0, 0.5f, 20f, 1f, 0),
+            S("Celebrate", N("celebrar"), 1.2f)
+                .Add(C, Rot, 0, 0f, 1.2f, -360f)
+                .Add(C, ScaleX, 0, 1f, 0.3f, 1.08f, 0.6f, 1f, 0.9f, 1.08f, 1.2f, 1f)
+                .Add(C, ScaleY, 0, 1f, 0.3f, 1.08f, 0.6f, 1f, 0.9f, 1.08f, 1.2f, 1f),
+            S("Encourage", N("animo"), 0.9f)
+                .Add(C, PosY, 0, 0, 0.45f, 30f, 0.9f, 0)
+                .Add(C, ScaleY, 0, 1f, 0.45f, 1.06f, 0.9f, 1f),
+        };
+        AddVisibility(list, N);
+        if (_clipsOnly)
+        {
+            foreach (var spec in list) Clip($"{Art}/Algoritm/Animations", spec);
+            return null;
+        }
+
+        return Controller($"{Art}/Algoritm/Animations", "char_algoritm", list, log);
+    }
+
+    private static void BuildGuide(string prefab, string sprite, AnimatorController controller, List<string> log)
+    {
+        var (root, stage) = Root(prefab);
+        var body = Node("Cuerpo", stage);
+        Stretch(body, new Vector2(0.5f, 0.5f));
+        body.gameObject.AddComponent<CanvasRenderer>();
+        var image = body.gameObject.AddComponent<Image>();
+        image.sprite = SpriteAt("Algoritm", sprite);
+        image.preserveAspect = true;
+        image.raycastTarget = false;
+        Finish(root, stage, controller, new[] { "ALGORITM" }, image.sprite, $"{Prefabs}/{prefab}.prefab");
+        log.Add($"{prefab}");
+    }
+
+    // ---------------------------------------------------------------- clips y controlador
+
+    private static AnimatorController Controller(string folder, string name, List<Spec> specs, List<string> log)
+    {
+        Directory.CreateDirectory(folder);
+        var path = $"{folder}/{name}.controller";
+        AssetDatabase.DeleteAsset(path);
+        var controller = AnimatorController.CreateAnimatorControllerAtPath(path);
+        var sm = controller.layers[0].stateMachine;
+        var states = new Dictionary<string, AnimatorState>();
+        foreach (var spec in specs)
+        {
+            var clip = Clip(folder, spec);
+            var state = sm.AddState(spec.Action);
+            state.motion = clip;
+            state.writeDefaultValues = true; // lo que un clip no anima vuelve a la pose base
+            states[spec.Action] = state;
+        }
+
+        sm.defaultState = states["Idle"];
+        // Aparecer termina flotando.
+        var toIdle = states["Appear"].AddTransition(states["Idle"]);
+        toIdle.hasExitTime = true;
+        toIdle.exitTime = 1f;
+        toIdle.duration = 0.15f;
+        toIdle.hasFixedDuration = true;
+        EditorUtility.SetDirty(controller);
+        return controller;
+    }
+
+    private static AnimationClip Clip(string folder, Spec spec)
+    {
+        var path = $"{folder}/{spec.File}.anim";
+        var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
+        if (clip == null)
+        {
+            clip = new AnimationClip();
+            AssetDatabase.CreateAsset(clip, path);
+        }
+
+        clip.ClearCurves();
+        clip.frameRate = 30f;
+        foreach (var group in spec.Curves.GroupBy(cv => (cv.Path, cv.Type, cv.Prop)))
+        {
+            var keys = new List<Keyframe>();
+            foreach (var cv in group)
+            {
+                for (var i = 0; i + 1 < cv.Keys.Length; i += 2)
+                {
+                    keys.Add(new Keyframe(cv.Keys[i], cv.Keys[i + 1]));
+                }
+            }
+
+            var curve = new AnimationCurve(keys.OrderBy(kf => kf.time).GroupBy(kf => kf.time).Select(g => g.Last()).ToArray());
+            for (var i = 0; i < curve.length; i++)
+            {
+                AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.ClampedAuto);
+                AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.ClampedAuto);
+            }
+
+            var binding = EditorCurveBinding.FloatCurve(group.Key.Path, group.Key.Type, group.Key.Prop);
+            AnimationUtility.SetEditorCurve(clip, binding, curve);
+        }
+
+        var settings = AnimationUtility.GetAnimationClipSettings(clip);
+        settings.loopTime = spec.Loop;
+        settings.stopTime = spec.Length;
+        AnimationUtility.SetAnimationClipSettings(clip, settings);
+        EditorUtility.SetDirty(clip);
+        return clip;
+    }
+}

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Game.Audio;
 using Game.Core;
+using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -423,6 +424,157 @@ namespace Game.Levels.Wheel.Tests
             Capturar("Workshop_03_tabla_montada");
 
             Assert.That(workshop.AssemblyImage.enabled, Is.True);
+        }
+
+        // --- los personajes (Dirección de arte §13.3) --------------------------------------------
+
+        [Test]
+        [Timeout(30000)]
+        public async Task WorkshopScene_DA133_LaNinaSenalaElTroncoQueEligeYVuelveAlReposo()
+        {
+            var taller = await OpenWorkshop();
+            Assert.That(taller.Player, Is.Not.Null, "la Niña está en el taller");
+
+            taller.Select(WorkshopPiece.ShortLogA);
+
+            Assert.That(taller.Player.Current, Is.EqualTo(ActorAction.Point), "señala el tronco que eligió");
+            await Esperar(() => taller.Player.Current != ActorAction.Point, 3f);
+            Assert.That(taller.Player.Current, Is.EqualTo(ActorAction.Idle), "y el gesto no se queda puesto");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task WorkshopScene_DA133_LaNinaMartillaAlPerforarYPapaConEllaAlEncajarCadaPieza()
+        {
+            var taller = await OpenWorkshop();
+            Assert.That(taller.Player, Is.Not.Null, "la Niña está en el taller");
+            Assert.That(taller.Helper, Is.Not.Null, "y Papá, que martilla con ella");
+
+            taller.Select(WorkshopPiece.ShortLogA);
+            taller.MachineButton.onClick.Invoke();
+            Assert.That(taller.Player.Current, Is.EqualTo(ActorAction.Hammer), "perforar con «Mecanizar» es martillar");
+
+            taller.Select(WorkshopPiece.ShortLogB);
+            await Arrastrar(taller, WorkshopPiece.Tool, taller.Pieces[WorkshopPiece.ShortLogB].Rect);
+            Assume.That(taller.Assembly.DrilledWheels, Is.EqualTo(2));
+            Assert.That(taller.Player.Current, Is.EqualTo(ActorAction.Hammer), "y con el mazo sobre el tronco, igual");
+
+            await Arrastrar(taller, WorkshopPiece.LongLog, taller.Pieces[WorkshopPiece.ShortLogA].Rect);
+            Assume.That(taller.Assembly.IsAxleFormed, Is.True);
+            Assert.That(taller.Player.Current, Is.EqualTo(ActorAction.Hammer), "la pieza que encaja se clava a martillazos");
+            Assert.That(taller.Helper.Current, Is.EqualTo(ActorAction.Hammer), "y Papá martilla con ella");
+        }
+
+        /// <summary>
+        /// Un paso fuera de orden no tiene gesto de derrota ni de desánimo: la Niña anima y vuelve
+        /// al reposo, sin pasar por ningún otro gesto (CP-02, Dirección de arte §7.3).
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task WorkshopScene_CP02_TrasUnPasoFueraDeOrdenLaNinaAnimaYNuncaHaceOtroGesto()
+        {
+            var taller = await OpenWorkshop();
+            Assert.That(taller.Player, Is.Not.Null, "la Niña está en el taller");
+
+            await Arrastrar(taller, WorkshopPiece.Tool, taller.Pieces[WorkshopPiece.ShortLogA].Rect);
+            Assume.That(taller.MessageLabel.text, Is.EqualTo(taller.Config.SelectNeededMessage));
+            Assert.That(taller.Player.Current, Is.EqualTo(ActorAction.Encourage), "el mazo sin tronco elegido: ánimo");
+
+            taller.Select(WorkshopPiece.ShortLogA);
+            taller.MachineButton.onClick.Invoke();
+            await Arrastrar(taller, WorkshopPiece.Plank, taller.Pieces[WorkshopPiece.ShortLogB].Rect);
+            Assume.That(taller.MessageLabel.text, Is.EqualTo(taller.Config.PlankTooEarlyMessage));
+            Assert.That(taller.Player.Current, Is.EqualTo(ActorAction.Encourage), "la tabla antes del eje: ánimo");
+
+            var gestos = new List<ActorAction>();
+            await Esperar(() =>
+            {
+                gestos.Add(taller.Player.Current);
+                return taller.Player.Current != ActorAction.Encourage;
+            }, 3f);
+            Assert.That(gestos.Distinct(), Is.EqualTo(new[] { ActorAction.Encourage, ActorAction.Idle }),
+                "del ánimo vuelve al reposo sin pasar por ningún otro gesto");
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task WorkshopScene_DA133_TodaLaFamiliaCelebraLaCarretillaTerminadaHastaSalir()
+        {
+            var taller = await OpenWorkshop();
+            var familia = new[] { taller.Player, taller.Helper }.Concat(taller.Onlookers).ToArray();
+            Assert.That(familia, Has.Length.EqualTo(4) & Has.All.Not.Null, "la Niña, Papá, Mamá y el Niño están en el taller");
+
+            taller.Select(WorkshopPiece.ShortLogA);
+            taller.MachineButton.onClick.Invoke();
+            taller.Select(WorkshopPiece.ShortLogB);
+            taller.MachineButton.onClick.Invoke();
+            await Arrastrar(taller, WorkshopPiece.LongLog, taller.Pieces[WorkshopPiece.ShortLogA].Rect);
+            await Arrastrar(taller, WorkshopPiece.Plank, taller.AssemblyImage.rectTransform);
+            await Arrastrar(taller, WorkshopPiece.Cargo, taller.AssemblyImage.rectTransform);
+            Assume.That(taller.IsCompleting, Is.True);
+
+            foreach (var rig in familia)
+            {
+                Assert.That(rig.Current, Is.EqualTo(ActorAction.Celebrate), $"{rig.name} celebra la carretilla terminada");
+            }
+
+            // Los martillazos de la caja siguen sonando durante el empuje: no cortan el festejo.
+            await Esperar(() => !taller.IsCompleting, 10f);
+            foreach (var rig in familia)
+            {
+                Assert.That(rig.Current, Is.EqualTo(ActorAction.Celebrate), $"{rig.name} sigue celebrando al terminar el empuje");
+            }
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task WorkshopScene_RNF03_LaFamiliaNoTapaPiezasCarretillaNiInterfazYNoRecibeClics()
+        {
+            var taller = await OpenWorkshop();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            var familia = new[] { taller.Player, taller.Helper }.Concat(taller.Onlookers).ToArray();
+            Assert.That(familia, Has.Length.EqualTo(4) & Has.All.Not.Null, "la Niña, Papá, Mamá y el Niño están en el taller");
+            var ocupado = taller.Pieces.Values.Select(entrada => entrada.Rect)
+                .Append(taller.AssemblyImage.rectTransform)
+                .Concat(Interfaz(taller))
+                .ToArray();
+
+            foreach (var rig in familia)
+            {
+                Assert.That(rig.transform.parent, Is.SameAs(taller.Environment.rectTransform),
+                    $"{rig.name} cuelga del entorno: acompaña el encuadre y el empuje final");
+                var caja = EnPantalla((RectTransform)rig.transform);
+                foreach (var elemento in ocupado)
+                {
+                    Assert.That(caja.Overlaps(EnPantalla(elemento)), Is.False, $"{rig.name} no tapa {elemento.name}");
+                }
+
+                Assert.That(rig.GetComponentsInChildren<Graphic>(true).Where(grafico => grafico.raycastTarget).Select(grafico => grafico.name),
+                    Is.Empty, $"ningún dibujo de {rig.name} le roba el clic a una pieza");
+            }
+        }
+
+        /// <summary>
+        /// El botón de pista es el círculo con Algoritm dentro, en su forma del Nivel 2. El sprite
+        /// es provisional con el nombre definitivo: el arte entra sustituyendo el archivo.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task WorkshopScene_INC45_ElBotonDePistaMuestraAAlgoritmConSuFormaDeRueda()
+        {
+            var taller = await OpenWorkshop();
+
+            var algoritm = taller.HelpButton.transform.Find("Fondo/Algoritm");
+
+            Assert.That(algoritm, Is.Not.Null, "Algoritm va dentro del «Fondo» del círculo: se hunde con él al pulsar");
+            var imagen = algoritm.GetComponent<Image>();
+            Assert.That(imagen, Is.Not.Null, "es una imagen");
+            Assert.That(imagen.isActiveAndEnabled, Is.True, "y se ve");
+            Assert.That(imagen.sprite, Is.Not.Null, "con dibujo");
+            Assert.That(imagen.sprite.name, Is.EqualTo("char_algoritm_n2_rueda_reposo"), "en el Nivel 2 el guía es la rueda (INC-45)");
+            Assert.That(imagen.preserveAspect, Is.True, "sin deformarse, sea cual sea el arte que llegue");
+            Assert.That(imagen.raycastTarget, Is.False, "el clic es del botón, no del dibujo");
         }
 
         // --- helpers ---------------------------------------------------------------------------

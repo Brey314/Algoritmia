@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Game.Audio;
 using Game.Core;
+using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -705,6 +706,149 @@ namespace Game.Levels.Wheel.Tests
                 runner?.Session.Delete(nombre);
                 LimpiarPersistentes();
             }
+        }
+
+        /// <summary>
+        /// La Niña programa de pie junto a la salida, mirando el tablero, y la familia la espera en
+        /// el refugio (§1.6.3.1, 2.5): cuelgan del entorno como las piezas —así las vigilan las
+        /// pruebas de encuadre—, no reciben clics y no se tiñen con la luz del decorado (§5.4).
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_DA133_LaNinaMiraElTableroJuntoALaSalidaYLaFamiliaEsperaEnElRefugio()
+        {
+            var maze = await OpenMaze();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(maze.Player, Is.Not.Null, "la Niña está en el laberinto");
+            Assert.That(maze.Family.Count(miembro => miembro != null), Is.EqualTo(3), "Papá, Mamá y el Niño esperan en el refugio");
+            Assert.That(maze.Player.Current, Is.EqualTo(ActorAction.Observe), "la Niña mira el tablero mientras escribe (§13.3)");
+            Assert.That(maze.Family.Select(miembro => miembro.Current), Has.All.EqualTo(ActorAction.Idle), "la familia espera en reposo");
+
+            var reparto = maze.Family.Append(maze.Player).ToArray();
+            foreach (var personaje in reparto)
+            {
+                Assert.That(maze.Pieces, Does.Contain((RectTransform)personaje.transform), $"{personaje.name} cuelga del entorno");
+                foreach (var grafico in personaje.GetComponentsInChildren<Graphic>(true))
+                {
+                    Assert.That(grafico.raycastTarget, Is.False, $"{personaje.name}/{grafico.name} no roba clics");
+                    Assert.That(grafico.color, Is.EqualTo(Color.white), $"{personaje.name}/{grafico.name} no se tiñe con el atardecer (§4.2, §5.4)");
+                }
+            }
+
+            var entorno = EnPantalla(maze.Environment.rectTransform);
+            Vector2 Casilla(Vector2Int celda) => entorno.min + Vector2.Scale(maze.CellAnchor(celda), entorno.size);
+            var salida = Casilla(maze.Grid.Start.Cell);
+            var refugio = Casilla(maze.Grid.Goal);
+            var nina = EnPantalla((RectTransform)maze.Player.transform).center;
+            Assert.That(Vector2.Distance(nina, salida), Is.LessThan(Vector2.Distance(nina, refugio)), "la Niña, junto a la salida");
+            foreach (var miembro in maze.Family)
+            {
+                var centro = EnPantalla((RectTransform)miembro.transform).center;
+                Assert.That(Vector2.Distance(centro, refugio), Is.LessThan(Vector2.Distance(centro, salida)), $"{miembro.name}, junto al refugio");
+            }
+        }
+
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_DA133_LaNinaSenalaAlEjecutarYVuelveAMirarElTablero()
+        {
+            var maze = await OpenMaze();
+            // Tres giros: nunca chocan y la ejecución dura más que el gesto.
+            for (var i = 0; i < 3; i++)
+            {
+                maze.AddBlock(InstructionBlock.Turn());
+            }
+
+            maze.ExecuteButton.onClick.Invoke();
+
+            Assert.That(maze.Player.Current, Is.EqualTo(ActorAction.Point), "al pulsar «Ejecutar» la Niña señala (§13.3)");
+            await Esperar(() => maze.Player.Current != ActorAction.Point);
+            Assert.That(maze.IsExecuting, Is.True, "el gesto acaba antes que la ejecución");
+            Assert.That(maze.Player.Current, Is.EqualTo(ActorAction.Observe), "y vuelve sola a mirar la carretilla");
+        }
+
+        /// <summary>
+        /// Que la carretilla no llegue es depurar, no perder: la Niña se anima y vuelve a mirar el
+        /// tablero, sin ningún otro gesto, y la familia sigue esperando (CP-02, RF-33, §7.3).
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_DA133_SiLaCarretillaNoLlegaLaNinaSeAnimaYNuncaHaceOtroGesto()
+        {
+            var maze = await OpenMaze();
+            // Girar a la izquierda y avanzar topa con el seto: se intenta y se vuelve.
+            maze.AddBlock(InstructionBlock.Turn(TurnDirection.Left));
+            maze.AddBlock(InstructionBlock.Forward(1));
+
+            var vistos = new HashSet<ActorAction>();
+            var trasElFallo = new List<ActorAction>();
+            maze.Execute();
+            await Esperar(() =>
+            {
+                vistos.Add(maze.Player.Current);
+                if (maze.IsExecuting && maze.MessageLabel.text == maze.Layout.StoppedMessage)
+                {
+                    trasElFallo.Add(maze.Player.Current);
+                }
+
+                return !maze.IsExecuting && maze.Player.Current == ActorAction.Observe;
+            });
+
+            Assert.That(trasElFallo, Is.Not.Empty.And.All.EqualTo(ActorAction.Encourage),
+                "desde que el guía dice que no llegó, la Niña se anima, y nada más (CP-02)");
+            Assert.That(vistos, Is.SubsetOf(new[] { ActorAction.Point, ActorAction.Observe, ActorAction.Encourage }),
+                "en todo el intento: señalar, mirar y animarse; ni celebrar ni un gesto de derrota");
+            Assert.That(maze.Family.Select(miembro => miembro.Current), Has.All.EqualTo(ActorAction.Idle), "la familia sigue esperando");
+        }
+
+        [Test]
+        [Timeout(120000)]
+        public async Task MazeScene_DA133_AlLlegarAlRefugioLaNinaYLaFamiliaCelebran()
+        {
+            var maze = await OpenMaze();
+            foreach (var block in maze.Grid.Solution().Blocks)
+            {
+                maze.AddBlock(block);
+            }
+
+            maze.Execute();
+            await Esperar(() => maze.MessageLabel.text == maze.Layout.ReachedMessage, 90f);
+
+            Assert.That(maze.Player.Current, Is.EqualTo(ActorAction.Celebrate), "la Niña celebra que la carretilla llegó (§13.3)");
+            Assert.That(maze.Family.Select(miembro => miembro.Current), Has.All.EqualTo(ActorAction.Celebrate), "y la familia con ella, en el refugio");
+        }
+
+        /// <summary>
+        /// El botón de pista lleva dentro de su círculo a Algoritm con la forma del nivel —la rueda
+        /// en el Nivel 2— en lugar del «?»: quien ayuda es el guía (§7.6, §10.2). El dibujo no
+        /// recibe el clic; lo recibe el botón, que sigue repitiendo la instrucción.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_DA76_ElBotonDePistaMuestraAAlgoritmEnFormaDeRueda()
+        {
+            var maze = await OpenMaze();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            var fondo = maze.HelpButton.transform.Find("Fondo");
+            Assert.That(fondo, Is.Not.Null, "el círculo conserva su fondo ámbar");
+            var hijo = fondo.Find("Algoritm");
+            Assert.That(hijo, Is.Not.Null, "dentro del círculo va Algoritm");
+            var algoritm = hijo.GetComponent<Image>();
+
+            Assert.That(algoritm.sprite, Is.Not.Null);
+            Assert.That(algoritm.sprite.name, Is.EqualTo("char_algoritm_n2_rueda_reposo"), "con la forma del Nivel 2: la rueda (§7.6)");
+            Assert.That(algoritm.preserveAspect, Is.True, "sin deformarse");
+            Assert.That(algoritm.raycastTarget, Is.False, "el clic lo recibe el botón, no el dibujo");
+            Assert.That(maze.HelpButton.GetComponentsInChildren<Text>(true), Is.Empty, "y ya no lleva el «?»");
+
+            var circulo = EnPantalla((RectTransform)fondo);
+            var dibujo = EnPantalla(algoritm.rectTransform);
+            Assert.That(circulo.Contains(dibujo.min) && circulo.Contains(dibujo.max - Vector2.one * 0.01f), Is.True,
+                "Algoritm cabe dentro del círculo");
         }
 
         [Test]
