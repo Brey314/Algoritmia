@@ -85,6 +85,10 @@ namespace Game.Levels.Wheel
         public float HoverRadius { get; private set; } = 0.15f;
 
         [field: SerializeField]
+        [field: Tooltip("Cómo se pinta el tronco redondo en 3/4, en el suelo y en la fila: cuerpo y vetas detrás del corte. El mismo asset que las escenas 2.1 y 2.2, para que el paso a la narrativa no se note (INC-50). Vacío = solo el corte.")]
+        public RollingLogLook LogLook { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Cuánto dura la transición al completar el acopio: los troncos vuelan a la caja y la cámara se acerca, en segundos.")]
         public float TransitionSeconds { get; private set; } = 1.2f;
 

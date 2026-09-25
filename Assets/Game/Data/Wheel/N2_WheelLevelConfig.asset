@@ -14,14 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Levels.Wheel::Game.Levels.Wheel.WheelLevelConfig
   <RequiredLogs>k__BackingField: 5
   <MinimumDistractors>k__BackingField: 8
-  <CounterFormat>k__BackingField: "Troncos redondos: {0} de {1}"
-  <PendingLogsFormat>k__BackingField: "Todavía faltan {0} troncos para mover la caja."
-  <CargoPlacedMessage>k__BackingField: "La caja quedó sobre los troncos. Ahora empújala."
-  <CargoMissedMessage>k__BackingField: "Ahí la caja no toca los troncos. Déjala encima de ellos."
+  <CounterFormat>k__BackingField: 'Troncos redondos: {0} de {1}'
+  <PendingLogsFormat>k__BackingField: "Todav\xEDa faltan {0} troncos para mover la
+    caja."
+  <CargoPlacedMessage>k__BackingField: "La caja qued\xF3 sobre los troncos. Ahora
+    emp\xFAjala."
+  <CargoMissedMessage>k__BackingField: "Ah\xED la caja no toca los troncos. D\xE9jala
+    encima de ellos."
   <ClosingSequenceId>k__BackingField: N2_Escena22_ElPatron
   <FarScale>k__BackingField: 0.6
   <HoverScale>k__BackingField: 1.4
   <HoverRadius>k__BackingField: 0.15
+  <LogLook>k__BackingField: {fileID: 11400000, guid: 719932f70953ec146bd004562be39349, type: 2}
   <TransitionSeconds>k__BackingField: 1.2
   <PlayFraming>k__BackingField:
     <Focus>k__BackingField: {x: 0.25, y: 0.5}
@@ -133,11 +137,11 @@ MonoBehaviour:
   - <Category>k__BackingField: 0
     <Message>k__BackingField: "Este rueda. \xBFQu\xE9 tiene que los otros no tienen?"
   - <Category>k__BackingField: 1
-    <Message>k__BackingField: "Esta piedra tiene esquinas. Cuando la empujas, se traba."
+    <Message>k__BackingField: Esta piedra tiene esquinas. Cuando la empujas, se traba.
   - <Category>k__BackingField: 2
-    <Message>k__BackingField: "Esto no soporta el peso de la caja."
+    <Message>k__BackingField: Esto no soporta el peso de la caja.
   - <Category>k__BackingField: 3
-    <Message>k__BackingField: "Sirve para golpear, no para mover cosas pesadas."
+    <Message>k__BackingField: Sirve para golpear, no para mover cosas pesadas.
   <Nudges>k__BackingField:
   - <Category>k__BackingField: 0
     <Radius>k__BackingField: 0.12

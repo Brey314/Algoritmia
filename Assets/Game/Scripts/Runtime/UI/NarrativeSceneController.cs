@@ -452,6 +452,11 @@ namespace Game.UI
                     go.AddComponent<BurnReveal>().Extent = prop.BurnExtent; // quemado quieto: la escena ya es después del fuego
                 }
 
+                if (prop.Rolling != null)
+                {
+                    RollingLog.Attach(image, prop.Rolling); // rueda con el giro que ya le da RollMotion
+                }
+
                 if (prop.Actor != null)
                 {
                     PlaceActor(prop, rect, image);

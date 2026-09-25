@@ -292,6 +292,10 @@ namespace Game.Levels.Wheel
             image.sprite = forestObject.Art;
             image.preserveAspect = true;
             image.color = Color.white;
+            if (forestObject.Category == ForestObjectCategory.RoundLog && config.LogLook != null)
+            {
+                RollingLog.Attach(image, config.LogLook);
+            }
 
             button.gameObject.SetActive(true);
             button.onClick.AddListener(() => Choose(forestObject, button));
@@ -636,9 +640,34 @@ namespace Game.Levels.Wheel
                 }
 
                 Place((RectTransform)button.transform, position, forestObject.Mirrored, cursor);
+                if (forestObject.Category == ForestObjectCategory.RoundLog &&
+                    button.GetComponentInChildren<RollingLog>() is { } log)
+                {
+                    Roll((RectTransform)button.transform, log, forestObject, position);
+                }
             }
 
             RustleLeaves(leavesMoving);
+        }
+
+        /// <summary>
+        /// El tronco que el cursor aparta rueda, no se desliza: gira lo que avanza entre su radio,
+        /// hacia la derecha en sentido horario. Solo cuenta el avance horizontal, que es el que va
+        /// de través a su eje; hacia el fondo se movería a lo largo del eje, sin girar.
+        /// </summary>
+        private void Roll(RectTransform rect, RollingLog log, ForestObject forestObject, Vector2 position)
+        {
+            var radius = log.Radius * Mathf.Abs(rect.localScale.y);
+            if (radius <= 0f)
+            {
+                return;
+            }
+
+            var travel = (position.x - forestObject.FloorPosition.x) * floorArea.rect.width;
+            var degrees = -travel / radius * Mathf.Rad2Deg;
+            // Con espejo el giro local se ve al revés: se invierte para que siga rodando hacia donde avanza.
+            rect.localRotation = Quaternion.Euler(0f, 0f,
+                forestObject.RotationDegrees + (forestObject.Mirrored ? -degrees : degrees));
         }
 
         /// <summary>
@@ -867,6 +896,11 @@ namespace Game.Levels.Wheel
                     image.preserveAspect = true;
                     image.color = Color.white;
                     image.gameObject.SetActive(true);
+                    if (config.LogLook != null)
+                    {
+                        RollingLog.Attach(image, config.LogLook); // como en la 2.2, que abre con esta fila
+                    }
+
                     _row.Add(image);
                 }
 

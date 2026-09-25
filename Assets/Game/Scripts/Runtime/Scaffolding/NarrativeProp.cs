@@ -87,6 +87,10 @@ namespace Game.Scaffolding
         public AudioClip LandSound { get; private set; }
 
         [field: SerializeField]
+        [field: Tooltip("Si se asigna, el objeto es un tronco en 3/4: la ilustración es el corte y detrás se pinta este cuerpo, cuyas vetas giran con él al rodar. El mismo asset que el bosque. Vacío = solo la ilustración.")]
+        public RollingLogLook Rolling { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Si se asigna, el objeto es un personaje: en su casilla se pinta este rig animado (Prefabs/Characters) y la ilustración queda de reserva, sin dibujarse. En un personaje, la ilustración es su retrato.")]
         public CharacterRig Actor { get; private set; }
 
