@@ -87,6 +87,10 @@ namespace Game.Scaffolding
         public AudioClip LandSound { get; private set; }
 
         [field: SerializeField]
+        [field: Tooltip("Ambiente que suena en la segunda capa **mientras el objeto se mueve**, en lugar de la de la escena, y se va al llegar: el agua contra los troncos de la balsa que cruza (RF-44). Dura lo que dura el movimiento, no lo que tarde en leerse el texto. Vacío = nada cambia.")]
+        public AudioClip MotionAmbient { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Si se asigna, el objeto es un tronco en 3/4: la ilustración es el corte y detrás se pinta este cuerpo, cuyas vetas giran con él al rodar. El mismo asset que el bosque. Vacío = solo la ilustración.")]
         public RollingLogLook Rolling { get; private set; }
 

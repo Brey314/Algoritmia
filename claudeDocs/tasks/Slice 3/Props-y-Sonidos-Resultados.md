@@ -39,7 +39,7 @@ de paso, `Game.Core`, `Game.Scaffolding` y `Game.UI`. No rediscute `claudeDocs/S
 | Archivo | Estado | Qué se hizo |
 |---|---|---|
 | `Audio/AudioManager.cs` | **Creado** (345 líneas) | Tercer singleton `DontDestroyOnLoad`. Cuatro buses con volumen (`MusicVolume` 0,8 · `AmbientVolume` 0,4 · `SfxVolume` 1 · `VoiceVolume` 0,6). API: `PlayAmbient`/`PlayAmbientLayer` (fundido cruzado; pedir el clip que ya suena no lo reinicia), `PlayMusic`, `PlaySfx(clip, pitchJitter, volume)`, `PlayHeld`/`StopHeld` (bucle mientras dura un clic sostenido), `PlayVoice`, `CutToSilence(keepAmbient)` (silencios del guion §5, corte seco). Expone en `internal` `LastSfx`, `SfxCount`, `HeldClip`, `AmbientClip`, `AmbientLayerClip`, `AmbientStarts` para las pruebas. |
-| `Audio/AssemblyInfo.cs` | **Creado** | `InternalsVisibleTo` para `Game.Audio.PlayMode.Tests` y para `Game.Levels.{Fire,Wheel}.PlayMode.Tests`, que comprueban qué clip sonó. |
+| `Audio/AssemblyInfo.cs` | **Creado** | `InternalsVisibleTo` para `Game.Audio.PlayMode.Tests` y para `Game.Levels.{Fire,Wheel}.PlayMode.Tests`, que comprueban qué clip sonó. Desde el 25/09 también `Game.Levels.River.PlayMode.Tests` (sonido del N3). |
 
 `Game.Audio.asmdef` ya existía desde la Fase 0; no se tocó.
 
@@ -184,9 +184,9 @@ Los `.wav` de PR #81 entraron sin `.meta`; esta rama les da `.meta` (GUID fijo) 
 | `Level 2/Piedra_cayendo.wav` | `Level 2/sfx_n2_piedra_cae.wav` | Renombrado |
 | `Level 2/Troncos.wav` | `Level 2/sfx_n2_troncos.wav` | Renombrado |
 | — | `Level 2/amb_n2_noche_intemperie.wav` | **Creado**; ningún asset lo referencia todavía |
-| `Level 3/Rio.wav` | `Level 3/amb_n3_rio_orilla.wav` | Renombrado; sin referenciar |
-| `Level 3/viento_rio.wav` | `Level 3/amb_viento_horizonte.wav` | Renombrado; sin referenciar |
-| `Level 3/Salpicadura_agua.wav` | `Level 3/sfx_n3_salpicadura.wav` | Renombrado; sin referenciar |
+| `Level 3/Rio.wav` | `Level 3/amb_n3_rio_orilla.wav` | Renombrado; desde el 25/09 lo referencian `N3_Sonidos` y las escenas del río |
+| `Level 3/viento_rio.wav` | `Level 3/amb_viento_horizonte.wav` | Renombrado; sin referenciar. El 25/09 Santiago lo renombró fuera del motor a `amb_balsa_movimiento.wav` (GUID nuevo), que suena en el cruce de la 3.3 |
+| `Level 3/Salpicadura_agua.wav` | `Level 3/sfx_n3_salpicadura.wav` | Renombrado; sin referenciar. El 25/09 pasó a `sfx_n3_salpicadura_undimiento.wav` fuera del motor (GUID nuevo); sigue sin referenciar |
 
 ---
 
@@ -233,8 +233,10 @@ Los `.wav` de PR #81 entraron sin `.meta`; esta rama les da `.meta` (GUID fijo) 
 - **Sin corrida completa registrada** tras `03675b9` y `d7ace67`: hace falta una pasada EditMode +
   PlayMode con `unity test` (Editor cerrado) para dar cifra de la rama entera.
 - `NarrativeScene_RNF01` falla por 1 px en `N1_Hallazgo` (anotado en `8ec5120`, sin corregir).
-- Las piezas del N3 y `amb_n2_noche_intemperie` están en disco pero **no las referencia ningún
-  asset**; no hay música ni blip de diálogo (`PS-01..PS-05`).
+- `amb_n2_noche_intemperie` y `sfx_n3_salpicadura_undimiento` están en disco pero **no las
+  referencia ningún asset**; no hay música ni blip de diálogo (`PS-01..PS-05`). El resto del N3
+  entró el 25/09/2026 con `N3_Sonidos` (`RiverSounds`): lo aplicado está en la rev. 4 de
+  `Direccion_de_Musica_y_Sonido.md` §19.
 - Los cuadros del fuego conservan el nombre de entrega y no el `prop_n1_…` de
   `Direccion_de_Arte.md`; renombrarlos es trabajo del motor.
 - Revisar los dos cambios de configuración que hizo el Editor (§9).

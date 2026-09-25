@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
@@ -37,6 +38,10 @@ namespace Game.Levels.River
         [SerializeField]
         [Tooltip("Contenido del guía del Nivel 3. La recolección activa su primera tarea, «Recolectar».")]
         private GuideContent guide;
+
+        [SerializeField]
+        [Tooltip("Sonidos del Nivel 3: el río con el bosque de fondo y el encaje al recoger. Vacío = la orilla se juega en silencio.")]
+        private RiverSounds sounds;
 
         [SerializeField]
         [Tooltip("La ilustración del río. Cubre la pantalla en el plano fijo del asset; de ella cuelgan Mamá, los materiales y la zona.")]
@@ -140,6 +145,7 @@ namespace Game.Levels.River
 
 #if UNITY_INCLUDE_TESTS
         internal RiverLevelConfig Config => config;
+        internal RiverSounds Sounds => sounds;
         internal Inventory Inventory => _inventory;
         internal TaskList Tasks => _tasks;
         internal RiverWalk Walk => _walk;
@@ -175,9 +181,18 @@ namespace Game.Levels.River
             _hints = new HintPolicy(StepNamed("Recolectar"));
             assemblyPanel.Runner = Runner;
 
+            // El río suena todo el nivel y el bosque encima (§8). Las escenas del río piden los
+            // mismos dos clips, así que de la narrativa a la orilla —y de vuelta tras la 3.2— el
+            // fondo sigue sin costura: pedir lo que ya suena no lo reinicia.
+            if (sounds != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayAmbient(sounds.RiverAmbient);
+                AudioManager.Instance.PlayAmbientLayer(sounds.ForestAmbient);
+            }
+
             // La ilustración cubre la pantalla sin deformarse en el plano fijo del asset —el
-            // cuadrante del bosque, sin río— y sustituir el archivo basta (RNF-23). Va antes de
-            // colgar nada de ella.
+            // cuadrante del bosque con la orilla asomando a la derecha— y sustituir el archivo
+            // basta (RNF-23). Va antes de colgar nada de ella.
             environment.enabled = environment.sprite != null;
             if (environment.sprite != null)
             {
@@ -363,6 +378,7 @@ namespace Game.Levels.River
             var entry = _spawned.First(spawned => spawned.Collectible == collectible);
             entry.Image.gameObject.SetActive(false);
             inventory.Show(collectible.Kind, collectible.Art, _inventory.Count(collectible.Kind));
+            Play(sounds?.Collected);
             if (playerRig != null)
             {
                 playerRig.PlayFor(ActorAction.PickUp, PickUpSeconds);
@@ -504,6 +520,15 @@ namespace Game.Levels.River
             messageIcon.sprite = icon;
             messageIcon.color = color;
             messageIcon.enabled = icon != null;
+        }
+
+        /// <summary>Un efecto del nivel. Sin gestor —la escena se abrió sin pasar por <c>Boot</c>— se juega en silencio.</summary>
+        private static void Play(AudioClip clip)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySfx(clip);
+            }
         }
 
         /// <summary>

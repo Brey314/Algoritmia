@@ -705,6 +705,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Levels.River::Game.Levels.River.AssemblyPanelController
   content: {fileID: 11400000, guid: 21a01e40f4b8e694a87b217a7290bafc, type: 2}
   guide: {fileID: 11400000, guid: 891ef1e80613b9a4d89105886346fcc6, type: 2}
+  sounds: {fileID: 11400000, guid: 8c01db2f647d98848ac67a7ea2c069d3, type: 2}
   world: {fileID: 1284706233}
   environment: {fileID: 1224541143}
   shade: {fileID: 650215416}
@@ -3052,6 +3053,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Levels.River::Game.Levels.River.RiverSceneController
   config: {fileID: 11400000, guid: 194ab3a44dcaff74eab6a464a0811880, type: 2}
   guide: {fileID: 11400000, guid: 891ef1e80613b9a4d89105886346fcc6, type: 2}
+  sounds: {fileID: 11400000, guid: 8c01db2f647d98848ac67a7ea2c069d3, type: 2}
   environment: {fileID: 1224541143}
   player: {fileID: 2004012114}
   playerRig: {fileID: 2074800598}

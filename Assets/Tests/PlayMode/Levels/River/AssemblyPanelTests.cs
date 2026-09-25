@@ -260,7 +260,7 @@ namespace Game.Levels.River.Tests
             return (river, panel);
         }
 
-        private static void WalkTo(RiverSceneController river, Vector2 target)
+        internal static void WalkTo(RiverSceneController river, Vector2 target)
         {
             for (var step = 0; step < 2000 && !river.Zone.IsOpen && Vector2.Distance(river.Walk.Position, target) > 0.005f; step++)
             {

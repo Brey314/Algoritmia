@@ -84,6 +84,8 @@ Ninguna salió del código; están registradas en el tablero con su fecha.
    `Unity.InputSystem` y una prueba lo vigila (INC-01).
 4. **El plano de la recolección es solo el bosque** (20/09): foco `(0.20, 0.20) ×2.5`, el piso
    termina en `GroundTop = 0.36` y hay perspectiva por profundidad; el río entra con el empuje.
+   **Desde el 25/09** el plano se abre a `(0.2632, 0.2632) ×1.9` para que asome un poco el río
+   (decisión de Santiago); el empuje del ensamblaje pasa a acercar hacia él.
 5. **Un solo recolector de indicadores para las tres fases** (R13): §3.6.1 define «pasos
    utilizados» sobre el nivel entero; solo el tiempo es por fase y el reloj de la base arranca al
    abrir el ensamblaje, no en la orilla.

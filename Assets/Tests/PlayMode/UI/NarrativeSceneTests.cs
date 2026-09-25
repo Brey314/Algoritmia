@@ -622,6 +622,45 @@ namespace Game.UI.Tests
         }
 
         /// <summary>
+        /// La balsa suena mientras cruza (RF-44): el agua contra los troncos entra en la segunda
+        /// capa, sobre el río, lo que dura el deslizamiento —no lo que tarde en leerse el texto— y
+        /// al llegar vuelve el bosque de la escena.
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF44_LaBalsaSuenaMientrasCruzaYAlLlegarVuelveElBosque()
+        {
+            var audio = new GameObject("TestAudio").AddComponent<AudioManager>();
+            try
+            {
+                var (controller, _) = await OpenNarrative("N3_Escena33_Cruce", LevelId.River);
+                var secuencia = SequenceNamed(controller, "N3_Escena33_Cruce");
+                var balsa = controller.Props.Single(p => p.Prop.Motion == PropMotion.Drift).Prop;
+                // Assert y no Assume: sin su sonido la balsa cruza en silencio y esto tiene que fallar.
+                Assert.That(balsa.MotionAmbient, Is.Not.Null, "la balsa lleva su sonido de cruce");
+
+                var alCruzar = audio.AmbientLayerClip;
+                var rioAlCruzar = audio.AmbientClip;
+                // Justo antes de llegar: el tiempo real nunca va por detrás del del juego, así que
+                // aquí la balsa aún se desliza. Un sonido que se fuera antes de tiempo se ve aquí.
+                await EsperarSegundos(balsa.MotionSeconds - 0.5f);
+                var antesDeLlegar = audio.AmbientLayerClip;
+                await EsperarSegundos(0.8f);
+
+                Assert.That(balsa.MotionAmbient.name, Is.EqualTo("amb_balsa_movimiento"), "la toma de la balsa");
+                Assert.That(alCruzar, Is.SameAs(balsa.MotionAmbient), "suena al empezar a cruzar");
+                Assert.That(antesDeLlegar, Is.SameAs(balsa.MotionAmbient), "y hasta el final del cruce");
+                Assert.That(rioAlCruzar.name, Is.EqualTo("amb_n3_rio_orilla"), "sobre el río, que no se va");
+                Assert.That(audio.AmbientLayerClip, Is.SameAs(secuencia.AmbientLayer), "al llegar vuelve la capa de la escena");
+                Assert.That(audio.AmbientLayerClip.name, Is.EqualTo("amb_n2_bosque_dia"), "el bosque");
+            }
+            finally
+            {
+                Object.DestroyImmediate(audio.gameObject);
+            }
+        }
+
+        /// <summary>
         /// Que el objeto no suene antes de caer y suene una vez al caer. <paramref name="alCaer"/>
         /// es la fracción de su movimiento en la que toca el suelo.
         /// </summary>

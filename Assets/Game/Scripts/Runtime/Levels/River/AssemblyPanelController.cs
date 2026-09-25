@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Game.Audio;
 using Game.Core;
 using Game.Scaffolding;
 using UnityEngine;
@@ -41,6 +42,10 @@ namespace Game.Levels.River
         [SerializeField]
         [Tooltip("Contenido del guía del Nivel 3: las tareas «Base», «Amarre» y «MastilYVela».")]
         private GuideContent guide;
+
+        [SerializeField]
+        [Tooltip("Sonidos del Nivel 3: el martillazo de cada pieza puesta, los de la fase aprobada y la balsa terminada. Vacío = el ensamblaje se juega en silencio.")]
+        private RiverSounds sounds;
 
         [SerializeField]
         [Tooltip("El mundo: el entorno y todo lo que cuelga de él. Es lo que la cámara empuja al abrir el panel.")]
@@ -92,6 +97,9 @@ namespace Game.Levels.River
         [Tooltip("Cuánto gira la balsa al hundirse por un costado, en grados.")]
         private float sinkAngle = -14f;
 
+        // Segundos del pulso de completado: la balsa crece y vuelve (RF-41).
+        private const float CompletionPulseSeconds = 0.35f;
+
         // Memoria de nivel (véase el remarks): sobrevive a la recarga de la escena, no al proceso.
         private static ConditionalNarrativeTrigger s_firstFailure;
         private static (RaftPhase Phase, Dictionary<string, MaterialKind> Placed)? s_stash;
@@ -123,6 +131,7 @@ namespace Game.Levels.River
 #if UNITY_INCLUDE_TESTS
         internal RaftAssembly Assembly => _assembly;
         internal RaftAssemblyContent Content => content;
+        internal RiverSounds Sounds => sounds;
         internal RectTransform RaftArea => raftArea;
         internal Button ConfirmButton => confirmButton;
         internal Text ConfirmLabel => confirmLabel;
@@ -283,6 +292,9 @@ namespace Game.Levels.River
             if (outcome.Accepted)
             {
                 _wrong.Remove(target.Slot.Id);
+                // Suena lo puesto, no lo correcto: colocar no valida (guion §1.8.4), así que la
+                // pieza equivocada también se clava y es el botón quien la devuelve.
+                Play(sounds?.PiecePlaced);
             }
 
             RefreshAll();
@@ -368,8 +380,9 @@ namespace Game.Levels.River
         }
 
         /// <summary>
-        /// La fase confirmada: pulso breve de completado (RF-41) y la fase queda en disco antes
-        /// de seguir (RF-04, RNF-14). Con la última, se sale al cruce.
+        /// La fase confirmada: pulso breve de completado y martillazos (RF-41), y la fase queda
+        /// en disco (RF-04, RNF-14). Con la última, la balsa terminada suena después del último
+        /// martillazo y se sale al cruce.
         /// </summary>
         private async Awaitable ConfirmedAsync(RaftPhase phase, string message)
         {
@@ -378,30 +391,106 @@ namespace Game.Levels.River
             _show(message, MessageTone.Done);
             _react?.Invoke(ActorAction.Celebrate);
 
+            // El tiempo de resolución llega hasta la confirmación (RF-45): el reloj se para aquí,
+            // no al acabar la animación.
+            var indicators = _indicators.Complete();
+            var last = _assembly.IsComplete;
+            if (!last)
+            {
+                // Lo aprobado queda en disco al aprobarse, no al acabar los martillazos: una pausa
+                // con «Reiniciar» a mitad de ellos no puede perderlo ni contar el paso dos veces
+                // al repetirlo (RF-41, RF-45).
+                Confirmed(phase, indicators);
+            }
+
             try
             {
-                await Tween(0.35f, t => raftArea.localScale = Vector3.one * Mathf.Lerp(1f, completionScale, Mathf.Sin(t * Mathf.PI)));
+                await PulseAndHammerAsync();
             }
             catch (OperationCanceledException)
             {
                 return;
             }
 
-            raftArea.localScale = Vector3.one;
-            _phaseConfirmed?.Invoke(phase);
-            Persist(phase);
-            IsBusy = false;
-
-            if (_assembly.IsComplete)
+            if (last)
             {
                 s_stash = null;
                 s_indicators = null;
+                // Un evento, un sonido (§2.3): la balsa terminada suena un golpe después del
+                // último martillazo, no encima, y se sale al cruce cuando ya sonó. El gestor
+                // sobrevive al cambio de escena y la pieza termina en la narrativa, como la
+                // carretilla del taller.
+                if (sounds != null && sounds.PhaseHitSeconds > 0f)
+                {
+                    try
+                    {
+                        await Awaitable.WaitForSecondsAsync(sounds.PhaseHitSeconds, destroyCancellationToken);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        return;
+                    }
+                }
+
+                Play(sounds?.RaftBuilt);
+                // La última se guarda al salir y no al aprobarse: con el nivel terminado en disco
+                // el cruce —su cierre reflexivo— contaría como visto (CP-07), y quien saliera a
+                // mitad de los martillazos lo podría omitir sin haberlo visto nunca.
+                Confirmed(phase, indicators);
+                IsBusy = false;
                 Leave(content.ClosingSequenceId);
                 return;
             }
 
+            IsBusy = false;
             _hints.Activate(StepFor(_assembly.ActivePhase));
             RefreshAll();
+        }
+
+        /// <summary>La lista marca la fase y la fase queda en disco con sus indicadores.</summary>
+        private void Confirmed(RaftPhase phase, PerformanceIndicators indicators)
+        {
+            _phaseConfirmed?.Invoke(phase);
+            Persist(phase, indicators);
+        }
+
+        /// <summary>
+        /// El pulso de completado y los martillazos de la fase aprobada: lo aprobado queda
+        /// clavado y no se pierde (RF-41). Van en el mismo reloj y la fase no se suelta hasta el
+        /// último golpe.
+        /// </summary>
+        /// <remarks>
+        /// **Por qué no un martilleo suelto** como el del taller (<c>_ = HammerAsync()</c>): el panel
+        /// quedaba libre al acabar el pulso con golpes por sonar, y la pieza siguiente se clavaba
+        /// encima de ellos (§2.3, un evento, un sonido).
+        /// </remarks>
+        private async Awaitable PulseAndHammerAsync()
+        {
+            var hits = sounds != null ? sounds.PhaseHits : 0;
+            var spacing = sounds != null ? sounds.PhaseHitSeconds : 0f;
+            var seconds = Mathf.Max(CompletionPulseSeconds, (hits - 1) * spacing);
+            var played = 0;
+            var elapsed = 0f;
+            while (true)
+            {
+                while (played < hits && elapsed >= played * spacing)
+                {
+                    Play(sounds.PhaseHammer);
+                    played++;
+                }
+
+                var t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(elapsed / CompletionPulseSeconds));
+                raftArea.localScale = Vector3.one * Mathf.Lerp(1f, completionScale, Mathf.Sin(t * Mathf.PI));
+                if (elapsed >= seconds && played >= hits)
+                {
+                    break;
+                }
+
+                await Awaitable.NextFrameAsync(destroyCancellationToken);
+                elapsed += Time.deltaTime;
+            }
+
+            raftArea.localScale = Vector3.one;
         }
 
         /// <summary>
@@ -463,11 +552,11 @@ namespace Game.Levels.River
 
         /// <summary>
         /// Guarda la fase confirmada con sus cuatro indicadores (RF-04, RF-45), que nunca ve el
-        /// estudiante (CP-03). Cerrar el registro reinicia el reloj de la fase siguiente.
+        /// estudiante (CP-03). Los cierra quien confirma, al confirmar: cerrar el registro
+        /// reinicia el reloj de la fase siguiente.
         /// </summary>
-        private void Persist(RaftPhase phase)
+        private void Persist(RaftPhase phase, PerformanceIndicators indicators)
         {
-            var indicators = _indicators.Complete();
             var profile = Runner?.Flow.ActiveProfile;
             if (profile == null)
             {
@@ -669,6 +758,15 @@ namespace Game.Levels.River
             rect.anchoredPosition = Vector2.zero;
             var imageHeight = environment.sprite != null ? environment.sprite.rect.height : environment.rectTransform.rect.height;
             rect.sizeDelta = Vector2.one * (imageHeight * size);
+        }
+
+        /// <summary>Un efecto del ensamblaje. Sin gestor —la escena se abrió sin pasar por <c>Boot</c>— se juega en silencio.</summary>
+        private static void Play(AudioClip clip)
+        {
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySfx(clip);
+            }
         }
 
         /// <summary>La tarea del guía de cada fase, por su id en el asset.</summary>

@@ -564,6 +564,34 @@ Igual que §18 del arte: se dejan escritas, no se toman por cuenta propia.
 
 ## 19. Historial
 
+- **rev. 4 (25/09/2026)** — Nivel 3, a petición de Santiago, con dos piezas del nivel, una del
+  Nivel 2 y las tres globales. El nivel lleva `N3_Sonidos.asset` (`RiverSounds`), que referencian
+  la orilla (`RiverSceneController`) y el panel de ensamblaje (`AssemblyPanelController`) de
+  `Level3_River`. Aplicado: `amb_n3_rio_orilla` suena de fondo con `amb_n2_bosque_dia` **encima,
+  en la segunda capa**, en la orilla, en el ensamblaje y en las cuatro escenas del río
+  (`N3_PuenteII_Rio`, 3.1, 3.2 y 3.3), que piden los mismos dos clips y entran sin costura
+  (`RiverSounds_RF05_LasEscenasDelRioSuenanComoLaOrilla`). Eso se aparta de §8, que no pone el
+  bosque en el Nivel 3. Ninguna de las piezas de §13 con su nombre está entregada todavía; las
+  globales hacen de ellas:
+  - `sfx_encaje_pieza` suena por cada material recogido (en lugar de `sfx_n3_recoger`).
+  - `sfx_martillo_madera` suena **una vez** por cada pieza que queda puesta en la balsa, también
+    la equivocada, porque colocar no valida (en lugar de `sfx_n3_pieza_encaja`). Soltarla fuera
+    de la balsa no suena.
+  - `sfx_martillo_madera` suena tres veces seguidas, separadas por 0,3 s, al aprobar una fase con
+    «Listo» o «Probar balsa» (en lugar de `sfx_n3_fase_confirmada`). El panel no se suelta hasta
+    el último golpe, para que la pieza siguiente no se clave encima (§2.3).
+  - `sfx_n1_pieza_tomar` suena con la balsa terminada, 0,3 s después del último martillazo y
+    antes de salir al cruce; no tiene fila en §13.
+  - `amb_balsa_movimiento` suena mientras la balsa cruza en la 3.3 (en lugar de `sfx_n3_cruce`,
+    que §13 pone en SFX y sin bucle). Va en la **capa** de ambiente sobre el río, en lugar del
+    bosque, y dura lo que dura el deslizamiento (9 s), no lo que tarde en leerse el texto. Al
+    llegar vuelve el bosque. El mecanismo es `NarrativeProp.MotionAmbient`.
+  - Una fase que no pasa, la balsa que se hunde y entrar a la zona sin todo **no suenan** (§2.1).
+    `sfx_n3_salpicadura_undimiento` está en disco y sin referenciar: haría de `sfx_n3_hundimiento`.
+  - `amb_balsa_movimiento` y `sfx_n3_salpicadura_undimiento` son `amb_viento_horizonte` y
+    `sfx_n3_salpicadura` renombrados fuera del motor, con GUID nuevo. Nada referenciaba los
+    anteriores. `amb_viento_horizonte`, que §8 pone en el horizonte y la escena final, ya no
+    existe, y el nombre nuevo no lleva el `n3` de §4.1.
 - **rev. 3 (23/09/2026)** — Nivel 2, a petición de Santiago, con cuatro de las piezas entregadas en
   PR #81 y una del Nivel 1. El nivel lleva `N2_Sonidos.asset` (`WheelSounds`), que referencian las
   tres escenas jugables. Aplicado: `amb_n2_bosque_dia` suena de fondo en el puente I, en las

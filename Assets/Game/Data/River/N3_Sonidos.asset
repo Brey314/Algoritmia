@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89f621b5371d7c047a3b684426bea439, type: 3}
+  m_Name: N3_Sonidos
+  m_EditorClassIdentifier: Game.Levels.River::Game.Levels.River.RiverSounds
+  <RiverAmbient>k__BackingField: {fileID: 8300000, guid: 2b173328d1e17c84fa8bf804a8568a27, type: 3}
+  <ForestAmbient>k__BackingField: {fileID: 8300000, guid: 51f096eb5872f6043bba5cee8f269d2c, type: 3}
+  <Collected>k__BackingField: {fileID: 8300000, guid: 583387d738313f14da1936acfc03b383, type: 3}
+  <PiecePlaced>k__BackingField: {fileID: 8300000, guid: 9a7f8431b83aba94aa6abb1384c7536e, type: 3}
+  <PhaseHammer>k__BackingField: {fileID: 8300000, guid: 9a7f8431b83aba94aa6abb1384c7536e, type: 3}
+  <PhaseHits>k__BackingField: 3
+  <PhaseHitSeconds>k__BackingField: 0.3
+  <RaftBuilt>k__BackingField: {fileID: 8300000, guid: b109a9290639d8341be16070d1a66a98, type: 3}

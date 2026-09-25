@@ -39,8 +39,8 @@ Desde el 10/09/2026 **corren varios en paralelo**, y **el reparto es por assembl
 | **Slice 4** | `Game.Reporting`, `Game.Core`, `Game.UI` |
 
 Además de los slices corre el **carril de arte y sonido** —toca `Assets/Game/Art/`,
-`Assets/Game/Audio/`, `Game.Audio`, `Game.Levels.Fire` y `Game.Levels.Wheel`—, así que se pisa con
-los Slices 1 y 2. Lo que lleva hecho, archivo por archivo, está en
+`Assets/Game/Audio/`, `Game.Audio` y los tres niveles (`Game.Levels.River` desde el sonido del N3,
+25/09/2026)—, así que se pisa con los tres primeros slices. Lo que lleva hecho, archivo por archivo, está en
 `claudeDocs/tasks/Slice 3/Props-y-Sonidos-Resultados.md`; los personajes animados, que además tocan
 `Game.Scaffolding`, `Game.UI`, los tres niveles, las 18 narrativas y las cinco escenas jugables, en
 `claudeDocs/tasks/Personajes/Personajes-Resultados.md`. Una regla suya que no caduca: los cuadros
@@ -332,14 +332,17 @@ antes de escribir la primera línea:
   código de hoy;
   y `Game.EditorTools`, **solo Editor**, que no referencia ningún `Game.*` (trae `PlayFromBoot`,
   `ArtImportRules`, `AudioImportRules`, `ClaudeSceneAutosave` y `Sandbox/CharacterProbe*`, que no es código del juego).
-  **Un nivel que suena referencia `Game.Audio`** —hoy `Game.Levels.Fire` y `Game.Levels.Wheel`— y **no llama al
+  **Un nivel que suena referencia `Game.Audio`** —hoy los tres— y **no llama al
   gestor con clips propios sino con los de su ScriptableObject** (`FireSounds` → `N1_Sonidos`,
-  `WheelSounds` → `N2_Sonidos`, CT-05); las escenas narrativas no tocan código: el ambiente es un campo de `NarrativeSequence` y
-  el efecto y el silencio son campos de `DialogueLine`. `AudioManager.Instance` puede ser nulo
+  `WheelSounds` → `N2_Sonidos`, `RiverSounds` → `N3_Sonidos`, CT-05); las escenas narrativas no tocan código: el ambiente es un campo de `NarrativeSequence`,
+  el efecto y el silencio son campos de `DialogueLine`, y lo que suena **mientras un objeto se
+  mueve** (la balsa que cruza) es `NarrativeProp.MotionAmbient`, en la capa de ambiente y solo lo
+  que dura el movimiento. `AudioManager.Instance` puede ser nulo
   (escena abierta sin pasar por `Boot`, pruebas): todo consumidor lo comprueba y el juego sigue
   en silencio, porque el audio refuerza y nunca informa solo (§2.4). **El sonido restante es de Santiago Benavides Rey** desde el acta D08
-  (tarjetas `D07-2`, `D08-2`): faltan las piezas del Nivel 3, el ambiente nocturno del Nivel 2,
-  la música y el sonido del diálogo; el Nivel 1 entró el 21/09/2026 y el Nivel 2 el 23/09/2026.
+  (tarjetas `D07-2`, `D08-2`): faltan el ambiente nocturno del Nivel 2, el hundimiento de la
+  balsa, la música y el sonido del diálogo; el Nivel 1 entró el 21/09/2026, el Nivel 2 el 23/09 y
+  el Nivel 3 el 25/09.
 - **`Game.Levels.River` a propósito no referencia `Unity.InputSystem`**: las flechas son botones
   uGUI con clic sostenido (`IPointerDown/Up`), y
   `RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles` vigila que el assembly no gane
@@ -415,7 +418,7 @@ antes de escribir la primera línea:
   propia línea**: sin ella el `internal` no se ve desde PlayMode aunque la de EditMode esté puesta.
   Hoy ese archivo existe en `Game.Core` (desde `d7ace67`), `Game.Levels.{Fire,Wheel,River}`,
   `Game.UI`, `Game.Audio` —que abre además sus internos a
-  `Game.Levels.{Fire,Wheel}.PlayMode.Tests` y `Game.UI.PlayMode.Tests`, que comprueban **qué** clip
+  `Game.Levels.{Fire,Wheel,River}.PlayMode.Tests` y `Game.UI.PlayMode.Tests`, que comprueban **qué** clip
   sonó— y `Game.Scaffolding` (desde `1d5ce58`, **solo** la línea de EditMode: su PlayMode aún no
   ve internos); `Game.Reporting` se prueba por superficie pública, así que ahí no hay
   `AssemblyInfo.cs` que buscar — y si una prueba nueva lo necesita, se crea.
