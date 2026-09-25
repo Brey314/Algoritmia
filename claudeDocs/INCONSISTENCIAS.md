@@ -99,6 +99,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-51 | El cierre del Nivel 3 nunca ofrece omitir; HU-14 FA-01 lo pide a quien repite el nivel | HU | **Abierto** (decisión tomada: se acepta) |
 | INC-52 | El Algoritm entregado es una llama con brazos, piernas y franja de colores; §7.6 pide una estrella sin extremidades | Dirección de arte, Interfaces | **Abierto** (se usa el arte entregado) |
 | INC-53 | Los personajes se animan por recorte con `Image` de uGUI; §13.1 fija rigging con el paquete 2D Animation | Dirección de arte | **Abierto** (decisión técnica: el rigging no cabe en un Canvas overlay) |
+| INC-54 | El taller del Nivel 2 tiene una séptima pieza, la cuerda, y un último paso, amarrar la caja; el guion §1.6.2.2 y RF-27/RF-29 cierran el armado con la caja | Guion, OE1, HU, CU | **Abierto** (decisión de Santiago, 25/09/2026) |
 
 ---
 
@@ -606,6 +607,29 @@ base, sin hojas de fotogramas; y §13.2–§13.3: respiración de reposo, sin sa
 **Corrección pendiente.** §13.1: «rigging por recorte con `Image` de uGUI (`CharacterRig`) sobre
 los sprites base en A-pose», con la razón.
 
+### INC-54 · La carretilla se termina amarrando la caja con una cuerda — abierto
+
+**Decisión de Santiago, 25/09/2026**: entra la pieza `prop_n2_pieza_2` —una cuerda— al taller de la
+fase 2 del Nivel 2, como pieza que se coloca en la carretilla, y su paso va **después de la caja**.
+El armado queda: perforar dos ruedas → eje → tabla → caja → **amarrar la caja con la cuerda**. La
+carretilla se da por completa al amarrarla, no al poner la caja.
+
+**Qué se hizo.** `WorkshopPiece.Rope` y `AssemblyStep.Rope`; la cuerda se lleva con clic
+sostenido, como el eje, la tabla y la caja, y soltarla antes de que la caja esté encima se rechaza
+con «La cuerda todavía no tiene nada que sujetar.», que dice qué falta sin dictar el paso (CP-06).
+No hay dibujo de la carretilla con la cuerda: la pieza misma queda sobre la caja
+(`AssemblyContent.RopePlacedPosition`). La instrucción del guía (`N2_Guia`, «Construir») y la
+escena 2.3 (`N2_Escena23_Construccion`) la nombran.
+
+**Qué dicen hoy los documentos.** Guion §1.6.2.2: «un área de trabajo con seis piezas
+dispuestas» y la tabla de seis pasos, que termina en «la carretilla queda completa» al soltar la
+caja; §1.6.2.1, la línea de Algoritm «coloca encima la tabla y sobre ella la caja de alimentos».
+RF-27 y RF-29, HU (flujo de la historia de la fase 2) y CU-07 describen el mismo armado sin cuerda.
+Las pruebas conservan RF-27 y RF-29 en el nombre; la del paso nuevo lleva INC-54.
+
+**Corrección pendiente.** Guion §1.6.2.1 y §1.6.2.2 (siete piezas, paso 7 y su mensaje fuera de
+orden), RF-27, RF-29, la historia de la fase 2 y CU-07.
+
 ## Residuos y puntos abiertos
 
 **Residuos menores** (no afectan al código ni a un criterio de verificación):
@@ -629,6 +653,9 @@ INC-43).
 
 ## Historial de revisiones
 
+- **rev. 13 (25/09/2026)** — Se abre **INC-54**: el taller del Nivel 2 gana la cuerda como séptima
+  pieza y un último paso, amarrar la caja; el guion, RF-27, RF-29 y CU-07 terminan el armado en la
+  caja.
 - **rev. 12 (24/09/2026)** — Entran los personajes animados. Se abren **INC-52**: el Algoritm
   entregado es una llama con extremidades y §7.6 pide una estrella sin ellas; se usa el arte
   entregado, con rueda y gota provisionales. Se abre **INC-53**: la animación es por recorte con

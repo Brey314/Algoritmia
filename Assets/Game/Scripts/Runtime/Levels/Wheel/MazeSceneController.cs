@@ -286,7 +286,8 @@ namespace Game.Levels.Wheel
             foreach (var obstacle in _grid.Obstacles)
             {
                 var art = layout.ObstacleArt.Length > 0 ? layout.ObstacleArt[random.Next(layout.ObstacleArt.Length)] : null;
-                Spawn($"Obstaculo_{obstacle.x}_{obstacle.y}", obstacle, art, new Color(0.35f, 0.32f, 0.42f));
+                var image = Spawn($"Obstaculo_{obstacle.x}_{obstacle.y}", obstacle, art, new Color(0.35f, 0.32f, 0.42f));
+                image.rectTransform.sizeDelta *= layout.ObstacleScale;
             }
 
             // El refugio no se marca con un cuadro de color: la salida ya se lee en el entorno, el

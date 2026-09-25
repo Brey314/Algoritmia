@@ -2,7 +2,8 @@ namespace Game.Levels.Wheel
 {
     /// <summary>
     /// El último paso del ensamblaje que quedó hecho (RF-29). El orden del enum **es** el orden
-    /// del guion §6.2.2: perforar dos ruedas → eje → tabla → caja, y solo avanza.
+    /// del armado: perforar dos ruedas → eje → tabla → caja (guion §6.2.2) → amarrar la caja con
+    /// la cuerda (INC-54), y solo avanza.
     /// </summary>
     public enum AssemblyStep
     {
@@ -11,6 +12,7 @@ namespace Game.Levels.Wheel
         SecondWheel = 2,
         Axle = 3,
         Plank = 4,
-        Cargo = 5
+        Cargo = 5,
+        Rope = 6
     }
 }

@@ -665,9 +665,7 @@ namespace Game.Levels.Wheel
 
             var travel = (position.x - forestObject.FloorPosition.x) * floorArea.rect.width;
             var degrees = -travel / radius * Mathf.Rad2Deg;
-            // Con espejo el giro local se ve al revés: se invierte para que siga rodando hacia donde avanza.
-            rect.localRotation = Quaternion.Euler(0f, 0f,
-                forestObject.RotationDegrees + (forestObject.Mirrored ? -degrees : degrees));
+            rect.localRotation = Quaternion.Euler(0f, 0f, forestObject.RotationDegrees + degrees);
         }
 
         /// <summary>

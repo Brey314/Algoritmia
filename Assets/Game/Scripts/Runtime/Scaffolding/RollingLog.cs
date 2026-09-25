@@ -35,6 +35,11 @@ namespace Game.Scaffolding
         private float _spin = float.NaN;
         private float _pixel;
 
+#if UNITY_INCLUDE_TESTS
+        /// <summary>El giro que se pasa a la textura, en grados.</summary>
+        internal float Spin => _spin;
+#endif
+
         /// <inheritdoc/>
         public override Texture mainTexture => _look != null && _look.Texture != null ? _look.Texture : s_WhiteTexture;
 
@@ -97,11 +102,13 @@ namespace Game.Scaffolding
                 return;
             }
 
-            // Deshace el giro —y el espejo— del objeto. Con espejo el giro local se ve al revés.
+            // Deshace el giro —y el espejo— del objeto. El espejo se aplica antes que el giro, así
+            // que el objeto se ve girar su giro local tal cual: eso es lo que rueda la textura, con
+            // espejo o sin él. Deshacerlo sí depende del espejo, que invierte el sentido del giro.
             var root = _face.rectTransform;
             var mirror = Mathf.Sign(root.localScale.x * root.localScale.y);
-            var spin = mirror * root.localEulerAngles.z;
-            rectTransform.localRotation = Quaternion.Euler(0f, 0f, -spin);
+            var spin = root.localEulerAngles.z;
+            rectTransform.localRotation = Quaternion.Euler(0f, 0f, -mirror * spin);
             rectTransform.localScale = new Vector3(mirror, 1f, 1f);
 
             // El tinte del botón (al pasar el cursor, al pulsar) cae en la imagen del objeto.

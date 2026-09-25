@@ -667,7 +667,11 @@ namespace Game.UI
                     // La balsa que cruza (RF-44) se desliza: el mismo avance suavizado, sin giro
                     // ni caída, y baja o sube lo que diga el asset.
                     var y = drifts ? -image.y * prop.MotionDrop * roll.Along : height - drop * roll.Drop;
-                    var spin = drifts ? 0f : rolls ? roll.Spin + roll.Tilt : Mathf.Sin(ground * Mathf.PI) * 12f;
+                    // Gira el tronco —el cilindro—; lo que rueda sobre él, la caja, se desliza y solo
+                    // se ladea al caer, igual que en el bosque.
+                    var spin = drifts ? 0f
+                        : rolls ? (prop.Rolling != null ? roll.Spin : roll.Tilt)
+                        : Mathf.Sin(ground * Mathf.PI) * 12f;
 
                     rect.anchoredPosition = origin + new Vector2(x, y);
                     rect.localRotation = Quaternion.Euler(0f, 0f, prop.RotationDegrees + spin);

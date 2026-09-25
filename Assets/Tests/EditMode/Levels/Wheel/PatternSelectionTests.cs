@@ -208,22 +208,20 @@ namespace Game.Levels.Wheel.Tests
         }
 
         [Test]
-        public void WheelLevelConfig_RF23_CadaCategoriaDelBosqueSeDibujaConUnSoloSprite()
+        public void WheelLevelConfig_RF23_LosTroncosRedondosSeDibujanConUnSoloSprite()
         {
-            // Un sprite por categoría y no uno por objeto. Con arte generado, cinco troncos
+            // Un sprite para los troncos y no uno por tronco. Con arte generado, cinco troncos
             // «parecidos pero no iguales» son cinco oportunidades de que uno deje de leerse como
             // redondo; uno solo, repetido, no puede desmentir el patrón que RF-23 pide encontrar.
+            // Los distractores sí varían (decisión de Santiago, 25/09/2026): plantas y
+            // herramientas distintas entre sí dejan la redondez como lo único que se repite.
             var porCategoria = ConfiguracionDelNivel2().ForestObjects
                 .GroupBy(objeto => objeto.Category)
                 .ToDictionary(grupo => grupo.Key,
                     grupo => grupo.Select(objeto => objeto.Art).Distinct().ToArray());
 
-            var conVariasIlustraciones = porCategoria
-                .Where(par => par.Value.Length != 1)
-                .Select(par => $"{par.Key} usa {par.Value.Length} sprites")
-                .ToArray();
-
-            Assert.That(conVariasIlustraciones, Is.Empty, string.Join(" · ", conVariasIlustraciones));
+            Assert.That(porCategoria[ForestObjectCategory.RoundLog], Has.Length.EqualTo(1),
+                "los cinco troncos redondos son el mismo dibujo, girado");
 
             var sprites = porCategoria.Values.SelectMany(unos => unos).ToArray();
             Assert.That(sprites.Distinct().Count(), Is.EqualTo(sprites.Length),

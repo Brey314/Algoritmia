@@ -10,7 +10,7 @@ namespace Game.Levels.Wheel
 {
     /// <summary>
     /// La escena de la fase 2 del Nivel 2 — el área de trabajo (RF-27, RF-28, RF-29). Reparte las
-    /// seis piezas sobre el entorno, traduce clic, botón y clic sostenido a
+    /// piezas sobre el entorno, traduce clic, botón y clic sostenido a
     /// <see cref="AssemblySequence"/> y pinta lo que la regla devuelve.
     /// </summary>
     /// <remarks>
@@ -228,12 +228,12 @@ namespace Game.Levels.Wheel
 
         /// <summary>
         /// Deja una pieza sobre el entorno, en el punto que le da el asset, y la cablea según lo que
-        /// es: los troncos cortos se pulsan, y el mazo, el eje, la tabla y la caja se sostienen
-        /// (guion §6.2.2).
+        /// es: los troncos cortos se pulsan, y el mazo, el eje, la tabla, la caja y la cuerda se
+        /// sostienen (guion §6.2.2, INC-54).
         /// </summary>
         /// <remarks>
         /// El modelo trae botón y asa; a cada pieza se le quita lo que no usa en vez de tener dos
-        /// modelos. Así la prueba del mapa de controles puede afirmar que **solo** cuatro objetos
+        /// modelos. Así la prueba del mapa de controles puede afirmar que **solo** cinco objetos
         /// responden al clic sostenido y que todo lo demás interactivo es un botón (RNF-02).
         /// </remarks>
         private void Spawn(WorkshopPiecePlacement placement)
@@ -360,7 +360,7 @@ namespace Game.Levels.Wheel
 
         // --- los arrastres (pasos 4–6) ------------------------------------------------------------
 
-        /// <summary>El clic sostenido sobre el eje, la tabla o la caja.</summary>
+        /// <summary>El clic sostenido sobre el mazo, el eje, la tabla, la caja o la cuerda.</summary>
         internal void Take(WorkshopPiece piece)
         {
             if (IsCompleting || !AssemblySequence.IsDraggable(piece) || !_pieces.TryGetValue(piece, out var entry))
@@ -416,7 +416,18 @@ namespace Game.Levels.Wheel
 
             if (outcome.Accepted)
             {
-                rect.gameObject.SetActive(false);
+                if (piece == WorkshopPiece.Rope)
+                {
+                    // La carretilla no tiene dibujo con la cuerda: la pieza misma se queda
+                    // amarrada encima de la caja y ya no se vuelve a tomar (INC-54).
+                    Hang(rect, config.RopePlacedPosition, config.RopePlacedSize);
+                    Destroy(rect.GetComponent<CargoHandle>());
+                }
+                else
+                {
+                    rect.gameObject.SetActive(false);
+                }
+
                 ShowAssembly(piece);
                 _ = HammerAsync();
                 _hints.RegisterSuccessfulAttempt();
@@ -518,7 +529,7 @@ namespace Game.Levels.Wheel
                 case WorkshopPiece.Plank:
                     assemblyImage.sprite = config.PlankArt;
                     break;
-                default:
+                case WorkshopPiece.Cargo:
                     assemblyImage.sprite = config.CompleteArt;
                     break;
             }

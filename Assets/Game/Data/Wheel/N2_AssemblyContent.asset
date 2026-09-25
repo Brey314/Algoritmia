@@ -37,10 +37,16 @@ MonoBehaviour:
     <Art>k__BackingField: {fileID: 21300000, guid: 55ca788eb08d23345b9f57fc38312cf0, type: 3}
     <Position>k__BackingField: {x: 0.925, y: 0.31}
     <Size>k__BackingField: 0.11
+  - <Piece>k__BackingField: 6
+    <Art>k__BackingField: {fileID: 21300000, guid: 649f1e8fe42ba7c498dd7439c9c42ae7, type: 3}
+    <Position>k__BackingField: {x: 0.6, y: 0.3}
+    <Size>k__BackingField: 0.1
   <DrilledWheelArt>k__BackingField: {fileID: 21300000, guid: 0c69c9fd600009540b90113856b173c4, type: 3}
   <AxleArt>k__BackingField: {fileID: 21300000, guid: 2cdae96867bd9694eab2fbc2688616d7, type: 3}
   <PlankArt>k__BackingField: {fileID: 21300000, guid: 457c5ddb3375d484681cefa09af6f9cd, type: 3}
   <CompleteArt>k__BackingField: {fileID: 21300000, guid: 730e4e910b1eebf42bde323e156e0bff, type: 3}
+  <RopePlacedPosition>k__BackingField: {x: 0.681, y: 0.33}
+  <RopePlacedSize>k__BackingField: 0.05
   <SelectedMessage>k__BackingField: "El tronco qued\xF3 resaltado."
   <AlreadyWheelMessage>k__BackingField: 'Ese tronco ya tiene su agujero: es una rueda.'
   <SelectNeededMessage>k__BackingField: Mecanizar necesita un tronco corto resaltado.
@@ -51,7 +57,8 @@ MonoBehaviour:
   <AxleFormedMessage>k__BackingField: "El tronco largo entr\xF3 por el centro de
     las dos ruedas: ya hay un eje."
   <PlankPlacedMessage>k__BackingField: "La tabla qued\xF3 montada sobre el conjunto."
-  <CompleteMessage>k__BackingField: "La caja va sobre la tabla. La carretilla est\xE1
+  <CargoPlacedMessage>k__BackingField: La caja va sobre la tabla.
+  <CompleteMessage>k__BackingField: "La cuerda sujeta la caja. La carretilla est\xE1
     completa."
   <AxleTooEarlyMessage>k__BackingField: "El tronco todav\xEDa no tiene por d\xF3nde
     entrar el palo."
@@ -59,6 +66,8 @@ MonoBehaviour:
     todav\xEDa."
   <CargoTooEarlyMessage>k__BackingField: "La caja se caer\xEDa. Falta algo plano
     debajo."
+  <RopeTooEarlyMessage>k__BackingField: "La cuerda todav\xEDa no tiene nada que
+    sujetar."
   <MissedMessage>k__BackingField: "La pieza vuelve a su sitio: cay\xF3 lejos del
     lugar de armado."
   <AssemblyPosition>k__BackingField: {x: 0.68, y: 0.33}

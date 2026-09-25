@@ -213,6 +213,13 @@ namespace Game.Levels.Wheel.Tests
 
             await Arrastrar(workshop, WorkshopPiece.Cargo, workshop.AssemblyImage.rectTransform);
             Assert.That(workshop.AssemblyImage.sprite, Is.SameAs(workshop.Config.CompleteArt));
+            Assert.That(workshop.Assembly.IsComplete, Is.False, "con la caja encima falta amarrarla (INC-54)");
+
+            await Arrastrar(workshop, WorkshopPiece.Rope, workshop.AssemblyImage.rectTransform);
+            var cuerda = workshop.Pieces[WorkshopPiece.Rope].Rect;
+            Assert.That(cuerda.gameObject.activeInHierarchy, Is.True, "la cuerda se queda amarrada sobre la caja");
+            Assert.That(EnPantalla(cuerda).Overlaps(EnPantalla(workshop.AssemblyImage.rectTransform)), Is.True,
+                "encima de la carretilla, no en su sitio del suelo");
             Assert.That(workshop.Assembly.IsComplete, Is.True);
             Assert.That(workshop.IsCompleting, Is.True, "y arranca el empuje de cámara de cierre");
         }
@@ -247,8 +254,8 @@ namespace Game.Levels.Wheel.Tests
                 .ToArray();
 
             Assert.That(arrastrables, Is.Empty, "ningún elemento del taller usa el arrastre de uGUI");
-            Assert.That(sostenidos, Is.EqualTo(new[] { "Pieza_Cargo", "Pieza_LongLog", "Pieza_Plank", "Pieza_Tool" }),
-                "lo único que responde al clic sostenido son las tres piezas que se colocan y el mazo");
+            Assert.That(sostenidos, Is.EqualTo(new[] { "Pieza_Cargo", "Pieza_LongLog", "Pieza_Plank", "Pieza_Rope", "Pieza_Tool" }),
+                "lo único que responde al clic sostenido son las cuatro piezas que se colocan y el mazo");
         }
 
         [Test]
@@ -322,6 +329,7 @@ namespace Game.Levels.Wheel.Tests
 
                 await Arrastrar(workshop, WorkshopPiece.Plank, workshop.AssemblyImage.rectTransform);
                 await Arrastrar(workshop, WorkshopPiece.Cargo, workshop.AssemblyImage.rectTransform);
+                await Arrastrar(workshop, WorkshopPiece.Rope, workshop.AssemblyImage.rectTransform);
                 await Esperar(() => !workshop.IsCompleting, 10f);
                 Assert.That(audio.LastSfx, Is.SameAs(sounds.CartBuilt), "la carretilla terminada suena al final, después de los martillazos");
                 Assert.That(audio.LastSfx.name, Is.EqualTo("sfx_n1_pieza_tomar"));
@@ -355,6 +363,7 @@ namespace Game.Levels.Wheel.Tests
                 await Arrastrar(workshop, WorkshopPiece.LongLog, workshop.Pieces[WorkshopPiece.ShortLogA].Rect);
                 await Arrastrar(workshop, WorkshopPiece.Plank, workshop.AssemblyImage.rectTransform);
                 await Arrastrar(workshop, WorkshopPiece.Cargo, workshop.AssemblyImage.rectTransform);
+                await Arrastrar(workshop, WorkshopPiece.Rope, workshop.AssemblyImage.rectTransform);
                 await Esperar(() => runner.Flow.Current != GameState.Playing);
 
                 Assert.That(perfil.IsPhaseConfirmed(fase2), Is.True, "la carretilla terminada confirma la fase 2 (RF-04)");
@@ -511,6 +520,7 @@ namespace Game.Levels.Wheel.Tests
             await Arrastrar(taller, WorkshopPiece.LongLog, taller.Pieces[WorkshopPiece.ShortLogA].Rect);
             await Arrastrar(taller, WorkshopPiece.Plank, taller.AssemblyImage.rectTransform);
             await Arrastrar(taller, WorkshopPiece.Cargo, taller.AssemblyImage.rectTransform);
+            await Arrastrar(taller, WorkshopPiece.Rope, taller.AssemblyImage.rectTransform);
             Assume.That(taller.IsCompleting, Is.True);
 
             foreach (var rig in familia)

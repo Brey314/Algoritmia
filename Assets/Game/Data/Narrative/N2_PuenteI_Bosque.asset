@@ -196,7 +196,7 @@ MonoBehaviour:
     <Actor>k__BackingField: {fileID: 0}
     <ActorStart>k__BackingField: 0
     <Beats>k__BackingField: []
-  - <Art>k__BackingField: {fileID: -5133885886887407156, guid: d8c04e0eb2e6b8e468f7a6a1a78dd626, type: 3}
+  - <Art>k__BackingField: {fileID: 2076456876981602082, guid: 07e9eeb115364f740919f4b90b69013e, type: 3}
     <Position>k__BackingField: {x: 0.805, y: 0.36}
     <Size>k__BackingField: 0.07
     <RotationDegrees>k__BackingField: 0
@@ -209,13 +209,14 @@ MonoBehaviour:
     <MotionSeconds>k__BackingField: 1.6
     <MotionDrop>k__BackingField: 0
     <LandSound>k__BackingField: {fileID: 0}
+    <Rolling>k__BackingField: {fileID: 11400000, guid: 719932f70953ec146bd004562be39349, type: 2}
     <Actor>k__BackingField: {fileID: 0}
     <ActorStart>k__BackingField: 0
     <Beats>k__BackingField: []
-  - <Art>k__BackingField: {fileID: 7880052985964257323, guid: ec8fe91178867d24fb6b66d7f734fcaf, type: 3}
+  - <Art>k__BackingField: {fileID: 2076456876981602082, guid: 07e9eeb115364f740919f4b90b69013e, type: 3}
     <Position>k__BackingField: {x: 0.825, y: 0.36}
     <Size>k__BackingField: 0.07
-    <RotationDegrees>k__BackingField: 0
+    <RotationDegrees>k__BackingField: 45
     <Mirrored>k__BackingField: 0
     <FrameAnimation>k__BackingField: {fileID: 0}
     <BurnExtent>k__BackingField: 0
@@ -225,13 +226,14 @@ MonoBehaviour:
     <MotionSeconds>k__BackingField: 1.6
     <MotionDrop>k__BackingField: 0
     <LandSound>k__BackingField: {fileID: 0}
+    <Rolling>k__BackingField: {fileID: 11400000, guid: 719932f70953ec146bd004562be39349, type: 2}
     <Actor>k__BackingField: {fileID: 0}
     <ActorStart>k__BackingField: 0
     <Beats>k__BackingField: []
-  - <Art>k__BackingField: {fileID: 2813922130077667989, guid: 8fa9b3be720b0fe448aae04dd9099182, type: 3}
+  - <Art>k__BackingField: {fileID: 2076456876981602082, guid: 07e9eeb115364f740919f4b90b69013e, type: 3}
     <Position>k__BackingField: {x: 0.815, y: 0.413}
     <Size>k__BackingField: 0.06
-    <RotationDegrees>k__BackingField: 0
+    <RotationDegrees>k__BackingField: -30
     <Mirrored>k__BackingField: 0
     <FrameAnimation>k__BackingField: {fileID: 0}
     <BurnExtent>k__BackingField: 0
@@ -241,10 +243,11 @@ MonoBehaviour:
     <MotionSeconds>k__BackingField: 1.6
     <MotionDrop>k__BackingField: 0
     <LandSound>k__BackingField: {fileID: 0}
+    <Rolling>k__BackingField: {fileID: 11400000, guid: 719932f70953ec146bd004562be39349, type: 2}
     <Actor>k__BackingField: {fileID: 0}
     <ActorStart>k__BackingField: 0
     <Beats>k__BackingField: []
-  - <Art>k__BackingField: {fileID: 195652039903426866, guid: 85db00077e28b7343bf08d24653687de, type: 3}
+  - <Art>k__BackingField: {fileID: 2262806618755955747, guid: 976c850ed5c57334583064850f84f672, type: 3}
     <Position>k__BackingField: {x: 0.69, y: 0.335}
     <Size>k__BackingField: 0.055
     <RotationDegrees>k__BackingField: -10
@@ -396,7 +399,7 @@ MonoBehaviour:
     <Actor>k__BackingField: {fileID: 0}
     <ActorStart>k__BackingField: 0
     <Beats>k__BackingField: []
-  - <Art>k__BackingField: {fileID: 195652039903426866, guid: 85db00077e28b7343bf08d24653687de, type: 3}
+  - <Art>k__BackingField: {fileID: 5256001766513851773, guid: 562fd383ac8a81f45a42204393184548, type: 3}
     <Position>k__BackingField: {x: 0.872, y: 0.33}
     <Size>k__BackingField: 0.05
     <RotationDegrees>k__BackingField: 10

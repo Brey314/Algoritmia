@@ -551,7 +551,10 @@ namespace Game.UI.Tests
             var troncosBajoLaCaja = controller.Props.Where(p => p.Prop.MotionLine == 0 && p.Prop.Motion == PropMotion.Roll && p.Prop.MotionDistance == 0f).ToArray();
             var cajaAlEmpezar = caja.Rect.anchoredPosition;
             var giroAlEmpezar = troncosBajoLaCaja.First().Rect.localEulerAngles.z;
-            await EsperarSegundos(caja.Prop.MotionSeconds + 0.2f);
+            await EsperarSegundos(caja.Prop.MotionSeconds * 0.4f);
+            Assert.That(Mathf.DeltaAngle(caja.Prop.RotationDegrees, caja.Rect.localEulerAngles.z), Is.EqualTo(0f).Within(0.5f),
+                "sobre los troncos la caja se desliza sin dar vueltas: los que giran son ellos");
+            await EsperarSegundos(caja.Prop.MotionSeconds * 0.6f + 0.2f);
 
             Assert.That(caja.Rect.anchoredPosition.x, Is.GreaterThan(cajaAlEmpezar.x), "la caja rodó a la derecha");
             Assert.That(caja.Rect.anchoredPosition.y, Is.LessThan(cajaAlEmpezar.y), "y al pasar el último tronco cayó al suelo");

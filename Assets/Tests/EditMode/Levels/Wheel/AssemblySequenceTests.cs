@@ -113,9 +113,35 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(sut.Place(WorkshopPiece.Cargo, true).Message, Is.EqualTo("falta la tabla"),
                 "con el eje pero sin tabla la caja sigue rechazada");
             Assert.That(sut.Place(WorkshopPiece.Plank, true).Accepted, Is.True, "con el eje la tabla se monta");
-            Assert.That(sut.Place(WorkshopPiece.Cargo, true).Accepted, Is.True, "y con la tabla la caja completa la carretilla");
-            Assert.That(sut.IsComplete, Is.True);
+            var cuerda = sut.Place(WorkshopPiece.Rope, true);
+            Assert.That(cuerda.Accepted, Is.False, "la cuerda no amarra nada sin la caja (INC-54)");
+            Assert.That(cuerda.Message, Is.EqualTo("falta la caja"));
+            Assert.That(sut.Place(WorkshopPiece.Cargo, true).Accepted, Is.True, "y con la tabla la caja va encima");
+            Assert.That(sut.IsComplete, Is.False, "la carretilla aún no está completa: falta amarrar la caja");
             Assert.That(sut.LastCompleted, Is.EqualTo(AssemblyStep.Cargo));
+        }
+
+        [Test]
+        public void AssemblySequence_INC54_LaCuerdaAmarraLaCajaYCompletaLaCarretilla()
+        {
+            var sut = Taller();
+            PerforarLasDos(sut);
+            sut.Place(WorkshopPiece.LongLog, true);
+            sut.Place(WorkshopPiece.Plank, true);
+
+            var caja = sut.Place(WorkshopPiece.Cargo, true);
+            Assert.That(caja.Message, Is.EqualTo("caja puesta"), "la caja ya no cierra el armado");
+
+            Assert.That(sut.Place(WorkshopPiece.Rope, false).Message, Is.EqualTo("lejos"),
+                "la cuerda soltada lejos no amarra nada");
+            Assert.That(sut.IsComplete, Is.False);
+
+            var cuerda = sut.Place(WorkshopPiece.Rope, true);
+            Assert.That(cuerda.Accepted, Is.True);
+            Assert.That(cuerda.Message, Is.EqualTo("carretilla lista"), "amarrar la caja completa la carretilla");
+            Assert.That(sut.IsComplete, Is.True);
+            Assert.That(sut.LastCompleted, Is.EqualTo(AssemblyStep.Rope));
+            Assert.That(AssemblySequence.IsDraggable(WorkshopPiece.Rope), Is.True, "la cuerda se lleva con clic sostenido");
         }
 
         [Test]
@@ -163,7 +189,8 @@ namespace Game.Levels.Wheel.Tests
             var content = UnityEngine.ScriptableObject.CreateInstance<AssemblyContent>();
             var rechazos = new[]
             {
-                content.AxleTooEarlyMessage, content.PlankTooEarlyMessage, content.CargoTooEarlyMessage
+                content.AxleTooEarlyMessage, content.PlankTooEarlyMessage, content.CargoTooEarlyMessage,
+                content.RopeTooEarlyMessage
             };
 
             Assert.That(content.AxleTooEarlyMessage, Is.EqualTo("El tronco todavía no tiene por dónde entrar el palo."));
@@ -187,8 +214,9 @@ namespace Game.Levels.Wheel.Tests
             {
                 content.SelectedMessage, content.AlreadyWheelMessage, content.SelectNeededMessage,
                 content.WheelDrilledMessage, content.BothWheelsMessage, content.AxleFormedMessage,
-                content.PlankPlacedMessage, content.CompleteMessage, content.AxleTooEarlyMessage,
-                content.PlankTooEarlyMessage, content.CargoTooEarlyMessage, content.MissedMessage
+                content.PlankPlacedMessage, content.CargoPlacedMessage, content.CompleteMessage,
+                content.AxleTooEarlyMessage, content.PlankTooEarlyMessage, content.CargoTooEarlyMessage,
+                content.RopeTooEarlyMessage, content.MissedMessage
             };
 
             Assert.That(mensajes.Where(mensaje => mensaje.Any(char.IsDigit)), Is.Empty,

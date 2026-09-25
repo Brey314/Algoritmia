@@ -1,5 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools.Utils;
+using UnityEngine.UI;
 
 namespace Game.Scaffolding.Tests
 {
@@ -43,6 +45,43 @@ namespace Game.Scaffolding.Tests
             Assert.That(lejos.y, Is.EqualTo(cerca.y).Within(1e-4f), "una línea del costado va paralela al eje");
             Assert.That(lejos.x - cerca.x, Is.EqualTo(Largo * Mathf.Sin(inclinacion * Mathf.Deg2Rad)).Within(1e-4f),
                 "y se ve tan larga como el tronco inclinado");
+        }
+
+        [Test]
+        public void RollingLog_RF26_EnEspejoLaTexturaGiraComoSeVeGirarElObjeto()
+        {
+            var look = ScriptableObject.CreateInstance<RollingLogLook>();
+            try
+            {
+                foreach (var espejo in new[] { false, true })
+                {
+                    var objeto = new GameObject("Tronco", typeof(RectTransform), typeof(Image));
+                    try
+                    {
+                        var rect = (RectTransform)objeto.transform;
+                        rect.localScale = new Vector3(espejo ? -1f : 1f, 1f, 1f);
+                        rect.localRotation = Quaternion.Euler(0f, 0f, -30f); // horario: rueda hacia la derecha
+
+                        var sut = RollingLog.Attach(objeto.GetComponent<Image>(), look);
+
+                        Assert.That(Mathf.DeltaAngle(0f, sut.Spin), Is.EqualTo(-30f).Within(1e-3f),
+                            $"espejo={espejo}: la textura gira hacia donde se ve girar el objeto, o rueda al revés de su avance");
+                        Assert.That(sut.transform.TransformVector(Vector3.right),
+                            Is.EqualTo(Vector3.right).Using(Vector3EqualityComparer.Instance),
+                            $"espejo={espejo}: el cilindro no gira ni se refleja con el objeto");
+                        Assert.That(sut.transform.TransformVector(Vector3.up),
+                            Is.EqualTo(Vector3.up).Using(Vector3EqualityComparer.Instance));
+                    }
+                    finally
+                    {
+                        Object.DestroyImmediate(objeto);
+                    }
+                }
+            }
+            finally
+            {
+                Object.DestroyImmediate(look);
+            }
         }
     }
 }

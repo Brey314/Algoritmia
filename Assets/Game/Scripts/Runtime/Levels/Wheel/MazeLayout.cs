@@ -85,6 +85,10 @@ namespace Game.Levels.Wheel
         public Sprite[] ObstacleArt { get; private set; } = Array.Empty<Sprite>();
 
         [field: SerializeField]
+        [field: Tooltip("Cuánto más grande que las demás piezas (PieceSize) se dibuja el obstáculo. El arbusto trae margen transparente: con 1.3 llena su casilla justa; con 1.65 los contiguos se montan unos sobre otros y se leen como un seto. Más grande empieza a tapar las casillas libres de al lado.")]
+        public float ObstacleScale { get; private set; } = 1.65f;
+
+        [field: SerializeField]
         [field: Tooltip("La luz de la hora del día: tiñe el entorno y todo lo que cuelga de él. El Nivel 2 dura un día entero y la fase 3 es al atardecer. Blanco = sin tinte.")]
         public Color LightTint { get; private set; } = Color.white;
 
