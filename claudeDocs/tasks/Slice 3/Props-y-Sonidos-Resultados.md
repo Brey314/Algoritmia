@@ -125,7 +125,7 @@ de paso, `Game.Core`, `Game.Scaffolding` y `Game.UI`. No rediscute `claudeDocs/S
 | `Narrative/N2_Escena24_Regreso.asset` | Modificado | Ambiente de bosque; luz de atardecer (1/0,76/0,58). |
 | `Narrative/N2_Escena25_Cierre.asset` | Modificado | Pasa al refugio: `entorno_n1_cueva_2x` con montón quemado y fuego animado, noche rojiza (1/0,62/0,42), ambiente cueva + hoguera. |
 | `Narrative/N3_PuenteII.asset` | Modificado | Arranca en el refugio con fuego y la misma noche; encadena a `N3_PuenteII_Horizonte`. |
-| `Narrative/N3_PuenteII_Horizonte.asset` | **Creado** | Sobre `env_enlace_n2`: el desplazamiento hacia el horizonte; encadena a `N3_PuenteII_Rio`. |
+| `Narrative/N3_PuenteII_Horizonte.asset` | **Creado** | Sobre `env_enlace_n2`: el desplazamiento hacia el horizonte; encadena a `N3_PuenteII_Rio`. Desde el 25/09 la hoguera central ya no va pintada: son objetos (montón de hojas en (0,5023; 0,3617) a 0,11, humo, llama animada a 0,173) sobre el pie de los troncos que pintaba el entorno, con las proporciones de la fogata grande de `N3_EscenaFinal`, y el entorno se entrega sin ella. `N3_EscenaFinal` lleva la misma hoguera en el mismo sitio sobre `env_final_fogatas` (el mismo poblado al atardecer), dibujada después de las otras dos fogatas y antes de los personajes. |
 
 Con estos dos assets nuevos el Nivel 2 y el Nivel 3 pasan de seis a **siete** secuencias cada uno.
 

@@ -414,9 +414,10 @@ antes de escribir la primera línea:
   lo alcance una prueba. **El assembly de PlayMode se llama `<Módulo>.PlayMode.Tests` y necesita su
   propia línea**: sin ella el `internal` no se ve desde PlayMode aunque la de EditMode esté puesta.
   Hoy ese archivo existe en `Game.Core` (desde `d7ace67`), `Game.Levels.{Fire,Wheel,River}`,
-  `Game.UI` y `Game.Audio` —este último abre además sus internos a
+  `Game.UI`, `Game.Audio` —que abre además sus internos a
   `Game.Levels.{Fire,Wheel}.PlayMode.Tests` y `Game.UI.PlayMode.Tests`, que comprueban **qué** clip
-  sonó—; `Game.Scaffolding` y `Game.Reporting` se prueban por superficie pública, así que ahí no hay
+  sonó— y `Game.Scaffolding` (desde `1d5ce58`, **solo** la línea de EditMode: su PlayMode aún no
+  ve internos); `Game.Reporting` se prueba por superficie pública, así que ahí no hay
   `AssemblyInfo.cs` que buscar — y si una prueba nueva lo necesita, se crea.
 - Raíz de código y assets: `Assets/Game/`, namespaces `Game.*` siguiendo la ruta bajo `Scripts/` y
   elidiendo `Runtime`. Tests en `Assets/Tests/{EditMode,PlayMode}/<Módulo>/`.
