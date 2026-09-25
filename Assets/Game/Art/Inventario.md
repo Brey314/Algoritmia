@@ -174,6 +174,7 @@ el color de acento del nivel está prohibido en el decorado (§9.2, §4.2).
 |---|---|
 | ○ `prop_n1_hojas.anim` | cruce entre los cuatro estados |
 | ○ `prop_n1_piedras_choque.anim`, `prop_n1_piedras_flotacion.anim` | |
+| ✓ `fx_n1_humo_nacer.anim` + `fx_n1_humo.anim` · `Smoke/` (33 PNG) | El humo de `S07a`: vive junto al fuego y no en `FX/Animations/`. Entrega de 284 cuadros a 30 fps, animada a ochos y nueves: 33 dibujos distintos, que conservan el nombre de entrega (`humo_nivel_1_NNNN.png`, `Single`). **Recortados** del lienzo de 2144 × 2108 a 1123 × 1933 (desde x 485, y 134): el mismo rectángulo en todos, así el dibujo no salta de un cuadro a otro, y la mitad de memoria. Si llega una entrega nueva con el lienzo entero, hay que recortarla igual o recalcular `Position` y `Size` de los ocho humos. `nacer` (0009–0059, 1,97 s) sube del hilo a la voluta y pasa a `fx_n1_humo` (0067–0275, 7,27 s en bucle). Dos controladores: `fx_n1_humo_nacer` donde el fuego nace (`N1_NacimientoDelFuego`) y `fx_n1_humo` donde ya ardía. Va detrás de cada llama, a 0,6 de su escala |
 
 ### `Props/Wheel/`
 
@@ -319,7 +320,7 @@ propios, sin posprocesado (§12.1). **No hay rojo de error en ningún efecto** (
 | ○ `fx_algoritm_barrido.anim` | `S02` |
 | ○ `fx_algoritm_barrido_tr05.anim`, `fx_algoritm_barrido_tr09.anim` | `S06` — barridos con muta del guía |
 | ○ `fx_n1_chispa_lejos.anim`, `_cerca`, `_muycerca` | `S07a` — un destello por posición del deslizante |
-| ○ `fx_n1_humo.anim` | `S07a` |
+| ✓ `fx_n1_humo.anim` | `S07a` — en `Props/Fire/Animations/`, junto al fuego |
 | ○ `fx_n1_llama.anim`, `fx_n1_halo.anim` | `S07b` — halo: escala 0.95–1.05, ciclo 1.2 s |
 | ○ `fx_n2_polvo.anim` | `S09a` — polvo del mecanizado |
 | ○ `fx_vaho.anim` | `S16a` — vaho de la noche helada |

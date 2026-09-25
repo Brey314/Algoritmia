@@ -44,7 +44,7 @@ los Slices 1 y 2. Lo que lleva hecho, archivo por archivo, está en
 `claudeDocs/tasks/Slice 3/Props-y-Sonidos-Resultados.md`; los personajes animados, que además tocan
 `Game.Scaffolding`, `Game.UI`, los tres niveles, las 18 narrativas y las cinco escenas jugables, en
 `claudeDocs/tasks/Personajes/Personajes-Resultados.md`. Una regla suya que no caduca: los cuadros
-de las animaciones del fuego conservan los nombres de entrega (`fuego_cenital_nivel_1_0000.png`, no
+de las animaciones del fuego y del humo conservan los nombres de entrega (`fuego_cenital_nivel_1_0000.png`, no
 el `prop_n1_…` de `Direccion_de_Arte.md`) y los referencia la curva del `.anim`: renombrarlos es
 trabajo del motor.
 
@@ -87,6 +87,12 @@ Lo vigilan `NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche` y
 el bosque del N2) tienen una costura en x = 0,5 que ningún encuadre debe cruzar: lo avisa
 `IllustrationFraming.Warnings` en el `OnValidate` de la secuencia.
 
+**Los troncos del N2 ruedan en el motor, no por cuadros** (acta D09): `RollingLog`
+(`Game.Scaffolding`) es un `Graphic` de uGUI que dibuja el tronco como cilindro en 3/4 a partir de
+una sola textura (`prop_n2_tronco_textura`) y lee el giro que ya le dan `RollMotion` o el cursor.
+La vista vive en `N2_TroncoRodante.asset` y se engancha con `NarrativeProp.Rolling` en las
+narrativas y `WheelLevelConfig.LogLook` en el bosque — sin cámara ni modelo 3D.
+
 **Cuántas fases tiene cada nivel** lo fija `PhaseId.PhasesPerLevel = { 1, 3, 3 }` — el Nivel 3 son
 tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **Al consumir
 `PlayerProfile`:** `ConfirmPhase(LevelId, int, …)` no existe; se pasa un `PhaseId` (`Game.Core`).
@@ -106,7 +112,7 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | `claudeDocs/Mockups de interfaz Algoritmia.html` | **Los mockups de pantalla**, numerados desde el 2 (no hay mockup 1). Los `todo.md` y los documentos de cámara los citan por número («mockup 7 · Nivel 1 · encendido»); es la referencia de disposición de una escena antes de tocar el `.unity`. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. **Los `plan.md` no se reescriben**, así que sus avisos de precondición («los Slices 1 y 2 no están hechos», «`Assets/` sigue sin código») están vencidos; lo que sigue valiendo de ellos es qué pieza previa generaliza cada tarea. Ninguno rediscute `SPEC.md`. |
 | `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión con markitdown. **Nunca editar ninguno de los dos desde código.** |
-| `docs/actas/OE3/Acta_D0N_*.md` | **Las actas de seguimiento, rehechas** (`D01` 02/09 … `D07` 19/09/2026): qué se decidió, cuándo y por qué, y **el tablero Kanban vive en su §6**, no en un archivo aparte. Siguen en `.gitignore` —existen en este equipo y no en un clon—, así que se perdieron una vez y pueden volver a perderse. La serie `OE2/` (`O01..O03`) **no** se rehizo: al leer hacia atrás **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` después—, así que una tarjeta se rastrea por su texto y no por su id, y el *porqué* de lo decidido antes del 02/09 se busca en los `.docx` y en `INCONSISTENCIAS.md`. |
+| `docs/actas/OE3/Acta_D0N_*.md` | **Las actas de seguimiento, rehechas** (`D01` 02/09 … `D09` 24/09/2026): qué se decidió, cuándo y por qué, y **el tablero Kanban vive en su §6**, no en un archivo aparte. Siguen en `.gitignore` —existen en este equipo y no en un clon—, así que se perdieron una vez y pueden volver a perderse. La serie `OE2/` (`O01..O03`) **no** se rehizo: al leer hacia atrás **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` después—, así que una tarjeta se rastrea por su texto y no por su id, y el *porqué* de lo decidido antes del 02/09 se busca en los `.docx` y en `INCONSISTENCIAS.md`. En las actas hay **dos Santiagos**: «Santiago» a secas en este archivo es Santiago Benavides Rey; Santiago Valdiri García es el otro estudiante (Slice 4, entorno del N3, fogata del cierre del N2). |
 
 `SPEC.md` es la fuente de verdad para cualquier duda de alcance o diseño; este archivo no la
 repite. Si algo del código contradice a `SPEC.md`, gana `SPEC.md` o se corrige el documento
@@ -331,9 +337,9 @@ antes de escribir la primera línea:
   `WheelSounds` → `N2_Sonidos`, CT-05); las escenas narrativas no tocan código: el ambiente es un campo de `NarrativeSequence` y
   el efecto y el silencio son campos de `DialogueLine`. `AudioManager.Instance` puede ser nulo
   (escena abierta sin pasar por `Boot`, pruebas): todo consumidor lo comprueba y el juego sigue
-  en silencio, porque el audio refuerza y nunca informa solo (§2.4). **El sonido sigue comprometido con otra persona** (actas
-  D05/D07, tarjetas `D05-2`/`D07-2`): los Niveles 2 y 3 y la música son suyos; lo del Nivel 1 se
-  incorporó el 21/09/2026 y lo del Nivel 2 el 23/09/2026, las dos veces a petición de Santiago.
+  en silencio, porque el audio refuerza y nunca informa solo (§2.4). **El sonido restante es de Santiago Benavides Rey** desde el acta D08
+  (tarjetas `D07-2`, `D08-2`): faltan las piezas del Nivel 3, el ambiente nocturno del Nivel 2,
+  la música y el sonido del diálogo; el Nivel 1 entró el 21/09/2026 y el Nivel 2 el 23/09/2026.
 - **`Game.Levels.River` a propósito no referencia `Unity.InputSystem`**: las flechas son botones
   uGUI con clic sostenido (`IPointerDown/Up`), y
   `RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles` vigila que el assembly no gane

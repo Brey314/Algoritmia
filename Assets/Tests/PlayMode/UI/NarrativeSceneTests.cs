@@ -440,12 +440,15 @@ namespace Game.UI.Tests
                 "el montón de hojas visto de lado está pintado");
             var monton = controller.Props.First(p => p.Prop.Art.name == "prop_n1_monton_hojas");
             Assert.That(monton.Rect.GetComponent<BurnReveal>(), Is.Not.Null, "y se ve quemado bajo la llama");
-            var llama = controller.Props
+            var animados = controller.Props
                 .Select(p => p.Rect.GetComponent<Animator>())
-                .FirstOrDefault(animator => animator != null);
-            Assert.That(llama, Is.Not.Null, "hay un objeto animado");
-            Assert.That(llama.runtimeAnimatorController.name, Is.EqualTo("prop_n1_fuego_normal"),
-                "y es la llama vista de lado (prop_n1_fuego_normal)");
+                .Where(animator => animator != null)
+                .Select(animator => animator.runtimeAnimatorController.name)
+                .ToArray();
+            Assert.That(animados, Has.Some.EqualTo("prop_n1_fuego_normal"),
+                "la llama vista de lado está animada (prop_n1_fuego_normal)");
+            // «Un hilo de humo sube despacio»: aquí el fuego nace, así que el humo nace con él.
+            Assert.That(animados, Has.Some.EqualTo("fx_n1_humo_nacer"), "y echa humo desde que nace");
         }
 
         [Test]

@@ -214,6 +214,37 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
+        /// Cada llama animada de las narrativas echa humo: un objeto con el clip del humo
+        /// (<c>fx_n1_humo</c>) sobre la misma llama, más arriba, y **antes** en la lista para que
+        /// se dibuje detrás y la llama tape su arranque.
+        /// </summary>
+        /// <remarks>
+        /// Se cuela solo: quien añade una fogata copia el objeto de la llama y se olvida del humo,
+        /// o lo pone después y el humo tapa la punta del fuego.
+        /// </remarks>
+        [Test]
+        public void NarrativeSequence_RF05_CadaLlamaEchaHumoPorDetrasYPorEncima()
+        {
+            var sinHumo = TodasLasSecuencias()
+                .SelectMany(sequence => sequence.Props
+                    .Select((prop, indice) => (sequence, prop, indice))
+                    .Where(entrada => Anima(entrada.prop, "prop_n1_fuego_normal"))
+                    .Where(llama => !sequence.Props
+                        .Take(llama.indice)
+                        .Any(humo => Anima(humo, "fx_n1_humo")
+                                     && humo.Position.y > llama.prop.Position.y
+                                     && Mathf.Abs(humo.Position.x - llama.prop.Position.x) < llama.prop.Size / 4f)))
+                .Select(llama => FormattableString.Invariant(
+                    $"{llama.sequence.Id} · llama {llama.indice} en ({llama.prop.Position.x:0.000}, {llama.prop.Position.y:0.000})"))
+                .ToArray();
+
+            Assert.That(sinHumo, Is.Empty);
+        }
+
+        private static bool Anima(NarrativeProp prop, string clip) =>
+            prop.FrameAnimation != null && prop.FrameAnimation.name.StartsWith(clip, StringComparison.Ordinal);
+
+        /// <summary>
         /// Las secuencias cuyos encuadres están verificados contra el cuadro de diálogo. No es
         /// «todas» a propósito: una escena entra en la lista cuando se revisa su encuadre, no
         /// antes; una prueba que se salta lo que no cumple no comprueba nada.
