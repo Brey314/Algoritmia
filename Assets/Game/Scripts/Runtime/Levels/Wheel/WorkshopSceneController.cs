@@ -418,8 +418,9 @@ namespace Game.Levels.Wheel
             {
                 if (piece == WorkshopPiece.Rope)
                 {
-                    // La carretilla no tiene dibujo con la cuerda: la pieza misma se queda
-                    // amarrada encima de la caja y ya no se vuelve a tomar (INC-54).
+                    // El taller no usa el dibujo de la carretilla con la cuerda (el de las
+                    // narrativas): la pieza misma se queda amarrada encima de la caja y ya no se
+                    // vuelve a tomar (INC-54).
                     Hang(rect, config.RopePlacedPosition, config.RopePlacedSize);
                     Destroy(rect.GetComponent<CargoHandle>());
                 }

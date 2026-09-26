@@ -100,6 +100,11 @@ namespace Game.Levels.River
         // Segundos del pulso de completado: la balsa crece y vuelve (RF-41).
         private const float CompletionPulseSeconds = 0.35f;
 
+        // Opacidad a partir de la cual un punto es «la pieza» al agarrar y al soltar. Los troncos
+        // van en diagonal dentro de cajas cuadradas que se solapan, así que probar la caja entrega
+        // el clic al vecino; probar el alfa exige las texturas de la balsa legibles (Read/Write).
+        private const float AlphaHitThreshold = 0.1f;
+
         // Memoria de nivel (véase el remarks): sobrevive a la recarga de la escena, no al proceso.
         private static ConditionalNarrativeTrigger s_firstFailure;
         private static (RaftPhase Phase, Dictionary<string, MaterialKind> Placed)? s_stash;
@@ -272,13 +277,19 @@ namespace Game.Levels.River
             _held = null;
             _ghost.gameObject.SetActive(false);
 
-            // Los espacios se solapan a propósito —el mástil cruza los troncos y roza la vela—,
-            // así que entre los que contienen el punto gana el de centro más cercano, no el
-            // primero del asset.
-            var target = _slots.Values
+            // Los espacios se solapan a propósito —los troncos van en diagonal y el mástil roza la
+            // vela—, así que el centro más cercano no basta: desde la punta de un tronco el centro
+            // del vecino queda más cerca que el suyo. Gana lo que se ve bajo el puntero, el de
+            // encima entre los que tienen dibujo ahí; si el punto no cae sobre ningún dibujo, el
+            // de centro más cercano, para que soltar junto a un amarre, que es fino, siga contando.
+            var inside = _slots.Values
                 .Where(entry => _assembly.IsOpen(entry.Slot)
                                 && RectTransformUtility.RectangleContainsScreenPoint(entry.Image.rectTransform, at, null))
-                .OrderBy(entry => Vector2.Distance(entry.Image.rectTransform.position, at))
+                .ToArray();
+            var target = inside
+                .Where(entry => entry.Image.IsRaycastLocationValid(at, null))
+                .OrderByDescending(entry => entry.Image.transform.GetSiblingIndex())
+                .Concat(inside.OrderBy(entry => Vector2.Distance(entry.Image.rectTransform.position, at)))
                 .FirstOrDefault();
 
             if (target.Slot == null)
@@ -624,6 +635,7 @@ namespace Game.Levels.River
                 image.rectTransform.sizeDelta = Vector2.Scale(slot.Size, side);
                 image.rectTransform.localRotation = Quaternion.Euler(0f, 0f, slot.Rotation);
                 image.preserveAspect = true;
+                image.alphaHitTestMinimumThreshold = AlphaHitThreshold;
 
                 var alert = image.transform.childCount > 0 ? image.transform.GetChild(0).GetComponent<Image>() : null;
                 if (alert != null)

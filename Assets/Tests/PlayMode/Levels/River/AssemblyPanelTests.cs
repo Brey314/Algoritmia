@@ -91,6 +91,25 @@ namespace Game.Levels.River.Tests
 
         [Test]
         [Timeout(60000)]
+        public async Task AssemblyPanel_RF40_SoltarSobreLaPuntaDeUnTroncoLoPoneEnEseTroncoYNoEnElVecino()
+        {
+            // Los troncos van en diagonal y sus cajas se solapan: desde la punta trasera de uno, el
+            // centro del vecino queda más cerca que el suyo. Decide el dibujo bajo el puntero.
+            var (_, panel) = await OpenAssembly();
+            var tronco = RiverMovementTests.EnPantalla(panel.Slots["tronco_1"].Image.rectTransform);
+            var vecino = RiverMovementTests.EnPantalla(panel.Slots["tronco_2"].Image.rectTransform);
+            var punta = tronco.min + Vector2.Scale(tronco.size, new Vector2(0.8f, 0.65f));
+            Assume.That(Vector2.Distance(punta, vecino.center), Is.LessThan(Vector2.Distance(punta, tronco.center)),
+                "desde la punta, el centro del vecino está más cerca: por cercanía caería en él");
+
+            await Drag(panel, MaterialKind.Logs, punta);
+
+            Assert.That(panel.Assembly.PlacedIn("tronco_1"), Is.EqualTo(MaterialKind.Logs), "el tronco queda donde se soltó");
+            Assert.That(panel.Assembly.PlacedIn("tronco_2"), Is.Null, "y no en el vecino");
+        }
+
+        [Test]
+        [Timeout(60000)]
         public async Task AssemblyPanel_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido()
         {
             var (river, panel) = await OpenAssembly();
@@ -269,10 +288,14 @@ namespace Game.Levels.River.Tests
         }
 
         /// <summary>Clic sostenido sobre la casilla, arrastre hasta el centro del espacio y soltar.</summary>
-        internal static async Task Drag(AssemblyPanelController panel, MaterialKind kind, RectTransform target)
+        internal static Task Drag(AssemblyPanelController panel, MaterialKind kind, RectTransform target)
         {
             Canvas.ForceUpdateCanvases();
-            var at = RiverMovementTests.EnPantalla(target).center;
+            return Drag(panel, kind, RiverMovementTests.EnPantalla(target).center);
+        }
+
+        internal static async Task Drag(AssemblyPanelController panel, MaterialKind kind, Vector2 at)
+        {
             panel.Take(kind, at);
             Assume.That(panel.Held, Is.EqualTo(kind), $"se agarró «{kind}»");
             // Sin cuadro entre agarrar y soltar: en el Editor hay un ratón real y `Update` seguiría
