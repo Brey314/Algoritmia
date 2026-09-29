@@ -3,13 +3,32 @@
 **Slice 1 · Golden Path temprano** · Estado: **T09, T10 y T11 implementadas y verdes** —
 corte de este documento: 8 de septiembre de 2026
 Verificación vigente: **EditMode 57/57 · PlayMode 33/33 + 2 omitidas** (las omitidas son las de
-verificación visual, que no corren en batchmode — §4.2)
+verificación visual, que no corren en batchmode — §4.2) *(Vencido el 25/09/2026: es la cifra del
+08/09; la vigente está en [`Slice-4-Resultados.md`](../Slice%204/Slice-4-Resultados.md), «Corrida
+completa de la suite (25/09/2026)».)*
 Plan técnico: [`plan.md`](plan.md) · Tablero: [`todo.md`](todo.md) · Contrato: `claudeDocs/SPEC.md`
 Fase anterior: [`Fase-1-Resultados.md`](Fase-1-Resultados.md)
 
 Este documento registra qué se implementó en la Fase 2, con qué pruebas se verificó y qué resultado
 dieron. **El código de la fase está completo**; del Checkpoint C quedan dos casillas que no son de
 código (§6). No reabre decisiones de `SPEC.md`: las cita.
+
+> **Estado al 25/09/2026:** el texto de abajo es la foto del 08/09 y se conserva tal cual. Cinco
+> cosas que aquí se leen como vigentes ya no lo son —dos de ellas, la ilustración a pantalla
+> completa y la tipografía, desde el mismo 08/09—, y cada una lleva una nota fechada en su sitio:
+> - la regla de «Omitir»: desde `d81cfc7` (17/09), «ya vista» es haber confirmado la **última**
+>   fase del nivel, no una cualquiera (§3);
+> - `N1_Guia` tiene tres pasos —`Reunir`, `Golpear`, `Soplar`— desde `863ef05` (15/09), y la ayuda
+>   ya está cableada en la cueva (§2.4, §6);
+> - la ilustración de `Narrative.unity` ocupa la pantalla entera desde `145a63e` (08/09), y la
+>   salida de cada narrativa la declara su asset (§2.1, §2.2, §5);
+> - `NarrativeScene_RF05_AvanzarLlegaHastaElFinalYSaleAOtraPantalla` ya no existe: la sustituyó
+>   una prueba del encadenado del N1 (§4.2);
+> - la tipografía dejó de ser la del sistema con `145a63e` (§6; el detalle, en el anexo de
+>   [`Fase-1-Resultados.md`](Fase-1-Resultados.md)).
+>
+> El detalle está en el **Anexo** al final. La mecánica del Nivel 1 que hoy consume esta ayuda
+> está en [`Fase-5-6-Resultados.md`](Fase-5-6-Resultados.md).
 
 ---
 
@@ -42,7 +61,9 @@ T10b son la misma y se cerraron juntas (§5).
   asset, no recompilar.
 - **`NarrativeSequence`** — el ScriptableObject de una escena narrativa: `Id`, `Level`,
   `Illustration` y `Lines`. **No es video** (RNF-06, peso del paquete): una ilustración fija con
-  cuadros de texto secuenciales.
+  cuadros de texto secuenciales. *(Ampliado al 25/09/2026: hoy el asset declara también cómo
+  sale —`NextSequenceId`, `NextPhase`, `EndsInCredits`, `IsReflectiveClosing`—, su ambiente y su
+  puesta en escena —cámara, luz y objetos—. Ver Anexo, B.3.)*
 - **`DialogueRunner`** — C# plano, sin dependencias de Unity. `Advance()` pasa una línea por clic y
   devuelve `false` al pasar la última, que es la señal de salida; `Skip()` salta al final **solo si
   está permitido**, y pedirlo sin permiso no hace nada ni lanza.
@@ -63,9 +84,14 @@ ni una rama. Es la razón de que `GameState.Narrative` sea un estado parametriza
   Space-Overlay con `CanvasScaler` a 1920×1080 match 0.5, la ilustración en la mitad superior, el
   cuadro de diálogo en la franja inferior con hablante y cuerpo, y los botones **Continuar** y
   **Omitir**. Paleta de `Direccion_de_Arte.md`: pergamino `#F7EFE2`, tinta `#3A1E18`, ámbar
-  `#E8A33D`, cuadro `#E0D4C0`. Añadida a Build Settings, que pasa a **5 escenas**.
+  `#E8A33D`, cuadro `#E0D4C0`. Añadida a Build Settings, que pasa a **5 escenas**. *(Vencido el
+  25/09/2026 en cuanto a la ilustración: desde `145a63e` (08/09) `Ilustracion` está anclada de (0,0)
+  a (1,1), a pantalla completa, y la encuadra `IllustrationFraming.Apply`; el cuadro de diálogo
+  sigue abajo. Ver Anexo, B.3.)*
 - **Tres assets del Nivel 1** en `Assets/Game/Data/Narrative/`: `N1_Apertura` (7 líneas, guion
-  §3.1), `N1_AparicionGuia` (11 líneas, §4.1) y `N1_Hallazgo` (18 líneas, §4.2).
+  §3.1), `N1_AparicionGuia` (11 líneas, §4.1) y `N1_Hallazgo` (18 líneas, §4.2). *(Al 25/09/2026
+  son cuatro: `ca6c8c6` (11/09, T15) sumó el cierre reflexivo `N1_NacimientoDelFuego`, de 17 líneas.
+  Las tres de aquí conservan su número de líneas.)*
 - **`GameState.Narrative` mapeado** a la escena `Narrative` en `GameFlowRunner.Scenes`. Antes no
   estaba, y esa ausencia es la que rompía el recorrido (§5).
 - **`Game.UI` pasa a referenciar `Game.Scaffolding`.** El test de arquitectura solo veta que `Core`
@@ -98,7 +124,11 @@ RF-13 pide **dos cosas separadas** y el andamiaje las mantiene separadas:
 - **`Assets/Game/Data/Guide/N1_Guia.asset`** — las dos tareas del Nivel 1 (`Golpear`, `Soplar`). La
   pista de `Golpear` es la formulación del guion §4.3.6, palabra por palabra: «Las chispas caen
   hacia abajo y se apagan rápido. ¿Cuánto camino tienen que recorrer antes de tocar las hojas?»
-  Orienta hacia la distancia sin nombrar la posición efectiva.
+  Orienta hacia la distancia sin nombrar la posición efectiva. *(Vencido el 25/09/2026: la pista de
+  `Golpear` dejó de ser la del guion §4.3.6 con `fa5d032` (12/09), cuando la mecánica dejó de medir
+  la distancia (INC-47); desde `863ef05` (15/09) son tres pasos —`Reunir`, `Golpear` y `Soplar`—, el
+  encendido tiene dos deslizantes, fuerza y cercanía de las piedras, y la pista nombra las dos. Ver
+  Anexo, B.2.)*
 
 El umbral vive en `HintPolicy.DefaultAttemptsForHint = 3` (`intentosParaPista` del guion §4.3.2) y
 el constructor admite otro valor, que es lo que usará `FireLevelConfig` en T12 sin tocar esta clase.
@@ -112,14 +142,18 @@ confirmadas y los cuatro indicadores. **Nada más**». Ampliar esa lista sería 
 ya radicado, que `CLAUDE.md` marca como «preguntar primero».
 
 Así que «ya vista» **se deriva del progreso** en vez de persistirse: si el perfil confirmó alguna
-fase del nivel, ya pasó por sus escenas antes. Es exactamente la consecuencia que pide HU-14 — la
+fase del nivel, ya pasó por sus escenas antes. *(Vencido el 25/09/2026: desde `d81cfc7` (17/09)
+«ya vista» exige la **última** fase del nivel confirmada, no una cualquiera
+(`NarrativeVisitPolicy.cs:53-54`); el cierre reflexivo va aparte y usa `ReachedLevel` desde
+`9f10485` (10/09). Lo que sigue vale igual: la señal sale del progreso, no de un campo nuevo. Ver
+Anexo, B.1.)* Es exactamente la consecuencia que pide HU-14 — la
 primera vuelta se lee entera, porque es donde el guía nombra la habilidad practicada (RF-12, CP-07),
 y solo quien repite puede saltar. La razón está escrita en el `<remarks>` de `NarrativeVisitPolicy`,
 no solo aquí: sin esa nota, una futura «mejora» añade el campo al perfil y rompe RNF-09.
 
 **Efecto secundario honesto:** el botón de omitir no se puede ver todavía en el juego real, porque
 no hay forma de confirmar una fase hasta **T17**. La regla está probada en EditMode; su verificación
-en pantalla queda anotada en el Checkpoint C.
+en pantalla queda anotada en el Checkpoint C. *(Al 25/09/2026: ver la nota de §6.)*
 
 ---
 
@@ -170,6 +204,12 @@ que la corrida del 08/09 solo comprueba que no hay regresión):
 | `NarrativeScene_INC28_NoMuestraOmitirLaPrimeraVezQueSeVeLaEscena` | INC-28, RF-06 |
 | `NarrativeScene_HU17_NoHayBotonDePausaEnUnaEscenaNarrativa` | HU-17 FA-04 |
 | `NarrativeScene_RNF01_LaLineaMasLargaCabeEnSuCuadroDeDialogo` | RNF-01 |
+
+*(Vencido el 25/09/2026: `NarrativeScene_RF05_AvanzarLlegaHastaElFinalYSaleAOtraPantalla` ya no
+existe. `1009c5a` (13/09) la sustituyó por
+`NarrativeScene_RF10_LaAperturaEncadenaLasTresEscenasDelNivel1YEntraAJugar`, que recorre
+`N1_Apertura` → `N1_AparicionGuia` → `N1_Hallazgo` y comprueba que sale a jugar la fase 1 del
+Nivel 1. Las otras cinco siguen en la clase. Ver Anexo, B.4.)*
 
 **Las 2 omitidas son las de verificación visual** (`MainMenu_RNF20_*`, `LevelSelect_RNF19_*`):
 `ScreenCapture` no encuentra la vista de juego en batchmode. En el corte del 07/09 **fallaban**;
@@ -241,6 +281,9 @@ solo («ninguno de los botones redirige»):
 
 La salida de una escena narrativa es hoy `LevelSelect`, con un comentario que marca el cambio: la
 salida natural es entrar a jugar, y pasa a `StartPlaying` cuando **T14** traiga `Level1_Cave`.
+*(Vencido el 25/09/2026: hoy la salida la declara el asset, y `NarrativeSceneController.Leave()`
+(`NarrativeSceneController.cs:821-852`) la resuelve en este orden: `NextSequenceId` → `NextPhase` →
+`EndsInCredits` → `IsReflectiveClosing` → `LevelSelect`. Ver Anexo, B.3.)*
 
 ---
 
@@ -248,11 +291,127 @@ salida natural es entrar a jugar, y pasa a `StartPlaying` cuando **T14** traiga 
 
 - **Ver el botón de omitir en la segunda visita** — la regla está probada en EditMode y la escena la
   respeta, pero verla en pantalla exige una fase confirmada, es decir **T17** (§3). Es la única
-  casilla del Checkpoint C que no depende de esta fase.
+  casilla del Checkpoint C que no depende de esta fase. *(Al 25/09/2026: T17 está hecha y la segunda
+  visita es alcanzable, pero la casilla sigue en `[~]` en el `todo.md` y ninguna prueba PlayMode
+  comprueba que el botón aparezca; las de pantalla solo comprueban que no aparece la primera vez,
+  entre ellas `NarrativeScene_INC28_NoMuestraOmitirLaPrimeraVezQueSeVeLaEscena`,
+  `LevelSummary_CP07_ElCierreReflexivoNoEsOmitibleLaPrimeraVez`,
+  `LevelSummary_RF03_DevuelveAlMenuConNivel3Desbloqueado` (`LevelSummaryTests.cs:144`, desde
+  `8de614f`, 15/09) y `GameEnding_INC39_RecorreLevelSummaryNarrativeCreditsYMainMenu`
+  (`GameEndingTests.cs:82`, desde `1179dae`, 21/09).)*
 - **Cablear `HintPolicy` a una pantalla** — T11 entrega la regla y su contenido, no un botón: la
   escena jugable donde vive el botón de ayuda es **T14**, y quien cuenta los fallos que la alimentan
-  es **T12**. Hasta entonces la política está probada pero no se ve.
+  es **T12**. Hasta entonces la política está probada pero no se ve. *(Resuelto al 25/09/2026: en la cueva
+  la cablea `FirePanelController`, que crea la `HintPolicy` con el paso `Reunir` y activa `Golpear`
+  y `Soplar` (`FirePanelController.cs:210`, `:409`, `:509`); ver
+  [`Fase-5-6-Resultados.md`](Fase-5-6-Resultados.md). Los controladores de los niveles 2 y 3 crean
+  la suya.)*
 - **Ilustraciones** — las tres secuencias tienen el campo `Illustration` vacío y la escena oculta la
-  imagen si no hay sprite. Son los assets A1–A6 del tablero, todavía sin generar.
+  imagen si no hay sprite. Son los assets A1–A6 del tablero, todavía sin generar. *(Vencido el
+  25/09/2026: los cuatro `N1_*.asset` tienen ilustración: `N1_Apertura` usa `entorno_n1_apertura` y
+  los otros tres, `entorno_n1_cueva_2x`.)*
 - **Tipografía** — fuente del sistema, igual que en la Fase 1. Baloo 2 / Nunito
-  (`Direccion_de_Arte.md` §11.2) sigue siendo tarea de assets.
+  (`Direccion_de_Arte.md` §11.2) sigue siendo tarea de assets. *(Vencido el 25/09/2026: las dos
+  entraron con `145a63e` (08/09) y hoy las usan los cuatro textos de `Narrative.unity`; ver el anexo
+  de [`Fase-1-Resultados.md`](Fase-1-Resultados.md), A.1.)*
+
+---
+
+## Anexo — lo que cambió después del cierre (25/09/2026)
+
+Verificado contra el código y los assets de `ccf77e6`. Recoge lo que cambió en las piezas de esta
+fase. La puesta en escena que se construyó encima de la escena `Narrative` —cámara por paradas,
+luz, objetos y personajes— entró con otras tareas y aquí solo se nombra.
+
+### B.1 La regla de «Omitir» (RF-06, INC-28)
+
+`NarrativeVisitPolicy.AlreadySeen` tiene hoy dos ramas, y ninguna amplía lo persistido (RNF-09):
+
+1. **Cierre reflexivo** (`IsReflectiveClosing`): `profile.ReachedLevel > sequence.Level`
+   (`NarrativeVisitPolicy.cs:43-46`), desde `9f10485` (10/09, W04). Al cierre se llega la primera vez
+   justo después de confirmar la última fase, así que la señal de las demás escenas ya sería cierta
+   y ofrecería omitir justo donde CP-07 y RF-12 lo prohíben. Lo que distingue la primera vuelta es
+   que el nivel siguiente aún no está desbloqueado. De ahí el orden que se le impone a quien cierre
+   un nivel: primero el cierre reflexivo, después el desbloqueo.
+2. **Cualquier otra escena**: haber confirmado la **última** fase del nivel,
+   `PhaseId.PhaseCountOf(sequence.Level)` (`NarrativeVisitPolicy.cs:53-54`), desde `d81cfc7` (17/09,
+   «las escenas solo se pueden saltar si el nivel completo ha sido terminado previamente»). Con la
+   regla de §3, al salir del bosque con la fase 1 recién confirmada, la 2.2 ofrecía «Omitir» la
+   primera vez que se veía; el comentario del código anota que lo vio Santiago el 17/09/2026. Como lo
+   aprobado no se pierde (RF-41), en las vueltas siguientes la última fase sigue confirmada.
+
+En el Nivel 1, que tiene una sola fase (`PhaseId.PhasesPerLevel = { 1, 3, 3 }`), las dos reglas
+coinciden; la diferencia está en los niveles 2 y 3.
+
+**INC-51** (abierto, decisión tomada: se acepta). El Nivel 3 no tiene nivel siguiente, así que su
+cierre (`N3_Escena33_Cruce`) y la escena final (`N3_EscenaFinal`) nunca cuentan como vistos y se leen
+enteros también al repetir el nivel. Lo anota el comentario de `NarrativeVisitPolicy.cs:39-42`,
+añadido con `13e2986` (23/09).
+
+Pruebas de la regla:
+
+| Prueba | Requisito | Entró con |
+|---|---|---|
+| `NarrativeVisitPolicy_RF06_ElCierreDelNivel2NoEsOmitibleLaPrimeraVez` | RF-06, CP-07 | `9f10485` (10/09) |
+| `NarrativeVisitPolicy_RF06_UnaEscenaIntermediaNoSeOmiteEnLaPrimeraVuelta` | RF-06 | `d81cfc7` (17/09) |
+| `NarrativeVisitPolicy_RF06_SinPerfilActivoNuncaSeOfreceOmitir` | RF-06 | `9f10485` (10/09) |
+| `NarrativeVisitPolicy_CP07_ElCruceYLaEscenaFinalNoSeOmitenLaPrimeraVez` (en `NarrativeSequenceTests`) | CP-07, RF-12 | `e3575bf` (16/09) |
+| `LevelSummary_CP07_ElCierreReflexivoNoEsOmitibleLaPrimeraVez` (PlayMode) | CP-07 | `f8ffcc8` (11/09, T18) |
+
+La segunda es la que vigila el cambio de `d81cfc7`: con la fase 1 del Nivel 2 confirmada, la 2.2 y
+la 2.3 no se omiten; con la 2, tampoco la 2.4; con la 3, `N2_PuenteI`, la 2.2 y la 2.4 ya sí.
+
+### B.2 `N1_Guia`: tres pasos
+
+Desde `863ef05` (15/09), `Assets/Game/Data/Guide/N1_Guia.asset` tiene tres pasos:
+
+| Paso | Instrucción | Pista |
+|---|---|---|
+| `Reunir` | «Reúne todas las hojas y las dos piedras en el centro de la pantalla.» | «Todo tiene que quedar dentro del círculo. ¿Qué pieza sigue fuera?» |
+| `Golpear` | «Elige la fuerza y qué tan cerca van las piedras, y golpea para hacer chispas.» | «Las chispas dependen de cómo chocan las piedras: de la fuerza y de qué tan juntas están. ¿Qué cambiarías antes del próximo golpe?» |
+| `Soplar` | «Sopla despacio sobre el montón de hojas para avivar el humo.» | «El humo ya está ahí. ¿Está todo junto y cerca? ¿Qué le falta para volverse llama?» |
+
+`HintPolicy` no cambió para esto: el paso es contenido (CT-05). La cablea `FirePanelController`
+(`new HintPolicy(Step("Reunir"), config.AttemptsBeforeHint)` en `FirePanelController.cs:210`), con
+el umbral de `N1_Config.asset`, que sigue en 3. `HintPolicy_CP06_LaPistaNuncaNombraLaPosicionEfectiva`
+sigue en la suite y sigue comprobando que ninguna pista del N1 diga «muy cerca». La mecánica que
+consume estos pasos está en [`Fase-5-6-Resultados.md`](Fase-5-6-Resultados.md).
+
+### B.3 La escena `Narrative` y lo que declara cada secuencia
+
+- **Ilustración a pantalla completa** desde `145a63e` (08/09): el `RectTransform` de `Ilustracion`
+  va anclado de (0,0) a (1,1); en `2a588f3` iba anclado arriba al centro. La encuadra
+  `IllustrationFraming.Apply` (`NarrativeSceneController.cs:743`). Encima, el controlador crea al
+  arrancar la capa `Oscuridad` con `darknessMaterial` (`fx_oscuridad.mat`,
+  `NarrativeSceneController.cs:41-42`, `:354`). `CuadroDialogo` sigue abajo al centro, 1400×180.
+- **La salida la declara el asset.** `Leave()` (`NarrativeSceneController.cs:821-852`) prueba, en
+  orden: `NextSequenceId` (`b6b886c`, 12/09) → `NextPhase` (`faaaa13`, 10/09) → `EndsInCredits`
+  (`1179dae`, 21/09) → `IsReflectiveClosing` (`9f10485`, 10/09) → `LevelSelect`. En el Nivel 1,
+  `N1_Apertura` → `N1_AparicionGuia` → `N1_Hallazgo` se encadenan por `NextSequenceId` desde
+  `1009c5a` (13/09), y `N1_Hallazgo` entra a jugar con `NextPhase: 1`. `N1_NacimientoDelFuego`
+  (`ca6c8c6`, 11/09, T15) es el cierre reflexivo y sale al resumen del nivel.
+- **Ilustraciones del N1.** `N1_Apertura` usa `entorno_n1_apertura`; `N1_AparicionGuia`,
+  `N1_Hallazgo` y `N1_NacimientoDelFuego`, `entorno_n1_cueva_2x`.
+- **Puesta en escena**, fuera del alcance de esta fase: `NarrativeSequence` declara además
+  `Ambient` y `AmbientLayer`; `CameraStart`, `CameraEnd`, `CameraKeys` y `Props` (`416ec79`, 11/09,
+  W07); `LightStart` (`fa5d032`, 12/09); `CameraSmoothingSeconds`, `OpensFromBlack` y
+  `HardCutFadeSeconds`. `DialogueLine` suma `Sound`, `Ambient` y `Silence`.
+- **`DialogueRunner`** ganó en `416ec79` (11/09, W07) `Progress` —cuánto va leído, de 0 a 1, «lo que
+  lleva la cámara por la ilustración al ritmo de la narrativa y no del reloj»— e `Index`, la línea
+  en curso. `Advance` y `Skip` no cambiaron.
+
+### B.4 Las suites de esta fase, hoy
+
+Contadas por grep sobre `Assets/Tests/` en `ccf77e6`:
+
+| Suite | 08/09 | Hoy | Qué se sumó |
+|---|---|---|---|
+| `DialogueRunnerTests` | 7 | 8 | `DialogueRunner_RF05_ElProgresoVaDeCeroAUnoAlRitmoDeLasLineas` (`416ec79`) |
+| `HintPolicyTests` | 7 | 15 | cuatro del Nivel 2 (`5f7a432`, 10/09, W03) y cuatro del Nivel 3 (`e3575bf`, 16/09) |
+| `NarrativeSequenceTests` | 3 | 11 | ocho de otras tareas: cuántas secuencias tienen el N2 y el N3, la luz del día del N2 (`ElNivel2TranscurreDelAmanecerALaNoche`, `d7ace67`), ningún encuadre del N3 se recorta (`e3575bf`), objetos bajo el cuadro de diálogo (`1009c5a`), cada objeto pintado tiene su ilustración (`d81cfc7`), humo (`f801186`) y la CP-07 de B.1 |
+| `NarrativeVisitPolicyTests` | — | 3 | la clase entera (B.1) |
+| `NarrativeSceneTests` (PlayMode) | 6 | 29 pruebas, 75 casos | la del encadenado del N1 (§4.2) y las de la puesta en escena de otras tareas; de las seis de §4.2 se retiró una |
+
+Las diecisiete EditMode de §4.1 siguen todas en la suite. La cifra de la suite completa está en
+[`Slice-4-Resultados.md`](../Slice%204/Slice-4-Resultados.md), «Corrida completa de la suite
+(25/09/2026)».

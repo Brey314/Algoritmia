@@ -3,7 +3,9 @@
 **Slice 1 · Golden Path temprano** · Estado: **T12–T16 implementadas y verdes** — corte de este
 documento: 11 de septiembre de 2026.
 Verificación vigente: **EditMode 84/84 · PlayMode 52/52** (`FirePanelTests` 13/13,
-`PauseMenuTests` 4/4, `PauseMenuPolicyTests` 1/1), 0 fallos.
+`PauseMenuTests` 4/4, `PauseMenuPolicyTests` 1/1), 0 fallos. *(Vencido el 25/09/2026: son las
+cifras al cerrar T16; al cerrar T19 eran EditMode 94/94 · PlayMode 54/54 (§3.8), y la corrida
+vigente está en `Slice-4-Resultados.md`.)*
 Plan técnico: [`plan.md`](plan.md) · Tablero: [`todo.md`](todo.md) · Contrato: `claudeDocs/SPEC.md`
 Fase anterior: [`Fase-2-Resultados.md`](Fase-2-Resultados.md)
 
@@ -11,16 +13,33 @@ La Fase 3 es el módulo `nivel-fuego`: el nivel jugable completo (panel de encen
 depuración, convergencia, resolución, indicadores). Este documento se irá llenando tarea a tarea;
 el código de la fase **no está completo**.
 
+> **Estado al 25/09/2026:** el texto de abajo es la foto del 11/09 y se conserva tal cual. T17–T19
+> también se terminaron ese día (§2e–§2g), aunque la tabla siguiente las deja «pendiente». La
+> mecánica que describe —deslizante de posición de tres muescas (`StrikePosition`), ocho mensajes
+> por distancia, registro con historial y rótulo «Aún no»— la rehicieron las **Fases 5 y 6** del
+> Slice 1 (T20–T27: `fa5d032` del 12/09 y `863ef05` del 15/09, INC-47): hoy el nivel se juega en
+> dos momentos, reunir las piezas en un círculo y encender con dos deslizantes, fuerza y cercanía de
+> las piedras, y la ayuda está cableada. Lo construido entonces está en
+> [`Fase-5-6-Resultados.md`](Fase-5-6-Resultados.md). Además, `4f69140` (11/09) quitó
+> `NarrativeOutcome`, la cueva se ilumina con la capa `fx_oscuridad` y no con el tinte `#8A97AB`, y
+> el arte, el sonido y los personajes del nivel llegaron después
+> ([`Props-y-Sonidos-Resultados.md`](../Slice%203/Props-y-Sonidos-Resultados.md),
+> [`Personajes-Resultados.md`](../Personajes/Personajes-Resultados.md)). Cada afirmación que se
+> comprobó vencida lleva una nota fechada en su sitio; el resumen está en el **Anexo** al final. Las cifras de
+> §3 son las del 10–11/09: la corrida vigente de la suite está en
+> [`Slice-4-Resultados.md`](../Slice%204/Slice-4-Resultados.md), «Corrida completa de la suite
+> (25/09/2026)».
+
 | Tarea | Qué entrega | Modo de prueba | Estado |
 |---|---|---|---|
-| T12 | `StrikePosition`, `FireLevelConfig`, `StrikeOutcome`, `FireAttempt` — lógica pura del nivel | EditMode | ✅ terminada |
-| T13 | `FireFeedbackLog` y los ocho mensajes del guion §4.3.4 | EditMode | ✅ terminada |
+| T12 | `StrikePosition`, `FireLevelConfig`, `StrikeOutcome`, `FireAttempt` — lógica pura del nivel *(25/09/2026: `StrikePosition` se borró en `fa5d032`)* | EditMode | ✅ terminada |
+| T13 | `FireFeedbackLog` y los ocho mensajes del guion §4.3.4 *(25/09/2026: hoy doce; los ocho de fallo, de fuerza y cercanía, ya no son del guion)* | EditMode | ✅ terminada |
 | T14 | Panel de encendido y escena `Level1_Cave` | PlayMode | ✅ terminada |
 | T15 | Convergencia: «Soplar» → nacimiento del fuego | PlayMode + VV | ✅ terminada |
 | T16 | Menú de pausa | EditMode + PlayMode | ✅ terminada |
-| T17 | Emisión de los cuatro indicadores del N1 | EditMode | pendiente |
-| T18 | Resumen de fin de nivel y cierre reflexivo | EditMode + PlayMode | pendiente |
-| T19 | Iluminación progresiva del escenario (RF-21, Baja) | VV | pendiente |
+| T17 | Emisión de los cuatro indicadores del N1 | EditMode | pendiente *(25/09/2026: terminada el 11/09, §2e)* |
+| T18 | Resumen de fin de nivel y cierre reflexivo | EditMode + PlayMode | pendiente *(25/09/2026: terminada el 11/09, §2f)* |
+| T19 | Iluminación progresiva del escenario (RF-21, Baja) | VV | pendiente *(25/09/2026: terminada el 11/09, §2g)* |
 
 ---
 
@@ -30,21 +49,30 @@ El assembly `Game.Levels.Fire` existía como `.asmdef` vacío desde T01; T12 le 
 código. Cuatro archivos en `Assets/Game/Scripts/Runtime/Levels/Fire/`:
 
 - **`StrikePosition`** — enum de tres distancias del deslizante (guion §4.3.2): `Far`, `Near`,
-  `VeryClose`. «Muy cerca» es la única efectiva por defecto.
+  `VeryClose`. «Muy cerca» es la única efectiva por defecto. *(Vencido el 25/09/2026: se borró en
+  `fa5d032`; hoy la fuerza se clasifica en `ForceBand` y la cercanía de las piedras en
+  `SpacingBand` — `Fase-5-6-Resultados.md` §3.1.)*
 - **`FireLevelConfig`** — ScriptableObject con los cuatro parámetros ajustables jugando
   (`AvailablePositions`, `EffectivePosition`, `MinimumEffectiveStrikes`, `AttemptsBeforeHint`),
   `[field: SerializeField]` + `[Tooltip]` con el texto del guion, valor por defecto = el propuesto
   (3 / Muy cerca / 3 / 3). Fuera del código para que retocarlos —PG-06 sigue abierto— no cueste
   recompilar (CT-05, RNF-18). **No se crea el `.asset`**: es de T14; los tests usan
-  `ScriptableObject.CreateInstance`.
+  `ScriptableObject.CreateInstance`. *(Vencido el 25/09/2026: hoy son doce parámetros —los de
+  fuerza, cercanía, acercamiento e ignición, más `MinimumEffectiveStrikes` y `AttemptsBeforeHint`,
+  que siguen de T12— y ninguno de posición; `Fase-5-6-Resultados.md` §3.1 y §3.4.)*
 - **`StrikeOutcome`** — `readonly struct` que devuelve un golpe: `Effective`, `Position`,
   `EffectiveStrikes`. Fábricas `SparksDied(position)` / `SparkLanded(effectiveStrikes)` con las
   firmas literales del `SPEC.md` §Estilo. Lo consumirá T13 para elegir el mensaje del log.
+  *(Vencido el 25/09/2026: ya no hay `Position`; lleva `Force`, `Band`, `Spacing` y
+  `EffectiveStrikes`, con las fábricas `SparksDied(force, band)`, `StonesMisplaced(force, band,
+  spacing)` y `SparkLanded(force, n)`.)*
 - **`FireAttempt`** — el código del `SPEC.md` §Estilo (líneas 334–365) tal cual, con
   `ConsecutiveFailures` expuesto como propiedad pública de solo lectura (patrón de `HintPolicy`).
   Lleva los dos contadores del guion §4.3.3/§4.3.5:
   - Golpe desde una posición no efectiva → `ConsecutiveFailures++`, devuelve `SparksDied`; **no
-    toca los golpes efectivos** (RF-16).
+    toca los golpes efectivos** (RF-16). *(25/09/2026: hoy «no efectivo» es piedras separadas o
+    demasiado encimadas, o fuerza fuera de 7–8, en `Strike(force, spacing)`; lo demás de esta
+    lista sigue igual.)*
   - Golpe desde la posición efectiva → `EffectiveStrikes++`, `ConsecutiveFailures = 0`, devuelve
     `SparkLanded`.
   - `CanBlow` deriva **solo** de `EffectiveStrikes`, que solo crece → una vez habilitado el soplo
@@ -66,13 +94,17 @@ Dos archivos más en `Assets/Game/Scripts/Runtime/Levels/Fire/` y un asset:
 - **`FireMessages`** — ScriptableObject con los **ocho mensajes del guion §4.3.4 literales**, ocho
   propiedades `[field: SerializeField, TextArea]` + `[Tooltip]` (patrón de `GuideContent`). El
   asset real es `Assets/Game/Data/Fire/N1_Mensajes.asset`, escrito como YAML a mano
-  (`unity-yaml-editing-guide`); el nombre sigue la convención `N1_*` del Nivel 1.
+  (`unity-yaml-editing-guide`); el nombre sigue la convención `N1_*` del Nivel 1. *(Vencido el
+  25/09/2026: hoy son doce; los ocho de fallo, de fuerza y de cercanía de las piedras, ya no son
+  el texto del guion —INC-47—, y los tres de golpe efectivo y el del soplo siguen literales;
+  `Fase-5-6-Resultados.md` §3.1 y §3.4.)*
 - **`FireFeedbackLog`** — C# plano, sin Unity. `Record(StrikeOutcome, consecutiveFailures)` elige
   el mensaje y lo acumula:
   - golpe efectivo → por ordinal: primero, segundo, o **final** al alcanzar el mínimo (guion
     §4.3.5 E6, el «hilo de humo»);
   - golpe no efectivo → por distancia (`Far`/`Near`) y racha: la variante «tras dos intentos» del
-    guion §4.3.4 entra desde el **segundo** fallo seguido;
+    guion §4.3.4 entra desde el **segundo** fallo seguido; *(vencido el 25/09/2026: hoy se elige
+    primero por cercanía de las piedras y, si no, por franja de fuerza; la racha sigue igual)*
   - **no repite el mismo mensaje dos veces seguidas** cuando hay alternativa aplicable (RF-18,
     «consecuencia observable distinta de la anterior»): en la misma distancia los golpes seguidos
     alternan «cualquiera» / «tras dos intentos».
@@ -88,10 +120,12 @@ Sin cambios de `.asmdef`.
 ## 2b. T14 — el panel de encendido y la primera escena jugable
 
 - **`Level1_Cave.unity`** — construida por script de Editor (skill `edit-scene`), alta en Build
-  Settings (**6 escenas**). Canvas Overlay 1920×1080; `EventSystem` con `InputSystemUIInputModule`
+  Settings (**6 escenas**; *hoy doce, 25/09/2026*). Canvas Overlay 1920×1080; `EventSystem` con `InputSystemUIInputModule`
   (nunca el legado, CT-06); deslizante de tres posiciones (`Navigation.None`), «Golpear», «Soplar»
   atenuado con **badge candado + «Aún no»** (RNF-19), área de registro con `ScrollRect`, montón de
-  hojas. Arte **placeholder** (A7–A9 sin generar).
+  hojas. Arte **placeholder** (A7–A9 sin generar). *(Vencido el 25/09/2026: desde `fa5d032` no hay
+  `ScrollRect` y el deslizante es de fuerza, de diez muescas; `863ef05` sumó el de cercanía y quitó
+  el rótulo «Aún no» —queda el candado—. `Fase-5-6-Resultados.md` §3.3.)*
 - **`FirePanelController`** (`Game.Levels.Fire`, con `UnityEngine.UI` añadido al `.asmdef`) —
   adaptador delgado: el clic de «Golpear» llama a `FireAttempt.Strike` (T12), el resultado a
   `FireFeedbackLog.Record` (T13), y el estado a la UI. **Cero reglas del juego.** El deslizante no
@@ -99,6 +133,8 @@ Sin cambios de `.asmdef`.
   oculta; no re-bloquea (INC-32). «Soplar» hoy solo registra el mensaje del soplo — la animación,
   el guardado y el salto a la escena de cierre son T15.
 - **`FeedbackLogView`** — vista tonta que une `Entries` con saltos de línea y baja el scroll.
+  *(Vencido el 25/09/2026: desde `fa5d032` muestra solo el último mensaje, en la tablilla superior
+  del mockup 7; el historial sigue en `FireFeedbackLog.Entries`.)*
   Desviación del plan: vive en `Game.Levels.Fire`, no en `Game.UI` (así `Game.UI` no depende de
   ningún nivel y `Game.Levels.Fire` no depende de `Game.UI`).
 - **`ControlesJugables.inputactions`** (nuevo) — mapa `UI` con **solo** bindings de puntero
@@ -108,8 +144,12 @@ Sin cambios de `.asmdef`.
   RNF-02 acota «escenas **jugables**».
 - **`GameFlowRunner.Scenes`** mapea `Playing → Level1_Cave` (un solo nivel hoy; por `LevelId`
   cuando lleguen Rueda/Río). **`NarrativeSceneController.Leave()`** entra a jugar el nivel de la
-  secuencia (`StartPlaying`), cerrando el `// PROVISIONAL (T14)`.
+  secuencia (`StartPlaying`), cerrando el `// PROVISIONAL (T14)`. *(Vencido el 25/09/2026: desde
+  `4f69140` la escena de `Playing` la elige la fase —`GameFlowRunner.PlayingScenes`— y `Leave()`
+  entra a jugar por el `NextPhase` del asset.)*
 - **`N1_Config.asset`** — el `FireLevelConfig` real (3 / Muy cerca / 3 / 3), YAML a mano.
+  *(Vencido el 25/09/2026: hoy lleva doce valores —fuerza, cercanía, acercamiento, ignición y los
+  dos de T12 que no cambiaron, 3 y 3—; `Fase-5-6-Resultados.md` §3.4.)*
 
 ### T14b — `PlayFromBoot.cs`: el corredor PlayMode se colgaba desde el MCP de Rider
 
@@ -143,24 +183,33 @@ T14; T15 completa lo que faltaba al accionarlo en condiciones válidas (guion §
 - **`PlayIgnitionAsync`** — un único `Color.Lerp` del `leavesImage` hacia un naranja de fuego en
   ~0,6 s, monótono y en una sola dirección: RNF-21 prohíbe destellos de alta frecuencia y un
   `PingPong` o cualquier oscilación los produciría. Placeholder — el sprite de fuego real y la
-  iluminación del resto del escenario son arte pendiente / T19.
+  iluminación del resto del escenario son arte pendiente / T19. *(Vencido el 25/09/2026: desde
+  `aca7acc`/`8ec5120` el nacimiento del fuego es la llama cenital animada sobre el montón y un
+  quemado que crece en `IgnitionSeconds`; sigue siendo un solo barrido. Props-y-Sonidos §2.5.)*
 - **`CompleteLevel`** — sin perfil activo, avisa y no hace nada (mismo criterio que `ScreenFlow`,
   sin acoplar `Game.Levels.Fire` a `Game.UI`). Con perfil: `PlayerProfile.ConfirmPhase(Fire, 1,
   default)` (**los cuatro indicadores reales son T17** — de momento se confirma la fase sin
   ellos, mismo patrón que T11 dejó el umbral de pista para T12), `LevelUnlockPolicy.UnlockAfterCompleting`
   (Nivel 2, RF-03), `(Saver ?? Runner.Session).SaveActive()` (RF-04, con el mismo patrón de
   `IProfileSaver` inyectable que `MainMenuController.Saver`, para que las pruebas usen un espía y
-  no toquen disco), y `Runner.StartNarrative("N1_NacimientoDelFuego")` (RF-20).
+  no toquen disco), y `Runner.StartNarrative("N1_NacimientoDelFuego")` (RF-20). *(Vencido el
+  25/09/2026: desde T18 `CompleteLevel` solo deja los indicadores y abre la narrativa; confirmar,
+  desbloquear y guardar los hace `LevelSummaryController.Show()` (§2f), y
+  `ConfirmPhase` recibe un `PhaseId` —firma de W02, `a012515`, que el N1 adoptó en `4f69140`—.)*
 - **`NarrativeOutcome`** (nuevo, `Game.Scaffolding`): `EntersLevel` / `ReturnsToLevelSelect`.
   `NarrativeSceneController.Leave()` (T14) asumía que **toda** narrativa entra a jugar; con la de
   cierre del N1 eso ya no vale. La secuencia declara su propósito en el asset —sin `if` por
   secuencia, la regla del proyecto se mantiene— y `Leave()` decide por ese campo. Valor por
   defecto (`EntersLevel = 0`) igual al comportamiento anterior: **los tres assets existentes no
-  se tocaron**.
+  se tocaron**. *(Vencido el 25/09/2026: `4f69140` (11/09) eliminó `NarrativeOutcome` al
+  reconciliar con el Slice 2; hoy `Leave()` prueba en orden `NextSequenceId` → `NextPhase` →
+  `EndsInCredits` → `IsReflectiveClosing` → menú de niveles.)*
 - **`N1_NacimientoDelFuego.asset`** (nuevo) — las 19 líneas del guion §4.4 (el nacimiento del
   fuego y el cierre reflexivo de Chispa, «se llama iterar»), añadido como cuarta entrada al
   arreglo `sequences` de `Narrative.unity` — un cambio de una sola línea en la escena, exactamente
-  la promesa de T09/T10: «añadir una escena narrativa es crear un asset».
+  la promesa de T09/T10: «añadir una escena narrativa es crear un asset». *(Vencido el
+  25/09/2026: T20 (`fa5d032`) lo reescribió con 17 líneas y el guía habla como ALGORITM, no
+  «Chispa» (INC-44); el cierre sigue diciendo «se llama iterar». `Fase-5-6-Resultados.md` §3.5.)*
 
 ### Un defecto real encontrado al verificar: `LoadPanel()` podía devolver el controlador equivocado
 
@@ -181,6 +230,10 @@ arreglo.
 
 **Sin tocar `Panel`/`FirePanelController`.** «Pausa» abre un overlay sobre `Playing` —no un estado
 nuevo (HU-17)— con Continuar, Reiniciar (con confirmación de una frase) y Volver al menú:
+*(Vencido el 25/09/2026: desde W17 del Slice 2 (`8de614f`, 15/09) es el menú del mockup 6
+—«Reanudar», «Reiniciar» y «Volver al menú de niveles» (`MenuPausa.prefab:1520`, `:2752`, `:924`)—,
+que sale a `LevelSelect` y no al menú principal (INC-49), y detiene el nivel con
+`Time.timeScale = 0` mientras está abierto (`PauseMenuController.cs:68`).)*
 
 - **Hallazgo de diseño previo a cualquier código**: `GameFlowRunner.Apply` solo recargaba una
   escena cuando su nombre **cambiaba**. `GameFlow.Allowed[Playing]` ya incluía `Playing` como
@@ -196,7 +249,9 @@ nuevo (HU-17)— con Continuar, Reiniciar (con confirmación de una frase) y Vol
   `LevelSelectController`/`NarrativeSceneController`, sin dependencia nueva para el nivel) vive en
   `Level1_Cave.unity` como una capa sobre el panel de T14. Un `Image` a pantalla completa
   (`raycastTarget = true`, último hermano del `Canvas`) bloquea el clic hacia «Golpear»/«Soplar»
-  mientras está pausado — el panel de T14 no se toca en absoluto.
+  mientras está pausado — el panel de T14 no se toca en absoluto. *(Vencido el 25/09/2026: desde
+  `8de614f` el controlador vive en el prefab `MenuPausa.prefab`, instanciado en las cinco escenas
+  jugables; `Level1_Cave.unity` lleva esa instancia.)*
 
 ### Dos bugs reales encontrados al verificar (no ruido del Editor)
 
@@ -228,6 +283,10 @@ cambio de estado puro.
 - **Errores corregidos** = un golpe efectivo que llega justo después de uno que no lo fue. No hace
   falta comparar `StrikePosition` aparte: la posición efectiva es única, así que cualquier golpe
   fallido está, por construcción, en una posición distinta a la del acierto que lo corrige.
+  *(Vencido el 25/09/2026 en su justificación: `StrikePosition` ya no existe, la fuerza efectiva
+  son dos muescas (7–8) y un fallo puede ser de cercanía. El cálculo no cambió y la prueba se llama
+  `…ErrorCorregidoExigeCambioDeFuerzaSeguidoDeAcierto`; el comentario de
+  `FireIndicatorCollector.cs:54-57` todavía repite este razonamiento.)*
 - **Pasos utilizados** = golpes efectivos acumulados al cruzar `MinimumEffectiveStrikes`; se
   congela ahí, golpes efectivos posteriores no lo mueven.
 - **Tiempo de resolución** = un reloj inyectado (`Func<float>`, `Time.realtimeSinceStartup` en
@@ -264,7 +323,9 @@ cierre** (el guía nombra la habilidad, la liga a lo hecho) → **resumen narrat
 vuelve al menú con el siguiente nivel desbloqueado. `N1_NacimientoDelFuego.asset` ya traía el
 cierre reflexivo escrito desde antes de T15 («Eso tiene nombre: se llama iterar. Probar, mirar el
 resultado y ajustar.», ligado a «Cambiaste de lugar, volviste a probar…») — RF-12 quedó
-satisfecho por contenido ya existente, sin código nuevo.
+satisfecho por contenido ya existente, sin código nuevo. *(25/09/2026: la línea dice hoy
+«Cambiaste la fuerza, volviste a probar…»; «se llama iterar» sigue. El recuadro del resumen, desde
+`fa5d032`, nombra la habilidad como «probar y ajustar» —`SkillNamed`—.)*
 
 **`LevelSummaryComposer`** (`Game.UI`, C# plano) compone el resumen a partir de
 `PerformanceIndicators`: dos de los cuatro indicadores (Intentos, Errores corregidos) se traducen
@@ -272,7 +333,9 @@ a una de dos variantes de texto cada uno desde `LevelSummaryMessages` (SO); Paso
 Tiempo de resolución no tienen una forma narrativa natural sin sonar a cifra disfrazada. Ninguna
 rama formatea un número — «cero cifras» es estructural, no un cuidado en tiempo de ejecución.
 `LevelSummaryController` pinta ese texto y, al continuar, confirma la fase, desbloquea el Nivel 2
-y guarda.
+y guarda. *(Corrección del 25/09/2026: confirma, desbloquea y guarda en `Show()`, al mostrarse
+—como dice el arreglo más abajo y como está desde T18—, no al continuar. La tablilla de los mockups
+13 y 13b es de `fa5d032`: `Fase-5-6-Resultados.md` §3.6.)*
 
 ### El bug real: el cierre reflexivo nunca era «la primera vez»
 
@@ -284,7 +347,10 @@ verdadero **desde la primerísima vez** que se completaba el nivel: el botón de
 siempre, violando CP-07 y el flujo alterno FA-02 de HU-14. Ninguna prueba existente lo atrapaba:
 `FirePanelTests` no llegaba a mirar la escena narrativa, y `NarrativeSceneTests` arrancaba
 `StartNarrative` directo con un perfil sin tocar, sin pasar por `CompleteLevel`. Un defecto real de
-T15, dormido hasta que T18 miró el flujo completo.
+T15, dormido hasta que T18 miró el flujo completo. *(Vencido el 25/09/2026 en cuanto a la regla:
+hoy el cierre reflexivo mira `ReachedLevel` (entró con W04, `9f10485`, en el carril del Slice 2) y
+las demás escenas, la **última** fase confirmada (`d81cfc7`, 17/09). En el N1, de una sola fase,
+«alguna» y «la última» coinciden. El orden que impone este arreglo sigue vigente.)*
 
 **Arreglo, siguiendo HU-14 al pie de la letra**: `ConfirmPhase`/`LevelUnlockPolicy`/`SaveActive` se
 movieron del paso 2 (donde estaban) al paso 6 (`LevelSummaryController.Show()`), justo donde el
@@ -292,7 +358,8 @@ flujo básico los sitúa. La mediación es `GameFlowRunner.PendingIndicators` (m
 `ActiveReporter`, T17): `FirePanelController.CompleteLevel()` ahora solo calcula los indicadores y
 los deja listos, sin confirmar nada. `NarrativeSceneController.Leave()` ganó una rama: las
 secuencias de cierre (`Outcome == ReturnsToLevelSelect`) van a `LevelSummary`, no directo a
-`LevelSelect` — sigue sin un `if` por secuencia, la rama depende del dato del asset.
+`LevelSelect` — sigue sin un `if` por secuencia, la rama depende del dato del asset. *(Vencido el
+25/09/2026: desde `4f69140` la marca es `IsReflectiveClosing`.)*
 
 Reordenar solo las *líneas* dentro de `CompleteLevel()` no habría alcanzado: la carga de escena es
 asíncrona, así que el resto del método habría terminado de correr antes de que la narrativa
@@ -326,6 +393,13 @@ máximo hasta la resolución (E7) — el `+1` reserva ese último escalón para 
 anima la iluminación en el mismo barrido de color que ya animaba el nacimiento del fuego
 (`PlayIgnitionAsync`, T15), sin temporizador ni animación nueva.
 
+*(Vencido el 25/09/2026: desde `fa5d032` `CaveLightingController` ya no interpola el color del
+`Fondo`: crea una capa «Oscuridad» con el material `fx_oscuridad` y anima un `NarrativeLight`
+—charco fijo sobre el montón, fondo de 0,10 a 0,30—, con la misma fracción
+`golpesEfectivos / (mínimo + 1)`. El `#8A97AB` de abajo ya no está en el código, y la prueba de
+RNF-20 mide la instrucción contra su tablilla, que la oscuridad no toca, no contra la cueva.
+`Fase-5-6-Resultados.md` §3.2 y §4, decisión 7.)*
+
 ### El ajuste de RNF-20: el color más oscuro no es el del documento de arte
 
 `Direccion_de_Arte.md` §8.1 prescribe una máscara `#0F1526` al 65 % de opacidad sobre el fondo del
@@ -348,6 +422,11 @@ sus anclas numéricas.
 ---
 
 ## 3. Verificación — declarada
+
+*(Vencido el 25/09/2026 en parte: trece de los nombres de estas tablas ya no existen —once los
+renombró o sustituyó la mecánica de fuerza y cercanía, y dos los trasladó T18 a `LevelSummaryTests`
+(§2f)—. La equivalencia está en el Anexo A.2 y las clases de
+hoy, con su conteo, en `Fase-5-6-Resultados.md` §5.)*
 
 ### 3.1 EditMode — T12
 
@@ -407,7 +486,9 @@ muestra **icono de candado + la palabra «Aún no»** en un badge bajo el botón
 depender del color (RNF-19 ✅). Contraste de la instrucción, «Lejos», «Golpear», «Soplar» y el
 badge sobre el pergamino suficiente; los glifos con tilde («montón», «golpéalas», «Aún») se dibujan
 (RNF-20 ✅). La primera captura **falló** —el badge no se veía, «Soplar» solo se distinguía por
-color— y se corrigió reparentando el badge fuera del botón (§2b).
+color— y se corrigió reparentando el badge fuera del botón (§2b). *(Vencido el 25/09/2026: el
+rótulo «Aún no» se retiró en `863ef05`; queda el candado, que con el color atenuado sigue siendo
+doble indicador —`FirePanel_RNF19_SoplarAtenuadoSeDistinguePorElCandadoAdemasDelColorYSinRotuloAunNo`—.)*
 
 ### 3.4 PlayMode — T15
 
@@ -578,19 +659,28 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
 - **PG-06 / R2** — los valores de `FireLevelConfig` (Muy cerca, 3, 3), el texto de los ocho
   mensajes, el resumen de `LevelSummaryMessages` (T18) y el color más oscuro de
   `CaveLightingController` (T19, `#8A97AB` — ajustado por RNF-20, no el `#0F1526` del documento de
-  arte) son primer borrador y se validan jugando en el Checkpoint D.
+  arte) son primer borrador y se validan jugando en el Checkpoint D. *(Vencido el 25/09/2026:
+  los valores, los ocho mensajes de fallo y la luz son otros —`Fase-5-6-Resultados.md` §3.4 y §4,
+  decisión 7—; PG-06 sigue abierto.)*
 - **Botón de ayuda (`HintPolicy`) sin cablear** — el panel y el registro existen desde T14, pero
   **no** el botón de ayuda: `FireAttempt.ShouldOfferHint` y `HintPolicy` cuentan lo mismo por
   caminos distintos y hay que decidir cuál lo alimenta. Sigue sin resolverse tras T19 (fuera del
   alcance de todas las tareas de esta fase: RF-13, ninguna de ellas lo traza); queda para una
-  tarea aparte.
+  tarea aparte. *(Vencido el 25/09/2026: cableado en `fa5d032`; lo alimenta `HintPolicy` con los
+  pasos `Reunir`, `Golpear` y `Soplar` de `N1_Guia`, y `FireAttempt.ShouldOfferHint` quedó sin
+  uso. `Fase-5-6-Resultados.md` §4, decisión 6.)*
 - **Arte del Nivel 1 (A7–A9)** — la escena `Level1_Cave` va con placeholders: montón de hojas =
   elipse blanca, badge y registro con formas planas, el «fuego» de T15 es un barrido de color sin
   sprite propio. El *mecanismo* de iluminación progresiva ya existe (T19); los cuatro estados
   reales del montón, el sprite del fuego y el arte real de la cueva siguen pendientes.
+  *(Vencido el 25/09/2026: la cueva cenital es de `fa5d032`; los sprites definitivos parciales, el
+  montón cenital y el quemado, de `2cbe287`, `aca7acc` y `8ec5120`, y la llama animada, de los
+  clips de `dc51804` que `aca7acc` puso en la escena —Props-y-Sonidos—.)*
 - **El encadenado de las tres secuencias narrativas del N1 (§4.1/§4.2) antes del panel** sigue sin
   resolverse — `NarrativeSceneController.Leave()` entra al nivel tras **cualquier** secuencia de
-  apertura del N1 (`Outcome = EntersLevel`), no específicamente tras `N1_Hallazgo`.
+  apertura del N1 (`Outcome = EntersLevel`), no específicamente tras `N1_Hallazgo`. *(Vencido el
+  25/09/2026: resuelto en `1009c5a` (13/09) por el asset: `N1_Apertura` → `N1_AparicionGuia` →
+  `N1_Hallazgo` con `NextSequenceId`, y `N1_Hallazgo` entra a jugar con `NextPhase` 1.)*
 - **Cuelgue intermitente del Test Runner** — el plugin Coplay reañade su botón de toolbar durante
   `TestJobRunner.ExecuteCallback` y ahí el corredor se traba a veces; en T15 llegó a cerrar el
   Editor por completo. Se recupera reiniciando (`execute_run_configuration("Start Unity")` de
@@ -613,3 +703,69 @@ Esqueleto compilable → pruebas en rojo → implementación → refactor.
   `LevelUnlockPolicy` a pesar de implementar `ILevelReporter`: la única pieza con estado de Unity
   es el `Func<float>` que le inyecta `FirePanelController`, no la clase misma. No dar por hecho
   que toda política de `Game.Core`/`Game.Levels.*` es 100 % pura sin Unity — revisar caso por caso.
+
+---
+
+## Anexo — lo que cambió después del cierre (25/09/2026)
+
+Verificado contra el código y los assets de `ccf77e6`. El grueso —la mecánica de reunir y encender
+de las Fases 5 y 6 (T20–T27)— lo cuenta [`Fase-5-6-Resultados.md`](Fase-5-6-Resultados.md); aquí
+va el índice de lo que este documento afirma y ya no es cierto, la equivalencia de las pruebas y lo
+que la fase hizo sin registrarlo.
+
+### A.1 Lo vencido, afirmación por afirmación
+
+| Dónde | Decía | Hoy | Desde |
+|---|---|---|---|
+| Cabecera | Verificación vigente EditMode 84/84 · PlayMode 52/52 | Cifras del cierre de T16; al cerrar T19, 94/94 · 54/54 (§3.8); la vigente, en `Slice-4-Resultados.md` | — |
+| Tabla inicial | T17–T19 «pendiente» | Terminadas el 11/09 | `d9c258a`, `f8ffcc8`, `2d2b7f4` |
+| §1 | `StrikePosition` (`Far` / `Near` / `VeryClose`) | Borrado; `ForceBand` (fuerza) y `SpacingBand` (cercanía) | `fa5d032`, `863ef05` |
+| §1, §2b | `FireLevelConfig` con cuatro parámetros; `N1_Config` 3 / Muy cerca / 3 / 3 | Doce parámetros; `N1_Config` 10 · 7–8 · 10 · 30 · 4 · 2 · 0,8 · 3,5 · 0,5 · 3 · 3 | `fa5d032`, `863ef05`, `2cbe287`, `aca7acc`, `8ec5120` |
+| §1 | `StrikeOutcome` con `Position` | `Force`, `Band`, `Spacing`, `EffectiveStrikes`; fábrica nueva `StonesMisplaced` | `fa5d032`, `863ef05` |
+| §2 | Ocho mensajes literales del guion, elegidos por distancia | Doce: ocho de fallo, de fuerza y de cercanía, que ya no son del guion, y los cuatro de acierto y soplo, iguales; manda la cercanía | `fa5d032`, `863ef05` |
+| §2b | Deslizante de tres posiciones, badge «candado + Aún no», registro con `ScrollRect` | Deslizantes de fuerza y de cercanía (0–10), solo el candado, tablilla con el último mensaje | `fa5d032`, `863ef05` |
+| §2b | Build Settings con 6 escenas | 12 en `EditorBuildSettings` | — |
+| §2b | `GameFlowRunner.Scenes` mapea `Playing → Level1_Cave` | `GameFlowRunner.PlayingScenes`, una escena por fase | `4f69140` |
+| §2c | Ignición = un `Color.Lerp` de ~0,6 s sobre las hojas | Llama cenital animada y quemado que crece en `IgnitionSeconds` | `aca7acc`, `8ec5120` |
+| §2c | `CompleteLevel` llama `PlayerProfile.ConfirmPhase(Fire, 1, default)` | Confirma `LevelSummaryController.Show()`, con `ConfirmPhase(PhaseId, …)` | `f8ffcc8` (T18), `a012515`, `4f69140` |
+| §2c, §2f, §4 | `NarrativeOutcome` (`EntersLevel` / `ReturnsToLevelSelect`) | Eliminado; `Leave()` decide por `NextSequenceId`, `NextPhase`, `EndsInCredits` e `IsReflectiveClosing` | `4f69140` lo eliminó; los campos son de `9f10485` (`IsReflectiveClosing`), `faaaa13` (`NextPhase`), `b6b886c` (`NextSequenceId`) y `1179dae` (`EndsInCredits`) |
+| §2c | `N1_NacimientoDelFuego`: 19 líneas, cierre de «Chispa» | 17 líneas, el guía es ALGORITM | `fa5d032` |
+| §2d | Continuar / Reiniciar / Volver al menú (principal); `PauseMenuController` en `Level1_Cave.unity` | Prefab `MenuPausa.prefab` en las cinco escenas jugables: Reanudar / Reiniciar / Volver al menú de niveles (INC-49), con `Time.timeScale = 0` | `8de614f` |
+| §2e | «Errores corregidos» justificado por la posición efectiva única | Mismo cálculo; la justificación ya no vale | `fa5d032` |
+| §2f | El resumen confirma «al continuar» | En `Show()`, al mostrarse —así desde T18— | — |
+| §2f | «Ya vista» = alguna fase del nivel confirmada | Cierre reflexivo: `ReachedLevel`; lo demás: la última fase confirmada | `9f10485`, `d81cfc7` |
+| §2g, §4 | Tinte del `Fondo` hacia `#8A97AB`; RNF-20 medido contra la cueva | Capa `fx_oscuridad` con `NarrativeLight`; RNF-20 medido contra la tablilla | `fa5d032` |
+| §4 | Botón de ayuda (`HintPolicy`) sin cablear | Cableado, con los pasos `Reunir`, `Golpear` y `Soplar` | `fa5d032`, `863ef05` |
+| §4 | Encadenado de las narrativas del N1 sin resolver | `NextSequenceId` en los assets | `1009c5a` |
+| §4 | Arte del N1 con placeholders | Cueva cenital; sprites definitivos parciales, montón, llama y quemado | `fa5d032`, `2cbe287`, `dc51804` (clips de la llama), `aca7acc`, `8ec5120` |
+
+### A.2 Pruebas de §3 que cambiaron de nombre
+
+Trece nombres de §3 ya no existen en `Assets/Tests/`: los once de la tabla, que se renombraron o se
+sustituyeron al cambiar la mecánica —ninguna se perdió—, y los dos que T18 trasladó (abajo).
+
+| En §3 | Hoy | Commit |
+|---|---|---|
+| `FireLevelConfig_CT05_ExponeLosCuatroParametrosDelGuion` | `FireLevelConfig_CT05_ExponeLosDiezParametrosDelNivel` | `863ef05` (en `fa5d032`, `…LosCincoParametrosDelNivel`) |
+| `FireAttempt_RF15_CambiarPosicionNoAlteraElEstado` | `FireAttempt_RF15_CambiarLaFuerzaNoAlteraElEstado` | `fa5d032` |
+| `FireMessages_RNF18_LosOchoMensajesDelGuionEstanDefinidos` | `FireMessages_RNF18_LosDoceMensajesDelNivelEstanDefinidos` | `863ef05` (en `fa5d032`, `…LosOnceMensajesDelNivel…`) |
+| `FireFeedbackLog_guion434_CadaDistanciaNoEfectivaDevuelveSuMensaje` | `FireFeedbackLog_guion434_CadaFranjaDeFuerzaNoEfectivaDevuelveSuMensaje` | `fa5d032` |
+| `FireFeedbackLog_RF18_TrasDosFallosSeguidosEnLaMismaDistanciaEscalaElMensaje` | `FireFeedbackLog_RF18_TrasDosFallosSeguidosEnLaMismaFranjaEscalaElMensaje` | `fa5d032` |
+| `FireIndicators_RF45_ErrorCorregidoExigeCambioDePosicionSeguidoDeAcierto` | `FireIndicators_RF45_ErrorCorregidoExigeCambioDeFuerzaSeguidoDeAcierto` | `fa5d032` |
+| `FirePanel_RF14_PresentaDeslizanteBotonGolpearYRegistro` | `FirePanel_RF14_AlEncenderPresentaLosDosDeslizantesGolpearYSoplar` | `863ef05` |
+| `FirePanel_RF15_MoverElDeslizanteNoEjecutaNingunGolpe` | `FirePanel_RF15_MoverLosDeslizantesNoEjecutaNingunGolpe` | `863ef05` |
+| `FirePanel_RF16_GolpearEscribeEnElRegistroElMensajeDeLaDistancia` | `FirePanel_RF16_GolpearEscribeEnElRegistroElMensajeDeLaFuerza` | `fa5d032` |
+| `FirePanel_RF17_ElRegistroNoDesbordaTrasDiezIntentos` | `FirePanel_RF17_LaTablillaMuestraElUltimoMensajeSinDesbordarTrasDiezIntentos` | `fa5d032` |
+| `FirePanel_RNF19_SoplarAtenuadoSeDistinguePorIconoYTextoAdemasDelColor` | `FirePanel_RNF19_SoplarAtenuadoSeDistinguePorElCandadoAdemasDelColorYSinRotuloAunNo` | `863ef05` |
+
+`FireLevel_RF04_GuardaAlCompletarLaFase` y `FireLevel_RF03_DesbloqueaElNivel2` (§3.4) ya los había
+trasladado T18 a `LevelSummaryTests` (§2f); hoy solo los nombra un comentario de
+`FirePanelTests.cs:491`. Los demás nombres de §3 siguen existiendo. Las clases del Nivel 1 de hoy,
+con su conteo, están en `Fase-5-6-Resultados.md` §5.1.
+
+### A.3 Lo que la fase hizo y no registró
+
+- **`Assets/Game/Scripts/Runtime/Levels/Fire/AssemblyInfo.cs`**, creado en T14 (`79c9b3d`, 10/09):
+  `InternalsVisibleTo` para `Game.Levels.Fire.Tests` y `Game.Levels.Fire.PlayMode.Tests`. Es lo que
+  deja a `FirePanelTests` y `CaveLightingTests` leer los miembros `internal` del panel
+  (`ForceSlider`, `Attempt`, `Lighting`…) sin subirlos a `public`. No ha cambiado desde entonces.
