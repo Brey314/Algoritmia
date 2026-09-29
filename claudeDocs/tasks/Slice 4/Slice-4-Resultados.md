@@ -6,16 +6,26 @@ rama `slice4`, con qué se verificó y qué quedó abierto. El tablero vivo sigu
 [`todo.md`](todo.md) —si este documento y el tablero se contradicen, gana el tablero— y el plan
 técnico es [`plan.md`](plan.md). Ninguno de los tres rediscute `claudeDocs/SPEC.md`.
 
+> **Estado al 25/09/2026:** el slice ya no está sin commitear. Entró a `main` como un solo
+> commit, `9c34924` («Slice 4», 24/09/2026), fusionado con el PR #85 (merge `7b08036`). Desde
+> entonces no ha cambiado ningún archivo propio del módulo: `Reporting/`, los tres controladores,
+> `TeacherReport.unity`, `ReportContent.asset` y sus pruebas. Hay notas fechadas en la tabla de
+> abajo, en §1, §2, §3 (decisión 5), §4 (Fase 4), §6 y §8. El detalle está en el «Anexo — lo que
+> cambió después del cierre (25/09/2026)»: el commit y su tarjeta, los dos diálogos de borrado,
+> la tipografía de `TeacherReport` y sus dos `ScrollRect`. La primera corrida completa de la
+> suite tras el trabajo de arte, sonido y personajes del 24–25/09 está en la última sección,
+> «Corrida completa de la suite (25/09/2026)».
+
 | Campo | Dato |
 |---|---|
 | **Incremento** | Slice 4 — Progreso, informe docente (RF-46) y borrado de datos (RF-47) |
 | **Rama** | `slice4`, desde `d5fa77f` (`main`, 23/09/2026) |
 | **Fechas de ejecución** | 23/09/2026 – 24/09/2026 |
-| **Commits en la rama** | 0 — todo el trabajo está sin commitear en el árbol de trabajo; mensaje de commit ya redactado, pendiente de que Santiago lo confirme |
-| **Volumen frente a `main`** | 43 archivos propios del slice (13 modificados + 30 nuevos; aparte, 44 `.meta` de `Assets/Game/Art/` se reserializaron solos al correr `unity test`, ruido del importador, no de este slice) · 736 inserciones / 69 borrados en lo modificado, +17 archivos `.cs` nuevos (744 líneas) y la escena `TeacherReport.unity` (6 312 líneas, generadas por el editor) |
+| **Commits en la rama** | 0 — todo el trabajo está sin commitear en el árbol de trabajo; mensaje de commit ya redactado, pendiente de que Santiago lo confirme *(Vencido el 25/09/2026: se commiteó como `9c34924`, 24/09/2026 13:54, y entró a `main` con el PR #85, merge `7b08036`; ver el Anexo, A.1.)* |
+| **Volumen frente a `main`** | 43 archivos propios del slice (13 modificados + 30 nuevos; aparte, 44 `.meta` de `Assets/Game/Art/` se reserializaron solos al correr `unity test`, ruido del importador, no de este slice) · 736 inserciones / 69 borrados en lo modificado, +17 archivos `.cs` nuevos (744 líneas) y la escena `TeacherReport.unity` (6 312 líneas, generadas por el editor) *(Precisión del 25/09/2026: `9c34924` suma 114 archivos —57 nuevos y 57 modificados— con 10 310 inserciones y 69 borrados. Incluye este documento, `todo.md` y también los 44 `.meta` de `Assets/Game/Art/`, cada uno con un bloque de plataforma `WebGL` añadido; ver A.1.)* |
 | **Código del módulo** | `Game.Reporting` (nuevo): 6 archivos, 248 líneas · controladores en `Game.UI`: `TeacherReportController`, `IndicatorTableView`, `EraseConfirmationDialog`, 314 líneas |
 | **Pruebas del módulo** | `Game.Reporting.Tests`: 4 archivos, 256 líneas, 14 casos · `Game.Content.Tests` (nuevo): 1 archivo, 154 líneas · PlayMode nuevas: `TeacherReportTests` + `EraseDialogTests`, 387 líneas, 7 casos |
-| **Verificación** | EditMode **321/321** (1 omitido declarado) · PlayMode dirigida a lo tocado (`Game.UI.PlayMode.Tests`, 5 clases): **23/25** (2 inconclusive preexistentes del Nivel 1, ajenas a este slice) · 24/09/2026 |
+| **Verificación** | EditMode **321/321** (1 omitido declarado) · PlayMode dirigida a lo tocado (`Game.UI.PlayMode.Tests`, 5 clases): **23/25** (2 inconclusive preexistentes del Nivel 1, ajenas a este slice) · 24/09/2026 *(Nota del 25/09/2026: cifras del 24/09/2026. La corrida completa posterior está en «Corrida completa de la suite (25/09/2026)», al final.)* |
 | **Presupuestos medidos** | No corresponden a este slice — sin arte de croma ni escena jugable nueva; P12 los mide sobre el proyecto completo |
 | **Fase de la metodología Árcade** | Desarrollo — ejecución del ciclo Diseño ↔ Desarrollo ↔ Pruebas |
 
@@ -39,7 +49,7 @@ implementados desde slices anteriores (§4, Fase 4).
 `Traceability_CT10_TodoRFTieneAlMenosUnaPruebaQueLoNombra` lo confirma sobre los 47). **No
 funcionales cerrados con prueba:** RNF-16 (frontera de `Game.Reporting`), RNF-09 (lista cerrada
 del JSON con un perfil de los tres niveles), CP-03 (barrido de cifras sobre once tipos de
-contenido), RNF-19/RNF-20 sobre la tabla del informe, RNF-02 (el mapa de controles del proyecto,
+contenido *(corrección del 25/09/2026: son diez; ver §4, Fase 4)*), RNF-19/RNF-20 sobre la tabla del informe, RNF-02 (el mapa de controles del proyecto,
 corregido en la escena nueva — hallazgo real, §5).
 
 ---
@@ -51,6 +61,11 @@ Las actas de `docs/actas/OE3/` no están en este equipo (están en `.gitignore` 
 slice se ejecutó completo en una sola sesión de Claude Code, a petición directa de Santiago
 («revisa y realiza el slice 4»), sin una tarjeta de Kanban de origen que citar aquí. Si existe una
 en el tablero de las actas, se asocia a mano al commit cuando se cree.
+
+*(Vencido el 25/09/2026: las actas `D01`–`D09` ya están en este equipo, rehechas. La tarjeta de
+origen existe: es `D08-1` (acta D08, 23/09/2026), «Iniciar el cuarto slice…», con Santiago
+Valdiri García como responsable. El acta D09 (24/09/2026) da el slice por cerrado y fusionado, y
+`D08-1` ya no figura en su tablero. El mensaje de `9c34924` no la cita; ver A.1.)*
 
 ---
 
@@ -74,6 +89,12 @@ Ninguna salió del código; quedaron registradas en `todo.md` con su fecha.
 5. **El diálogo de confirmación de P09 reutiliza el de `ProfileSelectController`** en vez de
    generar uno nuevo: alerta, aviso de irreversibilidad, «Cancelar» neutro y «Eliminar» marcado en
    ámbar con icono de papelera — un patrón ya construido y aprobado en el Slice 1.
+   *(Precisión del 25/09/2026: del Slice 1 se reutiliza la disposición —velo, `ui_alerta`,
+   confirmar en ámbar con `ui_papelera`— y la llamada a `ProfileSession.Delete`, no los textos
+   ni el componente. «Cancelar» / «Eliminar datos» son del diálogo de `TeacherReport`
+   (`TeacherReport.unity:3260` y `:3803`); el panel del estudiante en `MainMenu`, de `145a63e`
+   (08/09/2026), dice «Conservar» / «Borrar» (`MainMenu.unity:4161` y `:4319`).
+   `EraseConfirmationDialog` es un componente nuevo; ver A.2.)*
 6. **La escena se construyó con un script de editor efímero** (`execute_script` de `coplay-mcp`),
    no llamada por llamada con las herramientas de escena una por una: para una pantalla de ~40
    objetos son cientos de llamadas equivalentes; el script se escribe una vez, se corre, y se
@@ -131,7 +152,9 @@ cumplir el atributo de solo lectura de carpetas en NTFS.
 
 `Game.Content.Tests` (nuevo, el único assembly de pruebas que referencia los tres niveles a la
 vez — justificado como auditoría de cierre, no código de producción) recorre el grafo serializado
-de once tipos de contenido buscando cifras, saltando identificadores técnicos (campos que
+de once tipos de contenido *(corrección del 25/09/2026: son diez; el arreglo `TiposDeContenido`,
+`ContentInvariantTests.cs:35-41`, no ha cambiado desde `9c34924`. `ReportContent` y
+`CreditsContent` quedan fuera a propósito, :29-34; ver A.5)* buscando cifras, saltando identificadores técnicos (campos que
 terminan en «Id») y restando el índice de formato `{0}`/`{1}` antes de mirar dígitos. El JSON de
 un perfil que jugó los tres niveles se probó contra la lista cerrada de RNF-09, y la trazabilidad
 de CT-10 se deriva de los nombres de método: los 47 RF están citados. Al revisar el checkpoint se
@@ -196,7 +219,7 @@ una corrida real declarada.
 | EditMode, suite completa (11 assemblies, incluido `Game.Content.Tests`) | 24/09/2026 | **321/321**, 1 omitido declarado (INC-34 solo lectura, no aplicable en este equipo) |
 | EditMode, `Game.Architecture.Tests` tras corregir el hallazgo 3 | 24/09/2026 | **15/15** |
 | PlayMode, `Game.UI.PlayMode.Tests` (`TeacherReportTests`, `EraseDialogTests`, `MainMenuTests`, `ProfileSelectTests`, `LevelSummaryTests`) | 24/09/2026 | **23/25**, 2 inconclusive preexistentes de `LevelSummaryTests` (convergencia del Nivel 1, ajenas a este slice) |
-| PlayMode, suite completa del proyecto | 24/09/2026 | Lanzada en segundo plano (Nivel 3, luego `Narrative`); no se esperó el resultado porque este slice no tocó `Game.Levels.*` — cubrir su régimen de pruebas no era necesario para verificar lo construido aquí |
+| PlayMode, suite completa del proyecto | 24/09/2026 | Lanzada en segundo plano (Nivel 3, luego `Narrative`); no se esperó el resultado porque este slice no tocó `Game.Levels.*` — cubrir su régimen de pruebas no era necesario para verificar lo construido aquí *(25/09/2026: la primera corrida completa posterior está en «Corrida completa de la suite (25/09/2026)», al final.)* |
 
 **Verificación visual.** `capture_ui_canvas` sobre la escena real, con los perfiles manuales del
 equipo (`Ana`, con las siete fases jugadas; `pepe`, sin ninguna): cabecera alineada con las
@@ -218,6 +241,9 @@ nombre de cada indicador tras cablearlos.
 | `GameFlowTests` (+2) | 13 | | |
 | `SaveStoreTests` (+1) | 10 | | |
 | `TraceabilityTests` | 1 | | |
+
+*(Comprobado el 25/09/2026 con un conteo estático sobre `ccf77e6`: las trece cifras de esta tabla
+siguen iguales.)*
 
 ---
 
@@ -298,8 +324,14 @@ abiertas), este documento.
       arte final (CT-09).
 - [ ] Repetir la corrida de PlayMode completa del proyecto y declarar su resultado (§6) — quedó
       lanzada pero sin esperar, porque no tocaba nada de `Game.Levels.*`.
+      *(25/09/2026: corrida al final del documento, en «Corrida completa de la suite (25/09/2026)».)*
 - [ ] **Revisar y confirmar el mensaje de commit** (ya redactado, sin tarjeta de Kanban asociada
       — §2) y decidir si se commitea como un solo commit o se divide.
+      *(Resuelto; nota del 25/09/2026: el 24/09/2026 entró como un solo commit, `9c34924`, fusionado con el PR #85. La tarjeta es
+      `D08-1`; ver §2 y A.1.)*
+
+*(25/09/2026: se suman dos pendientes: la tipografía de `TeacherReport` y sus dos `ScrollRect`.
+Ver A.3, A.4 y A.6.)*
 
 **Sin bloqueantes de código.** Con RF-46 y RF-47 cerrados, los 47 RF del proyecto están
 implementados; lo que queda es cierre de proyecto, no desarrollo.
@@ -324,3 +356,139 @@ unity test --mode PlayMode  --filter "TeacherReportTests|EraseDialogTests|MainMe
 Con el Editor abierto, `unity test` falla con `another Unity instance is running`. Antes de correr
 pruebas tras editar un `.cs`, llamar primero a `get_unity_compilation_result` (hallazgo 6, §5) —
 si no, la corrida usa el ensamblado de antes del cambio.
+
+---
+
+## Anexo — lo que cambió después del cierre (25/09/2026)
+
+Este documento se escribió el 24/09/2026, con el trabajo todavía sin commitear. El anexo registra
+lo que pasó después con el slice y corrige lo que el texto de arriba decía mal o dejaba fuera.
+Todo se comprobó contra `ccf77e6` (HEAD al 25/09/2026) y contra `git log`.
+
+### A.1 El slice en git
+
+| Campo | Dato |
+|---|---|
+| **Commit** | `9c34924` «Slice 4», 24/09/2026 13:54, autor `Santivaldiry`. Su padre es `d5fa77f`, el mismo punto de partida que da la cabecera |
+| **Fusión** | PR #85, merge `7b08036` sobre `main` (24/09/2026 13:54) |
+| **Volumen** | 114 archivos (57 nuevos, 57 modificados), 10 310 inserciones y 69 borrados. Incluye este documento y `todo.md`. También incluye los 44 `.meta` de `Assets/Game/Art/` que la cabecera daba por ruido del importador: entraron en el commit, cada uno con un bloque de plataforma `WebGL` de 13 líneas (`overridden: 0`) |
+| **Tarjeta** | `D08-1` (acta D08, 23/09/2026), responsable Santiago Valdiri García. El mensaje del commit no la cita |
+| **Cambios posteriores** | Ninguno en los archivos propios del módulo. `git log 9c34924..HEAD` no devuelve nada sobre `Scripts/Runtime/Reporting/`, `TeacherReportController.cs`, `IndicatorTableView.cs`, `EraseConfirmationDialog.cs`, `TeacherReport.unity`, `Data/Reporting/`, `Tests/EditMode/Reporting/`, `Tests/EditMode/Content/`, `TraceabilityTests.cs`, `TeacherReportTests.cs` ni `EraseDialogTests.cs` |
+
+### A.2 Los dos diálogos de borrado (RF-47)
+
+RF-47 tiene dos puertas y un solo borrado. Las dos llaman a `ProfileSession.Delete` (`Game.Core`,
+`ProfileSession.cs:42-52`), que borra con `SaveStore.Delete` en las dos rutas y, si el perfil
+borrado era el activo, deja de tenerlo como activo. Lo que cambia es la pantalla:
+
+| | Panel del estudiante | Informe docente |
+|---|---|---|
+| Escena y componente | `MainMenu.unity` (`ProfilePanel/DeletePanel`), `ProfileSelectController` | `TeacherReport.unity` (`EraseDialogRoot`), `EraseConfirmationDialog` |
+| Origen | `145a63e` (08/09/2026, Slice 1) | `9c34924` (24/09/2026, este slice) |
+| Pregunta | «¿Borras el perfil de {nombre}?» (`ProfileSelectController.cs:133`) | «¿Eliminas definitivamente los datos de {nombre}? Esta acción no se puede deshacer.» (`EraseConfirmationDialog.cs:54`) |
+| Aviso aparte | «Su avance se pierde y no se puede recuperar.» (`MainMenu.unity:6072`) | No hay: la irreversibilidad va dentro de la pregunta |
+| Botones | «Conservar» (`MainMenu.unity:4161`) · «Borrar» (`:4319`) | «Cancelar» (`TeacherReport.unity:3260`) · «Eliminar datos» (`:3803`) |
+| Tipografía | Baloo 2 y Nunito | Fuente integrada de Unity (A.3) |
+| Pruebas | `ProfileSelect_RF47_BorrarPideConfirmacionAntesDeEliminarElPerfil`, `ProfileSelect_RF47_ConservarDejaElPerfilIntacto` | `EraseDialog_RF47_ExigeConfirmacionExplicitaYAdvierteIrreversibilidad`, `EraseDialog_CU12_CancelarNoRealizaNingunCambioEnDisco`, `EraseDialog_RF47_TrasConfirmarElPerfilDesapareceDeLaLista` |
+
+Las dos comparten la disposición: velo, `ui_alerta`, el botón de cancelar en crema y el de
+confirmar en ámbar con `ui_papelera`. En el informe, el botón de la lista que abre el diálogo
+también dice «Eliminar datos» (`TeacherReport.unity:3882`).
+
+### A.3 Tipografía de `TeacherReport`
+
+Los 20 componentes `Text` de `TeacherReport.unity` usan la fuente integrada de Unity
+(`m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000}`). Ninguno referencia las
+tipografías de `Assets/Game/Art/Fonts/` (Baloo 2 y Nunito, que entraron con `145a63e`). También
+usa la fuente integrada la etiqueta del botón «Progreso del equipo» que este slice añadió a
+`MainMenu` (`MainMenu.unity:3714`): es el único de los 24 textos de esa escena que no usa Baloo 2
+ni Nunito. Las otras pantallas de flujo —`LevelSelect`, `Credits`, `Narrative` y
+`LevelSummary`— no tienen ningún texto con la fuente integrada. El documento no lo registraba ni
+lo dejaba pendiente; se suma en A.6.
+
+### A.4 Desplazamiento con `ScrollRect`
+
+`TeacherReport.unity` desplaza sus dos listas con dos `ScrollRect` verticales con barra:
+`ProfileColumn/ProfileScroll` y `DataColumn/TableScroll`, ambos con `m_Vertical: 1` y
+`m_Inertia: 1`. `CLAUDE.md` pide que una lista que desborda se desplace con botones y no con un
+`ScrollRect`, porque este trae el arrastre de uGUI. En esta pantalla no hay arrastrar y soltar con
+el que se pelee, pero la misma regla limita la entrada a clic y clic sostenido «sin excepciones».
+Queda para revisar (A.6). `Credits.unity` tiene el mismo caso, con un `ScrollRect`.
+
+### A.5 El barrido de CP-03: diez tipos, no once
+
+`ContentInvariantTests.TiposDeContenido` (:35-41) enumera diez tipos: `LevelSummaryMessages`,
+`NarrativeSequence`, `GuideContent`, `FireMessages`, `WheelLevelConfig`, `RiverLevelConfig`,
+`RaftAssemblyContent`, `AssemblyContent`, `MazeLayout` y `GameTitleConfig`. El comentario de
+:29-34 deja fuera a propósito dos tipos: `ReportContent`, la única pantalla donde una cifra es
+correcta, y `CreditsContent`. El archivo no ha cambiado desde `9c34924`, así que «once» ya estaba
+mal al cierre. Después entraron dos `ScriptableObject` más, `RollingLogLook` (`b38c00b`) y
+`RiverSounds` (`ccf77e6`). Guardan una textura, clips de audio y parámetros numéricos, sin
+texto visible, y no están en la lista.
+
+### A.6 Pendientes que se suman a §8
+
+- [ ] Pasar a Baloo 2 y Nunito los 20 textos de `TeacherReport` y la etiqueta «Progreso del
+      equipo» de `MainMenu`, o dejar escrito por qué no (A.3).
+- [ ] Decidir si los dos `ScrollRect` de `TeacherReport` se cambian por botones de desplazamiento
+      o si se deja escrita la excepción (A.4).
+
+---
+
+## Corrida completa de la suite (25/09/2026)
+
+Registra la primera corrida completa de EditMode y PlayMode después del trabajo de arte, sonido
+y personajes del 24–25/09/2026. Se hizo sobre `ccf77e6` (HEAD), dentro del Editor abierto y con
+`TestRunnerApi`, porque Rider estaba caído.
+
+**Conteo estático.** No es una corrida: son los `.cs` de `Assets/Tests/` leídos sobre `ccf77e6`.
+Un método es uno marcado con `[Test]` o `[TestCase]`. Los casos son los que resultan al expandir
+`[TestCase]` y `[Values]` (los `[Values]` están en tres métodos de `CharacterRigTests`, con siete
+personajes cada uno). El conteo incluye las pruebas que se omiten o quedan inconclusas al
+ejecutarse.
+
+| Assembly EditMode | Métodos | Casos | Assembly PlayMode | Métodos | Casos |
+|---|---|---|---|---|---|
+| `Game.Architecture.Tests` | 15 | 15 | `Game.Audio.PlayMode.Tests` | 4 | 4 |
+| `Game.Audio.Tests` (sin pruebas) | 0 | 0 | `Game.Core.PlayMode.Tests` | 11 | 11 |
+| `Game.Content.Tests` | 1 | 1 | `Game.Levels.Fire.PlayMode.Tests` | 38 | 39 |
+| `Game.Core.Tests` | 54 | 60 | `Game.Levels.River.PlayMode.Tests` | 42 | 44 |
+| `Game.EditorTools.Tests` | 5 | 5 | `Game.Levels.Wheel.PlayMode.Tests` | 88 | 89 |
+| `Game.Levels.Fire.Tests` | 34 | 49 | `Game.UI.PlayMode.Tests` | 69 | 119 |
+| `Game.Levels.River.Tests` | 41 | 41 | | | |
+| `Game.Levels.Wheel.Tests` | 69 | 69 | | | |
+| `Game.Reporting.Tests` | 9 | 14 | | | |
+| `Game.Scaffolding.Tests` | 68 | 88 | | | |
+| `Game.UI.Tests` | 19 | 19 | | | |
+| **EditMode (11 assemblies)** | **315** | **361** | **PlayMode (6 assemblies)** | **252** | **306** |
+
+El mismo conteo sobre `9c34924` da 294 métodos y 322 casos en EditMode (los 321 superados de §6
+más el omitido) y 209 métodos y 225 casos en PlayMode. Entre los dos commits, las pruebas las
+tocaron `88fe0ee`, `b38c00b`, `f801186`, `1d5ce58` y `ccf77e6`: +39 casos en EditMode y +81 en
+PlayMode.
+
+**Resultado.** Las dos corridas, una tras otra, sobre `ccf77e6` con el árbol limpio. Los casos que
+ejecutó el runner coinciden con el conteo estático.
+
+| Modo | Casos | Superan | Fallan | Omitidas | Duración |
+|---|---|---|---|---|---|
+| EditMode | 361 | 360 | 0 | 1 | 9,8 s |
+| PlayMode | 306 | 304 | 2 | 0 | 1 695 s (28 min) |
+
+- **Omitida (EditMode):** `ProfileEraser_INC34_SobreDiscoRealCubreLosDosEscenariosDeAlmacenamiento`.
+  La prueba se omite sola: «Este equipo no hace cumplir el atributo de solo lectura sobre
+  carpetas», así que el escenario de solo lectura de INC-34 no se puede simular aquí.
+- **Falla — `RiverLevel_RNF05_LaMemoriaQuedaBajoDosGigasConElNivel3Cargado`:** 2 831 MB
+  reservados, medidos en el Editor. No mide el nivel sino la sesión: ese mismo día, el Editor
+  en modo edición y **sin** el nivel cargado ya reservaba 2 652 MB
+  (`Profiler.GetTotalReservedMemoryLong`). RNF-05 queda por medir sobre el build.
+- **Falla — `RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos`:** en el hundimiento un
+  cuadro saltó 0,076 del alto de la balsa, con un límite de 0,06. Corrida sola justo después,
+  pasa (1/1). También pasó en las corridas del mismo día previas a `ccf77e6`. El hundimiento
+  (`SinkAsync`) no cambió en `ccf77e6` y avanza con `Time.deltaTime`: un cuadro largo del Editor,
+  a los 28 min de corrida, basta para romperla. Queda abierta como prueba sensible al tiempo.
+
+**Cómo se corrió.** Con el tercer camino de CLAUDE.md §Comandos: un script `[InitializeOnLoad]`
+efímero en `Game.EditorTools` registra los callbacks de `TestRunnerApi`, escribe el resultado en
+`Temp/` y se dispara por reflexión con `execute_script` de coplay. Al terminar se borró: no es
+código del juego.

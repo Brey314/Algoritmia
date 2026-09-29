@@ -166,6 +166,11 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       (`DepthScaleAt`: 1.0 abajo → 0.55 donde termina el piso) para Mamá, materiales y zona
       (`RiverLevelConfig_DA83_…`, `RiverScene_DA83_…`). Radio de proximidad y de la zona a `0.04`
       (a zoom 2.5 son ≈ 190 px). Botón de ayuda: el circular de los niveles 1 y 2 (`Boton_Pista`).
+- [x] **Plano de la recolección abierto (25/09/2026, decisión de Santiago):** que se vea un poco el
+      río — foco `(0.2632, 0.2632) ×1.9`, recorte `[0, 0.526]²`: el bosque sigue llenando el plano y la
+      orilla con el pie de la cascada asoma a la derecha (`RiverLevelConfig_Guion82_ElPlanoDeRecoleccionEsElBosqueConUnPocoDelRio`,
+      que sustituye a la de «sin el río»). El empuje del ensamblaje pasa de alejar (×0,88) a acercar
+      (×1,16) hacia el río. Los radios siguen en `0.04`: a zoom 1.9 son ≈ 145 px.
 
 ---
 

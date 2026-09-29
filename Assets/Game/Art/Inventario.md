@@ -174,6 +174,7 @@ el color de acento del nivel está prohibido en el decorado (§9.2, §4.2).
 |---|---|
 | ○ `prop_n1_hojas.anim` | cruce entre los cuatro estados |
 | ○ `prop_n1_piedras_choque.anim`, `prop_n1_piedras_flotacion.anim` | |
+| ✓ `fx_n1_humo_nacer.anim` + `fx_n1_humo.anim` · `Smoke/` (33 PNG) | El humo de `S07a`: vive junto al fuego y no en `FX/Animations/`. Entrega de 284 cuadros a 30 fps, animada a ochos y nueves: 33 dibujos distintos, que conservan el nombre de entrega (`humo_nivel_1_NNNN.png`, `Single`). **Recortados** del lienzo de 2144 × 2108 a 1123 × 1933 (desde x 485, y 134): el mismo rectángulo en todos, así el dibujo no salta de un cuadro a otro, y la mitad de memoria. Si llega una entrega nueva con el lienzo entero, hay que recortarla igual o recalcular `Position` y `Size` de los ocho humos. `nacer` (0009–0059, 1,97 s) sube del hilo a la voluta y pasa a `fx_n1_humo` (0067–0275, 7,27 s en bucle). Dos controladores: `fx_n1_humo_nacer` donde el fuego nace (`N1_NacimientoDelFuego`) y `fx_n1_humo` donde ya ardía. Va detrás de cada llama, a 0,6 de su escala |
 
 ### `Props/Wheel/`
 
@@ -182,9 +183,9 @@ el color de acento del nivel está prohibido en el decorado (§9.2, §4.2).
 | ✓ `prop_n2_tronco_a.png` … `_e` (5, los válidos) | `B2` (Slice 2) — **provisional** |
 | ✓ `prop_n2_piedra_a.png` … `_d` · `prop_n2_planta_a.png` … `_c` · `prop_n2_herramienta_a.png` … `_c` | `B2` — distractores, **provisionales** |
 | ✓ `prop_n2_caja_suelo.png` — **provisional** (generado por código, W07, 11/09/2026); ○ `_sobre_troncos`, `_rodando` — hoy los tres estados usan el mismo sprite | `B3` |
-| ✓ `prop_n2_pieza_1.png` (tronco corto; **los dos gemelos comparten este archivo**), `_3` (eje), `_4` (tabla), `_5` (herramienta) — **provisionales** (generados por código, W09, 12/09/2026); la caja (`_6`) **es** `prop_n2_caja_suelo.png` (B5 = B3). Referenciados desde `Assets/Game/Data/Wheel/N2_AssemblyContent.asset`: sustituir el `.png` conservando el nombre basta | `B5` |
-| ✓ `prop_n2_carretilla_e1.png` … `_e5` — **provisionales** (W09, 12/09/2026): `e2` es la rueda perforada que sustituye al tronco al mecanizar, `e3`..`e5` los estados del conjunto en el lugar de armado; `e1` no se usa en escena (igual a `pieza_1`) | `B6` |
-| ✓ `prop_n2_laberinto_carretilla.png` — **provisional** (W13, 13/09/2026): copia de `_carretilla_e5`; la escena la rota según la orientación y le pone un morro. Referenciada desde `N2_MazeLayout.asset` (`CartArt`): sustituir el `.png` conservando el nombre basta. ○ `prop_n2_carretilla_cenital_norte.png`, `_este`, `_sur`, `_oeste` | `B7` |
+| ✓ `prop_n2_pieza_1.png` (tronco corto; **los dos gemelos comparten este archivo**), `_2` (cuerda), `_3` (eje), `_4` (tabla), `_5` (herramienta) — definitivos (25/09/2026); `_1`, `_2` y `_5` a 256×256, `_3` y `_4` a 512×512 porque la 2.3 los enseña a más de 256 px. La caja (`_6`) **es** `prop_n2_caja_suelo.png` (B5 = B3). Referenciados desde `Assets/Game/Data/Wheel/N2_AssemblyContent.asset`: sustituir el `.png` conservando el nombre basta | `B5` |
+| ✓ `prop_n2_carretilla_e1.png` … `_e5` — definitivos (25/09/2026): `e1` es la rueda perforada que sustituye al tronco al mecanizar (256×256, mismo encuadre que `pieza_1`); `e2`..`e4` los estados del conjunto en el lugar de armado —eje, tabla, caja— y `e5` la carretilla con la cuerda, que solo usan las narrativas: en el taller la cuerda es la pieza colgada sobre `e4` (INC-54). `e2`..`e5` a 512×512 y con el mismo encuadre, porque se sustituyen en el mismo sitio y el cierre del taller los acerca a ~500 px | `B6` |
+| ✓ `prop_n2_laberinto_carretilla.png` — definitiva (25/09/2026), cenital, 256×256: los rodillos van arriba y abajo, así que el dibujo mira al norte, que es como lo espera la escena al girarla según la orientación. Referenciada desde `N2_MazeLayout.asset` (`CartArt`) | `B7` |
 | ✓ `prop_n2_laberinto_obstaculo.png` — **provisional** (W13): copia de `_piedra_a`; `N2_MazeLayout.asset` (`ObstacleArt[0]`). ○ `prop_n2_obstaculo_piedra.png`, `_curva`, `_pendiente` | `B8` |
 
 Solo los troncos llevan la madera trabajada `#C79A5E`: es lo que separa lo fabricado de lo
@@ -214,9 +215,9 @@ natural y a la vez lo válido del distractor (§8.2).
 
 | Archivo | Origen |
 |---|---|
-| ◐ `prop_n3_tronco.png`, `_sogas`, `_tela`, `_mastil` | `C4` (Slice 3) — **provisionales** (R06, 17/09/2026, por código, paleta de §8.3: ámbar para troncos, sogas y mástil; espuma `#D6F0F5` para la tela). Referenciados desde `N3_RiverLevelConfig.asset` (`Art` de cada material) y reutilizados como icono de inventario: sustituir el `.png` conservando el nombre basta. Desde el 20/09/2026 los troncos son **cinco hallazgos sueltos** con el mismo sprite `prop_n3_tronco` (un tronco, 512×128); `prop_n3_troncos.png` (el montón) quedó **sin uso**. |
-| ◐ `prop_n3_tronco.png`, `prop_n3_amarre.png`, `prop_n3_vela.png` (+ `prop_n3_mastil.png`) y sus `_silueta` | `C7` **rehecho como composición** (R11, decisión de Santiago del 20/09/2026): la balsa **no** son tres láminas de estado sino diecisiete espacios que se pintan uno a uno —silueta hasta que se llena, pieza después— con **ocho sprites**: cuatro piezas y cuatro siluetas dibujadas aparte. Los espacios, sus fracciones y el arte por clase viven en `N3_RaftAssemblyContent.asset`. **Provisionales** por código (Pillow, paleta de §8.3; la silueta es el alfa de la pieza relleno en `#3A1E18` al 30 % con contorno); el definitivo entra sustituyendo cada archivo con su nombre. `_balsa_base/_amarre/_vela` **no se generan**. |
-| ◐ `prop_n3_balsa_hundida.png`, `_cruzando` | `C9` — **provisionales** (16/09/2026, dibujados por código con la paleta de §8.3: troncos ámbar, contorno `#3A1E18`, vela `#D6F0F5`). Los usan `N3_Escena32_PrimerIntento` y `N3_Escena33_Cruce`; el definitivo entra **sustituyendo el archivo con el mismo nombre**, sin tocar el asset. |
+| ✓ `prop_n3_tronco.png`, `_sogas`, `_tela`, `_mastil` | `C4` (Slice 3) — definitivos (25/09/2026; antes, provisionales de R06 por código). Referenciados desde `N3_RiverLevelConfig.asset` (`Art` de cada material) y reutilizados como icono de inventario: sustituir el `.png` conservando el nombre basta. Desde el 20/09/2026 los troncos son **cinco hallazgos sueltos** con el mismo sprite `prop_n3_tronco`; `prop_n3_troncos.png` (el montón) solo sale en la 3.1 y sigue en el estilo plano de antes. |
+| ✓ `prop_n3_tronco.png`, `prop_n3_amarre.png`, `prop_n3_vela.png` (+ `prop_n3_mastil.png`) y sus `_silueta` | `C7` **rehecho como composición** (R11, decisión de Santiago del 20/09/2026): la balsa **no** son tres láminas de estado sino diecisiete espacios que se pintan uno a uno —silueta hasta que se llena, pieza después— con **ocho sprites**: cuatro piezas y cuatro siluetas dibujadas aparte. Los espacios, sus fracciones y el arte por clase viven en `N3_RaftAssemblyContent.asset`. **Definitivos** (25/09/2026), en 3/4 como `prop_n3_balsa_cruzando`: tronco en diagonal con el corte abajo a la izquierda (256), liana que cruza el tronco (128), mástil vertical (512) y vela de cuero (256); ninguno se gira en la balsa. Los ocho son **legibles** (Read/Write): el panel prueba su alfa al agarrar y al soltar, porque las cajas de los troncos diagonales se solapan. |
+| ◐ `prop_n3_balsa_hundida.png` · ✓ `_cruzando` | `C9` — `_cruzando` definitiva (25/09/2026, 512×512, cuatro troncos: la mecánica arma cinco); `_hundida` sigue **provisional** (16/09/2026, por código, paleta de §8.3) y en el estilo plano de antes. Los usan `N3_Escena32_PrimerIntento` y `N3_Escena33_Cruce`; el definitivo entra **sustituyendo el archivo con el mismo nombre**, sin tocar el asset. |
 
 `C4` genera además el icono de inventario de cada material, en la misma lámina.
 
@@ -319,7 +320,7 @@ propios, sin posprocesado (§12.1). **No hay rojo de error en ningún efecto** (
 | ○ `fx_algoritm_barrido.anim` | `S02` |
 | ○ `fx_algoritm_barrido_tr05.anim`, `fx_algoritm_barrido_tr09.anim` | `S06` — barridos con muta del guía |
 | ○ `fx_n1_chispa_lejos.anim`, `_cerca`, `_muycerca` | `S07a` — un destello por posición del deslizante |
-| ○ `fx_n1_humo.anim` | `S07a` |
+| ✓ `fx_n1_humo.anim` | `S07a` — en `Props/Fire/Animations/`, junto al fuego |
 | ○ `fx_n1_llama.anim`, `fx_n1_halo.anim` | `S07b` — halo: escala 0.95–1.05, ciclo 1.2 s |
 | ○ `fx_n2_polvo.anim` | `S09a` — polvo del mecanizado |
 | ○ `fx_vaho.anim` | `S16a` — vaho de la noche helada |

@@ -452,6 +452,11 @@ namespace Game.UI
                     go.AddComponent<BurnReveal>().Extent = prop.BurnExtent; // quemado quieto: la escena ya es después del fuego
                 }
 
+                if (prop.Rolling != null)
+                {
+                    RollingLog.Attach(image, prop.Rolling); // rueda con el giro que ya le da RollMotion
+                }
+
                 if (prop.Actor != null)
                 {
                     PlaceActor(prop, rect, image);
@@ -635,6 +640,9 @@ namespace Game.UI
             // mitad del movimiento; lo que rueda y cae, al final.
             var landsAt = lifted ? 0.5f : 1f;
             var landed = false;
+            // Lo que suena mientras se mueve va en la capa y no en un disparo: cruza el río los
+            // segundos que dure el deslizamiento, con el fundido de entrada y salida de §3.3.
+            PlayAmbientLayer(prop.MotionAmbient);
 
             try
             {
@@ -662,7 +670,11 @@ namespace Game.UI
                     // La balsa que cruza (RF-44) se desliza: el mismo avance suavizado, sin giro
                     // ni caída, y baja o sube lo que diga el asset.
                     var y = drifts ? -image.y * prop.MotionDrop * roll.Along : height - drop * roll.Drop;
-                    var spin = drifts ? 0f : rolls ? roll.Spin + roll.Tilt : Mathf.Sin(ground * Mathf.PI) * 12f;
+                    // Gira el tronco —el cilindro—; lo que rueda sobre él, la caja, se desliza y solo
+                    // se ladea al caer, igual que en el bosque.
+                    var spin = drifts ? 0f
+                        : rolls ? (prop.Rolling != null ? roll.Spin : roll.Tilt)
+                        : Mathf.Sin(ground * Mathf.PI) * 12f;
 
                     rect.anchoredPosition = origin + new Vector2(x, y);
                     rect.localRotation = Quaternion.Euler(0f, 0f, prop.RotationDegrees + spin);
@@ -673,6 +685,22 @@ namespace Game.UI
             catch (OperationCanceledException)
             {
                 // La escena se descargó a medias: nada que dejar en su sitio.
+                return;
+            }
+
+            // Llegó: vuelve la capa de la escena, o se va si la escena no tiene (nulo funde a salida).
+            if (prop.MotionAmbient != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayAmbientLayer(_sequence.AmbientLayer);
+            }
+        }
+
+        /// <summary>El ambiente de un objeto que se mueve, si lo tiene y hay gestor. Sin clip no toca la capa de la escena.</summary>
+        private static void PlayAmbientLayer(AudioClip clip)
+        {
+            if (clip != null && AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlayAmbientLayer(clip);
             }
         }
 

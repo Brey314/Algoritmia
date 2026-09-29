@@ -61,17 +61,18 @@ namespace Game.Levels.Wheel.Tests
             // **Se exige por categoría y no por objeto.** Antes se pedía un sprite distinto para
             // cada uno de los catorce; con arte generado eso son cinco troncos «parecidos pero no
             // iguales» y cinco oportunidades de que uno deje de leerse como redondo. Lo que RF-23
-            // necesita es que las categorías no se confundan entre sí, y eso es lo que se afirma
-            // aquí; que dentro de una categoría no salgan calcados lo cubre la postura, abajo.
+            // necesita es que los troncos sean un solo dibujo y que las categorías no se
+            // confundan entre sí; plantas y herramientas sí varían (decisión de Santiago,
+            // 25/09/2026), y que dentro de un sprite no salgan calcados lo cubre la postura, abajo.
             var spritesPorCategoria = forest.Spawned
                 .GroupBy(entrada => entrada.Object.Category)
                 .ToDictionary(grupo => grupo.Key,
                     grupo => grupo.Select(entrada => entrada.Object.Art).Distinct().ToArray());
 
-            Assert.That(spritesPorCategoria.Values.Where(sprites => sprites.Length != 1), Is.Empty,
-                "cada categoría se dibuja con un solo sprite");
-            Assert.That(spritesPorCategoria.Values.SelectMany(sprites => sprites).Distinct().Count(),
-                Is.EqualTo(spritesPorCategoria.Count), "y ninguna lo comparte con otra");
+            Assert.That(spritesPorCategoria[ForestObjectCategory.RoundLog], Has.Length.EqualTo(1),
+                "los troncos redondos se dibujan con un solo sprite");
+            var todos = spritesPorCategoria.Values.SelectMany(sprites => sprites).ToArray();
+            Assert.That(todos.Distinct().Count(), Is.EqualTo(todos.Length), "y ninguna categoría comparte sprite con otra");
         }
 
         [Test]

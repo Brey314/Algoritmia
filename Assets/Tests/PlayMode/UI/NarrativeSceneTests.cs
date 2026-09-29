@@ -440,12 +440,15 @@ namespace Game.UI.Tests
                 "el montón de hojas visto de lado está pintado");
             var monton = controller.Props.First(p => p.Prop.Art.name == "prop_n1_monton_hojas");
             Assert.That(monton.Rect.GetComponent<BurnReveal>(), Is.Not.Null, "y se ve quemado bajo la llama");
-            var llama = controller.Props
+            var animados = controller.Props
                 .Select(p => p.Rect.GetComponent<Animator>())
-                .FirstOrDefault(animator => animator != null);
-            Assert.That(llama, Is.Not.Null, "hay un objeto animado");
-            Assert.That(llama.runtimeAnimatorController.name, Is.EqualTo("prop_n1_fuego_normal"),
-                "y es la llama vista de lado (prop_n1_fuego_normal)");
+                .Where(animator => animator != null)
+                .Select(animator => animator.runtimeAnimatorController.name)
+                .ToArray();
+            Assert.That(animados, Has.Some.EqualTo("prop_n1_fuego_normal"),
+                "la llama vista de lado está animada (prop_n1_fuego_normal)");
+            // «Un hilo de humo sube despacio»: aquí el fuego nace, así que el humo nace con él.
+            Assert.That(animados, Has.Some.EqualTo("fx_n1_humo_nacer"), "y echa humo desde que nace");
         }
 
         [Test]
@@ -548,7 +551,10 @@ namespace Game.UI.Tests
             var troncosBajoLaCaja = controller.Props.Where(p => p.Prop.MotionLine == 0 && p.Prop.Motion == PropMotion.Roll && p.Prop.MotionDistance == 0f).ToArray();
             var cajaAlEmpezar = caja.Rect.anchoredPosition;
             var giroAlEmpezar = troncosBajoLaCaja.First().Rect.localEulerAngles.z;
-            await EsperarSegundos(caja.Prop.MotionSeconds + 0.2f);
+            await EsperarSegundos(caja.Prop.MotionSeconds * 0.4f);
+            Assert.That(Mathf.DeltaAngle(caja.Prop.RotationDegrees, caja.Rect.localEulerAngles.z), Is.EqualTo(0f).Within(0.5f),
+                "sobre los troncos la caja se desliza sin dar vueltas: los que giran son ellos");
+            await EsperarSegundos(caja.Prop.MotionSeconds * 0.6f + 0.2f);
 
             Assert.That(caja.Rect.anchoredPosition.x, Is.GreaterThan(cajaAlEmpezar.x), "la caja rodó a la derecha");
             Assert.That(caja.Rect.anchoredPosition.y, Is.LessThan(cajaAlEmpezar.y), "y al pasar el último tronco cayó al suelo");
@@ -608,6 +614,45 @@ namespace Game.UI.Tests
 
                 Click(controller.AdvanceButton);
                 await Suena(audio, piedra.Prop, alCaer: 0.5f);
+            }
+            finally
+            {
+                Object.DestroyImmediate(audio.gameObject);
+            }
+        }
+
+        /// <summary>
+        /// La balsa suena mientras cruza (RF-44): el agua contra los troncos entra en la segunda
+        /// capa, sobre el río, lo que dura el deslizamiento —no lo que tarde en leerse el texto— y
+        /// al llegar vuelve el bosque de la escena.
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF44_LaBalsaSuenaMientrasCruzaYAlLlegarVuelveElBosque()
+        {
+            var audio = new GameObject("TestAudio").AddComponent<AudioManager>();
+            try
+            {
+                var (controller, _) = await OpenNarrative("N3_Escena33_Cruce", LevelId.River);
+                var secuencia = SequenceNamed(controller, "N3_Escena33_Cruce");
+                var balsa = controller.Props.Single(p => p.Prop.Motion == PropMotion.Drift).Prop;
+                // Assert y no Assume: sin su sonido la balsa cruza en silencio y esto tiene que fallar.
+                Assert.That(balsa.MotionAmbient, Is.Not.Null, "la balsa lleva su sonido de cruce");
+
+                var alCruzar = audio.AmbientLayerClip;
+                var rioAlCruzar = audio.AmbientClip;
+                // Justo antes de llegar: el tiempo real nunca va por detrás del del juego, así que
+                // aquí la balsa aún se desliza. Un sonido que se fuera antes de tiempo se ve aquí.
+                await EsperarSegundos(balsa.MotionSeconds - 0.5f);
+                var antesDeLlegar = audio.AmbientLayerClip;
+                await EsperarSegundos(0.8f);
+
+                Assert.That(balsa.MotionAmbient.name, Is.EqualTo("amb_balsa_movimiento"), "la toma de la balsa");
+                Assert.That(alCruzar, Is.SameAs(balsa.MotionAmbient), "suena al empezar a cruzar");
+                Assert.That(antesDeLlegar, Is.SameAs(balsa.MotionAmbient), "y hasta el final del cruce");
+                Assert.That(rioAlCruzar.name, Is.EqualTo("amb_n3_rio_orilla"), "sobre el río, que no se va");
+                Assert.That(audio.AmbientLayerClip, Is.SameAs(secuencia.AmbientLayer), "al llegar vuelve la capa de la escena");
+                Assert.That(audio.AmbientLayerClip.name, Is.EqualTo("amb_n2_bosque_dia"), "el bosque");
             }
             finally
             {

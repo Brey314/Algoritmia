@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Game.Levels.Wheel
 {
     /// <summary>
-    /// Contenido de la fase 2 del Nivel 2, el taller: las seis piezas con su sitio, el arte de
+    /// Contenido de la fase 2 del Nivel 2, el taller: las siete piezas con su sitio, el arte de
     /// cada estado de la carretilla y todo lo que dice el juego (RF-27..RF-29, RNF-18, CT-05).
     /// </summary>
     /// <remarks>
@@ -17,7 +17,7 @@ namespace Game.Levels.Wheel
     public class AssemblyContent : ScriptableObject
     {
         [field: SerializeField]
-        [field: Tooltip("Las seis piezas del área de trabajo con su sitio en el suelo (RF-27).")]
+        [field: Tooltip("Las piezas del área de trabajo con su sitio en el suelo: las seis del guion (RF-27) y la cuerda (INC-54).")]
         public WorkshopPiecePlacement[] Pieces { get; private set; } = Array.Empty<WorkshopPiecePlacement>();
 
         [field: SerializeField]
@@ -33,8 +33,16 @@ namespace Game.Levels.Wheel
         public Sprite PlankArt { get; private set; }
 
         [field: SerializeField]
-        [field: Tooltip("La carretilla completa con la caja encima (estado 5).")]
+        [field: Tooltip("La carretilla con la caja encima (estado 5). La cuerda se amarra encima de este dibujo.")]
         public Sprite CompleteArt { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("Dónde queda la cuerda amarrada, en fracciones de la ilustración: sobre la caja de la carretilla (INC-54).")]
+        public Vector2 RopePlacedPosition { get; private set; } = new Vector2(0.681f, 0.33f);
+
+        [field: SerializeField]
+        [field: Tooltip("Lado de la cuerda amarrada como fracción del alto de la ilustración.")]
+        public float RopePlacedSize { get; private set; } = 0.05f;
 
         [field: SerializeField, TextArea(2, 3)]
         [field: Tooltip("Al seleccionar un tronco corto todavía macizo.")]
@@ -65,8 +73,12 @@ namespace Game.Levels.Wheel
         public string PlankPlacedMessage { get; private set; } = "La tabla quedó montada sobre el conjunto.";
 
         [field: SerializeField, TextArea(2, 3)]
-        [field: Tooltip("Al colocar la caja: la carretilla queda completa (paso 6).")]
-        public string CompleteMessage { get; private set; } = "La caja va sobre la tabla. La carretilla está completa.";
+        [field: Tooltip("Al colocar la caja sobre la tabla (paso 6). Falta amarrarla.")]
+        public string CargoPlacedMessage { get; private set; } = "La caja va sobre la tabla.";
+
+        [field: SerializeField, TextArea(2, 3)]
+        [field: Tooltip("Al amarrar la caja con la cuerda: la carretilla queda completa (INC-54).")]
+        public string CompleteMessage { get; private set; } = "La cuerda sujeta la caja. La carretilla está completa.";
 
         [field: SerializeField, TextArea(2, 3)]
         [field: Tooltip("Guion §6.2.2: insertar el eje en un tronco sin perforar.")]
@@ -79,6 +91,10 @@ namespace Game.Levels.Wheel
         [field: SerializeField, TextArea(2, 3)]
         [field: Tooltip("Guion §6.2.2: colocar la caja antes que la tabla.")]
         public string CargoTooEarlyMessage { get; private set; } = "La caja se caería. Falta algo plano debajo.";
+
+        [field: SerializeField, TextArea(2, 3)]
+        [field: Tooltip("INC-54: soltar la cuerda antes de que la caja esté encima.")]
+        public string RopeTooEarlyMessage { get; private set; } = "La cuerda todavía no tiene nada que sujetar.";
 
         [field: SerializeField, TextArea(2, 3)]
         [field: Tooltip("Al soltar una pieza lejos del lugar de armado. Describe, no regaña (CP-02).")]
@@ -121,10 +137,12 @@ namespace Game.Levels.Wheel
             string bothWheels = "rueda dos",
             string axleFormed = "eje listo",
             string plankPlaced = "tabla lista",
+            string cargoPlaced = "caja puesta",
             string complete = "carretilla lista",
             string axleTooEarly = "falta perforar",
             string plankTooEarly = "falta el eje",
             string cargoTooEarly = "falta la tabla",
+            string ropeTooEarly = "falta la caja",
             string missed = "lejos",
             string closingSequenceId = "cierre",
             float completionSeconds = 0.05f,
@@ -138,10 +156,12 @@ namespace Game.Levels.Wheel
             content.BothWheelsMessage = bothWheels;
             content.AxleFormedMessage = axleFormed;
             content.PlankPlacedMessage = plankPlaced;
+            content.CargoPlacedMessage = cargoPlaced;
             content.CompleteMessage = complete;
             content.AxleTooEarlyMessage = axleTooEarly;
             content.PlankTooEarlyMessage = plankTooEarly;
             content.CargoTooEarlyMessage = cargoTooEarly;
+            content.RopeTooEarlyMessage = ropeTooEarly;
             content.MissedMessage = missed;
             content.ClosingSequenceId = closingSequenceId;
             content.CompletionSeconds = completionSeconds;

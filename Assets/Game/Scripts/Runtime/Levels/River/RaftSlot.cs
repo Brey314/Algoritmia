@@ -38,7 +38,7 @@ namespace Game.Levels.River
         public Vector2 Size { get; private set; } = new Vector2(0.2f, 0.2f);
 
         [field: SerializeField]
-        [field: Tooltip("Giro del espacio en grados, antihorario. El mástil se dibuja en diagonal suelto y va vertical en la balsa.")]
+        [field: Tooltip("Giro del espacio en grados, antihorario. Cero cuando el sprite ya viene dibujado como va en la balsa.")]
         public float Rotation { get; private set; }
 
         public RaftSlot(string id, RaftPhase phase, MaterialKind accepts, Vector2 position = default, Vector2 size = default,

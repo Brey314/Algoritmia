@@ -14,14 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Levels.Wheel::Game.Levels.Wheel.WheelLevelConfig
   <RequiredLogs>k__BackingField: 5
   <MinimumDistractors>k__BackingField: 8
-  <CounterFormat>k__BackingField: "Troncos redondos: {0} de {1}"
-  <PendingLogsFormat>k__BackingField: "Todavía faltan {0} troncos para mover la caja."
-  <CargoPlacedMessage>k__BackingField: "La caja quedó sobre los troncos. Ahora empújala."
-  <CargoMissedMessage>k__BackingField: "Ahí la caja no toca los troncos. Déjala encima de ellos."
+  <CounterFormat>k__BackingField: 'Troncos redondos: {0} de {1}'
+  <PendingLogsFormat>k__BackingField: "Todav\xEDa faltan {0} troncos para mover la
+    caja."
+  <CargoPlacedMessage>k__BackingField: "La caja qued\xF3 sobre los troncos. Ahora
+    emp\xFAjala."
+  <CargoMissedMessage>k__BackingField: "Ah\xED la caja no toca los troncos. D\xE9jala
+    encima de ellos."
   <ClosingSequenceId>k__BackingField: N2_Escena22_ElPatron
   <FarScale>k__BackingField: 0.6
   <HoverScale>k__BackingField: 1.4
   <HoverRadius>k__BackingField: 0.15
+  <LogLook>k__BackingField: {fileID: 11400000, guid: 719932f70953ec146bd004562be39349, type: 2}
   <TransitionSeconds>k__BackingField: 1.2
   <PlayFraming>k__BackingField:
     <Focus>k__BackingField: {x: 0.25, y: 0.5}
@@ -97,14 +101,14 @@ MonoBehaviour:
   - <Id>k__BackingField: planta_2
     <Category>k__BackingField: 2
     <DisplayName>k__BackingField: Planta
-    <Art>k__BackingField: {fileID: 2262806618755955747, guid: 976c850ed5c57334583064850f84f672, type: 3}
+    <Art>k__BackingField: {fileID: 195652039903426866, guid: 85db00077e28b7343bf08d24653687de, type: 3}
     <FloorPosition>k__BackingField: {x: 0.79, y: 0.52}
     <RotationDegrees>k__BackingField: 12
     <Mirrored>k__BackingField: 1
   - <Id>k__BackingField: planta_3
     <Category>k__BackingField: 2
     <DisplayName>k__BackingField: Planta
-    <Art>k__BackingField: {fileID: 2262806618755955747, guid: 976c850ed5c57334583064850f84f672, type: 3}
+    <Art>k__BackingField: {fileID: 5256001766513851773, guid: 562fd383ac8a81f45a42204393184548, type: 3}
     <FloorPosition>k__BackingField: {x: 0.44, y: 0.14}
     <RotationDegrees>k__BackingField: -18
     <Mirrored>k__BackingField: 0
@@ -118,14 +122,14 @@ MonoBehaviour:
   - <Id>k__BackingField: herramienta_2
     <Category>k__BackingField: 3
     <DisplayName>k__BackingField: Herramienta
-    <Art>k__BackingField: {fileID: -4098710883630630236, guid: 6835cf547ffc9d941b04d49a69404944, type: 3}
+    <Art>k__BackingField: {fileID: -4909834896886065096, guid: 4d02455ee58aa034387ccb7ae7c47d3f, type: 3}
     <FloorPosition>k__BackingField: {x: 0.95, y: 0.9}
     <RotationDegrees>k__BackingField: 90
     <Mirrored>k__BackingField: 0
   - <Id>k__BackingField: herramienta_3
     <Category>k__BackingField: 3
     <DisplayName>k__BackingField: Herramienta
-    <Art>k__BackingField: {fileID: -4098710883630630236, guid: 6835cf547ffc9d941b04d49a69404944, type: 3}
+    <Art>k__BackingField: {fileID: -9009615251398758779, guid: baddee88dd011be40bf10a47d9f0419f, type: 3}
     <FloorPosition>k__BackingField: {x: 0.55, y: 0.14}
     <RotationDegrees>k__BackingField: -25
     <Mirrored>k__BackingField: 1
@@ -133,11 +137,11 @@ MonoBehaviour:
   - <Category>k__BackingField: 0
     <Message>k__BackingField: "Este rueda. \xBFQu\xE9 tiene que los otros no tienen?"
   - <Category>k__BackingField: 1
-    <Message>k__BackingField: "Esta piedra tiene esquinas. Cuando la empujas, se traba."
+    <Message>k__BackingField: Esta piedra tiene esquinas. Cuando la empujas, se traba.
   - <Category>k__BackingField: 2
-    <Message>k__BackingField: "Esto no soporta el peso de la caja."
+    <Message>k__BackingField: Esto no soporta el peso de la caja.
   - <Category>k__BackingField: 3
-    <Message>k__BackingField: "Sirve para golpear, no para mover cosas pesadas."
+    <Message>k__BackingField: Sirve para golpear, no para mover cosas pesadas.
   <Nudges>k__BackingField:
   - <Category>k__BackingField: 0
     <Radius>k__BackingField: 0.12

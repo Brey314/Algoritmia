@@ -36,13 +36,15 @@ Desde el 10/09/2026 **corren varios en paralelo**, y **el reparto es por assembl
 | **Slice 1** | `Game.Levels.Fire`, `Game.Core`, escenas del N1, build portable |
 | **Slice 2** | `Game.Levels.Wheel`, `Game.Scaffolding` |
 | **Slice 3** | `Game.Levels.River`, `Game.Core`, `Game.Scaffolding`, escenas del N3 |
-| **Slice 4** | `Game.Reporting` (aún sin crear), `Game.Core`, `Game.UI` |
+| **Slice 4** | `Game.Reporting`, `Game.Core`, `Game.UI` |
 
 Además de los slices corre el **carril de arte y sonido** —toca `Assets/Game/Art/`,
-`Assets/Game/Audio/`, `Game.Audio`, `Game.Levels.Fire` y `Game.Levels.Wheel`—, así que se pisa con
-los Slices 1 y 2. Lo que lleva hecho, archivo por archivo, está en
-`claudeDocs/tasks/Slice 3/Props-y-Sonidos-Resultados.md`. Una regla suya que no caduca: los cuadros
-de las animaciones del fuego conservan los nombres de entrega (`fuego_cenital_nivel_1_0000.png`, no
+`Assets/Game/Audio/`, `Game.Audio` y los tres niveles (`Game.Levels.River` desde el sonido del N3,
+25/09/2026)—, así que se pisa con los tres primeros slices. Lo que lleva hecho, archivo por archivo, está en
+`claudeDocs/tasks/Slice 3/Props-y-Sonidos-Resultados.md`; los personajes animados, que además tocan
+`Game.Scaffolding`, `Game.UI`, los tres niveles, las 18 narrativas y las cinco escenas jugables, en
+`claudeDocs/tasks/Personajes/Personajes-Resultados.md`. Una regla suya que no caduca: los cuadros
+de las animaciones del fuego y del humo conservan los nombres de entrega (`fuego_cenital_nivel_1_0000.png`, no
 el `prop_n1_…` de `Direccion_de_Arte.md`) y los referencia la curva del `.anim`: renombrarlos es
 trabajo del motor.
 
@@ -85,6 +87,12 @@ Lo vigilan `NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche` y
 el bosque del N2) tienen una costura en x = 0,5 que ningún encuadre debe cruzar: lo avisa
 `IllustrationFraming.Warnings` en el `OnValidate` de la secuencia.
 
+**Los troncos del N2 ruedan en el motor, no por cuadros** (acta D09): `RollingLog`
+(`Game.Scaffolding`) es un `Graphic` de uGUI que dibuja el tronco como cilindro en 3/4 a partir de
+una sola textura (`prop_n2_tronco_textura`) y lee el giro que ya le dan `RollMotion` o el cursor.
+La vista vive en `N2_TroncoRodante.asset` y se engancha con `NarrativeProp.Rolling` en las
+narrativas y `WheelLevelConfig.LogLook` en el bosque — sin cámara ni modelo 3D.
+
 **Cuántas fases tiene cada nivel** lo fija `PhaseId.PhasesPerLevel = { 1, 3, 3 }` — el Nivel 3 son
 tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **Al consumir
 `PlayerProfile`:** `ConfirmPhase(LevelId, int, …)` no existe; se pasa un `PhaseId` (`Game.Core`).
@@ -94,7 +102,7 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | Archivo | Qué contiene |
 |---|---|
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
-| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. `INC-01`..`INC-45` están cerrados; **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`)— rigen para todo texto y asset nuevo. Quedan **abiertos** `INC-46` (tareas del Nivel 3), `INC-47` (la mecánica del Nivel 1 reúne los materiales en un círculo y luego mide fuerza y cercanía en dos deslizantes, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF), `INC-48` (el §4 del documento refundido es la arquitectura vieja), `INC-49` (el menú de pausa es el del mockup 6 y HU-17 aún dice «Continuar / Reiniciar nivel / Volver al menú principal»), `INC-50` («Empujar» en el bosque no anima el rodado, sale a la escena 2.2 que lo cuenta; RF-26/HU-08 lo describen dentro de la mecánica) e `INC-51` (el cierre del Nivel 3 no se puede omitir ni al repetirlo: sin nivel siguiente, la primera vuelta y las demás dejan el mismo perfil; HU-14 FA-01 aún lo pide). |
+| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. `INC-01`..`INC-45` están cerrados; **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`)— rigen para todo texto y asset nuevo. Quedan **abiertos** `INC-46` (tareas del Nivel 3), `INC-47` (la mecánica del Nivel 1 reúne los materiales en un círculo y luego mide fuerza y cercanía en dos deslizantes, apartándose del guion §4.3 y de RF-15/RF-16 radicados; los nombres de prueba conservan esos RF), `INC-48` (el §4 del documento refundido es la arquitectura vieja), `INC-49` (el menú de pausa es el del mockup 6 y HU-17 aún dice «Continuar / Reiniciar nivel / Volver al menú principal»), `INC-50` («Empujar» en el bosque no anima el rodado, sale a la escena 2.2 que lo cuenta; RF-26/HU-08 lo describen dentro de la mecánica), `INC-51` (el cierre del Nivel 3 no se puede omitir ni al repetirlo: sin nivel siguiente, la primera vuelta y las demás dejan el mismo perfil; HU-14 FA-01 aún lo pide), `INC-52` (el Algoritm entregado es una llama con extremidades, no la estrella de §7.6; la rueda y la gota son provisionales con nombre definitivo), `INC-53` (los personajes se animan por recorte en uGUI y no con el paquete 2D Animation que fija §13.1) e `INC-54` (el taller del N2 termina amarrando la caja con una cuerda, séptima pieza que el guion §1.6.2.2 y RF-27/RF-29 no tienen). |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
 | `claudeDocs/Direccion_de_Musica_y_Sonido.md` | **La ley del audio.** Hermano de la dirección de arte: cinco pilares (ningún sonido de fallo, §2.1, es CP-02 en el oído), cuatro buses bajo `AudioManager`, nomenclatura `mus_`/`amb_`/`sfx_`, los tres silencios del guion como piezas con disparador (§5) y el inventario de 104 piezas por nivel. **Qué piezas están cableadas lo dice su §19**, no este archivo: estar en `Assets/Game/Audio/` no es estar aplicado —una pieza suena solo si la referencia un asset (`N1_Sonidos`, `N2_Sonidos`, los `N*_*.asset`)—, y los puntos `PS-*` abiertos están en el mismo documento. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
@@ -104,7 +112,8 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | `claudeDocs/Mockups de interfaz Algoritmia.html` | **Los mockups de pantalla**, numerados desde el 2 (no hay mockup 1). Los `todo.md` y los documentos de cámara los citan por número («mockup 7 · Nivel 1 · encendido»); es la referencia de disposición de una escena antes de tocar el `.unity`. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. **Los `plan.md` no se reescriben**, así que sus avisos de precondición («los Slices 1 y 2 no están hechos», «`Assets/` sigue sin código») están vencidos; lo que sigue valiendo de ellos es qué pieza previa generaliza cada tarea. Ninguno rediscute `SPEC.md`. |
 | `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión con markitdown. **Nunca editar ninguno de los dos desde código.** |
-| `docs/actas/OE3/Acta_D0N_*.md` | **Las actas de seguimiento, rehechas** (`D01` 02/09 … `D07` 19/09/2026): qué se decidió, cuándo y por qué, y **el tablero Kanban vive en su §6**, no en un archivo aparte. Siguen en `.gitignore` —existen en este equipo y no en un clon—, así que se perdieron una vez y pueden volver a perderse. La serie `OE2/` (`O01..O03`) **no** se rehizo: al leer hacia atrás **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` después—, así que una tarjeta se rastrea por su texto y no por su id, y el *porqué* de lo decidido antes del 02/09 se busca en los `.docx` y en `INCONSISTENCIAS.md`. |
+| `docs/actas/OE3/Acta_D0N_*.md` | **Las actas de seguimiento, rehechas** (`D01` 02/09 … `D09` 24/09/2026): qué se decidió, cuándo y por qué, y **el tablero Kanban vive en su §6**, no en un archivo aparte. Siguen en `.gitignore` —existen en este equipo y no en un clon—, así que se perdieron una vez y pueden volver a perderse. La serie `OE2/` (`O01..O03`) **no** se rehizo: al leer hacia atrás **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` después—, así que una tarjeta se rastrea por su texto y no por su id, y el *porqué* de lo decidido antes del 02/09 se busca en los `.docx` y en `INCONSISTENCIAS.md`. En las actas hay **dos Santiagos**: «Santiago» a secas en este archivo es Santiago Benavides Rey; Santiago Valdiri García es el otro estudiante (Slice 4, entorno del N3, fogata del cierre del N2). |
+| `claudeDocs/entregables/OE3/` | **El entregable del OE3** (`Solucion_OE3_Prototipo_funcional.docx`), que describe el prototipo **en `ccf77e6`**: capítulos en `src/`, capturas en `fig/`. `python claudeDocs/entregables/OE3/tools/build.py` lo arma con pandoc (`pypandoc_binary`) y lo termina con Word por COM (`word_finalize.ps1`: tablas, paginación, índice y un PDF de revisión en `OE3/build/`). **Los anexos no se escriben aparte, se arrastran**: B–K son los `*-Resultados.md` de `claudeDocs/tasks/` y L las nueve actas de `docs/actas/OE3/`, así que editar un documento de resultados es editar el entregable. El Anexo A (matriz RF → pruebas, CT-10) lo genera `tools/rf_matrix.py` desde los nombres de prueba de `Assets/Tests` y la conversión de OE1 en `docs/md/`: renombrar una prueba lo cambia. Actas y conversión están en `.gitignore`, así que un clon limpio no lo puede armar. |
 
 `SPEC.md` es la fuente de verdad para cualquier duda de alcance o diseño; este archivo no la
 repite. Si algo del código contradice a `SPEC.md`, gana `SPEC.md` o se corrige el documento
@@ -221,9 +230,9 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
   ```
   La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04, RNF-05 y RNF-06,
   y junto al `.exe` nace `Datos/` en la primera ejecución (RNF-07, RNF-11). Entran las escenas
-  listadas en `EditorBuildSettings` —hoy once: las cinco jugables más las seis de flujo (`Boot`,
-  `MainMenu`, `LevelSelect`, `Credits`, `Narrative`, `LevelSummary`)—, con `Boot` de primera; la
-  lista crece con cada nivel y las escenas nuevas se añaden **desde el Editor** (Build Settings o
+  listadas en `EditorBuildSettings` —hoy doce: las cinco jugables más las siete de flujo (`Boot`,
+  `MainMenu`, `LevelSelect`, `Credits`, `Narrative`, `LevelSummary`, `TeacherReport`)—, con `Boot`
+  de primera; las escenas nuevas se añaden **desde el Editor** (Build Settings o
   un script de editor efímero de la skill `edit-scene`), no a mano. `/[Bb]uild[s]?/` está en
   `.gitignore`.
 - **Con Rider abierto**, `mcp__rider__run_unity_tests` / `mcp__rider__get_unity_compilation_result`
@@ -310,23 +319,31 @@ FSM + Scene Loader + capas. Detalle en `claudeDocs/SPEC.md` §Arquitectura; lo q
 antes de escribir la primera línea:
 
 - **Un assembly (`.asmdef`) por módulo**, dependencias en un solo sentido: `Game.Core` →
-  `Game.Scaffolding` → `Game.Levels.{Fire,Wheel,River}` → `Game.Reporting`. **Ningún nivel
-  referencia a otro nivel** — eso es lo que hace ejecutable la prueba de exclusión de RNF-16.
+  `Game.Scaffolding` → `Game.Levels.{Fire,Wheel,River}`. **Ningún nivel referencia a otro nivel**
+  — eso es lo que hace ejecutable la prueba de exclusión de RNF-16.
   `Game.Scaffolding` referencia además `UnityEngine.UI` (desde `8ec5120`, por `BurnReveal`).
+  **`Game.Reporting` referencia solo `Game.Core`** (Slice 4 P01, no el final de la cadena que dibuja
+  `SPEC.md`): retirar un nivel no puede romper el informe docente, y lo vigila
+  `Architecture_RNF16_ReportingNoReferenciaANingunAssemblyDeNivel`. Es dato y lógica sin uGUI; sus
+  pantallas (`TeacherReportController`, `EraseConfirmationDialog`) viven en `Game.UI`, y el borrado
+  de un perfil es `SaveStore.Delete` (`Game.Core`), sin clase propia.
   Fuera de esa cadena cuelgan tres assemblies más: `Game.Audio` (→ `Game.Core`) con
   `AudioManager`, el tercer singleton; `Game.UI` (→ `Game.Core`, `Game.Scaffolding`, `Game.Audio`,
-  `UnityEngine.UI`) con los controladores de pantalla, donde va la mayor parte del código de hoy;
+  `Game.Reporting`, `UnityEngine.UI`) con los controladores de pantalla, donde va la mayor parte del
+  código de hoy;
   y `Game.EditorTools`, **solo Editor**, que no referencia ningún `Game.*` (trae `PlayFromBoot`,
   `ArtImportRules`, `AudioImportRules`, `ClaudeSceneAutosave` y `Sandbox/CharacterProbe*`, que no es código del juego).
-  **Un nivel que suena referencia `Game.Audio`** —hoy `Game.Levels.Fire` y `Game.Levels.Wheel`— y **no llama al
+  **Un nivel que suena referencia `Game.Audio`** —hoy los tres— y **no llama al
   gestor con clips propios sino con los de su ScriptableObject** (`FireSounds` → `N1_Sonidos`,
-  `WheelSounds` → `N2_Sonidos`, CT-05); las escenas narrativas no tocan código: el ambiente es un campo de `NarrativeSequence` y
-  el efecto y el silencio son campos de `DialogueLine`. `AudioManager.Instance` puede ser nulo
+  `WheelSounds` → `N2_Sonidos`, `RiverSounds` → `N3_Sonidos`, CT-05); las escenas narrativas no tocan código: el ambiente es un campo de `NarrativeSequence`,
+  el efecto y el silencio son campos de `DialogueLine`, y lo que suena **mientras un objeto se
+  mueve** (la balsa que cruza) es `NarrativeProp.MotionAmbient`, en la capa de ambiente y solo lo
+  que dura el movimiento. `AudioManager.Instance` puede ser nulo
   (escena abierta sin pasar por `Boot`, pruebas): todo consumidor lo comprueba y el juego sigue
-  en silencio, porque el audio refuerza y nunca informa solo (§2.4). `Game.Reporting` llega en el
-  Slice 4 y todavía no existe en disco. **El sonido sigue comprometido con otra persona** (actas
-  D05/D07, tarjetas `D05-2`/`D07-2`): los Niveles 2 y 3 y la música son suyos; lo del Nivel 1 se
-  incorporó el 21/09/2026 y lo del Nivel 2 el 23/09/2026, las dos veces a petición de Santiago.
+  en silencio, porque el audio refuerza y nunca informa solo (§2.4). **El sonido restante es de Santiago Benavides Rey** desde el acta D08
+  (tarjetas `D07-2`, `D08-2`): faltan el ambiente nocturno del Nivel 2, el hundimiento de la
+  balsa, la música y el sonido del diálogo; el Nivel 1 entró el 21/09/2026, el Nivel 2 el 23/09 y
+  el Nivel 3 el 25/09.
 - **`Game.Levels.River` a propósito no referencia `Unity.InputSystem`**: las flechas son botones
   uGUI con clic sostenido (`IPointerDown/Up`), y
   `RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles` vigila que el assembly no gane
@@ -401,10 +418,11 @@ antes de escribir la primera línea:
   lo alcance una prueba. **El assembly de PlayMode se llama `<Módulo>.PlayMode.Tests` y necesita su
   propia línea**: sin ella el `internal` no se ve desde PlayMode aunque la de EditMode esté puesta.
   Hoy ese archivo existe en `Game.Core` (desde `d7ace67`), `Game.Levels.{Fire,Wheel,River}`,
-  `Game.UI` y `Game.Audio` —este último abre además sus internos a
-  `Game.Levels.{Fire,Wheel}.PlayMode.Tests` y `Game.UI.PlayMode.Tests`, que comprueban **qué** clip
-  sonó—; `Game.Scaffolding` se prueba por superficie pública, así que ahí no hay `AssemblyInfo.cs`
-  que buscar — y si una prueba nueva lo necesita, se crea.
+  `Game.UI` (**solo** la línea de PlayMode), `Game.Audio` —que abre además sus internos a
+  `Game.Levels.{Fire,Wheel,River}.PlayMode.Tests` y `Game.UI.PlayMode.Tests`, que comprueban **qué** clip
+  sonó— y `Game.Scaffolding` (desde `1d5ce58`, **solo** la línea de EditMode: su PlayMode aún no
+  ve internos); `Game.Reporting` se prueba por superficie pública, así que ahí no hay
+  `AssemblyInfo.cs` que buscar — y si una prueba nueva lo necesita, se crea.
 - Raíz de código y assets: `Assets/Game/`, namespaces `Game.*` siguiendo la ruta bajo `Scripts/` y
   elidiendo `Runtime`. Tests en `Assets/Tests/{EditMode,PlayMode}/<Módulo>/`.
 - **El nombre de la prueba es la trazabilidad.** Patrón `<Sujeto>_<Requisito>_<QuéHace>` en
@@ -417,7 +435,10 @@ antes de escribir la primera línea:
   idénticos pero con `includePlatforms` vacío. `Game.Architecture.Tests` es la excepción: no
   referencia ningún `Game.*` porque lee los `.asmdef` del disco — así puede exigir el assembly de
   un módulo que todavía no tiene código (RNF-15, RNF-16). Ahí vive también `ArtImportTest`
-  (RNF-23), que recorre por `AssetDatabase` los `.png` de `Art/`.
+  (RNF-23), que recorre por `AssetDatabase` los `.png` de `Art/`. `Game.Content.Tests` es la
+  excepción contraria: referencia los tres niveles y `Game.UI` para barrer el contenido del juego
+  entero (`Content_CP03_…`, ninguna cifra de desempeño en lo que ve el estudiante) — es el único
+  sitio donde un assembly ve todos los niveles a la vez, y solo porque es de pruebas.
 
 ## Invariantes pedagógicos — no son preferencias
 

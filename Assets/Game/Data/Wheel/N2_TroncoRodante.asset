@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23717e712c4f07d4bb411f735594824f, type: 3}
+  m_Name: N2_TroncoRodante
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.RollingLogLook
+  <Texture>k__BackingField: {fileID: 2800000, guid: d78d0539b9d79c14e934813642443805, type: 3}
+  <AxisDegrees>k__BackingField: 35
+  <TiltDegrees>k__BackingField: 40
+  <Depth>k__BackingField: 1.9
+  <OutlineWidth>k__BackingField: 0.16

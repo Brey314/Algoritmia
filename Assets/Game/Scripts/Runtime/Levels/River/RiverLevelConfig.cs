@@ -12,9 +12,11 @@ namespace Game.Levels.River
     /// <remarks>
     /// Un asset por nivel, como <see cref="WheelLevelConfig"/>. **Todas las posiciones son
     /// fracciones de la ilustración**, no píxeles ni fracciones de pantalla: la cámara de la
-    /// recolección es un plano fijo —desde el 20/09/2026 el cuadrante del bosque, foco (0.20,
-    /// 0.20) · zoom 2.50, **sin río a la vista**; el río aparece con el empuje del ensamblaje— y
-    /// lo que se ve es el recorte <c>foco ± 0.5/zoom</c>; lo que caiga fuera no aparece nunca, y
+    /// recolección es un plano fijo —el cuadrante del bosque apoyado en la esquina inferior
+    /// izquierda, desde el 25/09/2026 foco (0.2632, 0.2632) · zoom 1.9, con **un poco del río
+    /// asomando a la derecha** (del 20/09 al 25/09 fue ×2.5, sin río); el río entero entra con
+    /// el empuje del ensamblaje— y lo que se ve es el recorte <c>foco ± 0.5/zoom</c>; lo que
+    /// caiga fuera no aparece nunca, y
     /// <see cref="OnValidate"/> lo avisa. **El piso termina en <see cref="GroundTop"/>**: arriba
     /// empiezan los arbustos y los troncos de los árboles, y nada se coloca ahí. La perspectiva
     /// es por profundidad (<see cref="DepthScaleAt"/>): lo que está más abajo —más cerca— se ve
@@ -68,8 +70,8 @@ namespace Game.Levels.River
         public float BuildZoneRadius { get; private set; } = 0.04f;
 
         [field: SerializeField]
-        [field: Tooltip("Plano fijo de toda la recolección: el cuadrante del bosque, sin río a la vista (decisión del 20/09/2026). El río entra con el empuje de cámara del ensamblaje.")]
-        public CameraFraming PlayFraming { get; private set; } = new CameraFraming(new Vector2(0.2f, 0.2f), 2.5f);
+        [field: Tooltip("Plano fijo de toda la recolección: el cuadrante del bosque con un poco de la orilla asomando a la derecha (decisión de Santiago del 25/09/2026; antes, sin río). El río entero entra con el empuje de cámara del ensamblaje. El zoom no puede igualar al del ensamblaje: el empuje no tendría a dónde ir.")]
+        public CameraFraming PlayFraming { get; private set; } = new CameraFraming(new Vector2(0.2632f, 0.2632f), 1.9f);
 
         [field: SerializeField, TextArea(2, 3)]
         [field: Tooltip("Lo que se dice al recoger un material. {0} es su nombre. Describe, no felicita (RF-17).")]

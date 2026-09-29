@@ -4,9 +4,10 @@ using System.Collections.Generic;
 namespace Game.Levels.Wheel
 {
     /// <summary>
-    /// La máquina de ensamblaje de la fase 2 del Nivel 2 (RF-28, RF-29, guion §6.2.2): seis
-    /// piezas, cuatro pasos con condición de habilitación, y un rechazo que dice **qué falta
-    /// antes** en vez de qué está mal.
+    /// La máquina de ensamblaje de la fase 2 del Nivel 2 (RF-28, RF-29, guion §6.2.2): siete
+    /// piezas, cinco pasos con condición de habilitación —el último, amarrar la caja con la
+    /// cuerda, se aparta del guion (INC-54)—, y un rechazo que dice **qué falta antes** en vez de
+    /// qué está mal.
     /// </summary>
     /// <remarks>
     /// C# plano y sin escena, igual que <see cref="PatternSelection"/>: la escena traduce el clic
@@ -45,8 +46,10 @@ namespace Game.Levels.Wheel
 
         public bool IsPlankPlaced => LastCompleted >= AssemblyStep.Plank;
 
-        /// <summary>La carretilla está completa: la fase 2 queda resuelta (RF-29).</summary>
-        public bool IsComplete => LastCompleted == AssemblyStep.Cargo;
+        public bool IsCargoPlaced => LastCompleted >= AssemblyStep.Cargo;
+
+        /// <summary>La carretilla está completa, con la caja amarrada: la fase 2 queda resuelta (RF-29, INC-54).</summary>
+        public bool IsComplete => LastCompleted == AssemblyStep.Rope;
 
         public bool IsDrilled(WorkshopPiece piece) => _drilled.Contains(piece);
 
@@ -55,12 +58,13 @@ namespace Game.Levels.Wheel
             piece == WorkshopPiece.ShortLogA || piece == WorkshopPiece.ShortLogB;
 
         /// <summary>
-        /// El mazo, el tronco largo, la tabla y la caja se arrastran (guion §6.2.2 pasos 4–6, y
-        /// el mazo como segunda vía del paso 2).
+        /// El mazo, el tronco largo, la tabla, la caja y la cuerda se arrastran (guion §6.2.2
+        /// pasos 4–6, el mazo como segunda vía del paso 2, y la cuerda de INC-54).
         /// </summary>
         public static bool IsDraggable(WorkshopPiece piece) =>
             piece == WorkshopPiece.Tool || piece == WorkshopPiece.LongLog
-            || piece == WorkshopPiece.Plank || piece == WorkshopPiece.Cargo;
+            || piece == WorkshopPiece.Plank || piece == WorkshopPiece.Cargo
+            || piece == WorkshopPiece.Rope;
 
         /// <summary>
         /// Clic sobre una pieza. Un tronco corto queda resaltado —siempre disponible—; cualquier
@@ -140,8 +144,13 @@ namespace Game.Levels.Wheel
                     return new PatternSelection.Outcome(true, _content.PlankPlacedMessage);
                 case WorkshopPiece.Cargo when !IsPlankPlaced:
                     return new PatternSelection.Outcome(false, _content.CargoTooEarlyMessage);
-                default:
+                case WorkshopPiece.Cargo:
                     Advance(AssemblyStep.Cargo);
+                    return new PatternSelection.Outcome(true, _content.CargoPlacedMessage);
+                case WorkshopPiece.Rope when !IsCargoPlaced:
+                    return new PatternSelection.Outcome(false, _content.RopeTooEarlyMessage);
+                default:
+                    Advance(AssemblyStep.Rope);
                     return new PatternSelection.Outcome(true, _content.CompleteMessage);
             }
         }

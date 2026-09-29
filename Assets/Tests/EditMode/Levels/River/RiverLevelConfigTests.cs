@@ -50,14 +50,19 @@ namespace Game.Levels.River.Tests
         }
 
         [Test]
-        public void RiverLevelConfig_Guion82_ElPlanoDeRecoleccionMuestraSoloElBosqueSinElRio()
+        public void RiverLevelConfig_Guion82_ElPlanoDeRecoleccionEsElBosqueConUnPocoDelRio()
         {
             var config = Asset();
             var half = 0.5f / config.PlayFraming.Zoom;
+            var right = config.PlayFraming.Focus.x + half;
 
-            // El borde izquierdo del agua en env_n3_rio nunca baja de x ≈ 0.426 (medido el 20/09/2026):
-            // el recorte de la recolección termina antes, y el río solo entra con el empuje del ensamblaje.
-            Assert.That(config.PlayFraming.Focus.x + half, Is.LessThanOrEqualTo(0.42f), "el río queda fuera del plano de la recolección");
+            // El agua de env_n3_rio empieza entre x ≈ 0.42 y 0.54 según la altura (medido el
+            // 25/09/2026): el recorte pasa de 0.46 para que la orilla asome a la derecha
+            // (decisión de Santiago del 25/09/2026; guion §1.8, «orilla del río y bosque
+            // circundante»), y no de 0.6 para que siga siendo el bosque: el río entero entra con
+            // el empuje del ensamblaje.
+            Assert.That(right, Is.GreaterThan(0.46f), "la orilla asoma en el plano de la recolección");
+            Assert.That(right, Is.LessThanOrEqualTo(0.6f), "pero el plano sigue siendo el bosque");
             Assert.That(config.PlayFraming.Focus.y - half, Is.LessThanOrEqualTo(0.001f).And.GreaterThanOrEqualTo(-0.001f),
                 "el plano se apoya en el borde inferior: es el suelo del bosque");
             Assert.That(IllustrationFraming.Warnings(config.PlayFraming, null, mirroredForest: false, IllustrationFraming.ScreenAspect),

@@ -73,6 +73,7 @@ namespace Game.Levels.Wheel.Tests
                 await Arrastrar(workshop, WorkshopPiece.LongLog, workshop.Pieces[WorkshopPiece.ShortLogA].Rect);
                 await Arrastrar(workshop, WorkshopPiece.Plank, workshop.AssemblyImage.rectTransform);
                 await Arrastrar(workshop, WorkshopPiece.Cargo, workshop.AssemblyImage.rectTransform);
+                await Arrastrar(workshop, WorkshopPiece.Rope, workshop.AssemblyImage.rectTransform);
 
                 // Regreso (2.4) → laberinto (fase 3).
                 await AvanzarHasta(runner, () => runner.Flow.Current == GameState.Playing && runner.Flow.PlayingPhase == 3, 90f);
@@ -98,8 +99,8 @@ namespace Game.Levels.Wheel.Tests
                 var guardado = runner.Session.Load(nombre);
                 Assert.That(guardado.IsLevelComplete(LevelId.Wheel), Is.True, "las tres fases están en disco (RF-04, RNF-14)");
                 Assert.That(guardado.IsUnlocked(LevelId.River), Is.True);
-                Assert.That(guardado.IndicatorsFor(new PhaseId(LevelId.Wheel, 2)).StepsUsed, Is.EqualTo(5),
-                    "fase 2: cinco acciones de ensamblaje en orden (RF-45, §3.6.1)");
+                Assert.That(guardado.IndicatorsFor(new PhaseId(LevelId.Wheel, 2)).StepsUsed, Is.EqualTo(6),
+                    "fase 2: seis acciones de ensamblaje en orden, la última amarrar la caja (RF-45, §3.6.1, INC-54)");
                 Assert.That(guardado.IndicatorsFor(new PhaseId(LevelId.Wheel, 3)).StepsUsed, Is.EqualTo(solucion.Count),
                     "fase 3: los bloques de la secuencia que llegó (RF-45, §3.6.1)");
                 Assert.That(guardado.IndicatorsFor(new PhaseId(LevelId.Wheel, 1)).ResolutionSeconds, Is.GreaterThan(0f),
