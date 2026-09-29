@@ -87,7 +87,19 @@ namespace Game.Levels.Wheel.Tests
 
                 maze.Execute();
 
-                // Cierre (2.5) → resumen → menú.
+                // Cierre (2.5): se ve antes del desbloqueo. NarrativeVisitPolicy da el cierre por
+                // visto cuando el nivel siguiente ya está abierto, así que desbloquear al llegar al
+                // refugio le daría «Omitir» a la primera vuelta (CP-07, RF-12).
+                await AvanzarHasta(runner, () => runner.Flow.Current == GameState.Narrative
+                                                 && runner.Flow.NarrativeSequenceId == "N2_Escena25_Cierre", 120f);
+                await Esperar(() => ButtonWithLabel("Continuar") != null);
+                await Awaitable.NextFrameAsync(); // Start() de la escena ya decidió si se omite
+                await Awaitable.NextFrameAsync();
+                Assert.That(perfil.IsUnlocked(LevelId.River), Is.False,
+                    "el Nivel 3 se desbloquea en el resumen, después del cierre reflexivo");
+                Assert.That(ButtonWithLabel("Omitir"), Is.Null, "CP-07: el cierre no se omite la primera vez");
+
+                // → resumen → menú.
                 await AvanzarHasta(runner, () => runner.Flow.Current == GameState.LevelSummary, 120f);
                 Assert.That(perfil.IsPhaseConfirmed(new PhaseId(LevelId.Wheel, 3)), Is.True, "llegar al refugio confirmó la fase 3");
                 await Esperar(() => ButtonWithLabel("Continuar") != null);
