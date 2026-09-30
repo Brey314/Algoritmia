@@ -48,6 +48,13 @@ de las animaciones del fuego y del humo conservan los nombres de entrega (`fuego
 el `prop_n1_…` de `Direccion_de_Arte.md`) y los referencia la curva del `.anim`: renombrarlos es
 trabajo del motor.
 
+Desde el 29/09/2026 corre además el **carril OE4** —la evaluación funcional del prototipo—, con
+su `plan.md`, `casos.md` (el catálogo `PF-*` con guion paso a paso) y `todo.md` en
+`claudeDocs/tasks/OE4/`. Prueba el **ejecutable** compilado desde un
+commit etiquetado (`oe4-rc1`, `rc2`…), no el Editor, y cada veredicto lleva la versión en que se
+obtuvo. La etiqueta la pone Claude **solo con el visto bueno de Santiago** (T01); los resultados
+van a `OE4-Resultados.md`, que nace en T04.
+
 **Tres cosas que los carriles comparten** — tocar cualquiera cambia más de un nivel a la vez:
 
 - **El menú de pausa** (RF-07, HU-17) es el prefab `Assets/Game/Prefabs/UI/MenuPausa.prefab` (mockup 6: Reanudar ·
@@ -102,7 +109,7 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | Archivo | Qué contiene |
 |---|---|
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
-| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` —y entre ellos y el juego— con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. **`INC-01`..`INC-114` están cerrados** (rev. 14, 29/09/2026): ante un conflicto ganó el juego y se editó el documento, lo que solo pedía el documento se implementó y lo que solo tenía el juego se añadió al documento. **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`): una llama con extremidades, recoloreada en madera y agua (`INC-52`)— rigen para todo texto y asset nuevo. Solo siguen abiertos `PG-05` y `PG-06` del guion, que exigen observar a estudiantes jugando. |
+| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` —y entre ellos y el juego— con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. **`INC-01`..`INC-117` están cerrados** (rev. 15, 30/09/2026): ante un conflicto ganó el juego y se editó el documento, lo que solo pedía el documento se implementó y lo que solo tenía el juego se añadió al documento; `INC-115`..`INC-117` son la excepción, decisiones de Santiago de corregir el juego. **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`): una llama con extremidades, recoloreada en madera y agua (`INC-52`)— rigen para todo texto y asset nuevo. Solo siguen abiertos `PG-05` y `PG-06` del guion, que exigen observar a estudiantes jugando, y tres **pendientes de Santiago** del trabajo de grado (Anexo C, herramientas de ilustración, colaboración en el arte) que no se redactan sin su dato: están en «Residuos y puntos abiertos». |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
 | `claudeDocs/Direccion_de_Musica_y_Sonido.md` | **La ley del audio.** Hermano de la dirección de arte: cinco pilares (ningún sonido de fallo, §2.1, es CP-02 en el oído), cuatro buses bajo `AudioManager`, nomenclatura `mus_`/`amb_`/`sfx_`, los tres silencios del guion como piezas con disparador (§5) y el inventario de 104 piezas por nivel. **Qué piezas están cableadas lo dice su §19**, no este archivo: estar en `Assets/Game/Audio/` no es estar aplicado —una pieza suena solo si la referencia un asset (`N1_Sonidos`, `N2_Sonidos`, los `N*_*.asset`)—, y los puntos `PS-*` abiertos están en el mismo documento. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
@@ -111,9 +118,9 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | `Assets/Game/Art/Inventario.md` | **El índice de sprites.** Qué archivo va en cada carpeta de `Assets/Game/Art/`, la nomenclatura (`char_`, `prop_`, `env_`, `ui_`, `fx_`, `ref_`; niveles `n1`/`n2`/`n3`) y la convención de `.anim`. No decide nada: manda el tablero de arte `Tareas.xlsx` (163 piezas, tareas `S01..S16c`), **que no está en el repo**, y luego los `plan.md` y `Direccion_de_Arte.md`. |
 | `claudeDocs/Mockups de interfaz Algoritmia.html` | **Los mockups de pantalla**, numerados desde el 2 (no hay mockup 1). Los `todo.md` y los documentos de cámara los citan por número («mockup 7 · Nivel 1 · encendido»); es la referencia de disposición de una escena antes de tocar el `.unity`. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. **Los `plan.md` no se reescriben**, así que sus avisos de precondición («los Slices 1 y 2 no están hechos», «`Assets/` sigue sin código») están vencidos; lo que sigue valiendo de ellos es qué pieza previa generaliza cada tarea. Ninguno rediscute `SPEC.md`. |
-| `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión con markitdown. **Nunca editar ninguno de los dos desde código.** |
+| `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión con markitdown. **Nunca editar ninguno de los dos desde código** sin la autorización expresa de Santiago para ese cambio; con ella se editaron los radicados el 29–30/09/2026, cada uno con su fila fechada en el control de cambios, y el trabajo de grado se redacta por Word COM (PowerShell + `Word.Application`). |
 | `docs/actas/OE3/Acta_D0N_*.md` | **Las actas de seguimiento, rehechas** (`D01` 02/09 … `D09` 24/09/2026): qué se decidió, cuándo y por qué, y **el tablero Kanban vive en su §6**, no en un archivo aparte. Siguen en `.gitignore` —existen en este equipo y no en un clon—, así que se perdieron una vez y pueden volver a perderse. La serie `OE2/` (`O01..O03`) **no** se rehizo: al leer hacia atrás **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` después—, así que una tarjeta se rastrea por su texto y no por su id, y el *porqué* de lo decidido antes del 02/09 se busca en los `.docx` y en `INCONSISTENCIAS.md`. En las actas hay **dos Santiagos**: «Santiago» a secas en este archivo es Santiago Benavides Rey; Santiago Valdiri García es el otro estudiante (Slice 4, entorno del N3, fogata del cierre del N2). |
-| `docs/OE3/` | **El entregable del OE3, ya armado** (`127fbc4`): `Solucion_OE3_Prototipo_funcional.docx` describe el prototipo **en `ccf77e6`** (con `44fd479` anotado como posterior), capturas en `fig/` (LFS), y **cada anexo es un `.docx` aparte** (su Tabla 1.4): A matriz RF → pruebas (CT-10), B las cinco fases del Slice 1, C Slice 2, D Slice 3, E arte y sonido, F personajes, G Slice 4 y H las actas D01–D09 — este último **no está versionado**, como las actas. B–G reproducen los `*-Resultados.md` de `claudeDocs/tasks/` tal como quedaron en `127fbc4`, con notas fechadas verificadas al 25/09: **editar hoy un documento de resultados ya no cambia el entregable**, lo separa de él. Las herramientas que lo generaban (`build.py` con pandoc, `rf_matrix.py` para el Anexo A, `word_finalize.ps1`) **no están en el repo ni en este equipo**: rehacer un anexo es rehacer el generador. Son `.docx` bajo `docs/`: no se editan desde código. |
+| `docs/OE3/` | **El entregable del OE3, ya armado** (`127fbc4`): `Solucion_OE3_Prototipo_funcional.docx` describe el prototipo **en `ccf77e6`** (con `44fd479` anotado como posterior), capturas en `fig/` (LFS), y **cada anexo es un `.docx` aparte** (su Tabla 1.4): A matriz RF → pruebas (CT-10), B las cinco fases del Slice 1, C Slice 2, D Slice 3, E arte y sonido, F personajes, G Slice 4 y H las actas D01–D09 — este último **no está versionado**, como las actas. B–G reproducen los `*-Resultados.md` de `claudeDocs/tasks/` tal como quedaron en `127fbc4`, con notas fechadas verificadas al 25/09 y otra con el cierre general de inconsistencias del 29–30/09 (decisión D1: el entregable no se reescribe, solo se anota): **editar hoy un documento de resultados ya no cambia el entregable**, lo separa de él. Las herramientas que lo generaban (`build.py` con pandoc, `rf_matrix.py` para el Anexo A, `word_finalize.ps1`) **no están en el repo ni en este equipo**: rehacer un anexo es rehacer el generador. Son `.docx` bajo `docs/`: no se editan desde código. |
 
 `SPEC.md` es la fuente de verdad para cualquier duda de alcance o diseño; este archivo no la
 repite. Si algo del código contradice a `SPEC.md`, gana `SPEC.md` o se corrige el documento
@@ -129,7 +136,7 @@ la precedencia sino la edición del documento.
 
 | # | Documento | Archivo en `docs/` |
 |---|---|---|
-| 1 | Trabajo de grado | `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx` |
+| 1 | Trabajo de grado | `Trabajo_de_Grado_Entrega_Plantilla_28jul.docx` (desde el 30/09/2026) |
 | 2 | OE1 requerimientos | `Solución OE1_Requerimientos.docx` |
 | 3 | Guion | `Solucion_OE2_Diseno_final.docx` §1 |
 | 4 | Casos de uso, historias y matrices | `Solucion_OE2_Diseno_final.docx` §2–§3 |
@@ -140,6 +147,10 @@ la precedencia sino la edición del documento.
 «guion §N» → `Solucion_OE2_Diseno_final` **§1.N** («guion §4.3» es §1.4.3, «guion §12» —puntos
 abiertos `PG-*`— es §1.2); «OE2 §4» —control de cambios— es §5. (`SPEC.md` §Arquitectura cita
 `docs/arquitectura_videojuego_v2.docx`, sin el ` (2)`: es el nombre lógico, no la ruta real.)
+El trabajo de grado pasó el 30/09/2026 a la plantilla oficial del 28 de julio
+(`Plantilla Documento final 28 de julio de 2026 Pregrado.docx`, en blanco): los capítulos 6–8 son
+OE1–OE3 y falta el del OE4. `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx` sigue en `docs/` como
+versión anterior, y es la que citan todavía `SPEC.md` e `INCONSISTENCIAS.md`.
 
 **Numeración de requerimientos.** Los RF están cerrados en `RF-01..RF-47`. Los RNF **no**: OE1
 insertó `RNF-18` (parametrización de contenidos) el 24/08/2026 y desplazó en uno todo lo
@@ -235,6 +246,12 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
   de primera; las escenas nuevas se añaden **desde el Editor** (Build Settings o
   un script de editor efímero de la skill `edit-scene`), no a mano. `/[Bb]uild[s]?/` está en
   `.gitignore`.
+- **Tras cualquier corrida batchmode (`unity test`, `unity build`), `ProjectSettings.asset` sale
+  sin `SENTIS_ANALYTICS_ENABLED`** en los defines de Standalone, y `com.unity.ai.inference` lo
+  repone en la siguiente recarga de dominio del Editor: ese diff es ruido y no se commitea. Solo
+  compila código de Editor del paquete, así que no llega al ejecutable. Lo que sí está apagado en
+  `ProjectSettings` —analítica, estadísticas de hardware, pantalla de Unity, Alt+Intro (INC-97,
+  decisión D3: no se quita ningún paquete del manifiesto)— lo vigila `PlayerSettingsTest`.
 - **Con Rider abierto**, `mcp__rider__run_unity_tests` / `mcp__rider__get_unity_compilation_result`
   corren contra el Editor **abierto** (sin cerrar/reabrir) y habilitan el flujo test-first del
   plugin `unity-coding-skills`. Con Rider cerrado la sesión arranca con `ConnectionRefused`, que

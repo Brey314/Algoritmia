@@ -127,3 +127,6 @@ graphify-out/
 
 # Carpeta portable de datos de jugador — se genera en tiempo de ejecución (RNF-07, RNF-11)
 /[Dd]atos/
+
+# Archivos de bloqueo de Word y Office (~$*.docx): los crea Word mientras un documento está abierto
+~$*
