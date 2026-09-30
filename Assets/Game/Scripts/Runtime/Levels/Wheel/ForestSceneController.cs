@@ -88,6 +88,10 @@ namespace Game.Levels.Wheel
         private Button pushButton;
 
         [SerializeField]
+        [Tooltip("Candado sobre «Empujar» mientras no se puede empujar: el segundo canal de RNF-19, como «Soplar» y «Mecanizar».")]
+        private GameObject pushLockedBadge;
+
+        [SerializeField]
         [Tooltip("La fila de troncos alineados. Cuelga de la ilustración, anclada donde la escena 2.2 los dibuja. Aparece al completar el acopio y es donde se suelta la caja.")]
         private RectTransform logRow;
 
@@ -172,6 +176,7 @@ namespace Game.Levels.Wheel
         internal CargoPlacement Cargo => _cargo;
         internal RectTransform CargoRect => cargo;
         internal Button PushButton => pushButton;
+        internal GameObject PushLockedBadge => pushLockedBadge;
         internal RectTransform LogRow => logRow;
         internal RectTransform World => world;
         internal IReadOnlyList<Image> Row => _row;
@@ -218,6 +223,7 @@ namespace Game.Levels.Wheel
             // «Empujar» no existe durante el acopio: aparece con la fila de troncos y se habilita
             // con la caja colocada (RF-26). Un botón que no tiene tarea todavía no se muestra.
             pushButton.interactable = _cargo.CanPush;
+            RefreshPushLock();
             pushButton.gameObject.SetActive(false);
             pushButton.onClick.AddListener(Push);
 
@@ -526,6 +532,7 @@ namespace Game.Levels.Wheel
                 cargo.anchorMax = config.CargoPlacedPosition;
                 cargo.anchoredPosition = Vector2.zero;
                 pushButton.interactable = _cargo.CanPush;
+                RefreshPushLock();
                 Show(outcome.Message, acceptedIcon, acceptedColor);
                 Act(ActorAction.Idle);
                 return;
@@ -967,6 +974,15 @@ namespace Game.Levels.Wheel
             messageIcon.sprite = icon;
             messageIcon.color = color;
             messageIcon.enabled = icon != null;
+        }
+
+        /// <summary>El candado de «Empujar»: segundo canal de RNF-19, como «Soplar» y «Mecanizar».</summary>
+        private void RefreshPushLock()
+        {
+            if (pushLockedBadge != null)
+            {
+                pushLockedBadge.SetActive(!_cargo.CanPush);
+            }
         }
 
         /// <summary>

@@ -66,6 +66,24 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(20000)]
+        public async Task LevelSelect_RF03_CadaTarjetaMuestraUnaIlustracionSinCostura()
+        {
+            var (controller, _) = await OpenLevelSelect(NewProfile());
+
+            foreach (var level in new[] { LevelId.Fire, LevelId.Wheel, LevelId.River })
+            {
+                var arte = ArtFor(controller, level);
+                Assert.That(arte, Is.Not.Null, $"{level}: sin «Arte» bajo la tarjeta");
+                Assert.That(arte.sprite, Is.Not.Null, $"{level}: sin sprite asignado");
+
+                var size = arte.sprite.rect.size;
+                Assert.That(size.x / size.y, Is.EqualTo(16f / 9f).Within(0.01f),
+                    $"{level}: el sprite de la tarjeta no es 16:9 — un lienzo duplicado enseña la costura de x = 0,5");
+            }
+        }
+
+        [Test]
+        [Timeout(20000)]
         public async Task LevelSelect_RF03_CompletarElNivel1HabilitaElNivel2()
         {
             var profile = NewProfile();
@@ -76,6 +94,74 @@ namespace Game.UI.Tests
             controller.Refresh();
 
             Assert.That(controller.ButtonFor(LevelId.Wheel).interactable, Is.True);
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task LevelSelect_RNF14_UnNivelConTodasSusFasesConfirmadasDesbloqueaElSiguiente()
+        {
+            // Un cierre forzado a mitad de la escena de cierre del Nivel 2 (2.5) deja las tres
+            // fases confirmadas pero nunca llama a LevelUnlockPolicy.UnlockAfterCompleting —eso
+            // solo pasa en LevelSummaryController, al mostrarse el resumen (PF-RNF14-04,
+            // 30/09/2026)—, así que ReachedLevel se queda en Wheel. El menú tiene que desbloquear
+            // River igual, derivándolo de las fases ya guardadas.
+            var profile = NewProfile();
+            profile.Reach(LevelId.Wheel);
+            foreach (var phase in PhaseId.AllOf(LevelId.Wheel))
+            {
+                profile.ConfirmPhase(phase, new PerformanceIndicators(1, 0, 1, 10f));
+            }
+
+            var (controller, _) = await OpenLevelSelect(profile);
+
+            Assert.That(controller.ButtonFor(LevelId.River).interactable, Is.True,
+                "el Nivel 3 se desbloquea aunque el resumen del Nivel 2 nunca se mostró");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task LevelSelect_HU14_ElNivelCompletadoSeMarcaEnElMenu()
+        {
+            var profile = NewProfile();
+            var (controller, _) = await OpenLevelSelect(profile);
+
+            profile.ConfirmPhase(new PhaseId(LevelId.Fire, 1), new PerformanceIndicators(1, 0, 1, 10f));
+            LevelUnlockPolicy.UnlockAfterCompleting(profile, LevelId.Fire);
+            controller.Refresh();
+
+            Assert.That(controller.CompletedBadgeShownFor(LevelId.Fire), Is.True,
+                "el Nivel 1 completado no se marcó");
+            Assert.That(controller.CompletedBadgeShownFor(LevelId.Wheel), Is.False,
+                "el Nivel 2, recién desbloqueado y sin jugar, no está completado");
+            Assert.That(controller.CompletedBadgeShownFor(LevelId.River), Is.False);
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task LevelSelect_HU14_UnNivelConFasesPendientesNoSeMarcaCompletado()
+        {
+            var profile = NewProfile();
+            profile.ConfirmPhase(new PhaseId(LevelId.Fire, 1), new PerformanceIndicators(1, 0, 1, 10f));
+            LevelUnlockPolicy.UnlockAfterCompleting(profile, LevelId.Fire);
+            var (controller, _) = await OpenLevelSelect(profile);
+
+            profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 1), new PerformanceIndicators(1, 0, 1, 10f));
+            controller.Refresh();
+
+            Assert.That(controller.CompletedBadgeShownFor(LevelId.Wheel), Is.False,
+                "el Nivel 2 solo tiene una de sus tres fases confirmadas");
+            Assert.That(controller.ButtonFor(LevelId.Wheel).interactable, Is.True,
+                "un nivel a medias sigue siendo jugable");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task LevelSelect_HU14_UnPerfilNuevoNoMuestraNingunNivelCompletado()
+        {
+            var (controller, _) = await OpenLevelSelect(NewProfile());
+
+            Assert.That(new[] { LevelId.Fire, LevelId.Wheel, LevelId.River },
+                Has.All.Matches<LevelId>(level => !controller.CompletedBadgeShownFor(level)));
         }
 
         [Test]
@@ -171,6 +257,18 @@ namespace Game.UI.Tests
         private static void Click(Button button) =>
             ExecuteEvents.Execute(button.gameObject, new PointerEventData(EventSystem.current),
                 ExecuteEvents.pointerClickHandler);
+
+        /// <summary>El «Arte» de la tarjeta del nivel: sube desde su botón hasta «Level{N}Card».</summary>
+        private static Image ArtFor(LevelSelectController controller, LevelId level)
+        {
+            var card = controller.ButtonFor(level).transform;
+            while (card != null && !card.name.EndsWith("Card"))
+            {
+                card = card.parent;
+            }
+
+            return card != null ? card.Find("Fondo/Arte")?.GetComponent<Image>() : null;
+        }
 
         /// <summary>
         /// Guarda la captura que la prueba deja para revisar a mano, y **afirma que existe**.

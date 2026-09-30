@@ -46,15 +46,15 @@ namespace Game.Levels.Fire
         {
             if (!outcome.Effective)
             {
-                _attempts++; // Intentos = golpes ejecutados desde una posición no efectiva.
+                _attempts++; // Intentos = golpes no efectivos, por cercanía o por fuerza.
                 _lastStrikeFailed = true;
                 return;
             }
 
-            // Error corregido = un golpe efectivo que sigue de inmediato a uno que no lo fue. No
-            // hace falta comparar StrikePosition aparte: la posición efectiva es única, así que
-            // cualquier golpe fallido está, por construcción, en una posición distinta a la del
-            // acierto que la corrige.
+            // Error corregido = un golpe efectivo que sigue de inmediato a uno que no lo fue.
+            // Acertar justo después de fallar implica haber cambiado la fuerza o la cercanía de
+            // las piedras respecto del golpe fallido (OE1 §3.6.1): no hace falta guardar qué
+            // combinación se usó para saber que hubo una corrección.
             if (_lastStrikeFailed)
             {
                 _correctedErrors++;

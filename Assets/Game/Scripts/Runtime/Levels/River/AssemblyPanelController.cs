@@ -412,6 +412,11 @@ namespace Game.Levels.River
                 // con «Reiniciar» a mitad de ellos no puede perderlo ni contar el paso dos veces
                 // al repetirlo (RF-41, RF-45).
                 Confirmed(phase, indicators);
+
+                // Las tres fases comparten esta escena (RNF-14): sin esto, GameFlow.PlayingPhase
+                // se quedaba en la fase con la que se entró y «Reiniciar» siempre volvía a la
+                // recolección en vez de a la fase activa (HU-17 FA-01, DEC-3, 30/09/2026).
+                Runner?.SetPlayingPhase(LevelId.River, (int)_assembly.ActivePhase);
             }
 
             try

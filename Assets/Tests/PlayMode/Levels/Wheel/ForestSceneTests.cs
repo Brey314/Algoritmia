@@ -675,6 +675,29 @@ namespace Game.Levels.Wheel.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task ForestScene_RNF19_EmpujarDeshabilitadoLlevaCandado()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            await Acopiar(forest);
+            var fila = forest.LogRow;
+
+            Assert.That(forest.PushButton.gameObject.activeSelf, Is.True, "aparece con la fila de troncos");
+            Assert.That(forest.PushButton.interactable, Is.False, "sin la caja colocada no se puede accionar");
+            Assert.That(forest.PushLockedBadge.activeSelf, Is.True,
+                "y el segundo canal de RNF-19 lo dice: candado visible mientras está deshabilitado");
+
+            forest.TakeCargo();
+            forest.DragCargoTo(Centro(fila));
+            forest.ReleaseCargo();
+
+            Assert.That(forest.PushButton.interactable, Is.True, "colocada, «Empujar» se habilita");
+            Assert.That(forest.PushLockedBadge.activeSelf, Is.False, "y el candado se retira");
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task ForestScene_RF26_EmpujarNoAnimaElRodadoEnLaMecanicaSinoQueSaleALaNarrativa()
         {
             var forest = await OpenForest();

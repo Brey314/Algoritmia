@@ -163,6 +163,39 @@ namespace Game.Levels.River.Tests
         }
 
         [Test]
+        [Timeout(120000)]
+        [Category("Acceptance")]
+        public async Task RiverScene_HU17_ReiniciarEnElAmarreOElMastilVuelveALaFaseActivaYNoALaRecoleccion()
+        {
+            // Confirmar el amarre o el mástil no vuelve a pasar por GameFlow.TryStartPlaying —las
+            // tres fases del Nivel 3 comparten la misma escena (RNF-14)—, así que sin DEC-3
+            // «Reiniciar» siempre recargaba con la fase con la que se entró (la base).
+            var (runner, _) = await ArrancarConPerfil();
+
+            Assume.That(runner.StartPlaying(LevelId.River, 1), Is.True);
+            var river = await Esperar<RiverSceneController>(r => r.Spawned.Count > 0);
+            var panel = await RecogerYAbrirLaZona(river);
+
+            await AssemblyPanelTests.FillPhase(panel, RaftPhase.Base);
+            await AssemblyPanelTests.Confirm(panel);
+            await AssemblyPanelTests.FillPhase(panel, RaftPhase.Lashing);
+            await AssemblyPanelTests.Confirm(panel);
+            Assume.That(panel.Assembly.ActivePhase, Is.EqualTo(RaftPhase.MastAndSail), "confirmado el amarre, el panel sigue con el mástil");
+            Assert.That(runner.Flow.PlayingPhase, Is.EqualTo(3), "y GameFlow ya sabe que la fase activa es el mástil (DEC-3)");
+
+            Assert.That(PauseMenuPolicy.Restart(runner), Is.True);
+
+            river = await Esperar<RiverSceneController>(r => r != river && r.Zone.IsOpen);
+            panel = river.Assembly;
+            await AssemblyPanelTests.WaitIdle(panel);
+
+            Assert.That(panel.Assembly.ActivePhase, Is.EqualTo(RaftPhase.MastAndSail),
+                "«Reiniciar» vuelve a la fase activa (el mástil), no a la recolección");
+            Assert.That(panel.Assembly.IsConfirmed(RaftPhase.Base), Is.True, "la base sigue consolidada (RF-41)");
+            Assert.That(panel.Assembly.IsConfirmed(RaftPhase.Lashing), Is.True, "y el amarre también");
+        }
+
+        [Test]
         [Timeout(60000)]
         [Category("Acceptance")]
         public async Task RiverLevel_RNF04_LaEscenaDelNivel3CargaEnMenosDeDiezSegundos()

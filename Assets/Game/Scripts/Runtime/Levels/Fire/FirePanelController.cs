@@ -85,6 +85,14 @@ namespace Game.Levels.Fire
         private BurnReveal burn;
 
         [SerializeField]
+        [Tooltip("El hilo de humo sobre el montón (fx_n1_humo_nacer): arranca al converger y ya no se apaga (guion §1.4.3.5, fila E6). Oculto hasta entonces, por encima del montón y por debajo de las piedras.")]
+        private Animator pileSmoke;
+
+        [SerializeField]
+        [Tooltip("La chispa de cada golpe (Dirección de arte §12.2, cuatro rayos radiales #FFE9A8): sobre el punto del fuego si el golpe es efectivo, o desplazada fuera del montón si se pasó de fuerte. Oculta el resto del tiempo.")]
+        private RectTransform spark;
+
+        [SerializeField]
         [Tooltip("Iluminación progresiva del escenario (RF-21, prioridad Baja). Puede quedar sin " +
             "asignar: el resto del nivel sigue jugable sin ella.")]
         private CaveLightingController lighting;
@@ -120,12 +128,22 @@ namespace Game.Levels.Fire
         private const float EncourageSeconds = 1.035f;
         private const float BlowSeconds = 1.035f;
 
+        // Cuánto dura la chispa de un golpe (Dirección de arte §12.2): son tiempos de un efecto y
+        // no parámetros de juego, así que no van a FireLevelConfig.
+        private const float SparkSeconds = 0.2f;
+        private const float DyingSparkSeconds = 0.35f;
+
+        // Cuánto se desplaza la chispa que se apaga en el aire, hacia arriba y fuera del montón
+        // (leafPile mide 300 px de lado): un efecto de presentación, no una regla del juego.
+        private const float DyingSparkOffset = 200f;
+
         private FireAttempt _attempt;
         private FireFeedbackLog _log;
         private FireIndicatorCollector _indicators;
         private HintPolicy _hints;
         private StoneSpacing _spacing;
         private CancellationTokenSource _playerRest;
+        private CancellationTokenSource _sparkAnimation;
 
         /// <summary>El flujo del juego. Sin él (escena abierta sin pasar por Boot) no se navega.</summary>
         internal GameFlowRunner Runner { get; set; }
@@ -179,6 +197,8 @@ namespace Game.Levels.Fire
         internal Image LeafPile => leafPile;
         internal Animator FireFlame => fireFlame;
         internal BurnReveal Burn => burn;
+        internal Animator PileSmoke => pileSmoke;
+        internal RectTransform Spark => spark;
         internal FireAttempt Attempt => _attempt;
         internal FireFeedbackLog Log => _log;
         internal FireIndicatorCollector Indicators => _indicators;
@@ -246,6 +266,8 @@ namespace Game.Levels.Fire
             // el acercamiento (T25). El círculo se dibuja al pedir ayuda.
             gatherRing.gameObject.SetActive(false);
             leafPile.gameObject.SetActive(false);
+            pileSmoke.gameObject.SetActive(false);
+            spark.gameObject.SetActive(false);
             fireFlame.gameObject.SetActive(false);
             burn.Extent = 0f; // nada quemado hasta que nace el fuego
             foreach (var element in ignitionUi)
@@ -497,6 +519,20 @@ namespace Game.Levels.Fire
                     Play(sounds.Spark);
                 }
             }
+
+            // La chispa (Dirección de arte §12.2): cae en el montón con un golpe efectivo, se
+            // apaga en el aire si se pasó de fuerte con las piedras en su sitio, y no aparece con
+            // un golpe suave ni con las piedras mal puestas (guion §4.3.3).
+            if (outcome.Effective)
+            {
+                var strikesCounted = Mathf.Min(outcome.EffectiveStrikes, config.MinimumEffectiveStrikes);
+                ShowSpark(fireSpot.anchoredPosition, SparkSeconds * strikesCounted);
+            }
+            else if (outcome.Spacing == SpacingBand.Effective && outcome.Band == ForceBand.TooHard)
+            {
+                ShowSpark(fireSpot.anchoredPosition + new Vector2(0f, DyingSparkOffset), DyingSparkSeconds);
+            }
+
             // Papá golpea siempre. «Por qué no» un gesto de fallo tras un golpe sin chispa: se anima
             // —puño arriba— y vuelve al reposo, porque cabeza gacha u hombros caídos serían la
             // pantalla de derrota en pequeño (Dirección de arte §7.3, CP-02).
@@ -507,6 +543,17 @@ namespace Game.Levels.Fire
                 if (outcome.EffectiveStrikes == config.MinimumEffectiveStrikes)
                 {
                     _hints.Activate(Step("Soplar")); // la tarea cambia al converger (guion §4.3.6)
+                    // El montón pasa a humeante en la convergencia (guion §1.4.3.5, fila E6) y ya
+                    // no deja de humear: lo ganado no se retira por un fallo posterior (INC-32).
+                    // Entre el montón y las piedras, que ya están puestas (PlaceStones corrió antes
+                    // que este golpe) y van al final por su propio SetAsLastSibling. Al último
+                    // primero: si el humo empezaba **antes** que el montón en la jerarquía,
+                    // calcular el índice de destino sin moverlo antes salía mal — quitarlo de en
+                    // medio corre los índices de detrás una posición, y el destino ya calculado
+                    // quedaba corto.
+                    pileSmoke.transform.SetAsLastSibling();
+                    pileSmoke.transform.SetSiblingIndex(leafPile.transform.GetSiblingIndex() + 1);
+                    pileSmoke.gameObject.SetActive(true);
                 }
             }
             else
@@ -518,6 +565,43 @@ namespace Game.Levels.Fire
             logView.Show(_log.Entries);
             RefreshBlow();
             RefreshLighting();
+        }
+
+        /// <summary>Muestra la chispa en <paramref name="anchoredPosition"/> durante <paramref name="seconds"/>; un golpe nuevo cancela la anterior.</summary>
+        private void ShowSpark(Vector2 anchoredPosition, float seconds)
+        {
+            _sparkAnimation?.Cancel();
+            _sparkAnimation = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+            _ = PlaySparkAsync(anchoredPosition, seconds, _sparkAnimation.Token);
+        }
+
+        /// <summary>
+        /// La chispa aparece de golpe y se apaga bajando de escala hasta desaparecer: un único
+        /// barrido en una sola dirección, sin oscilar (RNF-21). Por encima de las piedras, que ya
+        /// están en su sitio (PlaceStones se llamó antes que este golpe); por debajo de la llama,
+        /// que se pone última al soplar (RF-20).
+        /// </summary>
+        private async Awaitable PlaySparkAsync(Vector2 anchoredPosition, float seconds, CancellationToken token)
+        {
+            spark.anchoredPosition = anchoredPosition;
+            spark.localScale = Vector3.one;
+            spark.SetAsLastSibling();
+            spark.gameObject.SetActive(true);
+
+            try
+            {
+                for (var elapsed = 0f; elapsed < seconds; elapsed += Time.deltaTime)
+                {
+                    spark.localScale = Vector3.one * Mathf.Lerp(1f, 0f, elapsed / seconds);
+                    await Awaitable.NextFrameAsync(token);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                return; // un golpe nuevo canceló esta chispa, o el panel se destruyó
+            }
+
+            spark.gameObject.SetActive(false);
         }
 
         /// <summary>

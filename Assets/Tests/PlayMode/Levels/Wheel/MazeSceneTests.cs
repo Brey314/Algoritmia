@@ -137,6 +137,24 @@ namespace Game.Levels.Wheel.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task MazeScene_RNF19_ElLadoElegidoDeGirarSeDistingueSinColor()
+        {
+            var maze = await OpenMaze();
+            maze.AddBlock(InstructionBlock.Turn(TurnDirection.Right));
+            // Con un solo bloque la fila 0 ya está desplegada.
+            var fila = maze.Rows[0];
+            Assert.That(fila.Find("Fondo/Lado/Der").GetComponent<Outline>().enabled, Is.True,
+                "el lado elegido lleva contorno además del color de atención (RNF-19)");
+            Assert.That(fila.Find("Fondo/Lado/Izq").GetComponent<Outline>().enabled, Is.False, "el otro, sin contorno");
+
+            maze.SetDirection(0, TurnDirection.Left);
+            fila = maze.Rows[0]; // RefreshRows recrea las filas
+            Assert.That(fila.Find("Fondo/Lado/Izq").GetComponent<Outline>().enabled, Is.True, "y ahora el elegido es «Izq»");
+            Assert.That(fila.Find("Fondo/Lado/Der").GetComponent<Outline>().enabled, Is.False);
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task MazeScene_RF31_LaOrientacionDeLaCarretillaEsVisibleYGiraACadaLado()
         {
             var maze = await OpenMaze();
@@ -733,6 +751,13 @@ namespace Game.Levels.Wheel.Tests
                 foreach (var grafico in personaje.GetComponentsInChildren<Graphic>(true))
                 {
                     Assert.That(grafico.raycastTarget, Is.False, $"{personaje.name}/{grafico.name} no roba clics");
+                    if (grafico.name == "Sombra")
+                    {
+                        // La sombra de contacto (INC-109, Direccion de arte §5.3) lleva su propio
+                        // tono fijo #000000 al 25%: no participa del tinte de la luz del decorado.
+                        continue;
+                    }
+
                     Assert.That(grafico.color, Is.EqualTo(Color.white), $"{personaje.name}/{grafico.name} no se tiñe con el atardecer (§4.2, §5.4)");
                 }
             }

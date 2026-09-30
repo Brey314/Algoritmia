@@ -73,6 +73,16 @@ namespace Game.Architecture.Tests
             var ajenas = escenas.Where(escena => escena.Guids.Any(guid => guid != ControlMapGuid)).Select(escena => escena.Nombre);
             Assert.That(ajenas, Is.Empty, "ninguna escena usa otro mapa de controles que el del juego (RNF-02)");
 
+            // Una escena puede tener un m_ActionsAsset sin `guid:` (fileID a un InputActionAsset
+            // incrustado en el propio archivo, como el DefaultInputActions que se coló en
+            // TeacherReport): eso no lo ve la regex de arriba, así que se vigila aparte (CT-06,
+            // RNF-02, INC-80).
+            var incrustadas = Directory.GetFiles(Path.Combine(Application.dataPath, "Game/Scenes"), "*.unity")
+                .Where(path => File.ReadAllText(path).Contains("UnityEngine.InputSystem.InputActionAsset"))
+                .Select(path => Path.GetFileNameWithoutExtension(path));
+            Assert.That(incrustadas, Is.Empty,
+                "ninguna escena incrusta su propio InputActionAsset: todas apuntan al mapa del juego (CT-06, RNF-02)");
+
             // El mapa del proyecto (Input System → Project-wide Actions) entra al ejecutable y se
             // habilita solo al arrancar: también tiene que ser el del juego.
             var build = File.ReadAllText(Path.Combine(ProjectRoot, "ProjectSettings/EditorBuildSettings.asset"));

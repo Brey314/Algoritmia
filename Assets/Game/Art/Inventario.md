@@ -32,8 +32,8 @@ Leyenda: **✓** en disco · **◐** provisional en disco (sustituir conservando
 
 ## `Characters/`
 
-**Cómo se animan (24/09/2026, INC-53).** Por **recorte**, no con el rig de 2D Animation que pide
-§13.1: las escenas son uGUI en un Canvas overlay y `SpriteSkin` no deforma una `Image`. Cada
+**Cómo se animan (24/09/2026, INC-53).** Por **recorte**, como fija §13.1, y no con el rig de
+2D Animation: las escenas son uGUI en un Canvas overlay y `SpriteSkin` no deforma una `Image`. Cada
 miembro de la familia está cortado en cinco partes —`torso`, `brazo_izq`, `brazo_der`,
 `pierna_izq`, `pierna_der`, con izquierda y derecha **de pantalla**—. Son `Image` hijas con el
 pivote en la articulación, sobre un lienzo de 1024 × 1024, el de los sprites base: la figura
@@ -45,9 +45,9 @@ cada `.png` conservando el nombre**; si cambia la silueta, hay que rehacer el pr
 tamaño y el pivote de cada parte viven en él.
 
 Retratos: solo existe `neutra`, un recorte de la cabeza de 320², que es el que usa el cuadro de
-diálogo. Las otras cinco expresiones de `S03a`/`S03b` siguen pendientes, y hoy ninguna línea pide
-una expresión. **No hay tristeza ni enfado**: tras un intento sin éxito el personaje hace «ánimo»
-(§7.3, CP-02). **No existen saltar, caer, aterrizar ni derrota** (CT-06, RNF-02, CP-02).
+diálogo. Es la única cara del juego: las otras cinco expresiones de `S03a`/`S03b` no se generan,
+porque la emoción la lleva el cuerpo con las acciones del rig (§7.3). **No hay tristeza ni
+enfado**: tras un intento sin éxito el personaje hace «ánimo» (`Encourage`, CP-02). **No existen saltar, caer, aterrizar ni derrota** (CT-06, RNF-02, CP-02).
 
 **Clips (21 por miembro de la familia).** `char_<x>_anim_<accion>.anim`, uno por estado del
 `Animator`, cuyo nombre es el de `ActorAction`: `idle`, `caminar`, `correr`, `hablar`, `golpear`,
@@ -60,7 +60,7 @@ controlador `char_<x>.controller` está al lado.
 
 | Archivo | Estado |
 |---|---|
-| ✓ `char_algoritm_n1_fuego_reposo.png` | Arte entregado (24/09/2026), recortado a cuadrado de 768². Es una llama con extremidades: ver **INC-52** |
+| ✓ `char_algoritm_n1_fuego_reposo.png` | Arte entregado (24/09/2026), recortado a cuadrado de 768². Es una llama con cara, brazos y piernas de palo, manos y franja de colores, tal como la describe `Direccion_de_Arte.md` §7.6 (INC-52, cerrado) |
 | ◐ `char_algoritm_n2_rueda_reposo.png` | **Provisional**: el fuego recoloreado en madera. El definitivo entra sustituyendo el archivo |
 | ◐ `char_algoritm_n3_gota_reposo.png` | **Provisional**: el fuego recoloreado en agua. Ídem |
 | ○ `_girando`, `_atenuado`, `char_algoritm_n*_retrato_*` | `S15`/`S03b`. Hoy el retrato del guía **es** el sprite de su forma |
@@ -186,7 +186,7 @@ el color de acento del nivel está prohibido en el decorado (§9.2, §4.2).
 | ✓ `prop_n2_pieza_1.png` (tronco corto; **los dos gemelos comparten este archivo**), `_2` (cuerda), `_3` (eje), `_4` (tabla), `_5` (herramienta) — definitivos (25/09/2026); `_1`, `_2` y `_5` a 256×256, `_3` y `_4` a 512×512 porque la 2.3 los enseña a más de 256 px. La caja (`_6`) **es** `prop_n2_caja_suelo.png` (B5 = B3). Referenciados desde `Assets/Game/Data/Wheel/N2_AssemblyContent.asset`: sustituir el `.png` conservando el nombre basta | `B5` |
 | ✓ `prop_n2_carretilla_e1.png` … `_e5` — definitivos (25/09/2026): `e1` es la rueda perforada que sustituye al tronco al mecanizar (256×256, mismo encuadre que `pieza_1`); `e2`..`e4` los estados del conjunto en el lugar de armado —eje, tabla, caja— y `e5` la carretilla con la cuerda, que solo usan las narrativas: en el taller la cuerda es la pieza colgada sobre `e4` (INC-54). `e2`..`e5` a 512×512 y con el mismo encuadre, porque se sustituyen en el mismo sitio y el cierre del taller los acerca a ~500 px | `B6` |
 | ✓ `prop_n2_laberinto_carretilla.png` — definitiva (25/09/2026), cenital, 256×256: los rodillos van arriba y abajo, así que el dibujo mira al norte, que es como lo espera la escena al girarla según la orientación. Referenciada desde `N2_MazeLayout.asset` (`CartArt`) | `B7` |
-| ✓ `prop_n2_laberinto_obstaculo.png` — **provisional** (W13): copia de `_piedra_a`; `N2_MazeLayout.asset` (`ObstacleArt[0]`). ○ `prop_n2_obstaculo_piedra.png`, `_curva`, `_pendiente` | `B8` |
+| ✓ `prop_n2_laberinto_obstaculo.png` — un arbusto cenital (25/09/2026, `1d5ce58`), el único sprite de obstáculo; `N2_MazeLayout.asset` (`ObstacleArt[0]`), dibujado a ×1,65 (`ObstacleScale`) para que los arbustos contiguos se lean como seto. Los obstáculos del laberinto son arbustos (RF-30): no hay piedras, curvas ni pendientes | `B8` |
 
 Solo los troncos llevan la madera trabajada `#C79A5E`: es lo que separa lo fabricado de lo
 natural y a la vez lo válido del distractor (§8.2).
@@ -263,7 +263,7 @@ RF-45) y **sin texto dentro de la imagen**: el texto lo escribe Unity encima.
 
 | Archivo | Origen |
 |---|---|
-| ○ `ui_n1_panel_deslizante.png`, `ui_n1_panel_tirador.png` | `A9` — riel de tres muescas (PG-06 abierto) |
+| ○ `ui_n1_panel_deslizante.png`, `ui_n1_panel_tirador.png` | `A9` — dos rieles de diez muescas, fuerza y cercanía (INC-47); valores sin validar jugando (PG-06 abierto) |
 | ○ `ui_n1_panel_golpear_reposo.png`, `_presionado` | `A9` |
 | ○ `ui_n1_panel_soplar_deshabilitado.png`, `_habilitado` | `A9` — candado vs. líneas de aire: la forma es el segundo canal (RNF-19) |
 | ○ `ui_n1_panel_registro_marco.png` | `A9` |
@@ -290,7 +290,7 @@ RF-45) y **sin texto dentro de la imagen**: el texto lo escribe Unity encima.
 |---|---|
 | ○ `ui_n3_dir_arriba_reposo.png`, `_presionado` (y `abajo`, `izquierda`, `derecha`) | `C3` (Slice 3) |
 | ○ `ui_n3_recoger_disponible.png`, `_no_disponible` | `C3` — materializa INC-01: el control es UI, no teclado (CT-06) |
-| ○ `ui_n3_lista_marco.png`, `ui_n3_inventario.png` · ◐ `ui_n3_casilla_hecha.png` | `C5` — única lista permanente del juego (INC-41). La casilla hecha es **provisional** (R05, 17/09/2026): círculo verde con visto; la pendiente reutiliza `Common/ui_circulo.png`. Son las dos formas de RNF-19 en la lista de tareas. Marco de lista, inventario, flechas y «Recoger» usan hoy `Common/ui_panel`, `ui_boton` y `ui_flecha`. |
+| ○ `ui_n3_lista_marco.png`, `ui_n3_inventario.png` · ◐ `ui_n3_casilla_hecha.png` | `C5` — única lista permanente del juego (INC-41). La casilla hecha es **provisional** (R05, 17/09/2026): círculo verde con visto; la pendiente reutiliza `Common/ui_circulo.png`. Son las dos formas de RNF-19 en la lista de tareas. La casilla hecha la reutiliza también, igual de provisional, la marca «Completado» de cada tarjeta del menú de niveles (INC-76, 29/09/2026). Marco de lista, inventario, flechas y «Recoger» usan hoy `Common/ui_panel`, `ui_boton` y `ui_flecha`. |
 | ○ `ui_n3_panel_marco.png`, `ui_n3_espacio_*` | `C8` — **parcialmente sin uso** desde R11 (20/09/2026): el panel es una sombra negra al 30 % sobre la ilustración (sin marco) y los espacios vacío/correcto/incorrecto son la silueta de la pieza, la pieza, y la pieza con `Common/ui_alerta` encima (RNF-19). Si `C8` se genera, solo el marco tendría dónde ir. |
 
 **`UI/River/Animations/`**
@@ -319,7 +319,7 @@ propios, sin posprocesado (§12.1). **No hay rojo de error en ningún efecto** (
 |---|---|
 | ○ `fx_algoritm_barrido.anim` | `S02` |
 | ○ `fx_algoritm_barrido_tr05.anim`, `fx_algoritm_barrido_tr09.anim` | `S06` — barridos con muta del guía |
-| ○ `fx_n1_chispa_lejos.anim`, `_cerca`, `_muycerca` | `S07a` — un destello por posición del deslizante |
+| — ~~`fx_n1_chispa_lejos.anim`, `_cerca`, `_muycerca`~~ | `S07a` — retirados (INC-47, INC-68): la chispa del golpe la dibuja el motor con dos `Image` planas en cruz, `#FFE9A8`, en `FirePanelController`; no hay archivo |
 | ✓ `fx_n1_humo.anim` | `S07a` — en `Props/Fire/Animations/`, junto al fuego |
 | ○ `fx_n1_llama.anim`, `fx_n1_halo.anim` | `S07b` — halo: escala 0.95–1.05, ciclo 1.2 s |
 | ○ `fx_n2_polvo.anim` | `S09a` — polvo del mecanizado |
@@ -343,19 +343,19 @@ Cerrados por el tablero: los tres cuerpos de Algoritm con sus estados (`S15`), l
 (`S07b`: `fx_n1_llama` + `fx_n1_halo`), el icono de pista —es Algoritm, `char_algoritm_n*_anim_pulso`
 de `S06`, como manda §10.2— y la convención de nombres de los `.anim`.
 
-1. **`claudeDocs/tasks/Slice 1/plan.md:959` sigue nombrando `char_chispa_base_reposo.png`.** El
-   tablero ya usa `char_algoritm_n1_estrella_reposo.png`; corregir `A1`.
-2. **`§15.4` está desactualizada en cuatro cosas:** no recoge el prefijo `ref_` (`S01`), no recoge
-   la convención de `.anim`, su ejemplo dice `char_nino_expr_sorpresa.png` cuando el tablero usa
-   `char_nino_retrato_sorpresa.png`, y su ejemplo `fx_chispa_apagada.png` no lleva el `n1` que sí
-   usan `§7.6` y el tablero.
-3. **`§12.2` describe el icono de pista como «antorcha de UI»**, contra `§10.2` y el tablero.
-4. **Dos implementaciones de la progresión de luz del Nivel 1:** `env_n1_cueva_luz1..4` (`A6`,
-   cuatro fondos) y `ui_n1_mascara` + su clip (`S07b`, una máscara de opacidad variable). §8.1
-   sanciona la máscara. Decidir antes de generar: son cuatro assets de diferencia.
-5. **`char_mama_cenital.png` (`S10`, una lámina) frente a `char_mama_cenital_norte.png`, `_este`,
-   `_sur`, `_oeste` (`C2`, cuatro archivos).** Probablemente la lámina se corta en los cuatro; hay
-   que confirmarlo antes de importar.
+1. **`claudeDocs/tasks/Slice 1/plan.md:959` sigue nombrando `char_chispa_base_reposo.png`** y
+   su prompt `A1` pide una estrella de cinco puntas. El juego usa
+   `char_algoritm_n1_fuego_reposo.png`, una llama (`Direccion_de_Arte.md` §7.6, INC-52). Los
+   `plan.md` no se reescriben, así que `A1` queda como registro de lo que se pidió.
+2. ~~`§15.4` está desactualizada en cuatro cosas~~ — resuelto el 30/09/2026: §15.4 recoge el prefijo
+   `ref_` y la convención de `.anim`, y sus ejemplos son archivos que existen (una sola expresión,
+   `retrato_neutra`, INC-108).
+3. ~~`§12.2` describe el icono de pista como «antorcha de UI»~~ — resuelto el 30/09/2026: §12.2 describe el pulso del botón de pista del Nivel 1 (`ui_pulso_pista`).
+4. ~~Dos implementaciones de la progresión de luz del Nivel 1~~ — resuelto el 30/09/2026: el juego no
+   usa ni `env_n1_cueva_luz1..4` ni `ui_n1_mascara`, sino la capa del shader `fx_oscuridad`
+   (`CaveLightingController`); ninguno de los dos assets se genera.
+5. ~~`char_mama_cenital.png` frente a `char_mama_cenital_norte.png`, `_este`, `_sur`, `_oeste`~~ —
+   resuelto el 30/09/2026: el juego usa una sola lámina, `Characters/Mother/char_mama_cenital.png`.
 6. **Tres efectos de `§12.2` no están en el tablero:** salpicadura de agua, recolección de objeto
    y reto resuelto. El de recolección puede estar cubierto por
    `prop_n3_material_recogida.anim` (`S10`), los otros dos no.

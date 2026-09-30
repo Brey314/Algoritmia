@@ -1,7 +1,7 @@
 namespace Game.Levels.Fire
 {
     /// <summary>
-    /// Lo que se observa tras un golpe (guion §4.3.3, con fuerza y cercanía de las piedras en vez
+    /// Lo que se observa tras un golpe (guion §1.4.3.3, con fuerza y cercanía de las piedras en vez
     /// de distancia desde la Fase 5/6). Lo consume el log de retroalimentación (T13) para elegir
     /// el mensaje narrativo.
     /// </summary>

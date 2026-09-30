@@ -135,6 +135,13 @@ namespace Game.Core
         public bool StartPlaying(LevelId level, int phase) =>
             Apply(Flow.TryStartPlaying(level, phase, PlayingScenes.ContainsKey));
 
+        /// <summary>
+        /// Registra la fase activa sin recargar la escena, a diferencia de <see cref="StartPlaying"/>:
+        /// para un nivel que juega varias fases en una sola escena (el Nivel 3, RNF-14), lo que deja
+        /// a «Reiniciar» (HU-17 FA-01) volver a la fase activa y no a la primera.
+        /// </summary>
+        public bool SetPlayingPhase(LevelId level, int phase) => Flow.SetPlayingPhase(level, phase);
+
         private bool Apply(bool transitioned)
         {
             if (!transitioned)

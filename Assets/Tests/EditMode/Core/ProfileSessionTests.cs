@@ -107,5 +107,24 @@ namespace Game.Core.Tests
             Assert.That(_fileSystem.Files, Is.Empty);
         }
 
+        [Test]
+        public void ProfileSession_INC34_ExponeQueElGuardadoCayoALaRutaDeRespaldo()
+        {
+            _fileSystem.ReadOnlyDirectories.Add(PortableRoot);
+            var sut = CreateSession();
+
+            Assert.That(sut.UsingFallback, Is.True);
+            Assert.That(sut.SaveDirectory, Is.EqualTo(FallbackRoot));
+        }
+
+        [Test]
+        public void ProfileSession_INC34_NoIndicaRespaldoConDatosEscribible()
+        {
+            var sut = CreateSession();
+
+            Assert.That(sut.UsingFallback, Is.False);
+            Assert.That(sut.SaveDirectory, Is.EqualTo(PortableRoot));
+        }
+
     }
 }

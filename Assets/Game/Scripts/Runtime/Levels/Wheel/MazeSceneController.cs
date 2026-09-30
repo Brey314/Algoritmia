@@ -156,12 +156,7 @@ namespace Game.Levels.Wheel
 
         private static readonly PhaseId Phase3 = new PhaseId(LevelId.Wheel, 3);
 
-        private static readonly Dictionary<BlockKind, string> Labels = new Dictionary<BlockKind, string>
-        {
-            [BlockKind.Forward] = "Avanzar",
-            [BlockKind.Backward] = "Retroceder",
-            [BlockKind.Turn] = "Girar"
-        };
+        private static readonly BlockKind[] BlockKinds = { BlockKind.Forward, BlockKind.Backward, BlockKind.Turn };
 
         private readonly List<RectTransform> _rows = new List<RectTransform>();
         private readonly BlockSequence _sequence = new BlockSequence();
@@ -307,7 +302,7 @@ namespace Game.Levels.Wheel
                 player.Play(ActorAction.Observe);
             }
 
-            foreach (var kind in Labels.Keys)
+            foreach (var kind in BlockKinds)
             {
                 var piece = SpawnBlock(InstructionBlock.Default(kind), kind == BlockKind.Backward ? paletteRowB : paletteRowA, RowMode.Palette);
                 piece.name = $"Bloque_{kind}";
@@ -575,7 +570,7 @@ namespace Game.Levels.Wheel
             var label = piece.Find("Fondo/Label")?.GetComponent<Text>();
             if (label != null)
             {
-                label.text = Labels[block.Kind];
+                label.text = Label(block.Kind);
                 // El rótulo deja sitio a lo que haya a su derecha: contador o lado desplegados,
                 // la flecha comprimida, o nada (en la paleta va centrado, como en el mockup).
                 var right = mode switch
@@ -647,6 +642,15 @@ namespace Game.Levels.Wheel
             return piece;
         }
 
+        /// <summary>El rótulo de cada bloque vive en el asset y no en el código (CT-05, RNF-18).</summary>
+        private string Label(BlockKind kind) => kind switch
+        {
+            BlockKind.Forward => layout.ForwardLabel,
+            BlockKind.Backward => layout.BackwardLabel,
+            BlockKind.Turn => layout.TurnLabel,
+            _ => string.Empty
+        };
+
         private static void Part(Transform piece, string path, bool on)
         {
             var part = piece.Find(path);
@@ -665,7 +669,10 @@ namespace Game.Levels.Wheel
             }
         }
 
-        /// <summary>El lado elegido de «Girar» va en color de atención; el otro en marfil sombra (mockup).</summary>
+        /// <summary>
+        /// El lado elegido de «Girar» va en color de atención y con contorno (RNF-19: nunca solo
+        /// el color); el otro, en marfil sombra y sin contorno.
+        /// </summary>
         private void Side(Transform piece, string path, bool selected)
         {
             var side = piece.Find(path);
@@ -685,6 +692,18 @@ namespace Game.Levels.Wheel
             {
                 icon.color = selected ? charcoalColor : softCharcoalColor;
             }
+
+            var outline = side.GetComponent<Outline>();
+            if (outline == null)
+            {
+                // Se comprueba con == y no con ?./??: Outline es un UnityEngine.Object, y su
+                // operador == distingue una referencia nula real de un objeto destruido.
+                outline = side.gameObject.AddComponent<Outline>();
+            }
+
+            outline.effectColor = charcoalColor;
+            outline.effectDistance = new Vector2(3f, -3f);
+            outline.enabled = selected;
         }
 
         /// <summary>

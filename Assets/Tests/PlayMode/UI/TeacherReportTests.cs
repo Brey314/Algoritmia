@@ -126,6 +126,43 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(20000)]
+        public async Task TeacherReport_INC34_AdvierteAlDocenteCuandoElGuardadoUsaLaRutaDeRespaldo()
+        {
+            var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
+            await Awaitable.NextFrameAsync();
+            runner.GoTo(GameState.TeacherReport);
+            await LoadSceneOf(runner);
+
+            var controller = await WaitForComponentAsync<TeacherReportController>(10f);
+            controller.Repository = new ProfileRepository(new FakeFileSystem(), "C:/Vacio/Datos", "C:/Vacio/Respaldo");
+            controller.UsingFallbackStorage = () => true;
+            controller.Show();
+
+            Assert.That(controller.FallbackNoticeLabel.gameObject.activeSelf, Is.True,
+                "no avisó de que el guardado está usando la ruta de respaldo");
+            Assert.That(controller.FallbackNoticeLabel.text, Is.Not.Empty);
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task TeacherReport_INC34_NoMuestraElAvisoConDatosEscribible()
+        {
+            var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
+            await Awaitable.NextFrameAsync();
+            runner.GoTo(GameState.TeacherReport);
+            await LoadSceneOf(runner);
+
+            var controller = await WaitForComponentAsync<TeacherReportController>(10f);
+            controller.Repository = new ProfileRepository(new FakeFileSystem(), "C:/Vacio/Datos", "C:/Vacio/Respaldo");
+            controller.UsingFallbackStorage = () => false;
+            controller.Show();
+
+            Assert.That(controller.FallbackNoticeLabel.gameObject.activeSelf, Is.False,
+                "avisó de una ruta de respaldo que no existe");
+        }
+
+        [Test]
+        [Timeout(20000)]
         public async Task TeacherReport_RF46_ConsultarNoAlteraNingunPerfil()
         {
             var profile = PlayerProfile.Create("Caro", Array.Empty<string>()).Profile;

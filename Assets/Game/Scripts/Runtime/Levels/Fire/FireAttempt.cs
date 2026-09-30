@@ -3,7 +3,7 @@ namespace Game.Levels.Fire
     /// <summary>
     /// Estado del panel de encendido del Nivel 1: resuelve un golpe según la fuerza y la cercanía
     /// de las piedras, y lleva los dos contadores —golpes efectivos y fallos consecutivos— del
-    /// guion §4.3.3/§4.3.5.
+    /// guion §1.4.3.3/§1.4.3.5.
     /// </summary>
     /// <remarks>
     /// C# plano, sin dependencias de Unity: la regla se prueba en EditMode, sin escena ni frames.
@@ -19,7 +19,7 @@ namespace Game.Levels.Fire
 
         public FireAttempt(FireLevelConfig config) => _config = config;
 
-        /// <summary>Golpes efectivos acumulados. Nunca decrece (guion §4.3.6).</summary>
+        /// <summary>Golpes efectivos acumulados. Nunca decrece (guion §1.4.3.6).</summary>
         public int EffectiveStrikes => _effectiveStrikes;
 
         /// <summary>Fallos seguidos desde el último golpe efectivo.</summary>

@@ -70,8 +70,103 @@ namespace Game.UI.Tests
             sut.Quit = () => order.Add("cerrar");
 
             Click(FindOption("Salir"));
+            Click(FindOption("Cerrar el juego"));
 
             Assert.That(order, Is.EqualTo(new[] { "guardar", "cerrar" }));
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_HU18_SalirPideConfirmacionAntesDeCerrar()
+        {
+            await LoadMainMenu();
+            var sut = Object.FindAnyObjectByType<MainMenuController>();
+            var order = new List<string>();
+            sut.Saver = new SpyProfileSaver(() => order.Add("guardar"));
+            sut.Quit = () => order.Add("cerrar");
+
+            Click(FindOption("Salir"));
+
+            Assert.That(sut.ExitConfirmPanel.activeSelf, Is.True, "la confirmación no se abrió");
+            Assert.That(TextContaining("ya está guardado"), Is.Not.Null,
+                "el aviso no dice que lo logrado ya está guardado");
+            Assert.That(order, Is.Empty, "«Salir» guardó o cerró antes de confirmar");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_HU18_QuedarmeVuelveAlMenuSinGuardarNiCerrar()
+        {
+            await LoadMainMenu();
+            var sut = Object.FindAnyObjectByType<MainMenuController>();
+            var order = new List<string>();
+            sut.Saver = new SpyProfileSaver(() => order.Add("guardar"));
+            sut.Quit = () => order.Add("cerrar");
+
+            Click(FindOption("Salir"));
+            Click(FindOption("Quedarme"));
+
+            Assert.That(sut.ExitConfirmPanel.activeSelf, Is.False, "«Quedarme» no cerró la confirmación");
+            Assert.That(sut.MainPanel.activeSelf, Is.True, "«Quedarme» no dejó ver el menú principal");
+            Assert.That(order, Is.Empty, "«Quedarme» guardó o cerró la aplicación");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_HU18_AdvierteLaRutaDeRespaldoAntesDeCerrar()
+        {
+            await LoadMainMenu();
+            var sut = Object.FindAnyObjectByType<MainMenuController>();
+            var quitCalled = false;
+            sut.Quit = () => quitCalled = true;
+            sut.FallbackDirectory = () => "C:/Usuario/AppData/Juego";
+
+            Click(FindOption("Salir"));
+
+            Assert.That(sut.FallbackNoticeLabel.gameObject.activeSelf, Is.True,
+                "no avisó de la ruta de respaldo");
+            Assert.That(sut.FallbackNoticeLabel.text, Does.Contain(sut.TitleConfig.FallbackSaveNotice));
+            Assert.That(sut.FallbackNoticeLabel.text, Does.Contain(@"C:\Usuario\AppData\Juego"));
+            Assert.That(quitCalled, Is.False, "avisar de la ruta ya cerró la aplicación");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_HU18_NoMuestraAvisoDeRespaldoConDatosEscribible()
+        {
+            await LoadMainMenu();
+            var sut = Object.FindAnyObjectByType<MainMenuController>();
+            sut.FallbackDirectory = () => null;
+
+            Click(FindOption("Salir"));
+
+            Assert.That(sut.FallbackNoticeLabel.gameObject.activeSelf, Is.False,
+                "avisó de una ruta de respaldo que no existe");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_HU18_ElAvisoDeRespaldoConUnaRutaLargaNoTapaLosBotones()
+        {
+            await LoadMainMenu();
+            var sut = Object.FindAnyObjectByType<MainMenuController>();
+            // La ruta real de respaldo (RNF-07): AppData\LocalLow\<compañía>\<producto> en Windows.
+            sut.FallbackDirectory = () => Application.persistentDataPath;
+
+            Click(FindOption("Salir"));
+            Canvas.ForceUpdateCanvases();
+
+            var label = sut.FallbackNoticeLabel;
+            Assert.That(label.gameObject.activeSelf, Is.True, "no avisó de la ruta de respaldo");
+            Assert.That(label.cachedTextGenerator.characterCountVisible, Is.EqualTo(label.text.Length),
+                "con la ruta real el texto entero sigue siendo visible: nada se trunca de golpe");
+
+            var noticeRect = ScreenRectOf((RectTransform)label.transform);
+            var stayButton = FindOption("Quedarme");
+            Assert.That(stayButton, Is.Not.Null, "«Quedarme» no está alcanzable: el aviso pudo taparlo");
+            var stayRect = ScreenRectOf(stayButton);
+            Assert.That(noticeRect.yMin, Is.GreaterThanOrEqualTo(stayRect.yMax),
+                "el aviso de la ruta de respaldo se monta sobre «Quedarme»");
         }
 
         [Test]
@@ -106,8 +201,8 @@ namespace Game.UI.Tests
             // «Salir» no puede cerrar el reproductor a mitad de la suite.
             sut.Quit = () => { };
             // Sin GameFlowRunner —la escena se cargó sin pasar por Boot— «Jugar», «Créditos» y
-            // «Progreso del equipo» avisan y no navegan; «Salir» sigue cerrando, que no
-            // necesita flujo.
+            // «Progreso del equipo» avisan y no navegan; «Salir» abre la confirmación sin
+            // necesitar flujo, y confirmarla («Cerrar el juego») tampoco lo necesita.
             LogAssert.Expect(LogType.Warning, MissingFlow);
             LogAssert.Expect(LogType.Warning, MissingFlow);
             LogAssert.Expect(LogType.Warning, MissingFlow);
@@ -116,6 +211,8 @@ namespace Game.UI.Tests
             {
                 Click(FindOption(label));
             }
+
+            Click(FindOption("Cerrar el juego"));
 
             // Lo que no puede pasar es que el clic lance: cualquier excepción registrada aquí
             // sería un mensaje no esperado y esta llamada la delata.
@@ -155,6 +252,11 @@ namespace Game.UI.Tests
             .FindObjectsByType<Button>(FindObjectsInactive.Exclude)
             .FirstOrDefault(button => button.GetComponentInChildren<Text>() is { } text
                                       && text.text.Trim() == label);
+
+        /// <summary>El texto visible (activo) cuyo contenido incluye <paramref name="fragment"/>.</summary>
+        private static Text TextContaining(string fragment) => Object
+            .FindObjectsByType<Text>(FindObjectsInactive.Exclude)
+            .FirstOrDefault(text => text.text.Contains(fragment));
 
         private static bool IsReachableByRaycast(Selectable target)
         {

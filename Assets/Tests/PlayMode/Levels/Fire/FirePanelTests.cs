@@ -274,6 +274,136 @@ namespace Game.Levels.Fire.Tests
 
         [Test]
         [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FirePanel_RF19_AlConvergerElMontonEmpiezaAHumearYNoDejaDeHacerlo()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+
+            Assert.That(controller.PileSmoke.gameObject.activeSelf, Is.False, "sin humo antes de converger");
+
+            ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes - 1);
+            await Awaitable.NextFrameAsync();
+            Assert.That(controller.PileSmoke.gameObject.activeSelf, Is.False, "todavía no converge");
+
+            Click(controller.StrikeButton);
+            await Awaitable.NextFrameAsync();
+            Assert.That(controller.PileSmoke.gameObject.activeSelf, Is.True, "el montón humea al converger (guion §1.4.3.5 E6)");
+            Assert.That(controller.PileSmoke.runtimeAnimatorController.name, Is.EqualTo("fx_n1_humo_nacer"));
+
+            controller.ForceSlider.value = SoftForce; // un fallo posterior no apaga lo ganado (INC-32)
+            Click(controller.StrikeButton);
+            await Awaitable.NextFrameAsync();
+            Assert.That(controller.PileSmoke.gameObject.activeSelf, Is.True, "lo ganado no se retira por un fallo (INC-32)");
+
+            controller.ForceSlider.value = EffectiveForce;
+            Click(controller.BlowButton);
+            await Awaitable.NextFrameAsync();
+            Assert.That(controller.PileSmoke.transform.GetSiblingIndex(),
+                Is.LessThan(controller.FireFlame.transform.GetSiblingIndex()), "el humo queda detrás de la llama tras soplar");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task FirePanel_RF19_ElHumoSeDibujaEncimaDelMontonYDebajoDeLasPiedras()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+
+            ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes);
+            await Awaitable.NextFrameAsync();
+
+            var humo = controller.PileSmoke.transform.GetSiblingIndex();
+            Assert.That(humo, Is.GreaterThan(controller.LeafPile.transform.GetSiblingIndex()), "el humo va sobre el montón");
+            // Solo las piedras: las hojas ya están ocultas (se fundieron en el montón) y se
+            // quedan donde estaban, sin pasar a la última posición como sí hacen las piedras.
+            foreach (var piece in controller.Pieces)
+            {
+                if (piece.Kind == PieceKind.Leaf)
+                {
+                    continue;
+                }
+
+                Assert.That(humo, Is.LessThan(piece.transform.GetSiblingIndex()), "y debajo de cada piedra");
+            }
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FirePanel_RF16_LaChispaSoloSeVeCuandoLasPiedrasChocanConFuerza()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            var fireSpot = controller.FireSpot.anchoredPosition;
+
+            controller.SpacingSlider.value = EffectiveSpacing;
+            controller.ForceSlider.value = SoftForce;
+            Click(controller.StrikeButton);
+            Assert.That(controller.Spark.gameObject.activeSelf, Is.False, "golpe suave: sin chispa");
+
+            controller.SpacingSlider.value = FarSpacing;
+            controller.ForceSlider.value = EffectiveForce;
+            Click(controller.StrikeButton);
+            Assert.That(controller.Spark.gameObject.activeSelf, Is.False, "piedras separadas: no chocan, no hay chispa aunque la fuerza sea efectiva");
+
+            controller.SpacingSlider.value = CloseSpacing;
+            Click(controller.StrikeButton);
+            Assert.That(controller.Spark.gameObject.activeSelf, Is.False, "piedras encimadas: se frotan, no chocan");
+
+            controller.SpacingSlider.value = EffectiveSpacing;
+            controller.ForceSlider.value = HardForce;
+            Click(controller.StrikeButton);
+            Assert.That(controller.Spark.gameObject.activeSelf, Is.True, "golpe de más: la chispa salta lejos y se apaga en el aire");
+            Assert.That(controller.Spark.anchoredPosition, Is.Not.EqualTo(fireSpot), "fuera del montón");
+
+            controller.ForceSlider.value = EffectiveForce;
+            Click(controller.StrikeButton);
+            Assert.That(controller.Spark.gameObject.activeSelf, Is.True, "golpe efectivo: la chispa cae en el montón");
+            Assert.That(controller.Spark.anchoredPosition, Is.EqualTo(fireSpot), "sobre el punto del fuego");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task FirePanel_RF16_ElBrilloDeLaChispaDuraMasConCadaGolpeEfectivo()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+
+            Click(controller.StrikeButton);
+            var primero = await SparkDurationAsync(controller.Spark, 2f);
+
+            Click(controller.StrikeButton);
+            var segundo = await SparkDurationAsync(controller.Spark, 2f);
+
+            Assert.That(segundo, Is.GreaterThan(primero), "el segundo golpe efectivo brilla más tiempo que el primero");
+        }
+
+        /// <summary>Espera a que la chispa se apague, comprobando en cada cuadro que su escala nunca sube (RNF-21), y devuelve cuánto tardó.</summary>
+        private static async Task<float> SparkDurationAsync(RectTransform spark, float timeoutSeconds)
+        {
+            Assume.That(spark.gameObject.activeSelf, Is.True, "la chispa debía estar visible al empezar a medir");
+            var start = Time.realtimeSinceStartup;
+            var lastScale = spark.localScale.x;
+            while (spark.gameObject.activeSelf)
+            {
+                Assert.That(spark.localScale.x, Is.LessThanOrEqualTo(lastScale + 0.0001f), "la escala nunca sube mientras la chispa se apaga (RNF-21)");
+                lastScale = spark.localScale.x;
+                Assert.That(Time.realtimeSinceStartup - start, Is.LessThan(timeoutSeconds), "la chispa no se apagó a tiempo");
+                await Awaitable.NextFrameAsync();
+            }
+
+            return Time.realtimeSinceStartup - start;
+        }
+
+        [Test]
+        [Timeout(20000)]
         public async Task FirePanel_RF19_SoplarSeHabilitaAlAlcanzarElMinimoDeGolpesEfectivos()
         {
             var controller = await LoadPanel();

@@ -14,6 +14,7 @@ namespace Game.UI
         // HU-01 FA-03: un perfil nuevo arranca en la escena narrativa de introducción del Nivel 1.
         private const string IntroNarrativeId = "N1_Apertura";
 
+        [SerializeField] private ProfileSelectContent content;
         [SerializeField] private Transform profileList;
         [SerializeField] private Button profileEntryPrototype;
         [SerializeField] private InputField nameField;
@@ -108,13 +109,13 @@ namespace Game.UI
             switch (result.Result)
             {
                 case ProfileCreationResult.Status.EmptyName:
-                    messageLabel.text = "Escribe un nombre para empezar.";
+                    messageLabel.text = content.EmptyNameMessage;
                     return;
                 case ProfileCreationResult.Status.DuplicateName:
-                    messageLabel.text = "Ya hay un perfil con ese nombre. Elige otro.";
+                    messageLabel.text = content.DuplicateNameMessage;
                     return;
                 case ProfileCreationResult.Status.InvalidName:
-                    messageLabel.text = "Ese nombre no se puede usar. Prueba con otro.";
+                    messageLabel.text = content.InvalidNameMessage;
                     return;
             }
 
@@ -130,7 +131,7 @@ namespace Game.UI
         private void AskDeletion(string profileName)
         {
             _pendingDeletion = profileName;
-            deletePrompt.text = $"¿Borras el perfil de {profileName}?";
+            deletePrompt.text = string.Format(content.DeletePromptFormat, profileName);
             deletePanel.SetActive(true);
         }
 
@@ -145,7 +146,7 @@ namespace Game.UI
             if (!Session.Delete(_pendingDeletion))
             {
                 // RNF-11 no admite «casi borrado»: si quedó rastro hay que decirlo, no callarlo.
-                messageLabel.text = "No se pudo borrar del todo ese perfil. Avisa a tu profe.";
+                messageLabel.text = content.DeleteFailedMessage;
             }
 
             CancelDeletion();

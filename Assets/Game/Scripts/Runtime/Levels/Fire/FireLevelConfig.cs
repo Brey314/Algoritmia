@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Game.Levels.Fire
 {
     /// <summary>
-    /// Los parámetros ajustables jugando del Nivel 1 (guion §4.3.2, reescrito en la Fase 5 con
+    /// Los parámetros ajustables jugando del Nivel 1 (guion §1.4.3.2, reescrito en la Fase 5 con
     /// fuerza en vez de distancia y en la Fase 6 con la cercanía de las piedras en un deslizante).
     /// Viven en un asset y no en el código para que retocarlos no cueste una recompilación
     /// (CT-05, RNF-18). Los valores por defecto son los acordados con Santiago el 12/09/2026 y el

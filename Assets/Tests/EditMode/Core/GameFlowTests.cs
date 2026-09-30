@@ -54,6 +54,29 @@ namespace Game.Core.Tests
             Assert.That(_sut.TryStartPlaying(LevelId.Fire, 1), Is.True);
         }
 
+        /// <summary>
+        /// Un cierre forzado durante la escena de cierre del Nivel 2 deja sus tres fases confirmadas
+        /// sin el resumen que avanza <see cref="PlayerProfile.ReachedLevel"/>. El menú pinta el
+        /// Nivel 3 desbloqueado con <see cref="LevelUnlockPolicy.IsUnlocked"/>, y entrar a jugarlo
+        /// se acepta con la misma regla (INC-116, PF-RNF14-04).
+        /// </summary>
+        [Test]
+        public void GameFlow_RNF14_EntraAlNivelQueDesbloqueanLasFasesConfirmadasDelAnterior()
+        {
+            var profile = NewProfile();
+            profile.Reach(LevelId.Wheel);
+            foreach (var phase in PhaseId.AllOf(LevelId.Wheel))
+            {
+                profile.ConfirmPhase(phase, new PerformanceIndicators(1, 0, 1, 10f));
+            }
+
+            _sut.TryGoTo(GameState.MainMenu);
+            _sut.TryGoTo(GameState.ProfileSelect);
+            _sut.TrySelectProfile(profile);
+
+            Assert.That(_sut.TryStartPlaying(LevelId.River, 1), Is.True);
+        }
+
         [Test]
         public void GameFlow_RF07_UnaTransicionIlegalNoCambiaDeEstadoYSeObserva()
         {
@@ -84,6 +107,46 @@ namespace Game.Core.Tests
             Assert.That(_sut.Current, Is.EqualTo(GameState.Playing));
             Assert.That(_sut.PlayingLevel, Is.EqualTo(LevelId.Wheel));
             Assert.That(_sut.PlayingPhase, Is.EqualTo(2));
+        }
+
+        [Test]
+        public void GameFlow_HU17_SetPlayingPhaseActualizaLaFaseActivaSinNavegar()
+        {
+            var perfil = NewProfile();
+            perfil.Reach(LevelId.River);
+            _sut.TryGoTo(GameState.MainMenu);
+            _sut.TryGoTo(GameState.ProfileSelect);
+            _sut.TrySelectProfile(perfil);
+            _sut.TryStartNarrative("n3_intro");
+            _sut.TryStartPlaying(LevelId.River, 1); // el Nivel 3 abre siempre en la base (R07)
+
+            // Confirmar el amarre no vuelve a pasar por TryStartPlaying (RNF-14: las tres fases
+            // comparten la misma escena): esto es lo que deja «Reiniciar» retomar en ella.
+            Assert.That(_sut.SetPlayingPhase(LevelId.River, 3), Is.True);
+
+            Assert.That(_sut.Current, Is.EqualTo(GameState.Playing), "no navega: solo actualiza el dato");
+            Assert.That(_sut.PlayingLevel, Is.EqualTo(LevelId.River));
+            Assert.That(_sut.PlayingPhase, Is.EqualTo(3));
+        }
+
+        [Test]
+        public void GameFlow_HU17_SetPlayingPhaseSeRechazaFueraDePlayingOEnOtroNivelOFaseInvalida()
+        {
+            var perfil = NewProfile();
+            perfil.Reach(LevelId.River);
+            _sut.TryGoTo(GameState.MainMenu);
+            _sut.TryGoTo(GameState.ProfileSelect);
+            _sut.TrySelectProfile(perfil);
+
+            Assert.That(_sut.SetPlayingPhase(LevelId.River, 2), Is.False, "todavía no se está jugando");
+
+            _sut.TryStartNarrative("n3_intro");
+            _sut.TryStartPlaying(LevelId.River, 1);
+
+            Assert.That(_sut.SetPlayingPhase(LevelId.Wheel, 1), Is.False, "no es el nivel que se está jugando");
+            Assert.That(_sut.SetPlayingPhase(LevelId.River, 4), Is.False, "el Nivel 3 no tiene una cuarta fase");
+            Assert.That(_sut.SetPlayingPhase(LevelId.River, 0), Is.False);
+            Assert.That(_sut.PlayingPhase, Is.EqualTo(1), "ningún rechazo tocó la fase activa");
         }
 
         [Test]

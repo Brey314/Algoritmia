@@ -50,6 +50,19 @@ namespace Game.Reporting
         [field: Tooltip("Texto cuando no hay ningún perfil registrado (CU-11 FA-2a).")]
         public string NoProfilesLabel { get; private set; } = "Todavía no hay perfiles registrados en este equipo.";
 
+        [field: SerializeField]
+        [field: Tooltip("Formato de la pregunta de confirmación de borrado (RF-47, CU-12); " +
+                         "{0} es el nombre del perfil.")]
+        public string ErasePromptFormat { get; private set; } =
+            "¿Eliminas definitivamente los datos de {0}? Esta acción no se puede deshacer.";
+
+        [field: SerializeField]
+        [field: Tooltip("Aviso al docente cuando el guardado cayó a la ruta de respaldo " +
+                         "(arquitectura §7, INC-77): sin cifras, solo dónde quedaron los perfiles.")]
+        public string FallbackStorageNotice { get; private set; } =
+            "Este equipo no deja guardar en la carpeta del juego: los perfiles se están guardando " +
+            "en la carpeta de datos de Windows.";
+
         public string LevelLabel(LevelId level) => level switch
         {
             LevelId.Fire => LevelOneLabel,
