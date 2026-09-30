@@ -305,6 +305,15 @@ namespace Game.Levels.Wheel
         {
             if (!outcome.Accepted)
             {
+                if (outcome.Message == config.MissedMessage)
+                {
+                    // Soltar el mazo lejos del tronco resaltado no es un razonamiento fallido —
+                    // como soltar lejos el tronco largo, la tabla, la caja o la cuerda (DEC-1,
+                    // 30/09/2026): se describe y no cuenta para el intento ni para la pista.
+                    Show(outcome.Message, helpIcon, helpColor);
+                    return;
+                }
+
                 _indicators.RecordRejected(); // Intentos de la fase 2: acciones fuera de secuencia (§3.6.1).
                 Encourage();
                 Show(outcome.Message, rejectedIcon, rejectedColor);

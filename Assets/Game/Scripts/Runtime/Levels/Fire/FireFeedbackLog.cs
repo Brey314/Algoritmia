@@ -3,9 +3,9 @@ using System.Collections.Generic;
 namespace Game.Levels.Fire
 {
     /// <summary>
-    /// El área de registro del Nivel 1 (guion §4.3.1): traduce cada golpe a un mensaje narrativo
-    /// del asset <see cref="FireMessages"/> y acumula el historial para que el estudiante compare
-    /// sus intentos (HU-05, HU-06).
+    /// El área de registro del Nivel 1 (guion §1.4.3.1): traduce cada golpe a un mensaje narrativo
+    /// del asset <see cref="FireMessages"/>. El historial queda en memoria (<see cref="Entries"/>)
+    /// pero la tablilla solo muestra el último mensaje (<see cref="FeedbackLogView"/>).
     /// </summary>
     /// <remarks>
     /// C# plano, sin dependencias de Unity. El panel jugable (T14) traduce el resultado de
@@ -25,7 +25,7 @@ namespace Game.Levels.Fire
             _minimumEffectiveStrikes = minimumEffectiveStrikes;
         }
 
-        /// <summary>El historial acumulado, del primer intento al último (HU-06).</summary>
+        /// <summary>El historial acumulado, del primer intento al último. Solo se lee dentro del panel: la tablilla muestra únicamente <see cref="Latest"/>, y no se persiste (RNF-09).</summary>
         public IReadOnlyList<string> Entries => _entries;
 
         /// <summary>El último mensaje escrito, o cadena vacía si no hay ninguno.</summary>

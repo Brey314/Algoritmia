@@ -175,6 +175,26 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task NarrativeScene_RF45_UnClicDeMasAlSalirDelCierreReflexivoYaVistoLlegaAlResumen()
+        {
+            // Sin SceneLoader la escena no se descarga: cada clic de más llega al controlador, que
+            // es la ventana de un doble clic mientras carga el resumen. Con el Nivel 2 abierto el
+            // cierre del Nivel 1 ya se vio, así que ofrece omitir y se prueban los dos botones.
+            var (controller, runner) = await OpenNarrative("N1_NacimientoDelFuego", LevelId.Wheel);
+            Assert.That(controller.SkipButton.gameObject.activeInHierarchy, Is.True,
+                "el arreglo no ofrece omitir: el cierre debería contar como visto");
+            Click(controller.SkipButton);
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.LevelSummary), "el arreglo no salió al resumen");
+
+            Click(controller.AdvanceButton);
+            Click(controller.SkipButton);
+
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.LevelSummary),
+                "el clic de más no puede sacar al estudiante del resumen hacia el menú");
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task NarrativeScene_HU17_NoHayBotonDePausaEnUnaEscenaNarrativa()
         {
             await OpenNarrative("N1_Apertura");

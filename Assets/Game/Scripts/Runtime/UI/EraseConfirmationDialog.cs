@@ -46,12 +46,16 @@ namespace Game.UI
             confirmButton.onClick.AddListener(Confirm);
         }
 
-        /// <summary>Abre el diálogo para el perfil dado. <paramref name="onClosed"/> recibe si se borró.</summary>
-        internal void Ask(string profileName, Action<bool> onClosed)
+        /// <summary>
+        /// Abre el diálogo para el perfil dado. El texto ya viene formateado (CT-05, RNF-18: el
+        /// vocabulario vive en <see cref="Game.Reporting.ReportContent.ErasePromptFormat"/>, no
+        /// aquí). <paramref name="onClosed"/> recibe si se borró.
+        /// </summary>
+        internal void Ask(string profileName, string promptText, Action<bool> onClosed)
         {
             _profileName = profileName;
             _onClosed = onClosed;
-            prompt.text = $"¿Eliminas definitivamente los datos de {profileName}? Esta acción no se puede deshacer.";
+            prompt.text = promptText;
             gameObject.SetActive(true);
         }
 

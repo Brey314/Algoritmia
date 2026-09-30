@@ -16,7 +16,7 @@ namespace Game.UI
     /// Vive en <c>Game.UI</c> y no en un assembly de nivel: es navegación general, como
     /// <see cref="LevelSelectController"/> o <see cref="NarrativeSceneController"/>, no una regla
     /// del nivel — así ningún assembly de nivel gana una dependencia nueva. Es el prefab
-    /// <c>MenuPausa</c>, el mismo en las cuatro escenas jugables (W17): el bloqueador de pantalla
+    /// <c>MenuPausa</c>, el mismo en las cinco escenas jugables (W17): el bloqueador de pantalla
     /// completa del overlay intercepta el clic hacia el panel de abajo, y <c>Time.timeScale</c>
     /// a cero detiene lo que se mueve —rodado, ejecución paso a paso— mientras está abierto.
     /// Este controlador no toca ningún controlador de nivel.

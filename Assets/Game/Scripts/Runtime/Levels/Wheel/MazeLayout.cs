@@ -81,7 +81,7 @@ namespace Game.Levels.Wheel
         public Sprite ShelterArt { get; private set; }
 
         [field: SerializeField]
-        [field: Tooltip("Piedras, curvas y pendientes (RF-30): cada obstáculo toma una al azar. Vacío deja cuadros.")]
+        [field: Tooltip("Sprites de obstáculo (RF-30): arbustos que, contiguos, se leen como seto. Cada obstáculo toma uno al azar. Vacío deja cuadros.")]
         public Sprite[] ObstacleArt { get; private set; } = Array.Empty<Sprite>();
 
         [field: SerializeField]
@@ -138,6 +138,18 @@ namespace Game.Levels.Wheel
         [field: SerializeField]
         [field: Tooltip("Id de la secuencia narrativa a la que sale la fase al alcanzar el refugio (guion §6.4).")]
         public string ClosingSequenceId { get; private set; } = "N2_Escena25_Cierre";
+
+        [field: SerializeField]
+        [field: Tooltip("Rótulo del bloque que avanza una casilla (CT-05, RNF-18).")]
+        public string ForwardLabel { get; private set; } = "Avanzar";
+
+        [field: SerializeField]
+        [field: Tooltip("Rótulo del bloque que retrocede una casilla (CT-05, RNF-18).")]
+        public string BackwardLabel { get; private set; } = "Retroceder";
+
+        [field: SerializeField]
+        [field: Tooltip("Rótulo del bloque que gira a un lado (CT-05, RNF-18).")]
+        public string TurnLabel { get; private set; } = "Girar";
 
         /// <summary>Un trazado en memoria para las pruebas, sin asset en disco.</summary>
         internal static MazeLayout Create(int columns, int rows, Vector2Int start, Orientation facing, Vector2Int goal,

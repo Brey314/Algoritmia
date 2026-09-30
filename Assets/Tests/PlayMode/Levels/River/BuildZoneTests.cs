@@ -124,6 +124,29 @@ namespace Game.Levels.River.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task RiverScene_RF36_RecogerTroncosSeMarcaConElUltimoTroncoYNoAntes()
+        {
+            var river = await RiverMovementTests.OpenRiver();
+            var troncos = river.Spawned.Where(entry => entry.Collectible.Kind == MaterialKind.Logs).ToArray();
+            var fila = river.Rows.Single(row => row.Task == RiverTaskId.CollectLogs);
+            var iconoPendiente = fila.Icon.sprite;
+
+            for (var i = 0; i < troncos.Length; i++)
+            {
+                var (tronco, _) = troncos[i];
+                WalkTo(river, tronco.Position);
+                river.CollectButton.onClick.Invoke();
+
+                var esElUltimo = i == troncos.Length - 1;
+                Assert.That(river.Tasks.IsDone(RiverTaskId.CollectLogs), Is.EqualTo(esElUltimo),
+                    esElUltimo ? "con el último tronco la tarea se marca" : "antes del último, la tarea sigue sin marcar (RF-36)");
+                Assert.That(fila.Icon.sprite, esElUltimo ? Is.Not.SameAs(iconoPendiente) : Is.SameAs(iconoPendiente),
+                    "el icono de la fila acompaña al estado de la tarea (RNF-19)");
+            }
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task RiverScene_DA133_MamaRecogeAlPulsarRecogerYVuelveSolaAlReposo()
         {
             var river = await RiverMovementTests.OpenRiver();

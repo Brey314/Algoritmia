@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b58bf6170794afc43a6269878e166600, type: 3}
+  m_Name: ProfileSelectContent
+  m_EditorClassIdentifier: Game.UI::Game.UI.ProfileSelectContent
+  <EmptyNameMessage>k__BackingField: Escribe un nombre para empezar.
+  <DuplicateNameMessage>k__BackingField: Ya hay un perfil con ese nombre. Elige otro.
+  <InvalidNameMessage>k__BackingField: Ese nombre no se puede usar. Prueba con otro.
+  <DeletePromptFormat>k__BackingField: "\xBFBorras el perfil de {0}?"
+  <DeleteFailedMessage>k__BackingField: No se pudo borrar del todo ese perfil. Avisa
+    a tu profe.

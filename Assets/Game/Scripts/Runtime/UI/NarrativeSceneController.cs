@@ -820,6 +820,15 @@ namespace Game.UI
         /// </remarks>
         private void Leave()
         {
+            // Se sale una sola vez: si el flujo ya no está en esta escena, ya se salió. La escena
+            // sigue viva mientras carga la siguiente, y el doble clic de un niño llegaba aquí dos
+            // veces: tras el cierre reflexivo el segundo `GoTo(LevelSummary)` ya era ilegal, caía a
+            // `LevelSelect` y se saltaba el resumen donde se nombra la habilidad (RF-12, RF-45).
+            if (Runner.Flow.Current != GameState.Narrative || Runner.Flow.NarrativeSequenceId != _sequence?.Id)
+            {
+                return;
+            }
+
             // Dos escenas del guion seguidas —la 2.2 y la 2.3— se encadenan por el asset: el
             // flujo vuelve a `Narrative` con el id nuevo y la escena se recarga (RF-05).
             if (_sequence != null && !string.IsNullOrEmpty(_sequence.NextSequenceId)

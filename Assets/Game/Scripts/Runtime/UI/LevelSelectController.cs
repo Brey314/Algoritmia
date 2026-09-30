@@ -8,8 +8,11 @@ namespace Game.UI
     /// <summary>
     /// Menú de niveles (RF-03). Los tres niveles se muestran **siempre**; los que el perfil activo
     /// aún no alcanzó salen bloqueados —color más un candado y la palabra «Bloqueado», nunca solo
-    /// color (RNF-19)— y no responden al clic. Adaptador delgado: la regla de desbloqueo vive en
-    /// <see cref="LevelUnlockPolicy"/>.
+    /// color (RNF-19)— y no responden al clic. Los que ya se completaron llevan además la marca
+    /// «Completado» —icono y palabra, tampoco solo color (RNF-19, HU-14)— y siguen siendo
+    /// jugables: completado no es lo mismo que bloqueado. Sin cifras (CP-03). Adaptador delgado:
+    /// la regla de desbloqueo vive en <see cref="LevelUnlockPolicy"/> y la de completado en
+    /// <see cref="PlayerProfile.IsLevelComplete"/>.
     /// </summary>
     public class LevelSelectController : MonoBehaviour
     {
@@ -21,6 +24,10 @@ namespace Game.UI
 
             [Tooltip("Grupo con el candado y el texto «Bloqueado». Se muestra solo si el nivel está bloqueado.")]
             public GameObject lockedBadge;
+
+            [Tooltip("Grupo con el icono de visto y el texto «Completado». Se muestra solo si todas " +
+                     "las fases del nivel están confirmadas (HU-14).")]
+            public GameObject completedBadge;
 
             [Tooltip("Secuencia narrativa con la que abre el nivel, p. ej. «N1_Apertura».")]
             public string openingSequenceId;
@@ -34,6 +41,7 @@ namespace Game.UI
 #if UNITY_INCLUDE_TESTS
         internal Button ButtonFor(LevelId level) => Find(level).button;
         internal bool LockBadgeShownFor(LevelId level) => Find(level).lockedBadge.activeSelf;
+        internal bool CompletedBadgeShownFor(LevelId level) => Find(level).completedBadge.activeSelf;
 #endif
 
         private LevelEntry Find(LevelId level) => Array.Find(entries, entry => entry.level == level);
@@ -91,6 +99,10 @@ namespace Game.UI
                 var unlocked = profile != null && LevelUnlockPolicy.IsUnlocked(profile, entry.level);
                 entry.button.interactable = unlocked;
                 entry.lockedBadge.SetActive(!unlocked);
+                // Un nivel completado se puede repetir (interactable no cambia): la marca solo
+                // informa que ya se terminó, con icono y palabra y no solo color (RNF-19), y sin
+                // cifras (CP-03).
+                entry.completedBadge.SetActive(profile != null && profile.IsLevelComplete(entry.level));
             }
         }
     }

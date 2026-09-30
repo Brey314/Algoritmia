@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Game.Core;
@@ -37,12 +38,26 @@ namespace Game.UI
         [SerializeField] private Button deleteButton;
         [SerializeField] private EraseConfirmationDialog eraseDialog;
 
+        /// <summary>
+        /// Aviso de que los perfiles se están guardando en la ruta de respaldo (arquitectura §7,
+        /// INC-77, INC-48): oculto salvo que <see cref="UsingFallbackStorage"/> lo diga. El texto
+        /// sale de <see cref="ReportContent.FallbackStorageNotice"/> (CT-05).
+        /// </summary>
+        [SerializeField] private Text fallbackNoticeLabel;
+
         private readonly List<Button> _entries = new List<Button>();
 
         internal GameFlowRunner Runner { get; set; }
 
         /// <summary>El origen de los perfiles. Producción: uno real sobre las rutas de <see cref="GameFlowRunner"/>.</summary>
         internal ProfileRepository Repository { get; set; }
+
+        /// <summary>
+        /// Punto de sustitución de INC-77/INC-48: si el guardado de perfiles cayó a la ruta de
+        /// respaldo. Producción: la sesión de <see cref="GameFlowRunner"/>, resuelta en <see cref="Awake"/>
+        /// junto con <see cref="Repository"/>.
+        /// </summary>
+        internal Func<bool> UsingFallbackStorage { get; set; }
 
         private PlayerProfile _selected;
 
@@ -54,6 +69,7 @@ namespace Game.UI
         internal EraseConfirmationDialog EraseDialog => eraseDialog;
         internal Button BackButton => backButton;
         internal PlayerProfile Selected => _selected;
+        internal Text FallbackNoticeLabel => fallbackNoticeLabel;
 #endif
 
         private void Awake()
@@ -63,6 +79,8 @@ namespace Game.UI
             {
                 Repository = new ProfileRepository(new DiskFileSystem(), Runner.PortableRoot, Runner.FallbackRoot);
             }
+
+            UsingFallbackStorage ??= () => Runner != null && Runner.Session.UsingFallback;
         }
 
         private void Start()
@@ -81,6 +99,12 @@ namespace Game.UI
 
         internal void Show()
         {
+            if (fallbackNoticeLabel != null && content != null)
+            {
+                fallbackNoticeLabel.text = content.FallbackStorageNotice;
+                fallbackNoticeLabel.gameObject.SetActive(UsingFallbackStorage != null && UsingFallbackStorage());
+            }
+
             if (Repository == null)
             {
                 return;
@@ -139,7 +163,10 @@ namespace Game.UI
                 return;
             }
 
-            eraseDialog.Ask(_selected.Name, deleted =>
+            var prompt = content != null
+                ? string.Format(content.ErasePromptFormat, _selected.Name)
+                : _selected.Name;
+            eraseDialog.Ask(_selected.Name, prompt, deleted =>
             {
                 if (deleted)
                 {

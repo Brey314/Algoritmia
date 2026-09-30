@@ -469,4 +469,4 @@ recorta sobre un entorno de follaje. Los fondos de escena no llevan chroma.
 - [ ] **Pregunta abierta 3 · Radio de proximidad de RF-37**, sin validar. Revisar en R-C.
 - [ ] **Pregunta abierta 6 · ¿Se adelantan R09 y R10?** Recomendación: sí, para descargar INC-30.
 - [ ] **PG-02 · nombre del guía.** Última oportunidad antes de la entrega: la escena final lo nombra.
-- [ ] **PG-01 · título del producto.** Sigue abierto y el juego ya estaría completo (RF-01, RF-08).
+- [x] **PG-01 · título del producto.** Sigue abierto y el juego ya estaría completo (RF-01, RF-08). *(Cerrado el 29/09/2026: «Algoritmia», guion §1.2.)*

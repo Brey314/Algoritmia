@@ -94,6 +94,9 @@ temporal de la sesión: hay que ajustarlas antes de usarlas.
 ## Pendiente
 
 - INC-52 e INC-53: corregir `Direccion_de_Arte.md` §7.6/§13.1 e `Interfaces.md` §4.3, o el arte.
+  *(Vencido el 29/09/2026: INC-52 e INC-53 se cerraron corrigiendo §7.6, §13.1, `Interfaces.md` §4.3
+  y el guion §1.1.1, que describen ya el guía entregado —una llama con extremidades, de fuego,
+  madera y agua— y la animación por recorte con `CharacterRig`.)*
 - Arte de rueda y gota: sustituir los dos `.png` conservando nombre y `.meta`.
 - Expresiones del retrato distintas de `neutra`: ninguna línea las pide todavía.
 - Objetos que el guion nombra y no tienen sprite: comida, humo, estela de Algoritm, maleza, piedras

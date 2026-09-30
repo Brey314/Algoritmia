@@ -72,6 +72,29 @@ namespace Game.Core
         /// <summary>Fase del nivel que está jugando <see cref="GameState.Playing"/> (RF-04).</summary>
         public int PlayingPhase { get; private set; }
 
+        /// <summary>
+        /// Registra qué fase de <see cref="GameState.Playing"/> está activa ahora, sin cambiar de
+        /// estado ni de nivel y sin navegar (a diferencia de <see cref="TryStartPlaying"/>).
+        /// </summary>
+        /// <remarks>
+        /// Para el Nivel 3 (RNF-14, HU-17 FA-01): sus tres fases comparten una sola escena, así
+        /// que confirmar el amarre o la base no vuelve a pasar por <see cref="TryStartPlaying"/>
+        /// y <see cref="PlayingPhase"/> se quedaba en la fase con la que se entró. «Reiniciar»
+        /// (<see cref="PauseMenuPolicy.Restart"/>) lee este mismo campo, así que sin esto siempre
+        /// recargaba la recolección en vez de la fase activa.
+        /// </remarks>
+        public bool SetPlayingPhase(LevelId level, int phase)
+        {
+            if (Current != GameState.Playing || PlayingLevel != level
+                || phase < 1 || phase > PhaseId.PhaseCountOf(level))
+            {
+                return false;
+            }
+
+            PlayingPhase = phase;
+            return true;
+        }
+
         /// <summary>Cambia de estado si la transición es legal. Devuelve si lo hizo.</summary>
         public bool TryGoTo(GameState next)
         {
@@ -128,7 +151,10 @@ namespace Game.Core
         /// </param>
         public bool TryStartPlaying(LevelId level, int phase, Predicate<PhaseId> isPlayable = null)
         {
-            if (ActiveProfile == null || !ActiveProfile.IsUnlocked(level)
+            // La misma regla que pinta el menú (INC-116): con PlayerProfile.IsUnlocked, que solo lee
+            // ReachedLevel, un cierre forzado en la escena de cierre dejaba el nivel siguiente
+            // desbloqueado en el menú pero imposible de empezar.
+            if (ActiveProfile == null || !LevelUnlockPolicy.IsUnlocked(ActiveProfile, level)
                 || phase < 1 || phase > PhaseId.PhaseCountOf(level))
             {
                 return false;

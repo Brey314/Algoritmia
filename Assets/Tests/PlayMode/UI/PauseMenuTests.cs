@@ -164,6 +164,26 @@ namespace Game.UI.Tests
         [Test]
         [Timeout(20000)]
         [Category("Acceptance")]
+        public async Task PauseMenu_HU17_OfreceExactamenteReanudarReiniciarYVolverAlMenuDeNiveles()
+        {
+            var pauseMenu = await LoadPauseMenu();
+
+            Click(pauseMenu.PauseButton);
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(pauseMenu.ContinueButton.GetComponentInChildren<Text>().text, Is.EqualTo("Reanudar"));
+            Assert.That(pauseMenu.RestartButton.GetComponentInChildren<Text>().text, Is.EqualTo("Reiniciar"));
+            Assert.That(pauseMenu.LevelSelectButton.GetComponentInChildren<Text>().text,
+                Is.EqualTo("Volver al menú de niveles"));
+
+            // HU-17 corregido (INC-49): exactamente esos tres, sin un cuarto botón en el panel base.
+            Assert.That(pauseMenu.BaseButtons.GetComponentsInChildren<Button>(includeInactive: true).Length,
+                Is.EqualTo(3));
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
         public async Task PauseMenu_HU17_NoSeMuestraEnEscenasNarrativas()
         {
             var load = SceneManager.LoadSceneAsync(NarrativeSceneName, LoadSceneMode.Single);

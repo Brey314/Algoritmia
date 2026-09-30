@@ -236,23 +236,25 @@ invariable** y **tres formas**. Aquí: un núcleo sonoro invariable y tres timbr
 |---|---|
 | Registro | Agudo, entre 800 Hz y 3 kHz. Nunca grave: es del tamaño de una palma |
 | Articulación | Notas cortas y separadas, nunca ligadas. Habla en destellos, como su estela de puntos sueltos |
-| Cuenta de cinco | Toda frase suya se cuenta hasta cinco: cinco notas, cinco pulsos, cinco destellos. Es el eco sonoro de la regla visual de las cinco puntas |
+| Cuenta de cinco | Toda frase suya se cuenta hasta cinco: cinco notas, cinco pulsos, cinco destellos. Es el eco sonoro de las cinco bandas de color de su franja (`Direccion_de_Arte.md` §7.6) |
 | Afinación | Escala pentatónica mayor, sin semitonos. Ningún intervalo suyo suena triste — no existe la tristeza en este personaje, igual que no existe en su set de expresiones (§7.3 del arte) |
 | Cola | Siempre con reverberación corta que se apaga sola: emite luz propia y el sonido también se sostiene solo |
 
 Si uno de estos cambia, deja de leerse como el mismo personaje. Es la misma regla que el
-arte aplica a los ojos y a la ausencia de extremidades.
+arte aplica a los ojos, a las extremidades y a la franja.
 
 ### 6.2 Los tres timbres
 
 | Nivel | Forma (arte) | Timbre | Material |
 |---|---|---|---|
-| 1 · La Oscuridad | Estrella | Campanilla de cristal con cola larga | Fuego: chisporroteo agudo bajo la nota |
-| 2 · La Rueda | Rueda | Marimba pequeña, ataque de madera | Madera: el golpe seco de la baqueta se oye |
-| 3 · El Río | Gota | Gota en cuenco de agua | Agua: la nota nace mojada y se cierra |
+| 1 · La Oscuridad | Llama de fuego (`Algoritm_Fuego`) | Campanilla de cristal con cola larga | Fuego: chisporroteo agudo bajo la nota |
+| 2 · La Rueda | La llama en madera (`Algoritm_Rueda`) | Marimba pequeña, ataque de madera | Madera: el golpe seco de la baqueta se oye |
+| 3 · El Río | La llama en agua (`Algoritm_Gota`) | Gota en cuenco de agua | Agua: la nota nace mojada y se cierra |
 
-**Cuándo muta.** Solo en los dos barridos `TR-05` y `TR-09`, exactamente como el arte
-—entra con el timbre del nivel que termina y sale con el del que empieza—. **Nunca a la
+**Cuándo muta.** Como el arte (`Direccion_de_Arte.md` §7.6): en los dos puentes, en el fundido
+entre dos secuencias narrativas (`N2_PuenteI` → `N2_PuenteI_Bosque`, `N3_PuenteII_Horizonte` →
+`N3_PuenteII_Rio`) —entra con el timbre del nivel que termina y sale con el del que empieza—. El
+barrido de `TR-05` y `TR-09` no existe en el juego. **Nunca a la
 vista, ni al oído, dentro de una escena jugable.**
 
 ---
@@ -321,7 +323,7 @@ Material aparente: **piedra y madera**, coherente con la interfaz diegética de
 | `sfx_ui_perfil_crear` | Tres notas cortas ascendentes de flauta. Bienvenida, no fanfarria | Confirmación de creación de perfil | 0.60 s | no | RF-02, HU-01 |
 | `sfx_ui_perfil_borrar` | Barrido descendente de arena. **Neutro**: borrar es un derecho del estudiante (RNF-11), no un castigo | Confirmación de eliminación de perfil | 0.50 s | no | RF-47, RNF-11 |
 | `sfx_ui_nivel_desbloqueado` | Piedra que se corre y deja pasar. Refuerza el candado que se abre, **no lo sustituye** (§2.4) | Al mostrarse un nivel recién habilitado en `LevelSelect` | 0.70 s | no | RF-03, RNF-19 |
-| `sfx_ui_tarea_marcada` | Nudo de cuerda que se aprieta. Coherente con la lista de tareas, que es cuerda con nudos | Marcado de una tarea de la lista del Nivel 3 | 0.30 s | no | RF-36 |
+| `sfx_ui_tarea_marcada` | Trazo corto y seco de carbón sobre piedra. Coherente con la lista de tareas, que es una tablilla de marfil donde la tarea cumplida recibe una marca de verificación | Marcado de una tarea de la lista del Nivel 3 | 0.30 s | no | RF-36 |
 | `sfx_ui_transicion_fundido` | Soplo de aire corto que cubre la costura entre escenas | Fundido de transición (`TR-05`, `TR-09` y demás) | 0.80 s | no | RNF-04 |
 | `sfx_ui_arranque` | Una sola nota de flauta con cola larga sobre negro | Escena `Boot`, antes del menú | 1.5 s | no | RNF-04 |
 | `sfx_ui_salida` | La misma nota, invertida y apagándose | Salida controlada desde el menú principal | 1.0 s | no | RF-09 |
@@ -341,8 +343,8 @@ Bus `Voz`. Timbre según §6.2.
 | `sfx_algoritm_presencia_n3` | Gota en cuenco, cinco notas, nacimiento mojado | Entrada de Algoritm en el Nivel 3 | 1.2 s | no | RF-10, §6.2 |
 | `sfx_algoritm_pista` | Pulso doble suave, del timbre del nivel. Acompaña el pulso de escala del icono de pista y **suena igual pidiendo ayuda que recibiéndola tras tres fallos**: si sonara distinto, el segundo caso se leería como reproche | Ayuda a demanda, y pista automática tras tres intentos fallidos | 0.9 s | no | RF-13, CP-06, CP-02 |
 | `sfx_algoritm_cierre` | Frase completa de cinco notas ascendentes, la única vez que su motivo se resuelve hacia arriba | Cierre reflexivo al completar un nivel | 2.0 s | no | RF-12, CP-07 |
-| `sfx_algoritm_barrido_tr05` | Transformación fuego → rueda: la campanilla se ensancha y aterriza en madera | Transición `TR-05`, del Nivel 1 al 2 | 1.8 s | no | INC-45, `Interfaces.md` §1 |
-| `sfx_algoritm_barrido_tr09` | Transformación rueda → gota: la madera se moja y se cierra en agua | Transición `TR-09`, del Nivel 2 al 3 | 1.8 s | no | INC-45, `Interfaces.md` §1 |
+| `sfx_algoritm_barrido_tr05` | Transformación fuego → rueda: la campanilla se ensancha y aterriza en madera | Transición `TR-05`, del Nivel 1 al 2 | 1.8 s | no | INC-45, `Direccion_de_Arte.md` §7.6; sin disparador: el barrido no existe en el juego |
+| `sfx_algoritm_barrido_tr09` | Transformación rueda → gota: la madera se moja y se cierra en agua | Transición `TR-09`, del Nivel 2 al 3 | 1.8 s | no | INC-45, `Direccion_de_Arte.md` §7.6; sin disparador: el barrido no existe en el juego |
 | `sfx_voz_blip` | **Blip único global para todo el diálogo.** Nota corta y sorda, sin altura reconocible, que suena mientras se escribe el texto —una vez cada dos o tres caracteres, no en cada uno— y calla en espacios y signos de puntuación. El mismo para los cinco hablantes | Escritura de texto en cualquier globo de diálogo | 0.06 s | no | RF-05, RNF-18 |
 
 > **Por qué un solo blip y no locución.** RNF-18 exige que los diálogos vivan en archivos de
@@ -359,12 +361,12 @@ la chispa: muere en el aire, muere en la piedra, vive un instante, vive más, hu
 
 | id | Descripción sonora | Disparador | Dur. | Loop | Traza |
 |---|---|---|---|---|---|
-| `sfx_n1_deslizante_muesca` | Piedra que encaja en una muesca. Tres muescas, mismo sonido | Cambio de posición en el control deslizante | 0.15 s | no | RF-15, guion §4.3.1 |
+| `sfx_n1_deslizante_muesca` | Piedra que encaja en una muesca. Diez muescas por deslizante, mismo sonido | Cambio de muesca en el deslizante de fuerza o en el de cercanía | 0.15 s | no | RF-15, guion §1.4.3.1 |
 | `sfx_n1_golpe_a` | Sílex contra pedernal: choque seco, brillante, con cola de polvo | Acción «Golpear», variación 1 | 0.35 s | no | RF-16 |
 | `sfx_n1_golpe_b` | La misma acción, ángulo distinto: más grave, menos brillo | Acción «Golpear», variación 2 | 0.35 s | no | RF-16 |
 | `sfx_n1_golpe_c` | Tercera variación, con raspado antes del choque | Acción «Golpear», variación 3 | 0.40 s | no | RF-16 |
-| `sfx_n1_chispa_aire` | Siseo agudo que se extingue **arriba**, sin llegar a nada | Golpe desde «Lejos» | 0.5 s | no | RF-16, RF-17, guion §4.3.3 |
-| `sfx_n1_chispa_piedra` | La chispa cae y se apaga contra superficie fría: un `tic` sordo, sin resonancia | Golpe desde «Cerca» | 0.6 s | no | RF-16, RF-17, guion §4.3.3 |
+| `sfx_n1_chispa_aire` | Siseo agudo que se extingue **arriba**, sin llegar a nada | Golpe con demasiada fuerza: las chispas saltan lejos de las hojas y se apagan en el aire | 0.5 s | no | RF-16, RF-17, guion §1.4.3.3 |
+| `sfx_n1_chispa_piedra` | La chispa cae y se apaga contra superficie fría: un `tic` sordo, sin resonancia | Sin disparador en la mecánica vigente: ningún golpe deja caer la chispa fuera de las hojas (con las piedras separadas o encimadas no sale chispa). Queda retirada salvo que el carril de sonido la reasigne | 0.6 s | no | RF-16, RF-17, guion §1.4.3.3 |
 | `sfx_n1_chispa_dentro_1` | Cae dentro de las hojas: chisporroteo de medio segundo que se apaga solo | Primer golpe efectivo | 0.9 s | no | RF-16, guion §4.3.3 |
 | `sfx_n1_chispa_dentro_2` | El mismo chisporroteo, más largo y con más cuerpo | Segundo golpe efectivo | 1.2 s | no | RF-16, guion §4.3.3 |
 | `sfx_n1_chispa_dentro_3` | No se apaga: al final aparece el siseo suave del humo subiendo | Golpe efectivo final | 1.6 s | no | RF-16, RF-19, guion §4.3.3 |
@@ -433,7 +435,7 @@ juego completo.
 | `sfx_n3_paso` | Paso descalzo sobre tierra húmeda y hierba. Se reproduce con el desplazamiento, espaciado y bajo: suena muchas veces y no puede molestar | Movimiento del personaje | 0.25 s | no | RF-35 |
 | `sfx_n3_boton_direccion` | Toque muy corto y neutro al accionar un botón de dirección. Es interfaz, no pisada | Clic en un botón de dirección | 0.10 s | no | RF-35, CT-06, INC-01 |
 | `sfx_n3_recoger` | El material entra al inventario: roce de fibra y un asentamiento corto | Acción «Recoger» sobre un objeto próximo | 0.5 s | no | RF-37 |
-| `sfx_n3_inventario_completo` | Cuerda del marco que se tensa. Los cuatro objetos son exactamente los necesarios: informa, no advierte | Cuarto objeto incorporado al inventario | 0.6 s | no | RF-38 |
+| `sfx_n3_inventario_completo` | Cuerda del marco que se tensa. Los ocho objetos de las cuatro casillas son exactamente los necesarios: informa, no advierte | Último material incorporado al inventario, con las cuatro casillas completas | 0.6 s | no | RF-38 |
 | `sfx_n3_zona_construccion` | Cambio de espacio: el río se acerca un paso y la madera apilada se asienta | Entrada del personaje en la zona de construcción | 0.9 s | no | RF-39 |
 | `sfx_n3_material_falta` | Nota corta y neutra que acompaña al mensaje de qué material falta. **No es negación**: la zona no rechaza, informa | Entrada en la zona sin los materiales requeridos | 0.4 s | no | RF-39, CP-02, §2.1 |
 | `sfx_n3_pieza_encaja` | Tronco que se acomoda en su espacio, con el agua debajo | Colocación correcta de una pieza en el panel | 0.5 s | no | RF-40 |
@@ -539,12 +541,10 @@ Consecuencias vigentes para el audio:
    satisface el criterio, pero **no exime del registro en créditos**: el reconocimiento es de
    autoría, y la autoría existe igual.
 
-> **Hallazgo documental.** La letra de **RNF-23 dice «recursos gráficos»**, no sonoros;
-> quien verifique el requisito contra su redacción literal podría concluir que el audio
-> queda fuera. `SPEC.md` ya cerró la laguna extendiéndolo a lo sonoro, y este documento se
-> apoya en esa extensión. Conviene registrarlo en `INCONSISTENCIAS.md` y corregir la
-> redacción de OE1 a «recursos gráficos y sonoros» — es una corrección de alcance de un
-> requerimiento ya radicado, de las de **preguntar primero**.
+> **Hallazgo documental — cerrado (29/09/2026).** La letra de RNF-23 y de CT-09 decía
+> «recursos gráficos», no sonoros. Por decisión de Santiago, OE1 dice ahora «recursos
+> gráficos y sonoros» en los dos, con entrada en su control de cambios (§6), y el cierre
+> quedó registrado en `INCONSISTENCIAS.md`.
 
 ---
 
@@ -555,10 +555,10 @@ Igual que §18 del arte: se dejan escritas, no se toman por cuenta propia.
 | ID | Situación | Acción requerida | Estado |
 |---|---|---|---|
 | `PS-01` | **No existe control de volumen en ninguna pantalla.** RF-01 da una pantalla de inicio sin menú de opciones —`Interfaces.md` §1.1 lo confirma— y RF-07 da una pausa con exactamente tres opciones. Añadir un deslizante sería interfaz que ningún RF pide, y `SPEC.md` clasifica eso como «preguntar primero». Este documento fija por tanto una mezcla correcta por omisión (§3.1) | Decidir si se añade control de volumen —lo que exige tocar RF-01 o RF-07— o si la mezcla fija es la respuesta definitiva. En un aula, el volumen del sistema operativo suele bastar | Abierto |
-| `PS-02` | El tema del menú y el de créditos son el mismo motivo, y ese motivo es la identidad sonora del producto. Pero el producto **no tiene título** (`PG-01`, abierto en el guion §12) | Definir el título antes de producir `mus_menu_loop`, o producirlo asumiendo que el motivo no cambiará al nombrarlo | Abierto |
+| `PS-02` | El tema del menú y el de créditos son el mismo motivo, y ese motivo es la identidad sonora del producto. El producto se titula **«Algoritmia»** (`PG-01`, cerrado en el guion §1.2) | Producir `mus_menu_loop` con el título ya fijado | Cerrado (29/09/2026): el título ya no bloquea la pieza; producirla sigue pendiente |
 | `PS-03` | Las duraciones de bucle de §7 (45–60 s) son propuestas, no valores medidos. Un bucle de 90 s pesa el triple que uno de 30 s | Ajustar tras la primera medición del paquete de `unity build`, siguiendo el orden de recorte de §15 | Abierto |
-| `PS-04` | La fuente de producción no está elegida. Generación propia satisface CT-09/RNF-23 como asset propio; una biblioteca externa exige autorización escrita y línea en créditos | Elegir y dejar escrito **antes** de producir la primera pieza, no después | Abierto |
-| `PS-05` | RNF-23 dice «recursos gráficos» y no menciona los sonoros (ver §17) | Registrar el hallazgo en `INCONSISTENCIAS.md` y corregir la redacción de OE1. Modificar un RNF radicado es de las de «preguntar primero» | Abierto |
+| `PS-04` | La fuente de producción no está elegida. Generación propia satisface CT-09/RNF-23 como asset propio; una biblioteca externa exige autorización escrita y línea en créditos | Elegir y dejar escrito **antes** de producir la primera pieza, no después | Cerrado (30/09/2026): generación propia del proyecto, acreditada en la fila «Música y sonido» de `CreditsContent.asset` (INC-78) |
+| `PS-05` | RNF-23 dice «recursos gráficos» y no menciona los sonoros (ver §17) | OE1 corrige CT-09 y RNF-23 a «recursos gráficos y sonoros» | Cerrado (29/09/2026) |
 
 ---
 

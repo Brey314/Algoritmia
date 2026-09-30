@@ -564,6 +564,10 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       lugar de armado. **El botón «Mecanizar» se queda** — RF-28 y el guion §6.2.2 paso 2 lo
       nombran y son entregables radicados, así que el gesto se **añade**, no sustituye.
       EditMode: `AssemblySequence_RF28_ElMazoSobreElTroncoResaltadoMecanizaIgualQueElBoton` — 7/7.
+      *(Nota del 30/09/2026: el mazo soltado lejos del tronco resaltado se sigue devolviendo con el
+      mensaje de «cayó lejos», pero ya no cuenta como intento, igual que las demás piezas soltadas
+      lejos — decisión de Santiago, INC-115; lo cambia `WorkshopSceneController.Drill` y lo vigila
+      `WorkshopScene_RF29_SoltarElMazoLejosNoCuentaComoIntento`.)*
 - [x] **W09 · Escena `Level2_Workshop` y cableado del ensamblaje** — `M` · `PM` `MCP` (12/09/2026, ampliada el 14/09/2026)
       RF-27, RF-28, RF-29, RF-04, RF-10, RNF-02, RNF-03, RNF-19, CT-06, HU-09, CU-07,
       INC-41 · depende de: W08
@@ -1007,10 +1011,11 @@ decorado la lleva (`Direccion_de_Arte.md` §8.2).
       que registra `TestRunnerApi.RegisterCallbacks` tras cada recarga de dominio y escribe el
       resultado en un archivo; se lanza con `coplay-mcp` `execute_script` y se sondea el archivo
       desde la terminal. Sirve para EditMode y PlayMode con el Editor abierto; se borró al terminar.
-- [~] **Pregunta abierta 1 · `Pasos utilizados` de la fase 1** sin definir en OE1 §3.6.1.
+- [x] **Pregunta abierta 1 · `Pasos utilizados` de la fase 1** sin definir en OE1 §3.6.1.
       Es un entregable radicado: **no se decide desde el código**. W15 lo emite como **0 («no
       aplica»)** y lo deja escrito en `WheelIndicatorCollector` y en su prueba
-      (`_RF45_PasosUtilizadosSigueLaDefinicionDeCadaFase`). Sigue pendiente la definición en OE1.
+      (`_RF45_PasosUtilizadosSigueLaDefinicionDeCadaFase`). Cerrada el 29/09/2026: OE1 §3.6.1 la
+      define como cero.
 - [ ] **Pregunta abierta 3 · Trazado del laberinto.** Validar `N2_MazeLayout.asset` jugando: al
       menos una solución que **exija girar**, ninguna que se resuelva con «Avanzar» repetido.
 - [ ] **Pregunta abierta 4 · ¿Se adelantan W10..W12?** Recomendación: sí, para descargar INC-33.

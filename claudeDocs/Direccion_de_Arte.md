@@ -235,9 +235,13 @@ personaje al desplazarse y al cambiar de dirección, lo que rompe la ilusión.
 Se resuelve con un sprite independiente: elipse de color plano `#000000` a 25 % de
 opacidad, hijo del GameObject del personaje, con su posición vertical anclada al suelo.
 
-No hay escalado por altura de salto: **en este juego no se salta**. El único personaje
-que se desplaza es Mamá en el Nivel 3, en vista superior y accionada con botones en
-pantalla (RF-35, CT-06, RNF-02), donde la elipse mantiene escala constante.
+No hay escalado por altura de salto: **en este juego no se salta**. En las mecánicas, el único personaje
+que se desplaza es Mamá en el Nivel 3, sobre un plano fijo de la orilla con perspectiva por
+profundidad y accionada con botones en pantalla (RF-35, CT-06, RNF-02): cuanto más abajo está,
+más grande se ve (`N3_RiverLevelConfig`: `DepthScaleNear` 1, `DepthScaleFar` 0,55), y todo lo
+que cuelga de ella escala con ella. En las narrativas los personajes sí caminan de una casilla a
+otra (`NarrativeSceneController.WalkAsync`), y la sombra, hija del lienzo del rig, viaja con
+ellos anclada a los pies.
 
 ### 5.4 Iluminación ambiental por nivel
 
@@ -308,22 +312,23 @@ como personaje jugable sin reajustar cámara ni colisionadores.
 La cabeza grande es lo que produce la lectura infantil y amable. Reducirla endurece
 al personaje de inmediato.
 
-### 7.3 Set de expresiones
+### 7.3 Expresión y emoción
 
-Cada personaje necesita seis expresiones faciales para el prototipo. Se generan como
-variaciones del sprite base manteniendo idénticos el cráneo, el peinado y el color.
+Cada personaje tiene **una sola cara, la neutra**, la del torso del rig y la del retrato del
+cuadro de diálogo (`char_<x>_retrato_neutra.png`): cejas separadas y algo curvas, ojos
+abiertos y redondos con brillo, sonrisa cerrada suave sin dientes. No se generan variantes
+faciales. La emoción la lleva el cuerpo, con un clip del rig por acción (§13.3, `ActorAction`):
 
-| Expresión | Cejas | Ojos | Boca | Uso en juego |
-| --- | --- | --- | --- | --- |
-| Neutra | Rectas, separadas | Abiertos, redondos | Sonrisa cerrada suave | Estado de reposo |
-| Alegre | Arqueadas hacia arriba | Entrecerrados en arco | Sonrisa abierta amplia | Reto resuelto |
-| Sorpresa | Muy elevadas | Muy abiertos, pupila pequeña | Óvalo abierto | Descubrimiento, evento narrativo |
-| Concentración | Ligeramente juntas | Entrecerrados horizontales | Línea recta corta | Durante un reto |
-| Duda | Una elevada, otra baja | Uno más cerrado | Línea ondulada corta | Pista disponible |
-| Ánimo | Arqueadas | Abiertos con brillo grande | Sonrisa abierta pequeña | Tras un intento fallido |
+| Emoción | Acción del rig | Uso en juego |
+| --- | --- | --- |
+| Reposo | `Idle` | Estado de reposo |
+| Alegría | `Celebrate` | Reto resuelto, cierre de fase |
+| Sorpresa | `Surprise` | Descubrimiento, evento narrativo |
+| Atención | `Observe` | Al empezar un reto, al mirar algo |
+| Ánimo | `Encourage` | Tras un intento fallido |
 
-**Regla sobre la tristeza y el enfado:** no existen en el set. Un intento fallido nunca
-produce una expresión negativa en los personajes; produce la expresión de ánimo. Esta
+**Regla sobre la tristeza y el enfado:** no existen, ni en la cara ni en el cuerpo. Un
+intento fallido nunca produce un gesto negativo en los personajes; produce el de ánimo. Esta
 decisión conecta con el principio de ensayo y error en entorno seguro que sostiene el
 enfoque de Aprendizaje Basado en Juegos del proyecto.
 
@@ -342,20 +347,21 @@ enfoque de Aprendizaje Basado en Juegos del proyecto.
 Todos los sprites base se generan en A-pose: brazos extendidos hacia los lados y hacia
 abajo, axilas abiertas, fondo visible entre cada brazo y el torso. Es una pose de
 producción, no de presentación: se ve rígida a propósito, porque es el frame del que
-derivan todas las animaciones y porque permite recortar las extremidades para el
-rigging sin tener que inventar dónde terminan.
+derivan todas las animaciones y porque permite recortar las extremidades en las partes
+de la animación por recorte (§13.1) sin tener que inventar dónde terminan.
 
 Las poses expresivas para el documento de trabajo de grado y las capturas de
 sustentación se generan aparte, usando el sprite base aprobado como referencia.
 
 ---
 
-### 7.6 Algoritm — una forma por nivel
+### 7.6 Algoritm — un cuerpo, tres materiales
 
-El guía se llama **Algoritm** (`PG-02` cerrado el 02/09/2026, INC-44) y **cambia de forma
-en cada nivel**: fuego, rueda y agua, en ese orden (INC-45). Es el mismo personaje en los
-tres —lo exige CN-03—, y lo que garantiza que se reconozca no es el contorno de su cuerpo
-sino el núcleo de identidad que sigue abajo.
+El guía se llama **Algoritm** (`PG-02` cerrado el 02/09/2026, INC-44) y **cambia de material
+en cada nivel**: fuego, madera y agua, en ese orden (INC-45). Es el mismo personaje en los
+tres —lo exige CN-03— y conserva en los tres **el mismo cuerpo**: una llama con cara, brazos y
+piernas de palo, manos y una franja de colores en la base (INC-52). Entre niveles cambia solo
+el color de la llama; la cara, las extremidades y la franja no cambian.
 
 El guion ya lo empujaba: en §4.4 el guía aparece «en el corazón de las llamas […] hecho de
 fuego esta vez». Su cuerpo es el material del descubrimiento que el nivel acaba de nombrar.
@@ -366,30 +372,42 @@ Si uno solo de estos rasgos cambia, deja de leerse como el mismo personaje:
 
 | Rasgo | Especificación |
 | --- | --- |
-| Tamaño | El de una palma de mano adulta; anchura total de poco más de una cabeza humana |
-| Ojos | Dos óvalos negros grandes, muy separados, en el tercio superior, cada uno con un punto de luz blanco en su esquina superior izquierda |
+| Cuerpo | Una llama de tres lenguas —la central, más alta— que se ensancha hacia abajo y apoya en una base redondeada. Es el mismo cuerpo en los tres niveles; lo que cambia es el material (tabla siguiente) |
+| Tamaño | Pequeño frente a la familia. En las narrativas su `NarrativeProp.Size` está entre un tercio y dos quintos del de Papá y Mamá (0,12 frente a 0,313 y 0,34 en `N1_AparicionGuia`), y es menor cuando aparece en la fogata (0,07 en `N1_NacimientoDelFuego`) |
+| Ojos | Dos ojos redondos grandes a media altura de la llama, blanco crema con iris café oscuro y un punto de luz blanco en cada uno |
 | Boca | Una sola línea curva hacia arriba, sonrisa cerrada. Sin nariz, sin cejas |
-| Extremidades | **Ninguna.** Sin brazos, sin piernas, sin manos, sin accesorios |
-| Núcleo interior | Área clara que repite la forma del cuerpo en pequeño, a borde duro, sin degradado |
-| Contorno | 8 px en `#E2571F`. **Cálido en los tres niveles**, aunque el cuerpo sea de madera o de agua: es la firma de que emite luz propia y su rastro de origen |
+| Extremidades | Brazos y piernas de palo, finos y del color del contorno, que salen de la base; manos abiertas color piel; cada pie es un trazo corto horizontal. Sin accesorios |
+| Franja | Cinco bandas horizontales en la base —naranja, verde, amarilla, azul y roja—, **iguales en los tres niveles**: el material de madera o de agua no las cambia |
+| Núcleo interior | Área más clara dentro de la llama que repite su silueta en pequeño y enmarca la cara |
+| Contorno | Café oscuro (`#3B1205`, muestreado del archivo), el mismo en el cuerpo y en las extremidades |
 | Estela | Cinco a siete puntos sueltos `#FFE9A8`, circulares, de tamaño decreciente, en curva. Nunca una nube difuminada |
-| Cuenta de cinco | La silueta siempre se cuenta hasta cinco: cinco puntas, cinco radios, cinco lóbulos |
 
 #### Las tres formas
 
-| Nivel | Forma | Cuerpo | Núcleo | Detalle |
-| --- | --- | --- | --- | --- |
-| 1 · La Oscuridad | **Estrella de cinco puntas**, todas de extremo redondeado, la superior en vertical | `#F5A62E` | `#FFE9A8` | La forma de origen. Es la que aparece en la fogata y se queda como brasa viva |
-| 2 · La Rueda | **Rueda**: disco de canto redondeado con cinco radios romos y un buje central | `#C79A5E` con radios y buje `#A67C4A` | `#FFE9A8` en el buje | El disco gira sobre su eje al flotar, en vez de inclinarse |
-| 3 · El Río | **Gota**: cuerpo redondeado de cinco lóbulos suaves, como una gota vista de frente | `#5AA8BF` | `#D6F0F5` | Su estela son gotas pequeñas, no puntos de luz |
+| Nivel | Material | Prefab · archivo | Cuerpo | Núcleo | Estado |
+| --- | --- | --- | --- | --- | --- |
+| 1 · La Oscuridad | **Fuego** | `Algoritm_Fuego` · `char_algoritm_n1_fuego_reposo.png` | Llama naranja `#FFA51E` | `#FFE093` | Arte entregado el 24/09/2026. Es la forma de origen: la que aparece en la fogata y se recoge en ella como brasa viva |
+| 2 · La Rueda | **Madera** | `Algoritm_Rueda` · `char_algoritm_n2_rueda_reposo.png` | La misma llama en tono de madera `#DBA362` | `#DBC0A1` | **Provisional.** El prefab y el archivo se llaman «rueda», pero no tiene disco, radios ni buje |
+| 3 · El Río | **Agua** | `Algoritm_Gota` · `char_algoritm_n3_gota_reposo.png` | La misma llama en tono de agua `#50C5EA` | `#A0D8EA` | **Provisional.** El prefab y el archivo se llaman «gota», pero no tiene forma de gota |
 
-**Cuándo muta.** En las dos transiciones entre niveles, que ya son suyas: el barrido de
-Algoritm de `TR-05` y `TR-09`. Entra con la forma del nivel que termina y sale con la del
-que empieza. En ningún otro momento cambia de cuerpo, y **nunca a la vista dentro de una
-escena jugable**.
+**Madera y agua son provisionales.** Salen del arte del Nivel 1 recoloreado por encima de la
+franja (`claudeDocs/tasks/Personajes/herramientas/forms.py`), para que cada nivel muestre un
+guía distinto sin arte nuevo. El definitivo entra **sustituyendo el archivo con el mismo
+nombre**, sin tocar escenas, prefabs ni assets. Mientras no llegue, esta tabla describe lo que
+el juego muestra; si el arte definitivo cambia la silueta, esta tabla, §7.6 y el guion §1.1.1
+se corrigen con él.
 
-**El riesgo del nivel 2, y cómo se contiene.** El cuerpo de la rueda usa `#C79A5E`, que es
-el acento del nivel y por tanto la señal de «esto es interactivo». La regla de §4.2 prohíbe
+**Cuándo muta.** En los dos puentes, al pasar de una secuencia narrativa a la siguiente,
+que es donde el juego funde a negro (`GameFlowRunner.FadesBetween`): en `N2_PuenteI` es de
+fuego y en `N2_PuenteI_Bosque` ya es de madera; en `N3_PuenteII` y `N3_PuenteII_Horizonte`
+es de madera y en `N3_PuenteII_Rio` ya es de agua. Entra con el material del nivel que
+termina y sale con el del que empieza. En ningún otro momento cambia, y **nunca a la vista
+dentro de una escena jugable**: en las cinco mecánicas aparece solo dentro del botón de
+ayuda, con el material de su nivel. El barrido de Algoritm de `TR-05` y `TR-09` todavía no
+existe en el juego (`fx_algoritm_barrido`, pendiente en `Assets/Game/Art/Inventario.md`).
+
+**El riesgo del nivel 2, y cómo se contiene.** El cuerpo de madera (`#DBA362`) queda muy
+cerca de `#C79A5E`, el acento del nivel y por tanto la señal de «esto es interactivo». La regla de §4.2 prohíbe
 ese tono en el **decorado**, y el guía no es decorado, así que no la infringe — pero sí
 puede confundir. Tres condiciones lo separan de un prop, y son obligatorias:
 
@@ -401,10 +419,14 @@ puede confundir. Tres condiciones lo separan de un prop, y son obligatorias:
 #### Nomenclatura
 
 ```
-char_algoritm_n1_estrella.png
-char_algoritm_n2_rueda.png
-char_algoritm_n3_gota.png
+char_algoritm_n1_fuego_reposo.png
+char_algoritm_n2_rueda_reposo.png
+char_algoritm_n3_gota_reposo.png
 ```
+
+Una sola imagen por forma, sin recorte en partes: los prefabs `Algoritm_Fuego`,
+`Algoritm_Rueda` y `Algoritm_Gota` animan el cuerpo entero con `char_algoritm.controller`, así
+que sustituir el archivo basta. «Rueda» y «gota» nombran el nivel, no la silueta.
 
 Sustituyen a `char_chispa_*`. La palabra `chispa` queda libre para lo que siempre fue en
 este juego: el destello del Nivel 1 (`fx_n1_chispa_*`), que no tiene nada que ver con el
@@ -416,8 +438,9 @@ guía y **no se renombra**.
 
 Los tres niveles comparten sistema de línea, sombreado y proporción, y se diferencian
 por acorde cromático, ambiente lumínico y vocabulario de formas. La progresión está
-diseñada para leerse como un amanecer largo: de la noche del nivel 1 al mediodía del
-nivel 2 y a la mañana húmeda del nivel 3.
+diseñada para leerse como un amanecer largo: de la noche del nivel 1 al día luminoso del
+nivel 2 —que la luz del motor recorre del amanecer a la noche (§8.2)— y a la mañana húmeda
+del nivel 3.
 
 ---
 
@@ -504,7 +527,13 @@ planos `#2E4258` con un reflejo de línea recta `#4A6B8C`.
 ### 8.2 Nivel 2 — La Rueda
 
 **Descubrimiento:** la rueda
-**Momento del día:** mediodía despejado
+**Momento del día:** el día entero, del amanecer a la noche. Las ilustraciones se pintan con
+luz de día despejado y sin tinte, que es la de la tarde (recolección y construcción); el
+amanecer (puente I), el atardecer (escena 2.4 y laberinto) y la noche junto al fuego (escena
+2.5 y arranque del puente II) los pone el motor encima —`NarrativeLight` en las narrativas,
+`MazeLayout.LightTint` en el laberinto—, no el dibujo. Lo vigilan
+`NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche` y
+`MazeScene_RF30_ElLaberintoEsAlAtardecer`.
 **Sensación buscada:** claridad y espacio para observar, comparar y construir. Es el
 nivel más luminoso de los tres.
 
@@ -652,7 +681,10 @@ independientes con su propio contorno cerrado. Razones:
 2. Evita redibujar el prop en cada frame de animación.
 3. El mismo asset sirve como icono de interfaz sin trabajo adicional.
 
-En Unity se montan como hijo del hueso de la mano.
+En Unity cada prop es un objeto propio sobre la ilustración —un `NarrativeProp` en la
+escena narrativa, una `Image` en las mecánicas— y no un hijo de la mano del personaje: la
+animación por recorte (§13.1) no tiene huesos, y ningún prop se monta sobre una parte del
+cuerpo.
 
 ### 9.2 Tratamiento visual de lo interactivo
 
@@ -672,19 +704,19 @@ hay desplazamiento libre en los niveles 1 y 2 y el del 3 es por casillas con bot
 
 | Nivel | Prop | Función | Color dominante |
 | --- | --- | --- | --- |
-| 1 | Montón de hojas secas (4 estados) | Objetivo del reto: intacto, chispas apagadas, humeante, encendido | `#B08541` |
+| 1 | Montón de hojas secas (3 estados) | Objetivo del reto: intacto, humeante al converger y encendido al soplar (la llama cenital encima y las hojas quemándose desde el centro) | `#B08541` |
 | 1 | Sílex | Pieza del panel, silueta angulosa | `#9BA0A8` |
 | 1 | Pedernal | Pieza del panel, silueta redondeada | `#8B5A3C` |
 | 1 | Hoguera | Resolución del nivel, única fuente de luz cálida | `#F5A62E` / `#E2571F` / `#FFE9A8` |
 | 2 | Objetos del bosque (válidos y distractores) | Selección por patrón, fase 1 (RF-22..RF-26) | Verde vivo solo en los válidos |
 | 2 | Caja de alimentos (3 estados) | Meta narrativa de la fase 1 | `#C4743E` |
-| 2 | Seis piezas del taller | Ensamblaje secuencial, fase 2 (RF-27..RF-29) | `#8B5A3C` + acento verde |
+| 2 | Siete piezas del taller (la séptima, la cuerda) | Ensamblaje secuencial, fase 2 (RF-27..RF-29) | `#8B5A3C` + acento verde |
 | 2 | Rueda y carretilla (5 estados) | Resultado del ensamblaje | `#A89880` + `#5FA842` |
 | 2 | Carretilla cenital (4 orientaciones) | Ejecución de la secuencia, fase 3 (RF-30..RF-33) | `#5FA842` |
 | 2 | Bloques de instrucción y botón «Ejecutar» | Editor de secuencia, fase 3 (RF-31, RF-32) | `#5FA842` sobre marfil |
 | 3 | Troncos y sogas | Materiales recolectables por casilla (RF-36..RF-39) | `#E8A33D` |
 | 3 | Mástil y vela | Materiales de la tercera fase de ensamblaje (RF-40) | `#E8A33D` / `#F2C46B` |
-| 3 | Balsa (3 estados de avance) | Construcción por fases: base, amarre, mástil y vela | `#8B5A3C` + `#E8A33D` |
+| 3 | Balsa compuesta: 17 espacios (cinco troncos, diez amarres, mástil y vela) que se pintan uno a uno, silueta hasta llenarse y pieza después, con 8 sprites —una pieza y una silueta por clase—; más la balsa hundida y la balsa cruzando de las narrativas | Construcción por fases: base, amarre, mástil y vela | `#8B5A3C` + `#E8A33D` |
 | 3 | Botones de dirección y «Recoger» | **Interfaz**, no props: la entrada del nivel (RF-35, CT-06) | `#E8A33D` sobre marfil |
 
 **Ningún prop se dibuja en la mano de un personaje** (§9.1), y ninguno usa el color de
@@ -702,18 +734,21 @@ piedras redondeadas, los marcos son cuerdas trenzadas. Esto reduce la ruptura en
 mundo e interfaz y refuerza la ambientación sin coste narrativo.
 
 **Mínima permanencia.** En pantalla solo permanece lo indispensable: el botón de pausa
-(RF-07) y, **solo en el Nivel 3**, la lista de cuatro tareas (RF-36). Los niveles 1 y 2
-**no llevan lista ni indicador permanente de progreso**: RNF-03 restringe la tarea
-**activa** a una, y añadir un marcador que no pide ningún RF sería una mecánica nueva
-(INC-41). Todo lo demás aparece por contexto y desaparece.
+(RF-07), el de pista y la tablilla de mensajes del guía; en el bosque del Nivel 2, el
+contador de acopio, que RF-24 pide permanente, y **solo en el Nivel 3**, la lista de cuatro
+tareas (RF-36) y el inventario. Los niveles 1 y 2 **no llevan lista de tareas ni barra de
+progreso**: RNF-03 restringe la tarea **activa** a una, y añadir un marcador que no pide
+ningún RF sería una mecánica nueva (INC-41). Todo lo demás aparece por contexto y desaparece.
 
 **Sin cifras a la vista del estudiante.** Ni intentos, ni pasos, ni tiempo, ni puntaje,
 en ninguna pantalla del juego ni en el resumen de fin de nivel (CP-03, RF-17, RF-45).
 Los números existen solo en el informe docente (RF-46).
 
-**Área táctil generosa.** Ningún elemento interactivo mide menos de 88×88 px a
+**Área táctil generosa.** Ningún botón de acción mide menos de 88×88 px a
 resolución de diseño. La motricidad fina de un niño de nueve años no es la de un
-adulto.
+adulto. Las excepciones son los botones de avance del cuadro de diálogo, de 76 px de
+alto, y los controles finos del editor de bloques del laberinto (cuenta, giro y
+desplazamiento de la lista, de 52 a 82 px).
 
 ### 10.2 Componentes
 
@@ -722,9 +757,9 @@ adulto.
 | Panel de diálogo | Tablilla de piedra clara | `#F7EFE2` con borde `#C4A882` | Esquinas muy redondeadas (32 px) |
 | Botón primario | Piedra redondeada | `#E8A33D`, borde `#3A1E18` | Sombra plana inferior de 6 px |
 | Botón secundario | Piedra clara | `#E0D4C0`, borde `#6B5248` | |
-| Lista de tareas (**solo Nivel 3**) | Cuerda con nudos | Cuerda `#C4A882`, nudo cerrado `#5FA842` | Un nudo por tarea de RF-36. Tarea cumplida = nudo cerrado **más** marca de forma, nunca solo color (RNF-19). Sin cifras |
+| Lista de tareas (**solo Nivel 3**) | Tablilla de piedra clara | `#F7EFE2` sin borde; pendiente carbón suave `#6B5247`, cumplida verde `#336638` | Esquina superior izquierda, una fila por tarea de RF-36 con un círculo delante del texto. Tarea pendiente = círculo liso; tarea cumplida = círculo verde con marca de verificación, y el texto pasa al mismo verde: cambia la forma **más** el color, nunca solo el color (RNF-19). Sin cifras. Es el único componente que renuncia a la vía diegética de §10.1 (INC-46): el Nivel 3 es el escenario más claro, y una tablilla de marfil se lee sobre el follaje mejor que una cuerda suelta (RNF-20) |
 | Icono de pista | Algoritm en pequeño | `#E8A33D` | Pulso lento de escala cuando hay pista disponible. Es el guía quien ofrece la pista (CP-06), así que el icono es él |
-| Marco de inventario | Cuerda trenzada | `#C4A882` | Casillas circulares |
+| Marco de inventario | Panel liso color arena | `#C7A87C` | Casillas cuadradas `#E0D4C0` en rejilla de 2×2, abajo a la izquierda; la de los troncos lleva cinco marcas que se encienden sin cifra (CP-03) |
 
 ### 10.3 Globos de diálogo
 
@@ -752,9 +787,10 @@ uso en un trabajo académico sin restricciones.
 | --- | --- | --- | --- |
 | Títulos y encabezados | **Baloo 2** | SIL OFL 1.1 | Peso alto, formas redondeadas, carácter lúdico sin perder legibilidad |
 | Diálogo y cuerpo | **Nunito** | SIL OFL 1.1 | Terminaciones redondeadas, excelente altura de x, muy legible a tamaño pequeño |
-| Números e indicadores | **Fredoka** | SIL OFL 1.1 | Cifras muy diferenciadas, ideal para contadores y pasos |
+Los números e indicadores no llevan familia propia: el contador del bosque va en Baloo 2
+Bold, y las cifras del informe docente, en Nunito.
 
-Las tres soportan caracteres del español (tildes, `ñ`, signos de apertura `¿` `¡`),
+Las dos soportan caracteres del español (tildes, `ñ`, signos de apertura `¿` `¡`),
 requisito no negociable.
 
 ### 11.3 Escala tipográfica
@@ -763,14 +799,16 @@ Definida a resolución de diseño 1920×1080.
 
 | Nivel | Tamaño | Familia | Peso | Interlineado |
 | --- | --- | --- | --- | --- |
-| Título de nivel | 72 px | Baloo 2 | 700 | 1.1 |
+| Título de pantalla | 64 px (el título del juego en la portada, 96 px en Baloo 2 ExtraBold) | Baloo 2 | 700 | 1.15 |
 | Subtítulo | 48 px | Baloo 2 | 600 | 1.2 |
-| Diálogo | 34 px | Nunito | 600 | 1.5 |
-| Instrucción de reto | 30 px | Nunito | 700 | 1.4 |
+| Diálogo | 26 px (nombre del hablante en Baloo 2 Bold a 22 px) | Nunito | 400 | 1.35 |
+| Tablilla del guía en las mecánicas (instrucción, mensajes y pista) | 26 px en el taller y el laberinto, 28 px en el río, 34 px en el bosque; 24 px en el Nivel 1 | Baloo 2 (Nunito en el Nivel 1) | 700 (400 en el Nivel 1) | 1.0 |
 | Texto secundario | 26 px | Nunito | 400 | 1.5 |
-| Contadores | 40 px | Fredoka | 600 | 1.0 |
+| Contadores | 30 px | Baloo 2 | 700 | 1.0 |
 
-**Mínimo absoluto: 26 px.** Ningún texto del juego baja de ese tamaño.
+**Mínimo: 26 px para el texto que lee el estudiante.** Solo bajan de ese tamaño los rótulos
+secundarios —nombre del hablante, rótulo «Algoritm» del resumen, etiqueta del laberinto, «Aún no»
+del taller, a 22 px— y la instrucción del Nivel 1 (24 px).
 
 ### 11.4 Reglas de composición
 
@@ -788,7 +826,9 @@ Definida a resolución de diseño 1920×1080.
 ### 12.1 Principios
 
 Todos los efectos se resuelven con sprites de color plano y animación por fotogramas.
-No se usan sistemas de partículas complejos, shaders personalizados ni posprocesado:
+No se usan sistemas de partículas complejos ni posprocesado, y los únicos shaders propios son dos
+de color plano —`fx_oscuridad`, la capa que oscurece e ilumina (Nivel 1 y `NarrativeLight`), y
+`fx_contraste`, el contraste del laberinto (`MazeLayout.Contrast`)—:
 la restricción de bajo consumo de recursos declarada en el alcance del proyecto lo
 impide, y el estilo plano no los necesita.
 
@@ -801,7 +841,7 @@ impide, y el estilo plano no los necesita.
 | Salpicadura de agua | 5 óvalos `#D6F0F5` en arco ascendente | 0.4 s |
 | Recolección de objeto | Círculo `#F7EFE2` que se expande y desaparece | 0.35 s |
 | Reto resuelto | 6 destellos de 4 puntas `#5FA842` en corona | 0.8 s |
-| Aparición de pista | Antorcha de UI que pulsa de escala 1.0 a 1.12 | Ciclo 1.5 s |
+| Aparición de pista | El botón de pista del Nivel 1 pulsa de escala 1.0 a 1.06 en bucle desde que se abre la escena (`ui_pulso_pista`); los de los niveles 2 y 3 no pulsan | Ciclo 2.2 s |
 
 ### 12.3 Retroalimentación de error
 
@@ -817,12 +857,17 @@ El tratamiento en su lugar:
 
 | Situación | Respuesta visual |
 | --- | --- |
-| Secuencia incorrecta | Las piezas vuelven a su posición inicial con una animación suave de 0.5 s; el personaje muestra la expresión de ánimo |
-| Prueba de balsa sin éxito (Nivel 3) | Salpicadura plana y la balsa vuelve al punto de partida tras 0.6 s. Lo ya confirmado **no se pierde** (RF-41, RF-43) |
-| Intento repetido sin éxito (3 veces) | El icono de pista comienza a pulsar en `#E8A33D` |
+| Secuencia incorrecta | La pieza vuelve a su sitio al soltarla, sin animación ni destello; el personaje hace el gesto de ánimo (`Encourage`) y la tablilla dice qué falta antes |
+| Prueba de balsa sin éxito (Nivel 3) | La balsa gira hacia un costado y se hunde un poco, y vuelve a su sitio en un solo movimiento continuo de 0.6 s, sin salpicadura ni destellos (guion §1.8.4, RNF-21). Lo ya confirmado **no se pierde** (RF-41, RF-43) |
+| Intento repetido sin éxito (3 veces) | La tablilla muestra la pista del guía, una pregunta, con el icono de ayuda (`HintPolicy`); el botón de pista no cambia |
 
-El único color de estado que existe es el verde de éxito (`#5FA842`) y el ámbar de
-atención (`#E8A33D`). No hay rojo de error en toda la interfaz.
+No hay rojo de error en toda la interfaz. El estado del intento lo lleva el icono que
+acompaña al mensaje del guía, con forma y color propios: verde oscuro `#336638` para lo
+aceptado y la tarea cumplida, ocre `#995C1A` para lo devuelto, azul pizarra `#3D4C70` para la
+instrucción y la pista; carbón suave `#6B5247` para la tarea pendiente del Nivel 3; naranja
+`#D96B29` para el espacio equivocado de la balsa, y ámbar de atención `#E8A33D` para el bloque
+elegido y el refugio del laberinto. El asa del deslizante de fuerza del Nivel 1 va de azul a
+rojo como escala de intensidad, no como error.
 
 ---
 
@@ -830,14 +875,28 @@ atención (`#E8A33D`). No hay rojo de error en toda la interfaz.
 
 ### 13.1 Enfoque técnico
 
-Rigging 2D en Unity (paquete 2D Animation) sobre los sprites base en A-pose, no
-animación fotograma a fotograma. Razones: el equipo es de dos personas con catorce
-semanas, y los generadores de imagen no producen secuencias de frames consistentes
-entre sí.
+Animación por recorte (*cut-out*) en uGUI sobre los sprites base en A-pose, no
+animación fotograma a fotograma. Cada miembro de la familia se corta en cinco partes
+—torso, brazo izquierdo, brazo derecho, pierna izquierda y pierna derecha, con izquierda y
+derecha de pantalla— que son `Image` hijas de un lienzo de 1024 × 1024, el de los sprites
+base, con el pivote en la articulación (`char_<x>_parte_<parte>.png`). Un `Animator` las gira
+y desplaza con un estado por acción del juego (`ActorAction`) y un clip por estado
+(`char_<x>_anim_<accion>.anim`, 21 por miembro de la familia, con el controlador
+`char_<x>.controller` al lado). El componente es `CharacterRig` (`Game.Scaffolding`), hay un
+prefab por personaje en `Assets/Game/Prefabs/Characters/`, y lo usan igual la escena narrativa
+y las cinco mecánicas. Algoritm es una sola `Image` por forma, sin recorte, con nueve clips que
+comparten las tres formas, para que sustituir su arte sea cambiar un archivo.
+
+Razones: el equipo es de dos personas con catorce semanas, y los generadores de imagen no
+producen secuencias de frames consistentes entre sí. No se usa el rigging con huesos del paquete
+2D Animation: todas las escenas son uGUI en un Canvas *Screen Space Overlay*, y `SpriteSkin`
+solo deforma un `SpriteRenderer`, que quedaría debajo del Canvas, tapado por la ilustración.
+Como `Image` hijas, las partes cuelgan de la ilustración y acompañan el paneo y el zoom de la
+cámara como cualquier otro objeto (INC-53).
 
 Consecuencia sobre el arte: los sprites base deben tener brazos y piernas
 completamente separados del torso, con fondo visible entre ellos. Un brazo fundido
-con el cuerpo obliga a inventar dónde termina al recortarlo para el hueso.
+con el cuerpo obliga a inventar dónde termina al recortarlo en su parte.
 
 ### 13.2 Principios de animación aplicados
 
@@ -863,7 +922,7 @@ existe salto en ningún nivel (CT-06, RNF-02).
 | Golpear las piedras | Papá (N1) | 0.6 s | Crítica |
 | Soplar | Papá (N1) | 0.9 s | Crítica |
 | Señalar / observar | Niña (N2), Algoritm | 0.6 s | Alta |
-| Caminar en vista superior, 4 direcciones | Mamá (N3) | Ciclo 0.8 s | Crítica |
+| Caminar: un solo ciclo que se voltea a izquierda o derecha según la dirección | Mamá (N3) | Ciclo 0.8 s | Crítica |
 | Recoger material | Mamá (N3) | 0.5 s | Alta |
 | Celebrar cierre de fase | El que corresponda | 1.2 s | Media |
 | Ánimo tras un intento sin avance | Todos | 0.9 s | Media |
@@ -890,7 +949,7 @@ información crítica del juego se transmite únicamente por color:
 | Información | Canal de color | Canal redundante |
 | --- | --- | --- |
 | Objeto interactivo | Color de acento del nivel | Contorno más grueso + flotación |
-| Reto resuelto | Verde `#5FA842` | Icono de nudo cerrado en la cuerda de progreso |
+| Reto resuelto | Verde `#5FA842` | En la lista de tareas del Nivel 3, el círculo liso de la tarea pendiente se cambia por un círculo con marca de verificación; en la frase del guía de los niveles 2 y 3, el acierto lleva un icono de forma distinta del de alerta |
 | Pista disponible | Ámbar `#E8A33D` | Pulso de escala del icono de Algoritm |
 | Casilla o espacio de ensamblaje válido | Contraste de valor | Borde más claro **y** marca de forma en la casilla |
 
@@ -947,20 +1006,18 @@ alta frecuencia, que pueden resultar molestos o desencadenar malestar.
 ```
 [categoria]_[sujeto]_[variante]_[estado].png
 
-char_papa_base_apose.png
-char_nina_base_apose.png
-char_nino_expr_sorpresa.png
-char_mama_cenital_norte.png
-prop_n1_hojas_encendido.png
+char_nino_retrato_neutra.png
+char_mama_cenital.png
+char_papa_parte_brazo_der.png
+prop_n1_monton_hojas_cenital.png
 prop_n2_carretilla_e5.png
-env_n1_cueva_luz4.png
 env_n2_bosque_claro.png
 env_n3_rio.png
-ui_n1_panel_soplar_habilitado.png
-fx_chispa_apagada.png
 ```
 
-Prefijos: `char_`, `prop_`, `env_`, `ui_`, `fx_`.
+Prefijos: `char_`, `prop_`, `env_`, `ui_`, `fx_` y `ref_` (`S01`). Una secuencia de cuadros entra como un
+`.anim` con curva PPtr sobre `Image.m_Sprite` y un `.controller` por clip (convención en
+`Assets/Game/Art/Inventario.md`); los cuadros del fuego y del humo conservan sus nombres de entrega.
 Niveles: `n1` (La Oscuridad), `n2` (La Rueda), `n3` (El Río).
 
 Sin tildes, sin espacios, sin mayúsculas en los nombres de archivo.
@@ -1034,8 +1091,8 @@ exclusivamente para el fuego, que es el elemento interactivo del nivel.
 ```
 PALETA DEL NIVEL: follaje cercano #7FA05A, follaje medio #5A7A3F, follaje lejano #3C5429,
 planta baja #6E9B4E, suelo de tierra #8A6B4A con sombra #6B5344, corteza de árbol #5C4530,
-piedra fría #7A8290 con sombra #4E5561, cielo entre las copas #A8DCE6. Bosque de mediodía,
-luz pareja y sin sombras largas.
+piedra fría #7A8290 con sombra #4E5561, cielo entre las copas #A8DCE6. Bosque de tarde despejada,
+luz pareja, sin tinte y sin sombras largas: el amanecer, el atardecer y la noche los pone el motor encima.
 PROHIBIDO usar madera clara trabajada (#C79A5E) en este elemento: ese tono está reservado
 para los objetos interactivos del nivel —troncos cortados, rueda, eje, tabla, carretilla—.
 La corteza del decorado usa el marrón oscuro desaturado indicado arriba.
@@ -1108,7 +1165,7 @@ Aplicar a cada pieza antes de darla por buena e importarla a Unity.
 
 ### Interfaz
 
-- [ ] Área táctil mínima de 88 × 88 px
+- [ ] Área táctil mínima de 88 × 88 px en botones de acción (excepciones en §10.1)
 - [ ] Contraste de texto mínimo 4.5:1
 - [ ] Información crítica con canal redundante además del color (§14.2)
 - [ ] Texto oscuro sobre fondo claro, nunca al revés
@@ -1122,7 +1179,7 @@ producción de assets.
 
 | Pendiente | Impacto en arte | Estado |
 | --- | --- | --- |
-| **Título del videojuego** (`PG-01`) | Pantalla de título, logotipo, tipografía de marca | **Abierto.** Se cierra en el Slice 4 |
+| **Título del videojuego** (`PG-01`) | Pantalla de título, logotipo, tipografía de marca | **Cerrado (09/09/2026): «Algoritmia».** La pantalla de inicio lo rotula en Baloo 2 ExtraBold, 96 px, `#3A1E18`, sin logotipo en imagen; el texto sale de `GameTitleConfig` |
 | **Nombre definitivo del guía** (`PG-02`) | Nombre y **forma**: se llama **Algoritm** y cambia de forma en cada nivel (§7.6) | **Cerrado (02/09/2026).** Ver INC-44 e INC-45 |
 | **Valores del Nivel 1** (`PG-06`) | Número de muescas del control deslizante en `A9` | **Abierto** hasta validarlo jugando |
 
@@ -1135,7 +1192,9 @@ producción de assets.
 - **Forma del guía:** ya **no** es una sola. El guion §1.1 fijaba una estrella constante; la
   decisión del 02/09/2026 la sustituye por **tres formas, una por nivel** —fuego, rueda, agua—
   con un núcleo de identidad invariable. Se especifica en §7.6 y se registra en INC-45. El
-  nombre, antes provisional, queda cerrado: **Algoritm** (INC-44).
+  arte entregado el 24/09/2026 las resolvió como **un solo cuerpo de llama en tres
+  materiales**, y el guía ya no es una estrella en ningún nivel (INC-52). El nombre, antes
+  provisional, queda cerrado: **Algoritm** (INC-44).
 
   El guion ya empujaba en esa dirección: en §4.4 el guía aparece «en el corazón de las llamas
   […] hecho de fuego esta vez» y se recoge en la fogata «como una brasa que sigue viva».

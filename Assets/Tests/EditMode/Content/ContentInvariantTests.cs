@@ -75,6 +75,69 @@ namespace Game.Content.Tests
         }
 
         /// <summary>
+        /// INC-52 (guion §1.4.1 y §1.4.4): Algoritm es una llama con brazos y piernas, no una
+        /// estrella — el arte y el diálogo no pueden contradecirse.
+        /// </summary>
+        [Test]
+        public void Content_DA76_NingunTextoVisibleDescribeAAlgoritmComoUnaEstrella()
+        {
+            var infracciones = new List<string>();
+
+            foreach (var tipo in TiposDeContenido)
+            {
+                foreach (var guid in AssetDatabase.FindAssets($"t:{tipo.Name}"))
+                {
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    var asset = AssetDatabase.LoadAssetAtPath(path, tipo);
+                    if (asset == null)
+                    {
+                        continue;
+                    }
+
+                    foreach (var (campo, texto) in Textos(asset, tipo, 0))
+                    {
+                        if (texto.IndexOf("forma de estrella", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            infracciones.Add($"{tipo.Name}.{campo} en {path}: «{texto}»");
+                        }
+                    }
+                }
+            }
+
+            Assert.That(infracciones, Is.Empty,
+                "DA §7.6/guion §1.4 (INC-52): Algoritm es una llama, ningún texto lo describe como una estrella.\n" +
+                string.Join("\n", infracciones));
+        }
+
+        /// <summary>
+        /// INC-54 (guion §1.6.2.2, acta D05): Algoritm nombra la cuerda en la escena 2.3, así que
+        /// la ilustración tiene que pintar las siete piezas del taller y no solo seis.
+        /// </summary>
+        [Test]
+        public void Content_INC54_LaEscena23PintaTodasLasPiezasDelTaller()
+        {
+            var assemblyContent = AssetDatabase.FindAssets($"t:{nameof(AssemblyContent)}")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<AssemblyContent>)
+                .Single(content => content != null);
+
+            var escena23 = AssetDatabase.FindAssets($"t:{nameof(NarrativeSequence)}")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<NarrativeSequence>)
+                .Single(sequence => sequence != null && sequence.Id == "N2_Escena23_Construccion");
+
+            var artesEnEscena = escena23.Props.Select(prop => prop.Art).ToHashSet();
+
+            var piezasSinPintar = assemblyContent.Pieces
+                .Where(pieza => !artesEnEscena.Contains(pieza.Art))
+                .Select(pieza => pieza.Piece.ToString());
+
+            Assert.That(piezasSinPintar, Is.Empty,
+                "INC-54: la escena 2.3 no pinta todas las piezas del taller (por índice de pieza): " +
+                string.Join(", ", piezasSinPintar));
+        }
+
+        /// <summary>
         /// Recorre el grafo serializado buscando texto, sin entrar en referencias a otro
         /// <see cref="Object"/> (Sprite, AudioClip, otro asset) ni en identificadores técnicos
         /// —cualquier campo que termine en «Id», como <c>NextSequenceId</c> o el <c>Id</c> de un

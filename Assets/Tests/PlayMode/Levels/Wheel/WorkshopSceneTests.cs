@@ -149,6 +149,31 @@ namespace Game.Levels.Wheel.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task WorkshopScene_RF29_SoltarElMazoLejosNoCuentaComoIntento()
+        {
+            var taller = await OpenWorkshop();
+            taller.Select(WorkshopPiece.ShortLogA);
+
+            // Soltar el mazo lejos del tronco resaltado, más veces que el umbral de la pista
+            // (HintPolicy.DefaultAttemptsForHint = 3, DEC-1): si contara, a la tercera aparecería
+            // la pista en vez de seguir diciendo que cayó lejos.
+            for (var i = 0; i < HintPolicy.DefaultAttemptsForHint + 1; i++)
+            {
+                await Arrastrar(taller, WorkshopPiece.Tool, taller.Pieces[WorkshopPiece.Cargo].Rect);
+                Assert.That(taller.MessageLabel.text, Is.EqualTo(taller.Config.MissedMessage),
+                    $"intento {i + 1}: sigue siendo «cayó lejos», nunca una pista");
+            }
+
+            Assert.That(taller.Assembly.IsDrilled(WorkshopPiece.ShortLogA), Is.False, "nunca llegó a perforar");
+
+            // Y sí perfora igual que antes: el intento por puntería no se contó, pero el tronco
+            // resaltado sigue ahí para intentarlo bien.
+            await Arrastrar(taller, WorkshopPiece.Tool, taller.Pieces[WorkshopPiece.ShortLogA].Rect);
+            Assert.That(taller.Assembly.IsDrilled(WorkshopPiece.ShortLogA), Is.True);
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task WorkshopScene_RF29_UnPasoFueraDeOrdenDevuelveLaPiezaYNoDeshaceNada()
         {
             var workshop = await OpenWorkshop();

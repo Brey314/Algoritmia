@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Game.Scaffolding
 {
@@ -158,18 +157,6 @@ namespace Game.Scaffolding
             }
 
             return false;
-        }
-
-        /// <summary>
-        /// Tiñe todas las partes, para escenas que tiñen lo que cuelga del entorno (el laberinto al
-        /// atardecer, <c>MazeLayout.LightTint</c>). Ningún clip anima el color, así que el tinte dura.
-        /// </summary>
-        public void Tint(Color color)
-        {
-            foreach (var graphic in GetComponentsInChildren<Graphic>(true))
-            {
-                graphic.color = color;
-            }
         }
 
         /// <summary>Escala el lienzo para llenar la casilla, como <c>preserveAspect</c> con un sprite cuadrado.</summary>

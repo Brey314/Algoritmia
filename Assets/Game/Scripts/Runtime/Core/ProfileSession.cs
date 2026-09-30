@@ -22,6 +22,12 @@ namespace Game.Core
         /// <summary>Nombres de los perfiles ya guardados, para pintar la lista y detectar duplicados (RF-02).</summary>
         public IReadOnlyList<string> ExistingProfileNames() => _store.ProfileNames();
 
+        /// <summary>Si el guardado cayó a la ruta de respaldo, para poder advertirlo (INC-34, INC-77).</summary>
+        public bool UsingFallback => _store.UsingFallback;
+
+        /// <summary>Carpeta en la que se está guardando de verdad, para mostrarla al advertir (INC-77).</summary>
+        public string SaveDirectory => _store.ActiveDirectory;
+
         /// <summary>Carga un perfil guardado con todo su progreso (RF-03, CU-01).</summary>
         public PlayerProfile Load(string profileName) => _store.Load(profileName);
 

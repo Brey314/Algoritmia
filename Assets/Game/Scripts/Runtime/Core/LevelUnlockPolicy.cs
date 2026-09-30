@@ -27,7 +27,22 @@ namespace Game.Core
             }
         }
 
-        /// <summary>Si el nivel se puede jugar con el progreso del perfil (RF-03).</summary>
-        public static bool IsUnlocked(PlayerProfile profile, LevelId level) => profile.IsUnlocked(level);
+        /// <summary>
+        /// Si el nivel se puede jugar con el progreso del perfil (RF-03): lo dice
+        /// <see cref="PlayerProfile.ReachedLevel"/>, o —cuando el cierre del nivel anterior no
+        /// llegó a mostrar el resumen que lo avanza (un cierre forzado a mitad de la escena de
+        /// cierre, RNF-14, PF-RNF14-04, 30/09/2026)— que sus fases estén **todas** confirmadas.
+        /// </summary>
+        /// <remarks>
+        /// Derivado, no persistido (RNF-09): no añade ningún campo, solo repite aquí la misma
+        /// lectura que ya hace <see cref="PlayerProfile.IsLevelComplete"/>. La consultan el menú de
+        /// niveles y <see cref="GameFlow.TryStartPlaying"/>, para que un nivel pintado como
+        /// desbloqueado también se pueda empezar. No vive en <see cref="PlayerProfile.IsUnlocked"/>
+        /// porque el cierre reflexivo (<c>Game.Scaffolding.NarrativeVisitPolicy</c>) sigue leyendo
+        /// <c>ReachedLevel</c> directamente: así la primera vuelta del cierre reflexivo sigue sin
+        /// poder omitirse aunque el desbloqueo llegue por aquí.
+        /// </remarks>
+        public static bool IsUnlocked(PlayerProfile profile, LevelId level) =>
+            profile.IsUnlocked(level) || (level > LevelId.Fire && profile.IsLevelComplete(level - 1));
     }
 }

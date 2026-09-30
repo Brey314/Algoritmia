@@ -22,7 +22,7 @@ namespace Game.Core
         LevelSummary,
         Credits,
 
-        /// <summary>RF-46. Existe en el flujo; su escena llega en el Slice 4.</summary>
+        /// <summary>RF-46: el informe docente.</summary>
         TeacherReport
     }
 }

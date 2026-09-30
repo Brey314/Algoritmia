@@ -22,6 +22,7 @@ namespace Game.UI.Tests
     public class LevelSummaryTests
     {
         private const string FireSceneName = "Level1_Cave";
+        private const string WheelClosingId = "N2_Escena25_Cierre";
 
         // N1_Config (Fase 5): el deslizante mide fuerza, 7 cae en la franja efectiva.
         private const float VeryClosePosition = 7f; // fuerza efectiva (N1_Config, Fase 5)
@@ -112,6 +113,30 @@ namespace Game.UI.Tests
         [Test]
         [Timeout(45000)]
         [Category("Acceptance")]
+        public async Task LevelSummary_RF45_DobleClicEnContinuarMientrasCargaElResumenSeQuedaEnElResumen()
+        {
+            var profile = NewProfile();
+            profile.Reach(LevelId.Wheel);
+            var (runner, narrative) = await OpenWheelClosingWithProfile(profile);
+            AvanzarNarrativaHastaElFinal(narrative, WheelClosingId); // el último clic sale al resumen, que carga sin fundido
+
+            // Un doble clic de un niño: el segundo llega unos cuadros después, con la escena
+            // narrativa todavía viva mientras «LevelSummary» carga.
+            await Awaitable.NextFrameAsync();
+            Assert.That(narrative != null && narrative.AdvanceButton.isActiveAndEnabled, Is.True,
+                "el arreglo no reproduce la ventana: la escena narrativa ya no recibe el segundo clic");
+            Click(narrative.AdvanceButton);
+
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.LevelSummary),
+                "el clic de más no puede saltarse el resumen, que es donde se nombra la habilidad (RF-12)");
+            var summary = await WaitForComponentAsync<LevelSummaryController>(10f);
+            Assert.That(summary, Is.Not.Null, "no apareció el resumen de fin de nivel");
+            Assert.That(summary.TitleLabel.text, Is.Not.Empty, "el resumen se muestra");
+        }
+
+        [Test]
+        [Timeout(45000)]
+        [Category("Acceptance")]
         public async Task LevelSummary_RF03_DevuelveAlMenuConNivel3Desbloqueado()
         {
             // Un perfil que acaba de resolver el laberinto: las fases 1 y 2 ya están en el perfil
@@ -121,29 +146,11 @@ namespace Game.UI.Tests
             profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 1), new PerformanceIndicators(3, 1, 0, 60f));
             profile.ConfirmPhase(new PhaseId(LevelId.Wheel, 2), new PerformanceIndicators(0, 0, 5, 90f));
 
-            var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
-            await Awaitable.NextFrameAsync(); // GameFlowRunner.Start() navega solo a MainMenu
-            runner.GoTo(GameState.ProfileSelect);
-            runner.SelectProfile(profile);
-            runner.StartPlaying(LevelId.Wheel, 3);
+            var (runner, narrative) = await OpenWheelClosingWithProfile(profile);
             runner.PendingIndicators = new PerformanceIndicators(2, 2, 6, 120f);
-            Assume.That(runner.StartNarrative("N2_Escena25_Cierre"), Is.True, "el laberinto sale al cierre reflexivo");
-
-            var load = SceneManager.LoadSceneAsync("Narrative", LoadSceneMode.Single);
-            while (load is { isDone: false })
-            {
-                await Awaitable.NextFrameAsync();
-            }
-
-            await Awaitable.NextFrameAsync();
-            await Awaitable.NextFrameAsync();
-            new GameObject("TestSceneLoader").AddComponent<SceneLoader>();
-
-            var narrative = await WaitForComponentAsync<NarrativeSceneController>(10f);
-            Assert.That(narrative, Is.Not.Null, "no apareció el cierre reflexivo del Nivel 2");
             Assert.That(narrative.SkipButton.gameObject.activeInHierarchy, Is.False,
                 "CP-07: la primera vez el cierre reflexivo no se puede omitir");
-            AvanzarNarrativaHastaElFinal(narrative, "N2_Escena25_Cierre");
+            AvanzarNarrativaHastaElFinal(narrative, WheelClosingId);
 
             Assert.That(await WaitUntilAsync(() => runner.Flow.Current == GameState.LevelSummary, 5f), Is.True,
                 "el cierre reflexivo no llevó al resumen de fin de nivel");
@@ -206,6 +213,36 @@ namespace Game.UI.Tests
             new GameObject("TestSceneLoader").AddComponent<SceneLoader>();
 
             return runner;
+        }
+
+        /// <summary>
+        /// Abre el cierre reflexivo del Nivel 2 como lo deja el laberinto: la fase 3 en juego y el
+        /// flujo ya en la narrativa. Mismo orden que <see cref="LoadFireLevelWithProfile"/>: el
+        /// runner antes de cargar «Narrative», el <see cref="SceneLoader"/> después.
+        /// </summary>
+        private static async Task<(GameFlowRunner runner, NarrativeSceneController narrative)>
+            OpenWheelClosingWithProfile(PlayerProfile profile)
+        {
+            var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
+            await Awaitable.NextFrameAsync(); // GameFlowRunner.Start() navega solo a MainMenu
+            runner.GoTo(GameState.ProfileSelect);
+            runner.SelectProfile(profile);
+            runner.StartPlaying(LevelId.Wheel, 3);
+            Assert.That(runner.StartNarrative(WheelClosingId), Is.True, "el laberinto sale al cierre reflexivo");
+
+            var load = SceneManager.LoadSceneAsync("Narrative", LoadSceneMode.Single);
+            while (load is { isDone: false })
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            await Awaitable.NextFrameAsync();
+            await Awaitable.NextFrameAsync();
+            new GameObject("TestSceneLoader").AddComponent<SceneLoader>();
+
+            var narrative = await WaitForComponentAsync<NarrativeSceneController>(10f);
+            Assert.That(narrative, Is.Not.Null, "no apareció el cierre reflexivo del Nivel 2");
+            return (runner, narrative);
         }
 
         /// <summary>Reúne, marca fuerza y cercanía efectivas, converge con el mínimo de golpes efectivos y pulsa «Soplar».</summary>

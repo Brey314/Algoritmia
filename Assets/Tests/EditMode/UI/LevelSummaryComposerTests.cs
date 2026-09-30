@@ -271,7 +271,7 @@ namespace Game.UI.Tests
             {
                 foreach (var texto in LineasVisibles(CargarMensajes(nivel)))
                 {
-                    var oraciones = texto.Split(new[] { '.', '!', '?', ':' }, StringSplitOptions.RemoveEmptyEntries);
+                    var oraciones = texto.Split(new[] { '.', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
                     foreach (var oracion in oraciones)
                     {
                         var palabras = oracion.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);

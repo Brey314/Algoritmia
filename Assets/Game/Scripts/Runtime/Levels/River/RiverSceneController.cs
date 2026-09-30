@@ -104,7 +104,7 @@ namespace Game.Levels.River
         private AssemblyPanelController assemblyPanel;
 
         [SerializeField]
-        [Tooltip("Icono de tarea pendiente: forma abierta.")]
+        [Tooltip("Icono de tarea pendiente: círculo liso.")]
         private Sprite pendingIcon;
 
         [SerializeField]

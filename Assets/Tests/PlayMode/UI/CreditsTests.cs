@@ -42,6 +42,17 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(20000)]
+        public async Task Credits_RNF23_NombraALosAutoresDeLosPersonajesYLaObraDeOrigen()
+        {
+            var (controller, _) = await OpenCredits();
+
+            Assert.That(controller.BodyLabel.text, Does.Contain("Bibiana Patricia Rey Barrote"));
+            Assert.That(controller.BodyLabel.text, Does.Contain("Luis Eduardo Benavides Porras"));
+            Assert.That(controller.BodyLabel.text, Does.Contain("Tecnología para niños: libro de actividades"));
+        }
+
+        [Test]
+        [Timeout(20000)]
         public async Task Credits_RF08_VolverRegresaAlMenuPrincipal()
         {
             var (_, runner) = await OpenCredits();

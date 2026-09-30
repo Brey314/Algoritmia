@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Game.Levels.Fire
 {
     /// <summary>
-    /// Los mensajes del registro del Nivel 1 (guion §4.3.4; los de fallo reescritos en las Fases
+    /// Los mensajes del registro del Nivel 1 (guion §1.4.3.4; los de fallo reescritos en las Fases
     /// 5 y 6 para hablar de fuerza y de cercanía de las piedras en vez de distancia).
     /// Observacionales y sin cifras (RF-17).
     /// </summary>
