@@ -53,7 +53,7 @@ evidencia de apoyo (columna de la matriz), no cuenta en el KPI.
   SHA-256 de `Algoritmia.exe` y fecha. **Cada sesión sobre el ejecutable empieza comprobando que
   el SHA-256 coincide**; si no coincide, la sesión no cuenta.
 - Tras correcciones hay `oe4-rc2`, `rc3`…: cada veredicto lleva la versión en la que se obtuvo.
-- `My project_BurstDebugInformation_DoNotShip` no es parte del entregable: RNF-06 se mide sin esa
+- `Algoritmia_BurstDebugInformation_DoNotShip` no es parte del entregable: RNF-06 se mide sin esa
   carpeta y se anotan los dos tamaños.
 
 ## 3. Criterios de evaluación
@@ -69,7 +69,8 @@ evidencia de apoyo (columna de la matriz), no cuenta en el KPI.
 4. **Precedencia** del proyecto cuando dos fuentes chocan: OE1 > guion > CU/HU > HU detalladas >
    arquitectura (CLAUDE.md §Precedencia). Ejemplo resuelto en el catálogo: repetir un nivel no
    reescribe los indicadores; OE1 §3.6.1 nota 4 manda sobre HU-14 FA-01, así que el esperado es el
-   de OE1, y el choque se anota como observación documental.
+   de OE1, y el choque se anota como observación documental. *(Nota 29/09/2026: HU-14 FA-01 y la
+   nota 4 ya se corrigieron y dicen lo mismo, INC-75; el ejemplo queda como antecedente.)*
 5. Los textos exactos citados en `casos.md` salen de los assets en `HEAD` al 29/09/2026. Antes de
    ejecutar se contrastan contra `oe4-rc1` (T04): si un texto cambió, **se corrige el catálogo
    antes de ejecutar, nunca durante**.
@@ -144,7 +145,7 @@ Script de PowerShell sin dependencias nuevas: `Add-Type` con P/Invoke a `user32`
 | `Preparar-Datos <perfiles…>` | Con el juego cerrado, vacía `Build/Algoritmia/Datos/` y copia los perfiles pedidos: un nombre (`OE4_B`) sale de `herramientas/perfiles/`, una ruta (`evidencias/S-N1_OE4N1.json`) se copia tal cual con el nombre del perfil. |
 | `Matar` | `taskkill /F` del PID (RNF-14). |
 | `Cerrar-Juego` | Cierre normal (o `Matar` si no responde en 10 s) y detiene el muestreador. |
-| `Revisar-Log <sesión>` | Copia `%USERPROFILE%\AppData\LocalLow\DefaultCompany\My project\Player.log` a `evidencias/<sesión>_Player.log` y lista las líneas con `Exception`, `Error` o `RNF-04:`. |
+| `Revisar-Log <sesión>` | Copia `%USERPROFILE%\AppData\LocalLow\Universidad Catolica de Colombia\Algoritmia\Player.log` a `evidencias/<sesión>_Player.log` y lista las líneas con `Exception`, `Error` o `RNF-04:`. |
 
 Detalles técnicos que el spike tiene que resolver: el proceso del arnés declara DPI-aware (si no,
 las coordenadas no coinciden en pantallas escaladas); la ventana del juego tiene que estar en primer
@@ -241,14 +242,14 @@ dejan escritos para que nadie los lea después como sorpresa ni como error del a
 |---|---|---|
 | Tomar un bloque que **ya está** en la secuencia del laberinto (para reordenarlo o retirarlo soltándolo fuera): la fila que recibió el «pulsar» se destruye en `RefreshRows` y el «soltar» nunca llega (`MazeSceneController.cs:732`, `:940-942`); el bloque se queda pegado al cursor. Ninguna prueba lo cubre con entrada real. | PF-RF34-02 | Mayor, quizá Bloqueante |
 | Cierre forzado durante la narrativa de cierre del N1: la fase del N1 solo se guarda en `LevelSummary`, así que se pierde el nivel entero (RF-04: «al completar cada fase»). | PF-RNF14-03 | Mayor |
-| Cierre forzado durante la escena 2.5: las tres fases del N2 quedan en disco, pero `reachedLevel` sigue en 2; el N3 queda bloqueado y hay que rehacer el N2 entero. | PF-RNF14-04 | Mayor |
-| «Salir» cierra sin la confirmación ni el aviso de guardado de HU-18. | PF-RF09-02 | Menor (criterio de HU) |
-| Nivel bloqueado sin mensaje (CU-02 FA-2a); sin marca de «completado» (HU-14 paso 7). | PF-RF03-03 | Menor |
+| Cierre forzado durante la escena 2.5: las tres fases del N2 quedan en disco, pero `reachedLevel` sigue en 2; el N3 queda bloqueado y hay que rehacer el N2 entero. *(30/09/2026: decisión de Santiago, INC-116 — el menú de niveles deriva el desbloqueo del N3 de las tres fases confirmadas, sin dato nuevo en el perfil; el caso comprueba además que el N3 se pueda jugar.)* | PF-RNF14-04 | Mayor |
+| «Salir» cierra sin la confirmación ni el aviso de guardado de HU-18. *(30/09/2026: resuelto en el juego — UI-03/UI-04, INC-77.)* | PF-RF09-02 | Menor (criterio de HU) |
+| Nivel bloqueado sin mensaje (CU-02 FA-2a); sin marca de «completado» (HU-14 paso 7). *(30/09/2026: resuelto — UI-07 y CU-02 2a corregido, INC-76.)* | PF-RF03-03 | Menor |
 | En el resumen del N3, «Volver al menú de niveles» lleva a la escena final. | PF-RF45-03 | Menor |
 | Commits con `(tarjeta: <id>)` sin tarjeta (`44fd479`, `d3a6cc9`, `1d5ce58`, `b38c00b`…). | PF-RNF17-01 | Menor |
 | El laberinto se genera al azar en cada partida (`Seed: 0`): no hay una secuencia ganadora fija, y los arbustos se dibujan a ×1,65 y tapan casillas vecinas. | Sesión S-N2C | Del probador: mal leído ≠ defecto |
-| RF-35 pide las flechas «en los costados»; están en cruceta abajo a la derecha. RF-38 dice «cuatro objetos»; hay 4 casillas y 8 piezas. Ninguna de las dos tiene INC. | PF-RF35-01, PF-RF38-01 | A decidir: código o INC |
-| El objetivo del N2 se da en imperativo; RF-10 pide «diálogo formulado en preguntas». | PF-RF10-02 | A decidir |
+| RF-35 pide las flechas «en los costados»; están en cruceta abajo a la derecha. RF-38 dice «cuatro objetos»; hay 4 casillas y 8 piezas. Ninguna de las dos tiene INC. *(30/09/2026: INC-91 e INC-89; los documentos se alinearon con el juego.)* | PF-RF35-01, PF-RF38-01 | A decidir: código o INC |
+| El objetivo del N2 se da en imperativo; RF-10 pide «diálogo formulado en preguntas». *(30/09/2026: RF-10 corregido, INC-62.)* | PF-RF10-02 | A decidir |
 | Doble clic en «Soplar» durante la ignición relanza la resolución (`Blow` no deshabilita los botones). | PF-RF20-02 | Por ver |
 | Paquetes de IA del Editor en el build (DirectML.dll, D3D12) y el módulo de analítica en el manifiesto: riesgo para RNF-10. | PF-RNF10-01 | Por ver |
 
@@ -305,6 +306,7 @@ pruebas del cuarto objetivo específico». T06 la comprueba mecánicamente (grep
    sí, reportado aparte.
 3. **Criterios que solo están en HU** (confirmación al salir, mensaje de nivel bloqueado, marca de
    completado…): ¿código o INC? Se decide caso por caso en el triaje (T21).
+   *Respondida el 30/09/2026: se implementaron en el juego (INC-76, INC-77).*
 4. **El arnés como ejecutor de caja negra.** ¿Vale para el trabajo de grado que las pruebas EXE las
    ejecute Claude con el arnés, declarándolo como se declaró su papel en el OE3? El Golden Path
    humano ×2 queda como evidencia humana.
@@ -314,6 +316,10 @@ pruebas del cuarto objetivo específico». T06 la comprueba mecánicamente (grep
 7. **Antes de compilar `rc1`:** ¿se retiran los paquetes de IA (`com.unity.ai.*`), DirectML y el
    módulo de analítica? Cambia lo que se mide en RNF-06, 08 y 10, y es una decisión pendiente de
    los autores (OE3 §10.2). Si no se retiran, se prueban tal como están.
+   *Respondida el 29/09/2026 (Santiago): no se retira ningún paquete del manifiesto; la analítica,
+   las estadísticas de hardware, la pantalla de presentación de Unity y Alt+Intro se desactivan en
+   ProjectSettings, y lo vigila una prueba de arquitectura. DirectML.dll y `D3D12/` siguen en el
+   paquete y se anotan en PF-RNF06-01 y PF-RNF10-01.*
 8. **Informe final.** Las herramientas que armaron el `.docx` del OE3 ya no existen. ¿Quién redacta
    el del OE4? Este plan deja los insumos en `OE4-Resultados.md`.
 9. **Evidencias en el repositorio** (por LFS, estimado 30–60 MB): ¿de acuerdo?

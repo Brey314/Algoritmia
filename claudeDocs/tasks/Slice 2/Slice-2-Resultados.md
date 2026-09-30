@@ -530,7 +530,7 @@ Están en el Anexo, A.2 y A.11.)*
   instalarlo sigue siendo la acción de mayor retorno del proyecto.
 - **Pregunta abierta 1 · `Pasos utilizados` de la fase 1.** OE1 §3.6.1 no lo define para el bosque.
   **No se decide desde el código**: W15 lo emite como 0 («no aplica») y lo deja escrito en el
-  recolector y en su prueba. Falta la definición en el documento radicado.
+  recolector y en su prueba. *(29/09/2026: cerrada; OE1 §3.6.1 define ya la fase 1: no se contabilizan pasos y el indicador se registra en cero.)*
 - **Pregunta abierta 3 · Trazado del laberinto.** Validar `N2_MazeLayout.asset` jugando: al menos
   una solución que **exija girar**, ninguna que se resuelva con «Avanzar» repetido.
 - **Las dos pruebas del bosque sensibles al ratón real** (§5.5). *(Nota del 25/09/2026: cerrado
@@ -787,6 +787,8 @@ El nivel transcurre en un día y lo dice la luz, no el arte. El detalle por asse
   amarrada encima y `WorkshopScene_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido` suma
   `Pieza_Rope` a lo que atiende el clic sostenido.
 - **INC-54 sigue abierto**: el guion §1.6.2.2 y RF-27/RF-29 cierran el armado con la caja.
+  *(Nota del 29/09/2026: cerrado. El guion §1.6.2.1 y §1.6.2.2, RF-27, RF-29, HU-09 y CU-07 ya
+  describen la cuerda como séptima pieza y amarrar la caja como último paso.)*
 - Cámara (`a9236f1`): el taller juega a zoom 1 —`PlayFraming` pasó de (0,772; 0,47) a 1,32 a
   (0,75; 0,5) a 1— y `CompletionFraming` movió su foco de x 0,705 a 0,785 (zoom 1,56).
 

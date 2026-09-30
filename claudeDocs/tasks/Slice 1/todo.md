@@ -123,6 +123,11 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       son residuos fuera de la carpeta portable y, en el caso de la telemetría, algo que RNF-08
       prohíbe. **Dos decisiones pendientes del usuario:** quitar
       `com.unity.modules.unityanalytics` de `Packages/manifest.json` y poner `usePlayerLog` en 0.
+      *(29/09/2026, decididas por Santiago: el manifiesto no se toca; la analítica se apaga en la
+      configuración del proyecto —`submitAnalytics: 0`; `SENTIS_ANALYTICS_ENABLED` lo repone el paquete
+      de inferencia y solo afecta al Editor— y una prueba
+      de arquitectura lo vigila; `usePlayerLog` sigue en 1 porque las sesiones del OE4 revisan el
+      `Player.log` (`Revisar-Log`).)*
       Aparte: `UnityConnectSettings.asset` apareció con `m_Enabled: 0 → 1` (analítica
       **encendida**); se revirtió a 0 y **al reabrir el Editor volvió a 1** — revertir el archivo
       no arregla nada mientras el módulo siga en el manifiesto.
@@ -445,7 +450,7 @@ cinco se descarta y se vuelve a pedir. La paleta y las especificaciones salen de
 `claudeDocs/Direccion_de_Arte.md`.
 
 **Los personajes se piden en A-pose**, no en poses de acción: las poses del nivel se producen
-animando el sprite con 2D Animation (`Direccion_de_Arte.md` §7.5 y §13.1). Pedirle a Gemini tres
+animando el sprite por recorte con `CharacterRig` (`Direccion_de_Arte.md` §7.5 y §13.1). Pedirle a Gemini tres
 poses del mismo personaje devuelve tres personajes distintos.
 
 - [ ] **A1 · Chispa, el guía** — chroma sí — guion §1.1/§4.1, PG-02, RF-10, RF-12, RF-13

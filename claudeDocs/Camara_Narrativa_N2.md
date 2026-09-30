@@ -119,7 +119,7 @@ queda apuntando literalmente al sitio donde está la respuesta, que es donde arr
 | # | Línea | Foco (x, y) | Zoom | Movimiento |
 |---|---|---|---|---|
 | `L0` | Amanece. La familia sale de la cueva... | **(0.845, 0.600)** | **1.70** | cerrado y alto contra los arboles: las brasas humean |
-| `L1` | CHISPA: Ahora que tienen fuego, pueden cocinar | **(0.824, 0.545)** | **1.55** | baja y abre: entra el suelo del claro |
+| `L1` | ALGORITM: Ahora que tienen fuego, pueden cocinar | **(0.824, 0.545)** | **1.55** | baja y abre: entra el suelo del claro |
 | `L2` | MAMA: Comida. | **(0.812, 0.510)** | **1.45** | sigue bajando, la familia ya esta en el claro |
 | `L3` | La familia sale a recolectar... | **(0.760, 0.490)** | **1.28** | deriva al oeste y abre: plano de la recoleccion |
 | `L4` | PAPA: Esto pesa demasiado... | **(0.735, 0.455)** | **1.50** | cierra sobre el monton en el suelo |
@@ -140,11 +140,11 @@ así que el paso de narrativa a juego no tiene salto.
 | # | Línea | Foco (x, y) | Zoom | Movimiento |
 |---|---|---|---|---|
 | `L0` | Bosque. Objetos dispersos por el suelo... | **(0.330, 0.400)** | **1.62** | CORTE al oeste. Suelo dominante: los objetos llenan la mitad baja |
-| `L1` | CHISPA: Observen bien... | **(0.298, 0.430)** | **1.52** | deriva al oeste rozando el suelo |
+| `L1` | ALGORITM: Observen bien... | **(0.298, 0.430)** | **1.52** | deriva al oeste rozando el suelo |
 | `L2` | MAMA: algunas cosas se mueven mas facil... | **(0.258, 0.405)** | **1.60** | baja otra vez sobre los troncos redondos |
 | `L3` | NINO: Voy a probar todas. | **(0.228, 0.395)** | **1.68** | empujon corto, mas cerca del suelo |
 | `L4` | NINA: Solo lo que realmente funciona. | **(0.190, 0.425)** | **1.45** | llega a la caja: 'a un lado, la caja' |
-| `L5` | CHISPA: Selecciona... cuando tengas cinco | **(0.250, 0.500)** | **1.00** | ABRE al plano de juego (= frame exacto de la fase 1) |
+| `L5` | ALGORITM: Selecciona... cuando tengas cinco | **(0.250, 0.500)** | **1.00** | ABRE al plano de juego (= frame exacto de la fase 1) |
 
 > **Cambio del 16/09/2026 [S] — las dos fases jugables muestran el entorno entero.** Los planos de
 > juego estaban a ×1.18 y ×1.32, y con el arte definitivo eso recorta la copa de los árboles por
@@ -177,7 +177,7 @@ La escena con paradas. Hereda el encuadre exacto del final de la fase 1 y **no s
 misma vista, mismos troncos, mismo sitio, la caja rodando sola. A partir de ahí:
 cierra sobre el niño → paneo puro al este hasta papá (misma escala, 0,84 pantallas de recorrido: se lee
 como un giro de cabeza) → sigue al este y abre con la familia → micro empuje sobre la niña, que es quien
-nombra el patrón → abre y sube con Chispa. **Arco: medio → cerrado → paneo → abierto → cerrado → general.**
+nombra el patrón → abre y sube con Algoritm. **Arco: medio → cerrado → paneo → abierto → cerrado → general.**
 
 | # | Línea | Foco (x, y) | Zoom | Movimiento |
 |---|---|---|---|---|
@@ -186,14 +186,14 @@ nombra el patrón → abre y sube con Chispa. **Arco: medio → cerrado → pane
 | `L2` | PAPA: Pero esa piedra no... | **(0.276, 0.440)** | **1.95** | paneo puro al este, misma escala: 0.84 pantallas |
 | `L3` | MAMA: Que diferencia hay? | **(0.312, 0.460)** | **1.58** | sigue al este y abre: entra la familia |
 | `L4` | NINA: Los que ruedan... son redondos. | **(0.322, 0.450)** | **1.78** | micro empuje sobre la nina: ella nombra el patron |
-| `L5` | CHISPA: Acabas de encontrar un patron... | **(0.296, 0.500)** | **1.26** | abre y sube: el patron es el cuadro entero |
+| `L5` | ALGORITM: Acabas de encontrar un patron... | **(0.296, 0.500)** | **1.26** | abre y sube: el patron es el cuadro entero |
 
 ### 5.5 · `N2_Escena23_Construccion` — El taller
 
 *Zona: claro este · 8 paradas · recorre 0.106 del canvas*
 
 **Corte al claro este.** La luz más fría y el encuadre más cerrado lo separan del bosque.
-La última línea de Chispa enumera cuatro pasos en orden, y la cámara los recorre uno por uno: cada pieza
+La última línea de Algoritm enumera los pasos en orden —el último, amarrar la caja con la cuerda (INC-54)—, y la cámara los recorre uno por uno: cada pieza
 entra en cuadro justo cuando se la nombra. Eso **exige partir esa línea en cuatro** (ver apartado 7).
 El encuadre final es el de la fase 2.
 
@@ -202,11 +202,11 @@ El encuadre final es el de la fase 2.
 | `L0` | NINA: Si hacemos algo redondo... | **(0.700, 0.450)** | **1.62** | CORTE al claro este. Plano medio sobre la nina |
 | `L1` | PAPA: Construyamos uno. | **(0.745, 0.455)** | **1.52** | deriva al este y abre un poco |
 | `L2` | NINO: Probemos! | **(0.762, 0.435)** | **1.78** | empuje rapido |
-| `L3` | MAMA: Paso a paso... podemos lograrlo. | **(0.775, 0.470)** | **1.35** | retrocede: aparecen las seis piezas |
-| `L4a` | CHISPA: Abre agujeros en los troncos cortos | **(0.694, 0.420)** | **1.95** | cierra sobre los dos troncos cortos |
-| `L4b` | CHISPA: luego unelos con el tronco largo | **(0.748, 0.420)** | **1.95** | paneo al este: el tronco largo |
-| `L4c` | CHISPA: coloca encima la tabla | **(0.800, 0.430)** | **1.88** | paneo al este: la tabla |
-| `L4d` | CHISPA: y sobre ella la caja. En ese orden. | **(0.750, 0.500)** | **1.00** | retrocede al banco completo (= frame de la fase 2) |
+| `L3` | MAMA: Paso a paso... podemos lograrlo. | **(0.775, 0.470)** | **1.35** | retrocede: aparecen las siete piezas |
+| `L4a` | ALGORITM: Abre agujeros en los troncos cortos | **(0.694, 0.420)** | **1.95** | cierra sobre los dos troncos cortos |
+| `L4b` | ALGORITM: luego unelos con el tronco largo | **(0.748, 0.420)** | **1.95** | paneo al este: el tronco largo |
+| `L4c` | ALGORITM: coloca encima la tabla | **(0.800, 0.430)** | **1.88** | paneo al este: la tabla |
+| `L4d` | ALGORITM: y sobre ella la caja; luego amárrala con la cuerda. En ese orden. | **(0.750, 0.500)** | **1.00** | retrocede al banco completo (= frame de la fase 2) |
 
 ### 5.6 · Fase 2 jugable — Construcción
 
@@ -231,12 +231,12 @@ tres pasos se ven como un solo plan) y termina en el plano más abierto del nive
 
 | # | Línea | Foco (x, y) | Zoom | Movimiento |
 |---|---|---|---|---|
-| `L0` | CHISPA: Ahora tienen la carretilla... | **(0.665, 0.445)** | **1.60** | sobre la carretilla, mirando el corredor |
+| `L0` | ALGORITM: Ahora tienen la carretilla... | **(0.665, 0.445)** | **1.60** | sobre la carretilla, mirando el corredor |
 | `L1` | PAPA: Empujar... | **(0.700, 0.440)** | **1.68** | PASO 1: la camara da un paso al este |
 | `L2` | NINO: Girar... | **(0.733, 0.440)** | **1.68** | PASO 2: mismo tamano, mismo salto |
 | `L3` | MAMA: Evitar la piedra... | **(0.766, 0.440)** | **1.68** | PASO 3: la piedra entra por el borde |
 | `L4` | NINA: Si ordenamos bien los pasos... | **(0.740, 0.470)** | **1.36** | retrocede: los tres pasos se ven como uno solo |
-| `L5` | CHISPA: Lleva la carretilla hasta el refugio | **(0.755, 0.500)** | **1.19** | el plano mas abierto del nivel: el camino por delante |
+| `L5` | ALGORITM: Lleva la carretilla hasta el refugio | **(0.755, 0.500)** | **1.19** | el plano mas abierto del nivel: el camino por delante |
 
 ### 5.8 · `N2_Escena25_Cierre` — Cierre del nivel
 
@@ -249,11 +249,11 @@ del claro. Que sea un único gesto sin paradas laterales es lo que lo hace leers
 | # | Línea | Foco (x, y) | Zoom | Movimiento |
 |---|---|---|---|---|
 | `L0` | La familia en el refugio, alrededor del fuego | **(0.852, 0.455)** | **1.95** | lo mas cerrado del nivel: el fuego y la carretilla cargada |
-| `L1` | CHISPA: Las grandes ideas nacen... | **(0.840, 0.465)** | **1.75** | empieza el retroceso lento |
-| `L2` | CHISPA: ...observas, comparas y organizas | **(0.822, 0.475)** | **1.55** | sigue abriendo |
-| `L3` | CHISPA: hicieron girar su pensamiento | **(0.808, 0.485)** | **1.40** | sigue |
-| `L4` | CHISPA: Eso se llama abstraer | **(0.798, 0.492)** | **1.30** | sigue |
-| `L5` | CHISPA: ...pensar como un algoritmo | **(0.772, 0.500)** | **1.16** | plano general: la familia pequena en el claro. Fundido |
+| `L1` | ALGORITM: Las grandes ideas nacen... | **(0.840, 0.465)** | **1.75** | empieza el retroceso lento |
+| `L2` | ALGORITM: ...observas, comparas y organizas | **(0.822, 0.475)** | **1.55** | sigue abriendo |
+| `L3` | ALGORITM: hicieron girar su pensamiento | **(0.808, 0.485)** | **1.40** | sigue |
+| `L4` | ALGORITM: Eso se llama abstraer | **(0.798, 0.492)** | **1.30** | sigue |
+| `L5` | ALGORITM: ...pensar como un algoritmo | **(0.772, 0.500)** | **1.16** | plano general: la familia pequena en el claro. Fundido |
 
 ---
 
@@ -266,9 +266,9 @@ entre los árboles del borde este, y cerrar sobre él para el humo lejano.
 | # | Línea | Foco (x, y) | Zoom | Movimiento |
 |---|---|---|---|---|
 | `L0` | La familia celebra en el refugio | **(0.800, 0.470)** | **1.52** | reencuadre desde el cierre del nivel |
-| `L1` | CHISPA: Lo lograron!... | **(0.810, 0.490)** | **1.42** | abre hacia el este |
+| `L1` | ALGORITM: Lo lograron!... | **(0.810, 0.490)** | **1.42** | abre hacia el este |
 | `L2` | La camara se desplaza hacia el horizonte | **(0.832, 0.585)** | **1.62** | SUBE a la copa: el hueco entre los arboles |
-| `L3` | CHISPA: Otros como ustedes. Mas adelante. | **(0.845, 0.620)** | **1.78** | cierra sobre el hueco: el humo lejano |
+| `L3` | ALGORITM: Otros como ustedes. Mas adelante. | **(0.845, 0.620)** | **1.78** | cierra sobre el hueco: el humo lejano |
 | `L4` | La familia avanza. El camino se corta. | **(0.800, 0.460)** | **1.35** | cae al suelo y frena en seco: corte al Nivel 3 |
 
 ---
@@ -300,7 +300,7 @@ Los catorce caben en el plano de juego (`0.058–0.482`) con margen.
 | Niño con el tronco que rueda | 0.168 | L1, centrado |
 | Papá con la piedra | 0.276 | L2, centrado tras el paneo |
 | Mamá y niña | 0.305 · 0.325 | L3 |
-| Chispa | 0.296 · y 0.60 | L5, al abrir y subir |
+| Algoritm | 0.296 · y 0.60 | L5, al abrir y subir |
 
 ### Claro este — Puente I, 2.3, fase 2, 2.4 y 2.5
 
@@ -314,38 +314,40 @@ Los catorce caben en el plano de juego (`0.058–0.482`) con margen.
 | 2.3 / fase 2 | Herramienta | 0.772 | 0.27 |
 | 2.3 / fase 2 | Tabla | 0.800 | 0.30 |
 | 2.3 / fase 2 | Caja de alimentos | 0.828 | 0.31 |
+| 2.3 / fase 2 | Cuerda | 0.600 | 0.41 (0.30 en la fase 2) |
 | 2.4 | Carretilla | 0.672 | 0.30 |
 | 2.4 | La piedra que hay que evitar | 0.870 | 0.29 |
 | 2.5 | Fuego del refugio | 0.852 | 0.30 |
 | 2.5 | Carretilla cargada | 0.790 | 0.31 |
 | 2.5 | Familia alrededor del fuego | 0.800 – 0.900 | 0.30 |
 
-El orden de las piezas de 2.3 en el suelo es de oeste a este **en el mismo orden en que Chispa las
-nombra**. Por eso el paneo de L4a→L4c funciona: la cámara lee la lista.
+El orden de las piezas de 2.3 en el suelo es de oeste a este **en el mismo orden en que Algoritm las
+nombra**, salvo la cuerda (INC-54), que queda al oeste de los troncos cortos y no tiene parada
+propia. Por eso el paneo de L4a→L4c funciona: la cámara lee la lista.
 
 ---
 
 ## 8. Dos cambios que le pido al guion
 
-**8.1 · Partir la instrucción de Chispa en 2.3 en cuatro líneas.** Hoy es una sola:
+**8.1 · Partir la instrucción de Algoritm en 2.3 en cuatro líneas.** Hoy es una sola:
 
-> CHISPA: Abre agujeros en el centro de los troncos cortos, luego únelos con el tronco largo, coloca
+> ALGORITM: Abre agujeros en el centro de los troncos cortos, luego únelos con el tronco largo, coloca
 > encima la tabla y sobre ella la caja de alimentos. En ese orden: cada paso necesita que el anterior
 > esté hecho.
 
 Propuesta:
 
-> CHISPA: Abre agujeros en el centro de los troncos cortos.  
-> CHISPA: Luego únelos con el tronco largo.  
-> CHISPA: Coloca encima la tabla.  
-> CHISPA: Y sobre ella, la caja de alimentos. En ese orden: cada paso necesita que el anterior esté hecho.
+> ALGORITM: Abre agujeros en el centro de los troncos cortos.  
+> ALGORITM: Luego únelos con el tronco largo.  
+> ALGORITM: Coloca encima la tabla.  
+> ALGORITM: Y sobre ella, la caja de alimentos. En ese orden: cada paso necesita que el anterior esté hecho.
 
 Dos motivos. Uno, la cámara solo puede moverse entre líneas, así que sin el corte no puede recorrer las
 piezas mientras se nombran. Dos, son cuatro instrucciones secuenciales para un niño de cuarto: cuatro
 cuadros de diálogo cortos se retienen mejor que un párrafo, y el propio nivel trata de descomponer.
 
 **8.2 · Confirmar el reparto de líneas largas.** Las tablas de arriba asumen que las dos intervenciones
-largas de Chispa en 2.5 se parten en dos cada una (6 líneas, como ya figura en tu inventario). Las
+largas de Algoritm en 2.5 se parten en dos cada una (6 líneas, como ya figura en tu inventario). Las
 paradas están ancladas **al texto de la línea, no al índice**, así que si el reparto cambia solo hay que
 mover la parada a la línea que empieza con ese texto.
 
@@ -404,7 +406,7 @@ limites:  x en [0.25/z, 1-0.25/z]   y en [0.5/z, 1-0.5/z]
 
 PuenteI  (claro este)
   L0     0.845 0.600 1.70   Amanece. La familia sale de la cueva...
-  L1     0.824 0.545 1.55   CHISPA: Ahora que tienen fuego, pueden cocinar
+  L1     0.824 0.545 1.55   ALGORITM: Ahora que tienen fuego, pueden cocinar
   L2     0.812 0.510 1.45   MAMA: Comida.
   L3     0.760 0.490 1.28   La familia sale a recolectar...
   L4     0.735 0.455 1.50   PAPA: Esto pesa demasiado...
@@ -415,11 +417,11 @@ PuenteI  (claro este)
 
 E21  (claro oeste)
   L0     0.330 0.400 1.62   Bosque. Objetos dispersos por el suelo...
-  L1     0.298 0.430 1.52   CHISPA: Observen bien...
+  L1     0.298 0.430 1.52   ALGORITM: Observen bien...
   L2     0.258 0.405 1.60   MAMA: algunas cosas se mueven mas facil...
   L3     0.228 0.395 1.68   NINO: Voy a probar todas.
   L4     0.190 0.425 1.45   NINA: Solo lo que realmente funciona.
-  L5     0.270 0.500 1.18   CHISPA: Selecciona... cuando tengas cinco
+  L5     0.270 0.500 1.18   ALGORITM: Selecciona... cuando tengas cinco
 
 F1  (claro oeste)
   JUEGO  0.270 0.500 1.18   Plano general fijo durante toda la recoleccion
@@ -431,42 +433,42 @@ E22  (claro oeste)
   L2     0.276 0.440 1.95   PAPA: Pero esa piedra no...
   L3     0.312 0.460 1.58   MAMA: Que diferencia hay?
   L4     0.322 0.450 1.78   NINA: Los que ruedan... son redondos.
-  L5     0.296 0.500 1.26   CHISPA: Acabas de encontrar un patron...
+  L5     0.296 0.500 1.26   ALGORITM: Acabas de encontrar un patron...
 
 E23  (claro este)
   L0     0.700 0.450 1.62   NINA: Si hacemos algo redondo...
   L1     0.745 0.455 1.52   PAPA: Construyamos uno.
   L2     0.762 0.435 1.78   NINO: Probemos!
   L3     0.775 0.470 1.35   MAMA: Paso a paso... podemos lograrlo.
-  L4a    0.694 0.420 1.95   CHISPA: Abre agujeros en los troncos cortos
-  L4b    0.748 0.420 1.95   CHISPA: luego unelos con el tronco largo
-  L4c    0.800 0.430 1.88   CHISPA: coloca encima la tabla
-  L4d    0.772 0.470 1.32   CHISPA: y sobre ella la caja. En ese orden.
+  L4a    0.694 0.420 1.95   ALGORITM: Abre agujeros en los troncos cortos
+  L4b    0.748 0.420 1.95   ALGORITM: luego unelos con el tronco largo
+  L4c    0.800 0.430 1.88   ALGORITM: coloca encima la tabla
+  L4d    0.772 0.470 1.32   ALGORITM: y sobre ella la caja; luego amárrala con la cuerda. En ese orden.
 
 F2  (claro este)
   JUEGO  0.772 0.470 1.32   Plano fijo del banco de trabajo
   CIERRE 0.785 0.445 1.56   Carretilla terminada
 
 E24  (corredor este)
-  L0     0.665 0.445 1.60   CHISPA: Ahora tienen la carretilla...
+  L0     0.665 0.445 1.60   ALGORITM: Ahora tienen la carretilla...
   L1     0.700 0.440 1.68   PAPA: Empujar...
   L2     0.733 0.440 1.68   NINO: Girar...
   L3     0.766 0.440 1.68   MAMA: Evitar la piedra...
   L4     0.740 0.470 1.36   NINA: Si ordenamos bien los pasos...
-  L5     0.755 0.500 1.19   CHISPA: Lleva la carretilla hasta el refugio
+  L5     0.755 0.500 1.19   ALGORITM: Lleva la carretilla hasta el refugio
 
 E25  (refugio (este))
   L0     0.852 0.455 1.95   La familia en el refugio, alrededor del fuego
-  L1     0.840 0.465 1.75   CHISPA: Las grandes ideas nacen...
-  L2     0.822 0.475 1.55   CHISPA: ...observas, comparas y organizas
-  L3     0.808 0.485 1.40   CHISPA: hicieron girar su pensamiento
-  L4     0.798 0.492 1.30   CHISPA: Eso se llama abstraer
-  L5     0.772 0.500 1.16   CHISPA: ...pensar como un algoritmo
+  L1     0.840 0.465 1.75   ALGORITM: Las grandes ideas nacen...
+  L2     0.822 0.475 1.55   ALGORITM: ...observas, comparas y organizas
+  L3     0.808 0.485 1.40   ALGORITM: hicieron girar su pensamiento
+  L4     0.798 0.492 1.30   ALGORITM: Eso se llama abstraer
+  L5     0.772 0.500 1.16   ALGORITM: ...pensar como un algoritmo
 
 PuenteII  (refugio -> horizonte)
   L0     0.800 0.470 1.52   La familia celebra en el refugio
-  L1     0.810 0.490 1.42   CHISPA: Lo lograron!...
+  L1     0.810 0.490 1.42   ALGORITM: Lo lograron!...
   L2     0.832 0.585 1.62   La camara se desplaza hacia el horizonte
-  L3     0.845 0.620 1.78   CHISPA: Otros como ustedes. Mas adelante.
+  L3     0.845 0.620 1.78   ALGORITM: Otros como ustedes. Mas adelante.
   L4     0.800 0.460 1.35   La familia avanza. El camino se corta.
 ```

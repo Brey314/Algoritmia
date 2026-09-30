@@ -6,15 +6,15 @@ RF/RNF/CP/CT/CN/CU/HU/PG remiten a esos documentos y son la unidad de trazabilid
 **Los documentos se refundieron el 14/09/2026: de seis pasaron a cuatro.** OE1 es ahora
 `Solución OE1_Requerimientos.docx`, y `Solucion_OE2_Diseno_final.docx` absorbe en un solo archivo
 el guion, los casos de uso, las historias de usuario, las matrices de trazabilidad y la
-arquitectura. El trabajo de grado salió de `docs/`: se recupera con
-`git show HEAD:"docs/Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx"`.
+arquitectura. El trabajo de grado sigue en `docs/`
+(`Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx`, con su conversión en `docs/md/`).
 
 **Orden de precedencia.** Cuando dos documentos se contradicen gana el de mayor prioridad, y se
 corrige el otro. Verificado contra su estado del 14/09/2026 (rev. 8):
 
 | # | Documento | Qué gobierna |
 |---|---|---|
-| 1 | Trabajo de grado — **fuera de `docs/`**, solo en `git show HEAD:…` | Objetivos, KPI, alcance, marco jurídico, metodología Árcade |
+| 1 | Trabajo de grado — `docs/Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx` | Objetivos, KPI, alcance, marco jurídico, metodología Árcade |
 | 2 | `Solución OE1_Requerimientos.docx` | Lineamientos CP/CT/CN, RF-01..RF-47, RNF-01..RNF-23 |
 | 3 | `Solucion_OE2_Diseno_final.docx` §1 (guion) | Narrativa, mecánicas, parámetros y textos exactos |
 | 4 | `Solucion_OE2_Diseno_final.docx` §2–§3 | CU-01..CU-12, HU-01..HU-18, matrices de trazabilidad |
@@ -25,26 +25,29 @@ corrige el otro. Verificado contra su estado del 14/09/2026 (rev. 8):
 `claudeDocs/`: «guion §N» → `Solucion_OE2_Diseno_final` **§1.N** («guion §4.3» es §1.4.3;
 «guion §12», los puntos abiertos `PG-*`, es §1.2); «OE2 §4» —control de cambios— es §5.
 
-> **La §4 del documento refundido es arquitectura obsoleta — no se usa (`INC-48`).** La
-> refundición copió ahí el capítulo **anterior** a la alineación: reintroduce
-> `Application.persistentDataPath`, `CinematicsPlayer` sobre StreamingAssets, los ocho estados
-> fijos, `EntityManager` con enemigos y el `EventBus` global. Gana
-> `arquitectura_videojuego_v2 (2).docx`, que es lo que este documento adopta y lo que el código
-> implementa. Las filas 3 y 4 de la tabla viven además en el **mismo archivo**, así que un choque
-> entre ellas no lo resuelve la precedencia sino la edición del documento.
+> **La §4 del documento refundido resume la arquitectura implementada (`INC-48`, cerrado el
+> 29/09/2026).** Hasta esa fecha reproducía el capítulo **anterior** a la alineación
+> (`Application.persistentDataPath`, `CinematicsPlayer` sobre StreamingAssets, ocho estados fijos,
+> `EntityManager` con enemigos, `EventBus` global); se sustituyó por un resumen de lo que implementa
+> el código —nueve estados con `Narrative` y `Playing` parametrizados, doce escenas, `Datos/` con
+> ruta de respaldo, tres singletons, los nueve assemblies— con remisión a
+> `arquitectura_videojuego_v2 (2).docx`, que sigue siendo el detalle. Las filas 3 y 4 de la tabla
+> viven además en el **mismo archivo**, así que un choque entre ellas no lo resuelve la precedencia
+> sino la edición del documento.
 
 La precedencia no resuelve las contradicciones **internas** a un documento: esas se corrigen
-editándolo. `INCONSISTENCIAS.md` (rev. 10, 15/09/2026) registra los 50 hallazgos históricos.
-**`INC-01`..`INC-45` están cerrados en los `.docx`.** Siguen abiertos `INC-46` (la lista de tareas
-del Nivel 3, que exige una decisión), `INC-47`, `INC-48`, `INC-49` e `INC-50`, más tres residuos
-menores.
+editándolo. `INCONSISTENCIAS.md` (rev. 15, 30/09/2026) registra los hallazgos `INC-01`..`INC-117`,
+y **todos están cerrados**: el 29/09/2026 se cerraron los que seguían abiertos (`INC-46`..`INC-54` y
+los residuos `INC-24-r`, `INC-44-r`, `INC-44-r2`) y los sesenta nuevos (`INC-55`..`INC-114`) con una
+regla —ante un conflicto gana el juego y se edita el documento; lo que solo pide el documento se
+implementa; lo que solo tiene el juego se añade al documento—, y el 30/09/2026 `INC-115`..`INC-117`,
+tres puntos en los que Santiago decidió corregir el juego. Solo siguen abiertos `PG-05` y
+`PG-06` del guion, que exigen observar a estudiantes jugando.
 
-**Hay un punto en el que el documento y el código ya no coinciden, y es deliberado: `INC-47`.**
-La mecánica del Nivel 1 implementada mide **fuerza** y exige acomodar hojas y piedras; los
-documentos —incluidos los refundidos— mantienen el deslizante de **posición** (`RF-15`, `RF-16`,
-HU-06, guion §1.4.3). Donde este documento describe el Nivel 1, describe **el código**; la
-divergencia con los `.docx` está registrada y fechada, no es un descuido. En todo lo demás,
-documento y código coinciden.
+**La mecánica del Nivel 1 ya coincide en documentos y código** (`INC-47`, cerrado el 29/09/2026):
+el guion §1.4.3–§1.4.4, `RF-14`–`RF-16` y OE1 §3.6.1, HU-04..HU-07 y CU-05 describen lo que hace
+el juego —reunir los materiales en el círculo y encender con dos deslizantes, fuerza y cercanía de
+las piedras, con la tablilla mostrando el último mensaje— (ver el supuesto 7).
 
 **Numeración.** Los RF están cerrados en `RF-01..RF-47`. Los RNF **no**: el control de cambios de
 OE1 del 24/08/2026 insertó `RNF-18` (parametrización de contenidos, el enunciado de CT-05) y
@@ -105,11 +108,14 @@ un id estable en kebab-case. Los ids —no los nombres de archivo— son el índ
 | `nivel-fuego` | C | Nivel 1 «La Oscuridad» — iteración y depuración | `sistema-navegacion`, `andamiaje` |
 | `nivel-rueda` | D | Nivel 2 «La Rueda» — abstracción, patrones, modelado, algoritmos | `sistema-navegacion`, `andamiaje` |
 | `nivel-rio` | E | Nivel 3 «El Río» — descomposición y depuración | `sistema-navegacion`, `andamiaje` |
-| `progreso-registro` | F | Registro de indicadores, resumen de nivel, consulta docente, eliminación de datos | `sistema-navegacion`, C, D, E |
+| `progreso-registro` | F | Registro de indicadores, resumen de nivel, consulta docente, eliminación de datos | `sistema-navegacion` — lee los indicadores del perfil persistido y no referencia ningún nivel (RNF-16; `Game.Reporting` → `Game.Core`) |
 
 Las flechas apuntan en un solo sentido. Los tres niveles no se conocen entre sí: esa es la
 condición que hace verificable RNF-16 (prueba de exclusión — retirar un nivel y comprobar
-que los demás siguen ejecutándose).
+que los demás siguen ejecutándose). Los niveles tampoco alimentan a F por referencia: cada uno
+registra sus indicadores con su recolector y los confirma en `PlayerProfile` (`Game.Core`); F los
+lee del disco, así que retirar un nivel no rompe el informe docente. El resumen de nivel que ve
+el estudiante es una pantalla de `Game.UI`.
 
 ### Orden de construcción — slice vertical
 
@@ -148,7 +154,7 @@ repite ni rediscute.
 |---|---|
 | Motor | Unity 6000.5.10f1, plantilla 2D + URP 17.6.0 (CT-01) |
 | Lenguaje | C# |
-| Entrada | Input System 1.20.0 (`Assets/Settings/InputSystem_Actions.inputactions`) — nunca la clase `Input` legada |
+| Entrada | Input System 1.20.0 con un solo mapa de controles, `Assets/Game/Input/ControlesJugables.inputactions` (solo puntero: clic y clic sostenido, INC-01), declarado como mapa del proyecto y vigilado por `InputSchemeTest` — nunca la clase `Input` legada. El `InputSystem_Actions.inputactions` de `Assets/Settings/` es el de la plantilla y no lo usa nada |
 | Datos de contenido | ScriptableObjects (CT-05, RNF-18) |
 | Persistencia | JSON local, sin red (CT-07, RNF-10) |
 | Pruebas | Unity Test Framework 1.7.0 (NUnit) |
@@ -222,8 +228,9 @@ public enum GameState { Boot, MainMenu, ProfileSelect, LevelSelect, Narrative,
                         Playing, LevelSummary, Credits, TeacherReport }
 ```
 
-`Narrative` se resuelve con un `NarrativeSequence` (ScriptableObject) y **una sola escena
-reutilizable**; `Playing` con un `LevelId` y una fase. Añadir una escena narrativa pasa a ser
+`Narrative` lleva el **id** de un `NarrativeSequence` (ScriptableObject) —el asset vive en
+`Game.Scaffolding`, que depende de `Game.Core`, y lo resuelve el controlador de la escena en
+`Game.UI`— y se reproduce en **una sola escena reutilizable**; `Playing` lleva un `LevelId` y una fase. Añadir una escena narrativa pasa a ser
 un asset, no un estado, una escena y una rama del FSM. Es menos código y menos peso en el
 paquete (RNF-06).
 
@@ -241,12 +248,15 @@ discutir:
 - **`NarrativeSequence.NextSequenceId` encadena dos escenas del guion** —la 2.2 con la 2.3—
   desde el asset. Encadenar escenas narrativas no cuesta un `if` en el controlador.
 
-**La oscuridad del Nivel 1 es una capa propia, y solo del Nivel 1.** `NarrativeLight`
-(`Game.Scaffolding`) junto con `CameraKey.HardCut`, `FlashSeconds` y `LightStart` en los
-`N1_*.asset`, sobre el shader `Algoritm/Oscuridad`. El Nivel 2 no la usa y no debe heredarla:
-`RF-21` (iluminación progresiva) es de prioridad Baja y está acotado al nivel del fuego. El
-diseño de los encuadres vive en `docs/Camara_Narrativa_N1.md` y su inventario en
-`docs/md/Camara_Narrativa_N1.md` — ambos fuera de git, sin copia.
+**La capa de luz de las narrativas es propia.** `NarrativeLight` (`Game.Scaffolding`), junto
+con `CameraKey.HardCut`, `FlashSeconds` y `LightStart` en los `N*_*.asset`, sobre el shader
+`Algoritm/Oscuridad`. En el Nivel 1 es la oscuridad de la cueva, y su progresión en la mecánica
+es `RF-21`, de prioridad Baja y acotado al nivel del fuego. En el Nivel 2 solo tiñe: el día pasa
+del amanecer a la noche (`N2_PuenteI` → `N2_Escena25_Cierre` y el arranque de `N3_PuenteII`,
+prueba `NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche`); en el laberinto, que no
+tiene esa capa, lo hace `MazeLayout.LightTint`. El diseño de los encuadres del N1 vive en
+`docs/Camara_Narrativa_N1.md` (versionado); su inventario, `docs/md/Camara_Narrativa_N1.md`, se
+perdió el 20/09/2026 y lo aplicado solo queda en los `N1_*.asset`.
 
 ### El FSM es C# plano
 
@@ -255,14 +265,19 @@ diseño de los encuadres vive en `docs/Camara_Narrativa_N1.md` y su inventario e
 Golden Path (RNF-13) se prueban en EditMode, sin escenas ni frames — que es lo que hace
 pagable el «un caso de prueba por requerimiento» de CT-10.
 
-### Comunicación: interfaz donde hay un consumidor, evento donde hay varios
+### Comunicación: interfaz donde hay un consumidor, evento solo dentro de una escena
 
 El documento propone un `EventBus` global para todo. Se acota:
 
-- **Interfaz inyectada** cuando el consumidor es conocido: un nivel reporta con
-  `ILevelReporter` que Core le pasa al arrancar. Sirve además para probar el nivel con un doble.
-- **Evento** solo cuando hay varios oyentes que no se conocen entre sí — HUD, audio y guardado
-  reaccionando a la misma señal.
+- **Interfaz inyectada** cuando el consumidor es conocido: la pantalla que guarda recibe un
+  `IProfileSaver` (`MainMenuController` al «Salir», `LevelSummaryController`), y sus pruebas le
+  pasan un doble; el nivel en curso se registra como `ILevelReporter` en
+  `GameFlowRunner.ActiveReporter` para que la pausa (`Game.UI`) le avise sin que interfaz y
+  niveles se referencien. `ILevelReporter` solo lleva `PauseOpened`/`PauseClosed`.
+- **Evento** solo dentro de una escena, cuando una pieza que crea el controlador le avisa de un
+  arrastre o un clic (`DraggablePiece.PickedUp`/`Dropped`, `RaftPieceHandle.Taken`/`Released`).
+  No hay evento de fase confirmada: quien cierra la fase llama a `ConfirmPhase` y a
+  `Session.SaveActive()` en la misma llamada (RF-04).
 
 Un bus genérico para todo convierte el flujo en algo que no se puede seguir leyendo el código,
 justo lo contrario de por qué se eligió una FSM.
@@ -273,10 +288,11 @@ Se conserva el reparto del documento, corrigiendo lo que no aplica a este juego.
 
 | Capa | Componentes | Módulo |
 |---|---|---|
-| Core | `GameBootstrap`, `GameFlow` (FSM), `SceneLoader`, `PlayerProfile`, `SaveStore` | `sistema-navegacion` |
-| Andamiaje | `DialogueRunner`, `GuideController`, `HintPolicy`, `FeedbackLog` | `andamiaje` |
-| Gameplay | `FireLevel`, `WheelLevel`, `RiverLevel` — un assembly cada uno | `nivel-*` |
-| UI | `HUDController`, menús, pausa (RF-07) | transversal |
+| Core | `GameFlow` (FSM), `GameFlowRunner`, `SceneLoader`, `PlayerProfile`, `ProfileSession`, `SaveStore` | `sistema-navegacion` |
+| Andamiaje | `DialogueRunner`, `NarrativeSequence`, `NarrativeVisitPolicy`, `ConditionalNarrativeTrigger`, `GuideContent`, `HintPolicy`, `IllustrationFraming`, `CharacterRig` | `andamiaje` |
+| Gameplay | Un assembly por nivel y un controlador por escena jugable —`FirePanelController`; `ForestSceneController`, `WorkshopSceneController`, `MazeSceneController`; `RiverSceneController` y `AssemblyPanelController`— sobre clases de C# plano, con su recolector de indicadores (`FireIndicatorCollector`, `WheelIndicatorCollector`, `RiverIndicatorCollector`); el registro de mensajes `FireFeedbackLog` es del Nivel 1 | `nivel-*` |
+| Reporting | `IndicatorReport`, `ProfileRepository`, `ReportContent` — solo depende de `Game.Core` (RNF-16) | `progreso-registro` |
+| UI | Controladores de pantalla: menú principal y perfiles, menú de niveles, narrativa, resumen, pausa (RF-07), créditos, informe docente y confirmación de borrado | transversal |
 | Audio | `AudioManager`, persiste entre escenas | transversal |
 | Datos | ScriptableObjects de diálogo, tareas y configuración (CT-05) | transversal |
 
@@ -291,10 +307,12 @@ desaconsejado en Unity moderno. `CinematicsPlayer` con `VideoPlayer` — ver má
 ### Dos decisiones de la versión previa que contradecían requerimientos
 
 **Las escenas narrativas no son video.** La versión previa proponía `VideoPlayer` con archivos en
-`StreamingAssets`. **RF-05** especifica «ilustraciones estáticas y cuadros de diálogo
-secuenciales», y el guion §2 lo confirma. Video comprometería además RNF-06 (< 500 MB) y RNF-04
-(carga < 10 s). Se implementa como `DialogueRunner` sobre ilustración fija, con avance por clic
-y botón de omitir (RF-06).
+`StreamingAssets`. **RF-05** especifica una ilustración fija que la cámara recorre, con
+personajes y objetos animados sobre ella y cuadros de diálogo secuenciales, sin video (corregido
+el 29/09/2026: decía «ilustraciones estáticas»), y el guion §1.2 lo confirma. Video comprometería
+además RNF-06 (< 500 MB) y RNF-04 (carga < 10 s). Se implementa como `DialogueRunner` sobre
+ilustración fija —encuadres de `IllustrationFraming`, personajes con `CharacterRig`, objetos con
+`NarrativeProp`, luz con `NarrativeLight`—, con avance por clic y botón de omitir (RF-06).
 
 **La persistencia no usa `Application.persistentDataPath`.** Escribe en `%AppData%\LocalLow`,
 fuera de la carpeta portable: choca con RNF-07 y con el criterio de verificación de RNF-11,
@@ -304,9 +322,10 @@ mantiene el supuesto 1: JSON en `Datos/` junto al ejecutable.
 **Y dos que contradecían criterios pedagógicos**, heredadas del molde arcade genérico:
 mencionaba pantalla de *Game Over* y *puntajes* en HUD y `SaveSystem`. **CP-02**
 prohíbe pantallas de derrota y **CP-03** prohíbe puntajes; RF-17 prohíbe cifras en la
-retroalimentación. No se implementan. El `InputHandler` tampoco abstrae gamepad: la entrada se
-limita a **clic y clic sostenido, sin excepciones** (CT-06, RNF-02). El desplazamiento del
-personaje en el Nivel 3 usa botones de dirección **en pantalla**, accionados con clic — no el
+retroalimentación. No se implementan. Tampoco hay un `InputHandler` que abstraiga gamepad: la
+entrada son los eventos de puntero de uGUI sobre el Input System y se limita a **clic y clic
+sostenido**; la única excepción es escribir el nombre al crear un perfil (CT-06, RNF-02, INC-80). El desplazamiento del
+personaje en el Nivel 3 usa botones de dirección **en pantalla**, accionados con clic sostenido — no el
 teclado (RF-35, guion §2.1/§8.2, CU-09; INC-01, cerrado).
 
 ---
@@ -325,9 +344,10 @@ Assets/
           Wheel/         → nivel-rueda
           River/         → nivel-rio
         Reporting/       → progreso-registro
-        UI/  Audio/      → HUD, menús, pausa; audio persistente
-      Editor/            → utilidades de editor, si aparecen
-    Data/                → ScriptableObjects: diálogos, tareas, configuración de nivel
+        UI/  Audio/      → pantallas (menús, perfiles, narrativa, resumen, pausa, informe docente); audio persistente
+      Editor/            → Game.EditorTools, solo Editor: PlayFromBoot, ArtImportRules, AudioImportRules, ClaudeSceneAutosave, Sandbox/
+    Data/                → ScriptableObjects: Fire/ Wheel/ River/ Narrative/ Guide/ Reporting/, más GameTitleConfig, CreditsContent, LevelSummaryMessages y ProfileSelectContent
+    Prefabs/             → Characters/ (rigs de la familia y los tres Algoritm), UI/ (MenuPausa, en las cinco escenas jugables)
     Scenes/
       Boot.unity  MainMenu.unity  LevelSelect.unity  Credits.unity
       TeacherReport.unity
@@ -337,14 +357,15 @@ Assets/
       Level2_Forest.unity  Level2_Workshop.unity  Level2_Maze.unity
       Level3_River.unity
     Art/  Audio/         → assets propios o con autorización escrita (CT-09, RNF-23)
-  Settings/              → URP 2D, Renderer2D, Input Actions (ya existente)
+    Input/               → ControlesJugables.inputactions, el único mapa de controles (RNF-02, CT-06)
+  Settings/              → URP 2D, Renderer2D (de la plantilla)
   Tests/
-    EditMode/            → lógica pura, una carpeta por módulo
-    PlayMode/            → escenas, UI, integración
+    EditMode/            → lógica pura, una carpeta por módulo, más Architecture/ (lee .asmdef y ajustes del disco), Content/ (barre el contenido de los tres niveles) y EditorTools/
+    PlayMode/            → escenas, UI, integración (Scaffolding y Reporting no tienen assembly de PlayMode)
 docs/                    → documentos fuente del trabajo de grado (no editar desde código)
-claudeDocs/              → SPEC.md (este contrato) e INCONSISTENCIAS.md (hallazgos)
+claudeDocs/              → SPEC.md (este contrato), INCONSISTENCIAS.md (hallazgos), Direccion_de_Arte.md, Direccion_de_Musica_y_Sonido.md, Interfaces.md, Camara_Narrativa_N2.md y los mockups de interfaz (HTML)
   tasks/
-    Slice 1/  Slice 2/  Slice 3/  Slice 4/
+    Slice 1/  Slice 2/  Slice 3/  Slice 4/  Personajes/  OE4/
       plan.md            → plan técnico del slice
       todo.md            → tablero de tareas del slice
 ```
@@ -354,17 +375,20 @@ Los namespaces siguen la ruta relativa a `Scripts`, elidiendo `Runtime`:
 
 **Assemblies** (`.asmdef`), uno por módulo con dependencia unidireccional:
 `Game.Core`, `Game.Scaffolding`, `Game.Levels.Fire`, `Game.Levels.Wheel`,
-`Game.Levels.River`, `Game.Reporting`, `Game.UI` y `Game.Audio`, más un assembly de pruebas por
-cada uno. Ningún assembly de nivel referencia a otro assembly de nivel: eso es lo que hace
+`Game.Levels.River`, `Game.Reporting`, `Game.UI` y `Game.Audio`, más su assembly de pruebas de
+EditMode (`<Módulo>.Tests`) y, salvo `Game.Scaffolding` y `Game.Reporting`, uno de PlayMode
+(`<Módulo>.PlayMode.Tests`); aparte están `Game.Architecture.Tests`, `Game.Content.Tests` y
+`Game.EditorTools.Tests`. Ningún assembly de nivel referencia a otro assembly de nivel: eso es lo que hace
 ejecutable la prueba de exclusión de RNF-16.
 
 Fuera de esa cadena cuelga **`Game.EditorTools`, solo Editor**, que **no referencia ningún
 `Game.*`**: trae `PlayFromBoot` —que fuerza el arranque en `Boot` al pulsar Play, y se suspende
-solo en batchmode y durante las corridas del Test Runner— y la maqueta `Sandbox/CharacterProbe*`,
-que no es código del juego. No entra en el paquete de entrega y por eso no cuenta para RNF-16.
+solo en batchmode y durante las corridas del Test Runner—, las reglas de importación
+`ArtImportRules` y `AudioImportRules` (RNF-23, RNF-06), `ClaudeSceneAutosave` y la maqueta
+`Sandbox/CharacterProbe*`, que no es código del juego. No entra en el paquete de entrega y por eso no cuenta para RNF-16.
 
-`Game.UI` y `Game.Audio` están en la lista de la arquitectura §9 (INC-40, cerrado): `HUDController`
-y `AudioManager` tienen que compilar en algún sitio, y meterlos en `Game.Core` haría que el
+`Game.UI` y `Game.Audio` están en la lista de la arquitectura §9 (INC-40, cerrado): los
+controladores de pantalla y `AudioManager` tienen que compilar en algún sitio, y meterlos en `Game.Core` haría que el
 núcleo dependiera de la UI — justo lo que impediría probar `GameFlow` en EditMode sin escena.
 **Dependen de `Game.Core`; nunca al revés.**
 
@@ -398,18 +422,31 @@ namespace Game.Levels.Fire
         public bool CanBlow => _effectiveStrikes >= _config.MinimumEffectiveStrikes;
         public bool ShouldOfferHint => _consecutiveFailures >= _config.AttemptsBeforeHint;
 
-        /// <summary>Resuelve un golpe desde la posición dada y devuelve lo observado.</summary>
-        public StrikeOutcome Strike(StrikePosition position)
+        public ForceBand Classify(int force) =>
+            force < _config.EffectiveForceMin ? ForceBand.TooSoft
+            : force > _config.EffectiveForceMax ? ForceBand.TooHard
+            : ForceBand.Effective;
+
+        /// <summary>Resuelve un golpe con la fuerza y la cercanía dadas y devuelve lo observado.</summary>
+        public StrikeOutcome Strike(int force, SpacingBand spacing = SpacingBand.Effective)
         {
-            if (position != _config.EffectivePosition)
+            var band = Classify(force);
+            if (spacing != SpacingBand.Effective)
             {
                 _consecutiveFailures++;
-                return StrikeOutcome.SparksDied(position);
+                return StrikeOutcome.StonesMisplaced(force, band, spacing); // sin choque no hay chispa
             }
-            // Lo ganado permanece: un fallo posterior nunca reduce el contador (guion §4.3.6).
+
+            if (band != ForceBand.Effective)
+            {
+                _consecutiveFailures++;
+                return StrikeOutcome.SparksDied(force, band);
+            }
+
+            // Lo ganado permanece: un fallo posterior nunca reduce el contador (guion §1.4.3.6).
             _effectiveStrikes++;
             _consecutiveFailures = 0;
-            return StrikeOutcome.SparkLanded(_effectiveStrikes);
+            return StrikeOutcome.SparkLanded(force, _effectiveStrikes);
         }
     }
 }
@@ -419,14 +456,17 @@ Los parámetros ajustables jugando van en ScriptableObject con `[field: Serializ
 `[Tooltip]`, nunca como literal en el código (CT-05, RNF-18):
 
 ```csharp
-[CreateAssetMenu(menuName = "Game/Levels/Fire Config")]
+[CreateAssetMenu(menuName = "Algoritm/Configuración del nivel fuego", fileName = "N1_Config")]
 public class FireLevelConfig : ScriptableObject
 {
-    [field: SerializeField, Tooltip("Distancias disponibles en el control deslizante.")]
-    public int AvailablePositions { get; set; } = 3;
+    [field: SerializeField, Tooltip("Muesca máxima del deslizante de fuerza (va de 0 a este valor).")]
+    public int ForceLevels { get; set; } = 10;
 
-    [field: SerializeField, Tooltip("Única posición desde la que un golpe cuenta como efectivo.")]
-    public StrikePosition EffectivePosition { get; set; } = StrikePosition.VeryClose;
+    [field: SerializeField, Tooltip("Fuerza mínima con la que un golpe cuenta como efectivo.")]
+    public int EffectiveForceMin { get; set; } = 7;
+
+    // … EffectiveForceMax, SpacingLevels, EffectiveOverlap, OverlapTolerance, GatherZoom,
+    // GatherSeconds, IgnitionSeconds, BurnExtent …
 
     [field: SerializeField, Tooltip("Golpes efectivos necesarios para habilitar el soplo.")]
     public int MinimumEffectiveStrikes { get; set; } = 3;
@@ -454,7 +494,8 @@ Unity Test Framework. Rigen `unity-coding-skills:test-designing-guide` y `test-w
 | EditMode (unitarias) | `Assets/Tests/EditMode/<Módulo>/` | Máquinas de estado, validadores de secuencia, contadores, desbloqueos condicionales, selección de mensaje narrativo, serialización del perfil. Sin escena, sin frames. |
 | PlayMode (integración) | `Assets/Tests/PlayMode/<Módulo>/` | Cableado de escena, flujo de UI, guardado y recarga, desbloqueo de nivel, recorridos del Golden Path. `[Category("Integration")]`. |
 | Aserción de layout | PlayMode | Elemento dentro de pantalla, sin solapamientos, texto sin desbordar, botón alcanzable por raycast. `[Category("Integration")]`. |
-| Verificación visual | PlayMode | Solo lo que no admite aserción estricta: contraste (RNF-20), doble indicador color+icono (RNF-19), ausencia de destellos rápidos (RNF-21). `[Category("VisualVerification")]`. |
+| Aceptación | EditMode y PlayMode | El criterio de aceptación de un RF, RNF o HU aseverado de extremo a extremo; se suma a la categoría de su nivel. El contraste texto/fondo (RNF-20) de los tres niveles se asevera así: razón ≥ 4.5:1 sobre los colores renderizados. `[Category("Acceptance")]`. |
+| Verificación visual | PlayMode | Solo lo que no admite aserción estricta, sobre capturas guardadas: doble indicador leído en escala de grises (RNF-19), ausencia de destellos rápidos (RNF-21) y la lectura del texto en las pantallas cuyo contraste no se mide (menú principal, laberinto, taller). `[Category("VisualVerification")]`. |
 | Manual | Plan de pruebas OE4 | Presupuestos de rendimiento, ejecución portable en dos equipos, ejecución sin red, cierre forzado y recuperación. |
 
 **Probar sin ampliar la superficie pública.** Un `AssemblyInfo.cs` en la raíz del módulo con
@@ -479,7 +520,7 @@ Los cuatro invariantes pedagógicos se prueban explícitamente en cada nivel, no
    donde más fácil se cuela una, y donde HU-14 ya lo hizo (INC-26).
 4. **El andamiaje orienta, no resuelve** (CP-06): la ayuda a demanda repite la instrucción
    vigente sin alterar el estado, y la pista tras tres fallos nunca nombra la respuesta —en el
-   Nivel 1, nunca la posición efectiva (guion §4.3.6).
+   Nivel 1, nunca la fuerza ni la cercanía efectivas (guion §4.3.6).
 
 Flujo de trabajo test-first por slice: `plan-feature` → `test-designer` → `failing-test-writer`
 → implementación → refactor y deduplicación. Para defectos, `fix-bug` (reproducir → diagnosticar
@@ -541,7 +582,7 @@ Verificables, uno por KPI del trabajo de grado (§2.3):
    Verificado el 30/08/2026 sobre los 47 RF: se cumple.
 2. **OE1 — Criterios pedagógicos.** Al menos el 80 % de los diez criterios CP está explícitamente
    integrado en el diseño. Los diez tienen hoy al menos un RF que los materializa (OE2 §3.2), y
-   tres de ellos —CP-02, CP-03 y CP-06— se verifican además con pruebas automatizadas.
+   cuatro de ellos —CP-02, CP-03, CP-06 y CP-07— se verifican además con pruebas automatizadas.
 3. **OE2 — Progresión.** Los tres niveles están diseñados e implementados con dificultad
    ascendente y desbloqueo secuencial (RF-03).
 4. **OE2 — Alineación narrativa.** Más del 85 % de los retos narrativos exige una acción de
@@ -565,39 +606,37 @@ Verificables, uno por KPI del trabajo de grado (§2.3):
 
 ## Decisiones sobre los documentos en conflicto
 
-`INCONSISTENCIAS.md` (rev. 10, 15/09/2026) registra los 50 hallazgos históricos entre los `.docx`.
-**`INC-01`..`INC-45` están cerrados en los documentos**, `INC-43`/`INC-44`/`INC-45` desde la
-refundición del 14/09/2026. Siguen abiertos cinco, y tres de ellos son el código adelantándose
-al documento:
+`INCONSISTENCIAS.md` (rev. 15, 30/09/2026) registra los hallazgos `INC-01`..`INC-117` entre los
+`.docx` y entre ellos y el juego. **Todos están cerrados en los documentos**: `INC-43`/`INC-44`/`INC-45`
+desde la refundición del 14/09/2026, `INC-46`..`INC-114` el 29/09/2026 e `INC-115`..`INC-117` el
+30/09/2026, cuando los `.docx` se
+alinearon con el juego y se implementó lo que solo pedían los documentos. Ya no hay divergencias
+deliberadas entre documento y código. Los que eran el código adelantándose al documento quedaron así:
 
-- **`INC-46`** — la lista de tareas del Nivel 3 está descrita como dos objetos distintos. Se
-  cierra dentro de `claudeDocs/`, pero **exige una decisión**; afecta al Slice 3, no a lo hecho.
-- **`INC-47`** — la mecánica del Nivel 1. **Es la única divergencia viva entre documento y
-  código**, y es deliberada: ver el supuesto 7.
-- **`INC-48`** — la §4 del documento refundido es arquitectura obsoleta. Gana
-  `arquitectura_videojuego_v2 (2).docx`; el código no cambia.
-- **`INC-49`** — el menú de pausa. En código son los rótulos del **mockup 6** (Reanudar ·
-  Reiniciar · Volver al menú de niveles, W17, 15/09/2026) y HU-17 todavía dice «Continuar /
-  Reiniciar nivel / Volver al menú principal». Decidido a favor del mockup: lo que falta es
-  corregir HU-17, no el código.
-- **`INC-50`** — el rodado del Nivel 2. «Empujar» confirma la fase y sale a la escena 2.2, que es
-  la que anima el rodado (W19, 15/09/2026); RF-26 y HU-08 lo describen dentro de la mecánica. El
-  requisito —ver rodar la caja sobre lo redondo— se cumple; cambia dónde.
+- **`INC-46`** — la lista de tareas del Nivel 3 es la tablilla de marfil con un círculo por tarea que
+  implementa el juego; se corrigió `Direccion_de_Arte.md` §10.2.
+- **`INC-47`** — la mecánica del Nivel 1 (reunir y encender con fuerza y cercanía): ver el supuesto 7.
+- **`INC-48`** — la §4 del documento refundido resume la arquitectura que implementa el código, con
+  remisión a `arquitectura_videojuego_v2 (2).docx`, que también se alineó (INC-94..INC-96).
+- **`INC-49`** — el menú de pausa del **mockup 6** (Reanudar · Reiniciar · Volver al menú de niveles)
+  está ya en RF-07 y HU-17; «Reiniciar» repite la fase activa sin repetir la narrativa.
+- **`INC-50`** — «Empujar» confirma la fase y sale a la escena 2.2, que anima el rodado; RF-26,
+  HU-08, CU-06 y el guion ya lo describen así.
 
 En todo lo demás el código sigue sencillamente lo que dicen los documentos.
 Lo que el código materializa de cada decisión, para que no se pierda al leer solo el `.docx`:
 
 | Hallazgo (cerrado) | Lo que el código materializa |
 |---|---|
-| INC-25 · HU-17 | Pausa como capa de UI sobre `Playing`, no un estado nuevo: `Time.timeScale = 0` mientras está abierta. Rótulos del mockup 6 (INC-49): Reanudar (restituye el estado exacto), Reiniciar (confirmación, repite **la fase activa**, nunca re-bloquea un nivel desbloqueado, no borra indicadores), Volver al menú de niveles. Un solo prefab `MenuPausa` en las cuatro escenas jugables. Sin `GameOver`. |
+| INC-25 · HU-17 | Pausa como capa de UI sobre `Playing`, no un estado nuevo: `Time.timeScale = 0` mientras está abierta. Rótulos del mockup 6 (INC-49, cerrado): Reanudar (restituye el estado exacto), Reiniciar (confirmación, repite **la fase activa** sin repetir la narrativa, nunca re-bloquea un nivel desbloqueado, no borra indicadores; en el Nivel 3, cuyas tres fases comparten escena, `AssemblyPanelController` registra la fase activa al confirmar cada una con `GameFlow.SetPlayingPhase`, INC-117), Volver al menú de niveles. Un solo prefab `MenuPausa` en las cinco escenas jugables. Sin `GameOver`. |
 | INC-26 · HU-14 | El resumen de fin de nivel es **narrativo y sin cifras** (RF-45, RF-17, CP-03). Las cifras solo viven en `TeacherReport` (RF-46); no hay `ScoreManager`. |
-| INC-01 · controles | **Botones de dirección en pantalla, accionados con clic.** Nunca teclado. El mapa de controles se inspecciona sin salvedades (RNF-02, CT-06). |
+| INC-01 · controles | **Botones de dirección en pantalla, accionados con clic sostenido.** Nunca teclado. El mapa de controles se inspecciona sin salvedades (RNF-02, CT-06). |
 | INC-27 · RNF-09 | Se persisten nombre o alias, nivel alcanzado, fases confirmadas y los cuatro indicadores. Nada más. |
-| INC-28 · omisión | El botón de omitir aparece **solo si la escena ya fue vista** (RF-06). El cierre reflexivo no se omite la primera vez (CP-07, RF-12). |
+| INC-28 · omisión | El botón de omitir aparece **solo si la escena ya fue vista** (RF-06). El cierre reflexivo no se omite la primera vez (CP-07, RF-12). En el Nivel 3 el cruce y la escena final no se omiten nunca, tampoco al repetirlo: sin nivel siguiente, el perfil no distingue la primera vuelta (INC-51, HU-14 FA-01). |
 | INC-29 · HU-10 | El Nivel 2 fase 3 emite exactamente los cuatro indicadores de OE1 §3.6.1, con su definición operativa. |
 | INC-30 · Nivel 3 | Lista de **cuatro tareas** (RF-36). Ensamblaje de **tres fases** (RF-40). Tarea 3 se marca al confirmar la fase de amarre; tarea 4, al confirmar mástil y vela; la fase de base no marca tarea por sí sola. |
 | INC-32 · «Soplar» | Una vez habilitado, «Soplar» **no** vuelve a deshabilitarse: lo ganado permanece (guion §4.3.6, CP-02). El desbloqueo depende solo del número de golpes efectivos. |
-| INC-33 · bloques del laberinto | «Avanzar» y «Retroceder» son relativos a la orientación de la carretilla; «Girar» rota 90° en sentido horario. Con la lectura absoluta el refugio podía ser inalcanzable. |
+| INC-33 · bloques del laberinto | «Avanzar ×n» y «Retroceder ×n» (n de 1 a 9) son relativos a la orientación de la carretilla; «Girar» rota 90° a la izquierda o a la derecha, según el lado elegido (mockup 10, 13/09/2026; INC-55). Con la lectura absoluta el refugio podía ser inalcanzable. |
 | INC-34 · persistencia | La eliminación de un perfil borra `Datos/` **y** la ruta de respaldo; la prueba de RNF-11 corre en los dos escenarios (`Datos/` escribible y de solo lectura). |
 | INC-35 · informe docente | `TeacherReport` presenta los indicadores **por nivel y por fase** (RF-45, RF-46). |
 | INC-37 · RF-44 / RF-46 | `RF-44` (cruce y cierre del juego) trazado a HU-13; `RF-46` (consulta docente) a HU-16. La numeración de historias sigue cerrada en HU-01..HU-18. |
@@ -621,9 +660,14 @@ Corregir cualquiera de estos ahora sale más barato que después.
    docente. Ya no es solo un supuesto: la arquitectura §7 lo adopta con esa justificación e
    incluye que **la eliminación de un perfil borra las dos rutas** y que la prueba de RNF-11 corre
    en los dos escenarios (INC-34, cerrado).
-2. **Guardado automático** al completar cada fase, no en cada acción (RF-04), que es lo que hace
+2. **Guardado automático** al confirmar cada fase, no en cada acción (RF-04), que es lo que hace
    verificable la recuperación tras cierre forzado (RNF-14). Los cuatro indicadores de OE1 §3.6.1
-   se persisten en ese mismo punto.
+   se persisten en ese mismo punto. Los Niveles 2 y 3 confirman cada fase al completarla; la única
+   fase del Nivel 1 y el desbloqueo del nivel siguiente, en los tres, los hace `LevelSummary`
+   después del cierre reflexivo (arquitectura §7, corregida el 29/09/2026). Si un cierre forzado
+   impide llegar al resumen de un nivel con todas sus fases confirmadas, el menú de niveles deriva
+   el desbloqueo de esas fases (`LevelUnlockPolicy.IsUnlocked`), sin campo nuevo en el perfil
+   (RNF-09, INC-116, 30/09/2026).
 3. **Los personajes son obra derivada de los diseños de la Familia Anonaky, con autorización
    escrita concedida** (PG-07 cerrado el 30/08/2026). Se rediseñaron —proporciones, vestuario,
    paleta y rasgos propios— pero **partieron** de esos personajes, y cambiar el diseño no
@@ -632,42 +676,45 @@ Corregir cualquiera de estos ahora sale más barato que después.
    (CT-09, RNF-23, trabajo de grado §3.3.2 y §5.2), y la constancia escrita se archiva con los
    anexos del trabajo de grado. Lo que sí es **original del proyecto** y no depende de PG-07:
    entornos, props, interfaz, tipografía, efectos y animación (`Direccion_de_Arte.md` §19).
-4. **Raíz de assets** `Assets/Game/` y namespace `Game.*`: el título aún no está definido (PG-01)
-   y no conviene atar la estructura de carpetas a una decisión pendiente.
+4. **Raíz de assets** `Assets/Game/` y namespace `Game.*`: el título del producto, «Algoritmia»
+   (PG-01, cerrado), vive en `GameTitleConfig` y en el `productName` de Unity (junto al
+   `companyName` «Universidad Catolica de Colombia», 29/09/2026), no en rutas ni namespaces.
 5. **El guía se llama Algoritm** (decisión del 02/09/2026, `PG-02` cerrado; INC-44), siguiendo el guion, que es el único documento con
    escena de origen y caracterización visual (PG-02). Al vivir en ScriptableObjects, el nombre se
    cambia sin tocar código.
-6. **Nivel 3 usa botones de dirección en pantalla**, accionados con clic — no el teclado. Letra
+6. **Nivel 3 usa botones de dirección en pantalla**, accionados con clic sostenido: Mamá avanza mientras se mantiene pulsado y se detiene al soltar — no el teclado. Letra
    vigente en todos los documentos: RF-35, guion §2.1 y §8.2, CU-09, HU-11 y arquitectura §1.
    **No hay excepción alguna a RNF-02 ni a CT-06** (INC-01, cerrado).
 7. **La mecánica del Nivel 1 mide fuerza y cercanía, no posición** (rediseño del 12/09/2026,
-   T20–T24, ampliado el 15/09/2026, T25–T27; `INC-47`). Primero el estudiante **reúne** hojas y
-   piedras en el círculo del centro (la ayuda lo dibuja); reunido todo, la cámara se acerca al
-   doble, las hojas se acomodan en fogata y fija dos hipótesis en dos deslizantes de 0 a 10 —la
-   **fuerza** del golpe y la **cercanía** de las piedras—, golpea y sopla. Los documentos —incluidos los refundidos del
-   14/09/2026— siguen describiendo un deslizante de **posición** de tres distancias (`RF-15`,
-   `RF-16`, HU-06, guion §1.4.3): **aquí gana el código**, y la divergencia está registrada y
-   fechada en `INCONSISTENCIAS.md`. Los nombres de las pruebas conservan `RF-15`/`RF-16` porque el
-   requisito de fondo no cambió: hipótesis → experimento → resultado observable → ajuste.
+   T20–T24, ampliado el 15/09/2026, T25–T27; `INC-47`, cerrado el 29/09/2026 al alinear el guion
+   §1.4.3–§1.4.4, OE1 `RF-14`–`RF-16` y §3.6.1, HU-04..HU-07 y CU-05 con el juego). Primero el
+   estudiante **reúne** hojas y piedras en el círculo del centro (la ayuda lo dibuja); reunido todo,
+   la cámara se acerca al doble, las hojas se funden en el montón y fija dos hipótesis en dos
+   deslizantes de 0 a 10 —la **fuerza** del golpe y la **cercanía** de las piedras—, golpea y sopla.
+   La tablilla muestra solo el último mensaje. Los nombres de las pruebas conservan `RF-15`/`RF-16`,
+   que ahora enuncian lo mismo: hipótesis → experimento → resultado observable → ajuste.
 
-   Valores vigentes en `FireLevelConfig`, **ninguno validado jugando todavía** (`PG-06`, abierto,
-   se cierra en el Checkpoint D):
+   Valores vigentes en `FireLevelConfig` (`N1_Config.asset`), **ninguno validado jugando todavía**
+   (`PG-06`, abierto: exige jugar con estudiantes, fuera del OE4):
 
    | Campo | Valor |
    |---|---|
    | `ForceLevels` | 10 |
    | `EffectiveForceMin` · `EffectiveForceMax` | 7 · 8 |
-   | `PileRadius` · `StonesRadius` | 0.10 · 0.20 |
+   | `SpacingLevels` | 10 |
+   | `EffectiveOverlap` · `OverlapTolerance` | 30 · 4 (px del lienzo de 1920×1080; con las piezas actuales, solo la muesca 5) |
+   | `GatherZoom` · `GatherSeconds` | 2 · 0.8 |
+   | `IgnitionSeconds` · `BurnExtent` | 3.5 · 0.5 |
    | `MinimumEffectiveStrikes` | 3 |
    | `AttemptsBeforeHint` | 3 |
 
    Viven en un ScriptableObject (CT-05, RNF-18) para que ajustarlos no cueste una recompilación.
-   La pista tras tres fallos **nunca nombra la fuerza efectiva**, igual que antes nunca nombraba
-   la posición (CP-06).
-8. **Los bloques del laberinto** son relativos a la orientación de la carretilla: «Girar» rota 90°
-   en sentido horario y «Avanzar» / «Retroceder» mueven adelante y atrás respecto de esa
-   orientación. Letra vigente en RF-31 y en el guion §6.3.2 (INC-33, cerrado). Con la lectura
-   absoluta ninguna secuencia se desplazaba en vertical.
+   La pista tras tres fallos **nunca nombra la fuerza ni la cercanía efectivas** (CP-06).
+8. **Los bloques del laberinto** son relativos a la orientación de la carretilla: «Avanzar ×n» y
+   «Retroceder ×n» (n de 1 a 9) mueven n casillas adelante o atrás respecto de esa orientación, y
+   «Girar» rota 90° al lado elegido, izquierda o derecha (decisión de Santiago, 13/09/2026,
+   mockup 10). Letra vigente en RF-31 y en el guion §1.6.3.2 (INC-33, cerrado; ajustada el
+   29/09/2026 por INC-55). Con la lectura absoluta ninguna secuencia se desplazaba en vertical.
 9. **Se guarda el progreso de avance** —nivel alcanzado y fases confirmadas— además del nombre y
    los cuatro indicadores. RF-03, RF-04 y ahora también RNF-09 lo contemplan (INC-27, cerrado).
 10. Los equipos de la institución tienen Windows 10 o superior con audio funcional, y el docente
@@ -684,35 +731,33 @@ Letra vigente de los documentos: el resumen de fin de nivel que ve el estudiante
 cifras** y las cifras son del informe docente, por nivel y por fase (RF-45, RF-46); **RF-46 es de
 prioridad Alta**, así que la consulta docente y la eliminación de datos entran juntas en el mismo
 slice; el botón de ejecutar del laberinto usa **clic simple** (PG-04 cerrado, RF-32); golpear
-desde una posición incorrecta **produce chispas visibles que se apagan** (PG-03 cerrado, RF-16;
-guion §4.3.3/§4.3.4 y HU-06 coinciden); y la **definición operativa de los cuatro indicadores**
+con demasiada fuerza **produce chispas visibles que se apagan** lejos de las hojas, con poca no
+saca chispa, y con las piedras separadas o demasiado encimadas tampoco (PG-03 cerrado, RF-16;
+guion §4.3.3/§4.3.4 y HU-06, alineados por `INC-47`); y la **definición operativa de los cuatro indicadores**
 por nivel está fijada en OE1 §3.6.1, con lista cerrada.
 
 ---
 
 ## Preguntas abiertas
 
-De los 48 hallazgos de `INCONSISTENCIAS.md` quedan tres abiertos, y **solo uno exige una decisión
-de diseño**: `INC-46`, la lista de tareas del Nivel 3 (cuerda con nudos contra panel de casillas),
-que hay que resolver antes de abrir el Slice 3. `INC-47` es una divergencia ya decidida —gana el
-código, ver supuesto 7— y `INC-48` también —gana `arquitectura_videojuego_v2 (2).docx`—: ninguno
-de los dos bloquea trabajo, pero los dos esperan una edición manual del `.docx`.
+Ningún hallazgo de `INCONSISTENCIAS.md` queda abierto (rev. 15, 30/09/2026).
 
-**Del guion (§12), sin resolver** — son del guion, no conflictos entre documentos:
-**PG-01** título del producto · ~~**PG-02** nombre definitivo del guía~~ **cerrado 02/09/2026: Algoritm** (INC-44, INC-45) ·
-**PG-05** verificar en pruebas que el cambio de esquema de control entre el Nivel 1 y el 2 no
-confunde · **PG-06** validar jugando los valores del Nivel 1 (`FireLevelConfig`).
+**Del guion (§1.2), sin resolver** — son del guion, no conflictos entre documentos, y los dos
+exigen observar a estudiantes jugando, que el OE4 no hace: **PG-05** verificar en pruebas que el
+cambio de esquema de control entre el Nivel 1 y el 2 no confunde · **PG-06** validar jugando los
+valores del Nivel 1 (`FireLevelConfig`). Cerrados: ~~**PG-01** título del producto~~ **«Algoritmia»**
+(09/09/2026, `GameTitleConfig`) · ~~**PG-02** nombre definitivo del guía~~ **Algoritm**
+(02/09/2026, INC-44, INC-45).
 
 **PG-07 cerrado (30/08/2026):** la autorización escrita de los personajes de la Familia Anonaky
 fue concedida, y desde la refundición del 14/09/2026 el `.docx` ya lo refleja (INC-43, cerrado).
 
-**Residuos cosméticos en `docs/`:** HU-17 y HU-18 no llevan el encabezado «Página 17/18 de 18»
-(`INC-24-r`); `Solucion_OE2_Diseno_final` §1.4.3 llama «Chispa» al guía en el estado E5
-(`INC-44-r`) y §1.1.1 conserva la cláusula «Nombre provisional» pese a que `PG-02` está cerrado
-(`INC-44-r2`). Ninguno afecta a un criterio de verificación.
+**Residuos cosméticos en `docs/`, corregidos el 29/09/2026:** el encabezado «Página 17/18 de 18»
+de HU-17 y HU-18 (`INC-24-r`), «Chispa» en el estado E5 de `Solucion_OE2_Diseno_final` §1.4.3
+(`INC-44-r`) y la cláusula «Nombre provisional» de §1.1.1 (`INC-44-r2`).
 
-**Cerrado desde la rev. 4:** la semántica de los bloques del laberinto (lectura relativa, giro
-90° horario, fijada en RF-31 y guion §6.3.2 — INC-33); `RF-19` sin condición de posición
+**Cerrado desde la rev. 4:** la semántica de los bloques del laberinto (lectura relativa, cuenta
+de 1 a 9 y giro a los dos lados, fijada en RF-31 y guion §1.6.3.2 — INC-33 e INC-55); `RF-19` sin condición de posición
 (INC-32); `RNF-09` admite el progreso de avance (INC-27); la restricción «escena ya vista» de
 `RF-06` en todos los documentos (INC-28); `RF-44` y `RF-46` trazados a HU-13 y HU-16, con la fila
 de historia asociada en CU-11 (INC-37); la definición operativa de los cuatro indicadores por

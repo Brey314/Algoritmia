@@ -472,6 +472,8 @@ corregir HU-14 FA-01, donde se pide el botón para quien repite. El comentario d
 `NarrativeVisitPolicy_CP07_ElCruceYLaEscenaFinalNoSeOmitenLaPrimeraVez` ya prueba con ese perfil
 —todas las fases del N3 confirmadas y el Nivel 3 alcanzado—, que es el mismo en cualquier vuelta.
 
+*(Nota 29/09/2026: INC-51 se cerró corrigiendo HU-14 FA-01, su tabla de datos de entrada y CU-03 2a para que digan lo que hace el juego; el código no cambió.)*
+
 **Inconsistencias abiertas al 25/09/2026** (tabla de `INCONSISTENCIAS.md`): de INC-46 a INC-50,
 como en §8, y además:
 

@@ -428,10 +428,15 @@ texto visible, y no están en la lista.
 
 ### A.6 Pendientes que se suman a §8
 
-- [ ] Pasar a Baloo 2 y Nunito los 20 textos de `TeacherReport` y la etiqueta «Progreso del
-      equipo» de `MainMenu`, o dejar escrito por qué no (A.3).
-- [ ] Decidir si los dos `ScrollRect` de `TeacherReport` se cambian por botones de desplazamiento
-      o si se deja escrita la excepción (A.4).
+- [x] Pasar a Baloo 2 y Nunito los 20 textos de `TeacherReport` y la etiqueta «Progreso del
+      equipo» de `MainMenu`, o dejar escrito por qué no (A.3). *(29/09/2026: hecho; los textos
+      de 22 px suben a 26 px y `Scenes_CN04_NingunTextoUsaLaFuenteIntegradaDelMotor` lo vigila.)*
+- [x] Decidir si los dos `ScrollRect` de `TeacherReport` se cambian por botones de desplazamiento
+      o si se deja escrita la excepción (A.4). *(29/09/2026: se conservan, igual que el de
+      `Credits`: barra y arrastre son clic y clic sostenido (CT-06). Al revisarlo apareció que el
+      módulo de entrada de `TeacherReport` llevaba incrustado el `DefaultInputActions` del paquete
+      —rueda, teclado y mando— y que la prueba de arquitectura no lo veía por no llevar `guid`; se
+      recableó a `ControlesJugables`, que no vincula la rueda. HU-18 se alineó en el `.docx`.)*
 
 ---
 

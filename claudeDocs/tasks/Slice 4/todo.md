@@ -232,7 +232,10 @@ Números, no adjetivos. Rellenar en el equipo de referencia.
 - [ ] Los diez criterios de éxito de `SPEC.md` revisados uno por uno
 - [ ] `INCONSISTENCIAS.md` revisado: ningún hallazgo reabierto por el código
 - [ ] Golden Path del juego entero, dos veces, sin incidencias (RNF-13)
-- [ ] **PG-01** (título) y **PG-02** (nombre del guía) cerrados y en pantalla
+- [x] **PG-01** (título) y **PG-02** (nombre del guía) cerrados y en pantalla *(29/09/2026: el
+      guion §1.2 cierra PG-01 con «Algoritmia», que la pantalla de inicio muestra desde `2893cdb`;
+      PG-02 estaba cerrado desde el 02/09 y Algoritm habla en las narrativas y en las pistas. Los
+      créditos no llevan el título: RF-08 no lo pide.)*
 - [ ] **RNF-12**: formato de consentimiento informado en los anexos del proyecto
 - [ ] **RNF-22**: inspección integral del contenido — sin violencia explícita, publicidad,
       compras integradas ni enlaces externos, en los tres niveles y en los créditos
@@ -315,7 +318,9 @@ Es lo que hace que se lea como andamiaje y no como pantalla de puntaje.
 - [x] **Pregunta abierta 4 · Unidad del tiempo de resolución.** Resuelta en el sentido propuesto:
       se persiste en segundos (sin cambios en `PerformanceIndicators`/el JSON) y se presenta en
       minutos y segundos vía `ResolutionTimeFormat` (P06).
-- [ ] **PG-01 · título del producto** y **PG-02 · nombre del guía.** Último slice: cerrarlos antes
-      de P12. Aparecen en inicio, créditos y las quince escenas narrativas.
+- [x] **PG-01 · título del producto** y **PG-02 · nombre del guía.** Último slice: cerrarlos antes
+      de P12. Aparecen en inicio, créditos y las quince escenas narrativas. *(Cerrados el
+      29/09/2026 en el guion §1.2: «Algoritmia» en la pantalla de inicio, sin repetirse en
+      créditos; Algoritm en las narrativas y las pistas.)*
 - [ ] **RNF-12 · consentimiento informado.** Verificación documental, no de código. Sin tarea
       porque no la tiene; queda listado en el Checkpoint P-E.

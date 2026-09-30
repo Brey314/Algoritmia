@@ -346,7 +346,7 @@ coinciden; la diferencia está en los niveles 2 y 3.
 **INC-51** (abierto, decisión tomada: se acepta). El Nivel 3 no tiene nivel siguiente, así que su
 cierre (`N3_Escena33_Cruce`) y la escena final (`N3_EscenaFinal`) nunca cuentan como vistos y se leen
 enteros también al repetir el nivel. Lo anota el comentario de `NarrativeVisitPolicy.cs:39-42`,
-añadido con `13e2986` (23/09).
+añadido con `13e2986` (23/09). *(Nota 29/09/2026: cerrado; HU-14 FA-01 y CU-03 2a ya recogen la excepción del Nivel 3.)*
 
 Pruebas de la regla:
 
