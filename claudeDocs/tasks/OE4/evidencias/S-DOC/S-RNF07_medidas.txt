@@ -1,0 +1,20 @@
+S-RNF07: 46 muestras · WorkingSet máx 416 MiB (escena «Level1_Cave») · Private máx 1,121 MiB (escena «Level1_Cave») · picos del SO: WS 416 MiB, commit 1,121 MiB
+RNF-05: máximo 1,121 MiB (1.09 GiB) frente a 2048 MiB: CUMPLE
+S-RNF07: red · 276 filas (escucha-local=138, EXTERNA=138)
+  EXTERNA: TCP 192.168.1.2:51193 -> 34.111.113.40:443 Established
+  EXTERNA: TCP 192.168.1.2:51192 -> 34.8.90.77:443 Established
+  EXTERNA: TCP 192.168.1.2:49881 -> 34.107.172.168:443 Established
+  EXTERNA: TCP 192.168.1.2:51193 -> 34.111.113.40:443 Established
+  EXTERNA: TCP 192.168.1.2:51192 -> 34.8.90.77:443 Established
+  EXTERNA: TCP 192.168.1.2:49881 -> 34.107.172.168:443 Established
+  EXTERNA: TCP 192.168.1.2:51193 -> 34.111.113.40:443 Established
+  EXTERNA: TCP 192.168.1.2:51192 -> 34.8.90.77:443 Established
+  EXTERNA: TCP 192.168.1.2:49881 -> 34.107.172.168:443 Established
+  EXTERNA: TCP 192.168.1.2:51193 -> 34.111.113.40:443 Established
+RNF-10: 138 fila(s) EXTERNA(s): revisar
+RNF-04: 7 cargas medidas (peor valor por escena; límite 10 s)
+  Level1_Cave        n=1  peor 0.155 s  ok
+  LevelSelect        n=1  peor 0.068 s  ok
+  MainMenu           n=2  peor 0.094 s  ok
+  Narrative          n=3  peor 0.765 s  ok
+exit=1 @ 12:30:54

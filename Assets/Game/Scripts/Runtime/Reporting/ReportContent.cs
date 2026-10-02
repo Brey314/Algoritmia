@@ -63,6 +63,10 @@ namespace Game.Reporting
             "Este equipo no deja guardar en la carpeta del juego: los perfiles se están guardando " +
             "en la carpeta de datos de Windows.";
 
+        [field: SerializeField]
+        [field: Tooltip("Encabezado del detalle: de quién son las cifras que se ven (RF-46); {0} es el nombre del perfil.")]
+        public string SelectedProfileFormat { get; private set; } = "Perfil de {0}";
+
         public string LevelLabel(LevelId level) => level switch
         {
             LevelId.Fire => LevelOneLabel,

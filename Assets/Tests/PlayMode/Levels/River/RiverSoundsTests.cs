@@ -141,6 +141,41 @@ namespace Game.Levels.River.Tests
         }
 
         /// <summary>
+        /// La balsa que se hunde suena a salpicadura —madera y agua— una sola vez (RF-42, §13, §2.3),
+        /// en la última fase y también al probar antes de tiempo (D-j del 30/09/2026). Describe lo que
+        /// se ve y no castiga (§2.1); lo que sigue mudo es «Listo» rechazado, que ya cubre
+        /// <c>AssemblyPanel_CP02_UnaFaseQueNoPasaNoSuena</c>. Sin <c>GameFlowRunner</c> el primer fallo
+        /// de la fase 3 no sale a la escena 3.2, así que el panel sigue abierto y se oye hasta el final.
+        /// </summary>
+        [TestCase(RaftPhase.Base)]
+        [TestCase(RaftPhase.MastAndSail)]
+        [Timeout(90000)]
+        [Category("Acceptance")]
+        public async Task AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas(RaftPhase fase)
+        {
+            var (_, panel) = await AssemblyPanelTests.OpenAssembly();
+            var sonidos = panel.Sounds;
+            Assume.That(sonidos, Is.Not.Null, "el panel tiene N3_Sonidos asignado");
+            if (fase == RaftPhase.MastAndSail)
+            {
+                // Base y amarre aprobados; el mástil y la vela, vacíos: la balsa terminada no pasa la prueba.
+                await AssemblyPanelTests.FillPhase(panel, RaftPhase.Base);
+                await AssemblyPanelTests.Confirm(panel);
+                await AssemblyPanelTests.FillPhase(panel, RaftPhase.Lashing);
+                await AssemblyPanelTests.Confirm(panel);
+            }
+
+            var antes = _audio.SfxCount;
+
+            await AssemblyPanelTests.Probar(panel);
+            await EsperarSegundos(sonidos.PhaseHits * sonidos.PhaseHitSeconds);
+
+            Assert.That(_audio.SfxCount - antes, Is.EqualTo(1), "un solo sonido por hundimiento (§2.3)");
+            Assert.That(_audio.LastSfx, Is.SameAs(sonidos.RaftSinking), "el de la balsa que se hunde");
+            Assert.That(_audio.LastSfx.name, Is.EqualTo("sfx_n3_hundimiento"), "madera y agua, no un pitido (§2.1)");
+        }
+
+        /// <summary>
         /// La balsa terminada suena a pieza tomada **después** de los tres martillazos de la última
         /// fase, no encima (§2.3), y antes de salir al cruce.
         /// </summary>

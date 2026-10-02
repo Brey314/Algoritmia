@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -140,6 +141,14 @@ namespace Game.Core
             operation.completed += _ =>
             {
                 LastLoadSeconds = (float)(Time.realtimeSinceStartupAsDouble - startedAt);
+
+                // RNF-04 se verifica midiendo sobre el ejecutable, y el arnés del OE4 lee esta línea
+                // en Player.log: su formato es contrato y no se cambia sin cambiar el arnés. Cultura
+                // invariante —en un Windows es-CO el decimal sería una coma— y sin pila: «por qué no»
+                // Debug.Log, que con la pila de PlayerSettings (ScriptOnly) ocupa varias líneas por
+                // carga. Las cifras van solo al registro; el estudiante nunca las ve (CP-03).
+                Debug.LogFormat(LogType.Log, LogOption.NoStacktrace, this, "{0}",
+                    FormattableString.Invariant($"RNF-04: «{sceneName}» cargó en {LastLoadSeconds:0.000} s"));
 
                 if (LastLoadSeconds > 10f)
                 {

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="3" result="Passed" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-02 02:38:33Z" end-time="2026-10-02 02:38:34Z" duration="0,9923736">
+  <test-suite type="TestSuite" id="1617" name="Algoritmia" fullname="Algoritmia" runstate="Runnable" testcasecount="471" result="Passed" start-time="2026-10-02 02:38:33Z" end-time="2026-10-02 02:38:34Z" duration="0.992374" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="EditMode" />
+    </properties>
+    <test-suite type="Assembly" id="1032" name="Game.Architecture.Tests.dll" fullname="C:/Dev/Algoritmia/Library/ScriptAssemblies/Game.Architecture.Tests.dll" runstate="Runnable" testcasecount="23" result="Passed" start-time="2026-10-02 02:38:33Z" end-time="2026-10-02 02:38:34Z" duration="0.885401" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="49180" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="EditMode" />
+        <property name="EditorOnly" value="True" />
+      </properties>
+      <test-suite type="TestSuite" id="1033" name="Game" fullname="Game" runstate="Runnable" testcasecount="23" result="Passed" start-time="2026-10-02 02:38:33Z" end-time="2026-10-02 02:38:34Z" duration="0.885149" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1034" name="Architecture" fullname="Game.Architecture" runstate="Runnable" testcasecount="23" result="Passed" start-time="2026-10-02 02:38:33Z" end-time="2026-10-02 02:38:34Z" duration="0.778293" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1035" name="Tests" fullname="Game.Architecture.Tests" runstate="Runnable" testcasecount="23" result="Passed" start-time="2026-10-02 02:38:33Z" end-time="2026-10-02 02:38:34Z" duration="0.777610" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="ArtImportTest" fullname="Game.Architecture.Tests.ArtImportTest" classname="Game.Architecture.Tests.ArtImportTest" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-02 02:38:33Z" end-time="2026-10-02 02:38:34Z" duration="0.668515" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-case id="1003" name="ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir" fullname="Game.Architecture.Tests.ArtImportTest.ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir" methodname="ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir" classname="Game.Architecture.Tests.ArtImportTest" runstate="Runnable" seed="1367788677" result="Passed" start-time="2026-10-02 02:38:33Z" end-time="2026-10-02 02:38:34Z" duration="0.271557" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1002" name="ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir" fullname="Game.Architecture.Tests.ArtImportTest.ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir" methodname="ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir" classname="Game.Architecture.Tests.ArtImportTest" runstate="Runnable" seed="1824136023" result="Passed" start-time="2026-10-02 02:38:34Z" end-time="2026-10-02 02:38:34Z" duration="0.389779" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1004" name="ArtImport_RNF23_LosNombresSiguenLaNomenclatura" fullname="Game.Architecture.Tests.ArtImportTest.ArtImport_RNF23_LosNombresSiguenLaNomenclatura" methodname="ArtImport_RNF23_LosNombresSiguenLaNomenclatura" classname="Game.Architecture.Tests.ArtImportTest" runstate="Runnable" seed="711202155" result="Passed" start-time="2026-10-02 02:38:34Z" end-time="2026-10-02 02:38:34Z" duration="0.006013" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

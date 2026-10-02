@@ -14,9 +14,10 @@ namespace Game.Levels.River
     /// el inventario, y abre el ensamblaje al entrar a la zona con todo.
     /// </summary>
     /// <remarks>
-    /// Adaptador delgado: aquí no hay ni una regla. Qué se marca, qué cabe, hasta dónde se anda
-    /// y qué falta viven en <see cref="TaskList"/>, <see cref="Inventory"/>, <see cref="RiverWalk"/>
-    /// y <see cref="BuildZone"/>, C# plano probado en EditMode; la ayuda en <see cref="HintPolicy"/>.
+    /// Adaptador delgado: aquí no hay ni una regla. Qué se marca, qué cabe, hasta dónde se anda,
+    /// qué falta y quién se dibuja delante viven en <see cref="TaskList"/>, <see cref="Inventory"/>,
+    /// <see cref="RiverWalk"/>, <see cref="BuildZone"/> y <see cref="DepthOrder"/>, C# plano probado
+    /// en EditMode; la ayuda en <see cref="HintPolicy"/>.
     ///
     /// **Mamá, los materiales y la zona cuelgan de la ilustración**, anclados en fracciones de
     /// ella (regla de D05 y lección del bosque del 17/09/2026): el plano es fijo y al sustituir el
@@ -48,7 +49,7 @@ namespace Game.Levels.River
         private Image environment;
 
         [SerializeField]
-        [Tooltip("Mamá en vista cenital. Anclada en fracciones de la ilustración.")]
+        [Tooltip("Mamá en vista cenital. Anclada por los pies (pivote 0.075, como la familia) en fracciones de la ilustración.")]
         private RectTransform player;
 
         [SerializeField]
@@ -190,9 +191,9 @@ namespace Game.Levels.River
                 AudioManager.Instance.PlayAmbientLayer(sounds.ForestAmbient);
             }
 
-            // La ilustración cubre la pantalla sin deformarse en el plano fijo del asset —el
-            // cuadrante del bosque con la orilla asomando a la derecha— y sustituir el archivo
-            // basta (RNF-23). Va antes de colgar nada de ella.
+            // La ilustración cubre la pantalla sin deformarse en el plano fijo del asset —la
+            // orilla con el río a la derecha— y sustituir el archivo basta (RNF-23). Va antes de
+            // colgar nada de ella.
             environment.enabled = environment.sprite != null;
             if (environment.sprite != null)
             {
@@ -209,7 +210,7 @@ namespace Game.Levels.River
             }
 
             Place(buildZoneMarker, config.BuildZonePosition);
-            Place(player, _walk.Position);
+            PlacePlayer(_walk.Position);
             BuildTaskList();
             inventory.Build(_inventory.Kinds.Select(kind => (kind, _inventory.Required(kind))));
 
@@ -253,7 +254,7 @@ namespace Game.Levels.River
 
             var before = _walk.Position;
             _walk.Step(direction, deltaTime);
-            Place(player, _walk.Position);
+            PlacePlayer(_walk.Position);
             // Antes de atender la zona: al abrirse, el ensamblaje la deja en reposo y un paso
             // posterior la dejaría andando quieta.
             Animate(_walk.Position != before, direction);
@@ -341,6 +342,50 @@ namespace Game.Levels.River
             rect.localScale = Vector3.one * config.DepthScaleAt(fraction.y);
         }
 
+        /// <summary>
+        /// Pone a Mamá en ese punto de la orilla —con los pies ahí, que es donde se ancla su casilla—
+        /// y la coloca en el orden de dibujo que le toca por su altura (INC-118).
+        /// </summary>
+        private void PlacePlayer(Vector2 position)
+        {
+            Place(player, position);
+            SortByDepth(position.y);
+        }
+
+        /// <summary>
+        /// Lo que está más abajo se dibuja delante (DA83, INC-118): Mamá, la familia y los materiales
+        /// se ordenan por su altura cada vez que Mamá se coloca. La escala ya da la perspectiva; el
+        /// orden de hermanos —el de dibujo en uGUI— da quién tapa a quién.
+        /// </summary>
+        /// <remarks>
+        /// Los materiales se instancian al final del entorno, por encima incluso de la sombra y del
+        /// área de la balsa, así que el primer orden los baja a la banda de Mamá. Todos pasan a ocupar puestos
+        /// seguidos desde el más bajo que ya ocupaba alguno de ellos: lo demás —el marcador de la
+        /// zona abajo, la sombra y el área de la balsa arriba— conserva su orden, y el ensamblaje
+        /// sigue oscureciendo a Mamá y a la familia. Se mueve solo lo que cambia de sitio:
+        /// reordenar a ciegas cada cuadro ensuciaría el lienzo sin que nada se haya movido. Los
+        /// puestos se dan de menor a mayor y no relativos al vecino: quitar un hermano de en medio
+        /// corre los índices de detrás y un destino calculado antes quedaría corto (como el humo
+        /// del Nivel 1).
+        /// </remarks>
+        private void SortByDepth(float playerY)
+        {
+            var entries = family.Where(rig => rig != null)
+                .Select(rig => ((RectTransform)rig.transform, ((RectTransform)rig.transform).anchorMin.y))
+                .Concat(_spawned.Select(entry => (entry.Image.rectTransform, entry.Collectible.Position.y)))
+                .Append((player, playerY));
+            var ordered = DepthOrder.BackToFront(entries);
+
+            var first = ordered.Min(rect => rect.GetSiblingIndex());
+            for (var i = 0; i < ordered.Count; i++)
+            {
+                if (ordered[i].GetSiblingIndex() != first + i)
+                {
+                    ordered[i].SetSiblingIndex(first + i);
+                }
+            }
+        }
+
         /// <summary>«Recoger» aparece solo con un material al alcance; con varios, el más cercano.</summary>
         private void RefreshReach()
         {
@@ -417,7 +462,8 @@ namespace Game.Levels.River
 
         /// <summary>
         /// Retomar en la fase 2 o 3 (RNF-14): la recolección ya se hizo en otra sesión, así que
-        /// el inventario se da por completo, la zona por abierta y el panel abre en esa fase.
+        /// el inventario se da por completo, la zona por abierta, Mamá espera en ella y el panel
+        /// abre en esa fase.
         /// </summary>
         private void ResumeAt(RaftPhase phase)
         {
@@ -438,6 +484,14 @@ namespace Game.Levels.River
 
             RefreshTasks();
             _zone.TryEnter(_inventory);
+
+            // Mamá abrió el ensamblaje en la zona la vez anterior: ahí espera al volver de la 3.2, al
+            // retomar desde disco o al reiniciar la fase (RNF-14). Con el plano del ensamblaje
+            // abierto a ×1.6 (lectura B, INC-118) el arranque queda a la vista, bajo el inventario.
+            // El modelo y la vista juntos: si solo se mueve la vista, el siguiente Tick la devuelve
+            // a donde el modelo creía que estaba.
+            _walk.MoveTo(config.BuildZonePosition);
+            PlacePlayer(_walk.Position);
             OpenAssembly(phase);
         }
 

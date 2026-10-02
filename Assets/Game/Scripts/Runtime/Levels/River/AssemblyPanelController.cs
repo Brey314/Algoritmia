@@ -11,8 +11,8 @@ namespace Game.Levels.River
 {
     /// <summary>
     /// El panel de ensamblaje en escena (RF-40..RF-43, HU-12, HU-13): la balsa compuesta espacio
-    /// a espacio sobre el río, los arrastres desde el inventario con clic sostenido, el botón
-    /// «Listo» / «Probar balsa», el resaltado del espacio incorrecto con color **e icono**, y las
+    /// a espacio sobre el río, los arrastres desde el inventario con clic sostenido, los botones
+    /// «Listo» y «Probar balsa», el resaltado del espacio incorrecto con color **e icono**, y las
     /// animaciones de completado y de hundimiento.
     /// </summary>
     /// <remarks>
@@ -24,8 +24,8 @@ namespace Game.Levels.River
     /// Diecisiete espacios y ocho sprites cubren todos los estados (decisión de Santiago del
     /// 20/09/2026, en lugar de treinta y cuatro láminas). El área de la balsa **cuelga de la
     /// ilustración** en fracciones de ella, y al abrirse el panel la cámara empuja del plano de
-    /// juego al de ensamblaje —el río al 85 % del ancho, la orilla partiendo la pantalla— como
-    /// el cierre del taller del Nivel 2.
+    /// juego al de ensamblaje —la orilla con la familia a la izquierda y el río con la balsa a la
+    /// derecha— como el cierre del taller del Nivel 2.
     ///
     /// **Memoria de nivel, no persistencia.** La escena 3.2 se reproduce en la escena narrativa
     /// y al volver esta se recarga; para que «la escena narra, no reinicia» (CP-02) las piezas
@@ -84,6 +84,14 @@ namespace Game.Levels.River
         private Text confirmLabel;
 
         [SerializeField]
+        [Tooltip("«Probar balsa» junto a «Listo» en la base y el amarre (RF-42, D-j): hunde la balsa a medio armar sin aprobar nada. En la última fase se oculta: allí probar es el botón de confirmar.")]
+        private Button testButton;
+
+        [SerializeField]
+        [Tooltip("El rótulo del botón de probar. El texto sale de RaftAssemblyContent.TestLabel.")]
+        private Text testLabel;
+
+        [SerializeField]
         [Tooltip("Icono que acompaña al color en el espacio incorrecto (RNF-19).")]
         private Sprite wrongIcon;
 
@@ -140,6 +148,8 @@ namespace Game.Levels.River
         internal RectTransform RaftArea => raftArea;
         internal Button ConfirmButton => confirmButton;
         internal Text ConfirmLabel => confirmLabel;
+        internal Button TestButton => testButton;
+        internal Text TestLabel => testLabel;
         internal Image Shade => shade;
         internal Image Ghost => _ghost;
         internal MaterialKind? Held => _held;
@@ -212,6 +222,8 @@ namespace Game.Levels.River
             AttachInventoryHandles();
             confirmButton.onClick.RemoveListener(Confirm);
             confirmButton.onClick.AddListener(Confirm);
+            testButton.onClick.RemoveListener(TestRaft);
+            testButton.onClick.AddListener(TestRaft);
             RefreshAll();
             _ = PushAsync();
         }
@@ -312,10 +324,24 @@ namespace Game.Levels.River
             _show(outcome.Accepted ? outcome.Message : content.OccupiedMessage, MessageTone.Help);
         }
 
-        // --- el botón ----------------------------------------------------------------------------
+        // --- los botones -------------------------------------------------------------------------
 
-        /// <summary>«Listo» o «Probar balsa» (RF-40, RF-42).</summary>
-        internal void Confirm()
+        /// <summary>«Listo» o, en la última fase, «Probar balsa» (RF-40, RF-42).</summary>
+        internal void Confirm() => Validate(test: false);
+
+        /// <summary>
+        /// «Probar balsa» en la base o el amarre (RF-42, D-j): la balsa a medio armar se hunde, lo mal
+        /// puesto vuelve al inventario y la fase sigue abierta. Cuenta como intento (OE1 §3.6.1) y
+        /// para la pista de las tres seguidas (RF-13); nunca aprueba la fase (RF-40) ni dispara la
+        /// escena 3.2.
+        /// </summary>
+        internal void TestRaft() => Validate(test: true);
+
+        /// <summary>
+        /// Los dos botones pasan por aquí para que el registro del intento, la pista y el ánimo de la
+        /// familia no se puedan olvidar en uno de los dos caminos.
+        /// </summary>
+        private void Validate(bool test)
         {
             if (IsBusy || _held.HasValue || _assembly == null || _assembly.IsComplete)
             {
@@ -328,8 +354,9 @@ namespace Game.Levels.River
             var placedBefore = _slots.Keys
                 .Where(id => _assembly.IsOpen(_slots[id].Slot) && _assembly.PlacedIn(id).HasValue)
                 .ToArray();
-            var result = _assembly.Confirm();
-            _indicators.RecordConfirmation(result, result.WrongSlotIds.Where(placedBefore.Contains));
+            var result = test ? _assembly.Test() : _assembly.Confirm();
+            var returned = result.WrongSlotIds.Where(placedBefore.Contains).ToArray();
+            _indicators.RecordConfirmation(result, returned);
 
             if (result.Passed)
             {
@@ -338,10 +365,14 @@ namespace Game.Levels.River
                 return;
             }
 
-            // El espacio incorrecto se señala con color e icono; el mensaje dice qué revisar y
-            // nunca cuál es la pieza (RNF-19, CP-06). Las piezas mal puestas ya volvieron.
+            // El espacio incorrecto se señala con color e icono; el mensaje dice qué revisar y nunca
+            // cuál es la pieza (RNF-19, CP-06). Las piezas mal puestas ya volvieron. Antes de la
+            // última fase la balsa está a medio armar por construcción —sus fases siguientes ni se
+            // ven (RF-40)—: señalar sus espacios vacíos convertiría la prueba en un mapa de dónde va
+            // cada pieza, así que solo se señala lo mal puesto, que es lo que volvió al inventario.
+            var early = test && phase != RaftPhase.MastAndSail;
             _wrong.Clear();
-            _wrong.UnionWith(result.WrongSlotIds);
+            _wrong.UnionWith(early ? returned : result.WrongSlotIds);
             RefreshAll();
             var hint = _hints.RegisterFailedAttempt();
             var message = hint ?? result.Message;
@@ -351,13 +382,13 @@ namespace Game.Levels.River
             // nunca hace un gesto de derrota: el hundimiento es el guion, no un castigo (CP-02, §7.3).
             _react?.Invoke(ActorAction.Encourage);
 
-            if (phase == RaftPhase.MastAndSail)
+            if (test || phase == RaftPhase.MastAndSail)
             {
-                _ = SinkAsync(message, tone);
+                _ = SinkAsync(message, tone, narrates: phase == RaftPhase.MastAndSail);
                 return;
             }
 
-            _show(message, tone);
+            _show(message, tone); // «Listo» rechazado: solo el mensaje, sin hundimiento ni sonido (§2.1)
         }
 
         // --- las animaciones ---------------------------------------------------------------------
@@ -510,13 +541,20 @@ namespace Game.Levels.River
         }
 
         /// <summary>
-        /// La balsa gira y se hunde por un costado y vuelve (guion §1.8.4, Direccion_de_Arte
-        /// §11). Después, la primera vez, la escena 3.2 (R12); las siguientes, solo el mensaje.
+        /// La balsa gira y se hunde por un costado y vuelve (guion §1.8.4, Direccion_de_Arte §11),
+        /// con su salpicadura. Después, si es la prueba de la balsa terminada
+        /// (<paramref name="narrates"/>) y es la primera vez, la escena 3.2 (R12); si no, solo el
+        /// mensaje.
         /// </summary>
-        private async Awaitable SinkAsync(string message, MessageTone tone)
+        private async Awaitable SinkAsync(string message, MessageTone tone, bool narrates)
         {
             IsBusy = true;
             RefreshButton();
+            // «Por qué no» pedagógico (Direccion_de_Musica_y_Sonido §2.1, CP-02): la balsa que se hunde
+            // suena a madera y agua porque **describe** lo que se ve —una balsa sin terminar o mal
+            // armada no flota—; no es un pitido ni un acorde de derrota. Por lo mismo «Listo»
+            // rechazado sigue mudo: ahí no se hunde nada. Un evento, un sonido (§2.3): uno, al empezar.
+            Play(sounds?.RaftSinking);
             var seconds = Mathf.Max(content.SinkSeconds, 0f);
             var drop = raftArea.rect.height * 0.15f;
 
@@ -539,6 +577,14 @@ namespace Game.Levels.River
             IsBusy = false;
             RefreshButton();
             _show(message, tone);
+
+            // La prueba anticipada no gasta la 3.2 (D-j): la escena nombra la depuración del primer
+            // fallo de la balsa terminada, y salir a ella desde la base o el amarre volvería a la
+            // fase 3 (NextPhase 3) consolidando fases sin confirmar (RaftAssembly.Resume, RNF-14, CP-02).
+            if (!narrates)
+            {
+                return;
+            }
 
             var sequenceId = s_firstFailure.AfterAttempt(passed: false);
             if (sequenceId != null && Runner != null)
@@ -761,8 +807,17 @@ namespace Game.Levels.River
                 return;
             }
 
-            confirmLabel.text = _assembly.ActivePhase == RaftPhase.MastAndSail ? content.TestLabel : content.ConfirmLabel;
-            confirmButton.interactable = !IsBusy && !_assembly.IsComplete;
+            var last = _assembly.ActivePhase == RaftPhase.MastAndSail;
+            var ready = !IsBusy && !_assembly.IsComplete;
+            confirmLabel.text = last ? content.TestLabel : content.ConfirmLabel;
+            confirmButton.interactable = ready;
+            // En la última fase confirmar ya es probar la balsa: queda un solo «Probar balsa» (RF-40, RF-42).
+            // Sin guardas de nulo: si la escena no cablea el botón, el panel tiene que fallar a la vista.
+            // RNF-21: al ocuparse el panel los dos botones se atenúan y al soltarse recuperan su tinte con
+            // el fundido de 0,1 s de Selectable —una bajada y una subida suaves por animación, no un parpadeo.
+            testButton.gameObject.SetActive(!last);
+            testLabel.text = content.TestLabel;
+            testButton.interactable = ready;
         }
 
         /// <summary>Cuelga un cuadro de la ilustración: centrado en una fracción de ella, con lado en fracción de su alto.</summary>

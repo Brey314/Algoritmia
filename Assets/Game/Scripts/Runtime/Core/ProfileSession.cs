@@ -31,6 +31,10 @@ namespace Game.Core
         /// <summary>Carga un perfil guardado con todo su progreso (RF-03, CU-01).</summary>
         public PlayerProfile Load(string profileName) => _store.Load(profileName);
 
+        /// <summary>Carga un perfil sin lanzar si el archivo está dañado (DEF-SPER-02).</summary>
+        public bool TryLoad(string profileName, out PlayerProfile profile) =>
+            _store.TryLoad(profileName, out profile);
+
         /// <summary>
         /// Crea un perfil validando el nombre contra los ya existentes. Devuelve un resultado
         /// tipado: nombre vacío o duplicado son flujos alternos de HU-01, no fallos (FA-01, FA-02).

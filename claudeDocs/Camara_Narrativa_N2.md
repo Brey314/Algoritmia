@@ -31,7 +31,9 @@ y el suelo ocupa la mitad inferior de la pantalla por sí solo.
 ## 2. El entorno duplicado
 
 Canvas final: **3198 × 899 px** (aspecto 3.557). A zoom 1 la pantalla muestra
-**0.4998** del canvas — justo la mitad. El espejo va montado así:
+**0.4998** del canvas — justo la mitad. *(Hoy el sprite es la entrega definitiva,
+`env_n2_bosque_claro.png`, de 3840 × 1080 (acta D06): la misma composición y el mismo aspecto,
+así que ninguna fracción de este documento cambia.)* El espejo va montado así:
 
 - El original ocupa `x 0.000–0.500`; la copia espejada, `x 0.500–1.000`.
 - **El espejo puro no tiene costura.** La última columna del original y la primera de la copia son la
@@ -162,7 +164,9 @@ así que el paso de narrativa a juego no tiene salto.
 *Zona: claro oeste · 2 paradas · recorre 0.038 del canvas*
 
 Plano general fijo durante toda la recolección, tal como pediste. Al acopiar el quinto tronco, el zoom
-hacia la caja (1,2 s) deja la cámara exactamente en el encuadre con el que abre 2.2.
+hacia la caja (1,2 s) deja la cámara exactamente en el encuadre con el que abre 2.2. La caja que el
+jugador deja sobre los troncos es la misma con la que abre 2.2: la llena, `prop_n2_caja_suelo`, en
+(0.200, 0.509) —`WheelLevelConfig.CargoPlacedPosition`— y con `Size` 0.148 (INC-120).
 
 | # | Línea | Foco (x, y) | Zoom | Movimiento |
 |---|---|---|---|---|
@@ -174,14 +178,14 @@ hacia la caja (1,2 s) deja la cámara exactamente en el encuadre con el que abre
 *Zona: claro oeste · 6 paradas · recorre 0.154 del canvas*
 
 La escena con paradas. Hereda el encuadre exacto del final de la fase 1 y **no se mueve** en la línea 0:
-misma vista, mismos troncos, mismo sitio, la caja rodando sola. A partir de ahí:
+misma vista, mismos troncos y la misma caja llena, en su sitio y con su tamaño (INC-120), que rueda sola. A partir de ahí:
 cierra sobre el niño → paneo puro al este hasta papá (misma escala, 0,84 pantallas de recorrido: se lee
 como un giro de cabeza) → sigue al este y abre con la familia → micro empuje sobre la niña, que es quien
 nombra el patrón → abre y sube con Algoritm. **Arco: medio → cerrado → paneo → abierto → cerrado → general.**
 
 | # | Línea | Foco (x, y) | Zoom | Movimiento |
 |---|---|---|---|---|
-| `L0` | La caja rueda sobre los troncos... | **(0.232, 0.420)** | **1.58** | HEREDA EXACTO el frame de la fase 1. La camara no se mueve |
+| `L0` | La caja rueda sobre los troncos... | **(0.232, 0.420)** | **1.58** | HEREDA EXACTO el frame de la fase 1, con la caja que deja el bosque. La camara no se mueve |
 | `L1` | NINO: Este tronco rueda! | **(0.168, 0.440)** | **1.95** | cierra sobre el nino: detras, el tronco nudoso |
 | `L2` | PAPA: Pero esa piedra no... | **(0.276, 0.440)** | **1.95** | paneo puro al este, misma escala: 0.84 pantallas |
 | `L3` | MAMA: Que diferencia hay? | **(0.312, 0.460)** | **1.58** | sigue al este y abre: entra la familia |
@@ -218,7 +222,7 @@ con el cierre de la fase 1: el nivel cierra sus dos fases con el mismo gesto.
 | # | Línea | Foco (x, y) | Zoom | Movimiento |
 |---|---|---|---|---|
 | `JUEGO` | Plano fijo del banco de trabajo | **(0.750, 0.500)** | **1.00** | identico al final de 2.3. **El claro este entero** (16/09/2026) |
-| `CIERRE` | Carretilla terminada | **(0.785, 0.445)** | **1.56** | empuje de 1.2s sobre la carretilla: rima con la fase 1 |
+| `CIERRE` | Carretilla terminada y amarrada (`e5`, INC-121) | **(0.785, 0.445)** | **1.56** | empuje de 1.2s sobre la carretilla: rima con la fase 1 |
 
 ### 5.7 · `N2_Escena24_Regreso` — El regreso
 
@@ -296,7 +300,7 @@ Los catorce caben en el plano de juego (`0.058–0.482`) con margen.
 
 | Elemento | x | Entra en cuadro en |
 |---|---|---|
-| Caja + 5 troncos rodando | 0.200 – 0.270 | L0 (heredado de la fase 1) |
+| Caja llena (la de la fase 1: y 0.509, `Size` 0.148) + 5 troncos rodando | 0.200 – 0.270 | L0 (heredado de la fase 1) |
 | Niño con el tronco que rueda | 0.168 | L1, centrado |
 | Papá con la piedra | 0.276 | L2, centrado tras el paneo |
 | Mamá y niña | 0.305 · 0.325 | L3 |
@@ -323,7 +327,9 @@ Los catorce caben en el plano de juego (`0.058–0.482`) con margen.
 
 El orden de las piezas de 2.3 en el suelo es de oeste a este **en el mismo orden en que Algoritm las
 nombra**, salvo la cuerda (INC-54), que queda al oeste de los troncos cortos y no tiene parada
-propia. Por eso el paneo de L4a→L4c funciona: la cámara lee la lista.
+propia. Por eso el paneo de L4a→L4c funciona: la cámara lee la lista. En la fase 2, al amarrar la
+cuerda, la pieza deja el suelo y la carretilla pasa al dibujo amarrado, `prop_n2_carretilla_e5`, el
+mismo con el que abre 2.4 (INC-121).
 
 ---
 
@@ -421,10 +427,10 @@ E21  (claro oeste)
   L2     0.258 0.405 1.60   MAMA: algunas cosas se mueven mas facil...
   L3     0.228 0.395 1.68   NINO: Voy a probar todas.
   L4     0.190 0.425 1.45   NINA: Solo lo que realmente funciona.
-  L5     0.270 0.500 1.18   ALGORITM: Selecciona... cuando tengas cinco
+  L5     0.250 0.500 1.00   ALGORITM: Selecciona... cuando tengas cinco
 
 F1  (claro oeste)
-  JUEGO  0.270 0.500 1.18   Plano general fijo durante toda la recoleccion
+  JUEGO  0.250 0.500 1.00   Plano general fijo durante toda la recoleccion
   CIERRE 0.232 0.420 1.58   Al acopiar el quinto tronco
 
 E22  (claro oeste)
@@ -443,10 +449,10 @@ E23  (claro este)
   L4a    0.694 0.420 1.95   ALGORITM: Abre agujeros en los troncos cortos
   L4b    0.748 0.420 1.95   ALGORITM: luego unelos con el tronco largo
   L4c    0.800 0.430 1.88   ALGORITM: coloca encima la tabla
-  L4d    0.772 0.470 1.32   ALGORITM: y sobre ella la caja; luego amárrala con la cuerda. En ese orden.
+  L4d    0.750 0.500 1.00   ALGORITM: y sobre ella la caja; luego amárrala con la cuerda. En ese orden.
 
 F2  (claro este)
-  JUEGO  0.772 0.470 1.32   Plano fijo del banco de trabajo
+  JUEGO  0.750 0.500 1.00   Plano fijo del banco de trabajo
   CIERRE 0.785 0.445 1.56   Carretilla terminada
 
 E24  (corredor este)

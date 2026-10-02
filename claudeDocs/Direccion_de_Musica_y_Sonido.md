@@ -35,6 +35,7 @@ más `RF-01..RF-47` y `RNF-01..RNF-23` vigentes.
 16. Checklist de aprobación de piezas
 17. Nota legal
 18. Decisiones pendientes
+19. Historial y piezas cableadas
 
 **Total: 104 piezas.**
 
@@ -223,6 +224,21 @@ con duración y disparador, y **protegerlos es tan obligatorio como producir un 
 
 En los tres, el corte es **seco**: no se aplica el fundido de §3.3.
 
+**S3 no está implementado, y es un límite del mecanismo, no un olvido.** S1 y S2 son el campo
+`Silence` de una línea (`N1_Apertura` y `N1_AparicionGuia`, §19 rev. 2). Ese corte se dispara al
+mostrarse la línea y sabe hacer dos cosas:
+
+- callar música y voz y dejar el ambiente entero (`SilenceCut.Music`, S2);
+- callarlo todo sin devolverlo (`SilenceCut.Everything`, S1).
+
+S3 pide una tercera: el ambiente al mínimo durante un segundo y de vuelta, justo antes de «Y eso
+ya lo llevan puesto». En `N3_EscenaFinal` esa frase comparte línea con las dos anteriores. Hacerlo
+exige tres cambios: un corte con duración en `AudioManager` (`Game.Audio`), su valor en
+`SilenceCut` (`Game.Scaffolding`) y partir esa línea del asset.
+
+Desde que la escena final tiene ambiente (INC-125, §19 rev. 5), S3 tampoco se cumple por
+omisión. Mientras no exista `mus_fin`, lo único que callaría S3 es ese ambiente.
+
 ---
 
 ## 6. Firma sonora de Algoritm
@@ -294,12 +310,21 @@ nota es un ambiente mal hecho—.
 |---|---|---|---|---|---|
 | `amb_noche_intemperie` | Viento sobre matorral, insectos, algún animal lejano. **Ningún grito reconocible**: la amenaza del guion es de silueta, no de rugido | Escena de apertura, antes de entrar en la cueva | 30 s | sí | guion §3.1 |
 | `amb_n1_cueva_oscura` | Goteo espaciado, eco largo, un hilo de aire. Es el sonido del problema del nivel | Interior de la cueva, estado inicial | 40 s | sí | RF-14, guion §4 |
-| `amb_n1_cueva_fuego` | El anterior más el crepitar establecido de la hoguera. Entra por fundido de 3 s al nacer el fuego y ya no se va | Tras `sfx_n1_fuego_nace` | 40 s | sí | RF-20, RF-21 |
-| `amb_n2_bosque_dia` | Pájaros dispersos, hojas, viento medio. Luminoso y abierto | Nivel 2 fase 1 | 40 s | sí | RF-22, guion §6.1 |
+| `amb_n1_cueva_fuego` | El anterior más el crepitar establecido de la hoguera. Entra por fundido de 3 s al nacer el fuego y ya no se va | Tras `sfx_n1_fuego_nace`. Es también la capa de la escena final, sobre `amb_n2_bosque_dia` (INC-125) | 40 s | sí | RF-20, RF-21, guion §9 |
+| `amb_n2_bosque_dia` | Pájaros dispersos, hojas, viento medio. Luminoso y abierto | Nivel 2 fase 1. Es también el fondo de la escena final, con `amb_n1_cueva_fuego` como capa (INC-125) | 40 s | sí | RF-22, guion §6.1, §9 |
 | `amb_n2_taller_claro` | Bosque más apagado y más cerca: el trabajo ocurre en un claro, no en campo abierto | Nivel 2 fase 2 | 40 s | sí | RF-27, guion §6.2 |
 | `amb_n2_refugio_fogata` | Fuego cercano, voces de familia muy bajas, sin palabras distinguibles | Escena 2.5 y escena puente II | 30 s | sí | guion §6.4, §7 |
 | `amb_n3_rio_orilla` | Corriente ancha y constante, agua contra piedra, aves de ribera. Es el obstáculo, y suena todo el nivel | Nivel 3 completo | 45 s | sí | RF-35, guion §8 |
-| `amb_viento_horizonte` | Viento alto y limpio, sin vegetación. Distancia | Escena puente II al mostrar las fogatas; escena final | 30 s | sí | guion §7, §9 |
+| `amb_viento_horizonte` | Viento alto y limpio, sin vegetación. Distancia | Escena puente II al mostrar las fogatas | 30 s | sí | guion §7 |
+
+**La escena final** (guion §9: «La familia camina hacia las fogatas…») suena al bosque de día con
+las fogatas: `amb_n2_bosque_dia` de fondo y `amb_n1_cueva_fuego` en la segunda capa. Es el mismo
+par con que abre `N2_PuenteI` (INC-125, decisión de Santiago del 30/09/2026).
+
+Hasta la rev. 5 esta tabla le daba la escena final a `amb_viento_horizonte`, que ya no existe: el
+archivo que llevaba ese nombre es hoy `amb_balsa_movimiento` y suena en la travesía de la 3.3
+(§19 rev. 4). Su fila queda como diseño del puente II, sin pieza: hoy el horizonte conserva la
+cueva y la hoguera (§19 rev. 3).
 
 ---
 
@@ -442,7 +467,7 @@ juego completo.
 | `sfx_n3_pieza_devuelta` | La pieza no asienta y vuelve al inventario: roce blando, sin golpe | Colocación incorrecta dentro de una fase | 0.5 s | no | RF-40, RF-43, §2.1 |
 | `sfx_n3_fase_confirmada` | Amarre que se aprieta y queda firme. **Una fase aprobada no se pierde** (RF-41), y el sonido debe transmitir esa firmeza | Confirmación correcta de una fase con «Listo» | 1.0 s | no | RF-41, guion §8.3 |
 | `sfx_n3_probar_balsa` | La balsa entra al agua: empuje y chapoteo grave | Acción «Probar balsa» | 1.2 s | no | RF-42 |
-| `sfx_n3_hundimiento` | La balsa gira y se hunde por un costado: madera que cruje, agua que entra, y **un final blando y hasta cómico**. La orilla es poco profunda y nadie corre peligro; el sonido lo dice | Prueba de la balsa fallida | 2.5 s | no | RF-42, CP-02, guion §8.4.1 |
+| `sfx_n3_hundimiento` | La balsa gira y se hunde por un costado: madera que cruje, agua que entra, y **un final blando y hasta cómico**. La orilla es poco profunda y nadie corre peligro; el sonido lo dice. Entregada: es `N3_Sonidos.RaftSinking` | Toda prueba de la balsa que la hunde: la de la balsa terminada, en mástil y vela, y la anticipada con «Probar balsa» en la base y el amarre. Suena una vez, al empezar el hundimiento. «Listo» rechazado no hunde nada y no suena | 1.74 s | no | RF-42, CP-02, guion §8.4.1, INC-122, INC-123 |
 | `sfx_n3_balsa_flota` | La balsa se asienta y se equilibra. Estabilidad audible | Prueba de la balsa exitosa | 1.5 s | no | RF-44, guion §8.5 |
 | `sfx_n3_vela_viento` | La tela se llena de golpe y queda tensa | La vela recibe el viento, dentro de la animación de cruce | 1.8 s | no | RF-44, guion §8.5 |
 | `sfx_n3_cruce` | Agua contra los troncos durante la travesía, constante y avanzando | Animación de cruce del río | 6.0 s | no | RF-44 |
@@ -562,8 +587,72 @@ Igual que §18 del arte: se dejan escritas, no se toman por cuenta propia.
 
 ---
 
-## 19. Historial
+## 19. Historial y piezas cableadas
 
+### Lo que suena hoy (01/10/2026)
+
+En `Assets/Game/Audio/` hay **19 piezas**. **Suenan 18**, las que referencia un asset:
+`N1_Sonidos`, `N2_Sonidos`, `N3_Sonidos` o una `NarrativeSequence`. Una no la referencia nadie:
+`amb_n2_noche_intemperie`. De esta tabla sale la hoja de PF-SON-01..03 (OE4 `casos.md`). Cuando
+una pieza hace de otra del inventario, la última columna dice de cuál.
+
+| Pieza | Dónde suena (asset · campo o línea) | Hace de |
+|---|---|---|
+| `amb_noche_intemperie` | apertura (`N1_Apertura`) | su fila de §8 |
+| `amb_n1_cueva_oscura` | 1.1, 1.2, la cueva (`N1_Sonidos.CaveAmbient`), 1.3, 2.5, el arranque del puente II y su horizonte | su fila de §8; en la 2.5 y el puente II, con la capa del fuego, `amb_n2_refugio_fogata` |
+| `amb_n1_cueva_fuego` | capa: al soplar (`FireAmbient`), 1.3, arranque del puente I, 2.5, puente II y su horizonte, escena final | su fila de §8; ídem en la 2.5 y el puente II |
+| `amb_n2_bosque_dia` | puente I, 2.1–2.4, las tres fases del Nivel 2 (`N2_Sonidos.ForestAmbient`), capa del río (`N3_Sonidos.ForestAmbient`, `N3_PuenteII_Rio`, 3.1–3.3) y fondo de la escena final | su fila de §8; en el taller, `amb_n2_taller_claro`; el laberinto no tiene fila propia; en el río se aparta de §8 (rev. 4) |
+| `amb_n3_rio_orilla` | orilla y ensamblaje (`RiverAmbient`), `N3_PuenteII_Rio`, 3.1–3.3 | su fila de §8 |
+| `amb_balsa_movimiento` | capa mientras la balsa cruza en la 3.3 (`NarrativeProp.MotionAmbient`) | `sfx_n3_cruce` (§13) |
+| `sfx_n1_pasos_eco` | apertura, «Los pasos resuenan contra la piedra» | su fila de §11 |
+| `sfx_n1_hojas_acomodo` | arrastre de una hoja (`LeafDrag`); 1.2, «Las amontona con cuidado en el suelo»; planta que se aparta en el bosque (`N2_Sonidos.LeafNudge`) | su fila de §11 |
+| `sfx_n1_pieza_tomar` | reunir → encender (`Gathered`); cinco troncos reunidos y carretilla terminada (`AllLogsCollected`, `CartBuilt`); balsa terminada (`RaftBuilt`) | su fila de §11; `sfx_n2_carretilla_lista` |
+| `sfx_n1_golpe` | golpe con las piedras en contacto (`Strike`, tono ±6 %); 1.2, «Las golpea una contra otra…» | `sfx_n1_golpe_a`/`_b`/`_c` |
+| `sfx_n1_chispa` | golpe efectivo (`Spark`); 1.2, «¡CLIC!» | `sfx_n1_chispa_dentro_1`/`_2`/`_3` |
+| `sfx_n1_soplo` | «Soplar» (`Blow`) | su fila de §11 |
+| `sfx_n2_troncos` | tronco que se aparta en el bosque (`LogNudge`); 2.2, el que suelta el niño, al caer | sin fila |
+| `sfx_n2_piedra_cae` | piedra o herramienta que se aparta (`StoneNudge`); 2.2, la piedra de papá y la caja, al caer | sin fila |
+| `sfx_n2_carretilla` | en bucle mientras la carretilla recorre la secuencia (`CartMove`) | `sfx_n2_paso_*` y `sfx_n2_retroceso_bloqueado` |
+| `sfx_encaje_pieza` | tronco acopiado y tronco perforado (`LogCollected`, `Drilled`); material recogido en la orilla (`N3_Sonidos.Collected`) | `sfx_n2_objeto_valido`, `sfx_n2_mecanizar`, `sfx_n3_recoger` |
+| `sfx_martillo_madera` | tres golpes al encajar una pieza en la carretilla (`AssemblyHammer`); uno por pieza puesta en la balsa (`PiecePlaced`) y tres al aprobar una fase (`PhaseHammer`) | `sfx_n2_eje_insertado`/`_tabla_colocada`/`_caja_colocada`, `sfx_n3_pieza_encaja`, `sfx_n3_fase_confirmada` |
+| `sfx_n3_hundimiento` | al empezar todo hundimiento de la balsa (`N3_Sonidos.RaftSinking`) | su fila de §13 |
+
+**Callan a propósito (§2.1):** «Listo» rechazado, la pieza que vuelve al inventario, entrar a la
+zona sin todo y el golpe con las piedras separadas.
+
+**Sin entregar:** toda la música (§7), los efectos de interfaz (§9), la firma de Algoritm y el
+blip (§10), y las filas de §8 a §13 que la tabla no nombra.
+
+### Revisiones
+
+- **rev. 5 (01/10/2026)** — Nivel 3 y escena final, por las decisiones de Santiago del 30/09/2026
+  (D-j y D-k, tarjeta D10-3).
+  - **La balsa que se hunde suena (INC-123).** `sfx_n3_hundimiento` es `RiverSounds.RaftSinking`
+    en `N3_Sonidos.asset`.
+    - Es la pieza que la rev. 4 dejó en disco sin referenciar, `sfx_n3_salpicadura_undimiento`,
+      renombrada **desde el motor** (`AssetDatabase.RenameAsset`) con su GUID
+      (`be2ba44e5cfd935448ca5a20ff9f2cb8`). El nombre nuevo es el id de §13 y cumple §4.1: lleva
+      el `n3` y ya no tiene la errata.
+    - Suena una vez, al empezar **todo** hundimiento: el de la balsa terminada, en mástil y vela,
+      y el de la prueba anticipada con «Probar balsa» en la base y el amarre (INC-122).
+    - Dura 1,74 s, frente a los 0,6 s del hundimiento, así que su cola acompaña la vuelta de la
+      balsa. Dos pruebas seguidas encadenan dos tomas: se acepta, porque cada prueba es un evento
+      (§2.3).
+    - «Listo» rechazado sigue mudo: ahí no se hunde nada.
+    - Describe y no castiga (§2.1). El comentario «por qué no» está en
+      `AssemblyPanelController.SinkAsync`.
+    - Pruebas: `RiverSounds_RF42_LaBalsaQueSeHundeSuenaASalpicadura` y
+      `AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas`. Sigue en verde
+      `AssemblyPanel_CP02_UnaFaseQueNoPasaNoSuena`.
+  - **La escena final suena (INC-125).** `N3_EscenaFinal` lleva `amb_n2_bosque_dia` de fondo y
+    `amb_n1_cueva_fuego` en la segunda capa, el par con que abre `N2_PuenteI`.
+    - §8 se corrige en esta revisión: le daba la escena a `amb_viento_horizonte`, que ya no existe.
+    - Prueba: `RiverSounds_RF44_LaEscenaFinalSuenaAlBosqueConLasFogatas`.
+    - Queda por oír (`OE4/Hoja-HUM.md`, H6) si `amb_n1_cueva_fuego`, pensado como la cueva con el
+      crepitar (§8), suena a eco de cueva y no a fogata al aire libre. Si es así, se pide una toma
+      de fogata sola.
+  - De la rev. 4, «la balsa que se hunde … no suenan» queda como historia.
+  - El silencio S3 sigue sin implementar: es un límite de `SilenceCut`, descrito en §5.
 - **rev. 4 (25/09/2026)** — Nivel 3, a petición de Santiago, con dos piezas del nivel, una del
   Nivel 2 y las tres globales. El nivel lleva `N3_Sonidos.asset` (`RiverSounds`), que referencian
   la orilla (`RiverSceneController`) y el panel de ensamblaje (`AssemblyPanelController`) de

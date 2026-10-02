@@ -137,6 +137,7 @@ namespace Game.Levels.River.Tests
             }
 
             AssertContraste("ensamblaje · confirmar", river.Assembly.ConfirmLabel, river.Environment);
+            AssertContraste("ensamblaje · probar", river.Assembly.TestLabel, river.Environment);
             AssertContrasteDeLaPausa("orilla", river.Environment);
 
             // El botón de confirmar se deshabilita durante cada animación y vuelve con un

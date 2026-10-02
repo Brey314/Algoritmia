@@ -124,6 +124,7 @@ namespace Game.Levels.River.Tests
                 "y cada espacio de la balsa");
             Assert.That(asas, Does.Contain("EspacioTemplate"), "más el modelo, inactivo");
             Assert.That(panel.ConfirmButton.GetComponent<Selectable>(), Is.InstanceOf<Button>(), "confirmar es un botón: clic simple");
+            Assert.That(panel.TestButton.GetComponent<Selectable>(), Is.InstanceOf<Button>(), "probar es un botón: clic simple");
             Assert.That(river.Pads.All(pad => !pad.gameObject.activeSelf), Is.True, "las flechas se retiraron");
         }
 
@@ -170,52 +171,62 @@ namespace Game.Levels.River.Tests
             Canvas.ForceUpdateCanvases();
             await Awaitable.NextFrameAsync();
 
-            var pantalla = new Rect(0, 0, Screen.width, Screen.height);
-            var piezas = new[]
-            {
+            AssertCabenSinSolaparse(
                 ("balsa", panel.RaftArea),
                 ("botón", (RectTransform)panel.ConfirmButton.transform),
                 ("inventario", river.InventoryArea),
                 ("lista de tareas", river.TaskArea),
-                ("tablilla del guía", (RectTransform)river.MessageLabel.transform.parent)
-            };
+                ("tablilla del guía", (RectTransform)river.MessageLabel.transform.parent));
+        }
 
-            foreach (var (nombre, rect) in piezas)
-            {
-                var caja = RiverMovementTests.EnPantalla(rect);
-                Assert.That(pantalla.Contains(caja.min) && pantalla.Contains(caja.max), Is.True, $"«{nombre}» cabe entero en pantalla — {caja}");
-            }
+        /// <summary>
+        /// En la base y el amarre «Probar balsa» se suma a «Listo» (RF-42, D-j del 30/09/2026): los
+        /// dos botones, la balsa, el inventario y las tablillas siguen cabiendo enteros y sin tocarse.
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        public async Task AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse()
+        {
+            var (river, panel) = await OpenAssembly();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            // Assert y no Assume: si el botón no está en la escena el arreglo está roto y esto tiene que fallar.
+            Assert.That(panel.TestButton.gameObject.activeInHierarchy, Is.True, "en la base «Probar balsa» está junto a «Listo»");
 
-            for (var i = 0; i < piezas.Length; i++)
-            {
-                for (var j = i + 1; j < piezas.Length; j++)
-                {
-                    Assert.That(RiverMovementTests.EnPantalla(piezas[i].Item2).Overlaps(RiverMovementTests.EnPantalla(piezas[j].Item2)),
-                        Is.False, $"«{piezas[i].Item1}» {RiverMovementTests.EnPantalla(piezas[i].Item2)} y «{piezas[j].Item1}» " +
-                                  $"{RiverMovementTests.EnPantalla(piezas[j].Item2)} no se solapan (RNF-03); pantalla {pantalla}");
-                }
-            }
+            AssertCabenSinSolaparse(
+                ("balsa", panel.RaftArea),
+                ("«Listo»", (RectTransform)panel.ConfirmButton.transform),
+                ("«Probar balsa»", (RectTransform)panel.TestButton.transform),
+                ("inventario", river.InventoryArea),
+                ("lista de tareas", river.TaskArea),
+                ("tablilla del guía", (RectTransform)river.MessageLabel.transform.parent));
         }
 
         [Test]
         [Timeout(90000)]
         [Category("VisualVerification")]
         [Description("Revisar las tres capturas: la balsa crece de la base con siluetas, a la base con amarres, al mástil y la vela; " +
-                     "el río al 85 % del ancho con la orilla en la mitad, la sombra al 30 % y el panel en el centro (decisión del 20/09/2026).")]
+                     "la familia en la orilla a la izquierda y la balsa sobre el agua a la derecha, a la escala de la 3.3, sin tocar a la " +
+                     "familia ni los botones; la casilla de tronco a 1:1, sin pixelado; la sombra al 30 % (lectura B, INC-118). " +
+                     "En _Base y _Amarre se ven «Listo» y «Probar balsa» lado a lado, con la misma tipografía, sin solaparse con la balsa y con " +
+                     "contraste legible; en _MastilYVela hay un solo «Probar balsa», centrado (D-j del 30/09/2026).")]
         public async Task AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance()
         {
             var (_, panel) = await OpenAssembly();
+            await Pause(0.15f); // los botones se funden al aparecer: capturar a medio fundido los deja pálidos
             await Awaitable.EndOfFrameAsync();
             CaptureScreenshot("AssemblyPanel_HU12_Base");
 
             await FillPhase(panel, RaftPhase.Base);
             await Confirm(panel);
+            await Pause(0.15f); // los botones se funden al aparecer: capturar a medio fundido los deja pálidos
             await Awaitable.EndOfFrameAsync();
             CaptureScreenshot("AssemblyPanel_HU12_Amarre");
 
             await FillPhase(panel, RaftPhase.Lashing);
             await Confirm(panel);
             await FillPhase(panel, RaftPhase.MastAndSail);
+            await Pause(0.15f); // los botones se funden al aparecer: capturar a medio fundido los deja pálidos
             await Awaitable.EndOfFrameAsync();
             CaptureScreenshot("AssemblyPanel_HU12_MastilYVela");
         }
@@ -257,6 +268,92 @@ namespace Game.Levels.River.Tests
             Assert.That(todos.Select(rig => rig.Current), Is.All.EqualTo(ActorAction.Encourage),
                 "el intento sin éxito se anima, nunca con un gesto de derrota (CP-02, §7.3)");
             await RiverMovementTests.AssertSoloAnimo(todos);
+        }
+
+        /// <summary>
+        /// «Probar balsa» disponible en cada fase (RF-42, D-j del 30/09/2026): junto a «Listo» en la
+        /// base y el amarre; en la última fase «Listo» ya no existe y confirmar es probar.
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        [Category("Acceptance")]
+        public async Task AssemblyPanel_RF42_ElBotonProbarBalsaEstaDisponibleEnCadaFase()
+        {
+            var (_, panel) = await OpenAssembly();
+            var content = panel.Content;
+
+            Assert.That(Rotulos(panel).Count(rotulo => rotulo == content.TestLabel), Is.EqualTo(1), "en la base hay un «Probar balsa»…");
+            Assert.That(Rotulos(panel), Does.Contain(content.ConfirmLabel), "…junto a «Listo»");
+
+            await FillPhase(panel, RaftPhase.Base);
+            await Confirm(panel);
+            Assert.That(Rotulos(panel).Count(rotulo => rotulo == content.TestLabel), Is.EqualTo(1), "en el amarre también…");
+            Assert.That(Rotulos(panel), Does.Contain(content.ConfirmLabel), "…junto a «Listo»");
+
+            await FillPhase(panel, RaftPhase.Lashing);
+            await Confirm(panel);
+            Assert.That(Rotulos(panel).Count(rotulo => rotulo == content.TestLabel), Is.EqualTo(1),
+                "en la última fase queda un solo «Probar balsa»: el de confirmar…");
+            Assert.That(Rotulos(panel), Does.Not.Contain(content.ConfirmLabel), "…porque «Listo» ya no aparece");
+        }
+
+        /// <summary>
+        /// La balsa a medio armar se hunde como la terminada y mal armada —gira por un costado y
+        /// vuelve— pero la fase sigue abierta y nada se aprueba (RF-40, RF-42, CP-02).
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        [Category("Acceptance")]
+        public async Task AssemblyPanel_RF42_ProbarLaBalsaIncompletaLaHundeYSigueEnLaFase()
+        {
+            var (river, panel) = await OpenAssembly();
+            var troncos = panel.Slots.Values.Where(entry => entry.Slot.Phase == RaftPhase.Base).ToArray();
+            await Drag(panel, MaterialKind.Logs, troncos[0].Image.rectTransform);
+
+            panel.TestButton.onClick.Invoke();
+
+            Assert.That(panel.IsBusy, Is.True, "la balsa se hunde");
+            var giro = 0f;
+            var limite = Time.realtimeSinceStartup + 10f;
+            while (panel.IsBusy && Time.realtimeSinceStartup < limite)
+            {
+                giro = Mathf.Max(giro, Mathf.Abs(Mathf.DeltaAngle(0f, panel.RaftArea.localEulerAngles.z)));
+                await Awaitable.NextFrameAsync();
+            }
+
+            Assert.That(panel.IsBusy, Is.False, "la animación del panel terminó");
+            Assert.That(giro, Is.GreaterThan(1f), "gira por un costado");
+            Assert.That(panel.RaftArea.localRotation, Is.EqualTo(Quaternion.identity), "y vuelve derecha");
+            Assert.That(panel.RaftArea.anchoredPosition, Is.EqualTo(Vector2.zero), "a su sitio");
+            Assert.That(panel.Assembly.ActivePhase, Is.EqualTo(RaftPhase.Base), "la fase sigue siendo la base…");
+            Assert.That(panel.Assembly.IsConfirmed(RaftPhase.Base), Is.False, "…y sin confirmar: probar no aprueba (RF-40)");
+            Assert.That(panel.Assembly.PlacedIn(troncos[0].Slot.Id), Is.EqualTo(MaterialKind.Logs), "lo bien puesto se queda");
+            Assert.That(river.MessageLabel.text, Is.EqualTo(panel.Content.UnfinishedTestMessage), "la tablilla dice que falta armar");
+            Assert.That(panel.gameObject.activeInHierarchy, Is.True, "el panel sigue abierto");
+            Assert.That(panel.TestButton.interactable && panel.ConfirmButton.interactable, Is.True, "con los dos botones listos para otro intento");
+        }
+
+        /// <summary>
+        /// Antes de la última fase solo se señala lo mal puesto, no los espacios vacíos: la balsa a
+        /// medio armar está incompleta por construcción, y marcar sus vacíos sería un mapa de dónde
+        /// va cada pieza (CP-06, guion §1.8.3).
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        public async Task AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto()
+        {
+            var (_, panel) = await OpenAssembly();
+            var troncos = panel.Slots.Values.Where(entry => entry.Slot.Phase == RaftPhase.Base).ToArray();
+            await Drag(panel, MaterialKind.Mast, troncos[0].Image.rectTransform); // el tronco largo cabe en la base: se rechaza al probar
+            await Drag(panel, MaterialKind.Logs, troncos[1].Image.rectTransform);
+
+            await Probar(panel);
+
+            Assert.That(troncos[0].Alert.gameObject.activeInHierarchy, Is.True, "el espacio con la pieza que no es lleva el icono de alerta");
+            Assert.That(troncos.Skip(1).Select(entry => entry.Alert.gameObject.activeInHierarchy), Has.All.False,
+                "ni el bien puesto ni los tres vacíos (CP-06)");
+            Assert.That(panel.Wrong, Is.EquivalentTo(new[] { troncos[0].Slot.Id }), "el único señalado es el mal puesto");
+            Assert.That(panel.Assembly.Remaining(MaterialKind.Mast), Is.EqualTo(1), "y su pieza volvió al inventario");
         }
 
         // --- utilería ---------------------------------------------------------------------------
@@ -322,6 +419,23 @@ namespace Game.Levels.River.Tests
             await WaitIdle(panel);
         }
 
+        /// <summary>Pulsa el «Probar balsa» que se ve: el de probar en la base y el amarre, el de confirmar en la última fase.</summary>
+        internal static async Task Probar(AssemblyPanelController panel)
+        {
+            var boton = panel.TestButton.gameObject.activeInHierarchy ? panel.TestButton : panel.ConfirmButton;
+            boton.onClick.Invoke();
+            await WaitIdle(panel);
+        }
+
+        private static async Task Pause(float seconds)
+        {
+            var end = Time.realtimeSinceStartup + seconds;
+            while (Time.realtimeSinceStartup < end)
+            {
+                await Awaitable.NextFrameAsync();
+            }
+        }
+
         internal static async Task WaitIdle(AssemblyPanelController panel, float seconds = 10f)
         {
             var deadline = Time.realtimeSinceStartup + seconds;
@@ -331,6 +445,34 @@ namespace Game.Levels.River.Tests
             } while (panel.IsBusy && Time.realtimeSinceStartup < deadline);
 
             Assert.That(panel.IsBusy, Is.False, "la animación del panel terminó");
+        }
+
+        /// <summary>Los rótulos de los botones del panel que se ven y se pueden pulsar.</summary>
+        private static string[] Rotulos(AssemblyPanelController panel) => panel.GetComponentsInChildren<Button>()
+            .Where(boton => boton.isActiveAndEnabled && boton.interactable)
+            .Select(boton => boton.GetComponentInChildren<Text>().text)
+            .ToArray();
+
+        /// <summary>Cada pieza cabe entera en pantalla y ningún par se solapa (RNF-03). Solo vale a 1920×1080: en el Editor con la Game View fija.</summary>
+        private static void AssertCabenSinSolaparse(params (string Nombre, RectTransform Rect)[] piezas)
+        {
+            var pantalla = new Rect(0, 0, Screen.width, Screen.height);
+
+            foreach (var (nombre, rect) in piezas)
+            {
+                var caja = RiverMovementTests.EnPantalla(rect);
+                Assert.That(pantalla.Contains(caja.min) && pantalla.Contains(caja.max), Is.True, $"«{nombre}» cabe entero en pantalla — {caja}");
+            }
+
+            for (var i = 0; i < piezas.Length; i++)
+            {
+                for (var j = i + 1; j < piezas.Length; j++)
+                {
+                    Assert.That(RiverMovementTests.EnPantalla(piezas[i].Rect).Overlaps(RiverMovementTests.EnPantalla(piezas[j].Rect)),
+                        Is.False, $"«{piezas[i].Nombre}» {RiverMovementTests.EnPantalla(piezas[i].Rect)} y «{piezas[j].Nombre}» " +
+                                  $"{RiverMovementTests.EnPantalla(piezas[j].Rect)} no se solapan (RNF-03); pantalla {pantalla}");
+                }
+            }
         }
 
         private static System.Collections.Generic.List<string> Visibles(AssemblyPanelController panel) =>

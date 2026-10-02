@@ -124,6 +124,40 @@ namespace Game.UI.Tests
                 "RF-46: un nivel no jugado se presenta sin datos, no con ceros");
         }
 
+        // OBS-SDOC-2: el detalle no decía de quién eran las cifras. Rojo esperado sin la corrección:
+        // SelectedProfileLabel no existe (no compila) o queda vacío.
+        [Test]
+        [Timeout(20000)]
+        public async Task TeacherReport_RF46_ElDetalleNombraElPerfilQueSeEstaMirando()
+        {
+            var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
+            await Awaitable.NextFrameAsync();
+            runner.GoTo(GameState.TeacherReport);
+            await LoadSceneOf(runner);
+
+            var controller = await WaitForComponentAsync<TeacherReportController>(10f);
+            var fileSystem = new FakeFileSystem();
+            foreach (var nombre in new[] { "Ana", "Beto" })
+            {
+                fileSystem.Write($"C:/Vacio/Datos/{nombre}.json",
+                    JsonUtility.ToJson(PlayerProfile.Create(nombre, Array.Empty<string>()).Profile));
+            }
+
+            controller.Repository = new ProfileRepository(fileSystem, "C:/Vacio/Datos", "C:/Vacio/Respaldo");
+            controller.Show();
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(controller.SelectedProfileLabel.text, Does.Contain(controller.Selected.Name), "nombra el perfil elegido por defecto");
+
+            var beto = controller.Entries.First(entrada => entrada.name == "Perfil(Beto)");
+            Click(beto);
+
+            Assert.That(controller.Selected.Name, Is.EqualTo("Beto"));
+            Assert.That(controller.SelectedProfileLabel.text, Does.Contain("Beto"), "y cambia al elegir otro");
+            Assert.That(controller.SelectedProfileLabel.text, Does.Not.Contain("Ana"));
+            Assert.That(controller.SelectedProfileLabel.gameObject.activeInHierarchy, Is.True);
+        }
+
         [Test]
         [Timeout(20000)]
         public async Task TeacherReport_INC34_AdvierteAlDocenteCuandoElGuardadoUsaLaRutaDeRespaldo()

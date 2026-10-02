@@ -14,7 +14,7 @@ namespace Game.Levels.River
     /// Las posiciones del área de la balsa son fracciones de la ilustración, como todo lo que
     /// cuelga de ella; las de cada espacio son fracciones de esa área (<see cref="RaftSlot"/>).
     /// El encuadre pasa por las mismas reglas que las paradas narrativas: con 16:9 sin duplicar
-    /// el rango del foco a zoom 2.2 es <c>[0.227, 0.773]</c> y <see cref="OnValidate"/> lo avisa.
+    /// el rango del foco a zoom 1.6 es <c>[0.3125, 0.6875]</c> y <see cref="OnValidate"/> lo avisa.
     /// </remarks>
     [CreateAssetMenu(menuName = "Algoritm/Ensamblaje del Nivel 3", fileName = "N3_RaftAssemblyContent")]
     public class RaftAssemblyContent : ScriptableObject
@@ -59,19 +59,19 @@ namespace Game.Levels.River
         public int KnotsPerRope { get; private set; } = 10;
 
         [field: SerializeField]
-        [field: Tooltip("Encuadre del ensamblaje: el río ocupa el 85 % del ancho y la orilla parte la pantalla en dos (decisión del 20/09/2026).")]
-        public CameraFraming AssemblyFraming { get; private set; } = new CameraFraming(new Vector2(0.5f, 0.23f), 2.2f);
+        [field: Tooltip("Encuadre del ensamblaje: la orilla con la familia a la izquierda y el río con la balsa a la derecha, apoyado en el borde inferior; ×1.6 frente al ×1.4 de la recolección (lectura B, 30/09/2026).")]
+        public CameraFraming AssemblyFraming { get; private set; } = new CameraFraming(new Vector2(0.5f, 0.3125f), 1.6f);
 
         [field: SerializeField]
         [field: Tooltip("Cuánto dura el empuje de cámara del plano de juego al del ensamblaje, en segundos.")]
         public float PushSeconds { get; private set; } = 1f;
 
         [field: SerializeField]
-        [field: Tooltip("Centro del área de la balsa, en fracciones de la ilustración. En el foco del encuadre queda en la mitad de la pantalla.")]
-        public Vector2 RaftPosition { get; private set; } = new Vector2(0.5f, 0.23f);
+        [field: Tooltip("Centro del área de la balsa, en fracciones de la ilustración: sobre el agua, con la punta izquierda tocando la orilla y a la derecha de la familia (lectura B).")]
+        public Vector2 RaftPosition { get; private set; } = new Vector2(0.58f, 0.23f);
 
         [field: SerializeField]
-        [field: Tooltip("Lado del área de la balsa (cuadrada) como fracción del alto de la ilustración.")]
+        [field: Tooltip("Lado del área de la balsa (cuadrada) como fracción del alto de la ilustración. Igual al Size de la balsa que cruza en la 3.3 (RF-44).")]
         public float RaftSize { get; private set; } = 0.28f;
 
         [field: SerializeField]
@@ -91,7 +91,7 @@ namespace Game.Levels.River
         public string ConfirmLabel { get; private set; } = "Listo";
 
         [field: SerializeField]
-        [field: Tooltip("Rótulo del botón en la última fase (RF-42).")]
+        [field: Tooltip("Rótulo de «Probar balsa»: el botón de confirmar en la última fase y el de probar en la base y el amarre (RF-42).")]
         public string TestLabel { get; private set; } = "Probar balsa";
 
         [field: SerializeField, TextArea(2, 3)]
@@ -123,8 +123,12 @@ namespace Game.Levels.River
         public string LashingConfirmedMessage { get; private set; } = "La balsa ya no se abre. Falta lo que atrapa el viento.";
 
         [field: SerializeField, TextArea(2, 3)]
-        [field: Tooltip("Cuando la prueba de la balsa falla: se hunde, y el mensaje dice qué revisar (RF-42, HU-13).")]
+        [field: Tooltip("Cuando la prueba de la balsa falla con algo mal puesto —en la última fase o antes de tiempo—: se hunde, y el mensaje dice qué revisar (RF-42, HU-13).")]
         public string TestFailedMessage { get; private set; } = "La balsa se volteó. Mira el espacio marcado: ¿qué debería ir ahí?";
+
+        [field: SerializeField, TextArea(2, 3)]
+        [field: Tooltip("«Probar balsa» antes de la última fase sin nada mal puesto: la balsa se hunde porque le falta armar el resto. Dice qué revisar sin nombrar la pieza ni dar cifras (CP-06, CP-03).")]
+        public string UnfinishedTestMessage { get; private set; } = "La balsa se hundió: todavía no está terminada. ¿Qué parte falta armar?";
 
         [field: SerializeField, TextArea(2, 3)]
         [field: Tooltip("Cuando la prueba de la balsa pasa: se cruza el río (guion §1.8.5).")]
@@ -151,7 +155,8 @@ namespace Game.Levels.River
             string placedMessage = "puesto",
             string takenBackMessage = "devuelta",
             string missedMessage = "fuera",
-            string occupiedMessage = "ocupado")
+            string occupiedMessage = "ocupado",
+            string unfinishedTestMessage = "se hunde: sin terminar")
         {
             var content = CreateInstance<RaftAssemblyContent>();
             content.Slots = slots;
@@ -165,6 +170,7 @@ namespace Game.Levels.River
             content.TakenBackMessage = takenBackMessage;
             content.MissedMessage = missedMessage;
             content.OccupiedMessage = occupiedMessage;
+            content.UnfinishedTestMessage = unfinishedTestMessage;
             return content;
         }
 #endif

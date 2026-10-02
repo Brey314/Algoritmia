@@ -1,0 +1,403 @@
+{
+ "cargas": {
+  "MainMenu": {
+   "n": 31,
+   "min": 0.051,
+   "mediana": 0.087,
+   "peor": 0.108,
+   "donde": "S-PER lanz. 8 (tras Boot)",
+   "por_sesion": {
+    "GP1": 3,
+    "GP2": 2,
+    "S-PER": 17,
+    "S-DOC": 7,
+    "S-RNF07": 2
+   }
+  },
+  "LevelSelect": {
+   "n": 27,
+   "min": 0.066,
+   "mediana": 0.069,
+   "peor": 0.072,
+   "donde": "S-PER lanz. 7 (tras MainMenu)",
+   "por_sesion": {
+    "GP1": 4,
+    "GP2": 3,
+    "S-PER": 16,
+    "S-DOC": 2,
+    "S-RNF07": 2
+   }
+  },
+  "Credits": {
+   "n": 3,
+   "min": 0.035,
+   "mediana": 0.036,
+   "peor": 0.04,
+   "donde": "GP1 lanz. 1 (tras MainMenu)",
+   "por_sesion": {
+    "GP1": 2,
+    "GP2": 1,
+    "S-PER": 0,
+    "S-DOC": 0,
+    "S-RNF07": 0
+   }
+  },
+  "Narrative": {
+   "n": 89,
+   "min": 0.035,
+   "mediana": 0.036,
+   "peor": 0.765,
+   "donde": "S-RNF07 lanz. 1 (tras LevelSelect)",
+   "por_sesion": {
+    "GP1": 19,
+    "GP2": 17,
+    "S-PER": 47,
+    "S-DOC": 3,
+    "S-RNF07": 3
+   }
+  },
+  "Level1_Cave": {
+   "n": 7,
+   "min": 0.154,
+   "mediana": 0.155,
+   "peor": 0.156,
+   "donde": "GP1 lanz. 1 (tras Narrative)",
+   "por_sesion": {
+    "GP1": 1,
+    "GP2": 1,
+    "S-PER": 3,
+    "S-DOC": 1,
+    "S-RNF07": 1
+   }
+  },
+  "LevelSummary": {
+   "n": 8,
+   "min": 0.035,
+   "mediana": 0.035,
+   "peor": 0.035,
+   "donde": "GP1 lanz. 1 (tras Narrative)",
+   "por_sesion": {
+    "GP1": 3,
+    "GP2": 3,
+    "S-PER": 2,
+    "S-DOC": 0,
+    "S-RNF07": 0
+   }
+  },
+  "Level2_Forest": {
+   "n": 4,
+   "min": 0.052,
+   "mediana": 0.052,
+   "peor": 0.052,
+   "donde": "GP1 lanz. 1 (tras Narrative)",
+   "por_sesion": {
+    "GP1": 1,
+    "GP2": 1,
+    "S-PER": 2,
+    "S-DOC": 0,
+    "S-RNF07": 0
+   }
+  },
+  "Level2_Workshop": {
+   "n": 5,
+   "min": 0.052,
+   "mediana": 0.069,
+   "peor": 0.069,
+   "donde": "GP1 lanz. 1 (tras Narrative)",
+   "por_sesion": {
+    "GP1": 1,
+    "GP2": 1,
+    "S-PER": 3,
+    "S-DOC": 0,
+    "S-RNF07": 0
+   }
+  },
+  "Level2_Maze": {
+   "n": 4,
+   "min": 0.053,
+   "mediana": 0.069,
+   "peor": 0.071,
+   "donde": "GP2 lanz. 1 (tras Narrative)",
+   "por_sesion": {
+    "GP1": 1,
+    "GP2": 1,
+    "S-PER": 2,
+    "S-DOC": 0,
+    "S-RNF07": 0
+   }
+  },
+  "Level3_River": {
+   "n": 6,
+   "min": 0.052,
+   "mediana": 0.053,
+   "peor": 0.086,
+   "donde": "S-PER lanz. 10 (tras Narrative)",
+   "por_sesion": {
+    "GP1": 2,
+    "GP2": 1,
+    "S-PER": 3,
+    "S-DOC": 0,
+    "S-RNF07": 0
+   }
+  },
+  "TeacherReport": {
+   "n": 4,
+   "min": 0.051,
+   "mediana": 0.054,
+   "peor": 0.057,
+   "donde": "S-DOC lanz. 1 (tras MainMenu)",
+   "por_sesion": {
+    "GP1": 0,
+    "GP2": 0,
+    "S-PER": 0,
+    "S-DOC": 4,
+    "S-RNF07": 0
+   }
+  }
+ },
+ "arranque_s": {
+  "GP1": 2.621,
+  "GP2": 2.601,
+  "S-RNF07": 3.229
+ },
+ "memoria": {
+  "GP1": {
+   "muestras": 2608,
+   "ws_mib": 399.3515625,
+   "ws_escena": "Narrative",
+   "ws_utc": "2026-10-01 14:38:41.206Z",
+   "ws_lanz": "1",
+   "priv_mib": 1140.07421875,
+   "priv_escena": "Narrative",
+   "priv_utc": "2026-10-01 15:07:49.220Z",
+   "pico_ws_so_mib": 399.3515625,
+   "pico_ws_so_escena": "Narrative",
+   "pico_ws_so_escena_previa": "Level2_Workshop",
+   "pico_ws_so_utc": "2026-10-01 14:38:41.206Z",
+   "pico_commit_mib": 1140.07421875,
+   "ws_max_por_escena_mib": {
+    "Narrative": 399,
+    "Level2_Workshop": 399,
+    "LevelSummary": 397,
+    "Level1_Cave": 396,
+    "Level2_Forest": 396,
+    "LevelSelect": 393,
+    "MainMenu": 359,
+    "Credits": 351,
+    "Level2_Maze": 333,
+    "Level3_River": 213
+   }
+  },
+  "GP2": {
+   "muestras": 987,
+   "ws_mib": 435.703125,
+   "ws_escena": "Level3_River",
+   "ws_utc": "2026-10-01 16:09:36.618Z",
+   "ws_lanz": "1",
+   "priv_mib": 1132.5859375,
+   "priv_escena": "Narrative",
+   "priv_utc": "2026-10-01 16:01:46.617Z",
+   "pico_ws_so_mib": 435.703125,
+   "pico_ws_so_escena": "Level3_River",
+   "pico_ws_so_escena_previa": "Level3_River",
+   "pico_ws_so_utc": "2026-10-01 16:09:36.618Z",
+   "pico_commit_mib": 1132.5859375,
+   "ws_max_por_escena_mib": {
+    "Narrative": 436,
+    "Level3_River": 436,
+    "Credits": 433,
+    "MainMenu": 430,
+    "LevelSummary": 429,
+    "Level2_Maze": 429,
+    "Level2_Workshop": 426,
+    "LevelSelect": 425,
+    "Level2_Forest": 421,
+    "Level1_Cave": 417
+   }
+  },
+  "S-PER": {
+   "muestras": 1364,
+   "ws_mib": 430.5859375,
+   "ws_escena": "Narrative",
+   "ws_utc": "2026-10-01 17:04:45.518Z",
+   "ws_lanz": "10",
+   "priv_mib": 1128.03515625,
+   "priv_escena": "Narrative",
+   "priv_utc": "2026-10-01 17:04:31.442Z",
+   "pico_ws_so_mib": 430.6015625,
+   "pico_ws_so_escena": "LevelSummary",
+   "pico_ws_so_escena_previa": "Narrative",
+   "pico_ws_so_utc": "2026-10-01 17:05:11.549Z",
+   "pico_commit_mib": 1128.03515625,
+   "ws_max_por_escena_mib": {
+    "Narrative": 431,
+    "Level2_Maze": 430,
+    "LevelSummary": 428,
+    "Level2_Workshop": 427,
+    "Level3_River": 425,
+    "Level2_Forest": 423,
+    "Level1_Cave": 420,
+    "LevelSelect": 417,
+    "MainMenu": 415
+   }
+  },
+  "S-DOC": {
+   "muestras": 216,
+   "ws_mib": 422.60546875,
+   "ws_escena": "MainMenu",
+   "ws_utc": "2026-10-01 17:26:07.122Z",
+   "ws_lanz": "2",
+   "priv_mib": 1122.9921875,
+   "priv_escena": "Level1_Cave",
+   "priv_utc": "2026-10-01 17:24:14.993Z",
+   "pico_ws_so_mib": 422.60546875,
+   "pico_ws_so_escena": "MainMenu",
+   "pico_ws_so_escena_previa": "TeacherReport",
+   "pico_ws_so_utc": "2026-10-01 17:26:07.122Z",
+   "pico_commit_mib": 1122.9921875,
+   "ws_max_por_escena_mib": {
+    "MainMenu": 423,
+    "TeacherReport": 423,
+    "LevelSelect": 417,
+    "Level1_Cave": 417,
+    "Narrative": 416
+   }
+  },
+  "S-RNF07": {
+   "muestras": 46,
+   "ws_mib": 416.26171875,
+   "ws_escena": "Level1_Cave",
+   "ws_utc": "2026-10-01 17:29:47.175Z",
+   "ws_lanz": "1",
+   "priv_mib": 1121.171875,
+   "priv_escena": "Level1_Cave",
+   "priv_utc": "2026-10-01 17:29:47.175Z",
+   "pico_ws_so_mib": 416.265625,
+   "pico_ws_so_escena": "Level1_Cave",
+   "pico_ws_so_escena_previa": "Level1_Cave",
+   "pico_ws_so_utc": "2026-10-01 17:29:51.266Z",
+   "pico_commit_mib": 1121.171875,
+   "ws_max_por_escena_mib": {
+    "Level1_Cave": 416,
+    "Narrative": 415,
+    "MainMenu": 412,
+    "LevelSelect": 411
+   }
+  }
+ },
+ "red": {
+  "GP1": {
+   "filas": 6281,
+   "externas": 3133,
+   "remotos": [
+    "34.107.172.168:443",
+    "34.111.113.40:443",
+    "34.8.90.77:443"
+   ],
+   "protocolos": [
+    "NINGUNA",
+    "TCP"
+   ],
+   "estados": [
+    "",
+    "Bound",
+    "Established"
+   ],
+   "clases": {
+    "escucha-local": 3133,
+    "EXTERNA": 3133,
+    "": 15
+   },
+   "lanzamientos_con_externa": "1/1"
+  },
+  "GP2": {
+   "filas": 2574,
+   "externas": 1287,
+   "remotos": [
+    "34.107.172.168:443",
+    "34.111.113.40:443",
+    "34.8.90.77:443"
+   ],
+   "protocolos": [
+    "TCP"
+   ],
+   "estados": [
+    "Bound",
+    "Established"
+   ],
+   "clases": {
+    "escucha-local": 1287,
+    "EXTERNA": 1287
+   },
+   "lanzamientos_con_externa": "1/1"
+  },
+  "S-PER": {
+   "filas": 5892,
+   "externas": 2946,
+   "remotos": [
+    "34.107.172.168:443",
+    "34.111.113.40:443",
+    "34.160.10.162:443",
+    "34.8.90.77:443"
+   ],
+   "protocolos": [
+    "TCP"
+   ],
+   "estados": [
+    "Bound",
+    "Established",
+    "SynSent"
+   ],
+   "clases": {
+    "escucha-local": 2946,
+    "EXTERNA": 2946
+   },
+   "lanzamientos_con_externa": "15/15"
+  },
+  "S-DOC": {
+   "filas": 911,
+   "externas": 455,
+   "remotos": [
+    "34.107.172.168:443",
+    "34.111.113.40:443",
+    "34.8.90.77:443"
+   ],
+   "protocolos": [
+    "NINGUNA",
+    "TCP"
+   ],
+   "estados": [
+    "",
+    "Bound",
+    "Established"
+   ],
+   "clases": {
+    "escucha-local": 455,
+    "EXTERNA": 455,
+    "": 1
+   },
+   "lanzamientos_con_externa": "2/2"
+  },
+  "S-RNF07": {
+   "filas": 276,
+   "externas": 138,
+   "remotos": [
+    "34.107.172.168:443",
+    "34.111.113.40:443",
+    "34.8.90.77:443"
+   ],
+   "protocolos": [
+    "TCP"
+   ],
+   "estados": [
+    "Bound",
+    "Established"
+   ],
+   "clases": {
+    "escucha-local": 138,
+    "EXTERNA": 138
+   },
+   "lanzamientos_con_externa": "1/1"
+  }
+ }
+}

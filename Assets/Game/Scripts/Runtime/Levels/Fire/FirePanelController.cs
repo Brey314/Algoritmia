@@ -39,6 +39,11 @@ namespace Game.Levels.Fire
         [Tooltip("Deslizante de cercanía de las piedras (T26): a la izquierda lejos, a la derecha una encima de otra. Su rango lo fija la configuración.")]
         private Slider spacingSlider;
 
+        [SerializeField]
+        [Range(0f, 1f)]
+        [Tooltip("Opacidad de los deslizantes mientras descansan (encendido). Su ColorTint no se ve: el objetivo del Slider es el contorno del asa y la cara opaca lo tapa, así que se atenúa todo el deslizante.")]
+        private float restingSliderAlpha = 0.5f;
+
         [SerializeField] private Button strikeButton;
         [SerializeField] private Button blowButton;
 
@@ -85,11 +90,11 @@ namespace Game.Levels.Fire
         private BurnReveal burn;
 
         [SerializeField]
-        [Tooltip("El hilo de humo sobre el montón (fx_n1_humo_nacer): arranca al converger y ya no se apaga (guion §1.4.3.5, fila E6). Oculto hasta entonces, por encima del montón y por debajo de las piedras.")]
+        [Tooltip("El hilo de humo del montón (fx_n1_humo_nacer), con el pivote en su base: nace en el punto del golpe al converger y ya no se apaga (guion §1.4.3.5, fila E6); al soplar sube hasta la corona de la llama, detrás de ella y encogiéndose. Oculto hasta entonces, por encima del montón y por debajo de las piedras.")]
         private Animator pileSmoke;
 
         [SerializeField]
-        [Tooltip("La chispa de cada golpe (Dirección de arte §12.2, cuatro rayos radiales #FFE9A8): sobre el punto del fuego si el golpe es efectivo, o desplazada fuera del montón si se pasó de fuerte. Oculta el resto del tiempo.")]
+        [Tooltip("El rayo de la chispa (#FFE9A8), con el pivote en su cola: sale del punto del fuego y cae en las hojas si el golpe es efectivo, o salta lejos y se apaga en el aire si se pasó de fuerte. Su ancho es el largo del rayo y su alto el grosor. Oculto el resto del tiempo.")]
         private RectTransform spark;
 
         [SerializeField]
@@ -128,14 +133,38 @@ namespace Game.Levels.Fire
         private const float EncourageSeconds = 1.035f;
         private const float BlowSeconds = 1.035f;
 
-        // Cuánto dura la chispa de un golpe (Dirección de arte §12.2): son tiempos de un efecto y
-        // no parámetros de juego, así que no van a FireLevelConfig.
+        // Cuánto dura la chispa de un golpe: son tiempos de un efecto y no parámetros de juego,
+        // así que no van a FireLevelConfig. La efectiva dura más con cada golpe (guion §1.4.3.3).
         private const float SparkSeconds = 0.2f;
         private const float DyingSparkSeconds = 0.35f;
 
-        // Cuánto se desplaza la chispa que se apaga en el aire, hacia arriba y fuera del montón
-        // (leafPile mide 300 px de lado): un efecto de presentación, no una regla del juego.
-        private const float DyingSparkOffset = 200f;
+        // Hasta dónde vuela el rayo, en fracciones del lado del montón (leafPile: 300 px de suelo,
+        // antes del acercamiento). Medido el 30/09/2026 sobre prop_n1_monton_hojas_cenital con las
+        // piedras en la muesca efectiva (a ±21 px, 36,6 px de radio dibujado):
+        // - el efectivo vuela hacia la mitad de abajo, donde el montón se extiende bajo las piedras.
+        //   Por arriba las hojas acaban a 43–90 px del golpe y las piedras ya tapan 39: con un
+        //   círculo entero, una de cada tres chispas caería en el suelo de la cueva. Entre 0,205 y
+        //   0,22 del lado toda caída es hoja y ninguna es piedra;
+        // - el que se pasa de fuerte salta hacia la mitad de arriba: pasa de la última hoja (154,5
+        //   px) y se apaga antes de la tablilla (190 px de suelo con la cámara al doble, a 16:9).
+        //   Hacia abajo se metería bajo el deslizante de cercanía.
+        // Son medidas del arte, no reglas del juego: se rehacen si cambia el dibujo del montón.
+        private const float LandingMinReach = 0.205f;
+        private const float LandingMaxReach = 0.22f;
+        private const float DyingMinReach = 0.52f;
+        private const float DyingMaxReach = 0.6f;
+
+        // La corona de la llama cenital, en fracción de su alto sobre el centro: la punta de los
+        // dibujos del bucle (fuego_cenital_nivel_1_0095…0168) cae entre 0,22 y 0,32; con 0,25 la
+        // punta tapa la base del humo al terminar el encendido (cuadro 0103). Es una medida del
+        // arte, no un parámetro del juego: se rehace si cambia el dibujo de la llama.
+        private const float FlameCrownFraction = 0.25f;
+
+        // Cuánto se encoge el humo al subir a la corona, como el que acompaña a cada llama en las
+        // narrativas (Inventario.md: «a 0,6 de su escala»): a tamaño completo, su remate asomaba por
+        // la franja entre la tablilla y el borde de arriba, y se cortaba contra él (captura del
+        // 30/09/2026). Con 0,6 el humo acaba bajo el borde de arriba de la tablilla, a 16:9.
+        private const float SmokeCrownScale = 0.6f;
 
         private FireAttempt _attempt;
         private FireFeedbackLog _log;
@@ -144,9 +173,16 @@ namespace Game.Levels.Fire
         private StoneSpacing _spacing;
         private CancellationTokenSource _playerRest;
         private CancellationTokenSource _sparkAnimation;
+        private bool _igniting; // «Soplar» ya se pulsó: el fuego nace y el nivel se cierra al terminar
 
         /// <summary>El flujo del juego. Sin él (escena abierta sin pasar por Boot) no se navega.</summary>
         internal GameFlowRunner Runner { get; set; }
+
+        /// <summary>
+        /// Azar de la dirección y del largo de la chispa: el mismo patrón que
+        /// <see cref="FloorScatter.Place"/>. Las pruebas ponen uno con semilla.
+        /// </summary>
+        internal System.Random SparkRandom { get; set; } = new System.Random();
 
         /// <summary>Todavía se están reuniendo los materiales: sin interfaz de encendido (T25).</summary>
         internal bool IsGathering { get; private set; } = true;
@@ -209,6 +245,9 @@ namespace Game.Levels.Fire
         internal CharacterRig Player => player;
         internal CharacterRig[] Family => family;
         internal CharacterRig Restless => restless;
+
+        /// <summary>Dónde cae el último rayo de la chispa, en el espacio del suelo.</summary>
+        internal Vector2 SparkLanding { get; private set; }
 #endif
 
         private RectTransform Floor => (RectTransform)fireSpot.parent;
@@ -375,11 +414,23 @@ namespace Game.Levels.Fire
                 piece.enabled = false; // ya no se arrastran: desde aquí las piedras las mueve el deslizante
             }
 
-            // El montón entra encima de las hojas que llegan; las piedras irán encima de él (PlaceStones).
+            // Orden de dibujo del encendido desde el primer cuadro del acercamiento: las hojas que
+            // llegan < el montón, que entra por fundido < las piedras. Si las piedras subieran recién
+            // al terminar, se verían 0,8 s bajo las hojas (pedido de Santiago, 30/09/2026).
             var pileColor = leafPile.color;
             leafPile.color = new Color(pileColor.r, pileColor.g, pileColor.b, 0f);
             leafPile.rectTransform.SetAsLastSibling();
+            RaiseStones();
             leafPile.gameObject.SetActive(true);
+
+            // La tablilla pasa sobre el suelo, como el resto de la interfaz: el humo sube hasta la
+            // corona de la llama y taparía su texto (RNF-03). «Por qué no» en la escena: reuniendo,
+            // una pieza soltada bajo la tablilla quedaría tapada y, con su texto como raycastTarget,
+            // no se podría volver a tomar; el nivel no se terminaría. Es el mismo par de llamadas que
+            // el humo en Strike, y por la misma razón: SetSiblingIndex solo calcula mal el destino.
+            var tablet = logView.transform;
+            tablet.SetAsLastSibling();
+            tablet.SetSiblingIndex(Floor.GetSiblingIndex() + 1);
 
             var starts = Array.ConvertAll(pieces, piece => piece.Position);
             var targets = CampfireLayout();
@@ -457,7 +508,24 @@ namespace Game.Levels.Fire
             });
         }
 
-        /// <summary>El sílex y el pedernal a la distancia de la muesca, uno a cada lado del punto del fuego (T26).</summary>
+        /// <summary>Sube el sílex y el pedernal al final del suelo: se dibujan sobre las hojas y el montón (T26).</summary>
+        private void RaiseStones()
+        {
+            foreach (var piece in pieces)
+            {
+                if (piece.Kind != PieceKind.Leaf)
+                {
+                    piece.transform.SetAsLastSibling();
+                }
+            }
+        }
+
+        /// <summary>
+        /// El sílex y el pedernal a la distancia de la muesca, uno a cada lado del punto del fuego
+        /// (T26). Solo los mueve: el orden de dibujo lo fijó <see cref="RaiseStones"/> al pasar al
+        /// encendido, y moverlo aquí subiría las piedras sobre la chispa o la llama con cada
+        /// cambio del deslizante.
+        /// </summary>
         private void PlaceStones()
         {
             if (IsGathering)
@@ -472,12 +540,10 @@ namespace Game.Levels.Fire
                 if (piece.Kind == PieceKind.Silex)
                 {
                     piece.MoveTo(spot + new Vector2(-distance / 2f, 0f));
-                    piece.transform.SetAsLastSibling(); // las piedras van sobre las hojas
                 }
                 else if (piece.Kind == PieceKind.Pedernal)
                 {
                     piece.MoveTo(spot + new Vector2(distance / 2f, 0f));
-                    piece.transform.SetAsLastSibling();
                 }
             }
         }
@@ -491,9 +557,11 @@ namespace Game.Levels.Fire
         /// <summary>Ejecuta un golpe con la fuerza y la cercanía marcadas y refresca la UI (RF-16).</summary>
         internal void Strike()
         {
-            if (IsGathering)
+            if (IsGathering || _igniting)
             {
-                return; // sin fogata no hay qué golpear: el botón ni siquiera está en pantalla.
+                // Sin fogata no hay qué golpear: el botón ni siquiera está en pantalla. Y con el fuego
+                // naciendo los mandos descansan (LockControls): un golpe pondría la chispa sobre la llama.
+                return;
             }
 
             var outcome = _attempt.Strike(SelectedForce, _spacing.Classify(SelectedSpacing));
@@ -520,17 +588,21 @@ namespace Game.Levels.Fire
                 }
             }
 
-            // La chispa (Dirección de arte §12.2): cae en el montón con un golpe efectivo, se
-            // apaga en el aire si se pasó de fuerte con las piedras en su sitio, y no aparece con
-            // un golpe suave ni con las piedras mal puestas (guion §4.3.3).
+            // La chispa es un rayo que sale del punto del golpe (pedido de Santiago, 30/09/2026).
+            // Con un golpe efectivo cae en las hojas y el brillo dura más con cada golpe. Si se pasó
+            // de fuerte con las piedras en su sitio, salta lejos y se apaga en el aire. Con un golpe
+            // suave o las piedras mal puestas no hay chispa (guion §1.4.3.3).
+            // «Por qué no» otro color ni otro trazo para el golpe de más: es el mismo rayo, más largo
+            // y hacia otro lado, que es lo que cuenta el guion; un rojo o un destello lo convertirían
+            // en marca de error (CP-02, Dirección de arte §12.3).
             if (outcome.Effective)
             {
                 var strikesCounted = Mathf.Min(outcome.EffectiveStrikes, config.MinimumEffectiveStrikes);
-                ShowSpark(fireSpot.anchoredPosition, SparkSeconds * strikesCounted);
+                ShowSpark(SparkLandingPoint(intoPile: true), SparkSeconds * strikesCounted);
             }
             else if (outcome.Spacing == SpacingBand.Effective && outcome.Band == ForceBand.TooHard)
             {
-                ShowSpark(fireSpot.anchoredPosition + new Vector2(0f, DyingSparkOffset), DyingSparkSeconds);
+                ShowSpark(SparkLandingPoint(intoPile: false), DyingSparkSeconds);
             }
 
             // Papá golpea siempre. «Por qué no» un gesto de fallo tras un golpe sin chispa: se anima
@@ -545,12 +617,11 @@ namespace Game.Levels.Fire
                     _hints.Activate(Step("Soplar")); // la tarea cambia al converger (guion §4.3.6)
                     // El montón pasa a humeante en la convergencia (guion §1.4.3.5, fila E6) y ya
                     // no deja de humear: lo ganado no se retira por un fallo posterior (INC-32).
-                    // Entre el montón y las piedras, que ya están puestas (PlaceStones corrió antes
-                    // que este golpe) y van al final por su propio SetAsLastSibling. Al último
-                    // primero: si el humo empezaba **antes** que el montón en la jerarquía,
-                    // calcular el índice de destino sin moverlo antes salía mal — quitarlo de en
-                    // medio corre los índices de detrás una posición, y el destino ya calculado
-                    // quedaba corto.
+                    // Entre el montón y las piedras, que ya están puestas (RaiseStones las subió al
+                    // pasar al encendido). Al último primero: si el humo empezaba **antes** que el
+                    // montón en la jerarquía, calcular el índice de destino sin moverlo antes salía
+                    // mal — quitarlo de en medio corre los índices de detrás una posición, y el
+                    // destino ya calculado quedaba corto.
                     pileSmoke.transform.SetAsLastSibling();
                     pileSmoke.transform.SetSiblingIndex(leafPile.transform.GetSiblingIndex() + 1);
                     pileSmoke.gameObject.SetActive(true);
@@ -567,24 +638,44 @@ namespace Game.Levels.Fire
             RefreshLighting();
         }
 
-        /// <summary>Muestra la chispa en <paramref name="anchoredPosition"/> durante <paramref name="seconds"/>; un golpe nuevo cancela la anterior.</summary>
-        private void ShowSpark(Vector2 anchoredPosition, float seconds)
+        /// <summary>
+        /// Dónde cae la chispa. La dirección es una media vuelta al azar: la de abajo si cae en las
+        /// hojas, la de arriba si salta lejos. El largo es un valor al azar dentro de su franja.
+        /// Se sortea primero la dirección y después el largo.
+        /// </summary>
+        private Vector2 SparkLandingPoint(bool intoPile)
         {
+            var angle = Mathf.PI * (float)SparkRandom.NextDouble();
+            var direction = new Vector2(Mathf.Cos(angle), intoPile ? -Mathf.Sin(angle) : Mathf.Sin(angle));
+            var reach = intoPile
+                ? Mathf.Lerp(LandingMinReach, LandingMaxReach, (float)SparkRandom.NextDouble())
+                : Mathf.Lerp(DyingMinReach, DyingMaxReach, (float)SparkRandom.NextDouble());
+            return fireSpot.anchoredPosition + direction * (reach * leafPile.rectTransform.rect.width);
+        }
+
+        /// <summary>Lanza el rayo de la chispa hasta <paramref name="landing"/> en <paramref name="seconds"/>; un golpe nuevo cancela el anterior.</summary>
+        private void ShowSpark(Vector2 landing, float seconds)
+        {
+#if UNITY_INCLUDE_TESTS
+            SparkLanding = landing;
+#endif
             _sparkAnimation?.Cancel();
             _sparkAnimation = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
-            _ = PlaySparkAsync(anchoredPosition, seconds, _sparkAnimation.Token);
+            _ = PlaySparkAsync(landing, seconds, _sparkAnimation.Token);
         }
 
         /// <summary>
-        /// La chispa aparece de golpe y se apaga bajando de escala hasta desaparecer: un único
-        /// barrido en una sola dirección, sin oscilar (RNF-21). Por encima de las piedras, que ya
-        /// están en su sitio (PlaceStones se llamó antes que este golpe); por debajo de la llama,
-        /// que se pone última al soplar (RF-20).
+        /// El rayo sale del punto del golpe y cae en <paramref name="landing"/>: la cabeza llega a
+        /// la caída en la primera mitad del tiempo y la cola la alcanza en la segunda, y ahí se
+        /// apaga. Es un único barrido en una sola dirección, sin oscilar la escala ni el alfa
+        /// (RNF-21). Va por encima de las piedras, que subieron al pasar al encendido, y por debajo
+        /// de la llama, que se pone última al soplar (RF-20).
         /// </summary>
-        private async Awaitable PlaySparkAsync(Vector2 anchoredPosition, float seconds, CancellationToken token)
+        private async Awaitable PlaySparkAsync(Vector2 landing, float seconds, CancellationToken token)
         {
-            spark.anchoredPosition = anchoredPosition;
-            spark.localScale = Vector3.one;
+            var origin = fireSpot.anchoredPosition;
+            var path = landing - origin;
+            spark.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(path.y, path.x) * Mathf.Rad2Deg);
             spark.SetAsLastSibling();
             spark.gameObject.SetActive(true);
 
@@ -592,7 +683,11 @@ namespace Game.Levels.Fire
             {
                 for (var elapsed = 0f; elapsed < seconds; elapsed += Time.deltaTime)
                 {
-                    spark.localScale = Vector3.one * Mathf.Lerp(1f, 0f, elapsed / seconds);
+                    var t = elapsed / seconds;
+                    var head = Mathf.Clamp01(2f * t);
+                    var tail = Mathf.Clamp01(2f * t - 1f);
+                    spark.anchoredPosition = origin + path * tail;
+                    spark.sizeDelta = new Vector2(path.magnitude * (head - tail), spark.sizeDelta.y);
                     await Awaitable.NextFrameAsync(token);
                 }
             }
@@ -639,12 +734,16 @@ namespace Game.Levels.Fire
         internal void Blow()
         {
             // Guarda defensiva: el botón ya está atenuado antes de converger (guion §4.3.6), pero
-            // un clic simulado en pruebas no pasa por esa comprobación de la UI.
-            if (!_attempt.CanBlow)
+            // un clic simulado en pruebas no pasa por esa comprobación de la UI. Y una sola vez:
+            // `CanBlow` no vuelve a falso (INC-32), así que sin `_igniting` cada «Soplar» durante
+            // el encendido lanzaría otro ResolveAsync.
+            if (!_attempt.CanBlow || _igniting)
             {
                 return;
             }
 
+            _igniting = true;
+            LockControls();
             _log.RecordBlowSuccess();
             logView.Show(_log.Entries);
             Play(sounds?.Blow);
@@ -652,6 +751,38 @@ namespace Game.Levels.Fire
             // es de la escena de cierre.
             Act(ActorAction.Blow, BlowSeconds, ActorAction.Kneel);
             _ = ResolveAsync();
+        }
+
+        /// <summary>
+        /// Desde «Soplar» y hasta que termina el nivel los mandos del panel descansan (RNF-21): un
+        /// segundo «Soplar» relanzaría el encendido —el quemado volvería a cero y el cierre correría
+        /// dos veces— y un «Golpear» pondría la chispa sobre la llama y bajaría la luz un cuadro, de
+        /// la subida del encendido al escalón del golpe. No es un castigo (CP-02): el estudiante ya
+        /// hizo lo que se le pedía y solo mira nacer el fuego; por eso tampoco sale el candado de
+        /// «Soplar», que dice «todavía no», no «ya está».
+        /// </summary>
+        private void LockControls()
+        {
+            blowButton.interactable = false;
+            strikeButton.interactable = false;
+            Rest(forceSlider);
+            Rest(spacingSlider);
+        }
+
+        /// <summary>
+        /// Deja el deslizante sin respuesta y a la vista como tal (DEF-W5R-02). <c>interactable</c>
+        /// solo aplica el <c>ColorTint</c> a su gráfico objetivo —el contorno del asa—, y la cara que
+        /// el niño ve va encima y opaca, así que sin esto «no responde» parecería «sigue activo».
+        /// </summary>
+        private void Rest(Slider slider)
+        {
+            slider.interactable = false;
+            if (!slider.TryGetComponent<CanvasGroup>(out var group))
+            {
+                group = slider.gameObject.AddComponent<CanvasGroup>();
+            }
+
+            group.alpha = restingSliderAlpha;
         }
 
         /// <summary>
@@ -708,7 +839,8 @@ namespace Game.Levels.Fire
 
         /// <summary>
         /// Nacimiento del fuego (guion §4.3.5 E7): la llama cenital prende sobre el montón y las
-        /// hojas se queman desde el centro hacia fuera en <see cref="FireLevelConfig.IgnitionSeconds"/>.
+        /// hojas se queman desde el centro hacia fuera en <see cref="FireLevelConfig.IgnitionSeconds"/>;
+        /// el humo sube hasta la corona de la llama, detrás de ella, encogiéndose.
         /// </summary>
         private async Awaitable PlayIgnitionAsync()
         {
@@ -728,6 +860,17 @@ namespace Game.Levels.Fire
             fireFlame.transform.SetAsLastSibling();
             fireFlame.gameObject.SetActive(true);
 
+            // El humo sube con el fuego hasta la corona de la llama, detrás de ella, y se encoge al
+            // subir (pedido de Santiago, 30/09/2026). Va con el mismo t que el quemado: un solo
+            // barrido, sin volver (RNF-21). Arranca de donde nació, en el punto del golpe y a su
+            // escala.
+            var smoke = (RectTransform)pileSmoke.transform;
+            var flame = (RectTransform)fireFlame.transform;
+            var smokeFrom = smoke.anchoredPosition;
+            var crown = flame.anchoredPosition + new Vector2(0f, FlameCrownFraction * flame.rect.height);
+            var smokeScaleFrom = smoke.localScale;
+            var smokeScaleAtCrown = smokeScaleFrom * SmokeCrownScale;
+
             // Las hojas se queman desde donde cayó la llama, despacio y solo hasta donde diga la
             // configuración; después el quemado se queda quieto. Un solo crecimiento, sin oscilar (RNF-21).
             var startLighting = lighting != null ? lighting.Progress : 1f;
@@ -735,6 +878,8 @@ namespace Game.Levels.Fire
             {
                 var t = elapsed / duration;
                 burn.Extent = config.BurnExtent * t;
+                smoke.anchoredPosition = Vector2.Lerp(smokeFrom, crown, t);
+                smoke.localScale = Vector3.Lerp(smokeScaleFrom, smokeScaleAtCrown, t);
 
                 // Un solo barrido combinado con el fuego: la iluminación completa llega en la
                 // resolución (guion E7), no antes (E4 solo sube un escalón por golpe efectivo).
@@ -743,6 +888,8 @@ namespace Game.Levels.Fire
             }
 
             burn.Extent = config.BurnExtent;
+            smoke.anchoredPosition = crown;
+            smoke.localScale = smokeScaleAtCrown;
             lighting?.SetProgress(1f);
         }
 

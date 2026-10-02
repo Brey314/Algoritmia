@@ -73,28 +73,28 @@ namespace Game.Levels.Wheel.Tests
             var forest = await OpenScene<ForestSceneController>("Level2_Forest", f => f.Spawned.Count > 0);
             forest.Spawned.First(e => e.Object.Category != ForestObjectCategory.RoundLog).Button.onClick.Invoke();
             await Awaitable.NextFrameAsync();
-            AssertContraste("bosque · mensaje", forest.MessageLabel);
-            AssertContraste("bosque · contador", forest.CounterLabel);
-            AssertContrasteDeLaPausa("bosque");
+            AssertContraste("bosque · mensaje", forest.MessageLabel, forest.Environment);
+            AssertContraste("bosque · contador", forest.CounterLabel, forest.Environment);
+            AssertContrasteDeLaPausa("bosque", forest.Environment);
 
             var workshop = await OpenScene<WorkshopSceneController>("Level2_Workshop", w => w.Pieces.Count > 0);
             workshop.Select(WorkshopPiece.ShortLogA);
             await Awaitable.NextFrameAsync();
-            AssertContraste("taller · mensaje", workshop.MessageLabel);
-            AssertContraste("taller · mecanizar", workshop.MachineButton.GetComponentInChildren<Text>(true));
-            AssertContrasteDeLaPausa("taller");
+            AssertContraste("taller · mensaje", workshop.MessageLabel, workshop.Environment);
+            AssertContraste("taller · mecanizar", workshop.MachineButton.GetComponentInChildren<Text>(true), workshop.Environment);
+            AssertContrasteDeLaPausa("taller", workshop.Environment);
 
             var maze = await OpenScene<MazeSceneController>("Level2_Maze", m => m.Rows != null);
             maze.AddBlock(InstructionBlock.Forward(2));
             await Awaitable.NextFrameAsync();
-            AssertContraste("laberinto · mensaje", maze.MessageLabel);
-            AssertContraste("laberinto · ejecutar", maze.ExecuteButton.GetComponentInChildren<Text>(true));
+            AssertContraste("laberinto · mensaje", maze.MessageLabel, maze.Environment);
+            AssertContraste("laberinto · ejecutar", maze.ExecuteButton.GetComponentInChildren<Text>(true), maze.Environment);
             foreach (var texto in maze.Rows.SelectMany(row => row.GetComponentsInChildren<Text>(true)).Where(t => !string.IsNullOrWhiteSpace(t.text)))
             {
-                AssertContraste($"laberinto · bloque «{texto.text}»", texto);
+                AssertContraste($"laberinto · bloque «{texto.text}»", texto, maze.Environment);
             }
 
-            AssertContrasteDeLaPausa("laberinto");
+            AssertContrasteDeLaPausa("laberinto", maze.Environment);
         }
 
         [Test]
@@ -182,18 +182,23 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(label.text.Any(char.IsDigit), Is.False, $"{donde}: sin cifras (CP-03)");
         }
 
-        /// <summary>Contraste del texto contra la cara sobre la que se pinta, medido en la escena (RNF-20).</summary>
-        private static void AssertContraste(string donde, Text text)
+        /// <summary>
+        /// Contraste del texto contra la cara sobre la que se pinta, medido en la escena (RNF-20).
+        /// La cara tiene que ser una tablilla o un botón: un texto directamente sobre la ilustración
+        /// no tiene contraste medible, y el bosque claro es el caso más expuesto.
+        /// </summary>
+        private static void AssertContraste(string donde, Text text, Image ilustracion)
         {
             Assert.That(text, Is.Not.Null, $"{donde}: no hay texto");
             var cara = text.GetComponentInParent<Image>(true); // la pausa está inactiva hasta abrirse
             Assert.That(cara, Is.Not.Null, $"{donde}: el texto no cuelga de ninguna cara con Image");
+            Assert.That(cara, Is.Not.SameAs(ilustracion), $"{donde}: el texto va directo sobre la ilustración, sin tablilla (RNF-20)");
             var contraste = ContrastRatio(text.color, cara.color);
             TestContext.WriteLine($"{donde}: {contraste:F2}:1");
             Assert.That(contraste, Is.GreaterThanOrEqualTo(4.5), $"{donde}: {contraste:F2}:1 no alcanza el 4.5:1 de RNF-20");
         }
 
-        private static void AssertContrasteDeLaPausa(string escena)
+        private static void AssertContrasteDeLaPausa(string escena, Image ilustracion)
         {
             var botones = Object.FindObjectsByType<Button>(FindObjectsInactive.Include)
                 .Where(b => b.GetComponentInChildren<Text>(true) is { } t
@@ -202,7 +207,7 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(botones, Has.Length.EqualTo(5), $"{escena}: el menú de pausa está en la escena con sus cinco botones (W17)");
             foreach (var boton in botones)
             {
-                AssertContraste($"{escena} · pausa · {boton.GetComponentInChildren<Text>(true).text}", boton.GetComponentInChildren<Text>(true));
+                AssertContraste($"{escena} · pausa · {boton.GetComponentInChildren<Text>(true).text}", boton.GetComponentInChildren<Text>(true), ilustracion);
             }
         }
 

@@ -50,10 +50,12 @@ trabajo del motor.
 
 Desde el 29/09/2026 corre además el **carril OE4** —la evaluación funcional del prototipo—, con
 su `plan.md`, `casos.md` (el catálogo `PF-*` con guion paso a paso) y `todo.md` en
-`claudeDocs/tasks/OE4/`. Prueba el **ejecutable** compilado desde un
-commit etiquetado (`oe4-rc1`, `rc2`…), no el Editor, y cada veredicto lleva la versión en que se
-obtuvo. La etiqueta la pone Claude **solo con el visto bueno de Santiago** (T01); los resultados
-van a `OE4-Resultados.md`, que nace en T04.
+`claudeDocs/tasks/OE4/`. Prueba el **ejecutable** compilado, no el Editor, y cada veredicto lleva
+la versión en que se obtuvo. El candidato vigente es rc2 (01/10/2026, 479,0 MB), que sustituye a
+rc1; los dos se compilaron sin etiqueta ni commit, desde el árbol de trabajo de la rama, y la
+procedencia de rc2 —HEAD, huella de `git diff HEAD` y lista de archivos sin seguimiento— está en
+`evidencias/build-rc2.md` (la de rc1, en `build-rc1.md`). Si un candidato se etiqueta, la etiqueta la pone
+Claude **solo con el visto bueno de Santiago** (T01); los resultados van a `OE4-Resultados.md`.
 
 **Tres cosas que los carriles comparten** — tocar cualquiera cambia más de un nivel a la vez:
 
@@ -90,7 +92,7 @@ amanecer azulado en `N2_PuenteI`, tarde sin tinte en la recolección y el armado
 2.4, y noche junto al fuego en la 2.5 y en el arranque de `N3_PuenteII`. En el laberinto, que no
 tiene esa capa, lo hace `MazeLayout.LightTint`, que tiñe el entorno y todo lo que cuelga de él.
 Lo vigilan `NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche` y
-`MazeScene_RF30_ElLaberintoEsAlAtardecer`. Las ilustraciones de 3840 de ancho (`entorno_n1_apertura`,
+`MazeScene_RF30_ElLaberintoEsAlAtardecer`. Las ilustraciones de 3840 de ancho (`env_n1_apertura`,
 el bosque del N2) tienen una costura en x = 0,5 que ningún encuadre debe cruzar: lo avisa
 `IllustrationFraming.Warnings` en el `OnValidate` de la secuencia.
 
@@ -109,7 +111,7 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | Archivo | Qué contiene |
 |---|---|
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
-| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` —y entre ellos y el juego— con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. **`INC-01`..`INC-117` están cerrados** (rev. 15, 30/09/2026): ante un conflicto ganó el juego y se editó el documento, lo que solo pedía el documento se implementó y lo que solo tenía el juego se añadió al documento; `INC-115`..`INC-117` son la excepción, decisiones de Santiago de corregir el juego. **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`): una llama con extremidades, recoloreada en madera y agua (`INC-52`)— rigen para todo texto y asset nuevo. Solo siguen abiertos `PG-05` y `PG-06` del guion, que exigen observar a estudiantes jugando, y tres **pendientes de Santiago** del trabajo de grado (Anexo C, herramientas de ilustración, colaboración en el arte) que no se redactan sin su dato: están en «Residuos y puntos abiertos». |
+| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` —y entre ellos y el juego— con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. **`INC-01`..`INC-130` están cerrados** (rev. 16, 01/10/2026): ante un conflicto ganó el juego y se editó el documento, lo que solo pedía el documento se implementó y lo que solo tenía el juego se añadió al documento; `INC-115`..`INC-117` son la excepción, decisiones de Santiago de corregir el juego. `INC-118`..`INC-130` recogen la sesión del 30/09 (acta D10) y el peso del paquete (RNF-06). **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`): una llama con extremidades, recoloreada en madera y agua (`INC-52`)— rigen para todo texto y asset nuevo. Solo siguen abiertos `PG-05` y `PG-06` del guion, que exigen observar a estudiantes jugando, tres **pendientes de Santiago** del trabajo de grado (Anexo G con la autorización de la Familia Anonaky, herramientas de ilustración, colaboración en el arte) que no se redactan sin su dato y uno del carril de sonido (el silencio S3 de la escena final): están en «Residuos y puntos abiertos». |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
 | `claudeDocs/Direccion_de_Musica_y_Sonido.md` | **La ley del audio.** Hermano de la dirección de arte: cinco pilares (ningún sonido de fallo, §2.1, es CP-02 en el oído), cuatro buses bajo `AudioManager`, nomenclatura `mus_`/`amb_`/`sfx_`, los tres silencios del guion como piezas con disparador (§5) y el inventario de 104 piezas por nivel. **Qué piezas están cableadas lo dice su §19**, no este archivo: estar en `Assets/Game/Audio/` no es estar aplicado —una pieza suena solo si la referencia un asset (`N1_Sonidos`, `N2_Sonidos`, los `N*_*.asset`)—, y los puntos `PS-*` abiertos están en el mismo documento. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
@@ -118,9 +120,9 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | `Assets/Game/Art/Inventario.md` | **El índice de sprites.** Qué archivo va en cada carpeta de `Assets/Game/Art/`, la nomenclatura (`char_`, `prop_`, `env_`, `ui_`, `fx_`, `ref_`; niveles `n1`/`n2`/`n3`) y la convención de `.anim`. No decide nada: manda el tablero de arte `Tareas.xlsx` (163 piezas, tareas `S01..S16c`), **que no está en el repo**, y luego los `plan.md` y `Direccion_de_Arte.md`. |
 | `claudeDocs/Mockups de interfaz Algoritmia.html` | **Los mockups de pantalla**, numerados desde el 2 (no hay mockup 1). Los `todo.md` y los documentos de cámara los citan por número («mockup 7 · Nivel 1 · encendido»); es la referencia de disposición de una escena antes de tocar el `.unity`. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. **Los `plan.md` no se reescriben**, así que sus avisos de precondición («los Slices 1 y 2 no están hechos», «`Assets/` sigue sin código») están vencidos; lo que sigue valiendo de ellos es qué pieza previa generaliza cada tarea. Ninguno rediscute `SPEC.md`. |
-| `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión con markitdown. **Nunca editar ninguno de los dos desde código** sin la autorización expresa de Santiago para ese cambio; con ella se editaron los radicados el 29–30/09/2026, cada uno con su fila fechada en el control de cambios, y el trabajo de grado se redacta por Word COM (PowerShell + `Word.Application`). |
-| `docs/actas/OE3/Acta_D0N_*.md` | **Las actas de seguimiento, rehechas** (`D01` 02/09 … `D09` 24/09/2026): qué se decidió, cuándo y por qué, y **el tablero Kanban vive en su §6**, no en un archivo aparte. Siguen en `.gitignore` —existen en este equipo y no en un clon—, así que se perdieron una vez y pueden volver a perderse. La serie `OE2/` (`O01..O03`) **no** se rehizo: al leer hacia atrás **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` después—, así que una tarjeta se rastrea por su texto y no por su id, y el *porqué* de lo decidido antes del 02/09 se busca en los `.docx` y en `INCONSISTENCIAS.md`. En las actas hay **dos Santiagos**: «Santiago» a secas en este archivo es Santiago Benavides Rey; Santiago Valdiri García es el otro estudiante (Slice 4, entorno del N3, fogata del cierre del N2). |
-| `docs/OE3/` | **El entregable del OE3, ya armado** (`127fbc4`): `Solucion_OE3_Prototipo_funcional.docx` describe el prototipo **en `ccf77e6`** (con `44fd479` anotado como posterior), capturas en `fig/` (LFS), y **cada anexo es un `.docx` aparte** (su Tabla 1.4): A matriz RF → pruebas (CT-10), B las cinco fases del Slice 1, C Slice 2, D Slice 3, E arte y sonido, F personajes, G Slice 4 y H las actas D01–D09 — este último **no está versionado**, como las actas. B–G reproducen los `*-Resultados.md` de `claudeDocs/tasks/` tal como quedaron en `127fbc4`, con notas fechadas verificadas al 25/09 y otra con el cierre general de inconsistencias del 29–30/09 (decisión D1: el entregable no se reescribe, solo se anota): **editar hoy un documento de resultados ya no cambia el entregable**, lo separa de él. Las herramientas que lo generaban (`build.py` con pandoc, `rf_matrix.py` para el Anexo A, `word_finalize.ps1`) **no están en el repo ni en este equipo**: rehacer un anexo es rehacer el generador. Son `.docx` bajo `docs/`: no se editan desde código. |
+| `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión con markitdown. **Nunca editar ninguno de los dos desde código** sin la autorización expresa de Santiago para ese cambio; con ella se editaron los radicados del 29/09 al 01/10/2026, cada uno con su fila fechada en el control de cambios, y el trabajo de grado se redacta por Word COM (PowerShell + `Word.Application`). |
+| `docs/actas/OE3/Acta_D*_*.md` | **Las actas de seguimiento, rehechas** (`D01` 02/09 … `D10` 30/09/2026): qué se decidió, cuándo y por qué, y **el tablero Kanban vive en su §6**, no en un archivo aparte. Siguen en `.gitignore` —existen en este equipo y no en un clon—, así que se perdieron una vez y pueden volver a perderse; su versión en Word vive en el SharePoint de Santiago, y por eso el entregable del OE3 ya no las anexa. La serie `OE2/` (`O01..O03`) **no** se rehizo: al leer hacia atrás **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` después—, así que una tarjeta se rastrea por su texto y no por su id, y el *porqué* de lo decidido antes del 02/09 se busca en los `.docx` y en `INCONSISTENCIAS.md`. En las actas hay **dos Santiagos**: «Santiago» a secas en este archivo es Santiago Benavides Rey; Santiago Valdiri García es el otro estudiante (Slice 4, entorno del N3, fogata del cierre del N2). |
+| `docs/OE3/` + `claudeDocs/entregables/OE3/` | **El entregable del OE3 y su generador.** `docs/OE3/` guarda lo publicado: `Solucion_OE3_Prototipo_funcional.docx`, capturas en `fig/` (LFS) y **un `.docx` por anexo** —A matriz RF → pruebas (CT-10), B las cinco fases del Slice 1, C Slice 2, D Slice 3, E arte y sonido, F personajes, G Slice 4—. **No hay Anexo H**: las actas están en Word en el SharePoint de Santiago. **El entregable se reescribe al estado vigente del prototipo** (acta D10), lo que deja sin efecto la decisión D1 del 29/09 de darle solo una nota fechada. El generador se recuperó y está versionado en `claudeDocs/entregables/OE3/`: los capítulos en `src/`, los anexos B–G en `src/anexos/` y `tools/` con `build.py` (pandoc más `word_finalize.ps1` por Word COM, con la plantilla de estilos del OE2 extraída de `127fbc4` para que el aspecto no cambie) y `rf_matrix.py`, que escribe el Anexo A desde los nombres de las pruebas (`--worktree` cuenta las del árbol de trabajo). `python claudeDocs/entregables/OE3/tools/build.py` arma los ocho `.docx` en `build/` (ignorado) y corre las guardas —sin «§», sin Anexo H, las tablas que cita el trabajo de grado, figuras descargadas de LFS—; **solo `--publish`**, si pasan, los copia a `docs/OE3/`. Se edita `src/` y se publica: los `.docx` de `docs/OE3/` no se tocan a mano. |
 
 `SPEC.md` es la fuente de verdad para cualquier duda de alcance o diseño; este archivo no la
 repite. Si algo del código contradice a `SPEC.md`, gana `SPEC.md` o se corrige el documento
@@ -150,7 +152,7 @@ abiertos `PG-*`— es §1.2); «OE2 §4» —control de cambios— es §5. (`SPE
 El trabajo de grado pasó el 30/09/2026 a la plantilla oficial del 28 de julio
 (`Plantilla Documento final 28 de julio de 2026 Pregrado.docx`, en blanco): los capítulos 6–8 son
 OE1–OE3 y falta el del OE4. `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx` sigue en `docs/` como
-versión anterior, y es la que citan todavía `SPEC.md` e `INCONSISTENCIAS.md`.
+versión anterior; `SPEC.md` e `INCONSISTENCIAS.md` ya citan la plantilla.
 
 **Numeración de requerimientos.** Los RF están cerrados en `RF-01..RF-47`. Los RNF **no**: OE1
 insertó `RNF-18` (parametrización de contenidos) el 24/08/2026 y desplazó en uno todo lo
@@ -239,8 +241,10 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
   ```
   unity build --target StandaloneWindows64 -o "Build/Algoritmia/Algoritmia.exe" --log-file build.log --no-banner --non-interactive
   ```
-  La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04, RNF-05 y RNF-06,
-  y junto al `.exe` nace `Datos/` en la primera ejecución (RNF-07, RNF-11). Entran las escenas
+  La carpeta de salida **es** el entregable portable: sobre ella se miden RNF-04, RNF-05 y RNF-06
+  —hoy pesa 479,0 MB, con 21 de margen (rc2, `claudeDocs/tasks/OE4/evidencias/build-rc2.md`)—;
+  `LicenseNotices` deja junto al `.exe` la carpeta `Licencias/` con los avisos de la OFL y de
+  Phosphor (MIT), y a su lado nace `Datos/` en la primera ejecución (RNF-07, RNF-11). Entran las escenas
   listadas en `EditorBuildSettings` —hoy doce: las cinco jugables más las siete de flujo (`Boot`,
   `MainMenu`, `LevelSelect`, `Credits`, `Narrative`, `LevelSummary`, `TeacherReport`)—, con `Boot`
   de primera; las escenas nuevas se añaden **desde el Editor** (Build Settings o
@@ -249,15 +253,47 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
 - **Tras cualquier corrida batchmode (`unity test`, `unity build`), `ProjectSettings.asset` sale
   sin `SENTIS_ANALYTICS_ENABLED`** en los defines de Standalone, y `com.unity.ai.inference` lo
   repone en la siguiente recarga de dominio del Editor: ese diff es ruido y no se commitea. Solo
-  compila código de Editor del paquete, así que no llega al ejecutable. Lo que sí está apagado en
+  compila código de Editor del paquete, así que no llega al ejecutable. Un build reescribe además
+  `ProjectSettings.asset` (`preloadedAssets` con `ControlesJugables.inputactions`): también es
+  ruido, y se restaura con `git checkout` antes de medir la huella del árbol. `UnityConnectSettings.asset`
+  ya no cambia (rc1 lo dejaba en `m_Enabled: 1`; rc2 no, por `UnityServicesOff`). Lo que sí está apagado en
   `ProjectSettings` —analítica, estadísticas de hardware, pantalla de Unity, Alt+Intro (INC-97,
-  decisión D3: no se quita ningún paquete del manifiesto)— lo vigila `PlayerSettingsTest`.
+  decisión D3: no se quita ningún paquete del manifiesto)— lo vigila `PlayerSettingsTest`, y los
+  servicios de Unity los fuerza además `UnityServicesOff` al compilar, sea cual sea la copia en
+  memoria del Editor.
+- **El ejecutable se maneja con `claudeDocs/tasks/OE4/herramientas/oe4.ps1`**, el arnés del carril
+  OE4 (`pwsh -NoProfile -File … help`): trata `Algoritmia.exe` como caja negra —lo lanza tras
+  comprobar su SHA-256 y hace clic, sostiene, arrastra y escribe en fracciones del área cliente,
+  como `IllustrationFraming`; sin foco o con otra ventana encima no envía nada— y mide RNF-04 (la
+  línea «RNF-04: … cargó en N s» que `SceneLoader` escribe en el `Player.log`), RNF-05, RNF-06
+  (`Tamano`, sin `Datos/` ni `*_DoNotShip`), RNF-10 y los residuos de RNF-07 y RNF-11 contra una foto
+  previa. Su estado vive en `%TEMP%\Algoritmia-OE4` (`OE4_TRABAJO`). No es código del juego.
 - **Con Rider abierto**, `mcp__rider__run_unity_tests` / `mcp__rider__get_unity_compilation_result`
   corren contra el Editor **abierto** (sin cerrar/reabrir) y habilitan el flujo test-first del
   plugin `unity-coding-skills`. Con Rider cerrado la sesión arranca con `ConnectionRefused`, que
   significa «no hay a quién preguntar», no «no existe»: abrir Rider y reiniciar la sesión de Claude
   Code, o usar `unity test`.
-- **Con Rider caído y el Editor abierto** queda un tercer camino, el único que no obliga a cerrar
+- **Con el Editor abierto y sin Rider, las pruebas van por
+  `claudeDocs/tasks/OE4/herramientas/editor.ps1`**, un envoltorio de la API HTTP de
+  `com.unity.pipeline` (en el manifiesto; `unity cmd` no habla con su versión 0.5.0-exp.1):
+  ```
+  pwsh -NoProfile -File "claudeDocs/tasks/OE4/herramientas/editor.ps1" help
+  pwsh -NoProfile -File "claudeDocs/tasks/OE4/herramientas/editor.ps1" tests-edit -              # EditMode entera
+  pwsh -NoProfile -File "claudeDocs/tasks/OE4/herramientas/editor.ps1" tests-play RiverScene_    # PlayMode filtrada
+  ```
+  Lee puerto y token de `Library/Pipeline/.unity-pipeline-port` en cada llamada —el token no se
+  imprime—, y el filtro es una subcadena del nombre completo (`-` = sin filtro). **Sus guardas:** toca
+  `Temp/claude-active` antes de cada llamada (`ClaudeSceneAutosave`); se niega a correr pruebas con
+  escenas sucias —nunca pulsa el diálogo— o con errores de compilación vigentes, porque Unity
+  conservaría los assemblies viejos y saldría un verde falso (tras editar código, `recompile`); y un
+  mutex rechaza una segunda invocación que modifique el Editor. `tests-play` fija la Game View a
+  1920×1080 —sin ella fallan las pruebas de disposición— y abre `Boot` antes; PlayMode se sondea por
+  `Temp/pipeline_test_status.json`, porque durante la recarga de dominio el HTTP no responde. Salidas:
+  0 bien, 1 fallos, 2 infraestructura, 3 guarda (no tocó nada); resultados en
+  `%TEMP%\Algoritmia-editor-runs` o `-Out`. Si una corrida se interrumpe, `exec cancel_tests`, y
+  `exec editor_stop` si quedó en Play. `exec build` compila el ejecutable sin cerrar el Editor, pero
+  ignora `output_path` y deja la salida en `Builds/StandaloneWindows64/`: se mueve a `Build/Algoritmia/`.
+- **Si la API del pipeline no responde**, queda un camino más que tampoco obliga a cerrar
   el Editor: un script `[InitializeOnLoad]` efímero **dentro del proyecto** que re-registra
   `TestRunnerApi.RegisterCallbacks` tras cada recarga de dominio y escribe el resultado a un
   archivo, disparado por reflexión con `mcp__coplay-mcp__execute_script`. El archivo de resultados
@@ -351,7 +387,12 @@ antes de escribir la primera línea:
   `Game.Reporting`, `UnityEngine.UI`) con los controladores de pantalla, donde va la mayor parte del
   código de hoy;
   y `Game.EditorTools`, **solo Editor**, que no referencia ningún `Game.*` (trae `PlayFromBoot`,
-  `ArtImportRules`, `AudioImportRules`, `ClaudeSceneAutosave` y `Sandbox/CharacterProbe*`, que no es código del juego).
+  `ArtImportRules`, `AudioImportRules`, `ClaudeSceneAutosave`, `LicenseNotices` —tras cada build de
+  Windows copia `OFL.txt` y `LICENSE-Phosphor.txt` a `Licencias/`, junto al `.exe`, y hace fallar el
+  build si falta uno (INC-127)—, `UnityServicesOff` —antes de cada build apaga a la fuerza nueve
+  interruptores de servicios de Unity (el general de Connect, Analytics, Insights, Cloud
+  Diagnostics, `submitAnalytics`…) y, después, hace fallar el build si `globalgamemanagers` nombra
+  `unity3d.com` (DEF-SPIKE-01, INC-97)— y `Sandbox/CharacterProbe*`, que no es código del juego).
   **Un nivel que suena referencia `Game.Audio`** —hoy los tres— y **no llama al
   gestor con clips propios sino con los de su ScriptableObject** (`FireSounds` → `N1_Sonidos`,
   `WheelSounds` → `N2_Sonidos`, `RiverSounds` → `N3_Sonidos`, CT-05); las escenas narrativas no tocan código: el ambiente es un campo de `NarrativeSequence`,
@@ -360,9 +401,11 @@ antes de escribir la primera línea:
   que dura el movimiento. `AudioManager.Instance` puede ser nulo
   (escena abierta sin pasar por `Boot`, pruebas): todo consumidor lo comprueba y el juego sigue
   en silencio, porque el audio refuerza y nunca informa solo (§2.4). **El sonido restante es de Santiago Benavides Rey** desde el acta D08
-  (tarjetas `D07-2`, `D08-2`): faltan el ambiente nocturno del Nivel 2, el hundimiento de la
-  balsa, la música y el sonido del diálogo; el Nivel 1 entró el 21/09/2026, el Nivel 2 el 23/09 y
-  el Nivel 3 el 25/09.
+  (tarjetas `D07-2`, `D08-2`): faltan el ambiente nocturno del Nivel 2 (`amb_n2_noche_intemperie`
+  está en disco sin referenciar), la música, el sonido del diálogo y el silencio S3 de la escena
+  final; el Nivel 1 entró el 21/09/2026, el Nivel 2 el 23/09, el Nivel 3 el 25/09 y, el 01/10, el
+  hundimiento de la balsa (`sfx_n3_hundimiento`, INC-123) y el ambiente de la escena final, bosque
+  con las fogatas en la segunda capa (INC-125).
 - **`Game.Levels.River` a propósito no referencia `Unity.InputSystem`**: las flechas son botones
   uGUI con clic sostenido (`IPointerDown/Up`), y
   `RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles` vigila que el assembly no gane
@@ -413,7 +456,10 @@ antes de escribir la primera línea:
 - **Cómo entra una imagen:** `Game.EditorTools/ArtImportRules.cs` fuerza en todo
   `Assets/Game/Art/` **sin comprimir** y `maxTextureSize` 4096 —comprimida, la ilustración plana
   enseña la rejilla de bloques de 4×4, y el N1 la multiplica por la capa de oscuridad— y
-  `ArtImport_RNF23_…` lo vigila. El importador de fábrica trae `Sprite Mode: Multiple`, que para un
+  `ArtImport_RNF23_…` lo vigila. **Única excepción:** los cuadros del fuego y del humo del N1
+  (`Props/Fire/Animations/`) entran a **1024**, también sin comprimir (INC-130): a tamaño completo el
+  paquete pesaba 866,7 MB frente al tope de 500 de RNF-06, y en pantalla no pasan de ~650 px; lo
+  vigila `ArtImport_RNF06_…`. El importador de fábrica trae `Sprite Mode: Multiple`, que para un
   fondo entero o un prop hace que `LoadAssetAtPath<Sprite>` devuelva **nulo**: cada imagen nueva se
   pasa a `Single` desde el motor (`TextureImporter.spriteImportMode`). **Cómo entra una secuencia
   de cuadros:** un `.anim` con curva `PPtr` sobre `Image.m_Sprite` más un `.controller` por clip —
@@ -439,8 +485,9 @@ antes de escribir la primera línea:
   Hoy ese archivo existe en `Game.Core` (desde `d7ace67`), `Game.Levels.{Fire,Wheel,River}`,
   `Game.UI` (**solo** la línea de PlayMode), `Game.Audio` —que abre además sus internos a
   `Game.Levels.{Fire,Wheel,River}.PlayMode.Tests` y `Game.UI.PlayMode.Tests`, que comprueban **qué** clip
-  sonó— y `Game.Scaffolding` (desde `1d5ce58`, **solo** la línea de EditMode: su PlayMode aún no
-  ve internos); `Game.Reporting` se prueba por superficie pública, así que ahí no hay
+  sonó—, `Game.Scaffolding` (desde `1d5ce58`, **solo** la línea de EditMode: su PlayMode aún no
+  ve internos) y `Game.EditorTools` (por `LicenseNotices`, hacia `Game.EditorTools.Tests`);
+  `Game.Reporting` se prueba por superficie pública, así que ahí no hay
   `AssemblyInfo.cs` que buscar — y si una prueba nueva lo necesita, se crea.
 - Raíz de código y assets: `Assets/Game/`, namespaces `Game.*` siguiendo la ruta bajo `Scripts/` y
   elidiendo `Runtime`. Tests en `Assets/Tests/{EditMode,PlayMode}/<Módulo>/`.
@@ -454,7 +501,7 @@ antes de escribir la primera línea:
   idénticos pero con `includePlatforms` vacío. `Game.Architecture.Tests` es la excepción: no
   referencia ningún `Game.*` porque lee los `.asmdef` del disco — así puede exigir el assembly de
   un módulo que todavía no tiene código (RNF-15, RNF-16). Ahí vive también `ArtImportTest`
-  (RNF-23), que recorre por `AssetDatabase` los `.png` de `Art/`. `Game.Content.Tests` es la
+  (RNF-23, y RNF-06 para los cuadros del fuego), que recorre por `AssetDatabase` los `.png` de `Art/`. `Game.Content.Tests` es la
   excepción contraria: referencia los tres niveles y `Game.UI` para barrer el contenido del juego
   entero (`Content_CP03_…`, ninguna cifra de desempeño en lo que ve el estudiante) — es el único
   sitio donde un assembly ve todos los niveles a la vez, y solo porque es de pruebas.
@@ -479,7 +526,9 @@ pantalla de derrota.
 y clic sostenido, sin excepciones — los controles de dirección del Nivel 3 son botones en pantalla
 accionados con clic, no teclado (CT-06, RNF-02), y una lista que desborda se desplaza con
 **botones** y no con un `ScrollRect`, que trae el arrastre de uGUI y se pelea con el arrastrar y
-soltar de la mecánica; ningún dato por red (RNF-08, RNF-10); nada de `.meta` escritos a mano. Todo
+soltar de la mecánica — la única excepción, decidida el 29/09/2026 (INC-80), son los `ScrollRect` del
+informe docente (2) y de los créditos (1): esas pantallas no tienen arrastrar y soltar, y su barra se
+maneja con clic y clic sostenido; ningún dato por red (RNF-08, RNF-10); nada de `.meta` escritos a mano. Todo
 RF necesita al menos un caso de prueba que lo nombre (CT-10).
 
 ## Commits y decisiones

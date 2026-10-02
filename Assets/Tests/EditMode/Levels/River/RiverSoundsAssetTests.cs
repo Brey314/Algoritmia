@@ -56,5 +56,40 @@ namespace Game.Levels.River.Tests
             Assert.That(balsa.MotionAmbient, Is.Not.Null, "la balsa suena al cruzar");
             Assert.That(balsa.MotionAmbient.name, Is.EqualTo("amb_balsa_movimiento"), "con el movimiento de la balsa");
         }
+
+        /// <summary>
+        /// La escena final suena a la civilización que se divisa: el bosque de día con el crepitar de
+        /// las fogatas encima, el mismo par que ya suena en <c>N2_PuenteI</c> (D-k, tarjeta D10-3). La
+        /// toma que la dirección de sonido le daba (<c>amb_viento_horizonte</c>, §8) ya no existe, y
+        /// una escena sin ambiente corta en seco el río y el bosque que traía la 3.3.
+        /// </summary>
+        [Test]
+        [Category("Acceptance")]
+        public void RiverSounds_RF44_LaEscenaFinalSuenaAlBosqueConLasFogatas()
+        {
+            var escenaFinal = Asset<NarrativeSequence>("N3_EscenaFinal");
+
+            Assert.That(escenaFinal.Ambient, Is.Not.Null, "la escena final no es muda");
+            Assert.That(escenaFinal.Ambient.name, Is.EqualTo("amb_n2_bosque_dia"), "el bosque");
+            Assert.That(escenaFinal.AmbientLayer, Is.Not.Null, "con una segunda capa");
+            Assert.That(escenaFinal.AmbientLayer.name, Is.EqualTo("amb_n1_cueva_fuego"),
+                "el crepitar de las fogatas encima, como en N2_PuenteI");
+        }
+
+        /// <summary>
+        /// La balsa que se hunde suena a salpicadura, madera y agua (§13, D-j del 30/09/2026): la
+        /// toma ya estaba entregada como <c>sfx_n3_salpicadura_undimiento</c> y se renombró desde el
+        /// motor, así que conserva el GUID. Sin su pieza en el asset, la balsa se hunde en silencio.
+        /// </summary>
+        [Test]
+        [Category("Acceptance")]
+        public void RiverSounds_RF42_LaBalsaQueSeHundeSuenaASalpicadura()
+        {
+            var sonidos = Asset<RiverSounds>("N3_Sonidos");
+
+            Assert.That(sonidos.RaftSinking, Is.Not.Null, "la balsa que se hunde tiene su pieza (§13)");
+            Assert.That(sonidos.RaftSinking.name, Is.EqualTo("sfx_n3_hundimiento"),
+                "la salpicadura, renombrada desde el motor");
+        }
     }
 }

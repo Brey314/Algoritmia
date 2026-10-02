@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="4" result="Passed" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-01 09:29:50Z" end-time="2026-10-01 09:29:52Z" duration="1,7944454">
+  <test-suite type="TestSuite" id="2010" name="Algoritmia" fullname="Algoritmia" runstate="Runnable" testcasecount="364" result="Passed" start-time="2026-10-01 09:29:50Z" end-time="2026-10-01 09:29:52Z" duration="1.794445" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="2002" name="Game.UI.PlayMode.Tests.dll" fullname="C:/Dev/Algoritmia/Library/ScriptAssemblies/Game.UI.PlayMode.Tests.dll" runstate="Runnable" testcasecount="139" result="Passed" start-time="2026-10-01 09:29:50Z" end-time="2026-10-01 09:29:52Z" duration="1.792676" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42352" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="2003" name="Game" fullname="Game" runstate="Runnable" testcasecount="139" result="Passed" start-time="2026-10-01 09:29:50Z" end-time="2026-10-01 09:29:52Z" duration="1.791735" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="2004" name="UI" fullname="Game.UI" runstate="Runnable" testcasecount="139" result="Passed" start-time="2026-10-01 09:29:50Z" end-time="2026-10-01 09:29:52Z" duration="1.790859" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="2005" name="Tests" fullname="Game.UI.Tests" runstate="Runnable" testcasecount="139" result="Passed" start-time="2026-10-01 09:29:50Z" end-time="2026-10-01 09:29:52Z" duration="1.790075" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1855" name="CreditsTests" fullname="Game.UI.Tests.CreditsTests" classname="Game.UI.Tests.CreditsTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-01 09:29:50Z" end-time="2026-10-01 09:29:52Z" duration="1.789147" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1856" name="Credits_RF08_MuestraElReconocimientoDeLaAutoria" fullname="Game.UI.Tests.CreditsTests.Credits_RF08_MuestraElReconocimientoDeLaAutoria" methodname="Credits_RF08_MuestraElReconocimientoDeLaAutoria" classname="Game.UI.Tests.CreditsTests" runstate="Runnable" seed="1406624296" result="Passed" start-time="2026-10-01 09:29:50Z" end-time="2026-10-01 09:29:51Z" duration="0.503284" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1858" name="Credits_RF08_VolverRegresaAlMenuPrincipal" fullname="Game.UI.Tests.CreditsTests.Credits_RF08_VolverRegresaAlMenuPrincipal" methodname="Credits_RF08_VolverRegresaAlMenuPrincipal" classname="Game.UI.Tests.CreditsTests" runstate="Runnable" seed="80249433" result="Passed" start-time="2026-10-01 09:29:51Z" end-time="2026-10-01 09:29:51Z" duration="0.438430" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1859" name="Credits_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot" fullname="Game.UI.Tests.CreditsTests.Credits_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot" methodname="Credits_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot" classname="Game.UI.Tests.CreditsTests" runstate="Runnable" seed="2014808085" result="Passed" start-time="2026-10-01 09:29:51Z" end-time="2026-10-01 09:29:52Z" duration="0.422858" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Credits» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1857" name="Credits_RNF23_NombraALosAutoresDeLosPersonajesYLaObraDeOrigen" fullname="Game.UI.Tests.CreditsTests.Credits_RNF23_NombraALosAutoresDeLosPersonajesYLaObraDeOrigen" methodname="Credits_RNF23_NombraALosAutoresDeLosPersonajesYLaObraDeOrigen" classname="Game.UI.Tests.CreditsTests" runstate="Runnable" seed="298634331" result="Passed" start-time="2026-10-01 09:29:52Z" end-time="2026-10-01 09:29:52Z" duration="0.422948" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

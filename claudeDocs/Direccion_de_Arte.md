@@ -1,6 +1,6 @@
 # Dirección de arte — Videojuego educativo 2D
 
-Última actualización: 2026-08-31
+Última actualización: 2026-10-01
 Proyecto: prototipo de videojuego educativo 2D · Unity · C#
 Fase Árcade: Diseño (OE2)
 Documento de referencia obligatoria para todo asset visual del proyecto
@@ -191,7 +191,7 @@ Usados en interfaz y en elementos comunes a todos los niveles.
 
 | Nombre | Hex | Uso |
 | --- | --- | --- |
-| Marfil | `#F7EFE2` | Fondo de globos de diálogo y paneles |
+| Marfil | `#F7EFE2` | Fondo del cuadro de diálogo y de los paneles |
 | Marfil sombra | `#E0D4C0` | Borde interior de paneles |
 | Carbón | `#3A1E18` | Texto y contornos |
 | Carbón suave | `#6B5248` | Texto secundario |
@@ -239,9 +239,12 @@ No hay escalado por altura de salto: **en este juego no se salta**. En las mecá
 que se desplaza es Mamá en el Nivel 3, sobre un plano fijo de la orilla con perspectiva por
 profundidad y accionada con botones en pantalla (RF-35, CT-06, RNF-02): cuanto más abajo está,
 más grande se ve (`N3_RiverLevelConfig`: `DepthScaleNear` 1, `DepthScaleFar` 0,55), y todo lo
-que cuelga de ella escala con ella. En las narrativas los personajes sí caminan de una casilla a
-otra (`NarrativeSceneController.WalkAsync`), y la sombra, hija del lienzo del rig, viaja con
-ellos anclada a los pies.
+que cuelga de ella escala con ella. Su casilla se ancla por los pies, como la de la familia
+(pivote (0,5; 0,075)), y en la orilla Mamá, la familia y los materiales se ven a la escala de la
+escena 3.1 (INC-118). Quién tapa a quién lo decide la profundidad: entre Mamá, la familia y los
+materiales, lo que está más abajo se dibuja delante (`DepthOrder`). En las narrativas los
+personajes sí caminan de una casilla a otra (`NarrativeSceneController.WalkAsync`), y la sombra,
+hija del lienzo del rig, viaja con ellos anclada a los pies.
 
 ### 5.4 Iluminación ambiental por nivel
 
@@ -429,8 +432,8 @@ Una sola imagen por forma, sin recorte en partes: los prefabs `Algoritm_Fuego`,
 que sustituir el archivo basta. «Rueda» y «gota» nombran el nivel, no la silueta.
 
 Sustituyen a `char_chispa_*`. La palabra `chispa` queda libre para lo que siempre fue en
-este juego: el destello del Nivel 1 (`fx_n1_chispa_*`), que no tiene nada que ver con el
-guía y **no se renombra**.
+este juego: el rayo del golpe del Nivel 1 (§12.2), que dibuja el motor, no tiene archivo y no
+tiene nada que ver con el guía.
 
 ---
 
@@ -650,9 +653,10 @@ se logra oscureciendo la banda central del cauce con `#2B6B80` y aclarando los b
 cerca de las orillas.
 
 **Sobre el riesgo:** el agua nunca se representa como amenazante. No hay rápidos
-violentos, no hay espuma turbulenta, no hay oscuridad bajo la superficie. Si el
-personaje cae, la retroalimentación es una salpicadura y un reinicio inmediato de la
-secuencia, sin animación de peligro. Se detalla en §12.3.
+violentos, no hay espuma turbulenta, no hay oscuridad bajo la superficie. Nadie cae al
+agua: lo que no aguanta es la balsa, que se inclina, se hunde un poco y vuelve a su sitio.
+La salpicadura es sonora (`sfx_n3_hundimiento`) y en imagen no hay efecto de agua ni
+animación de peligro (INC-123). Se detalla en §12.3.
 
 #### Niebla
 
@@ -666,6 +670,16 @@ Helechos como abanicos de tres o cuatro hojas planas, juncos en `#8CA84E` como l
 gruesas con punta redondeada, flores pequeñas de cinco pétalos en `#B87FC4` y `#7FA8E0`
 (nunca en ámbar, por la regla de acento), libélulas como dos óvalos y cuatro elipses
 transparentes.
+
+#### Plano y escala
+
+El Nivel 3 se juega y se narra sobre una sola ilustración 16:9, `env_n3_rio`, sin duplicar.
+La recolección la encuadra a ×1,4: la orilla con el río y el pie de la cascada a la derecha.
+El ensamblaje empuja a ×1,6, con la familia en la orilla a la izquierda y la balsa sobre el agua
+a la derecha. Con ese plano abierto, Mamá, la familia, los materiales y la zona de construcción
+toman la escala con que los muestra la escena 3.1, y la balsa del ensamblaje mide lo que la que
+cruza en la 3.3 (INC-118). La balsa del cruce navega por debajo de la espuma de la cascada, a
+y 0,395, con los cuatro viajeros encima (INC-124).
 
 ---
 
@@ -700,23 +714,24 @@ cuerpo.
 
 El inventario es el del juego que describen el guion y los RF: no hay recolectables
 sueltos por el escenario, ni objetos empujables, ni plataformas colocables, porque no
-hay desplazamiento libre en los niveles 1 y 2 y el del 3 es por casillas con botones.
+hay desplazamiento libre en los niveles 1 y 2 y el del 3 es por la orilla con botones en
+pantalla.
 
 | Nivel | Prop | Función | Color dominante |
 | --- | --- | --- | --- |
-| 1 | Montón de hojas secas (3 estados) | Objetivo del reto: intacto, humeante al converger y encendido al soplar (la llama cenital encima y las hojas quemándose desde el centro) | `#B08541` |
+| 1 | Montón de hojas secas (3 estados) | Objetivo del reto: intacto; humeante al converger, con un hilo de humo que nace en el punto del golpe, entre las hojas y las piedras; y encendido al soplar: la llama cenital encima, el humo en su corona y las hojas quemándose desde el centro. Es un solo dibujo, `prop_n1_monton_hojas_cenital`, y los estados los pone el motor (§12.2) | `#B08541` |
 | 1 | Sílex | Pieza del panel, silueta angulosa | `#9BA0A8` |
 | 1 | Pedernal | Pieza del panel, silueta redondeada | `#8B5A3C` |
 | 1 | Hoguera | Resolución del nivel, única fuente de luz cálida | `#F5A62E` / `#E2571F` / `#FFE9A8` |
 | 2 | Objetos del bosque (válidos y distractores) | Selección por patrón, fase 1 (RF-22..RF-26) | Verde vivo solo en los válidos |
-| 2 | Caja de alimentos (3 estados) | Meta narrativa de la fase 1 | `#C4743E` |
+| 2 | Caja de alimentos (3 estados) | Meta narrativa de la fase 1. Un solo dibujo, la caja llena `prop_n2_caja_suelo`, en el suelo, sobre los troncos y rodando; la escena 2.2 abre con la misma caja, en el sitio y con el tamaño en que la deja el bosque (INC-120) | `#C4743E` |
 | 2 | Siete piezas del taller (la séptima, la cuerda) | Ensamblaje secuencial, fase 2 (RF-27..RF-29) | `#8B5A3C` + acento verde |
-| 2 | Rueda y carretilla (5 estados) | Resultado del ensamblaje | `#A89880` + `#5FA842` |
+| 2 | Rueda y carretilla (5 estados) | Resultado del ensamblaje: `prop_n2_carretilla_e1`…`_e5`. El taller termina en `e5` al amarrar la cuerda, el mismo dibujo con el que abre la escena 2.4 (INC-121) | `#A89880` + `#5FA842` |
 | 2 | Carretilla cenital (4 orientaciones) | Ejecución de la secuencia, fase 3 (RF-30..RF-33) | `#5FA842` |
 | 2 | Bloques de instrucción y botón «Ejecutar» | Editor de secuencia, fase 3 (RF-31, RF-32) | `#5FA842` sobre marfil |
-| 3 | Troncos y sogas | Materiales recolectables por casilla (RF-36..RF-39) | `#E8A33D` |
+| 3 | Troncos y sogas | Materiales recolectables en la orilla (RF-36..RF-39) | `#E8A33D` |
 | 3 | Mástil y vela | Materiales de la tercera fase de ensamblaje (RF-40) | `#E8A33D` / `#F2C46B` |
-| 3 | Balsa compuesta: 17 espacios (cinco troncos, diez amarres, mástil y vela) que se pintan uno a uno, silueta hasta llenarse y pieza después, con 8 sprites —una pieza y una silueta por clase—; más la balsa hundida y la balsa cruzando de las narrativas | Construcción por fases: base, amarre, mástil y vela | `#8B5A3C` + `#E8A33D` |
+| 3 | Balsa compuesta: 17 espacios (cinco troncos, diez amarres, mástil y vela) que se pintan uno a uno, silueta hasta llenarse y pieza después, con 8 sprites —una pieza y una silueta por clase—; más la balsa hundida (3.2) y la balsa cruzando (3.3) de las narrativas, que navega bajo la espuma de la cascada (INC-124) | Construcción por fases: base, amarre, mástil y vela | `#8B5A3C` + `#E8A33D` |
 | 3 | Botones de dirección y «Recoger» | **Interfaz**, no props: la entrada del nivel (RF-35, CT-06) | `#E8A33D` sobre marfil |
 
 **Ningún prop se dibuja en la mano de un personaje** (§9.1), y ninguno usa el color de
@@ -761,11 +776,20 @@ desplazamiento de la lista, de 52 a 82 px).
 | Icono de pista | Algoritm en pequeño | `#E8A33D` | Pulso lento de escala cuando hay pista disponible. Es el guía quien ofrece la pista (CP-06), así que el icono es él |
 | Marco de inventario | Panel liso color arena | `#C7A87C` | Casillas cuadradas `#E0D4C0` en rejilla de 2×2, abajo a la izquierda; la de los troncos lleva cinco marcas que se encienden sin cifra (CP-03) |
 
-### 10.3 Globos de diálogo
+### 10.3 Cuadro de diálogo
 
-Forma ovalada de esquinas muy redondeadas, relleno `#F7EFE2`, contorno `#3A1E18` de
-6 px, con cola triangular redondeada apuntando al hablante. Sin sombra proyectada,
-sin degradado.
+El diálogo se lee en un cuadro con retrato, no en un globo con cola (INC-129). Es el
+`CuadroDialogo` de `Narrative.unity`, el panel de diálogo de §10.2: una tablilla de
+1400 × 180 px centrada abajo, a 16 px del borde, dentro del cuarto inferior de la pantalla, con
+relleno marfil `#F7EFE2` en un marco `#C4A882` y una sombra plana inferior de 6 px, sin
+degradado. Arriba a la izquierda lleva el retrato del hablante en un recuadro de 128 px
+(`char_<x>_retrato_neutra.png`, o la forma de Algoritm de su nivel). A su derecha van el nombre
+del hablante y el texto (§11.3). Abajo a la derecha quedan «Continuar», botón primario de
+260 × 76, y «Omitir», secundario de 200 × 76, que solo aparece en escenas ya vistas (RF-06).
+
+No tiene cola: quién habla lo dicen el retrato y el nombre, y no una flecha hacia un personaje
+que la cámara puede dejar fuera de cuadro. Lo que el texto nombra se ve por encima del cuadro
+(acta D05; lo vigila `NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo`).
 
 El texto es siempre `#3A1E18` sobre marfil. Nunca texto claro sobre fondo oscuro: la
 legibilidad para lectores en formación es notablemente peor.
@@ -812,7 +836,7 @@ del taller, a 22 px— y la instrucción del Nivel 1 (24 px).
 
 ### 11.4 Reglas de composición
 
-- Máximo 2 líneas por globo de diálogo, 12 palabras por línea.
+- Máximo 2 líneas por cuadro de diálogo, 12 palabras por línea.
 - Alineación a la izquierda, nunca justificada.
 - Sin mayúsculas sostenidas en textos de más de tres palabras: entorpecen la lectura
   en formación.
@@ -836,12 +860,18 @@ impide, y el estilo plano no los necesita.
 
 | Efecto | Construcción | Duración |
 | --- | --- | --- |
-| Chispas que se apagan | 4 líneas cortas radiales `#FFE9A8` que se acortan hasta desaparecer, sin llama (RF-16) | 0.35 s |
-| Chispa | 4 líneas cortas radiales `#FFE9A8` | 0.2 s |
-| Salpicadura de agua | 5 óvalos `#D6F0F5` en arco ascendente | 0.4 s |
+| Chispa (Nivel 1, golpe efectivo) | Un solo rayo recto `#FFE9A8` de 4 u de grosor (8 px a 1080p con la cámara al doble), sin halo ni llama. Nace en el punto del golpe y cae en las hojas, en una dirección al azar de la mitad de abajo del montón, a 0,205–0,22 de su lado | 0,2 s por golpe efectivo, hasta 0,6 s con el tercero |
+| Chispa que se apaga (Nivel 1, fuerza de más con las piedras en su sitio) | El mismo rayo, más largo: sale hacia la mitad de arriba, a 0,52–0,6 del lado, pasa de la última hoja y se apaga en el aire, bajo la tablilla, sin prender nada (RF-16). Mismo trazo y mismo color: otro color lo volvería marca de error (CP-02, §12.3) | 0,35 s |
+| Humo del montón (Nivel 1) | Hilo de humo por cuadros (`fx_n1_humo_nacer`, que sigue en bucle con `fx_n1_humo`) con el pivote en la base, en el punto del golpe y de 87 × 150 u. Nace al converger, entre las hojas y las piedras, y no pasa de medio montón (RF-19). Al soplar sube a la corona de la llama, detrás de ella, y se encoge a 0,6 en el mismo barrido que el quemado (RF-20) | Nacer, 1,97 s; bucle, 7,27 s |
+| Salpicadura de la balsa (Nivel 3) | Solo sonora: `sfx_n3_hundimiento` al empezar cada hundimiento. En imagen no hay efecto de agua (§12.3, INC-123) | 1,74 s de sonido |
 | Recolección de objeto | Círculo `#F7EFE2` que se expande y desaparece | 0.35 s |
 | Reto resuelto | 6 destellos de 4 puntas `#5FA842` en corona | 0.8 s |
 | Aparición de pista | El botón de pista del Nivel 1 pulsa de escala 1.0 a 1.06 en bucle desde que se abre la escena (`ui_pulso_pista`); los de los niveles 2 y 3 no pulsan | Ciclo 2.2 s |
+
+Los dos rayos de la chispa hacen un único barrido (INC-119): la cabeza llega a la caída en la
+primera mitad del tiempo, la cola la alcanza en la segunda y ahí se apaga, sin volver ni oscilar
+en escala ni en alfa (RNF-21). Un golpe nuevo corta el rayo anterior. El humo de las narrativas
+es el mismo `fx_n1_humo`, detrás de cada llama y a 0,6 de su escala.
 
 ### 12.3 Retroalimentación de error
 
@@ -858,7 +888,7 @@ El tratamiento en su lugar:
 | Situación | Respuesta visual |
 | --- | --- |
 | Secuencia incorrecta | La pieza vuelve a su sitio al soltarla, sin animación ni destello; el personaje hace el gesto de ánimo (`Encourage`) y la tablilla dice qué falta antes |
-| Prueba de balsa sin éxito (Nivel 3) | La balsa gira hacia un costado y se hunde un poco, y vuelve a su sitio en un solo movimiento continuo de 0.6 s, sin salpicadura ni destellos (guion §1.8.4, RNF-21). Lo ya confirmado **no se pierde** (RF-41, RF-43) |
+| Prueba de balsa sin éxito (Nivel 3) | «Probar balsa», en cualquiera de las tres fases (INC-122): la balsa gira hacia un costado, se hunde un poco y vuelve a su sitio en un solo movimiento continuo de 0.6 s (guion §1.8.4, RNF-21). Suena la salpicadura (`sfx_n3_hundimiento`), que describe y no castiga, y en imagen no hay efecto de agua ni destellos (INC-123). En la base y el amarre la prueba no aprueba la fase y marca solo lo mal puesto, nunca los espacios vacíos: marcarlos sería un mapa de dónde va cada pieza (CP-06). Lo ya confirmado **no se pierde** (RF-41, RF-43) |
 | Intento repetido sin éxito (3 veces) | La tablilla muestra la pista del guía, una pregunta, con el icono de ayuda (`HintPolicy`); el botón de pista no cambia |
 
 No hay rojo de error en toda la interfaz. El estado del intento lo lleva el icono que
@@ -979,15 +1009,53 @@ alta frecuencia, que pueden resultar molestos o desencadenar malestar.
 
 ### 15.2 Importación de sprites
 
+Son los ajustes que aplica el proyecto (INC-128):
+
 | Ajuste | Valor |
 | --- | --- |
 | Texture Type | Sprite (2D and UI) |
-| Sprite Mode | Single (personajes) / Multiple (hojas de props) |
-| Pivot | Bottom (personajes) / Center (props) |
+| Sprite Mode | Single. El importador de fábrica trae `Multiple`, y con él `LoadAssetAtPath<Sprite>` devuelve nulo para un fondo o un prop entero: cada imagen nueva se pasa a `Single` desde el motor (`TextureImporter.spriteImportMode`). Excepciones, abajo |
+| Pivot | Center en el importador. El pivote que cuenta en un personaje vive en su prefab: cada parte del rig gira en su articulación (§13.1) y la casilla se ancla por los pies, en (0,5; 0,075) |
 | Filter Mode | Bilinear |
-| Compression | Normal Quality |
-| Max Size | 2048 |
-| Generate Physics Shape | Desactivado (los colisionadores se definen a mano) |
+| Generate Mip Maps | Desactivado |
+| Compression | Sin comprimir (`ArtImportRules`) |
+| Max Size | 4096 (`ArtImportRules`): las panorámicas llegan a 3840 y no se reducen. Excepción: los cuadros de `Props/Fire/Animations/` entran a 1024 (INC-130) |
+| Read/Write | Desactivado, salvo en las ocho piezas y siluetas de la balsa del Nivel 3: el panel prueba su alfa al agarrar y al soltar |
+| Generate Physics Shape | El valor de fábrica, sin efecto: todo es uGUI y no hay colisionadores |
+
+**Sin comprimir y a 4096, por regla.** `ArtImportRules` (`Game.EditorTools`) los fuerza en todo
+`Assets/Game/Art/`, también al reimportar: un archivo recién soltado entra con los valores de
+fábrica (comprimido, 2048) y nadie lo nota hasta verlo en pantalla. Comprimida, la ilustración
+plana enseña la rejilla de bloques de 4×4 —se ve en la pared de la cueva— y el Nivel 1 la
+multiplica por la capa de oscuridad, que amplifica el error en los tonos oscuros. Lo vigila
+`ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`; la memoria se mide sobre el
+ejecutable (RNF-05).
+
+**Excepción: los cuadros del fuego y del humo del Nivel 1 (INC-130, RNF-06).** `Props/Fire/Animations/`
+entra a **1024 px de lado máximo**, también sin comprimir. Sin la excepción eran 67 PNG referenciados
+(134 entradas en el informe del build) de hasta 2144 × 2108 y 533 MB, y el paquete pesaba 827 MB frente
+al tope de 500 MB (RNF-06). Ya son un dibujo por clave de la curva, sin duplicados, así que no hay
+arreglo sin pérdida. En pantalla el fuego se ve a unos 650 px como mucho y el humo a menos de 300:
+el humo queda en 595 × 1024 y el fuego normal en 1024 × 1007, en memoria, sin pérdida visible; el fuego
+cenital (500 × 278) no cambia. El PPU se escala con la textura y el tamaño en el mundo no se mueve. Lo
+vigila `ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir`; con la excepción el
+build pesa 479,0 MB.
+
+**Halo de croma.** Los sprites que salen de un fondo verde puro se limpian de halo verde en el
+borde. El 01/10/2026 se limpiaron siete PNG —los tres `char_algoritm_n?_*_reposo` y los cuatro
+retratos `char_*_retrato_neutra`— tocando solo píxeles semitransparentes, con el alfa idéntico al del
+original. Quedan unas 12 o 13 motas verdes opacas (α ≥ 200) en las puntas del pelo de los retratos de
+Niña y Papá y de Algoritm, visibles a 1080p: limpiarlas obliga a retocar píxeles opacos, y queda
+pendiente del carril de arte.
+
+**Doce PNG siguen en `Multiple`.** Son `Environments/Narrative/env_enlace_n2.png` y once de
+`Props/Wheel/`: `prop_n2_tronco_a`, `prop_n2_piedra_a`…`_d`, `prop_n2_planta_a`…`_c` y
+`prop_n2_herramienta_a`…`_c`. Diez los referencian `N2_WheelLevelConfig` y las narrativas del
+Nivel 2 y del puente II por su sub-sprite, con un `fileID` distinto de `21300000`: pasarlos a
+`Single` rompería esas referencias, así que no se migran. `prop_n2_piedra_c` y `_d` no los usa
+ningún asset. Si uno de los doce se sustituye por un archivo de otro tamaño, el recorte del
+sub-sprite se ajusta desde el motor conservando su `spriteID`, como se hizo con las piedras el
+25/09/2026.
 
 ### 15.3 Orden de capas
 
@@ -1021,6 +1089,15 @@ Prefijos: `char_`, `prop_`, `env_`, `ui_`, `fx_` y `ref_` (`S01`). Una secuencia
 Niveles: `n1` (La Oscuridad), `n2` (La Rueda), `n3` (El Río).
 
 Sin tildes, sin espacios, sin mayúsculas en los nombres de archivo.
+
+Todos los sprites de `Assets/Game/Art/` la cumplen, y lo vigila
+`ArtImport_RNF23_LosNombresSiguenLaNomenclatura`. Los cinco que llegaron fuera de ella se
+renombraron desde el motor (`AssetDatabase.RenameAsset`), con el GUID intacto y sin tocar escenas
+ni assets (INC-126): `env_n1_apertura`, `env_n1_cueva_2x`, `env_n1_cueva_cenital` y
+`env_n2_laberinto`, que traían el prefijo viejo `entorno_`, y `prop_n2_caja_suelo_vacia`, que
+traía tilde. Solo se apartan de la regla los cuadros del fuego y del humo
+(`fuego_cenital_nivel_1_0000.png`, `humo_nivel_1_0009.png`): conservan el nombre de entrega
+porque los referencia la curva del `.anim`, y renombrarlos es trabajo del motor.
 
 ---
 
@@ -1231,3 +1308,10 @@ documento son originales del proyecto y no dependen de esa autorización.
 Las tipografías recomendadas en §11 se distribuyen bajo licencia SIL Open Font License
 1.1, que permite su uso, modificación y distribución en proyectos académicos y
 comerciales sin restricciones de atribución en el producto.
+
+Los tres glifos del menú de pausa (`ui_pausa`, `ui_reanudar` y `ui_reiniciar`) no son
+originales del proyecto: son iconos de la familia Phosphor Icons, con licencia MIT, y la
+pantalla de créditos los acredita con su licencia (INC-127). Es el único crédito de Phosphor: solo los
+iconos de pausa, no el resto de la interfaz. Los créditos dicen «Entornos, objetos e interfaz: originales
+del proyecto, salvo los iconos de pausa.» e «Iconos de pausa: Phosphor Icons, licencia MIT.», y la
+licencia está en `Assets/Game/Art/UI/Common/LICENSE-Phosphor.txt` (el build la copia a `Licencias/`).

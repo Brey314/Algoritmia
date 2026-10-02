@@ -130,10 +130,10 @@ MonoBehaviour:
     <Silhouette>k__BackingField: {fileID: 21300000, guid: 212e534d08b3fb545aefeabb43fde71b, type: 3}
   <KnotsPerRope>k__BackingField: 10
   <AssemblyFraming>k__BackingField:
-    <Focus>k__BackingField: {x: 0.5, y: 0.23}
-    <Zoom>k__BackingField: 2.2
+    <Focus>k__BackingField: {x: 0.5, y: 0.3125}
+    <Zoom>k__BackingField: 1.6
   <PushSeconds>k__BackingField: 1
-  <RaftPosition>k__BackingField: {x: 0.5, y: 0.23}
+  <RaftPosition>k__BackingField: {x: 0.58, y: 0.23}
   <RaftSize>k__BackingField: 0.28
   <SinkSeconds>k__BackingField: 0.6
   <FirstFailureSequenceId>k__BackingField: N3_Escena32_PrimerIntento
@@ -148,4 +148,5 @@ MonoBehaviour:
   <BaseConfirmedMessage>k__BackingField: "La base qued\u00F3 firme. Ahora hay que sujetarla para que no se abra."
   <LashingConfirmedMessage>k__BackingField: La balsa ya no se abre. Falta lo que atrapa el viento.
   <TestFailedMessage>k__BackingField: "La balsa se volte\u00F3. Mira el espacio marcado: \u00BFqu\u00E9 deber\u00EDa ir ah\u00ED?"
+  <UnfinishedTestMessage>k__BackingField: "La balsa se hundi\u00F3: todav\u00EDa no est\u00E1 terminada. \u00BFQu\u00E9 parte falta armar?"
   <TestPassedMessage>k__BackingField: "La balsa flota derecha. \u00A1A cruzar!"

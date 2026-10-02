@@ -241,12 +241,35 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(workshop.Assembly.IsComplete, Is.False, "con la caja encima falta amarrarla (INC-54)");
 
             await Arrastrar(workshop, WorkshopPiece.Rope, workshop.AssemblyImage.rectTransform);
-            var cuerda = workshop.Pieces[WorkshopPiece.Rope].Rect;
-            Assert.That(cuerda.gameObject.activeInHierarchy, Is.True, "la cuerda se queda amarrada sobre la caja");
-            Assert.That(EnPantalla(cuerda).Overlaps(EnPantalla(workshop.AssemblyImage.rectTransform)), Is.True,
-                "encima de la carretilla, no en su sitio del suelo");
+            Assert.That(workshop.AssemblyImage.sprite, Is.SameAs(workshop.Config.TiedArt),
+                "y con la cuerda, el último dibujo: la caja amarrada (INC-54)");
             Assert.That(workshop.Assembly.IsComplete, Is.True);
             Assert.That(workshop.IsCompleting, Is.True, "y arranca el empuje de cámara de cierre");
+        }
+
+        [Test]
+        [Category("Acceptance")]
+        [Timeout(30000)]
+        public async Task WorkshopScene_INC54_AlAmarrarLaCuerdaLaCarretillaPasaAlDibujoConCuerda()
+        {
+            var workshop = await OpenWorkshop();
+            workshop.Select(WorkshopPiece.ShortLogA);
+            workshop.MachineButton.onClick.Invoke();
+            workshop.Select(WorkshopPiece.ShortLogB);
+            workshop.MachineButton.onClick.Invoke();
+            await Arrastrar(workshop, WorkshopPiece.LongLog, workshop.Pieces[WorkshopPiece.ShortLogA].Rect);
+            await Arrastrar(workshop, WorkshopPiece.Plank, workshop.AssemblyImage.rectTransform);
+            await Arrastrar(workshop, WorkshopPiece.Cargo, workshop.AssemblyImage.rectTransform);
+            Assert.That(workshop.AssemblyImage.sprite, Is.SameAs(workshop.Config.CompleteArt),
+                "arreglo: la caja ya está encima y falta amarrarla");
+
+            await Arrastrar(workshop, WorkshopPiece.Rope, workshop.AssemblyImage.rectTransform);
+
+            Assert.That(workshop.AssemblyImage.sprite, Is.Not.Null.And.SameAs(workshop.Config.TiedArt),
+                "la carretilla pasa al dibujo con la cuerda, el mismo con el que abre la 2.4");
+            Assert.That(workshop.AssemblyImage.enabled, Is.True, "y se sigue viendo");
+            Assert.That(workshop.Pieces[WorkshopPiece.Rope].Rect.gameObject.activeSelf, Is.False,
+                "la cuerda deja el suelo: ya la dibuja la carretilla");
         }
 
         [Test]
@@ -437,7 +460,8 @@ namespace Game.Levels.Wheel.Tests
         [Category("VisualVerification")]
         [Description("Verificar en las capturas: el taller es el claro este del bosque con el encuadre de la 2.3; " +
                      "las piezas se leen sobre el pasto sin que la tablilla ni los botones las tapen; la carretilla crece " +
-                     "donde estaban las ruedas; «Aún no» con candado sobre «Mecanizar»; contraste carbón sobre marfil.")]
+                     "donde estaban las ruedas; «Aún no» con candado sobre «Mecanizar»; contraste carbón sobre marfil; " +
+                     "en _04 la carretilla amarrada (e5): la caja atada con la cuerda tras el empuje de cierre.")]
         public async Task WorkshopScene_RNF20_CapturaDelTallerEnReposoYConLaCarretillaMontada()
         {
             var workshop = await OpenWorkshop();
@@ -456,6 +480,11 @@ namespace Game.Levels.Wheel.Tests
             await Arrastrar(workshop, WorkshopPiece.Plank, workshop.AssemblyImage.rectTransform);
             await Awaitable.NextFrameAsync();
             Capturar("Workshop_03_tabla_montada");
+
+            await Arrastrar(workshop, WorkshopPiece.Cargo, workshop.AssemblyImage.rectTransform);
+            await Arrastrar(workshop, WorkshopPiece.Rope, workshop.AssemblyImage.rectTransform);
+            await Awaitable.NextFrameAsync();
+            Capturar("Workshop_04_carretilla_amarrada");
 
             Assert.That(workshop.AssemblyImage.enabled, Is.True);
         }

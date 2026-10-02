@@ -425,18 +425,10 @@ namespace Game.Levels.Wheel
 
             if (outcome.Accepted)
             {
-                if (piece == WorkshopPiece.Rope)
-                {
-                    // El taller no usa el dibujo de la carretilla con la cuerda (el de las
-                    // narrativas): la pieza misma se queda amarrada encima de la caja y ya no se
-                    // vuelve a tomar (INC-54).
-                    Hang(rect, config.RopePlacedPosition, config.RopePlacedSize);
-                    Destroy(rect.GetComponent<CargoHandle>());
-                }
-                else
-                {
-                    rect.gameObject.SetActive(false);
-                }
+                // Toda pieza aceptada deja el suelo y pasa a ser la carretilla, la cuerda también:
+                // su dibujo amarrada sobre la caja ya es `TiedArt` (INC-54). Nada de lo hecho se
+                // deshace (CP-02).
+                rect.gameObject.SetActive(false);
 
                 ShowAssembly(piece);
                 _ = HammerAsync();
@@ -541,6 +533,11 @@ namespace Game.Levels.Wheel
                     break;
                 case WorkshopPiece.Cargo:
                     assemblyImage.sprite = config.CompleteArt;
+                    break;
+                case WorkshopPiece.Rope:
+                    // El último estado del taller es el dibujo con el que abre la 2.4: del taller a
+                    // la narrativa la carretilla no cambia (INC-54, RF-05).
+                    assemblyImage.sprite = config.TiedArt;
                     break;
             }
 

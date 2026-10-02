@@ -19,8 +19,9 @@ namespace Game.Levels.River.Tests
         [Timeout(30000)]
         [Category("VisualVerification")]
         [Description("Revisar la captura: lista de tareas arriba a la izquierda, inventario vacío abajo a la " +
-                     "izquierda, flechas y «Recoger» a la derecha, zona marcada junto al agua y los cuatro " +
-                     "materiales repartidos por la orilla (mockup 11-12).")]
+                     "izquierda, flechas y «Recoger» a la derecha, el río y el pie de la cascada a la derecha; la zona junto " +
+                     "al agua con la familia detrás; los ocho materiales repartidos por la orilla, sin deformar ni ampliar y " +
+                     "ninguno sobre agua o seto; Mamá, la familia y los materiales a la escala de la 3.1 (INC-118) (mockup 11-12).")]
         public async Task RiverScene_RF36_CapturaDeLaOrillaAlAbrir()
         {
             await RiverMovementTests.OpenRiver();
@@ -32,7 +33,8 @@ namespace Game.Levels.River.Tests
         [Timeout(30000)]
         [Category("VisualVerification")]
         [Description("Revisar la captura: tareas 1 y 2 con visto verde, 3 y 4 con círculo; inventario con " +
-                     "los cuatro materiales; panel de ensamblaje abierto y flechas retiradas.")]
+                     "los cuatro materiales; panel de ensamblaje abierto y flechas retiradas; Mamá en el borde " +
+                     "de la zona, entera y fuera del inventario, delante de la familia (lectura B, INC-118).")]
         public async Task RiverScene_RF39_CapturaConTodoRecogidoYLaZonaAbierta()
         {
             var river = await RiverMovementTests.OpenRiver();

@@ -21,6 +21,15 @@ namespace Game.EditorTools
     /// valores de fábrica (2048, comprimido) y nadie lo nota hasta verlo en pantalla. Aquí la regla
     /// se aplica sola, incluido el reimport.
     ///
+    /// **Única excepción: los cuadros del fuego y el humo del N1** (<c>Art/Props/Fire/Animations/</c>,
+    /// RNF-06). Son 67 PNG (134 entradas del BuildReport) de hasta 2144×2108 y sin comprimir pesaban
+    /// 533 MB, con lo que el paquete llegó a 866,7 MB (826,6 MiB) frente al tope de 500 MB. Ya son
+    /// un dibujo por clave, sin duplicados, así que no hay arreglo sin pérdida. En pantalla el fuego normal se ve a ~650 px como
+    /// mucho (Size ≤ 0,22 del alto) y el humo a menos de 300 px, de modo que 1024 px no se nota. Se
+    /// **sigue sin comprimir**, por el mismo motivo de la regla general: la rejilla de bloques de
+    /// 4×4 sobre degradados largos. Cambiar el tope es cambiar <c>FireFramesMaxTextureSize</c> y
+    /// <c>ArtImport_RNF06_…</c>.
+    ///
     /// **Ojo:** esto pisa lo que se toque a mano en el Inspector para estos dos campos. Cambiar la
     /// regla es cambiar este archivo.
     /// </remarks>
@@ -31,6 +40,11 @@ namespace Game.EditorTools
         /// <summary>Lado máximo, en píxeles: las panorámicas se entregan a 3840 y no se reducen.</summary>
         private const int MaxTextureSize = 4096;
 
+        private const string FireFramesRoot = ArtRoot + "Props/Fire/Animations/";
+
+        /// <summary>Tope de los cuadros del fuego y el humo (RNF-06, ver la nota de la clase).</summary>
+        private const int FireFramesMaxTextureSize = 1024;
+
         private void OnPreprocessTexture()
         {
             if (!assetPath.StartsWith(ArtRoot, StringComparison.Ordinal))
@@ -40,7 +54,9 @@ namespace Game.EditorTools
 
             var importer = (TextureImporter)assetImporter;
             importer.textureCompression = TextureImporterCompression.Uncompressed;
-            importer.maxTextureSize = MaxTextureSize;
+            importer.maxTextureSize = assetPath.StartsWith(FireFramesRoot, StringComparison.Ordinal)
+                ? FireFramesMaxTextureSize
+                : MaxTextureSize;
         }
     }
 }

@@ -103,6 +103,10 @@ namespace Game.Scaffolding
         public ActorAction ActorStart { get; private set; } = ActorAction.Idle;
 
         [field: SerializeField]
+        [field: Tooltip("Si el personaje termina cada paso que empieza aunque el texto avance: ningún paso nuevo lo interrumpe, lo que se lee mientras camina lo hace al llegar y, si un paso lo movía, camina después desde donde llegó. Para quien va sobre algo que se mueve —la familia en la balsa que cruza (RF-44)—: interrumpirlo lo haría saltar a mitad del río (RNF-21). Sin marcar, un paso nuevo lo interrumpe y salta a donde tenía que llegar.")]
+        public bool FinishesSteps { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Lo que hace el personaje línea a línea: una acción y, si se mueve, a dónde. Entre pasos mantiene lo último; si dice la línea y está de pie, gesticula.")]
         public ActorBeat[] Beats { get; private set; } = Array.Empty<ActorBeat>();
 
@@ -128,6 +132,15 @@ namespace Game.Scaffolding
             Beats = beats ?? Array.Empty<ActorBeat>();
             return this;
         }
+
+#if UNITY_INCLUDE_TESTS
+        /// <summary>Lo marca como quien termina sus pasos (<see cref="FinishesSteps"/>). En el juego la marca viene del asset.</summary>
+        internal NarrativeProp FinishingSteps()
+        {
+            FinishesSteps = true;
+            return this;
+        }
+#endif
 
         public NarrativeProp(Sprite art, Vector2 position, float size, float rotationDegrees = 0f, bool mirrored = false)
         {

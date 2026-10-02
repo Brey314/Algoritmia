@@ -109,11 +109,18 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ### ✅ Checkpoint B — Navegación
 - [x] Perfil nuevo → Nivel 1 habilitado, Niveles 2 y 3 bloqueados **con icono además de color** — `LevelSelect_RF03_*` + RNF-19
-- [~] Cerrar y reabrir conserva el perfil y su progreso (RNF-14, manual sobre el ejecutable) —
+- [x] Cerrar y reabrir conserva el perfil y su progreso (RNF-14, manual sobre el ejecutable) —
       **build portable hecho el 08/09** (`unity build`, 137 MB, 5 escenas). Se creó un perfil
       jugando y quedó en `Build/Algoritmia/Datos/yo.json`; el archivo sobrevive al cierre. Falta
       **ver el perfil listado al reabrir**, que es un clic en «Jugar» y lo hace el usuario.
-- [~] `Datos/` aparece junto al ejecutable, sin residuos fuera de ella (RNF-07, manual) —
+      — cerrado el 01/10/2026: sobre el ejecutable rc1, el perfil `OE4N1b`, creado jugando el
+      Nivel 1, salió con «Salir» y al relanzar y pulsar «Jugar» apareció en la lista y abrió con
+      el mismo progreso —N1 «Completado», N2 habilitado, N3 bloqueado— (S-PER, paso 22,
+      `claudeDocs/tasks/OE4/evidencias/S-PER/S1-cerrar-reabrir_perfil_listado.png` y
+      `S1-cerrar-reabrir_progreso_conservado.png`); sobre rc2 lo repite PF-RF02-02, `OE4_Z` abre
+      con su progreso exacto (`claudeDocs/tasks/OE4/evidencias/rc2/PF-RF02-02_OE4_Z_progreso.png`;
+      `claudeDocs/tasks/OE4/OE4-Resultados.md` §5 y §8.4).
+- [x] `Datos/` aparece junto al ejecutable, sin residuos fuera de ella (RNF-07, manual) —
       **`Datos/` sí nace junto al `.exe` en la primera ejecución** (RNF-07 ✅). **Pero hay residuo
       fuera** (RNF-11 ❌): el reproductor escribe en
       `%AppData%\LocalLow\DefaultCompany\My project\` un `Player.log` (PlayerSettings
@@ -131,7 +138,27 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       Aparte: `UnityConnectSettings.asset` apareció con `m_Enabled: 0 → 1` (analítica
       **encendida**); se revirtió a 0 y **al reabrir el Editor volvió a 1** — revertir el archivo
       no arregla nada mientras el módulo siga en el manifiesto.
-- [ ] Revisado con el usuario
+      — cerrado el 01/10/2026: una copia de la carpeta entregable puesta en una ruta con espacio
+      fuera del repositorio arrancó sin instalar nada ni elevar privilegios y creó `Datos/` junto
+      a su ejecutable (PF-RNF07-01, `claudeDocs/tasks/OE4/evidencias/S-DOC/S-RNF07_portabilidad.txt`).
+      Sobre rc2, `UnityServicesOff` (`Game.EditorTools`) apaga los servicios de Unity antes del
+      build y comprueba que el juego compilado no nombre sus servidores: en LocalLow solo queda
+      `Player.log`, sin archivos nuevos de Analytics ni de Insights; en
+      `HKCU\Software\Universidad Catolica de Colombia\Algoritmia` quedan los valores de pantalla,
+      un contador y un identificador de sesión del reproductor y tres `unity_connect.*`, ninguno
+      con datos del estudiante (`claudeDocs/tasks/OE4/evidencias/rc2/S-INI-rc2_residuos.txt`,
+      `GP3_residuos.txt`). Los dos valores de sesión y los tres `unity_connect.*` son DEF-RC2-01
+      (Menor, resto de DEF-SPIKE-01), documentado
+      como residuo del motor para la entrega (decisión D-RC2-01, opción b); poner
+      `m_InitializeOnStartup` a 0 en `UnityConnectSettings` o borrar esas claves al salir queda como
+      mejora recomendada para un build futuro, porque pide build, residuos y SUITE
+      (`claudeDocs/tasks/OE4/OE4-Resultados.md` §4.6, §8.6 y §8.7).
+- [x] Revisado con el usuario
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de
+      Claude del 01/10/2026: las dos casillas anteriores, cerradas sobre el ejecutable (S-PER
+      paso 22 y PF-RNF07-01); el `Player.log` y las claves de pantalla quedaron decididos el 29/09
+      (INC-97) y el resto del registro es DEF-RC2-01, documentado como residuo del motor
+      (`claudeDocs/tasks/OE4/OE4-Resultados.md` §8.7).
 
 **Código de Fase 1 completo (T05–T08). Del Checkpoint B queda: el clic que confirma RNF-14 al
 reabrir, la decisión sobre los dos residuos de `LocalLow` (RNF-11/RNF-08) y la revisión con el
@@ -186,12 +213,26 @@ usuario.**
 - [x] Las tres escenas narrativas se recorren completas — `NarrativeScene_RF05_*` verde en
       **PlayMode 31/33**: las tres resuelven en la misma escena y avanzar hasta el final sale a
       otra pantalla. `N1_Apertura` recorrida además a mano (7 líneas → `LevelSelect`)
-- [~] El botón de omitir aparece **solo** en la segunda visita (INC-28) — la regla está probada en
+- [x] El botón de omitir aparece **solo** en la segunda visita (INC-28) — la regla está probada en
       EditMode (`DialogueRunner_RF06_*`, `_INC28_*`) y la escena la respeta; falta verla en la
       segunda visita real, que exige una fase confirmada y por tanto **T17**
+      *(01/10/2026: Implementación — la segunda visita real la comprueba
+      `NarrativeScene_INC28_OfreceOmitirEnLaSegundaVisitaTrasTerminarElNivel1` (D10-5): con el
+      perfil que deja el Nivel 1 terminado —su fase confirmada y el Nivel 2 abierto—, la escena
+      `Narrative` ofrece «Omitir» en `N1_Apertura`, y
+      `NarrativeScene_INC28_NoMuestraOmitirLaPrimeraVezQueSeVeLaEscena` comprueba que la primera vez
+      no aparece. Las dos, en verde en la suite completa del 01/10/2026. Sobre el ejecutable,
+      PF-RF06-01 en P sobre rc1
+      (`claudeDocs/tasks/OE4/evidencias/GP1/PF-RF06-01_N1_segunda_visita_omitir_INC28.png`) y
+      PF-RF06-02 y 03 sobre rc2 (`claudeDocs/tasks/OE4/OE4-Resultados.md` §5 y §8.4).)*
 - [x] Ninguna pista resuelve la tarea ni nombra «Muy cerca» (CP-06) —
       `HintPolicy_CP06_LaPistaNuncaNombraLaPosicionEfectiva` verde sobre el asset del N1 (08/09/2026)
-- [ ] Revisado con el usuario
+- [x] Revisado con el usuario
+      *(01/10/2026: Decisión — revisado por Santiago el 30/09/2026 (acta D10, §5), tras comprobar en
+      verde en la suite completa del 01/10/2026 las tres casillas del checkpoint: las narrativas del
+      Nivel 1 (`NarrativeScene_RF05_ResuelveTresSecuenciasDistintasSinRamas`,
+      `NarrativeScene_RF10_LaAperturaEncadenaLasTresEscenasDelNivel1YEntraAJugar`), «Omitir» solo en
+      la segunda visita y `HintPolicy_CP06_LaPistaNuncaNombraLaPosicionEfectiva`.)*
 
 **Código de Fase 2 completo (T09–T11), EditMode 57/57 · PlayMode 33/33 + 2 omitidas.** Del
 Checkpoint C quedan dos casillas y ninguna es de código: ver el botón de omitir en la segunda visita
@@ -323,12 +364,60 @@ exige una fase confirmada (**T17**) y la revisión con el usuario.
 todas las que siguen son verificación manual y revisión con el usuario.
 
 ### ✅ Checkpoint D — Slice 1 completo
-- [ ] **Dos recorridos completos** del Golden Path sin incidencias (RNF-13)
-- [ ] Cierre forzado a mitad de nivel → retoma desde la última fase confirmada (RNF-14)
-- [ ] Carga de escena < 10 s y memoria < 2 GB, **medidas** en el equipo de referencia (RNF-04, RNF-05)
+- [x] **Dos recorridos completos** del Golden Path sin incidencias (RNF-13)
+      — cerrado el 01/10/2026: tres recorridos completos sobre el ejecutable con el arnés
+      `claudeDocs/tasks/OE4/herramientas/oe4.ps1` (acta D10, §5), de la pantalla de inicio a los
+      créditos con perfil nuevo: GP1 (87 min, ventana 1920×1080) y GP2 (33 min, pantalla completa)
+      sobre rc1, y GP3 (16 min, pantalla completa) sobre rc2. Los tres terminaron sin bloqueos,
+      cierres inesperados ni estados irrecuperables, sin `Exception` en `Player.log` y con las
+      siete fases en el JSON; los defectos no bloqueantes que vieron GP1 y GP2 (DEF-GP1-01..03 en el
+      laberinto, DEF-SPIKE-01 en la red) se corrigieron en rc2 y se reverificaron
+      (`claudeDocs/tasks/OE4/OE4-Resultados.md` §3, §8.3 y §8.5;
+      `claudeDocs/tasks/OE4/evidencias/GP1/GP1_OE4GP1_final.json`, `GP2/GP2_OE4GP2_final.json`,
+      `rc2/GP3_registro_de_pasos.md`). La duración de 20–40 min con un estudiante es H8 de
+      `claudeDocs/tasks/OE4/Hoja-HUM.md` (Slice 3).
+- [x] Cierre forzado a mitad de nivel → retoma desde la última fase confirmada (RNF-14)
+      — cerrado el 01/10/2026: sobre rc1, siete cierres forzados (`Matar`), entre ellos uno a
+      mitad de la mecánica del Nivel 1 —retoma la cueva desde cero con el perfil listado—
+      (`claudeDocs/tasks/OE4/evidencias/S-PER/PF-RNF14-N1mec_*.png`) y otro durante
+      `N1_NacimientoDelFuego`, que deja el nivel por completar porque su fase se guarda al mostrarse
+      el resumen (PF-RNF14-03, INC-74); en los siete el perfil reabrió sin error en la primera fase
+      pendiente, con lo confirmado y sus indicadores intactos
+      (`claudeDocs/tasks/OE4/evidencias/S-PER/S-PER_registro_de_pasos.md`). Sobre rc2, dos cierres
+      más en el instante del guardado: entre la escritura del temporal y el reemplazo queda el
+      perfil anterior intacto y se retoma la fase sin confirmar; justo después del reemplazo queda
+      el perfil nuevo completo; en ningún caso un JSON truncado
+      (`claudeDocs/tasks/OE4/evidencias/rc2/PF-RNF14-guardado_matar1.txt` y `_matar2.txt`;
+      `claudeDocs/tasks/OE4/OE4-Resultados.md` §5 y §8.3). La ventana interna de `File.Replace`,
+      sin `<perfil>.json` en disco, no se alcanzó y queda como riesgo residual Menor (R-RC2-A, `claudeDocs/tasks/OE4/OE4-Resultados.md` §8.7).
+- [x] Carga de escena < 10 s y memoria < 2 GB, **medidas** en el equipo de referencia (RNF-04, RNF-05)
+      — cerrado el 01/10/2026: medidas sobre el ejecutable en el equipo 1 (Ryzen 5 7600X, 32 GB,
+      RTX 5070 Ti, Windows 11), leyendo la línea `RNF-04: «X» cargó en N s` que `SceneLoader` deja en
+      `Player.log`: peor carga 0,765 s en 188 cargas de rc1 y 0,780 s en 74 de rc2, las dos de
+      `Narrative` al abrir `N1_Apertura`; `Level1_Cave` 0,156 s; memoria máxima de rc2 425,5 MiB de
+      trabajo y 1 124,6 MiB privada (rc1: 435,7 y 1 140,1 MiB), < 2048 MiB
+      (`claudeDocs/tasks/OE4/OE4-Resultados.md` §4.1, §4.2 y §8.6;
+      `claudeDocs/tasks/OE4/evidencias/S-RNF/S-RNF_cargas.csv`, `rc2/GP3_mem.csv`). La columna
+      del segundo equipo es la de P12 del Slice 4 (H3) y la del equipo sin tarjeta dedicada, CT-02 (H5).
 - [ ] Ejecución portable con el adaptador de red deshabilitado (RNF-07, RNF-08)
-- [ ] Todo RF del slice tiene al menos una prueba que lo nombra (CT-10)
-- [ ] Revisado con el usuario antes de abrir el Slice 2
+      — sigue abierta el 01/10/2026 por la decisión D-b (acta D10, §5): la ejecuta Santiago con H3
+      (la carpeta portable en un segundo equipo) y H4 (sin conexión) de
+      `claudeDocs/tasks/OE4/Hoja-HUM.md`, y se marca con su plantilla. En el equipo 1, sobre rc2,
+      ya hay 0 conexiones de red en 1312 muestras (PF-RNF10-01) y la copia portable de rc1 arrancó
+      desde una ruta con espacio (PF-RNF07-01) (`claudeDocs/tasks/OE4/OE4-Resultados.md` §4.6 y §8.6).
+- [x] Todo RF del slice tiene al menos una prueba que lo nombra (CT-10)
+      *(01/10/2026: Implementación — lo exige
+      `Traceability_CT10_TodoRFTieneAlMenosUnaPruebaQueLoNombra` (`9c34924`, 24/09), que deriva la
+      matriz de los nombres de método y pide los 47 RF; en verde en la suite completa del
+      01/10/2026. RF-01 a RF-21 y RF-45, los de este slice, tienen cada uno al menos una prueba.)*
+- [x] Revisado con el usuario antes de abrir el Slice 2
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de
+      Claude del 01/10/2026: a posteriori, porque el Slice 2 corre en paralelo desde el 10/09; los
+      recorridos, el cierre forzado y las cargas y la memoria se comprobaron sobre el ejecutable
+      (PF-RNF13-01 con GP1, GP2 y GP3; PF-RNF14-01..05; PF-RNF04-01 y PF-RNF05-01 en el equipo 1,
+      `claudeDocs/tasks/OE4/OE4-Resultados.md` §3–§5 y §8), y la suite de rc2 pasa entera (PlayMode
+      376/376, EditMode 470 = 469 + 1 omitida, `claudeDocs/tasks/OE4/evidencias/suites/rc2-final/`).
+      La ejecución sin red y en un segundo equipo queda con Santiago (H3 y H4).
 
 ---
 
@@ -379,17 +468,26 @@ montón no penaliza: solo escribe en el registro lo que pasó (CP-02).
       no, mensaje observacional en el registro y el nivel sigue. Se retiran del `Level1_Cave` el
       marco «Hoguera», el `MontonHojas` placeholder y la etiqueta de instrucción fija (la
       instrucción vive en «Pista»); la prueba `RNF03` que exige una `InstruccionLabel` se ajusta.
-- [~] **T24 · Documentos y verificación** — `S` (12/09/2026: todo menos la revisión con el usuario)
+- [x] **T24 · Documentos y verificación** — `S` (12/09/2026: todo menos la revisión con el usuario)
       `Interfaces.md` §7, `Camara_Narrativa_N1.md` §3, `INCONSISTENCIAS.md` (INC-47), suites
       completas por CLI y captura del panel en Play revisada con el usuario.
       **Hecho el 12/09/2026 salvo la revisión con el usuario.** Santiago retiró además el registro
       con historial («estorba»): la tablilla superior muestra el último mensaje (`FeedbackLogView`).
       T21 ajustado: asa azul→rojo lineal por muesca, escala 0,8–1,2.
+      *(01/10/2026: Decisión — la revisión con el usuario se hizo: Santiago vio el panel en Play el
+      12/09 y pidió quitar el historial, que se quitó; la Fase 6 (T25–T27, `863ef05`, 15/09)
+      sustituyó ese panel, y los dos estudiantes aprobaron la mecánica que quedó el mismo 15/09
+      (acta D06, §3 y §5). Revisado por Santiago el 30/09/2026 (acta D10, §5). INC-47 está cerrado
+      desde el 29/09.)*
 
 ### Checkpoint E — mecánica nueva del Nivel 1
 - [x] El nivel se juega entero con la mecánica nueva: arrastrar → elegir fuerza → golpear → soplar — **EditMode 173/173 · PlayMode 95/95 (6 VV omitidas)** por CLI, 12/09/2026
 - [x] Ningún fallo penaliza ni bloquea (CP-02); ninguna pista nombra la fuerza ni la distancia correctas (CP-06) — `FirePanel_RF19_SoplarConLasHojasRegadas…`, `FirePanel_RF13_…` (12/09/2026)
-- [ ] Revisado con el usuario
+- [x] Revisado con el usuario
+      *(01/10/2026: Decisión — la Fase 6 sustituyó la mecánica de esta fase —T26 reemplazó la regla
+      de «piedras cerca» de T22 y retiró el soplo condicionado de T23—; la que quedó la aprobaron
+      los dos estudiantes el 15/09 (acta D06, §3 y §5) y su revisión es la del Checkpoint F.
+      Revisado por Santiago el 30/09/2026 (acta D10, §5).)*
 
 ---
 
@@ -433,7 +531,16 @@ montón no penaliza: solo escribe en el registro lo que pasó (CP-02).
 ### Checkpoint F — reunir y encender
 - [x] El nivel se juega entero: reunir → acercamiento → fuerza y cercanía → golpear → soplar — **EditMode 221/221 · PlayMode 144/153** por CLI (`unity test`, Editor cerrado, 15/09/2026): 6 VV omitidas en batchmode y **3 fallos preexistentes de disposición** en la resolución 640×480 del batchmode (`MazeScene_RNF03_AlAcumularse…`, `WorkshopScene_RNF03_NadaSeSale…`, `NarrativeScene_RNF01_LaLineaMasLarga…`), medidos 0/3 también sobre el código sin la Fase 6 — pasan con el Editor abierto (W-F, 148/148)
 - [x] Ningún fallo penaliza ni bloquea (CP-02); ninguna pista ni mensaje nombra la muesca correcta (CP-06, RF-17) — `FirePanel_RF16_ConLasPiedrasSeparadasOEncimadas…`, `FirePanel_RF13_…`
-- [ ] Revisado con el usuario: el radio del círculo, el tamaño de la fogata y que la muesca 2 sea la certera (PG-06 sigue abierto)
+- [x] Revisado con el usuario: el radio del círculo, el tamaño de la fogata y que la muesca 2 sea la certera (PG-06 sigue abierto)
+      *(01/10/2026: Decisión — revisado por Santiago el 30/09/2026 (acta D10, §5) sobre la mecánica
+      vigente: el radio del círculo, con el borde en la mitad de «Golpear»
+      (`FirePanel_RF13_AlReunirLaPistaDibujaElCirculoConElBordeEnLaMitadDelBotonDeAbajo`); la
+      fogata, que desde el 22/09 es el montón cenital que se quema desde el centro (`aca7acc`,
+      `8ec5120`), y la cercanía certera, que desde el 21/09 es la muesca 5 y no la 2
+      (`EffectiveOverlap` 30 en `N1_Config`, `2cbe287`;
+      `StoneSpacing_RF16_ElGolpeCerteroEsSoloLaMuescaCinco`). Las capturas del encendido con las
+      correcciones de D10-1 se revisaron el 01/10. PG-06 sigue abierto en «Bloqueantes y decisiones
+      pendientes».)*
 
 ---
 
@@ -453,32 +560,149 @@ cinco se descarta y se vuelve a pedir. La paleta y las especificaciones salen de
 animando el sprite por recorte con `CharacterRig` (`Direccion_de_Arte.md` §7.5 y §13.1). Pedirle a Gemini tres
 poses del mismo personaje devuelve tres personajes distintos.
 
-- [ ] **A1 · Chispa, el guía** — chroma sí — guion §1.1/§4.1, PG-02, RF-10, RF-12, RF-13
-- [ ] **A2 · Papá (jugable N1)** — chroma sí — **A-pose** — guion §1.1/§4.2, RF-14, HU-06, CN-02
-- [ ] **A3 · Mamá** — chroma sí — **A-pose** — guion §1.1/§4.2
-- [ ] **A4 · Niña** — chroma sí — **A-pose**, penacho alto — guion §1.1/§4.2
-- [ ] **A5 · Niño** — chroma sí — **A-pose**, copete hacia adelante — guion §1.1/§4.2
-- [ ] **A6 · Cueva, cuatro escalones de luz** — chroma **no** — guion §3.1/§4, RF-21
-- [ ] **A7 · Montón de hojas, cuatro estados** — chroma sí — guion §4.3.1/§4.3.3, RF-14, RF-16
-- [ ] **A8 · Sílex y pedernal** — chroma sí — guion §4.1/§4.2, RF-16, RNF-19
-- [ ] **A9 · Controles del panel de encendido** — chroma sí — RF-14, RF-15, RF-19, RNF-19
-- [ ] **A10 · Marco de diálogo del guía** — chroma sí — RF-05, RF-06, RNF-20
-- [ ] Cada asset pasa la **checklist de `Direccion_de_Arte.md` §17** y su línea «Verificación»
-- [ ] Postproceso: recorte del verde, alfa, halo, nombre según §15.4, import con los ajustes de
+- [x] **A1 · Chispa, el guía** — chroma sí — guion §1.1/§4.1, PG-02, RF-10, RF-12, RF-13
+      *(01/10/2026: Decisión — el guía es Algoritm (INC-44) y no la estrella de este pedido: es una
+      llama con extremidades (INC-52). Su arte del Nivel 1, `char_algoritm_n1_fuego_reposo.png`,
+      entró el 24/09 (`88fe0ee`) con el prefab `Algoritm_Fuego` y nueve clips; «girando» y
+      «atenuado» son los clips `girar` y `apagado`. Pruebas:
+      `CharacterRig_DA133_CadaPersonajeTieneUnEstadoPorAccion` y
+      `FirePanel_DA76_LaPistaMuestraAAlgoritmConSuFormaDeFuego`. El halo de su contorno se limpia en
+      la casilla de postproceso de esta sección.)*
+- [x] **A2 · Papá (jugable N1)** — chroma sí — **A-pose** — guion §1.1/§4.2, RF-14, HU-06, CN-02
+      *(01/10/2026: Implementación — el sprite base en A-pose del 24/09 se cortó en cinco partes con
+      el pivote en la articulación y se anima por recorte con `CharacterRig` (INC-53, `88fe0ee`):
+      `char_papa_parte_*.png`, `char_papa_retrato_neutra.png` y el prefab `Papa`, con 21 clips y el
+      cuerpo apoyado en los pies. Pruebas:
+      `FireLevel_DA133_PapaGolpeaAlPulsarGolpearYVuelveAlReposo` y
+      `FireLevel_CP02_TrasUnGolpeSinChispaPapaSeAnimaYNuncaHaceUnGestoDeDerrota`. El halo del
+      retrato se limpia en la casilla de postproceso.)*
+- [x] **A3 · Mamá** — chroma sí — **A-pose** — guion §1.1/§4.2
+      *(01/10/2026: Implementación — mismo origen y rig que A2 (INC-53, `88fe0ee`):
+      `char_mama_parte_*.png`, `char_mama_retrato_neutra.png` y el prefab `Mama`, con 21 clips. Es
+      la jugable del Nivel 3:
+      `RiverScene_DA133_MamaCaminaMientrasSeSostieneUnaFlechaYReposaAlSoltarla`. El halo del retrato
+      se limpia en la casilla de postproceso.)*
+- [x] **A4 · Niña** — chroma sí — **A-pose**, penacho alto — guion §1.1/§4.2
+      *(01/10/2026: Implementación — rig por recorte (INC-53, `88fe0ee`): `char_nina_parte_*.png`,
+      `char_nina_retrato_neutra.png` y el prefab `Nina`, con 21 clips; habla también como «NIÑOS».
+      Es la jugable del bosque: `ForestScene_DA133_LaNinaSenalaElTroncoQueEligeYVuelveAlReposo` y
+      `CharacterRig_RF05_LosDosNinosHablanComoNinos`. El halo del retrato se limpia en la casilla de
+      postproceso.)*
+- [x] **A5 · Niño** — chroma sí — **A-pose**, copete hacia adelante — guion §1.1/§4.2
+      *(01/10/2026: Implementación — rig por recorte (INC-53, `88fe0ee`): `char_nino_parte_*.png`,
+      `char_nino_retrato_neutra.png` y el prefab `Nino`, con los 21 clips de la familia. En el Nivel
+      1 observa: `FireLevel_DA133_LaFamiliaEsperaAtrasQuietaYElNinoObserva`. El halo del retrato se
+      limpia en la casilla de postproceso.)*
+- [x] **A6 · Cueva, cuatro escalones de luz** — chroma **no** — guion §3.1/§4, RF-21
+      *(01/10/2026: Decisión — la luz del Nivel 1 es una sola ilustración base con la máscara del
+      motor, no cuatro fondos (acta D06, 15/09). `CaveLightingController` pone sobre la vista
+      cenital la capa del shader `fx_oscuridad` y la aclara un escalón por golpe efectivo, así que
+      los cuatro `env_n1_cueva_luz*` no se producen; los entornos del nivel se entregaron y
+      aprobaron en esa acta. Pruebas: `FireLevel_RF21_IluminacionSubeUnEscalonPorGolpeEfectivo` y
+      `FirePanel_RNF20_ContrasteSuficienteEnElEstadoMasOscuro`.)*
+- [x] **A7 · Montón de hojas, cuatro estados** — chroma sí — guion §4.3.1/§4.3.3, RF-14, RF-16
+      *(01/10/2026: Corrección — los cuatro estados los compone el motor sobre
+      `prop_n1_monton_hojas_cenital.png`: intacto; con chispas, un solo rayo que nace en el punto
+      del golpe (D10-1, INC-119); humeante, un hilo de humo que nace en ese punto y no pasa de medio
+      montón; encendido, el quemado radial con la llama cenital y el humo en su corona. Desde D10-1
+      las piedras quedan siempre sobre las hojas. Pruebas:
+      `FirePanel_RF14_DuranteElAcercamientoLasPiedrasNuncaQuedanBajoLasHojas`,
+      `FirePanel_RF16_LaChispaEsUnRayoDelCentroQueCaeEnLasHojasEnUnaDireccionAlAzar`,
+      `FirePanel_RF19_ElHiloDeHumoNaceEnElPuntoDelGolpeYNoEsMasAltoQueMedioMonton`,
+      `FireLevel_RF20_AlSoplarPrendeLaLlamaCenitalSobreElMonton` y
+      `FireLevel_RF20_AlPrenderElFuegoElHumoSubeALaCoronaDeLaLlama`, en verde en la suite completa
+      del 01/10/2026.)*
+- [x] **A8 · Sílex y pedernal** — chroma sí — guion §4.1/§4.2, RF-16, RNF-19
+      *(01/10/2026: Implementación — `prop_n1_silex.png` y `prop_n1_pedernal.png` son definitivos
+      (`2cbe287`, 21/09) y distintos entre sí a simple vista, como pidió el acta D06.
+      `prop_n1_piedras_choque` no hace falta: el choque lo dan el golpe de Papá y el rayo que dibuja
+      el motor (INC-68, INC-119). Desde D10-1 las piedras se dibujan sobre las hojas durante todo el
+      acercamiento (`FirePanel_RF14_DuranteElAcercamientoLasPiedrasNuncaQuedanBajoLasHojas`, en
+      verde en la suite completa del 01/10/2026).)*
+- [x] **A9 · Controles del panel de encendido** — chroma sí — RF-14, RF-15, RF-19, RNF-19
+      *(01/10/2026: Decisión — Santiago aceptó el 30/09/2026 el conjunto genérico de interfaz como
+      arte final (acta D10, §5), así que no hay láminas `ui_n1_panel_*`. El panel del mockup 7 se
+      arma con `ui_boton`, `ui_circulo` y `ui_lock` teñidos, y lo vigilan
+      `FirePanel_RNF19_SoplarAtenuadoSeDistinguePorElCandadoAdemasDelColorYSinRotuloAunNo` —el
+      candado es el segundo indicador— y `FirePanel_RNF20_ContrasteSuficienteEnElEstadoMasOscuro`,
+      en verde en la suite completa del 01/10/2026.)*
+- [x] **A10 · Marco de diálogo del guía** — chroma sí — RF-05, RF-06, RNF-20
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de
+      Claude del 01/10/2026: el marco final es el cuadro de diálogo del conjunto genérico de
+      interfaz que D-a acepta como definitivo —`CuadroDialogo` de `Narrative.unity`, con
+      `ui_panel` y `ui_boton` teñidos y el retrato de quien habla—, sin láminas `ui_dialogo_*`; la
+      dirección de arte §10.3 lo describe como cuadro y no como globo con cola (INC-129). Contraste
+      medido sobre píxeles: nombre del hablante 6,2:1, línea 13,5:1 y «Continuar» 7,1:1, todos
+      ≥ 4,5:1 (`claudeDocs/tasks/OE4/evidencias/arte/rnf20.md`).
+- [x] Cada asset pasa la **checklist de `Direccion_de_Arte.md` §17** y su línea «Verificación»
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de
+      Claude del 01/10/2026: las columnas que se miden las midió `arte_check.py` sobre los 96 PNG
+      que no son cuadros de entrega —nombre §15.4 96/96, canal alfa 96/96, halo de croma
+      intenso en 0, sin compresión con pérdida 96/96 (`claudeDocs/tasks/OE4/evidencias/arte/sprites.md`)—,
+      con RNF-20 en 24 textos ≥ 4,5:1 y cuatro iconos ≥ 3:1 (`rnf20.md`, `rnf20-extra.md` y, para
+      el icono de alerta del Nivel 3, `rnf20-w3.md`), RNF-19 en
+      `rnf19.md` y `rnf19-w3.md` y RNF-21 en las tres secuencias del fuego y del humo, con 1
+      destello/s como máximo (`rnf21.md`); los glifos de Phosphor (MIT) se acreditan en los
+      créditos (INC-127). Las columnas de criterio quedan con la aceptación del arte entregado
+      (acta D10, §4: «tablero de arte A1 a A10, cubierto por el arte entregado»); lo que el proceso
+      ya no pide —fondo croma, margen del 10 % en piezas recortadas, cuatro fondos de luz— quedó sin
+      objeto con INC-53 y el acta D06.
+- [x] Postproceso: recorte del verde, alfa, halo, nombre según §15.4, import con los ajustes de
       §15.2 (**PPU 100**, pivot `Bottom` en personajes y `Center` en props e interfaz)
-- [ ] Verificar RNF-20 y RNF-19 sobre el arte final, no sobre el prompt
+      — cerrado el 01/10/2026: el halo de las tres formas de Algoritm y de los cuatro retratos se
+      limpió sin redibujar ni cambiar el GUID, y los cinco nombres fuera de §15.4 se renombraron
+      desde el motor (`env_n1_apertura`, `env_n1_cueva_2x`, `env_n1_cueva_cenital`,
+      `env_n2_laberinto`, `prop_n2_caja_suelo_vacia`; INC-126), lo que vigila
+      `ArtImport_RNF23_LosNombresSiguenLaNomenclatura`, en verde en la suite de rc2. Todo
+      `Assets/Game/Art/` va a 100 PPU y sin comprimir, a 4096 salvo los cuadros del fuego y del humo
+      del Nivel 1, que entran a 1024 (`ArtImportRules`, INC-130,
+      `ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir`), y todo lo que no
+      es entorno lleva transparencia (`claudeDocs/tasks/OE4/evidencias/arte/sprites.md`). §15.2
+      describe ya esos ajustes (INC-128): el importador deja el pivote en el centro y en los
+      personajes el que cuenta vive en el rig, en la articulación de cada parte y con el cuerpo
+      apoyado en los pies (INC-53). Quedan documentadas, sin corregir en este corte, las motas
+      verdes opacas en las puntas del pelo de los retratos de Niña y Papá, que piden limpieza
+      manual del carril de arte (decisión D-OBS).
+- [x] Verificar RNF-20 y RNF-19 sobre el arte final, no sobre el prompt
+      — cerrado el 01/10/2026: medido sobre capturas del arte final con `arte_check.py`. RNF-20:
+      tablilla de la cueva en su estado más oscuro 13,5:1, cuadro de diálogo ≥ 6,2:1, pantalla de
+      inicio ≥ 6,2:1 y mandos del panel de encendido ≥ 7,1:1 (`claudeDocs/tasks/OE4/evidencias/arte/rnf20.md`,
+      `rnf20-extra.md`). RNF-19 en escala de grises: montón, humo y fuego se separan por forma y
+      por gris (A7), y «Soplar» atenuado, que en gris apenas cambia, lo distingue el candado, a
+      13,8:1 (`rnf19.md` y su lectura). Lo vigilan además
+      `FirePanel_RNF20_ContrasteSuficienteEnElEstadoMasOscuro`,
+      `FirePanel_RNF19_SoplarAtenuadoSeDistinguePorElCandadoAdemasDelColorYSinRotuloAunNo` y
+      `LevelSelect_RNF19_ElEstadoBloqueadoLlevaCandadoYTextoAdemasDelColor`, en verde en la suite
+      de rc2 (`claudeDocs/tasks/OE4/evidencias/suites/rc2-final/`).
 
 ---
 
 ## Bloqueantes y decisiones pendientes
 
-- [~] **R1 · Servidor MCP para pruebas.** Rider 2026.2 + plugin «MCP Server Extension for Unity»
+- [x] **R1 · Servidor MCP para pruebas.** Rider 2026.2 + plugin «MCP Server Extension for Unity»
       (id 30357) instalados el 06/09; MCP `rider` registrado. **Sigue abierto:** en la sesión del
       08/09 el MCP `rider` arrancó con `ConnectionRefused` pese a tener el Editor de Unity abierto
       — el puente lo sirve **Rider**, no Unity, así que con Rider cerrado no hay a quién preguntar.
       Entretanto `unity test` (CLI, Editor cerrado) cubre el flujo test-first: es lo que se usó en
       T04b y en T11.
+      *(01/10/2026: Implementación — el servidor está instalado y responde con Rider abierto —T12 a
+      T19 se corrieron por él—; `ConnectionRefused` significa «Rider cerrado» (`CLAUDE.md`
+      §Comandos), como ya dice la cabecera de este tablero. El P00 del Slice 4 (23/09) fijó
+      `unity test` como corredor confirmado, y desde el 30/09
+      `claudeDocs/tasks/OE4/herramientas/editor.ps1` (`649b4d6`) corre las suites con el Editor
+      abierto por la API de `com.unity.pipeline`: así se corrió la suite completa del 01/10/2026.)*
 - [x] **PG-01** · título provisional para `GameTitleConfig` (T05) = **«Algoritm»** (confirmado por
       el usuario el 06/09/2026). Marcador; se cambia editando el asset sin recompilar.
-- [ ] **T08** · confirmar que los créditos entran en el Slice 1 (RF-01 pone el botón en el inicio).
+- [x] **T08** · confirmar que los créditos entran en el Slice 1 (RF-01 pone el botón en el inicio).
+      *(01/10/2026: Implementación — T08 (07/09) dejó la escena `Credits` con
+      `CreditsContent.asset`, y entra en el ejecutable entre las doce escenas de
+      `EditorBuildSettings`; «Créditos» está en la pantalla de inicio
+      (`MainMenu_RF01_MuestraJugarCreditosYSalirAlcanzablesPorRaycast`,
+      `Credits_RF08_MuestraElReconocimientoDeLaAutoria`,
+      `Credits_RF08_VolverRegresaAlMenuPrincipal`, en verde en la suite completa del 01/10/2026).
+      RF-01 radicado enumera Jugar, Créditos, Progreso del equipo y Salir (INC-81).)*
 - [ ] **PG-06** · validar jugando los valores de `FireLevelConfig` en el Checkpoint D.
+      — sigue abierta el 01/10/2026 por la decisión D-b (acta D10, §5): la valida Santiago jugando
+      con estudiantes, con H2 de `claudeDocs/tasks/OE4/Hoja-HUM.md` —en la misma sesión que H1— y
+      el consentimiento de RNF-12 (`claudeDocs/tasks/OE4/Consentimiento-RNF12.md`), y se marca con
+      su plantilla. Los valores vigentes están en esa hoja y en `N1_Config`.

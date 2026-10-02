@@ -183,5 +183,18 @@ namespace Game.Levels.River.Tests
             var fuera = new RiverWalk(new Vector2(0.9f, 0.9f), limites, 1f);
             Assert.That(fuera.Position, Is.EqualTo(new Vector2(0.4f, 0.6f)), "un arranque fuera se recorta al escenario");
         }
+
+        [Test]
+        public void RiverWalk_RNF14_MoveToColocaAMamaEnElModeloYRecortaALosLimites()
+        {
+            var limites = new Rect(0.1f, 0.2f, 0.3f, 0.4f);
+            var sut = new RiverWalk(new Vector2(0.2f, 0.3f), limites, speed: 1f);
+
+            sut.MoveTo(new Vector2(0.35f, 0.5f));
+            Assert.That(sut.Position, Is.EqualTo(new Vector2(0.35f, 0.5f)), "queda donde se la puso, sin recorrer el camino");
+
+            sut.MoveTo(new Vector2(0.9f, 0.9f));
+            Assert.That(sut.Position, Is.EqualTo(new Vector2(0.4f, 0.6f)), "fuera de la orilla se recorta");
+        }
     }
 }

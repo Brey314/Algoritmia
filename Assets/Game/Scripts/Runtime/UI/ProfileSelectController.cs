@@ -1,3 +1,4 @@
+using System.Linq;
 using Game.Core;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +24,20 @@ namespace Game.UI
         [SerializeField] private Text messageLabel;
         [SerializeField] private GameObject mainPanel;
 
+        [Header("Páginas de la lista (RF-02, RNF-03)")]
+        [SerializeField]
+        [Tooltip("Cuántos perfiles caben enteros en el panel. El resto se alcanza con las flechas.")]
+        [Min(1)]
+        private int profilesPerPage = 3;
+
+        [SerializeField]
+        [Tooltip("Página anterior. Solo aparece si hay una página antes: clic, nunca arrastre ni rueda (RNF-02, CT-06).")]
+        private Button pageUpButton;
+
+        [SerializeField]
+        [Tooltip("Página siguiente. Solo aparece si hay una página después.")]
+        private Button pageDownButton;
+
         [Header("Confirmación de borrado (RF-47, RNF-11)")]
         [SerializeField] private GameObject deletePanel;
         [SerializeField] private Text deletePrompt;
@@ -31,6 +46,11 @@ namespace Game.UI
 
         /// <summary>Perfil que el estudiante pidió borrar y aún no ha confirmado.</summary>
         private string _pendingDeletion;
+
+        private int _page;
+
+        internal Button PageUpButton => pageUpButton;
+        internal Button PageDownButton => pageDownButton;
 
         internal ProfileSession Session { get; set; }
         internal GameFlowRunner Runner { get; set; }
@@ -48,6 +68,8 @@ namespace Game.UI
             backButton.onClick.AddListener(Back);
             deleteConfirmButton.onClick.AddListener(ConfirmDeletion);
             deleteCancelButton.onClick.AddListener(CancelDeletion);
+            pageUpButton.onClick.AddListener(() => ShowPage(_page - 1));
+            pageDownButton.onClick.AddListener(() => ShowPage(_page + 1));
             deletePanel.SetActive(false);
         }
 
@@ -59,8 +81,15 @@ namespace Game.UI
 
             if (ScreenFlow.Ready(Session, this))
             {
+                _page = 0;
                 Populate();
             }
+        }
+
+        private void ShowPage(int page)
+        {
+            _page = page;
+            Populate();
         }
 
         private void Populate()
@@ -74,7 +103,14 @@ namespace Game.UI
                 }
             }
 
-            foreach (var profileName in Session.ExistingProfileNames())
+            var names = Session.ExistingProfileNames();
+            _page = ProfilePaging.ClampPage(_page, names.Count, profilesPerPage);
+            var pages = ProfilePaging.PageCount(names.Count, profilesPerPage);
+            // Cada flecha solo está donde lleva a algún sitio: sin perfiles de más no hay ninguna.
+            pageUpButton.gameObject.SetActive(_page > 0);
+            pageDownButton.gameObject.SetActive(_page < pages - 1);
+
+            foreach (var profileName in names.Skip(_page * profilesPerPage).Take(profilesPerPage))
             {
                 var entry = Instantiate(profileEntryPrototype, profileList);
                 entry.gameObject.name = $"ProfileEntry({profileName})";
@@ -95,7 +131,15 @@ namespace Game.UI
                 return;
             }
 
-            Runner.SelectProfile(Session.Load(profileName));
+            // Un JSON dañado (corte de luz a mitad de guardado, archivo editado a mano) no puede
+            // dejar el clic sin respuesta ni lanzar: se avisa y el perfil sigue pudiéndose borrar.
+            if (!Session.TryLoad(profileName, out var profile))
+            {
+                messageLabel.text = content.UnreadableProfileMessage;
+                return;
+            }
+
+            Runner.SelectProfile(profile);
         }
 
         private void CreateNew()

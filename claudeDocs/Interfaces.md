@@ -62,9 +62,10 @@ llegar a su resumen (RF-03, RNF-14, INC-116). El bloqueo se comunica por
 —todas sus fases confirmadas— lleva la marca «Completado» con un icono de visto, también por
 dos canales y sin cifras (HU-14 paso 7, HU-05, CP-03); sigue desbloqueado y se puede volver a jugar.
 
-**5 · Escena narrativa.** Globo de diálogo (§10.3), retrato del hablante, botón de continuar y
-botón de omitir —este último **solo en escenas ya vistas** (RF-06)—. Máximo dos líneas por
-globo y doce palabras por línea (§11.4).
+**5 · Escena narrativa.** Cuadro de diálogo en el cuarto inferior de la pantalla (§10.3), sin
+cola: retrato y nombre del hablante, el texto, botón de continuar y botón de omitir —este último
+**solo en escenas ya vistas** (RF-06)—. Máximo dos líneas por cuadro y doce palabras por línea
+(§11.4).
 
 **6 · Pausa.** Está arriba a la derecha en las cinco escenas jugables y permanece toda la fase,
 como el botón de pista y la tablilla de mensajes (regla 6 de §3).
@@ -72,7 +73,8 @@ Tablilla marfil sobre el velo carbón al 72 % con tres botones apilados: **Reanu
 **Reiniciar** (secundario, añadido el 15/09/2026 por decisión de Santiago: pide confirmación de una
 frase y repite **la fase activa**, INC-25) y **Volver al menú de niveles** (secundario). Sin ajustes
 de dificultad: no existen. Con la pausa abierta el tiempo se detiene (`Time.timeScale = 0`) y no
-suma al indicador de resolución (OE1 §3.6.1 nota 1).
+suma al indicador de resolución (OE1 §3.6.1 nota 1). Los glifos del botón de pausa, de Reanudar y
+de Reiniciar son de Phosphor Icons (MIT), acreditados en los créditos (INC-127).
 
 **7 · Nivel 1.** Desde el 15/09/2026 (Fase 6, INC-47) son **dos momentos**. *Reunir*: la cueva
 cenital a sangre con hojas, sílex y pedernal regados que se **arrastran** al centro; en pantalla
@@ -85,7 +87,12 @@ las piedras** con diez muescas entre la mitad de «Soplar» y la mitad de «Golp
 izquierda, «Cerca» a la derecha), botón «Golpear», botón «Soplar» —deshabilitado hasta que RF-19 lo
 permita, y la diferencia se lee por el candado, sin rótulo, no por el color—, botón de pista
 arriba a la izquierda y pausa arriba a la derecha. Una sola tablilla arriba
-muestra la instrucción y luego **el último mensaje** del registro (el historial ya no se ve). La
+muestra la instrucción y luego **el último mensaje** del registro (el historial ya no se ve).
+Mientras se reúne, la tablilla queda debajo del suelo de la cueva, para que una pieza soltada bajo
+ella siga a la vista y al alcance del clic; al pasar al encendido sube sobre el suelo, y el humo
+que sube a la corona de la llama pasa por detrás de ella (RNF-03). Desde que se sopla hasta que
+termina el nivel, «Soplar», «Golpear» y los dos deslizantes dejan de responder y se atenúan; no
+llevan candado, porque no es un «todavía no» sino el fuego naciendo (CP-02). La
 progresión de luz del nivel es retroalimentación en sí misma (RF-21), pero **nunca es el único
 canal** (RNF-19).
 
@@ -94,15 +101,24 @@ devuelto. Fase 2: siete piezas —la séptima es la cuerda— y el panel de ensa
 tres bloques de instrucción —que se distinguen **por forma**, criterio literal de RNF-19— y el
 botón «Ejecutar», de clic simple (`PG-04`).
 
-**11–12 · Nivel 3.** La orilla en un plano fijo con perspectiva por profundidad. Cuatro botones
+**11–12 · Nivel 3.** La orilla en un plano fijo con perspectiva por profundidad, a ×1,4: el río y
+el pie de la cascada a la derecha. Mamá, la familia —detrás de la zona de construcción—, los ocho
+materiales y la zona se ven a la escala con que los muestra la escena 3.1, y lo que está más abajo
+se dibuja delante (INC-118). Cuatro botones
 de dirección en cruceta abajo a la derecha —Mamá avanza mientras se sostiene el clic— y
 «Recoger»: son la entrada del nivel, no props, y materializan `INC-01` —el control es UI en pantalla, nunca teclado (RF-35, CT-06,
 RNF-02)—. Lista de cuatro tareas en una tablilla de marfil arriba a la izquierda, con un círculo por
 tarea que se cambia por un círculo verde con visto al cumplirla, **la única lista permanente del
 juego** (RF-36, `INC-41`, `INC-46`), inventario de cuatro casillas cuadradas en rejilla de 2×2 abajo a la izquierda —la de los
 troncos con cinco marcas que se encienden sin cifra—, y el ensamblaje sobre el propio río: la
-cámara empuja del plano de juego al de la balsa y una sombra negra al 30 % cubre la
-ilustración, sin ventana superpuesta.
+cámara empuja del plano de juego al de la balsa, a ×1,6, con la familia en la orilla a la
+izquierda y la balsa sobre el agua a la derecha, y una sombra negra al 30 % cubre la
+ilustración, sin ventana superpuesta. Abajo, en la base y el amarre, «Listo» confirma la fase y a
+su derecha «Probar balsa» la pone a prueba sin aprobarla: la balsa se hunde y vuelve, suena la
+salpicadura, y se marca y vuelve al inventario solo lo mal puesto, nunca los espacios vacíos
+(CP-06). En mástil y vela queda un solo botón centrado, «Probar balsa», que es el que confirma
+(INC-122). Los dos miden 360×96. La balsa terminada cruza en la escena 3.3 por debajo de la
+espuma de la cascada, a y 0,395 (INC-124).
 
 **13 · Resumen de fin de nivel.** Mockups 13 y 13b, en código desde el 12/09/2026: tablilla
 centrada sobre arena con el avatar del guía y el título («Esto es lo que pasó en la cueva»), el

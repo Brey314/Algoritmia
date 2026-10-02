@@ -1,0 +1,35 @@
+{
+  "mode": "editmode",
+  "filter": "ArtImport",
+  "filterType": "testName",
+  "startedUtc": "2026-10-02T02:38:30.1611961Z",
+  "finishedUtc": "2026-10-02T02:38:38.3403382Z",
+  "elapsedSec": 8.2,
+  "status": "completed",
+  "error": null,
+  "summary": {
+    "Total": 3,
+    "Passed": 3,
+    "Failed": 0,
+    "Skipped": 0,
+    "Inconclusive": 0
+  },
+  "xml": "C:\\Users\\benab\\AppData\\Local\\Temp\\claude\\c--Dev-Algoritmia\\a5dca15e-0f11-4624-ba8a-5eb31dd2d2f0\\scratchpad\\cierre\\runs\\final-docs\\artimport\\2026-10-01_213830_editmode.xml",
+  "results": [
+    {
+      "FullName": "Game.Architecture.Tests.ArtImportTest.ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir",
+      "Status": "Passed",
+      "Duration": 0.2715568
+    },
+    {
+      "FullName": "Game.Architecture.Tests.ArtImportTest.ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir",
+      "Status": "Passed",
+      "Duration": 0.3897788
+    },
+    {
+      "FullName": "Game.Architecture.Tests.ArtImportTest.ArtImport_RNF23_LosNombresSiguenLaNomenclatura",
+      "Status": "Passed",
+      "Duration": 0.0060126
+    }
+  ]
+}

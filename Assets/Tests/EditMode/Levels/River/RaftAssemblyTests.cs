@@ -147,6 +147,110 @@ namespace Game.Levels.River.Tests
             Assert.That(sut.IsConfirmed(RaftPhase.Base), Is.True, "después de todo eso se confirma igual");
         }
 
+        /// <summary>
+        /// «Probar balsa» con la base o el amarre a medio armar (RF-42, D-j del 30/09/2026): la balsa
+        /// se hunde, pero no aprueba nada. El caso 2 es la base entera y bien puesta: probar no
+        /// equivale a «Listo», así que tampoco la consolida.
+        /// </summary>
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        public void RaftAssembly_RF42_ProbarLaBalsaIncompletaNoConfirmaNiAvanzaDeFase(int puestos)
+        {
+            var content = RaftAssemblyContent.Create(Slots(), knotsPerRope: 2);
+            var sut = Sut(content);
+            for (var i = 1; i <= puestos; i++)
+            {
+                sut.Place($"tronco_{i}", MaterialKind.Logs);
+            }
+
+            var result = sut.Test();
+
+            Assert.That(result.Passed, Is.False, "una balsa a medio armar se hunde");
+            Assert.That(sut.ActivePhase, Is.EqualTo(RaftPhase.Base), "la fase sigue abierta (CP-02)");
+            Assert.That(sut.IsConfirmed(RaftPhase.Base), Is.False, "probar nunca consolida una fase (RF-40)");
+            Assert.That(result.Message, Is.EqualTo(content.UnfinishedTestMessage), "dice que falta armar, no qué pieza");
+            Assert.That(Enumerable.Range(1, puestos).Select(i => sut.PlacedIn($"tronco_{i}")),
+                Is.EqualTo(Enumerable.Repeat((MaterialKind?)MaterialKind.Logs, puestos)), "los troncos bien puestos siguen en su sitio");
+            Assert.That(sut.Remaining(MaterialKind.Logs), Is.EqualTo(2 - puestos), "y no vuelven al inventario");
+            Assert.That(result.WrongSlotIds,
+                Is.EquivalentTo(Enumerable.Range(puestos + 1, 2 - puestos).Select(i => $"tronco_{i}")),
+                "los vacíos cuentan como no terminados para el informe (RF-45), aunque el panel no los señale");
+            Assert.That(sut.Rejections, Is.EqualTo(1), "y es un intento más para el informe docente (RF-45)");
+        }
+
+        [Test]
+        public void RaftAssembly_RF43_ProbarAntesDeTiempoDevuelveSoloLoMalPuesto()
+        {
+            var content = RaftAssemblyContent.Create(Slots(), knotsPerRope: 2);
+            var sut = Sut(content);
+            sut.Place("tronco_1", MaterialKind.Logs);
+            sut.Place("tronco_2", MaterialKind.Mast);
+
+            var result = sut.Test();
+
+            Assert.That(sut.PlacedIn("tronco_1"), Is.EqualTo(MaterialKind.Logs), "lo bien puesto se queda (RF-43)");
+            Assert.That(sut.PlacedIn("tronco_2"), Is.Null, "lo mal puesto vuelve al inventario");
+            Assert.That(sut.Remaining(MaterialKind.Mast), Is.EqualTo(1), "el mástil está otra vez a mano");
+            Assert.That(sut.Remaining(MaterialKind.Logs), Is.EqualTo(1), "y el tronco puesto no se devolvió");
+            Assert.That(result.WrongSlotIds, Is.EquivalentTo(new[] { "tronco_2" }), "el único espacio señalado es el mal puesto");
+            Assert.That(result.Message, Is.EqualTo(content.TestFailedMessage), "con algo mal puesto, el mensaje de la prueba fallida");
+        }
+
+        [Test]
+        public void RaftAssembly_RF41_ProbarLaBalsaNoTocaLasFasesAprobadas()
+        {
+            var sut = Sut();
+            BuildBase(sut);
+            sut.Place("amarre_1", MaterialKind.Cloth);
+
+            sut.Test();
+
+            Assert.That(sut.IsConfirmed(RaftPhase.Base), Is.True, "la base sigue confirmada (RF-41)");
+            Assert.That(sut.PlacedIn("tronco_1"), Is.EqualTo(MaterialKind.Logs), "con sus troncos puestos");
+            Assert.That(sut.PlacedIn("tronco_2"), Is.EqualTo(MaterialKind.Logs));
+            Assert.That(sut.Remaining(MaterialKind.Logs), Is.Zero, "y descontados del inventario");
+            Assert.That(sut.ActivePhase, Is.EqualTo(RaftPhase.Lashing), "la fase abierta sigue siendo el amarre…");
+            Assert.That(sut.IsConfirmed(RaftPhase.Lashing), Is.False, "…sin confirmar");
+            Assert.That(sut.PlacedIn("amarre_1"), Is.Null, "lo mal puesto del amarre vuelve al inventario");
+            Assert.That(sut.Remaining(MaterialKind.Cloth), Is.EqualTo(1));
+        }
+
+        [Test]
+        public void RaftAssembly_RF42_EnLaUltimaFaseProbarEsConfirmar()
+        {
+            var sut = Sut();
+            BuildBase(sut);
+            BuildLashing(sut);
+            sut.Place("mastil", MaterialKind.Mast);
+            sut.Place("vela", MaterialKind.Cloth);
+
+            var result = sut.Test();
+
+            Assert.That(result.Passed, Is.True, "la balsa terminada pasa la prueba");
+            Assert.That(sut.IsComplete, Is.True, "y queda terminada: en la última fase probar y confirmar son lo mismo (RF-42)");
+        }
+
+        [Test]
+        public void RaftAssembly_RF42_EnLaUltimaFaseProbarConUnVacioSenalaElVacioConElMensajeDeLaPrueba()
+        {
+            var content = RaftAssemblyContent.Create(Slots(), knotsPerRope: 2);
+            var sut = Sut(content);
+            BuildBase(sut);
+            BuildLashing(sut);
+            sut.Place("mastil", MaterialKind.Mast);
+
+            var result = sut.Test();
+
+            Assert.That(result.Passed, Is.False);
+            Assert.That(result.WrongSlotIds, Is.EqualTo(new[] { "vela" }),
+                "la última fase se prueba como se confirma: el vacío se señala; es lo único que falta");
+            Assert.That(result.Message, Is.EqualTo(content.TestFailedMessage),
+                "con el mensaje de la prueba de la balsa terminada y no con el de «falta armar»");
+            Assert.That(sut.ActivePhase, Is.EqualTo(RaftPhase.MastAndSail));
+            Assert.That(sut.PlacedIn("mastil"), Is.EqualTo(MaterialKind.Mast), "lo bien puesto se queda (RF-43)");
+        }
+
         [Test]
         public void RaftAssembly_RNF14_RetomarEnUnaFaseConsolidaLasAnterioresConSusPiezas()
         {

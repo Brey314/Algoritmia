@@ -1,12 +1,24 @@
 #!/usr/bin/env python3
 """Genera el Anexo A (matriz RF -> pruebas) desde los nombres de método de Assets/Tests (CT-10).
 
-Uso: python claudeDocs/entregables/OE3/tools/rf_matrix.py
-Lee las pruebas del commit COMMIT (no del árbol de trabajo, que otros carriles pueden tener a
-medias) y los nombres de RF-01..RF-47 de la conversión de OE1, y escribe src/A-matriz-rf.md.
+Uso: python claudeDocs/entregables/OE3/tools/rf_matrix.py [COMMIT | --worktree] [--out RUTA]
+
+  (sin argumentos)  lee las pruebas del último commit (git rev-parse --short HEAD).
+  COMMIT            cualquier referencia de git (hash, rama, etiqueta): el anexo cita su hash corto y su fecha.
+  --worktree        lee las pruebas del árbol de trabajo, con lo que aún no tiene commit: es el corte de un
+                    cierre que no tendrá commit propio hasta que alguien lo haga. El anexo cita entonces
+                    «el árbol de trabajo», con el commit sobre el que está. Se corre al final, no a medias
+                    del trabajo de otros carriles.
+  --out RUTA        escribe ahí en lugar de en src/A-matriz-rf.md (para probar sin tocar la fuente del anexo).
+
+Sin --worktree no lee el árbol de trabajo, que otros carriles pueden tener a medias. Los nombres de
+RF-01..RF-47 salen de la conversión de OE1 (docs/md/); la matriz queda en src/A-matriz-rf.md, que
+tools/build.py convierte en el Anexo A.
 """
+import argparse
 import re
 import subprocess
+import sys
 from collections import Counter, defaultdict
 from pathlib import Path, PurePosixPath
 
@@ -15,7 +27,6 @@ ROOT = HERE.parents[3]  # tools -> OE3 -> entregables -> claudeDocs -> raíz del
 OE1 = ROOT / "docs" / "md" / "Solución OE1_Requerimientos.md"
 TESTS = "Assets/Tests"
 OUT = HERE.parent / "src" / "A-matriz-rf.md"
-COMMIT = "ccf77e6"
 
 RF_ROW = re.compile(r"^\|\s*RF-(\d{2})\s*\|\s*([^|]+?)\s*\|")
 ATTR = re.compile(r"^\s*\[(Test\]|TestCase\()")
@@ -27,6 +38,7 @@ PERIPHERAL = re.compile(r"Suena|Sonido|Sounds|Audio|Captura")
 OTHER_IDS = {
     "RNF": "requerimientos no funcionales (RNF)",
     "CP": "criterios pedagógicos (CP)",
+    "CN": "criterios narrativos y de diseño (CN)",  # OE1, apartado 1.3
     "DA": "secciones de la dirección de arte",
     "INC": "hallazgos de consistencia (INC)",
     "HU": "historias de usuario (HU)",
@@ -35,6 +47,7 @@ OTHER_IDS = {
     "CT": "restricciones técnicas (CT)",
     "OE": "definición operativa de los indicadores de OE1",
     "PG": "puntos abiertos del guion (PG)",
+    "OBS": "observaciones de la evaluación funcional del OE4 (OBS)",
 }
 
 
@@ -52,15 +65,38 @@ def git(*args):
     return subprocess.run(["git", "-C", str(ROOT), *args], capture_output=True, check=True).stdout
 
 
-def scan_tests():
-    """Devuelve [(método, modo, módulo, clase)] de cada método marcado con [Test] o [TestCase] en COMMIT."""
+def resolve(ref):
+    """Hash corto del commit al que apunta `ref`."""
+    try:
+        return git("rev-parse", "--short", "--verify", f"{ref}^{{commit}}").decode().strip()
+    except subprocess.CalledProcessError:
+        raise SystemExit(f"rf_matrix: «{ref}» no es un commit de este repositorio")
+
+
+def commit_date(commit):
+    """Fecha del commit como DD/MM/AAAA (git la da como AAAA-MM-DD con %cs)."""
+    year, month, day = git("show", "-s", "--format=%cs", commit).decode().strip().split("-")
+    return f"{day}/{month}/{year}"
+
+
+def test_sources(commit):
+    """Los .cs de Assets/Tests como [(ruta, texto)]: los de `commit`, o los del árbol de trabajo si es None."""
+    if commit is None:
+        paths = sorted(p.relative_to(ROOT).as_posix() for p in (ROOT / TESTS).rglob("*.cs"))
+        return [(p, (ROOT / p).read_text(encoding="utf-8-sig")) for p in paths]
+    listing = git("ls-tree", "-r", "-z", "--name-only", commit, "--", TESTS).decode("utf-8")
+    paths = sorted(p for p in listing.split("\0") if p.endswith(".cs"))
+    return [(p, git("show", f"{commit}:{p}").decode("utf-8-sig")) for p in paths]
+
+
+def scan_tests(sources):
+    """Devuelve [(método, modo, módulo, clase)] de cada método marcado con [Test] o [TestCase]."""
     methods = []
-    listing = git("ls-tree", "-r", "-z", "--name-only", COMMIT, "--", TESTS).decode("utf-8")
-    for path in sorted(p for p in listing.split("\0") if p.endswith(".cs")):
+    for path, text in sources:
         rel = PurePosixPath(path).relative_to(TESTS).parts
         mode, module = rel[0], ".".join(rel[1:-1])
         pending, klass = False, None
-        for line in git("show", f"{COMMIT}:{path}").decode("utf-8-sig").splitlines():
+        for line in text.splitlines():
             c = CLASS.search(line)
             if c and not line.strip().startswith("//"):
                 klass = c.group(1)
@@ -88,8 +124,28 @@ def other_ids(methods):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # canalizada, Windows la dejaría en cp1252 y los acentos saldrían rotos
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("commit", nargs="?", help="commit, rama o etiqueta (por defecto, HEAD)")
+    parser.add_argument("--worktree", action="store_true", help="lee las pruebas del árbol de trabajo")
+    parser.add_argument("--out", type=Path, default=OUT, help="archivo de salida (por defecto, src/A-matriz-rf.md)")
+    args = parser.parse_args()
+    if args.worktree and args.commit:
+        parser.error("COMMIT y --worktree se excluyen")
+
+    if args.worktree:
+        head = resolve("HEAD")
+        sources = test_sources(None)
+        where = "el árbol de trabajo"
+        where_long = f"{where} del corte (sobre el commit `{head}`)"
+    else:
+        commit = resolve(args.commit or "HEAD")
+        sources = test_sources(commit)
+        where = f"el commit `{commit}`"
+        where_long = f"{where} ({commit_date(commit)})"
+
     names = read_rf_names()
-    methods = scan_tests()
+    methods = scan_tests(sources)
     by_rf = defaultdict(list)
     for name, mode, module, _ in methods:
         for rf in {int(x) for x in RF_IN_NAME.findall(name)}:
@@ -106,7 +162,7 @@ def main():
                           sorted(others.items(), key=lambda kv: -kv[1]))  # estable: empates en el orden de OTHER_IDS
     unnamed_txt = "" if not unnamed else (
         " El otro no lleva identificador en su nombre: lo lleva en el de cada uno de sus casos "
-        "parametrizados (véase el documento principal, §9.1)." if unnamed == 1 else
+        "parametrizados (véase el documento principal, apartado 9.1)." if unnamed == 1 else
         f" Los otros {unnamed} no llevan identificador en su nombre.")
 
     rows, examples = [], []
@@ -126,31 +182,32 @@ def main():
 
     text = f"""# ANEXO A. MATRIZ DE TRAZABILIDAD DE REQUERIMIENTOS FUNCIONALES A PRUEBAS
 
-Esta matriz no se redactó a mano: la generó el script `rf_matrix.py`, que acompaña a este documento, a partir de los nombres de los métodos de prueba del proyecto en el commit `{COMMIT}` (25/09/2026). Aplica la regla CT-10 del proyecto, según la cual el nombre de cada prueba sigue el patrón `<Sujeto>_<Requisito>_<QuéHace>` y el identificador del medio es la trazabilidad. El script recorre los archivos de prueba de las carpetas EditMode y PlayMode, toma cada método marcado con `[Test]` o `[TestCase]` y lo asigna al RF que su nombre cita. Los nombres de los requerimientos se toman de la tabla de requerimientos funcionales del documento de solución del objetivo específico 1.
+Esta matriz no se redactó a mano: la generó el script `rf_matrix.py`, que acompaña a este documento, a partir de los nombres de los métodos de prueba del proyecto en {where_long}. Aplica la regla CT-10 del proyecto, según la cual el nombre de cada prueba sigue el patrón `<Sujeto>_<Requisito>_<QuéHace>` y el identificador del medio es la trazabilidad. El script recorre los archivos de prueba de las carpetas EditMode y PlayMode, toma cada método marcado con `[Test]` o `[TestCase]` y lo asigna al RF que su nombre cita. Los nombres de los requerimientos se toman de la tabla de requerimientos funcionales del documento de solución del objetivo específico 1.
 
 La columna «Pruebas» de la Tabla A.1 cuenta métodos, no casos: un método parametrizado con varios `[TestCase]` cuenta una vez, y una prueba que verifica un RF sin citarlo en su nombre no se cuenta. Entre paréntesis separa los métodos del modo EditMode («EM», lógica en C# sin escena) de los del modo PlayMode («PM», escenas reales cargadas). La columna «Módulos» indica los módulos de pruebas donde viven esos métodos, ordenados de más a menos pruebas. La Tabla A.2 muestra, como ejemplo, una de las pruebas de cada RF: la de nombre más corto entre las que verifican su comportamiento, dejando atrás las que solo comprueban el sonido o toman capturas.
 
 De los {len(methods)} métodos de prueba del proyecto, {citing} citan un RF en su nombre y cubren {len(covered)} de los 47 RF. De los {rest} restantes, {rest - unnamed} citan otro identificador: {breakdown}.{unnamed_txt} Que todo RF tenga al menos una prueba que lo nombre lo comprueba además, de forma automática, la prueba `Traceability_CT10_TodoRFTieneAlMenosUnaPruebaQueLoNombra` en cada corrida de la suite.
 
-**Tabla A.1.** Pruebas automatizadas que nombran cada requerimiento funcional (RF-01 a RF-47) en el commit `{COMMIT}`, por modo y por módulo.
+**Tabla A.1.** Pruebas automatizadas que nombran cada requerimiento funcional (RF-01 a RF-47) en {where}, por modo y por módulo.
 
 | RF | Requerimiento | Pruebas | Módulos |
 |----|--------------------|----------|--------------------|
 """ + "\n".join(rows) + f"""
 
-**Tabla A.2.** Una prueba de ejemplo por requerimiento funcional en el commit `{COMMIT}`.
+**Tabla A.2.** Una prueba de ejemplo por requerimiento funcional en {where}.
 
 | RF | Ejemplo de prueba |
 |----|------------------------------------------|
 """ + "\n".join(examples) + f"\n\n{closing}\n"
-    OUT.write_text(text, encoding="utf-8", newline="\n")
+    args.out.write_text(text, encoding="utf-8", newline="\n")
 
     classes = {m[3] for m in methods}
     print(f"métodos={len(methods)} (EM={sum(m[1] == 'EditMode' for m in methods)}, "
           f"PM={sum(m[1] == 'PlayMode' for m in methods)}) clases={len(classes)} "
           f"citanRF={citing} RFcubiertos={len(covered)}/47 sinPrueba={missing} "
           f"otros={dict(others)} sinId={unnamed}")
-    print(f"escrito: {OUT}")
+    print(f"fuente: {where_long}")
+    print(f"escrito: {args.out}")
 
 
 if __name__ == "__main__":

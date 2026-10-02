@@ -12,8 +12,9 @@ namespace Game.Levels.River
     /// El cruce no está aquí: la balsa cruza en la escena narrativa 3.3, y el agua contra los
     /// troncos es contenido de esa secuencia (<c>NarrativeProp.MotionAmbient</c>).
     ///
-    /// «Por qué no» pedagógico: aquí no hay ninguna pieza para el fallo, y no debe haberla. La
-    /// pieza que vuelve al inventario y la balsa que se hunde no suenan a derrota (§2.1, CP-02).
+    /// «Por qué no» pedagógico: no hay ninguna pieza para el fallo, y no debe haberla. «Listo»
+    /// rechazado y la pieza que vuelve al inventario no suenan. La balsa que se hunde suena a lo
+    /// que es —madera y agua, <see cref="RaftSinking"/>—: describe y no castiga (§2.1, §13, CP-02).
     /// Cualquier campo con nombre de derrota, error o fallo reintroduce el pitido que el proyecto prohíbe.
     /// </remarks>
     [CreateAssetMenu(menuName = "Algoritm/Sonidos del nivel río", fileName = "N3_Sonidos")]
@@ -52,5 +53,9 @@ namespace Game.Levels.River
         [field: SerializeField]
         [field: Tooltip("sfx_n1_pieza_tomar · la balsa terminada: suena una vez tras los martillazos de la última fase, antes de salir al cruce.")]
         public AudioClip RaftBuilt { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("sfx_n3_hundimiento · la balsa que se prueba se hunde por un costado en la orilla poco profunda y vuelve (§13, RF-42). Suena al empezar cada hundimiento, antes de la fase 3 y en ella. Describe, no castiga (§2.1): «Listo» rechazado sigue mudo.")]
+        public AudioClip RaftSinking { get; private set; }
     }
 }

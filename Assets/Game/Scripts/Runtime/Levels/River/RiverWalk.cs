@@ -38,6 +38,9 @@ namespace Game.Levels.River
             Position = Clamp(Position + direction.normalized * (_speed * deltaTime));
         }
 
+        /// <summary>Coloca a Mamá ahí (recortado a los límites), sin recorrer el camino.</summary>
+        public void MoveTo(Vector2 point) => Position = Clamp(point);
+
         private Vector2 Clamp(Vector2 point) => new Vector2(
             Mathf.Clamp(point.x, Bounds.xMin, Bounds.xMax),
             Mathf.Clamp(point.y, Bounds.yMin, Bounds.yMax));

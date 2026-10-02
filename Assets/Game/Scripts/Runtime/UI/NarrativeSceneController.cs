@@ -489,16 +489,22 @@ namespace Game.UI
         /// cuenta el texto se ve cuando se lee.
         /// </summary>
         /// <remarks>
-        /// Quien va de camino **termina su camino** aunque el texto avance: la familia que cruza
-        /// sobre la balsa llega con ella, que sigue deslizándose sola. Solo un paso nuevo en la
+        /// Quien va de camino **termina su camino** aunque el texto avance. Solo un paso nuevo en la
         /// línea lo interrumpe, y entonces salta a donde tenía que llegar antes de empezarlo, para
         /// que ningún paso arranque desde la mitad de otro.
+        ///
+        /// A quien **termina sus pasos** (<see cref="NarrativeProp.FinishesSteps"/>) no lo interrumpe
+        /// ni un paso nuevo: lo que se lee mientras camina lo hace al llegar (WalkAsync). Es la
+        /// familia que cruza sobre la balsa (RF-44): saltar a donde tenía que llegar sería verla
+        /// bajarse a mitad del río (RNF-21). «Por qué no» para todos: en las otras diecisiete escenas
+        /// manda el paso nuevo y el salto es el de siempre; volverlo regla general cambiaría lo que
+        /// ve en catorce de ellas quien avanza deprisa, y se acotó a la 3.3 (01/10/2026).
         /// </remarks>
         private void PlayActors(int line, string speaker)
         {
             foreach (var actor in _actors)
             {
-                if (actor.Moving != null && ActorTimeline.BeatAt(actor.Prop, line) == null)
+                if (actor.Moving != null && !ActorTimeline.Interrupts(actor.Prop, line))
                 {
                     continue; // al llegar hará lo de la línea en que llegue (WalkAsync)
                 }
@@ -510,7 +516,7 @@ namespace Game.UI
                 if (cue.Moves)
                 {
                     actor.Moving = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
-                    _ = WalkAsync(actor, cue, actor.Moving.Token);
+                    _ = WalkAsync(actor, cue, ActorTimeline.BeatAt(actor.Prop, line), actor.Moving.Token);
                 }
             }
         }
@@ -526,9 +532,11 @@ namespace Game.UI
         /// El desplazamiento de un paso: la casilla viaja en fracciones de la ilustración, con
         /// arranque y llegada suaves y sin cambios de color (RNF-21). Al llegar hace lo que toca en
         /// la línea que se esté leyendo entonces: la llegada si sigue la suya; si el texto ya
-        /// avanzó, lo que mantiene —o dice su línea si es suya—.
+        /// avanzó, lo que mantiene —o dice su línea si es suya—. Quien termina sus pasos da antes,
+        /// desde donde llegó, el paso con movimiento que se leyó mientras caminaba
+        /// (<see cref="ActorTimeline.PendingStep"/>).
         /// </summary>
-        private async Awaitable WalkAsync(Actor actor, ActorCue cue, CancellationToken token)
+        private async Awaitable WalkAsync(Actor actor, ActorCue cue, ActorBeat step, CancellationToken token)
         {
             var seconds = Mathf.Max(cue.Seconds, 0.01f);
             var elapsed = 0f;
@@ -548,6 +556,17 @@ namespace Game.UI
 
             SetAnchor(actor.Rect, cue.To);
             StopWalking(actor);
+            var pending = ActorTimeline.PendingStep(actor.Prop, step, Dialogue.Index);
+            if (pending != null)
+            {
+                // Sale de donde llegó y no de donde el paso decía empezar: así no salta (RNF-21).
+                actor.Rig.Play(pending.Action);
+                actor.Moving = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+                _ = WalkAsync(actor, new ActorCue(cue.To, pending.Destination, true, pending.Seconds, pending.Action, pending.Arrival),
+                    pending, actor.Moving.Token);
+                return;
+            }
+
             var now = ActorTimeline.Cue(actor.Prop, Dialogue.Index, actor.Rig.Speaks(Dialogue.Current?.Speaker));
             actor.Rig.Play(now.Moves ? now.After : now.During);
         }

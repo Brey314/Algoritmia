@@ -12,6 +12,9 @@ Plan técnico: estas dos fases **no tienen sección en [`plan.md`](plan.md)**; s
 de [`todo.md`](todo.md) (líneas 330–432) · Contrato: `claudeDocs/SPEC.md` · Hallazgo: `INC-47`
 (abierto) en `claudeDocs/INCONSISTENCIAS.md`
 Fase anterior: [`Fase-3-Resultados.md`](Fase-3-Resultados.md)
+*(01/10/2026: INC-47 está cerrado desde el 29/09/2026, y después del cierre el Nivel 1 cambió en el
+humo, la chispa, las piedras y los mandos al soplar; lo registra el
+[Anexo](#anexo--lo-que-cambió-después-del-cierre-01102026) del final.)*
 
 Las Fases 5 y 6 rehicieron la mecánica del Nivel 1 por pedido de Santiago («ese slider mide fuerza,
 no distancia», 12/09/2026). El deslizante de **posición** de tres muescas del guion §4.3 (hoy
@@ -394,3 +397,214 @@ del F (`todo.md:430`, «ninguna pista ni mensaje nombra la muesca correcta»), e
   abre la escena, no tras tres fallos; lo recoge también `Personajes-Resultados.md` como pendiente.
 - **Los tres fallos de disposición en batchmode** del Checkpoint F eran ajenos al N1; su estado de
   hoy lo dice la corrida del 25/09 en `Slice-4-Resultados.md`.
+
+*(01/10/2026: de esta lista quedan vencidos tres puntos. INC-47 se cerró el 29/09/2026 corrigiendo
+los documentos radicados; los comentarios de `FireIndicatorCollector.cs` y `FireFeedbackLog.cs` se
+corrigieron en `37b3cb7` (30/09); y la revisión con el usuario la resolvió la decisión D-a del acta
+D10 (30/09/2026), que la marca como hecha por Santiago tras verificarla con pruebas y capturas.
+Siguen abiertos los dos parámetros sin prueba de valor y el pulso permanente de «Pista». Detalle en
+el Anexo, A.2, A.3 y A.7.)*
+
+---
+
+## Anexo — lo que cambió después del cierre (01/10/2026)
+
+Lo de arriba es el registro del 25/09/2026 sobre `ccf77e6` y se conserva. Este anexo recoge lo que
+llegó después al Nivel 1 y, del carril del Slice 1, a `Game.Core` y a la regla de «Omitir», que
+ningún otro documento de resultados registra. Fuentes: `git log` hasta `359365e` (30/09/2026) y el
+árbol de trabajo de la rama `feat/cierre-de-slices-y-oe3` del 01/10/2026, que entra en el commit de
+cierre con las tarjetas D10-1 y D10-5 del acta D10.
+
+### A.1 Qué cambió y dónde
+
+| Fecha | Commit | Qué cambió |
+|---|---|---|
+| 30/09 | `37b3cb7` | El montón humea al converger (INC-47), la chispa se ve (INC-68), las acotaciones dejan de llamar «estrella» a Algoritm (INC-52) y se corrigen los comentarios vencidos de §6 — A.3 |
+| 30/09 | `5a22df1` | Documentos: INC-47 queda cerrado (decisión del 29/09) — A.2 |
+| 01/10 | sin hash, D10-1 | Piedras sobre las hojas, la chispa como un solo rayo (INC-119), el humo hasta la corona de la llama y los mandos quietos desde «Soplar» — A.4 |
+| 01/10 | sin hash, D10-5 | Una línea `RNF-04` por carga en `SceneLoader` y la prueba de «Omitir» en la segunda visita — A.5 |
+
+`37b3cb7` y `5a22df1` entraron en `main` con el PR #88 (`1c7f4ab`, 30/09/2026).
+
+### A.2 INC-47, cerrado (29/09/2026)
+
+La cabecera y §6 dan INC-47 por abierto. Se cerró con la regla del 29/09: ante un conflicto gana el
+juego y se corrige el documento. El guion §1.4.3, OE1 RF-14, RF-15 y RF-16 (nombre y texto) con las
+celdas del Nivel 1 de §3.6.1, HU-04 a HU-07 y CU-05 describen ya los dos momentos —reunir en el
+círculo y encender con fuerza y cercanía—, los mensajes por fuerza y por cercanía y la tablilla con
+el último mensaje. El historial `FireFeedbackLog.Entries` vive solo en memoria y no lo lee nadie
+fuera del panel (RNF-09). Lo único que el documento pedía y el juego no tenía —el montón humeante de
+la convergencia— se implementó en `37b3cb7` (A.3). Detalle de la corrección en
+`claudeDocs/INCONSISTENCIAS.md`, INC-47.
+
+### A.3 `37b3cb7` (30/09/2026): el montón humea y la chispa se ve
+
+- **Humo de la convergencia** (INC-47, guion §1.4.3.5, fila E6). Al alcanzar el mínimo de golpes
+  efectivos entra el hilo de humo del montón (`pileSmoke`, `Humo` en `Level1_Cave`, con el clip
+  `fx_n1_humo_nacer`), entre el montón y las piedras, y ya no se apaga: lo ganado no se retira por un
+  fallo posterior (INC-32). Pruebas: `FirePanel_RF19_AlConvergerElMontonEmpiezaAHumearYNoDejaDeHacerlo`
+  y `FirePanel_RF19_ElHumoSeDibujaEncimaDelMontonYDebajoDeLasPiedras`.
+- **Chispa visible** (INC-68). Cada golpe efectivo muestra la chispa sobre el punto del fuego —0,2 s
+  por golpe efectivo, hasta el mínimo— y el golpe de más con las piedras en su sitio la muestra
+  desplazada hacia arriba, apagándose en el aire en 0,35 s; el golpe suave y las piedras mal puestas
+  no dan chispa. En este commit era una cruz de dos `Image` (`RayoH`, `RayoV`) que se encogía hasta
+  desaparecer; el 01/10 pasó a ser un solo rayo (A.4). Pruebas:
+  `FirePanel_RF16_LaChispaSoloSeVeCuandoLasPiedrasChocanConFuerza` y
+  `FirePanel_RF16_ElBrilloDeLaChispaDuraMasConCadaGolpeEfectivo`.
+- **Algoritm deja de ser «estrella»** en las acotaciones de `N1_AparicionGuia` y
+  `N1_NacimientoDelFuego` (INC-52). Lo vigila `Content_DA76_NingunTextoVisibleDescribeAAlgoritmComoUnaEstrella`.
+- **Comentarios vencidos de §6, corregidos.** `FireIndicatorCollector`: «intentos» son los golpes no
+  efectivos, por cercanía o por fuerza, y el error corregido se explica sin `StrikePosition`.
+  `FireFeedbackLog`: el historial queda en memoria y la tablilla muestra solo el último mensaje. Las
+  citas «guion §4.3» pasan a §1.4.3 en `FireLevelConfig`, `FireAttempt`, `FireMessages`,
+  `StrikeOutcome` y `FeedbackLogView`.
+
+### A.4 Correcciones del 01/10/2026 (tarjeta D10-1)
+
+Las tres primeras son decisiones de Santiago del 30/09/2026 (acta D10, §5); la cuarta corrige dos
+defectos que aparecieron al especificarlas. Solo el rayo contradice un documento (INC-119); las
+otras tres no contradicen ninguno y no abren hallazgo.
+
+- **Las piedras van sobre las hojas desde el primer cuadro del acercamiento.** `RaiseStones()` las sube
+  justo después de poner el montón al frente en `EnterIgnitionAsync`, y `PlaceStones` ya solo las
+  mueve: el deslizante de cercanía no las sube sobre la chispa ni sobre la llama. Pruebas:
+  `FirePanel_RF14_DuranteElAcercamientoLasPiedrasNuncaQuedanBajoLasHojas` y
+  `FirePanel_RF15_MoverLaCercaniaNoSubeLasPiedrasSobreLaChispa`.
+- **La chispa es un solo rayo** (INC-119). Un trazo `#FFE9A8` de 4 u de grueso (8 px a 1080p) sale del
+  punto del golpe en una dirección al azar (`SparkRandom`, un `System.Random` inyectable). El golpe
+  efectivo cae en la mitad de abajo, a 0,205–0,22 del lado del montón, siempre sobre hojas y nunca
+  sobre una piedra; el de más va a la mitad de arriba, a 0,52–0,6: pasa del montón y se apaga en el
+  aire por debajo de la tablilla, con el mismo trazo y el mismo color, porque no es un castigo
+  (CP-02). Un solo barrido cabeza-cola, sin volver (RNF-21). En la escena, `Chispa` lleva el pivote en
+  la cola, `RayoH` se estira a sus cuatro lados y `RayoV` desaparece. Pruebas:
+  `FirePanel_RF16_LaChispaEsUnRayoDelCentroQueCaeEnLasHojasEnUnaDireccionAlAzar`,
+  `FirePanel_RF16_ConFuerzaDeMasElRayoPasaDeLasHojasYSeApagaEnElAire`,
+  `FirePanel_RNF21_ElRayoDeLaChispaHaceUnSoloBarridoSinVolver` y la captura
+  `FirePanel_RF16_ElRayoDeLaChispaSeVeSobreElMonton`; se ajustaron
+  `FirePanel_RF16_LaChispaSoloSeVeCuandoLasPiedrasChocanConFuerza` y el ayudante `SparkDurationAsync`.
+- **El humo nace en el punto del golpe y sube a la corona de la llama.** El `RectTransform` de `Humo`
+  pasa a pivote en la base (0,5; 0), en el punto del fuego y de 87 × 150: es un hilo que no pasa de
+  medio montón. Al soplar, `PlayIgnitionAsync` lo lleva hasta la corona de la llama
+  (`FlameCrownFraction`, 0,25 de su alto), por detrás de ella, y lo encoge a 0,6
+  (`SmokeCrownScale`) con el mismo avance que el quemado: un solo barrido, sin parpadeo. Al empezar el
+  encendido la tablilla sube por código sobre el suelo, y con él sobre el humo; en la escena no se
+  movió, para que una pieza soltada bajo la tablilla mientras se reúne siga encima y con clic.
+  Pruebas: `FirePanel_RF19_ElHiloDeHumoNaceEnElPuntoDelGolpeYNoEsMasAltoQueMedioMonton`,
+  `FireLevel_RF20_AlPrenderElFuegoElHumoSubeALaCoronaDeLaLlama`,
+  `FireLevel_RF20_AlPrenderElFuegoElHumoNoSobrepasaElBordeDeArribaDeLaTablilla`,
+  `FireLevel_RNF03_AlPrenderElFuegoLaTablillaQuedaPorEncimaDelHumo`,
+  `FirePanel_RNF03_ReuniendoUnaPiezaBajoLaTablillaQuedaEncimaYAlAlcanceDelClic` y las capturas
+  `FirePanel_RF19_ElHiloDeHumoSeVeFinoYNaceEnElCentroDelMonton` y
+  `FireLevel_RF20_AlTerminarDePrenderElHumoAsomaPorLaCoronaDetrasDeLaLlama`. Los cuadros del humo
+  conservan su nombre de entrega.
+- **Desde «Soplar» los mandos descansan hasta que termina el nivel.** Un segundo «Soplar» relanzaba el
+  encendido —el quemado volvía a cero y `CompleteLevel` corría dos veces— y un «Golpear» ponía la
+  chispa sobre la llama y bajaba la luz un cuadro. La bandera `_igniting` guarda `Blow()` y
+  `Strike()`, y `LockControls()` deja sin interacción «Soplar», «Golpear» y los dos deslizantes: se
+  atenúan en un fundido de 0,1 s y no llevan candado, porque no es un «todavía no» ni un castigo
+  (CP-02, comentado en el código). Pruebas: `FireLevel_RNF21_SoplarDosVecesNoReiniciaElEncendido`,
+  `FireLevel_RF20_SoplarDosVecesCierraElNivelUnaSolaVez` y
+  `FireLevel_RF20_DuranteElEncendidoLosMandosDelPanelNoResponden`.
+
+Los cambios están en `FirePanelController.cs`, `Level1_Cave.unity` y `FirePanelTests.cs`. Unity
+reordena el YAML de la escena al guardarla: el cambio real son tres `RectTransform` —`Humo`, `Chispa`
+y `RayoH`— y los cuatro documentos de `RayoV`. `N1_Config`, los cuadros del fuego y del humo, los
+`.anim` y `DraggablePiece` no cambian. La revisión adversarial del 01/10/2026 los aprobó con las
+capturas a la vista: el rayo sale del centro y cae en las hojas, el humo es un hilo que nace entre las
+piedras y, al prender, asoma por la corona detrás de la llama.
+
+### A.5 Del carril del Slice 1, fuera del nivel (tarjeta D10-5)
+
+- **`SceneLoader` deja una línea por carga** en el registro del reproductor:
+  `RNF-04: «<escena>» cargó en <segundos> s`, con tres decimales y punto en cualquier cultura y sin
+  pila (`LogOption.NoStacktrace`). Es el instrumento para medir RNF-04 sobre el ejecutable; la cifra
+  solo va al registro, nunca a la pantalla (CP-03), y el aviso de más de 10 s se conserva. Prueba:
+  `SceneLoader_RNF04_CadaCargaDejaSuTiempoEnElRegistro`. La tabla de mediciones está en
+  `Slice 4/Slice-4-Resultados.md`, Anexo B.
+- **«Omitir» en la segunda visita real** (INC-28).
+  `NarrativeScene_INC28_OfreceOmitirEnLaSegundaVisitaTrasTerminarElNivel1` abre `N1_Apertura` con el
+  perfil que deja el Nivel 1 terminado —su fase confirmada y el Nivel 2 alcanzado— y exige el botón;
+  `NarrativeScene_INC28_NoMuestraOmitirLaPrimeraVezQueSeVeLaEscena` cubre la primera vez. El ayudante
+  `OpenNarrative` de `NarrativeSceneTests` admite ahora las fases confirmadas del perfil. Sin cambio de
+  código de producción: la regla es la de `NarrativeVisitPolicy`.
+
+### A.6 Pruebas y cifras al 01/10/2026
+
+| Assembly | 25/09 (`ccf77e6`) | 30/09 (`359365e`) | 01/10 | Qué lo movió |
+|---|---|---|---|---|
+| `Game.Levels.Fire.Tests` (EditMode) | 49 | 49 | 49 | — |
+| `Game.Levels.Fire.PlayMode.Tests` | 39 | 43 | 59 | `37b3cb7`: +4 (humo y chispa). D10-1: +16 (`FirePanelTests` pasa de 38 a 54 casos; `FireSoundsTests` 3 y `CaveLightingTests` 2 no cambian) |
+
+De las 16 nuevas de D10-1, las 13 de integración y aceptación salieron en rojo por el motivo
+esperado antes del cambio, o —las guardas, que nacen en verde— con una mutación del código revertida
+después; las tres de captura solo comprueban con `Assume` y se revisaron a ojo. La suite
+del nivel pasó cinco veces seguidas sin intermitencias, y la suite completa del 01/10/2026, con el
+Editor abierto a 1920 × 1080, dio EditMode 393 = 392 + 1 omitida de siempre y PlayMode 351 = 350 +
+`RiverLevel_RNF05_…`, que mide la memoria del Editor y pasa aislada (1 660 MB). Las cifras por
+assembly están en `Slice 4/Slice-4-Resultados.md`, «Corrida completa de la suite (01/10/2026)».
+
+### A.7 Lo que sigue abierto al 01/10/2026
+
+- **Dos parámetros sin prueba de valor** (§6): `IgnitionSeconds` y `BurnExtent`.
+- **El pulso de «Pista»** sigue siendo permanente (§6).
+- **«Pista» y la pausa** siguen activas durante el encendido, y «Pista» repite entonces la instrucción
+  de soplar. Es inofensivo; se mira en el recorrido completo sobre el ejecutable.
+- **Lo que asoma del humo en la corona**: a 16:9 quedan unos 15 px entre la última lengua de la llama
+  y el humo. Se calibra con `FlameCrownFraction` y `SmokeCrownScale` mirando el ejecutable.
+- **A 21:9** la tablilla baja y tapa la punta de la llama y el remate del rayo de más, y el humo
+  asoma sobre ella. Queda fuera de alcance: el juego se mide a 16:9.
+- **El golpe fuerte en plural.** El guion §1.4.3.4 dice «las chispas saltan por todas partes» y en
+  pantalla hay un solo rayo; el texto no se toca sin Santiago.
+- **PG-06** (los valores del Nivel 1 validados jugando con estudiantes) sigue a cargo de Santiago
+  (acta D10, §5; `claudeDocs/tasks/OE4/Hoja-HUM.md`, H2).
+
+### A.8 El ejecutable: licencias junto al `.exe` y cuadros del fuego a 1024 px (01/10/2026)
+
+Apartado nuevo. Los dos cambios los pidió el ejecutable candidato, que es del carril de este slice
+(el build portable), y los dos tocan el Nivel 1 o su entrega. La procedencia del candidato —HEAD
+`359365e`, huellas del árbol sin commit y SHA-256 del `.exe`— está en
+`claudeDocs/tasks/OE4/evidencias/build-rc1.md`.
+
+- **Las licencias viajan con el ejecutable.** La MIT de Phosphor Icons, de los tres glifos del menú
+  de pausa (INC-127), y la SIL OFL 1.1 de Nunito y Baloo 2 piden que el aviso acompañe cada copia
+  que se distribuye, y los dos textos vivían solo en `Assets/`, que no viaja. `LicenseNotices`
+  (`Game.EditorTools`, solo Editor) es un `IPostprocessBuildWithReport`: al terminar cada build de
+  Windows de 64 bits copia `Assets/Game/Art/UI/Common/LICENSE-Phosphor.txt` y
+  `Assets/Game/Art/Fonts/OFL.txt` a `Licencias/`, junto al `.exe`, y hace fallar el build si falta
+  alguno, porque un entregable sin su licencia no debe pasar por bueno. La lógica es el método
+  estático `CopyTo`; el callback solo le pasa la carpeta del build. `Game.EditorTools` gana un
+  `AssemblyInfo.cs` con `InternalsVisibleTo("Game.EditorTools.Tests")`. Pruebas (EditMode, de 5 a 9
+  en `Game.EditorTools.Tests`): `LicenseNotices_RNF23_ElEjecutableLlevaLasLicenciasDeTerceros`,
+  `LicenseNotices_RNF23_UnBuildRepetidoSobrescribeLosAvisos`,
+  `LicenseNotices_RNF23_SiFaltaUnAvisoElBuildFalla` y
+  `LicenseNotices_RNF23_LosAvisosDelProyectoExistenDeVerdad`. El candidato trae `Licencias/` con
+  `OFL.txt` y `LICENSE-Phosphor.txt`.
+- **El paquete no cabía: los cuadros del fuego y del humo, a 1024 px** (INC-130, RNF-06). El primer
+  build candidato (01/10, 05:17) pesó 866,7 MB frente al límite de 500 MB. Lo llenaban los cuadros de
+  `Assets/Game/Art/Props/Fire/Animations/`: 67 PNG —33 de humo de 1123 × 1933, 13 de fuego normal de
+  2144 × 2108 y 21 de fuego cenital de 500 × 278— que sumaban 533 MB sin comprimir. Ya eran un dibujo
+  por clave, la convención de los `.anim`, así que no había arreglo sin pérdida. En pantalla el fuego
+  normal se ve a unos 650 px como mucho y el humo a menos de 300, de modo que `ArtImportRules` hace
+  una sola excepción: esa carpeta se importa con `maxTextureSize` 1024, **sin comprimir**, por el
+  mismo motivo que la regla general (la rejilla de bloques de 4 × 4 sobre degradados largos). Los 67
+  `.meta` cambian solo esa línea (4096 → 1024): el fuego normal queda en 1024 × 1007, el humo en
+  595 × 1024 y el cenital no cambia. El tamaño en el mundo no se mueve, porque los píxeles por unidad
+  se escalan con la textura. Los cuadros conservan su nombre de entrega. Prueba:
+  `ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir`, que salió en rojo antes
+  del cambio; `ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir` admite esa carpeta, y
+  solo esa, después de comprobar que tampoco está comprimida. Resultado: los cuadros pasan de 533 a
+  145,7 MB y el paquete, a **479,0 MB** (456,8 MiB), con 21 MB de margen. El build de 866,7 MB se
+  conserva aparte como `Build/Algoritmia_2026-10-01_827MB`.
+- **Lo comprobó la revisión del cambio**, con las pruebas que pintan esos cuadros en PlayMode
+  (7/7) y las capturas ampliadas al doble, antes y después: el fuego y el humo del montón, del
+  nacimiento del fuego, del cierre del Nivel 2 y de la escena final se ven igual, sin borrosidad ni
+  dientes de sierra. Detalle en `Slice 4/Slice-4-Resultados.md`, «Verificación final y paquete
+  (01/10/2026)».
+- **Pruebas del nivel**: `Game.Levels.Fire.Tests` sigue en 49 y `Game.Levels.Fire.PlayMode.Tests` en
+  59, todas en verde en la verificación final del 01/10/2026 (EditMode 433 = 432 + 1 omitida y
+  PlayMode 364/364, antes de INC-130) y la EditMode completa siguiente (434 = 433 + 1 omitida).
+- **Queda**: el comentario de `ArtImportRules` habla de «134 texturas»; son 67 PNG, y 134 es el
+  número de entradas del informe del build. Corregirlo cambia la huella del árbol registrada en
+  `build-rc1.md`, así que se corrige después de la pasada del OE4, anotando que solo cambia un
+  comentario. Mirar el fuego y el humo a 1080p en el
+  ejecutable, y la memoria (RNF-05), van con la pasada del OE4 sobre el candidato.

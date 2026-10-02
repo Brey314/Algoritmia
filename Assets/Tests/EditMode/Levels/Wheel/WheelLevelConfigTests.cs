@@ -62,6 +62,38 @@ namespace Game.Levels.Wheel.Tests
                 "y una sola caja que recorre la fila: el rodado que el bosque ya no anima");
         }
 
+        // Objeto_Caja de Level2_Forest mide 160 de lado en unidades del entorno, y el entorno es
+        // env_n2_bosque_claro a tamaño nativo, de 1080 de alto: la caja del bosque ocupa 160/1080.
+        private const float LadoDeLaCajaDelBosque = 160f / 1080f;
+
+        [Test]
+        [Category("Acceptance")]
+        public void WheelLevelConfig_RF05_LaCajaColocadaEsLaQueLaEscena22DibujaAlAbrir()
+        {
+            var config = AssetDatabase.FindAssets($"t:{nameof(WheelLevelConfig)}")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<WheelLevelConfig>)
+                .Single();
+            var cierre = AssetDatabase.FindAssets($"t:{nameof(NarrativeSequence)}")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<NarrativeSequence>)
+                .Single(sequence => sequence.Id == config.ClosingSequenceId);
+            // La caja es lo único que rueda con recorrido en la línea 0; los troncos giran en el sitio.
+            var caja = cierre.Props.Single(prop =>
+                prop.Motion == PropMotion.Roll && prop.MotionLine == 0 && prop.MotionDistance > 0f);
+
+            // Del bosque a la 2.2 la caja no se mueve, no cambia de tamaño ni de dibujo: el corte la
+            // repite. Un valor fijo en la prueba del bosque dejó pasar el desfase de 1d5ce58.
+            Assert.That(caja.Position.x, Is.EqualTo(config.CargoPlacedPosition.x).Within(0.001f),
+                "la 2.2 la dibuja donde el bosque la deja");
+            Assert.That(caja.Position.y, Is.EqualTo(config.CargoPlacedPosition.y).Within(0.001f),
+                "y a la misma altura");
+            Assert.That(caja.Size, Is.EqualTo(LadoDeLaCajaDelBosque).Within(0.001f),
+                "del mismo tamaño que la del bosque");
+            Assert.That(caja.Art.name, Is.EqualTo("prop_n2_caja_suelo"),
+                "y es la caja llena que se arrastra en el bosque");
+        }
+
         [Test]
         public void WheelLevelConfig_RF05_ElBosqueAbreConLaVistaConLaQueTerminaLaEscena21()
         {

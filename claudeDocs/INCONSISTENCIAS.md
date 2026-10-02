@@ -7,23 +7,29 @@ documentos y cómo quedó**; allí está **qué implementa el código**.
 **Los documentos se refundieron el 14/09/2026: de seis pasaron a cuatro.** OE1 es ahora
 `Solución OE1_Requerimientos.docx`, y `Solucion_OE2_Diseno_final.docx` absorbe en un solo archivo
 el guion (§1), los casos de uso (§2), las historias de usuario (§2 bis), las matrices de
-trazabilidad (§3) y la arquitectura (§4). El trabajo de grado sigue en `docs/`
-(`Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx`, con su conversión en `docs/md/`). Las citas por
-sección de este documento siguen valiendo con una traducción mecánica: «guion §N» → `Solucion_OE2`
-§1.N, «OE2 §4» → `Solucion_OE2` §5 (control de cambios).
+trazabilidad (§3) y la arquitectura (§4). El trabajo de grado sigue en `docs/`: desde el 30/09/2026
+el vigente es `Trabajo_de_Grado_Entrega_Plantilla_28jul.docx`, sobre la plantilla oficial del 28 de
+julio; las correcciones anteriores se hicieron en `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx`, y
+los dos tienen su conversión en `docs/md/`. Las citas por sección de este documento siguen valiendo
+con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
+(control de cambios).
 
-**Verificación vigente: 30/09/2026, rev. 15.** Se contrastaron todos los documentos —los `.docx`
-de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago, **todos los hallazgos
-están cerrados**: ante un conflicto gana el juego y se edita el documento; lo que solo pide el
-documento se implementa en el juego; lo que solo tiene el juego se añade al documento. Se cerraron
-así los nueve que seguían abiertos (**INC-46** a **INC-54**), los tres residuos (`INC-24-r`,
-`INC-44-r`, `INC-44-r2`) y el punto `PG-01` del guion, y se registraron y cerraron sesenta
-hallazgos nuevos, **INC-55** a **INC-114**. Siguen abiertos solo `PG-05` y `PG-06`, puntos del guion
-que exigen observar a estudiantes jugando, y tres **pendientes de Santiago** que el juego no zanja
-(ver «Residuos y puntos abiertos»). El entregable del OE3 no se reescribe: recibe una nota
-fechada con estos cierres. La rev. 15 (30/09/2026) registra y cierra **INC-115** a **INC-117**,
-tres puntos que la verificación final dejó a criterio de Santiago y en los que él decidió corregir
-el juego.
+**Verificación vigente: 01/10/2026, rev. 16.** La rev. 14 (29/09/2026) contrastó todos los
+documentos —los `.docx` de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago,
+**todos los hallazgos están cerrados**: ante un conflicto gana el juego y se edita el documento; lo
+que solo pide el documento se implementa en el juego; lo que solo tiene el juego se añade al
+documento. Se cerraron así los nueve que seguían abiertos (**INC-46** a **INC-54**), los tres
+residuos (`INC-24-r`, `INC-44-r`, `INC-44-r2`) y el punto `PG-01` del guion, y se registraron y
+cerraron sesenta hallazgos nuevos, **INC-55** a **INC-114**. La rev. 15 (30/09/2026) registra y
+cierra **INC-115** a **INC-117**, tres puntos que la verificación final dejó a criterio de Santiago y
+en los que él decidió corregir el juego. La rev. 16 (01/10/2026) registra y cierra con la misma regla
+**INC-118** a **INC-130**: los cambios de la sesión del 30/09/2026 (acta D10) que contradecían un
+documento —las correcciones de los tres niveles, la prueba anticipada de la balsa y su sonido—,
+cuatro hallazgos de la dirección de arte y el peso del paquete de entrega (RNF-06). Siguen abiertos
+solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
+**pendientes de Santiago** que el juego no zanja: tres del trabajo de grado y uno del sonido (ver
+«Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
+(acta D10), lo que deja sin efecto la decisión D1 del 29/09/2026 de darle solo una nota fechada.
 
 > **Los hallazgos 44 y 45 no nacieron de un conflicto entre documentos, sino de una decisión del
 > autor tomada el 02/09/2026.** Se registraron aquí igual, porque el efecto era el mismo: los
@@ -46,7 +52,7 @@ corrigió el otro:
 
 | # | Documento (tras la refundición del 14/09/2026) | Qué gobierna |
 |---|---|---|
-| 1 | Trabajo de grado — `docs/Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx` | Objetivos, KPI, alcance, marco jurídico, metodología |
+| 1 | Trabajo de grado — `docs/Trabajo_de_Grado_Entrega_Plantilla_28jul.docx` (desde el 30/09/2026; antes, `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx`) | Objetivos, KPI, alcance, marco jurídico, metodología |
 | 2 | `Solución OE1_Requerimientos.docx` | Lineamientos CP/CT/CN, RF-01..RF-47, RNF-01..RNF-23 |
 | 3 | `Solucion_OE2_Diseno_final.docx` §1 (guion) | Narrativa, mecánicas, parámetros y textos exactos |
 | 4 | `Solucion_OE2_Diseno_final.docx` §2–§3 | CU-01..CU-12, HU-01..HU-18, matrices |
@@ -60,7 +66,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 
 ---
 
-## Resumen — estado a 30/09/2026 (rev. 15)
+## Resumen — estado a 01/10/2026 (rev. 16)
 
 | ID | Hallazgo | Documentos | Estado |
 |---|---|---|---|
@@ -162,6 +168,19 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-115 | Soltar el mazo lejos del tronco resaltado contaba como intento | OE1, OE2, HU v2, OE4, juego | **Cerrado** (30/09/2026) |
 | INC-116 | Tras un cierre durante la escena de cierre del Nivel 2, el Nivel 3 seguía bloqueado | Arquitectura, HU v2, SPEC, Interfaces, OE4, juego | **Cerrado** (30/09/2026) |
 | INC-117 | Nivel 3: «Reiniciar» volvía a la recolección al repetir el nivel ya completado | HU v2, Arquitectura, SPEC, OE4, juego | **Cerrado** (30/09/2026) |
+| INC-118 | Nivel 3: el plano de la mecánica se abre y la familia, los materiales y la balsa toman la escala de las narrativas | Dirección de arte, Inventario de arte, Interfaces, OE4, juego | **Cerrado** (01/10/2026) |
+| INC-119 | Nivel 1: la chispa del golpe es un solo rayo que nace en el punto del golpe | Dirección de arte, Inventario de arte, OE4, juego | **Cerrado** (01/10/2026) |
+| INC-120 | Nivel 2: la escena 2.2 abría con otra caja que la que deja la fase del bosque | Cámara N2, Dirección de arte, Inventario de arte, juego | **Cerrado** (01/10/2026) |
+| INC-121 | Nivel 2: al amarrar la cuerda, la carretilla del taller pasa al dibujo amarrado con que abre la escena 2.4 | Inventario de arte, Dirección de arte, Cámara N2, juego | **Cerrado** (01/10/2026) |
+| INC-122 | Nivel 3: «Probar balsa» también en la base y el amarre, sin aprobar la fase | OE1, OE2, HU v2, Dirección de arte, Inventario de arte, Interfaces, OE4, juego | **Cerrado** (01/10/2026) |
+| INC-123 | Nivel 3: la balsa que se hunde suena | Dirección de sonido, Dirección de arte, Inventario de arte, juego | **Cerrado** (01/10/2026) |
+| INC-124 | Nivel 3: la balsa del cruce navegaba sobre la espuma de la cascada | Dirección de arte, Inventario de arte, Interfaces, juego | **Cerrado** (01/10/2026) |
+| INC-125 | La escena final suena al bosque de día con las fogatas | Dirección de sonido, OE4, juego | **Cerrado** (01/10/2026) |
+| INC-126 | Cinco archivos de arte con nombre fuera de la nomenclatura | Dirección de arte, Inventario de arte, CLAUDE.md, juego | **Cerrado** (01/10/2026) |
+| INC-127 | Los glifos del menú de pausa son de Phosphor Icons y los créditos los daban por originales | Dirección de arte, Inventario de arte, Interfaces, juego | **Cerrado** (01/10/2026) |
+| INC-128 | La dirección de arte fijaba otros ajustes de importación que los que aplica el proyecto | Dirección de arte, Inventario de arte | **Cerrado** (01/10/2026) |
+| INC-129 | El diálogo se lee en un cuadro con retrato, no en un globo con cola | Dirección de arte, Interfaces | **Cerrado** (01/10/2026) |
+| INC-130 | El paquete de entrega superaba los 500 MB por los cuadros del fuego y del humo del Nivel 1 | Dirección de arte, Inventario de arte, CLAUDE.md | **Cerrado** (01/10/2026) |
 
 ---
 
@@ -750,9 +769,9 @@ carretilla se da por completa al amarrarla, no al poner la caja.
 **Qué se hizo.** `WorkshopPiece.Rope` y `AssemblyStep.Rope`; la cuerda se lleva con clic
 sostenido, como el eje, la tabla y la caja, y soltarla antes de que la caja esté encima se rechaza
 con «La cuerda todavía no tiene nada que sujetar.», que dice qué falta sin dictar el paso (CP-06).
-No hay dibujo de la carretilla con la cuerda: la pieza misma queda sobre la caja
-(`AssemblyContent.RopePlacedPosition`). La instrucción del guía (`N2_Guia`, «Construir») y la
-escena 2.3 (`N2_Escena23_Construccion`) la nombran.
+En el taller no había dibujo de la carretilla con la cuerda: la pieza misma quedaba sobre la caja
+(`AssemblyContent.RopePlacedPosition`) hasta INC-121. La instrucción del guía (`N2_Guia`,
+«Construir») y la escena 2.3 (`N2_Escena23_Construccion`) la nombran.
 
 **Qué dicen hoy los documentos.** Guion §1.6.2.2: «un área de trabajo con seis piezas
 dispuestas» y la tabla de seis pasos, que termina en «la carretilla queda completa» al soltar la
@@ -765,7 +784,10 @@ orden), RF-27, RF-29, la historia de la fase 2 y CU-07.
 
 **Corrección aplicada (29/09/2026).** El guion §1.6.2.1 y §1.6.2.2 (siete piezas, paso 7 y su
 mensaje fuera de orden), RF-27 y RF-29, HU-09, su resumen en OE2 y CU-07 recogen la cuerda. En el
-juego, la escena 2.3 pinta la cuerda que nombra Algoritm (regla b, tarea DATA-04).
+juego, la escena 2.3 pinta la cuerda que nombra Algoritm (regla b, tarea DATA-04). Se completó
+además (30/09/2026): al amarrar la cuerda, la carretilla del taller pasa a `prop_n2_carretilla_e5`,
+el dibujo con que abre la escena 2.4, y se retiran `RopePlacedPosition` y `RopePlacedSize`
+(INC-121).
 
 ### INC-55 · Los bloques del laberinto llevan una cuenta de 1 a 9 y un giro a los dos lados, y el editor inserta donde se suelta — cerrado (29/09/2026)
 
@@ -1023,7 +1045,8 @@ escalón de luz, pero ninguna chispa visible.
 **Regla (b).** Solo en el documento: se implementa en el juego.
 
 **Corrección aplicada (29/09/2026).** Documentos: OE4: S-N1 · Inventario de arte: FX. Tareas de
-código: FI-02.
+código: FI-02. Se completó además (01/10/2026): la cruz pasa a ser un solo rayo que nace en el punto
+del golpe y sale en una dirección al azar (INC-119).
 
 ### INC-69 · Escenas narrativas: «ya vista» es haber completado el nivel, Omitir salta la escena en curso y Continuar avanza — cerrado (29/09/2026)
 
@@ -1206,8 +1229,12 @@ acreditadas en «Música y sonido»; PG-07 cerrado el 30/08/2026.
 **Regla (b).** Solo en el documento: se implementa en el juego.
 
 **Corrección aplicada (29/09/2026).** Documentos: OE4: S-INI · OE1: §2.4; §1.2 CT-09; §4.6 RNF-23 ·
-Trabajo de grado: Resumen; Abstract; Introducción; §3.3.2; §5.2 (LISTA DE ANEXOS y ANEXOS, final del documento: **pendientes** —falta el Anexo C con el
+Trabajo de grado: Resumen; Abstract; Introducción; §3.3.2; §5.2 (LISTA DE ANEXOS y ANEXOS, final del documento: **pendientes** —falta el anexo con el
 escaneo de la autorización—) · HU v2: HU-18 · Dirección de sonido: §17; §18 S-05. Tareas de código: DATA-01.
+Desde el 30/09/2026 el trabajo de grado vigente es la plantilla del 28/07, que no recogía estas
+correcciones ni deja libre la letra C. Se aplicaron a ella el 01/10/2026 —Resumen, Abstract,
+Introducción, §3.3.2 y la viñeta del libro en §5.1—; el anexo con la autorización sigue pendiente:
+ver «Pendientes de Santiago», puntos 1 y 4.
 Se completó además (30/09/2026): el texto de créditos quedó en tres oraciones de 16, 10 y 8 palabras
 (RNF-01) —«Personajes basados en la Familia Anonaky, de Bibiana Patricia Rey Barrote y Luis Eduardo
 Benavides Porras. Vienen del libro Tecnología para niños: libro de actividades (2019). Se usan con
@@ -1250,6 +1277,13 @@ jugables; los créditos y el informe se desplazan con `ScrollRect` (barra y arra
 
 **Corrección aplicada (29/09/2026).** Documentos: HU v2: HU-18 · registros de tareas: §8 · OE1: §1.2
 CT-06; §4.1 RNF-02 · SPEC: fila «Entrada»; §Estructura del proyecto. Tareas de código: UI-01. Se completó además: Trabajo de grado: §5.2 (Unity Test Framework) · Arquitectura: §1 fila «Entrada»; §6 fila «InputHandler con gamepad»; §11 fila de entrada; §12 cambio 9.
+
+**Nota (01/10/2026).** Los dos `ScrollRect` del informe docente y el de los créditos son la excepción
+decidida el 29/09/2026 (`Slice 4/Slice-4-Resultados.md` A.6): esas pantallas no tienen arrastrar y
+soltar, y su barra se maneja con clic y clic sostenido. La regla «una lista que desborda se desplaza
+con botones, nunca con `ScrollRect`» rige donde hay arrastrar y soltar —la secuencia del laberinto
+se desplaza con ▲/▼—. Con ocho perfiles, la octava fila del informe sale con el borde recortado,
+pero se ve y se elige: es una observación menor, sin corrección en este corte.
 
 ### INC-81 · El menú principal tiene cuatro opciones: Jugar, Créditos, Progreso del equipo y Salir — cerrado (29/09/2026)
 
@@ -1366,7 +1400,9 @@ eventos propio; el informe se abre sin clave.
 **Regla (a).** Conflicto: gana el juego y se corrige el documento.
 
 **Corrección aplicada (29/09/2026).** Documentos: HU v2: HU-16 · OE1: §2.3 · Trabajo de grado:
-§3.3.1.
+§3.3.1. La plantilla del 28/07, vigente desde el 30/09/2026, no la recogía; se aplicó el 01/10/2026:
+§3.3.1 dice ahora que los datos quedan en JSON sin cifrar y que el informe docente no tiene clave
+(«Pendientes de Santiago», punto 4).
 
 ### INC-88 · Nivel 3: la recolección no es una fase y el ensamblaje ocupa las tres — cerrado (29/09/2026)
 
@@ -1410,6 +1446,8 @@ v2: HU-11 fila «Descripción de Historia de usuario»; HU-11 fila «Flujo Bási
 Alternos»; HU-11 fila «Criterios de Aceptación»; HU-11 fila «Inventario (sistema)»; HU-12 fila
 «Flujo Básico»; HU-12 fila «Pieza de construcción (arrastre)» · Dirección de sonido: Inventario de
 piezas del Nivel 3 · Dirección de arte: §9.3; §12.3 fila «Prueba de balsa sin éxito (Nivel 3)».
+Se completó además (01/10/2026): el hundimiento suena (`sfx_n3_hundimiento`, INC-123); en imagen
+sigue sin efecto de agua.
 
 ### INC-90 · Ensamblaje de la balsa: colocar no valida, el botón siempre está habilitado y se rotula «Listo» o «Probar balsa» — cerrado (29/09/2026)
 
@@ -1427,7 +1465,9 @@ clic sostenido; soltar fuera la devuelve al inventario y sobre un espacio ocupad
 **Regla (a).** Conflicto: gana el juego y se corrige el documento.
 
 **Corrección aplicada (29/09/2026).** Documentos: HU v2: HU-12; HU-12 fila «Botón Confirmar fase» ·
-OE4: Sesión del Nivel 3; PF-RF40-02 · OE2: §1.8.4; §2.3 CU-10 fila «Flujos alternativos».
+OE4: Sesión del Nivel 3; PF-RF40-02 · OE2: §1.8.4; §2.3 CU-10 fila «Flujos alternativos». Se completó
+además (01/10/2026): en la base y el amarre, «Probar balsa» se ofrece también junto a «Listo» y no
+aprueba la fase (INC-122).
 
 ### INC-91 · Controles del Nivel 3: cruceta abajo a la derecha, con clic sostenido — cerrado (29/09/2026)
 
@@ -1566,6 +1606,26 @@ red»; §2 · registros de tareas: Checkpoint B. Tareas de código: PS-01. El de
 mientras la analítica del Editor esté activa (`AnalyticsDefineManager`), y solo compila código de
 Editor del paquete —su `Runtime/` no lo usa—, así que no llega al ejecutable. Quitarlo de verdad
 exige retirar el paquete del manifiesto, que D3 excluye. Arquitectura §2 lo dice así: la analítica que algunos paquetes activan en el Editor no entra en el ejecutable.
+
+**Nota (01/10/2026).** El ejecutable rc1 abría conexiones a :443 y dejaba restos de Analytics e
+Insights en LocalLow y `unity_connect.*` en HKCU (DEF-SPIKE-01, `OE4-Resultados.md` §6 y §8.3)
+aunque `UnityConnectSettings.asset` dijera `m_Enabled: 0`. **Causa raíz:** el interruptor general de
+Unity Connect estaba encendido en la memoria del Editor, y el build serializa esa copia y no el
+archivo; `m_EngineDiagnosticsEnabled` (Insights) estaba además en 1 también en disco. **Arreglo:**
+`Assets/Game/Scripts/Editor/UnityServicesOff.cs` (`Game.EditorTools`) apaga a la fuerza nueve
+interruptores antes del build —el general de Connect, Analytics, Performance Reporting, Cloud
+Diagnostics, Insights, Purchasing, Ads, `submitAnalytics` y `enableCrashReportAPI`— y, después,
+hace fallar el build si `globalgamemanagers` nombra `unity3d.com`; `m_EngineDiagnosticsEnabled` pasa
+a 0, y `PlayerSettingsTest` se amplía para exigir apagados todos los servicios del archivo, Insights,
+Cloud Diagnostics y `enableCrashReportAPI`. En rc2 hay cero conexiones y en LocalLow solo
+`Player.log` (PF-RNF10-01, P). **Residuo (DEF-RC2-01, Menor):** el reproductor sigue escribiendo en
+HKCU tres `unity_connect.*` —entre ellos un identificador de instalación— y un contador y un
+identificador de sesión (`unity.player_session_count`, `unity.player_sessionid`). No sale del equipo
+ni es un dato del estudiante, y se documenta como residuo del motor para la entrega, junto al
+`Player.log` y las claves de pantalla. Para un build futuro queda como mejora recomendada
+`m_InitializeOnStartup: 0` (Analytics) en `UnityConnectSettings.asset` o borrar esas claves de `PlayerPrefs` al
+salir; las dos piden build nuevo, repetir los residuos y la SUITE. Desactivar el módulo
+`com.unity.modules.unityanalytics` choca con D3.
 
 ### INC-98 · CT-04 y RNF-16: cada nivel en sus escenas y su módulo de código — cerrado (29/09/2026)
 
@@ -1771,7 +1831,9 @@ prueba cortaba en «:».
 
 **Regla (a).** Conflicto: gana el juego y se corrige el documento.
 
-**Corrección aplicada (29/09/2026).** Documentos: Trabajo de grado: §1.4.
+**Corrección aplicada (29/09/2026).** Documentos: Trabajo de grado: §1.4. La plantilla del 28/07,
+vigente desde el 30/09/2026, no la recogía (allí es §1.3); se aplicó el 01/10/2026 («Pendientes de
+Santiago», punto 4).
 
 ### INC-112 · El trabajo de grado describía el patrón de unidades didácticas con Wix y para 7-8 años — cerrado (29/09/2026)
 
@@ -1784,7 +1846,9 @@ de niveles y avance con un clic.
 
 **Regla (a).** Conflicto: gana el juego y se corrige el documento.
 
-**Corrección aplicada (29/09/2026).** Documentos: Trabajo de grado: §3.2.4.
+**Corrección aplicada (29/09/2026).** Documentos: Trabajo de grado: §3.2.4. La plantilla del
+28/07, vigente desde el 30/09/2026, no la recogía; se aplicó el 01/10/2026 («Pendientes de
+Santiago», punto 4).
 
 ### INC-113 · El trabajo de grado no recogía herramientas ni actividades del desarrollo — cerrado (29/09/2026)
 
@@ -1797,7 +1861,10 @@ informe docente y borrado, ejecutable portable medido.
 
 **Regla (c).** Solo en el juego: se añade al documento.
 
-**Corrección aplicada (29/09/2026).** Documentos: Trabajo de grado: §5.2; §5.1.3.
+**Corrección aplicada (29/09/2026).** Documentos: Trabajo de grado: §5.2; §5.1.3. La plantilla del
+28/07, vigente desde el 30/09/2026, no recogía la de los instrumentos (allí, §5.1); se aplicó el
+01/10/2026 con cuatro viñetas nuevas —Unity Test Framework, Input System, Git y Claude Code—
+(«Pendientes de Santiago», punto 4).
 
 ### INC-114 · El índice y la lista de figuras del trabajo de grado estaban desactualizados — cerrado (29/09/2026)
 
@@ -1897,6 +1964,510 @@ pruebas `GameFlow_HU17_SetPlayingPhaseActualizaLaFaseActivaSinNavegar`,
 `GameFlow_HU17_SetPlayingPhaseSeRechazaFueraDePlayingOEnOtroNivelOFaseInvalida` y
 `RiverScene_HU17_ReiniciarEnElAmarreOElMastilVuelveALaFaseActivaYNoALaRecoleccion`).
 
+### INC-118 · Nivel 3: el plano de la mecánica se abre y la familia, los materiales y la balsa toman la escala de las narrativas — cerrado (01/10/2026)
+
+**El conflicto.** La mecánica del Nivel 3 mostraba la orilla a cuatro décimas de la escala con que
+la cuentan las narrativas del mismo río —la casilla de Papá medía 77,7 píxeles de la ilustración en
+la recolección y 191,5 en la escena 3.1—, y los registros del Slice 3 fijaban esos planos como
+decisiones.
+
+**Qué decían los documentos.** `Slice-3-Resultados.md` §3, decisiones 2 y 4: el ensamblaje empuja a
+(0,50; 0,23) ×2,2, con el río al 85 % del ancho (20/09/2026), y la recolección se abre a
+(0,2632; 0,2632) ×1,9 para que asome un poco el río (decisión de Santiago del 25/09/2026);
+`Slice 3/todo.md`, el plano del 25/09 con radios de 0,04 y las casillas del radio de RF-37 y del
+encuadre del ensamblaje «validados jugando»; `casos.md` S-N3, las posiciones en la orilla y
+«Recoger» a unos ±0,08 de pantalla; la prueba
+`RiverLevelConfig_Guion82_ElPlanoDeRecoleccionEsElBosqueConUnPocoDelRio`, con el recorte derecho en
+0,6 como máximo «para que siga siendo el bosque». El diseño de cámara del Nivel 3 ya no está en el
+equipo: el encuadre de la 3.1 solo consta en `N3_Escena31_Llegada.asset`. El guion §1.8, fila
+«Escenario» —un plano fijo a la altura de los personajes, con perspectiva por profundidad—, no fija
+encuadre ni escala, y no cambia.
+
+**Qué hacía el juego.** A 1920×1080, Papá medía 148 px en la recolección y 171 en el ensamblaje, la
+Niña y el Niño 89, y Mamá de 121 a 185 según la profundidad; la balsa del ensamblaje ocupaba 665 px,
+con el 56 % del casco sobre el agua, y un tronco de 256 px se ampliaba a 353. Mamá se anclaba por el
+centro de su casilla y, al retomar el ensamblaje, quedaba en el arranque. La 3.1 pintaba el montón
+plano `prop_n3_troncos`, en el estilo anterior a los materiales de la mecánica.
+
+**Decisión de Santiago, 30/09/2026 (acta D10).** Se abre el plano de la mecánica —la recolección de
+×1,9 a cerca de ×1,4 y el ensamblaje de ×2,2 a cerca de ×1,6—; los personajes crecen cerca de 2,3
+veces, los materiales 1,8 y la zona 1,5, la orilla se reacomoda y la 3.1 pasa a coincidir con la
+mecánica. **Por delegación de Santiago (01/10/2026)**, el orquestador fijó los valores medidos sobre
+`env_n3_rio.png` y los ajustes que los hacen posibles: Mamá se ancla por los pies, como la familia;
+la balsa del ensamblaje se corre en x —no baja— para quedar sobre el agua sin tapar a Papá; al
+retomar el ensamblaje, Mamá espera en la zona, y Mamá, la familia y los materiales se dibujan por
+profundidad.
+
+**Regla (a).** Conflicto: gana el juego y se corrige el documento.
+
+**Corrección aplicada (01/10/2026).** Documentos: Dirección de arte: §5.3 (Mamá y la familia se
+anclan por los pies; lo de abajo se dibuja delante); §8.3 «Plano y escala» · Inventario de arte:
+`Environments/River/` (`env_n3_rio` y la zona); `Props/River/` (`prop_n3_troncos` queda sin uso) ·
+Interfaces: §1.1 «11–12 · Nivel 3» · OE4: S-N3 (posiciones en la orilla y en el ensamblaje, zona
+transitable y alcance de «Recoger») · registros de tareas: `Slice-3-Resultados.md`,
+`Props-y-Sonidos-Resultados.md` y `Personajes-Resultados.md` (notas fechadas). Los radicados no fijan
+encuadres y no cambian. Tareas de código: D10-3. `PlayFraming`
+(0,3572; 0,3572) ×1,4 y `AssemblyFraming` (0,50; 0,3125) ×1,6; `RaftPosition` (0,58; 0,23), con
+`RaftSize` 0,28, el de la balsa de la 3.3; `WalkableArea` x 0,18–0,40 · y 0,05–0,34, que ahora son
+los pies de Mamá; `StartPosition` (0,21; 0,19); `BuildZonePosition` (0,395; 0,22); `ProximityRadius`
+y `BuildZoneRadius` 0,06, y los ocho materiales repartidos por la orilla, ninguno a menos de 0,12 de
+la zona (`N3_RiverLevelConfig`, `N3_RaftAssemblyContent`). En `Level3_River`, por `sizeDelta` de las
+instancias y sin reconstruir prefabs: Mamá 240 con pivote (0,5; 0,075), Papá 178,75, la Niña y el
+Niño 107,25, los materiales 172,8 y la zona 255. `RiverSceneController.ResumeAt` deja a Mamá en la
+zona y `DepthOrder` (C# plano) pone delante, entre Mamá, la familia y los materiales, lo que está
+más abajo. La 3.1 pinta `prop_n3_tronco` y
+`prop_n3_mastil` (Size 0,07; el mástil girado −50°). A 1920×1080, Papá pasa a 250 px en la orilla y
+a 286 en el ensamblaje, la balsa a 484 px y un tronco de la balsa a 256, sin ampliar el sprite.
+Pruebas: `RiverLevelConfig_Guion82_ElPlanoDeRecoleccionEsLaOrillaConElRio` (sustituye a
+`…EsElBosqueConUnPocoDelRio`), `RiverScene_INC118_LosPersonajesDeLaMecanicaTienenLaEscalaDeLaNarrativa`,
+`RiverLevelConfig_INC118_LaEscena31PintaCadaMaterialConElArteDeLaOrilla`,
+`RiverScene_DA83_MamaSeAnclaPorLosPiesComoLaFamilia`,
+`RaftAssemblyContent_RF44_LaBalsaDelEnsamblajeMideLoQueLaDelCruce`,
+`DepthOrder_DA83_LoQueEstaMasAbajoSeDibujaDelante`,
+`DepthOrder_DA83_ALaMismaAlturaConservaElOrdenQueTraia`,
+`RiverScene_DA83_LoQueEstaMasAbajoSeDibujaDelante` y
+`RiverScene_RNF14_AlRetomarElEnsamblajeMamaEsperaEnLaZona`, más
+`RiverLevelConfig_RF37_ElRepartoObligaARecorrerLaOrillaYCabeEnElPlanoFijo` ampliada. Siguen en verde
+las pruebas de RNF-03 del Nivel 3 a 1920×1080 y
+`RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles`.
+
+### INC-119 · Nivel 1: la chispa del golpe es un solo rayo que nace en el punto del golpe — cerrado (01/10/2026)
+
+**El conflicto.** El juego dibuja la chispa del golpe como un solo rayo que sale del punto del golpe
+en una dirección al azar; la dirección de arte la describe como cuatro líneas radiales, y el índice
+de sprites y el catálogo de pruebas, como una cruz que se encoge sobre el montón.
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §12.2, filas «Chispas que se apagan» (cuatro
+líneas cortas radiales `#FFE9A8` que se acortan hasta desaparecer, 0,35 s) y «Chispa» (cuatro líneas
+radiales, 0,2 s); `Inventario.md` §`FX/`, fila de los `fx_n1_chispa_*` retirados («dos `Image` planas
+en cruz»); la corrección aplicada de INC-68; `casos.md` S-N1, pasos 17 y 18 («una chispa sobre el
+montón que se encoge y desaparece»). El guion §1.4.3.3 —la chispa cae dentro del montón; con fuerza
+de más, saltan lejos de las hojas y se apagan en el aire— ya describe el rayo y no cambia.
+
+**Qué hacía el juego.** Desde `37b3cb7` (INC-68), una cruz de dos `Image` planas `#FFE9A8` (`RayoH`
+y `RayoV`) que se encogía hasta desaparecer sobre el punto del golpe; la del golpe de más salía
+desplazada hacia arriba (`DyingSparkOffset`).
+
+**Decisión de Santiago, 30/09/2026 (acta D10).** La chispa pasa a ser un solo rayo que nace en el
+punto del golpe y sale en una dirección al azar: con el golpe efectivo cae dentro del montón; con
+fuerza de más es largo, pasa del montón y se apaga en el aire; en los dos casos hace un único
+barrido, sin volver (RNF-21). **Por delegación de Santiago (01/10/2026)**, el orquestador fijó el
+reparto sobre el arte medido: el rayo efectivo sale hacia la mitad de abajo y cae a 0,205–0,22 del
+lado del montón, siempre sobre hojas y nunca sobre una piedra; el de más sale hacia la mitad de
+arriba, llega a 0,52–0,6 y se apaga antes de la tablilla. El trazo mide 4 unidades, 8 px a 1080.
+
+**Regla (a).** Conflicto: gana el juego y se corrige el documento.
+
+**Corrección aplicada (01/10/2026).** Documentos: Dirección de arte: §7.6 «Nomenclatura»; §12.2, las
+dos filas de la chispa y su barrido único · Inventario de arte: `FX/`, fila de `fx_n1_chispa_*` ·
+OE4: S-N1 pasos 17 a 20; PF-RF16-01 · INC-68 (nota) · registros de tareas: `Fase-5-6-Resultados.md`
+y `Props-y-Sonidos-Resultados.md` (notas fechadas). Tareas de código: D10-1. `FirePanelController` elige la dirección con `SparkRandom`
+—el patrón de `FloorScatter.Place`— y barre cabeza y cola una sola vez, sin escalar; en
+`Level1_Cave`, `Chispa` lleva el pivote en la cola, `RayoH` se estira sobre toda ella con el mismo
+`#FFE9A8` y `RayoV` se borra. Pruebas:
+`FirePanel_RF16_LaChispaEsUnRayoDelCentroQueCaeEnLasHojasEnUnaDireccionAlAzar`,
+`FirePanel_RF16_ConFuerzaDeMasElRayoPasaDeLasHojasYSeApagaEnElAire`,
+`FirePanel_RNF21_ElRayoDeLaChispaHaceUnSoloBarridoSinVolver` y la captura
+`FirePanel_RF16_ElRayoDeLaChispaSeVeSobreElMonton`; se ajustan
+`FirePanel_RF16_LaChispaSoloSeVeCuandoLasPiedrasChocanConFuerza` y `SparkDurationAsync`.
+
+### INC-120 · Nivel 2: la escena 2.2 abría con otra caja que la que deja la fase del bosque — cerrado (01/10/2026)
+
+**El conflicto.** Al pasar del bosque a la escena 2.2, la caja de alimentos cambiaba de dibujo, de
+sitio y de tamaño, y los documentos piden que la narrativa herede el cuadro exacto con que termina
+la fase.
+
+**Qué decían los documentos.** Guion §1.6.1.1 («A un lado, la caja de alimentos…») y §1.6.1.3 («La
+caja rueda sobre los troncos…»); `Camara_Narrativa_N2.md` §5.3 —el cierre de la fase 1 deja la
+cámara en el encuadre con que abre la 2.2—, §5.4 fila `L0` («hereda exacto» el cuadro de la fase 1:
+misma vista, mismos troncos, mismo sitio) y §7 «Puesta en escena de 2.2»; el tooltip de
+`WheelLevelConfig.CargoPlacedPosition` («el punto en el que la escena 2.2 la dibuja al abrir»);
+`Slice-2-Resultados.md` §A.13, que dejaba por decidir si el salto era buscado.
+
+**Qué hacía el juego.** Desde `1d5ce58` (25/09/2026), la 2.2 dibujaba `prop_n2_caja_suelo_vacía` en
+(0,2; 0,545) con 0,12 del alto, y el bosque deja `prop_n2_caja_suelo` en (0,2; 0,5089) con 0,148.
+`ForestScene_RF26_…` no lo veía porque comparaba con una constante copiada.
+
+**Decisión de Santiago, 30/09/2026 (acta D10).** Solo se corrige la caja de la 2.2: vuelve a ser la
+caja llena que la fase del bosque deja sobre los troncos, en su mismo sitio y con su mismo tamaño.
+
+**Regla (b).** Solo en el documento: se implementa en el juego.
+
+**Corrección aplicada (01/10/2026).** Documentos: Cámara N2: §5.3; §5.4 y su fila `L0`; §7 «Puesta en
+escena de 2.2» · Dirección de arte: §9.3 fila «Caja de alimentos (3 estados)» · Inventario de arte:
+`Props/Wheel/` (la caja llena y la vacía, sin uso) · registros de tareas: `Slice-2-Resultados.md` y
+`Props-y-Sonidos-Resultados.md` (notas fechadas). Tareas de código: D10-2.
+La caja de `N2_Escena22_ElPatron` (`Prop_9`) vuelve a `prop_n2_caja_suelo`, en (0,2; 0,5089), con
+Size 0,14814815 y `MotionDrop` 0,074074075 —la inversa exacta de `1d5ce58`—, y sigue deslizándose
+sin girar; `prop_n2_caja_suelo_vacía` queda sin uso (su nombre lo corrige INC-126). Pruebas:
+`WheelLevelConfig_RF05_LaCajaColocadaEsLaQueLaEscena22DibujaAlAbrir`;
+`ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22` lee la caja de
+`CargoPlacedPosition` en lugar de la constante.
+
+### INC-121 · Nivel 2: al amarrar la cuerda, la carretilla del taller pasa al dibujo amarrado con que abre la escena 2.4 — cerrado (01/10/2026)
+
+**El conflicto.** El guion y la dirección de arte terminan el taller con la carretilla completa y la
+cuerda amarrada; el juego dejaba la cuerda como una pieza suelta sobre la caja, y el dibujo amarrado
+solo salía en las narrativas.
+
+**Qué decían los documentos.** El guion §1.6.2.2, paso 7 («La cuerda queda amarrada sobre la caja y
+la carretilla queda completa»), y `Direccion_de_Arte.md` §9.3 («Rueda y carretilla (5 estados)») ya
+lo pedían; INC-54 «Qué se hizo» («No hay dibujo de la carretilla con la cuerda: la pieza misma queda
+sobre la caja») e `Inventario.md` §`Props/Wheel/`, fila `B6` («`e5` … que solo usan las narrativas:
+en el taller la cuerda es la pieza colgada sobre `e4`»), describían lo que hacía el juego.
+
+**Qué hacía el juego.** Al soltar la cuerda sobre la caja, el taller conservaba `e4` y dejaba la
+pieza encima (`AssemblyContent.RopePlacedPosition` y `RopePlacedSize`). `prop_n2_carretilla_e5` solo
+lo usaban `N2_Escena24_Regreso`, `N2_Escena25_Cierre`, `N3_PuenteII`, `N3_PuenteII_Rio` y
+`N3_Escena31_Llegada`.
+
+**Decisión de Santiago, 30/09/2026 (acta D10).** Al amarrar la cuerda, la carretilla pasa al dibujo
+de la carretilla amarrada, el mismo con el que abre la escena 2.4.
+
+**Regla (b).** Solo en el documento: se implementa en el juego.
+
+**Corrección aplicada (01/10/2026).** Documentos: Inventario de arte: `Props/Wheel/` fila `B6` ·
+Dirección de arte: §9.3 fila «Rueda y carretilla (5 estados)» · Cámara N2: §5.6 fila `CIERRE`; §7
+«Claro este» · INC-54 (nota) · registros de tareas: `Slice-2-Resultados.md` y
+`Props-y-Sonidos-Resultados.md` (notas fechadas). Tareas de código: D10-2.
+Campo `AssemblyContent.TiedArt` —`prop_n2_carretilla_e5` en `N2_AssemblyContent`— y
+`case WorkshopPiece.Rope` en `WorkshopSceneController.ShowAssembly`; se retiran la rama de la cuerda
+colgada de `Release`, `RopePlacedPosition` y `RopePlacedSize`. `e4` y `e5` comparten encuadre, así
+que la carretilla no salta de sitio. Pruebas:
+`WorkshopScene_INC54_AlAmarrarLaCuerdaLaCarretillaPasaAlDibujoConCuerda` y
+`AssemblyContent_INC54_LaCarretillaAmarradaEsElDibujoConElQueAbreLaEscena24`, que conservan INC54
+porque cierran el paso que abrió INC-54; se ajusta
+`WorkshopScene_RF29_LaCarretillaCreceSobreLoAnteriorSinQueLaInterfazLaTape`.
+
+### INC-122 · Nivel 3: «Probar balsa» también en la base y el amarre, sin aprobar la fase — cerrado (01/10/2026)
+
+**El conflicto.** Los documentos reservan «Probar balsa» a la fase de mástil y vela, donde probar es
+confirmar, y hacen de la primera prueba fallida la única interrupción del nivel; el juego ofrece
+además la prueba en la base y el amarre, sin aprobar la fase ni interrumpirla.
+
+**Qué decían los documentos.** OE1 §3.2 RF-11 («La única acción que interrumpe la fase es la primera
+prueba fallida de la balsa…»), §3.5 RF-40 («Cada fase dispone de un botón de confirmación…») y RF-42
+(«El botón de probar balsa debe validar el ensamblaje…»), y §1.1 CP-06, que repite el disparo de la
+3.2; el guion §1.8.3 (tabla de fases: «Listo» en la base y el amarre, «Probar balsa» solo en mástil y
+vela, con la validación final), §1.8.4 (fila «Prueba de la balsa fallida» y párrafo «Pista del
+guía») y §1.8.4.1 (la 3.2 «se dispara la primera vez que la prueba de la balsa falla»); CU-03
+(precondiciones) y CU-10 (flujos alternativos 6a y 6b); HU-12 (paso 6 y fila «Botón «Listo» /
+«Probar balsa»») y HU-13 (paso 7, FA-01 y fila «Botón Probar balsa»); INC-90;
+`Direccion_de_Arte.md` §12.3 fila «Prueba de balsa sin éxito (Nivel 3)»; `casos.md` S-N3 y
+PF-RF42-01. OE1 §3.6.1 ya cuenta las pruebas de balsa fallidas como intentos del Nivel 3 y no
+cambia.
+
+**Qué hacía el juego.** El botón del panel se rotulaba «Listo» en la base y el amarre y «Probar
+balsa» en mástil y vela (INC-90): la balsa no se podía probar antes de la última fase.
+
+**Decisión de Santiago, 30/09/2026 (acta D10).** En la base y el amarre, «Probar balsa» se ofrece
+junto a «Listo». La balsa incompleta se hunde y suena la salpicadura (INC-123); la prueba cuenta como
+intento y devuelve solo lo mal puesto, pero no aprueba la fase ni dispara la escena 3.2, que sigue
+saliendo únicamente con el primer fallo de la fase de mástil y vela. **Por delegación de Santiago
+(01/10/2026)**, el orquestador fijó el detalle: antes de la última fase se marca solo lo mal puesto y
+no los espacios vacíos, porque una balsa a medio armar está incompleta por construcción y marcar sus
+vacíos sería un mapa de dónde va cada pieza (CP-06); si solo hay vacíos, la tablilla dice «La balsa
+se hundió: todavía no está terminada. ¿Qué parte falta armar?», sin cifras ni solución; la prueba
+anticipada suma a las tres seguidas que traen la pregunta orientadora, y una base entera y bien
+puesta tampoco se aprueba al probarla: solo «Listo» consolida (RF-40).
+
+**Regla (a).** Conflicto: gana el juego y se corrige el documento.
+
+**Corrección aplicada (01/10/2026).** Documentos —los radicados, por automatización de Word (acta
+D10), cada uno con su fila del 01/10/2026 en el control de cambios—: OE1: §1.1 CP-06; §3.2 RF-11;
+§3.5 RF-40; §3.5 RF-42; §6 · OE2: §1.8.3, párrafo que abre el apartado; §1.8.4 fila «Prueba de la
+balsa fallida» y párrafo «Pista del guía» (confirmar o probar tres veces seguidas sin que la fase
+valide); §1.8.4.1, acotación final; §2.3 CU-03 fila «Precondiciones»; §2.3 CU-10 flujos alternativos
+2c, nuevo, y 6a; §5 · HU v2: HU-12 paso 6 y fila «Botón «Listo» / «Probar balsa»», versión 1.3;
+HU-13 paso 7, FA-01, FA-03, nuevo, y fila «Botón Probar balsa», versión 1.3 · Dirección de arte:
+§12.3 fila «Prueba de balsa sin éxito (Nivel 3)» · Inventario de arte: `UI/River/` (los dos botones
+del panel) · Interfaces: §1.1 «11–12 · Nivel 3» · OE4: S-N3; PF-RF42-01; PF-RF42-02, nuevo, para la
+prueba anticipada · INC-90 (nota) · registros de tareas: `Slice-3-Resultados.md` (nota fechada).
+CP-06 y CU-03 no estaban en la lista del acta D10: se editan por delegación de Santiago, porque
+repetían el disparo de la 3.2 y habrían quedado en contradicción con RF-11 y CU-10.
+Tareas de código: D10-3. `RaftAssembly.Test()` (C# plano) equivale a `Confirm()` en la última fase;
+en la base y el amarre valida la fase abierta, devuelve lo mal puesto (RF-43), cuenta un
+rechazo (RF-45) y nunca consolida ni abre fase (RF-40). `RaftAssemblyContent.UnfinishedTestMessage`
+vive en `N3_RaftAssemblyContent`. En `AssemblyPanelController` y `Level3_River`, `Button_Test` aparece
+junto a «Listo» en la base y el amarre y se oculta en mástil y vela; un solo `Validate` atiende los
+dos botones, y la prueba anticipada no llama a `AfterAttempt`, así que no gasta la escena 3.2. El
+código lleva el comentario pedagógico (CP-02, CP-06). Pruebas en EditMode:
+`RaftAssembly_RF42_ProbarLaBalsaIncompletaNoConfirmaNiAvanzaDeFase`,
+`RaftAssembly_RF43_ProbarAntesDeTiempoDevuelveSoloLoMalPuesto`,
+`RaftAssembly_RF41_ProbarLaBalsaNoTocaLasFasesAprobadas`,
+`RaftAssembly_RF42_EnLaUltimaFaseProbarEsConfirmar`,
+`RaftAssembly_RF42_EnLaUltimaFaseProbarConUnVacioSenalaElVacioConElMensajeDeLaPrueba` y
+`RaftAssemblyContent_RF42_ElAssetTraeElMensajeDeLaBalsaSinTerminar`; en PlayMode:
+`AssemblyPanel_RF42_ElBotonProbarBalsaEstaDisponibleEnCadaFase`,
+`AssemblyPanel_RF42_ProbarLaBalsaIncompletaLaHundeYSigueEnLaFase`,
+`AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto`,
+`AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse`,
+`RiverScene_Guion841_ProbarAntesDeLaUltimaFaseNoGastaLaEscena32` y
+`RiverIndicators_RF45_UnaPruebaDeBalsaIncompletaCuentaComoIntento`. Siguen en verde
+`AssemblyPanel_CP02_UnaFaseQueNoPasaNoSuena` y
+`RaftAssembly_CP02_NoHayLimiteDeIntentosNiPantallaDeDerrota`.
+
+### INC-123 · Nivel 3: la balsa que se hunde suena — cerrado (01/10/2026)
+
+**El conflicto.** La dirección de sonido pone una pieza al hundimiento de la balsa y el juego lo
+dejaba mudo; la dirección de arte se contradecía sobre la salpicadura.
+
+**Qué decían los documentos.** `Direccion_de_Musica_y_Sonido.md` §13 fila `sfx_n3_hundimiento`
+(disparador «Prueba de la balsa fallida», 2,5 s) y §19 rev. 4 («Una fase que no pasa, la balsa que
+se hunde y entrar a la zona sin todo no suenan (§2.1)», con `sfx_n3_salpicadura_undimiento` en disco
+y sin referenciar); `Direccion_de_Arte.md` §12.3 fila «Prueba de balsa sin éxito» («sin salpicadura
+ni destellos») frente a §8.3 «Sobre el riesgo» («la retroalimentación es una salpicadura»). §2.1 de
+la dirección de sonido pone la balsa que gira entre los sonidos descriptivos de un intento sin éxito:
+se cumple.
+
+**Qué hacía el juego.** El hundimiento de 0,6 s era mudo. La pieza en disco,
+`sfx_n3_salpicadura_undimiento`, se había renombrado fuera del motor —con GUID nuevo y una errata en
+el nombre— y no la referenciaba nada.
+
+**Decisión de Santiago, 30/09/2026 (acta D10).** La balsa que se hunde suena a salpicadura en las tres
+fases, también con la prueba anticipada (INC-122). La pieza se renombra desde el motor.
+
+**Regla (a).** Conflicto: gana el juego y se corrige el documento.
+
+**Corrección aplicada (01/10/2026).** Documentos: Dirección de sonido: §13 fila `sfx_n3_hundimiento`
+(entregada, de 1,74 s; suena con toda prueba que hunde la balsa); §19, piezas cableadas y rev. 5 ·
+Dirección de arte: §8.3 «Sobre el riesgo»; §12.2 fila «Salpicadura de la balsa (Nivel 3)»; §12.3
+fila «Prueba de balsa sin éxito (Nivel 3)» (la salpicadura es sonora; en imagen no hay efecto de
+agua) · Inventario de arte: «Puntos abiertos», punto 6 · registros de tareas:
+`Props-y-Sonidos-Resultados.md` y `Slice-3-Resultados.md` (notas fechadas). Tareas de código: D10-3. La pieza se renombra a
+`sfx_n3_hundimiento` con `AssetDatabase.RenameAsset` —el GUID y el `.meta` no cambian— y es
+`RiverSounds.RaftSinking` en `N3_Sonidos`; suena al empezar todo hundimiento, y «Listo» rechazado y
+la zona sin todos los materiales siguen mudos. El código lleva el comentario de §2.1 y CP-02: el
+sonido describe, no castiga. Pruebas: `RiverSounds_RF42_LaBalsaQueSeHundeSuenaASalpicadura`
+(EditMode) y `AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas`, en la base y en
+mástil y vela (PlayMode). Siguen en verde `AssemblyPanel_CP02_UnaFaseQueNoPasaNoSuena`,
+`AudioAssets_CP02_NingunaPiezaSeLlamaDerrotaNiError` y
+`AudioImport_RNF06_CadaFamiliaEntraConLosAjustesDeSuTabla`. El volumen y la doble salpicadura de dos
+pruebas seguidas se comprueban de oído (guion H7 de `claudeDocs/tasks/OE4/Hoja-HUM.md`).
+
+### INC-124 · Nivel 3: la balsa del cruce navegaba sobre la espuma de la cascada — cerrado (01/10/2026)
+
+**El conflicto.** En la escena 3.3 la balsa cruzaba sobre la espuma del pie de la cascada, y bajarla
+exige mover también una parada de cámara, contra la regla de la sesión D05: cuando objeto y encuadre
+no concuerdan, se mueve el objeto.
+
+**Qué decían los documentos.** `Slice 3/todo.md`, tarjeta R04 (la balsa del cruce, «más arriba de lo
+que propone §6 del documento de cámara para no quedar bajo el cuadro de diálogo»); la regla de D05,
+en `CLAUDE.md` §Arquitectura y en el acta D05; `Slice-3-Resultados.md`. El diseño de cámara del
+Nivel 3 ya no está en el equipo: lo aplicado solo consta en `N3_Escena33_Cruce.asset`.
+
+**Qué hacía el juego.** `prop_n3_balsa_cruzando` cruzaba con el centro en y 0,455 (x 0,56, Size 0,28),
+con el 32 % de la cubierta y el pie del mástil sobre la espuma, que ocupa y 0,403–0,544 de
+`env_n3_rio.png`.
+
+**Decisión de Santiago, 30/09/2026 (acta D10).** De las balsas narrativas del Nivel 3 solo baja la del
+cruce, y se autoriza retocar su parada de cámara como excepción a la regla de D05. **Por delegación de
+Santiago (01/10/2026)**, el orquestador la dejó en 0,395 y no en 0,39: a 0,39 tocaba el cuadro de
+diálogo en la parada L4, que no se mueve.
+
+**Regla (a)**, con excepción expresa a la regla de D05, que sigue valiendo para las demás escenas.
+
+**Corrección aplicada (01/10/2026).** Documentos: Dirección de arte: §8.3 «Plano y escala»; §9.3
+fila de la balsa compuesta · Inventario de arte: `Props/River/` fila `C9` · Interfaces: §1.1 «11–12 ·
+Nivel 3» · registros de tareas: `Slice-3-Resultados.md` y `Personajes-Resultados.md` (notas
+fechadas). Sin el documento de cámara del Nivel 3, el registro del encuadre es el propio asset.
+Tareas de código: D10-3. En
+`N3_Escena33_Cruce.asset` la balsa baja de y 0,455 a 0,395, con el 3,9 % de la cubierta sobre la
+espuma; los cuatro viajeros bajan 0,06 con ella —posición inicial y pasos de las líneas 0 y 2: Papá y
+Mamá a 0,397, la Niña a 0,345 y el Niño a 0,341—, y los pasos de la línea 3, que bajan a la otra
+orilla, no cambian (bajarlos metería a la Niña en el río); la parada L3 pasa de (0,65; 0,47) a
+(0,65; 0,41) con el mismo zoom, ×1,55. Pruebas:
+`NarrativeSequence_RF44_LaBalsaDelCruceNavegaBajoLaEspumaDeLaCascada`,
+`NarrativeSequence_RF44_LaFamiliaBajaConLaBalsaYViajaEnSuSitio` y
+`NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos`;
+`NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo` sigue en verde sin recortar
+`Verificadas`.
+
+### INC-125 · La escena final suena al bosque de día con las fogatas — cerrado (01/10/2026)
+
+**El conflicto.** La dirección de sonido daba a la escena final una pieza que ya no existe, y el juego
+la dejaba muda.
+
+**Qué decían los documentos.** `Direccion_de_Musica_y_Sonido.md` §8 fila `amb_viento_horizonte`
+(disparador «…; escena final»), una pieza que ya no existe (§19 rev. 4); `Props-y-Sonidos-Resultados.md`,
+fila de `N3_EscenaFinal.asset` («No tiene ambiente ni ningún sonido»). El guion §1.9 —la familia
+camina hacia las fogatas, con el río, el bosque y la cueva detrás— se cumple.
+
+**Qué hacía el juego.** `N3_EscenaFinal.asset` tenía `Ambient` y `AmbientLayer` vacíos: la última
+escena del juego no sonaba.
+
+**Decisión de Santiago, 30/09/2026 (acta D10).** La escena final suena al bosque de día, con el
+crepitar de las fogatas en una segunda capa.
+
+**Regla (a).** Conflicto: gana el juego y se corrige el documento.
+
+**Corrección aplicada (01/10/2026).** Documentos: Dirección de sonido: §5 (S3); §8 filas
+`amb_n1_cueva_fuego`, `amb_n2_bosque_dia` y `amb_viento_horizonte`; §19, piezas cableadas y rev. 5 ·
+OE4: S-N3, escena final · registros de tareas: `Props-y-Sonidos-Resultados.md` y
+`Slice-3-Resultados.md` (notas fechadas). Tareas de código: D10-3. `N3_EscenaFinal.asset` lleva
+`Ambient` = `amb_n2_bosque_dia` y `AmbientLayer` = `amb_n1_cueva_fuego`, el mismo par que
+`N2_PuenteI`; no hace falta código, porque
+`NarrativeSceneController.Begin` ya pide los dos. Prueba:
+`RiverSounds_RF44_LaEscenaFinalSuenaAlBosqueConLasFogatas`. Con ambiente, el silencio S3 de la
+dirección de sonido §5 —un segundo con el ambiente al mínimo antes de la última frase de Algoritm—
+ya no se cumple por omisión y todavía no se aplica: queda en «Residuos y puntos abiertos». Si
+`amb_n1_cueva_fuego` suena a cueva y no a fogata al aire libre se comprueba de oído (guion H6 de
+`claudeDocs/tasks/OE4/Hoja-HUM.md`).
+
+### INC-126 · Cinco archivos de arte con nombre fuera de la nomenclatura — cerrado (01/10/2026)
+
+**El conflicto.** Cuatro entornos conservaban el prefijo `entorno_` y una caja llevaba tilde, contra
+la nomenclatura de §15.4.
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §15.4 (prefijo `env_`; «Sin tildes, sin
+espacios, sin mayúsculas»); `Inventario.md` §`Environments/` (los que conservan el prefijo viejo «hay
+que renombrarlos … desde el motor») y §`Props/Wheel/`; `Props-y-Sonidos-Resultados.md` («El nombre
+lleva tilde, contra §15.4»); `CLAUDE.md`, que cita `entorno_n1_apertura` en la regla de la costura de
+3840, y el comentario de `MazeLayout.cs`. INC-66 e INC-82 citan los nombres viejos y quedan como
+registro.
+
+**Qué hacía el juego.** `entorno_n1_apertura`, `entorno_n1_cueva_2x`, `entorno_n1_cueva_cenital`,
+`entorno_n2_laberinto` y `prop_n2_caja_suelo_vacía`: los cinco nombres que el informe de
+`arte_check.py` del 30/09/2026 marcó entre 96 PNG.
+
+**Decisión de Santiago, 30/09/2026 (acta D10).** Los cinco se renombran desde el motor, sin perder su
+identificador, y una prueba nueva vigila la regla.
+
+**Regla (b).** Solo en el documento: se implementa en el juego.
+
+**Corrección aplicada (01/10/2026).** Documentos: Dirección de arte: §15.4 · Inventario de arte:
+`Environments/`; `Props/Wheel/` · CLAUDE.md: regla de la costura de 3840 · el comentario de
+`MazeLayout.cs`. Tareas de código: D10-4. `env_n1_apertura`, `env_n1_cueva_2x`, `env_n1_cueva_cenital`, `env_n2_laberinto` y
+`prop_n2_caja_suelo_vacia`, con `AssetDatabase.RenameAsset` —primero en simulación— y el GUID
+intacto. Los cuadros del fuego y del humo conservan sus nombres de entrega, la excepción que §15.4 ya
+escribe. Prueba: `ArtImport_RNF23_LosNombresSiguenLaNomenclatura`.
+
+### INC-127 · Los glifos del menú de pausa son de Phosphor Icons y los créditos los daban por originales — cerrado (01/10/2026)
+
+**El conflicto.** Los créditos daban por originales del proyecto toda la interfaz, y tres de sus
+glifos son de una familia de iconos con licencia MIT.
+
+**Qué decían los documentos.** OE1 §1.2 CT-09 y §4.6 RNF-23: los recursos son de creación propia o
+cuentan con autorización escrita, «con reconocimiento expreso en los créditos»; `Inventario.md`
+§`UI/Common/`, nota «Licencia de los tres glifos de pausa (17/09/2026)», que dejaba a Santiago
+acreditarlos o sustituirlos; `Slice 1/todo.md` §Assets visuales («Entornos, props e interfaz son
+originales del proyecto»).
+
+**Qué hacía el juego.** `ui_pausa`, `ui_reanudar` y `ui_reiniciar` son los iconos `pause`, `play` y
+`arrow-counter-clockwise` de Phosphor Icons rasterizados a 128 px, y el cuerpo de
+`CreditsContent.asset` decía «Entornos, objetos e interfaz: originales del proyecto.».
+
+**Decisión de Santiago, 30/09/2026 (acta D10).** Se acreditan.
+
+**Regla (b).** Solo en el documento: se implementa en el juego.
+
+**Corrección aplicada (01/10/2026).** Documentos: Dirección de arte: §19 «Nota legal» · Inventario de
+arte: `UI/Common/` (se cierra la nota de licencia) · Interfaces: §1.1, punto 6 «Pausa». CT-09 y
+RNF-23 ya lo pedían y no cambian. Tareas de código: D10-4. Las dos últimas oraciones de
+`CreditsContent.asset` dicen «Entornos, objetos e interfaz: originales del proyecto, salvo los iconos
+de pausa.» e «Iconos de pausa: Phosphor Icons, licencia MIT.»: nombran Phosphor Icons y su licencia
+como `Credits.unity` nombra las tipografías y su licencia SIL OFL 1.1, sin pasar de 20 palabras
+(`CreditsContent_RNF01_NingunaOracionSupera20Palabras`), y la interfaz sigue constando como original
+salvo los tres glifos. Se completó además (01/10/2026): la MIT y la OFL piden que el aviso acompañe
+la copia distribuida, así que `LicenseNotices` (`Game.EditorTools`) copia `LICENSE-Phosphor.txt` y
+`OFL.txt` a `Licencias/`, junto al ejecutable, al terminar cada build de Windows, y lo hace fallar si
+falta uno (`LicenseNotices_RNF23_ElEjecutableLlevaLasLicenciasDeTerceros` y
+`LicenseNotices_RNF23_SiFaltaUnAvisoElBuildFalla`).
+
+### INC-128 · La dirección de arte fijaba otros ajustes de importación que los que aplica el proyecto — cerrado (01/10/2026)
+
+**El conflicto.** §15.2 pide comprimir, limitar a 2048, cortar hojas en `Multiple` y poner el pivote
+abajo; el proyecto importa sin comprimir, a 4096 y en `Single`.
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §15.2: Compression «Normal Quality», Max Size
+2048, Sprite Mode «Single (personajes) / Multiple (hojas de props)» y Pivot «Bottom (personajes) /
+Center (props)»; `Slice 1/todo.md` §Assets visuales («import con los ajustes de §15.2…»).
+
+**Qué hace el juego.** `ArtImportRules` (`Game.EditorTools`) importa todo `Assets/Game/Art/` sin
+comprimir y a 4096 —comprimida, la ilustración plana enseña la rejilla de bloques de 4×4, y la capa
+de oscuridad del Nivel 1 la amplifica—, y lo vigila
+`ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`. Cada imagen pasa a `Single` desde
+el motor, porque con `Multiple`, el valor de fábrica, `LoadAssetAtPath<Sprite>` devuelve nulo. En
+uGUI el punto de apoyo lo fija el `RectTransform`, no el importador: en los rigs, cada parte gira
+sobre su articulación (§13.1, INC-53).
+
+**Regla (a).** Conflicto: gana el juego y se corrige el documento.
+
+**Corrección aplicada (01/10/2026).** Documentos: Dirección de arte: §15.2 describe esa regla y su
+razón · Inventario de arte: cabecera (cada pieza entra en `Single`), `Environments/` y `Props/Wheel/`
+(los que siguen en `Multiple`). **Excepción, decidida por el orquestador por delegación de Santiago (01/10/2026):** doce PNG
+del Nivel 2 llegaron en `Multiple` con un solo sprite (`<nombre>_0`) —`env_enlace_n2`,
+`prop_n2_herramienta_a` a `_c`, `prop_n2_piedra_a` a `_d`, `prop_n2_planta_a` a `_c` y
+`prop_n2_tronco_a`—. Se quedan en `Multiple` los diez que escenas y assets referencian por ese
+sub-sprite: pasarlos a `Single` cambia el fileID de su sprite a 21300000 y rompería esas
+referencias. `prop_n2_piedra_c` y `_d` no los referencia nada y siguen también en `Multiple`: conviene
+pasarlos a `Single` antes de que una escena o un asset los use. Se completó además (01/10/2026): los
+cuadros del fuego y del humo de `Props/Fire/Animations/` entran a 1024 px como máximo, la única
+excepción al tope de 4096 (INC-130).
+
+### INC-129 · El diálogo se lee en un cuadro con retrato, no en un globo con cola — cerrado (01/10/2026)
+
+**El conflicto.** La dirección de arte e Interfaces describen el diálogo de las narrativas como un
+globo con cola que apunta al hablante; el juego lo pone en un cuadro fijo con el retrato.
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §10.3 «Globos de diálogo» (forma ovalada,
+contorno de 6 px, cola triangular hacia el hablante), §11.4 («Máximo 2 líneas por globo de diálogo»)
+y §4.3 (marfil, «Fondo de globos de diálogo y paneles»); `Interfaces.md` §1.1, punto 5 («Globo de
+diálogo (§10.3), retrato del hablante…»).
+
+**Qué hace el juego.** `CuadroDialogo`, en `Narrative.unity`, ocupa el cuarto inferior de la pantalla
+con `Marco`, `Retrato`, `Hablante`, `Cuerpo`, `BotonContinuar` y `BotonOmitir`, sin cola: es el
+«Panel de diálogo» de §10.2.
+
+**Regla (a).** Conflicto: gana el juego y se corrige el documento.
+
+**Corrección aplicada (01/10/2026).** Documentos: Dirección de arte: §4.3 fila «Marfil»; §10.3, que
+pasa a «Cuadro de diálogo» y lo describe; §11.4 · Interfaces: §1.1, punto 5. La regla del texto
+`#3A1E18` sobre marfil no cambia.
+
+### INC-130 · El paquete de entrega superaba los 500 MB por los cuadros del fuego y del humo del Nivel 1 — cerrado (01/10/2026)
+
+**El conflicto.** RNF-06 limita el ejecutable y sus recursos a 500 MB, y con la regla de importación
+que fijan los documentos —todo `Assets/Game/Art/` sin comprimir y a 4096, sin excepción (INC-128)—
+el paquete de entrega pesaba 866,7 MB.
+
+**Qué decían los documentos.** OE1 §4.2 RNF-06 («El tamaño total del ejecutable y sus recursos no
+debe superar los 500 MB»), que no cambia; `Direccion_de_Arte.md` §15.2 (fila «Max Size» y párrafo
+«Sin comprimir y a 4096, por regla»); `Inventario.md`, párrafo «Cómo entran», y `CLAUDE.md`, «Cómo
+entra una imagen», que dicen lo mismo para todo `Art/`; la prueba
+`ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`, que lo exigía a toda textura de
+`Art/`.
+
+**Qué hacía el juego.** El primer ejecutable de entrega, del 01/10/2026, pesó 866 718 251 bytes
+(866,7 MB; 826,6 MiB). `Props/Fire/Animations/` sumaba 533 MB en 67 cuadros sin comprimir y a
+tamaño completo —33 de humo de 1123 × 1933, 13 de fuego normal de 2144 × 2108 y 21 de fuego
+cenital de 500 × 278—, que son 134 entradas en el informe del build. Ya eran un dibujo por clave, sin
+duplicados (la regla de las secuencias de cuadros), así que no había arreglo sin pérdida.
+
+**Decisión del orquestador por delegación de Santiago (01/10/2026).** Los cuadros de
+`Props/Fire/Animations/` se importan a 1024 px de lado como máximo y siguen sin comprimir:
+comprimidos enseñarían la misma rejilla de bloques de 4×4 que evita la regla general. En pantalla el
+fuego se ve a unos 650 px como mucho y el humo a menos de 300, así que la reducción no se nota: la
+revisión comparó las capturas de antes y de después, ampliadas sin interpolar, y no halló pérdida
+visible.
+
+**Regla (a).** Conflicto: gana el juego y se corrige el documento. RNF-06 ya lo pedía y no cambia.
+
+**Corrección aplicada (01/10/2026).** Documentos: Dirección de arte: §15.2 (fila «Max Size» y la
+excepción) · Inventario de arte: «Cómo entran»; `Props/Fire/Animations/` · CLAUDE.md: «Cómo entra una
+imagen» · INC-128 (nota). En el código, `ArtImportRules` (`Game.EditorTools`) da `maxTextureSize`
+1024 a lo que está bajo `Assets/Game/Art/Props/Fire/Animations/` (`FireFramesMaxTextureSize`) y deja
+el resto a 4096; los 67 `.meta` se reimportaron desde el motor. En memoria el humo queda en
+595 × 1024 y el fuego normal en 1024 × 1007, y el cenital no cambia; el PPU se escala con la
+textura, así que el tamaño en el mundo es el mismo. La carpeta pasa de 533 MB a 145,7 MB y el
+paquete a 478 979 915 bytes (479,0 MB; 456,8 MiB), con 21 MB de margen
+(`claudeDocs/tasks/OE4/evidencias/build-rc1.md`). Una entrega nueva de cuadros entra sola a 1024: los
+`.png` de la entrega no se reducen a mano. Pruebas:
+`ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir`, nueva, y
+`ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`, que sigue exigiendo que esa carpeta
+entre sin comprimir y solo a ella le admite otro tope. La memoria (RNF-05) se mide sobre el
+ejecutable.
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -1910,31 +2481,91 @@ pruebas `GameFlow_HU17_SetPlayingPhaseActualizaLaFaseActivaSinNavegar`,
 **Puntos abiertos del guion** —`Solucion_OE2_Diseno_final` §1.2— son del guion, no conflictos
 entre documentos. Siguen **abiertos** `PG-05` (verificar en pruebas que el cambio de esquema de
 control entre niveles no confunde) y `PG-06` (validar jugando los valores del Nivel 1): los dos
-exigen observar a estudiantes jugando, que el OE4 no hace, y su columna «Situación» se actualizó a lo
-que hace el juego. Están **cerrados**: `PG-01` (título «Algoritmia», en el juego desde el
+exigen observar a estudiantes jugando, y su columna «Situación» se actualizó a lo que hace el juego.
+Los hará Santiago con estudiantes de cuarto en una misma sesión (acta D10), con los guiones H1 y H2
+de `claudeDocs/tasks/OE4/Hoja-HUM.md` y, antes, el consentimiento informado de los acudientes
+(`claudeDocs/tasks/OE4/Consentimiento-RNF12.md`, RNF-12); se cierran cuando entregue los resultados
+y no pasan a trabajos futuros. Están **cerrados**: `PG-01` (título «Algoritmia», en el juego desde el
 09/09/2026 y en el `.docx` desde el 29/09/2026), `PG-02` (el guía se llama **Algoritm**, 02/09/2026 —
 INC-44), `PG-03` y `PG-04` (redacción de `RF-16` y `RF-32`, 24/08/2026) y `PG-07` (autorización
 escrita de los personajes, 30/08/2026 — INC-43).
 
-**Pendientes de Santiago (30/09/2026).** Tres puntos del trabajo de grado que el juego no permite
-redactar sin inventar; quedan abiertos hasta que Santiago aporte el dato:
+**Pendientes de Santiago (01/10/2026).** Puntos del trabajo de grado que el juego no zanja; quedan
+abiertos hasta que Santiago aporte el dato o la decisión. Siguen abiertos los tres primeros; el
+cuarto se cerró el 01/10/2026. Las secciones son las del trabajo de grado vigente, la plantilla del
+28/07 (`Trabajo_de_Grado_Entrega_Plantilla_28jul.docx`, desde el 30/09/2026):
 
-1. **Anexo C** (INC-78). §3.3.2 dice que la constancia de la autorización de los autores de la
-   Familia Anonaky «se incorpora como anexo», pero LISTA DE ANEXOS y ANEXOS solo tienen A
-   (presupuesto) y B (cronograma). Falta el escaneo de la autorización y su enlace de SharePoint
-   para añadir «Anexo C. Autorización escrita de uso de los personajes de la Familia Anonaky» en
-   las dos listas.
-2. **Herramientas de ilustración** (§5.2, viñeta de Adobe Illustrator y Photoshop). `Interfaces.md`
-   §4 describe una especificación de estilo que se pega en un generador de imágenes, y el trabajo
-   de grado solo nombra Illustrator y Photoshop. Falta saber qué herramientas se usaron de verdad.
+1. **Anexo con la autorización de la Familia Anonaky** (INC-78). La letra C ya no está libre: en la
+   plantilla, LISTA DE ANEXOS y ANEXOS tienen A (presupuesto), B (cronograma), C, D y E (las
+   soluciones de OE1, OE2 y OE3) y, desde el 01/10/2026, F (el formato de consentimiento de RNF-12,
+   tarjeta D10-8), así que la autorización será el **Anexo G**. Falta el escaneo y su enlace de
+   SharePoint para añadirla en las dos listas; al añadirla, la viñeta de §3.3.2 que cita la
+   autorización cambia su punto final por «; su constancia es el Anexo G.».
+2. **Herramientas de ilustración** (§5.1, viñeta de Adobe Illustrator y Photoshop; era §5.2 en la
+   versión anterior). `Interfaces.md` §4 describe una especificación de estilo que se pega en un
+   generador de imágenes, y el trabajo de grado solo nombra Illustrator y Photoshop. Falta saber qué
+   herramientas se usaron de verdad.
 3. **Colaboración en el arte.** Los créditos acreditan la «Producción de arte» a Sofía Valentina
-   Giraldo Segovia (`CreditsContent.asset`), a quien el trabajo de grado no nombra ni en §5.2 ni en
+   Giraldo Segovia (`CreditsContent.asset`), a quien el trabajo de grado no nombra ni en §5.1 ni en
    el presupuesto. Falta decidir cómo se nombra esa colaboración.
+4. **Las correcciones del 29/09 en la plantilla — cerrado (01/10/2026).** La plantilla partía de un
+   texto anterior a la rev. 14 y no recogía las correcciones que se hicieron en
+   `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx`: las de INC-78 —el Resumen, el Abstract, la
+   Introducción, §3.3.2 y la viñeta del libro en §5.1 volvían a presentar la autorización de los
+   autores como condicional—, INC-87 (§3.3.1, «confidencialidad e integridad»), INC-111 (§1.3, la
+   integración con la resolución de problemas matemáticos), INC-112 (§3.2.4, Wix y niños de 7 a 8
+   años) e INC-113 (§5.1, sin Unity Test Framework, Git ni Claude). La edición que autoriza el acta
+   D10 alcanzaba solo el capítulo 8; **por delegación de Santiago (01/10/2026)** el orquestador las
+   llevó a los capítulos 1 a 5, porque ya estaban decididas el 29/09 y no son decisiones nuevas. Se
+   aplicaron el 01/10/2026 por automatización de Word —doce cambios, junto con el Anexo F de
+   consentimiento—, sin tocar el resto del texto y con la tabla de contenido y las listas de figuras
+   y tablas al día; §3.3.2 sigue sin anunciar la constancia como anexo hasta que exista (punto 1). El
+   trabajo de grado no tiene tabla de control de cambios: la edición consta aquí y en INC-78, INC-87
+   e INC-111 a INC-113.
+
+**Pendiente del carril de sonido (01/10/2026).** El silencio S3 de la dirección de sonido §5 —un
+segundo con el ambiente al mínimo y la música suspendida antes de la última frase de Algoritm— no se
+aplica en la escena final, que desde INC-125 tiene ambiente. `SilenceCut` solo calla la música o lo
+calla todo sin devolverlo, y «Y eso ya lo llevan puesto» comparte línea con las dos frases
+anteriores: hacen falta un corte con duración en `AudioManager` (`Game.Audio`), su valor en
+`SilenceCut` (`Game.Scaffolding`) y partir esa línea de `N3_EscenaFinal`, como explica §5. Es del
+carril de sonido, que lleva Santiago desde el acta D08.
 
 ---
 
 ## Historial de revisiones
 
+- **rev. 16 (01/10/2026)** — Cierre de la sesión del 30/09/2026 (acta D10). Con la regla del 29/09
+  se registran y cierran **INC-118** a **INC-130**, los cambios de la sesión que contradecían un
+  documento: el plano abierto del Nivel 3, con la escala de las narrativas (118); la chispa del
+  Nivel 1 como un solo rayo (119); la caja de la escena 2.2 (120); la carretilla amarrada del taller
+  (121); «Probar balsa» en la base y el amarre (122); la balsa que se hunde y suena (123); la balsa
+  del cruce, bajo la espuma (124); el ambiente de la escena final (125); cinco nombres de archivo
+  (126); el crédito de los glifos de pausa (127); los ajustes de importación de §15.2 (128); el
+  cuadro de diálogo (129), y los cuadros del fuego y del humo del Nivel 1 a 1024 px, que bajan el
+  paquete de entrega de 866,7 MB a 479,0 MB (130, RNF-06). Decide Santiago (30/09) y, en el detalle
+  y en INC-130, el orquestador por delegación suya (01/10). Los valores de INC-118 a INC-128 se
+  comprobaron contra el repositorio después de la revisión del código. Los radicados que cambian con la prueba anticipada —RF-11, RF-40 y RF-42; el guion
+  §1.8.3 a §1.8.4.1 y CU-10; HU-12 y HU-13, y por coherencia CP-06 y CU-03— se editan por
+  automatización de Word, con su fila en cada control de cambios. Ningún documento contradice, y por eso no abren hallazgo, las piedras que
+  quedaban bajo las hojas al encender; el humo del Nivel 1, ahora un hilo que nace en el punto del
+  golpe y, al soplar, sube a la corona de la llama por detrás de ella; los mandos del Nivel 1, que
+  desde «Soplar» dejan de responder (un segundo «Soplar» relanzaba el encendido); la línea de
+  registro de cada carga de `SceneLoader` (RNF-04), y el salto de los viajeros de la 3.3 cuando el
+  texto avanza durante el cruce (`NarrativeProp.FinishesSteps`, solo en esa escena). Tampoco lo abre
+  aceptar como definitivos el anillo de la zona, la balsa hundida, el conjunto genérico de interfaz
+  y el boceto de la iconografía del informe docente: «provisionales» los llamaban los registros de
+  tareas, no un documento de diseño. Como D1 no abrió hallazgo, tampoco lo abre la decisión que la
+  sustituye: el entregable del OE3 se reescribe al estado vigente del prototipo, lo que **deja sin
+  efecto la decisión D1** del 29/09 —darle solo una nota fechada—, y ya no lleva anexo H, porque las
+  actas están en Word en el SharePoint de Santiago. «Residuos y puntos abiertos» cita ahora el trabajo
+  de grado vigente, la plantilla del 28/07: el anexo con la autorización de la Familia Anonaky será
+  el G, porque desde el 01/10 el F es el formato de consentimiento de RNF-12; las correcciones del
+  29/09 que la plantilla no recogía se registran como pendiente 4 y se cierran el mismo día,
+  aplicadas por automatización de Word por delegación de Santiago, y se suma el silencio S3 de la
+  escena final. Sin reabrir ningún hallazgo, ganan una nota fechada INC-97 (la causa y el arreglo de
+  DEF-SPIKE-01, con su residuo DEF-RC2-01) e INC-80 (la excepción de los `ScrollRect` del informe
+  docente y de los créditos).
 - **rev. 15 (30/09/2026)** — Verificación final. Por decisión de Santiago se corrige el juego en
   tres puntos que la verificación dejó a su criterio, y se registran y cierran **INC-115** (el mazo
   soltado lejos no cuenta como intento), **INC-116** (el menú deriva el desbloqueo de las fases

@@ -1,0 +1,1 @@
+Fuentes de los Anexos B a G del entregable del OE3, en Markdown de pandoc como los capítulos de `../`: `B-slice-1.md`, `C-slice-2.md`, `D-slice-3.md`, `E-arte-y-sonido.md`, `F-personajes.md` y `G-slice-4.md`; el título de nivel 1 va sin «ANEXO X.» (lo añade `tools/build.py`, que describe en su cabecera las guardas que deben pasar).

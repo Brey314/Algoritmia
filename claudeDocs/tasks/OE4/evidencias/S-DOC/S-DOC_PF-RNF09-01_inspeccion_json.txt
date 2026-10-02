@@ -1,0 +1,19 @@
+PF-RNF09-01 - inspeccion de los JSON de perfil en claudeDocs/tasks/OE4/evidencias (01/10/2026)
+Claves permitidas: name, reachedLevel, phases[level, phase, attempts, correctedErrors, stepsUsed, resolutionSeconds]
+  ok  GP1\GP1_OE4GP1_final.json  claves=name,reachedLevel,phases  fases=7
+  ok  GP1\GP1_OE4GP1_tras_N1.json  claves=name,reachedLevel,phases  fases=1
+  ok  GP1\GP1_OE4GP1_tras_N2.json  claves=name,reachedLevel,phases  fases=4
+  ok  GP2\GP2_OE4GP2_final.json  claves=name,reachedLevel,phases  fases=7
+  ok  GP2\GP2_OE4GP2_tras_N1.json  claves=name,reachedLevel,phases  fases=1
+  ok  GP2\GP2_OE4GP2_tras_N2.json  claves=name,reachedLevel,phases  fases=4
+  ok  S-PER\S-PER_OE4N1b_final.json  claves=name,reachedLevel,phases  fases=1
+  ok  S-PER\S-PER_OE4N1b_tras_resumen_N1.json  claves=name,reachedLevel,phases  fases=1
+  ok  S-PER\S-PER_OE4_B_final.json  claves=name,reachedLevel,phases  fases=4
+  ok  S-PER\S-PER_OE4_B_tras_confirmar_taller.json  claves=name,reachedLevel,phases  fases=3
+  ok  S-PER\S-PER_OE4_B_tras_laberinto.json  claves=name,reachedLevel,phases  fases=4
+  ok  S-PER\S-PER_OE4_B_tras_matar_en_2.2.json  claves=name,reachedLevel,phases  fases=2
+  ok  S-PER\S-PER_OE4_E_final.json  claves=name,reachedLevel,phases  fases=6
+  ok  S-SPIKE\S-SPIKE_OE4SPIKE.json  claves=name,reachedLevel,phases  fases=0
+  ok  S-SPIKE\S-SPIKE_OE4_Z_final.json  claves=name,reachedLevel,phases  fases=7
+  (no es perfil) build-rc1.build_status.json
+15 perfiles revisados. Ademas, vistos en vivo durante S-PER/S-DOC: CON.json y OE4R.json = {"name","reachedLevel":1,"phases":[]}

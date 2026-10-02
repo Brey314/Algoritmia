@@ -1,13 +1,52 @@
-"""Arma el entregable del OE3: el documento principal (capítulos de src/) y cada anexo en su propio
-.docx — A (matriz RF→pruebas), B (las fases del Slice 1), C–G (los demás documentos de resultados)
-y H (actas).
+"""Arma el entregable del OE3: el documento principal (capítulos de src/) y sus siete anexos, cada uno
+en su propio .docx. El Anexo A es la matriz RF -> pruebas que escribe tools/rf_matrix.py; los B a G
+se redactan en src/anexos/.
 
-Uso: python claudeDocs/entregables/OE3/tools/build.py
-Requiere pypandoc_binary (pandoc 3.9) y Microsoft Word (para tablas, numeración de páginas,
-tabla de contenido y PDF de revisión, vía tools/word_finalize.ps1).
+Uso (desde cualquier carpeta del repositorio):
+    python claudeDocs/entregables/OE3/tools/build.py [--no-word] [--publish]
+
+  (sin opciones)  arma los 8 .docx en claudeDocs/entregables/OE3/build/ (con el Markdown intermedio y
+                  un PDF de revisión por documento) y corre las guardas. No toca docs/OE3.
+  --no-word       salta tools/word_finalize.ps1: los .docx quedan sin cuadrícula en las tablas, sin
+                  número de página, con la tabla de contenido vacía y sin PDF. Es para probar el
+                  generador mientras otro proceso usa Word; no se combina con --publish.
+  --publish       si las guardas pasan, copia los 8 .docx a docs/OE3/, donde están versionados junto
+                  a fig/. Es lo único que escribe allí: un armado sin --publish no copia ni borra nada.
+
+Fuentes (todas en Markdown de pandoc, el mismo de los capítulos):
+  src/01-... a 12-*.md   los capítulos del documento principal, en el orden de CHAPTERS.
+  src/A-matriz-rf.md     Anexo A. Lo escribe rf_matrix.py: se corre antes, y al cierre con --worktree
+                         para contar las pruebas del árbol de trabajo.
+  src/anexos/B-slice-1.md, C-slice-2.md, D-slice-3.md, E-arte-y-sonido.md, F-personajes.md,
+  G-slice-4.md          Anexos B a G. El título de nivel 1 va sin «ANEXO X.»: lo añade este script,
+                         junto con la línea que ata el anexo al documento principal; los encabezados
+                         «Anexo ...» internos pasan a «Apéndice». Si una fuente no existe, el armado
+                         avisa y no genera ese anexo; el resto se arma igual.
+Plantilla de estilos: la del OE2 tal como está en el commit 127fbc4, que se extrae con git a
+build/ref_oe2_127fbc4.docx (la del árbol cambió el 29-30/09/2026 y el entregable no debe cambiar de
+aspecto). Las figuras (fig/) se buscan en OE3/ y en docs/OE3/ (--resource-path).
+
+Guardas, sobre el Markdown intermedio de build/ (se corren en cada armado; con --publish, si alguna
+falla no se abre Word ni se copia nada):
+  - se armaron los 8 documentos;
+  - ningún «§» (las remisiones del entregable son «apartado 9.1»), ningún «Anexo H» / «ANEXO H» ni
+    rango de anexos que llegue a la H: no hay Anexo H, las actas están en el SharePoint;
+  - el principal trae las Tablas 2.2, 4.12, 8.1, 8.2 y 9.3, que cita el trabajo de grado;
+  - cada figura fig/... existe y está descargada de LFS.
+Si falta la fuente de un anexo, el armado lo avisa y sigue con los demás; la guarda de los 8 documentos
+falla, así que no se publica un conjunto incompleto. Las líneas que citan las guardas son las del
+Markdown de build/, no las de src/: se ubican por el extracto.
+Sale con 0 si todo está en orden y con 1 si alguna guarda falla (los .docx de build/ quedan armados de
+todos modos) o si falta un capítulo o la plantilla.
+
+Requiere pypandoc_binary (pandoc 3.9), git y, salvo con --no-word, Microsoft Word sin otra
+automatización en curso: word_finalize.ps1 abre su propia instancia por COM y la cierra al terminar.
 """
+import argparse
+import os
 import pathlib
 import re
+import shutil
 import subprocess
 import sys
 import zipfile
@@ -16,12 +55,15 @@ import pypandoc
 
 OE3 = pathlib.Path(__file__).resolve().parents[1]
 ROOT = OE3.parents[2]
-TASKS = ROOT / "claudeDocs" / "tasks"
-ACTAS = ROOT / "docs" / "actas" / "OE3"
-REFERENCE = ROOT / "docs" / "Solucion_OE2_Diseno_final.docx"
-DELIVERY = OE3.parent  # claudeDocs/entregables: el documento principal y sus anexos, juntos
+SRC = OE3 / "src"
 BUILD = OE3 / "build"
+PUBLISHED = ROOT / "docs" / "OE3"  # destino de --publish; allí está también fig/
+RESOURCE_PATH = [OE3, PUBLISHED]
 MAIN = "Solucion_OE3_Prototipo_funcional"
+# docs/Solucion_OE2_Diseno_final.docx es un radicado que se edita (cambió el 29-30/09/2026): la
+# plantilla de estilos se toma de como estaba al armarse el entregable, no del árbol.
+REFERENCE_SOURCE = "127fbc4:docs/Solucion_OE2_Diseno_final.docx"
+REFERENCE = BUILD / "ref_oe2_127fbc4.docx"
 
 CHAPTERS = [
     "01-objetivo.md", "02-metodologia.md", "03-arquitectura.md", "04a-progresion-nivel1.md",
@@ -30,31 +72,31 @@ CHAPTERS = [
     "12-control-cambios.md",
 ]
 
-# Letra, sufijo del archivo y origen: un documento de resultados, la matriz generada, el Slice 1
-# (sus fases, en un solo anexo) o las actas.
+# Letra, sufijo del archivo y fuente (relativa a src/) de cada anexo.
 ANNEXES = [
-    ("A", "Matriz_trazabilidad", "matriz"),
-    ("B", "Slice_1", "slice1"),
-    ("C", "Slice_2", "Slice 2/Slice-2-Resultados.md"),
-    ("D", "Slice_3", "Slice 3/Slice-3-Resultados.md"),
-    ("E", "Arte_y_sonido", "Slice 3/Props-y-Sonidos-Resultados.md"),
-    ("F", "Personajes", "Personajes/Personajes-Resultados.md"),
-    ("G", "Slice_4", "Slice 4/Slice-4-Resultados.md"),
-    ("H", "Actas", "actas"),
+    ("A", "Matriz_trazabilidad", "A-matriz-rf.md"),
+    ("B", "Slice_1", "anexos/B-slice-1.md"),
+    ("C", "Slice_2", "anexos/C-slice-2.md"),
+    ("D", "Slice_3", "anexos/D-slice-3.md"),
+    ("E", "Arte_y_sonido", "anexos/E-arte-y-sonido.md"),
+    ("F", "Personajes", "anexos/F-personajes.md"),
+    ("G", "Slice_4", "anexos/G-slice-4.md"),
 ]
 
-# Las fases del Slice 1, en el orden en que cerraron; cada una conserva su texto y su numeración.
-SLICE_1 = [
-    "Slice 1/Fase-0-Resultados.md",
-    "Slice 1/Fase-1-Resultados.md",
-    "Slice 1/Fase-2-Resultados.md",
-    "Slice 1/Fase-3-Resultados.md",
-    "Slice 1/Fase-5-6-Resultados.md",
-]
+# Las tablas del principal que cita el trabajo de grado: renumerarlas rompe sus remisiones.
+CITED_TABLES = ("1.2", "2.2", "4.12", "8.1", "8.2", "8.3", "9.3", "9.5")
+CITED_FIGURES = ("4.2", "4.7", "4.8")
+FORBIDDEN = (
+    ("«§»", re.compile("§")),
+    ("«Anexo H»", re.compile(r"\banexo h\b", re.I)),
+    ("un rango de anexos que llega a la H", re.compile(r"\banexos? [A-G](?: a |\s*[–-]\s*)H\b", re.I)),
+    ("un marcador «{{...}}» sin rellenar", re.compile(r"\{\{")),
+    ("un comentario de trabajo «<!--»", re.compile(r"<!--")),
+)
 
-# Identificadores que pandoc escribe al pasar de gfm a markdown: no van en el texto.
-HEADING_ID = re.compile(r"[ \t]*\{#[^}\n]*\}[ \t]*$", re.M)
-
+# Enlaces a otros archivos del repositorio (no imágenes): dentro del Word no existen y queda el texto.
+REPO_LINK = re.compile(r"(?<!!)\[([^\]]+)\]\((?!https?:)[^)]*\)")
+# Los emoji de estado salen a color en Word; en un entregable se leen como símbolos sobrios.
 EMOJI = {"✅": "✓", "❌": "✗", "\U0001f7e1": "Parcial:", "⏳": "Pendiente"}
 
 PAGE_BREAK = '```{=openxml}\n<w:p><w:r><w:br w:type="page"/></w:r></w:p>\n```'
@@ -83,16 +125,12 @@ PANDOC_STYLES = """
 """
 
 
-def to_markdown(gfm: str) -> str:
-    """Un documento del repositorio (GitHub Markdown) en el Markdown de pandoc, listo para el Word."""
-    # Los enlaces a otros .md del repositorio no existen dentro del Word: queda el texto.
-    gfm = re.sub(r"\[([^\]]+)\]\((?!https?:)[^)]*\)", r"\1", gfm)
-    # Los emoji de estado salen a color en Word; en un entregable se leen como símbolos sobrios.
-    for emoji, plain in EMOJI.items():
-        gfm = gfm.replace(emoji, plain)
-    text = pypandoc.convert_text(gfm, "markdown", format="gfm", extra_args=["--wrap=none"])
-    # En Windows pandoc devuelve CRLF, y con él la expresión de los identificadores no llega al fin de línea.
-    return HEADING_ID.sub("", text.replace("\r\n", "\n"))
+def plain(text: str) -> str:
+    """Quita de una fuente lo que no existe dentro del Word: enlaces a otros archivos y emoji de estado."""
+    text = REPO_LINK.sub(r"\1", text)
+    for emoji, simple in EMOJI.items():
+        text = text.replace(emoji, simple)
+    return text
 
 
 def headings(lines: list[str], rewrite) -> list[str]:
@@ -107,8 +145,7 @@ def headings(lines: list[str], rewrite) -> list[str]:
 
 
 def internal(text: str) -> str:
-    """Los anexos propios de un documento de resultados pasan a «Apéndice»: dentro del entregable,
-    «Anexo B» es otra cosa."""
+    """Un «Anexo» propio de la fuente pasa a «Apéndice»: dentro del entregable, «Anexo B» es otra cosa."""
     return re.sub(r"^Anexo\b", "Apéndice", text)
 
 
@@ -118,83 +155,22 @@ def origin(letter: str) -> str:
             f"Documento principal: {MAIN}.docx.*")
 
 
-def results_annex(letter: str, relative: str) -> str:
-    """Un documento de resultados como anexo: su título pasa a «ANEXO X.»; sus secciones conservan el nivel."""
-    lines = to_markdown((TASKS / relative).read_text(encoding="utf-8")).splitlines()
+def annex(letter: str, source: pathlib.Path) -> str:
+    """Un anexo: su título de nivel 1 pasa a «ANEXO X. …»; sus secciones conservan el nivel."""
     titled = False
 
     def rewrite(level: int, text: str) -> str:
         nonlocal titled
         if level == 1 and not titled:
             titled = True
-            return f"# ANEXO {letter}. {text.upper()}\n\n{origin(letter)}"
+            title = re.sub(r"^ANEXO [A-Z]\.\s*", "", text, flags=re.I)  # rf_matrix.py ya lo escribe puesto
+            return f"# ANEXO {letter}. {title.upper()}\n\n{origin(letter)}"
         return "#" * level + " " + internal(text)
 
-    out = headings(lines, rewrite)
+    out = headings(plain(source.read_text(encoding="utf-8")).splitlines(), rewrite)
     if not titled:
-        raise SystemExit(f"{relative}: no tiene título de nivel 1")
+        raise SystemExit(f"{source.name}: no tiene título de nivel 1")
     return "\n".join(out)
-
-
-def slice1_annex(letter: str) -> str:
-    """Anexo B: los documentos de resultados de las fases del Slice 1, uno tras otro. El título de
-    cada fase pasa a sección y lo suyo baja un nivel; el documento principal las cita como
-    «Anexo B, Fase N, §x»."""
-    parts = [f"# ANEXO {letter}. SLICE 1 — GOLDEN PATH TEMPRANO: RESULTADOS DE LAS FASES 0 A 3, 5 Y 6",
-             "", origin(letter), "",
-             "Reúne los cinco documentos de resultados del primer incremento, en el orden en que cerraron "
-             "sus fases: Fase 0 (cimientos), Fase 1 (navegación mínima), Fase 2 (andamiaje mínimo), Fase 3 "
-             "(primera versión del Nivel 1) y Fases 5 y 6 (mecánica vigente del Nivel 1, INC-47). Cada fase "
-             "empieza en página nueva y conserva íntegros su texto y su numeración propia; el documento "
-             "principal las cita como «Anexo B, Fase N, §x»."]
-    for relative in SLICE_1:
-        lines = to_markdown((TASKS / relative).read_text(encoding="utf-8")).splitlines()
-        titled = False
-
-        def rewrite(level: int, text: str) -> str:
-            nonlocal titled
-            if level == 1 and not titled:
-                titled = True
-                return f"## {text}"
-            return "#" * (level + 1) + " " + internal(text)
-
-        body = headings(lines, rewrite)
-        if not titled:
-            raise SystemExit(f"{relative}: no tiene título de nivel 1")
-        parts.append("\n".join(["", PAGE_BREAK, "", *body]))
-    return "\n\n".join(parts)
-
-
-def matrix_annex() -> str:
-    """El Anexo A lo genera tools/rf_matrix.py en src/A-matriz-rf.md."""
-    lines = (OE3 / "src" / "A-matriz-rf.md").read_text(encoding="utf-8").splitlines()
-    return "\n".join(headings(lines, lambda level, text: f"# {text}\n\n{origin('A')}" if level == 1
-                              else "#" * level + " " + text))
-
-
-def actas_annex(letter: str) -> str:
-    """El anexo de las actas: las nueve del tercer objetivo, íntegras, una por página."""
-    parts = [f"# ANEXO {letter}. ACTAS DE SEGUIMIENTO DEL OBJETIVO ESPECÍFICO 3 (D01–D09)", "", origin(letter), "",
-             "Transcripción íntegra de las nueve actas de sesión de trabajo del tercer objetivo, "
-             "del 2 al 24 de septiembre de 2026. La sección 6 de cada acta contiene el tablero Kanban "
-             "del proyecto (véase el documento principal, §2.3)."]
-    for acta in sorted(ACTAS.glob("Acta_D0*.md")):
-        date = re.search(r"(\d{4})-(\d{2})-(\d{2})", acta.name)
-        lines = acta.read_text(encoding="utf-8").splitlines()
-        # El título es la primera línea: en unas actas es encabezado («# ACTA…») y en otras texto
-        # plano, con las secciones en el nivel 1. Las secciones pasan al nivel 3 en todas.
-        title = lines[0].lstrip("#").strip().strip("*").strip()
-        levels = []
-        headings(lines[1:], lambda level, text: levels.append(level) or "")
-        shift = 3 - min(levels) if levels else 0
-        body = headings(lines[1:], lambda level, text: "#" * (level + shift) + " " + text)
-        text = to_markdown("\n".join(body))
-        series = re.search(r"Acta_(D\d+)", acta.name).group(1)
-        if series not in title:
-            title += f" ({series})"  # la D01 se registró como O03, la tercera de la serie del OE2
-        heading = f"## {title} — {date.group(3)}/{date.group(2)}/{date.group(1)}"
-        parts.append("\n".join(["", PAGE_BREAK, "", heading, "", text]))
-    return "\n\n".join(parts)
 
 
 def with_page_breaks(markdown: str) -> str:
@@ -211,11 +187,11 @@ def with_page_breaks(markdown: str) -> str:
     return "\n".join(out)
 
 
-def with_toc(markdown: str, depth: int = 2) -> str:
+def with_toc(markdown: str) -> str:
     """Tabla de contenido al principio si el documento tiene secciones que listar."""
     sections = []
     headings(markdown.splitlines(), lambda level, text: sections.append(level) or "")
-    return f"{toc(depth)}\n\n{PAGE_BREAK}\n\n{markdown}" if sections.count(2) >= 3 else markdown
+    return f"{toc()}\n\n{PAGE_BREAK}\n\n{markdown}" if sections.count(2) >= 3 else markdown
 
 
 def add_styles(docx: pathlib.Path) -> None:
@@ -236,50 +212,126 @@ def add_styles(docx: pathlib.Path) -> None:
     temporary.replace(docx)
 
 
+def extract_reference() -> None:
+    """Deja en build/ la plantilla de estilos: el .docx del OE2 en el commit 127fbc4."""
+    try:
+        blob = subprocess.run(["git", "-C", str(ROOT), "show", REFERENCE_SOURCE],
+                              capture_output=True, check=True).stdout
+    except (subprocess.CalledProcessError, FileNotFoundError) as error:
+        raise SystemExit(f"no se pudo extraer {REFERENCE_SOURCE} con git (¿clon incompleto?): {error}")
+    if not blob.startswith(b"PK"):
+        raise SystemExit(f"{REFERENCE_SOURCE} no es un .docx (¿un puntero de Git LFS?)")
+    REFERENCE.write_bytes(blob)
+
+
 def render(markdown: str, stem: str) -> tuple[pathlib.Path, pathlib.Path]:
-    """Markdown → .docx con la plantilla del OE2 y los estilos que faltan. Devuelve (.docx, .pdf de revisión)."""
+    """Markdown -> .docx con la plantilla del OE2 y los estilos que faltan. Devuelve (.docx, .pdf de revisión)."""
     (BUILD / f"{stem}.md").write_text(markdown, encoding="utf-8")
-    docx = DELIVERY / f"{stem}.docx"
+    docx = BUILD / f"{stem}.docx"
     pypandoc.convert_text(
         markdown, "docx", format="markdown-auto_identifiers", outputfile=str(docx),
-        extra_args=[f"--reference-doc={REFERENCE}", f"--resource-path={OE3}", "--wrap=none",
-                    "--syntax-highlighting=none"])
+        extra_args=[f"--reference-doc={REFERENCE}",
+                    f"--resource-path={os.pathsep.join(map(str, RESOURCE_PATH))}",
+                    "--wrap=none", "--syntax-highlighting=none"])
     add_styles(docx)
     return docx, BUILD / f"{stem}.pdf"
 
 
-def annex_markdown(letter: str, source: str) -> str:
-    if source == "matriz":
-        return matrix_annex()
-    if source == "actas":
-        return actas_annex(letter)
-    if source == "slice1":
-        return slice1_annex(letter)
-    return results_annex(letter, source)
+def guards(documents: list[tuple[pathlib.Path, pathlib.Path]]) -> list[str]:
+    """Lo que impide publicar, leído del Markdown intermedio (build/*.md), que es lo que llega al Word."""
+    problems = []
+    built = {docx.stem for docx, _ in documents}
+    absent = [letter for letter, suffix, _ in ANNEXES if f"Solucion_OE3_Anexo_{letter}_{suffix}" not in built]
+    if absent:
+        problems.append(f"no se armaron los anexos {', '.join(absent)}: falta su fuente en src/")
+    for stem in sorted(built):
+        text = (BUILD / f"{stem}.md").read_text(encoding="utf-8")
+        lines = text.splitlines()
+        for label, pattern in FORBIDDEN:
+            hits = [(number, line, match) for number, line in enumerate(lines, 1)
+                    for match in pattern.finditer(line)]
+            if hits:
+                shown = "; ".join(f"l. {number} «...{line[max(0, match.start() - 25):match.end() + 25]}...»"
+                                  for number, line, match in hits[:3])
+                problems.append(f"{stem}.md: {len(hits)} veces {label} (p. ej. {shown})")
+        for figure in sorted(set(re.findall(r"\]\((fig/[^)\s]+)\)", text))):
+            size = max(((base / figure).stat().st_size for base in RESOURCE_PATH if (base / figure).is_file()),
+                       default=0)
+            if size < 1024:  # un puntero de LFS sin descargar pesa unos cientos de bytes
+                problems.append(f"{stem}.md: la figura {figure} no está o no está descargada de LFS")
+    main_text = (BUILD / f"{MAIN}.md").read_text(encoding="utf-8")
+    for number in CITED_TABLES:
+        if not re.search(rf"^\*\*Tabla {re.escape(number)}\.\*\*", main_text, re.M):
+            problems.append(f"{MAIN}.md: falta la Tabla {number}, que cita el trabajo de grado")
+    for number in CITED_FIGURES:
+        if not re.search(rf"!\[Figura {re.escape(number)}\.", main_text):
+            problems.append(f"{MAIN}.md: falta la Figura {number}, que cita el trabajo de grado")
+    return problems
 
 
-def main() -> None:
-    missing = [c for c in CHAPTERS + ["A-matriz-rf.md"] if not (OE3 / "src" / c).exists()]
-    if missing:
-        raise SystemExit(f"faltan capítulos: {missing}")
-    BUILD.mkdir(exist_ok=True)
-    # Lo de un armado anterior —anexos con otra letra o nombre— no puede quedar junto a lo nuevo.
-    for stale in [*DELIVERY.glob("Solucion_OE3_Anexo_*.docx"), *BUILD.glob("*.md"), *BUILD.glob("*.pdf")]:
-        stale.unlink()
-    body = with_page_breaks("\n\n".join((OE3 / "src" / c).read_text(encoding="utf-8") for c in CHAPTERS))
-    documents = [render(f"{toc()}\n\n{PAGE_BREAK}\n\n{body}\n", MAIN)]
-    for letter, suffix, source in ANNEXES:
-        # El del Slice 1 reúne cinco documentos: su tabla de contenido baja a las secciones de cada fase.
-        depth = 3 if source == "slice1" else 2
-        documents.append(render(with_toc(annex_markdown(letter, source), depth) + "\n",
-                                f"Solucion_OE3_Anexo_{letter}_{suffix}"))
-    # Un solo Word para todos: tablas, pie con número de página, tabla de contenido y PDF.
+def finalize(documents: list[tuple[pathlib.Path, pathlib.Path]]) -> None:
+    """Un solo Word para todos: tablas, pie con número de página, tabla de contenido y PDF."""
     listing = BUILD / "documentos.txt"
     listing.write_text("\n".join(f"{docx}\t{pdf}" for docx, pdf in documents) + "\n", encoding="utf-8")
     subprocess.run(["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
                     str(OE3 / "tools" / "word_finalize.ps1"), "-List", str(listing)], check=True)
+
+
+def publish(documents: list[tuple[pathlib.Path, pathlib.Path]]) -> None:
+    """Copia los .docx a docs/OE3. Antes de copiar nada se comprueba que ninguno esté abierto en Word,
+    para no dejar el conjunto a medias."""
+    for docx, _ in documents:
+        target = PUBLISHED / docx.name
+        if target.exists():
+            try:
+                with open(target, "r+b"):
+                    pass
+            except PermissionError:
+                raise SystemExit(f"{target.name} está abierto en otro programa (¿Word?): "
+                                 "ciérrelo y repita --publish")
+    for docx, _ in documents:
+        shutil.copyfile(docx, PUBLISHED / docx.name)
+        print(f"publicado: {PUBLISHED / docx.name}")
+
+
+def main(argv: list[str] | None = None) -> int:
+    sys.stdout.reconfigure(encoding="utf-8")  # canalizada, Windows la deja en cp1252: acentos rotos
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--no-word", action="store_true", help="salta word_finalize.ps1 (solo para probar el generador)")
+    parser.add_argument("--publish", action="store_true", help="si las guardas pasan, copia los 8 .docx a docs/OE3")
+    args = parser.parse_args(argv)
+    if args.publish and args.no_word:
+        parser.error("--publish exige el paso de Word: un .docx sin terminar no se publica")
+    missing = [c for c in CHAPTERS if not (SRC / c).exists()]
+    if missing:
+        raise SystemExit(f"faltan capítulos: {missing}")
+    BUILD.mkdir(exist_ok=True)
+    # Lo de un armado anterior —anexos con otra letra o nombre— no puede quedar junto a lo nuevo. Solo
+    # build/: docs/OE3 tiene los anexos versionados y únicamente --publish lo toca.
+    for stale in (*BUILD.glob("Solucion_OE3_*"), *BUILD.glob("documentos.txt")):
+        stale.unlink()
+    extract_reference()
+    body = with_page_breaks("\n\n".join((SRC / c).read_text(encoding="utf-8") for c in CHAPTERS))
+    documents = [render(f"{toc()}\n\n{PAGE_BREAK}\n\n{body}\n", MAIN)]
+    for letter, suffix, name in ANNEXES:
+        if not (SRC / name).exists():
+            print(f"AVISO: falta src/{name}: el Anexo {letter} no se arma")
+            continue
+        documents.append(render(with_toc(annex(letter, SRC / name)) + "\n", f"Solucion_OE3_Anexo_{letter}_{suffix}"))
+    problems = guards(documents)
+    for problem in problems:
+        print(f"GUARDA: {problem}")
+    if args.publish and problems:
+        print(f"No se publica: {len(problems)} guardas fallan. No se abrió Word ni se tocó docs/OE3.")
+        return 1
+    if not args.no_word:
+        finalize(documents)
     for docx, _ in documents:
         print(docx)
+    if args.publish:
+        publish(documents)
+    print("guardas: todas pasan" if not problems else f"guardas: {len(problems)} fallan")
+    return 1 if problems else 0
 
 
 if __name__ == "__main__":

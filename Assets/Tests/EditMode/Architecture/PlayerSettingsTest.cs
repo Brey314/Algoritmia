@@ -50,6 +50,18 @@ namespace Game.Architecture.Tests
                 "Unity Connect sigue deshabilitado: sin transmisión por red a terceros (RNF-08)");
             Assert.That(connect, Does.Match(@"UnityAnalyticsSettings:\s*\n\s+m_Enabled: 0\b"),
                 "Unity Analytics sigue deshabilitado (RNF-10)");
+
+            // DEF-SPIKE-01: el rc1 se conectó a Internet y dejó restos en LocalLow y HKCU. Vale todo
+            // servicio de Unity del archivo, no solo los dos de arriba: ninguno encendido, y los tres que
+            // no se llaman «Enabled» tampoco (el diagnóstico del motor viene encendido de fábrica).
+            Assert.That(connect, Does.Not.Match(@"(?m)^\s+m_Enabled: [^0\s]"),
+                "ningún servicio de Unity está encendido: Analytics, Insights, Performance, Purchasing, Ads (RNF-10)");
+            Assert.That(connect, Does.Match(@"InsightsSettings:\s*\n\s+m_EngineDiagnosticsEnabled: 0\b"),
+                "el diagnóstico del motor de Unity (Insights) sigue apagado: ni conexiones ni archivos en LocalLow (RNF-10, RNF-11)");
+            Assert.That(connect, Does.Match(@"m_EnableCloudDiagnosticsReporting: 0\b"),
+                "los informes de fallos a la nube de Unity siguen apagados (RNF-10)");
+            Assert.That(settings, Does.Match(@"enableCrashReportAPI: 0\b"),
+                "el ejecutable no guarda ni envía informes de fallos (RNF-10)");
         }
 
         [Test]

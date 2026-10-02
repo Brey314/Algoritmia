@@ -15,6 +15,17 @@ técnico es [`plan.md`](plan.md). Ninguno de los tres rediscute `claudeDocs/SPEC
 > la tipografía de `TeacherReport` y sus dos `ScrollRect`. La primera corrida completa de la
 > suite tras el trabajo de arte, sonido y personajes del 24–25/09 está en la última sección,
 > «Corrida completa de la suite (25/09/2026)».
+>
+> **01/10/2026:** el módulo cambió el 30/09 con el cierre de inconsistencias (`37b3cb7`): el informe
+> docente avisa de la ruta de respaldo y sus textos viven en datos, «Salir» pide confirmación, el
+> menú de niveles marca «Completado» y desbloquea por fases, y el ejecutable se identifica como
+> «Algoritmia». Lo registra el [Anexo B](#anexo-b--lo-que-cambió-después-del-25092026-01102026), con
+> la tabla de P12 de las doce escenas. Al final están la revisión uno por uno de los diez criterios
+> de éxito de `SPEC.md` y la corrida completa de la suite del 01/10/2026, que es la vigente.
+>
+> *(01/10/2026, más tarde: la vigente pasa a ser la verificación final antes del build, en la
+> última sección, «Verificación final y paquete (01/10/2026)», con el tamaño del ejecutable
+> candidato.)*
 
 | Campo | Dato |
 |---|---|
@@ -336,6 +347,14 @@ Ver A.3, A.4 y A.6.)*
 **Sin bloqueantes de código.** Con RF-46 y RF-47 cerrados, los 47 RF del proyecto están
 implementados; lo que queda es cierre de proyecto, no desarrollo.
 
+*(01/10/2026: las revisiones con el usuario, D1 final y la pregunta abierta 2 las resolvió Santiago
+el 30/09/2026 (acta D10, §5): las revisiones se marcan tras verificarlas con pruebas y capturas, el
+boceto de D1 queda como arte definitivo y el informe docente no lleva protección de acceso. PG-01 y
+PG-02 están cerrados. El formato de RNF-12 está escrito y la inspección textual de RNF-22, hecha;
+el Golden Path doble, la parte visual de RNF-22 y la columna del equipo 1 de P12 se hacen sobre el
+ejecutable candidato, y CT-02 y la columna del equipo 2 quedan a cargo de Santiago. Detalle en el
+Anexo B, B.7 y B.8.)*
+
 ---
 
 ## 9. Cómo se reproduce
@@ -497,3 +516,329 @@ ejecutó el runner coinciden con el conteo estático.
 efímero en `Game.EditorTools` registra los callbacks de `TestRunnerApi`, escribe el resultado en
 `Temp/` y se dispara por reflexión con `execute_script` de coplay. Al terminar se borró: no es
 código del juego.
+
+---
+
+## Anexo B — lo que cambió después del 25/09/2026 (01/10/2026)
+
+El Anexo A dice que desde `9c34924` no había cambiado ningún archivo propio del módulo. Dejó de ser
+cierto el 30/09: el cierre de inconsistencias (`37b3cb7`) tocó `ReportContent`,
+`TeacherReportController`, `EraseConfirmationDialog`, `TeacherReport.unity` y sus pruebas, y con
+ellos el guardado, la salida, el menú de niveles y el ejecutable. Este anexo lo registra con lo que
+el 01/10 añadió para medir el proyecto, y la tabla de P12 con las doce escenas. Fuentes: `git log`
+hasta `359365e` (30/09/2026), el acta D10 y la rama `feat/cierre-de-slices-y-oe3`, que entra en el
+commit de cierre con la tarjeta D10-5.
+
+### B.1 Qué cambió y dónde
+
+| Fecha | Commit | Qué cambió |
+|---|---|---|
+| 29/09 | `d105838` | El plan de pruebas del OE4 — B.2 |
+| 30/09 | `37b3cb7` | El ejecutable se identifica como «Algoritmia» (INC-97); «Salir» con confirmación y aviso de respaldo (INC-77, INC-48); textos de perfiles y borrado en datos (INC-104); menú de niveles con «Completado» y arte real (INC-76, INC-82); informe docente en Baloo 2 y Nunito con el mapa de controles del juego (INC-79, INC-80); desbloqueo por fases (INC-116) — B.3 a B.6 |
+| 30/09 | `5a22df1` | Documentos alineados con el juego (`INCONSISTENCIAS.md`, rev. 15) y las notas del 29/09 de A.6 |
+| 30/09 | acta D10 | Decisiones de cierre del slice — B.7 |
+| 01/10 | sin hash, D10-5 | Una línea `RNF-04` por carga en `SceneLoader`, para medir P12 sobre el ejecutable — B.8 |
+
+`d105838`, `37b3cb7` y `5a22df1` entraron en `main` con el PR #88 (`1c7f4ab`, 30/09/2026).
+
+### B.2 `d105838` (29/09/2026): el plan de pruebas del OE4
+
+`claudeDocs/tasks/OE4/plan.md` fija la versión congelada, los ejecutores, el arnés sobre el
+ejecutable, los perfiles semilla y el registro de defectos; `casos.md` es el catálogo de unos 120
+casos (`PF-*`) sobre los RF y los RNF, y `todo.md`, el tablero de T01 a T28 con seis puntos de
+control. Es la base de P12 y de los criterios 6, 7 y 9 de `SPEC.md` (sección siguiente). El mismo
+commit corrigió el doble clic al salir de un cierre reflexivo, que saltaba el resumen de fin de
+nivel; se registra en `Slice 2/Slice-2-Resultados.md`, Anexo B, B.3.
+
+### B.3 El ejecutable (INC-97, decisiones D2 y D3 del 29/09/2026)
+
+- `productName` «Algoritmia» y `companyName` «Universidad Catolica de Colombia»: el `Player.log`, la
+  ruta de respaldo y la clave del registro del reproductor viven bajo
+  `…\Universidad Catolica de Colombia\Algoritmia\`.
+- Sin analítica ni estadísticas de hardware, sin la pantalla de presentación de Unity y sin
+  Alt+Intro, y sin retirar ningún paquete. La aserción sobre `SENTIS_ANALYTICS_ENABLED` se retiró: la
+  repone `com.unity.ai.inference` en cada recarga y solo afecta al Editor.
+- Lo vigila `PlayerSettingsTest` (nuevo, `Game.Architecture.Tests`):
+  `Architecture_RF01_ElEjecutableSeIdentificaComoAlgoritmia`,
+  `Architecture_RNF10_ElEjecutableNoEnviaAnaliticaNiEstadisticasDeHardware`,
+  `Architecture_RNF02_ElEjecutableNoAlternaPantallaCompletaConAltIntro` y
+  `Architecture_RF01_ElEjecutableArrancaSinPantallaDePresentacionDeUnity`.
+
+### B.4 Perfiles, guardado y salida (INC-48, INC-77, INC-104)
+
+- **La ruta de respaldo, a la vista.** `ProfileSession` expone si el guardado cayó a la ruta de
+  respaldo y en qué carpeta (`ProfileSession_INC34_ExponeQueElGuardadoCayoALaRutaDeRespaldo`,
+  `ProfileSession_INC34_NoIndicaRespaldoConDatosEscribible`). El informe docente avisa entonces al
+  docente de dónde quedaron los perfiles, sin cifras, como pide la arquitectura §7
+  (`ReportContent.FallbackStorageNotice`; `TeacherReport_INC34_AdvierteAlDocenteCuandoElGuardadoUsaLaRutaDeRespaldo`,
+  `TeacherReport_INC34_NoMuestraElAvisoConDatosEscribible`).
+- **«Salir» pide confirmación** («Quedarme» / «Cerrar el juego») e informa del guardado; con `Datos/`
+  no escribible muestra la carpeta de respaldo (`GameTitleConfig.FallbackSaveNotice`) y ajusta la
+  letra para no tapar los botones. Pruebas: `MainMenu_HU18_SalirPideConfirmacionAntesDeCerrar`,
+  `MainMenu_HU18_QuedarmeVuelveAlMenuSinGuardarNiCerrar`,
+  `MainMenu_HU18_AdvierteLaRutaDeRespaldoAntesDeCerrar`,
+  `MainMenu_HU18_NoMuestraAvisoDeRespaldoConDatosEscribible` y
+  `MainMenu_HU18_ElAvisoDeRespaldoConUnaRutaLargaNoTapaLosBotones`.
+- **Textos en datos** (INC-104, CT-05): los cinco mensajes de la selección de perfil pasan a
+  `ProfileSelectContent` (un `ScriptableObject` nuevo, `Data/ProfileSelectContent.asset`) y la
+  pregunta del borrado del docente a `ReportContent.ErasePromptFormat`. En la tabla de A.2, las
+  referencias de la fila «Pregunta» a `ProfileSelectController.cs:133` y `EraseConfirmationDialog.cs:54`
+  ya no son la fuente del texto.
+
+### B.5 Menú de niveles e informe docente (INC-76, INC-79, INC-80, INC-82)
+
+- **«Completado».** Un nivel con todas sus fases confirmadas lleva en el menú un icono de visto y la
+  palabra «Completado» —no solo color (RNF-19)— y se puede repetir; sin cifras (CP-03). Pruebas:
+  `LevelSelect_HU14_ElNivelCompletadoSeMarcaEnElMenu`,
+  `LevelSelect_HU14_UnNivelConFasesPendientesNoSeMarcaCompletado` y
+  `LevelSelect_HU14_UnPerfilNuevoNoMuestraNingunNivelCompletado`.
+- **Arte real** en inicio, créditos y menú de niveles en lugar de los rótulos «… · placeholder»
+  (INC-82), y la tarjeta del Nivel 2 con una ilustración 16:9 sin costura. Pruebas:
+  `Scenes_RNF01_NingunTextoDeEscenaEsUnRotuloDeTrabajo` y
+  `LevelSelect_RF03_CadaTarjetaMuestraUnaIlustracionSinCostura`.
+- **El informe docente** en Baloo 2 y Nunito, a 26 px como mínimo (INC-79), y con el mapa de controles
+  del juego en lugar del `DefaultInputActions` que llevaba incrustado (INC-80): son los dos pendientes
+  de A.6, que este commit implementó. Lo vigilan `Scenes_CN04_NingunTextoUsaLaFuenteIntegradaDelMotor`
+  e `InputSchemeTest`. Vence la fila «Tipografía» de la tabla de A.2.
+
+### B.6 Desbloqueo por fases (INC-116)
+
+Decisión de Santiago del 30/09/2026. Si el juego se cerraba durante la escena 2.5, las tres fases del
+Nivel 2 ya estaban en disco y el menú lo marcaba «Completado», pero el Nivel 3 seguía bloqueado
+hasta repetir el Nivel 2 y llegar a su resumen. `LevelUnlockPolicy.IsUnlocked` da ahora un nivel por
+desbloqueado si lo dice el nivel alcanzado o si todas las fases del anterior están confirmadas. Se
+deriva del progreso guardado, sin campo nuevo (RNF-09), y lo consultan el menú de niveles y
+`GameFlow.TryStartPlaying`. `NarrativeVisitPolicy` sigue leyendo el nivel alcanzado, así que el
+cierre reflexivo sigue sin poder omitirse la primera vez (CP-07, RF-12). Pruebas:
+`LevelUnlockPolicy_RNF14_UnNivelConTodasSusFasesConfirmadasDesbloqueaElSiguiente`,
+`LevelUnlockPolicy_RNF14_UnNivelConFasesPendientesNoDesbloqueaElSiguiente`,
+`GameFlow_RNF14_EntraAlNivelQueDesbloqueanLasFasesConfirmadasDelAnterior` y
+`LevelSelect_RNF14_UnNivelConTodasSusFasesConfirmadasDesbloqueaElSiguiente`.
+
+### B.7 Decisiones de cierre del acta D10 (30/09/2026)
+
+- **Revisiones con el usuario** (las cinco de P-A a P-E): se marcan como revisadas por Santiago el
+  30/09/2026, siempre después de verificarlas con pruebas y capturas.
+- **D1**: el boceto queda como arte definitivo de los cuatro indicadores; es arte propio, y lo cubre la
+  línea «interfaz: originales del proyecto» de `CreditsContent.asset`.
+- **Pregunta abierta 2**: el informe docente no lleva protección de acceso, porque ningún requerimiento
+  la pide.
+- **RNF-12**: el formato de consentimiento del acudiente y de asentimiento del estudiante, conforme a
+  la Ley 1581 de 2012 y al Decreto 1377 de 2013, está en `claudeDocs/tasks/OE4/Consentimiento-RNF12.md`
+  y va en blanco como anexo del trabajo de grado; los firmados los recoge Santiago antes de la sesión
+  con estudiantes.
+- **RNF-22**: la inspección textual está hecha (01/10/2026): ningún texto de `Assets/Game/Data`, de
+  las escenas ni de los prefabs lleva enlaces, precios, compras ni publicidad, y
+  `Packages/manifest.json` no trae paquetes de compras ni de anuncios. La parte visual —sin violencia
+  explícita— se hace sobre las capturas del recorrido completo del ejecutable.
+- **Golden Path doble** (RNF-13): sobre el ejecutable candidato, con un arnés que lo maneja como caja
+  negra (`claudeDocs/tasks/OE4/herramientas/oe4.ps1`).
+- **A cargo de Santiago**, con un guion por casilla en `claudeDocs/tasks/OE4/Hoja-HUM.md`: CT-02 (H5),
+  la columna del equipo 2 de P12 (H3), la red apagada (H4) y el Golden Path cronometrado (H8). Se
+  marcan cuando entregue los resultados; no pasan a trabajos futuros.
+
+*(01/10/2026, después: desde INC-127 la línea de `CreditsContent.asset` dice «Entornos, objetos e
+interfaz: originales del proyecto, salvo los iconos de pausa.», y una oración nueva acredita los tres
+glifos del menú de pausa: «Iconos de pausa: Phosphor Icons, licencia MIT.». Los cuatro iconos de los
+indicadores de D1 siguen cubiertos como arte propio. Detalle en
+`Slice 3/Props-y-Sonidos-Resultados.md`, Anexo D.)*
+
+### B.8 La línea `RNF-04` y la tabla de P12
+
+`SceneLoader` deja en el registro del reproductor una línea por carga,
+`RNF-04: «<escena>» cargó en <segundos> s`, con tres decimales y punto en cualquier cultura y sin
+pila; la cifra no llega nunca a la pantalla (CP-03). Prueba:
+`SceneLoader_RNF04_CadaCargaDejaSuTiempoEnElRegistro`. Con ella se mide sobre el ejecutable la carga
+de cada escena.
+
+La tabla de `todo.md` lista nueve de las doce escenas de `EditorBuildSettings`: le faltan
+`LevelSelect`, `Credits` y `LevelSummary`. Esta es la tabla con las doce, en el orden del build:
+
+| Medición | Presupuesto | Equipo 1 | Equipo 2 |
+|---|---|---|---|
+| Carga `Boot` | < 10 s | escena inicial: arranque hasta `MainMenu` cargado ≤ 3,23 s | H3 |
+| Carga `MainMenu` | < 10 s | 0,11 s | H3 |
+| Carga `LevelSelect` *(fila añadida el 01/10/2026)* | < 10 s | 0,08 s | H3 |
+| Carga `Credits` *(fila añadida el 01/10/2026)* | < 10 s | 0,04 s | H3 |
+| Carga `Narrative` | < 10 s | 0,78 s | H3 |
+| Carga `Level1_Cave` | < 10 s | 0,16 s | H3 |
+| Carga `LevelSummary` *(fila añadida el 01/10/2026)* | < 10 s | 0,04 s | H3 |
+| Carga `Level2_Forest` | < 10 s | 0,05 s | H3 |
+| Carga `Level2_Workshop` | < 10 s | 0,09 s | H3 |
+| Carga `Level2_Maze` | < 10 s | 0,09 s | H3 |
+| Carga `Level3_River` | < 10 s | 0,09 s | H3 |
+| Carga `TeacherReport` | < 10 s | 0,06 s | H3 |
+| Memoria máxima en ejecución | < 2 GB | 446 MB de trabajo · 1 179 MB privada | H3 |
+| Tamaño del paquete | < 500 MB | 479,0 MB | H3 |
+| Golden Path completo | 20–40 min | H8 | H8 |
+
+El equipo 1 es el de desarrollo. La columna del equipo 2 la llena Santiago con la sesión H3 de
+`Hoja-HUM.md`, y la fila del Golden Path completo, con H8, en la columna del equipo que use: los
+recorridos automatizados sobre el ejecutable solo pueden cerrar que transcurren sin incidencias, no
+cuánto tarda un estudiante. La
+última medición registrada es la del 21/09/2026, sobre once escenas: carga de `Level3_River` en
+1,36 s, 1 226 MB reservados y paquete de 217 MB (`Slice 3/Slice-3-Resultados.md`, §6).
+
+*(01/10/2026, después: la columna del equipo 1 se midió sobre el ejecutable. Las cargas son el peor
+caso por escena entre rc1 (188 cargas en 20 lanzamientos) y rc2 (74 en 7), con dos decimales, leído
+de la línea `RNF-04`; `Boot` no pasa por `SceneLoader` y se da la cota superior del arranque hasta
+`MainMenu` cargado. Memoria y paquete son de rc2, el ejecutable vigente: rc1 dio 457 MB de trabajo y
+1 195 MB privada. Fuente: `claudeDocs/tasks/OE4/OE4-Resultados.md`, §4.1 a §4.3 y §8.6. La misma
+columna, con las tres filas añadidas, está en la tabla de P12 de `todo.md`.)*
+
+---
+
+## Criterios de éxito de SPEC.md, revisión uno por uno (01/10/2026)
+
+`claudeDocs/SPEC.md`, §Criterios de éxito: uno por KPI del trabajo de grado. Las pruebas citadas
+existen en `Assets/Tests` y pasaron en la suite completa del 01/10/2026 (sección siguiente).
+
+| # | Criterio | Evidencia | Veredicto |
+|---|---|---|---|
+| 1 | **OE1 — Trazabilidad.** El 100 % de los RF implementados, asociado a una faceta del pensamiento computacional o a un lineamiento | OE1 §5.1 y OE2 §3.1 a §3.4: los RF de los niveles (módulos C, D y E) están en la matriz de facetas y los de soporte, andamiaje y evaluación (A, B y F), en las de lineamientos, como resume OE2 §3.6. Se verificó el 30/08/2026 sobre los 47 RF; siguen siendo RF-01 a RF-47, y los cambios del 25/09 al 01/10 corrigen comportamiento y texto sin añadir ni quitar ninguno | **Cumple** |
+| 2 | **OE1 — Criterios pedagógicos.** Al menos el 80 % de los diez CP, integrado en el diseño | OE2 §3.2: los diez CP tienen al menos un RF que los materializa (100 %). Cuatro se verifican además con pruebas que los nombran: CP-02 (20, entre ellas `GameFlow_CP02_NoExisteEstadoDeDerrota`, `RaftAssembly_CP02_NoHayLimiteDeIntentosNiPantallaDeDerrota` y `AssemblyPanel_CP02_UnaFaseQueNoPasaNoSuena`), CP-03 (8, entre ellas `Content_CP03_NingunTextoVisibleAlEstudianteContieneCifrasDeDesempeno` y `LevelSummary_CP03_NoExisteClaseDePuntajeEnElProyecto`), CP-06 (6: `HintPolicy_CP06_*`, `AssemblySequence_CP06_…`, `RaftValidator_CP06_…`, `SequenceExecutor_CP06_…`) y CP-07 (2: `LevelSummary_CP07_ElCierreReflexivoNoEsOmitibleLaPrimeraVez`, `NarrativeVisitPolicy_CP07_ElCruceYLaEscenaFinalNoSeOmitenLaPrimeraVez`) | **Cumple** (10 de 10) |
+| 3 | **OE2 — Progresión.** Tres niveles con dificultad ascendente y desbloqueo secuencial (RF-03) | Tres niveles de una, tres y tres fases (`PhaseId.PhasesPerLevel`): una sola variable en el N1, tres mecánicas distintas en el N2 y tres fases bloqueantes con prueba y depuración en el N3 (OE2 §3.2, CP-04, y §3.6). Desbloqueo: `LevelUnlockPolicy_RF03_*` (5), `LevelSelect_RF03_*`, `GameFlow_RF03_NoPermiteEntrarANivelBloqueado` y `LevelUnlockPolicy_CP02_NuncaRebloqueaUnNivelYaDesbloqueado`; desde el 30/09 el nivel siguiente se abre también con todas las fases del anterior confirmadas (INC-116, B.6) | **Cumple** |
+| 4 | **OE2 — Alineación narrativa.** Más del 85 % de los retos narrativos exige una acción de pensamiento computacional (CP-10) | Los retos que plantean las 18 narrativas se resuelven en las siete fases persistidas (1 + 3 + 3) y en la recolección del N3, y cada uno es una acción de la matriz de facetas de OE2 §3.1: iteración y depuración en el N1; patrones y abstracción, algoritmo y secuencia en el N2; descomposición y depuración en el N3. Ninguno se supera avanzando el texto: el flujo solo sale de una narrativa a la mecánica de su fase (`GameFlow_RNF13_RecorreElGoldenPathCompletoSinEstadoIrrecuperable`, `WheelLevel_RNF13_RecorreElNivel2CompletoHastaElMenuConNivel3Desbloqueado`, `RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio`) | **Cumple** (8 de 8 retos jugables) |
+| 5 | **OE3 — Mecánicas.** Al menos tres mecánicas principales implementadas | Las siete que enumera el criterio, cada una con su escena y sus pruebas: panel de hipótesis e iteración (`Level1_Cave`); selección por patrón (`Level2_Forest`), ensamblaje secuencial (`Level2_Workshop`) y editor de bloques (`Level2_Maze`); movimiento y recolección en la orilla y ensamblaje por fases con prueba y depuración (`Level3_River`) | **Cumple** (siete; pide tres) |
+| 6 | **OE3 — Golden Path.** Cada nivel, de principio a fin sin bloqueos, cierres inesperados ni estados irrecuperables; dos recorridos completos sin incidencias (RNF-13) | En el Editor, los recorridos automatizados por tramos están en verde: `GameFlow_RNF13_…`, `WheelLevel_RNF13_…` —que desde `d105838` exige ver la 2.5 antes del desbloqueo—, `RiverLevel_RNF13_…`, `GameEnding_INC39_RecorreLevelSummaryNarrativeCreditsYMainMenu` y `GameEnding_RF44_LaPruebaSuperadaReproduceElCruceYElCierre`. Los recorridos del juego entero se hicieron sobre el ejecutable con el arnés: tres, de la pantalla de inicio a los créditos y de vuelta, cada uno con perfil nuevo —GP1 (87 min, ventana de 1920 × 1080) y GP2 (33 min, pantalla completa) sobre rc1, y GP3 (16 min, pantalla completa) sobre rc2—, sin bloqueos, cierres inesperados ni estados irrecuperables y con las siete fases en el JSON. Los defectos no bloqueantes que vieron los dos primeros —DEF-GP1-01 a 03 en el laberinto y DEF-SPIKE-01 en la red— se corrigieron en rc2 y se reverificaron, y GP3 no halló ninguno del juego (`claudeDocs/tasks/OE4/OE4-Resultados.md`, §3, §8.3 y §8.5). PF-RNF13-01 sigue en P parcial solo por el recorrido con cronómetro de Santiago (H8), que mide la duración con una persona y no las incidencias | **Cumple** (tres recorridos completos, ninguna incidencia bloqueante) |
+| 7 | **OE4 — Pruebas funcionales.** 90 % de la funcionalidad verificada, con caso de prueba por requerimiento (CT-10) | Caso por requerimiento: `Traceability_CT10_TodoRFTieneAlMenosUnaPruebaQueLoNombra` (los 47 RF, en verde) y el catálogo `claudeDocs/tasks/OE4/casos.md`. El porcentaje de funcionalidad verificada sale de ejecutar el OE4: sobre rc2 hay 103 casos con veredicto —89 P, 13 P parcial, 0 F y 1 NE— de los 127 del catálogo, con una eficacia provisional de 89 / 89 = 100 % («P parcial» y NE quedan fuera del cómputo), y 44 de los 47 RF (93,6 %) tienen al menos un caso aprobado sobre el ejecutable; RF-11, RF-21 y RF-42 solo tienen casos parciales o sin ejecutar. Ningún caso de un RF de prioridad Alta termina en F (`claudeDocs/tasks/OE4/OE4-Resultados.md`, §5, §8.4 y §8.8). El KPI final (T24) se calcula sobre el catálogo completo, con los 24 casos que faltan | **Cumple con lo ejecutado** (provisional hasta el KPI final del OE4) |
+| 8 | **OE4 — Requerimientos críticos.** Todos los RF de prioridad Alta, implementados | Los 45 RF de prioridad Alta lo están desde el Checkpoint P-E (24/09/2026), y también RF-06 (Media) y RF-21 (Baja): los 47. `Traceability_CT10_…` los nombra a todos en pruebas, y los cambios del 25/09 al 01/10 no quitan ninguno | **Cumple** |
+| 9 | **Presupuestos.** Carga < 10 s, memoria < 2 GB, paquete < 500 MB; ejecución portable en dos equipos distintos y con el adaptador de red deshabilitado | Instrumento: la línea `RNF-04` por carga (B.8). Equipo 1: la tabla de P12 sobre el ejecutable (B.8): peor carga 0,78 s (`Narrative` al abrir `N1_Apertura` tras crear un perfil), arranque hasta `MainMenu` ≤ 3,23 s, memoria máxima de 446 MB de trabajo y 1 179 MB privada, y paquete de 479,0 MB; una copia de la carpeta entregable arrancó en una ruta con espacio, sin instalar nada ni elevar privilegios, y creó `Datos/` junto a su ejecutable (PF-RNF07-01), y sobre el ejecutable vigente no se observó ninguna conexión de red en 1312 muestras de 2 s, con el arranque sin muestrear (PF-RNF10-01) (`claudeDocs/tasks/OE4/OE4-Resultados.md`, §4 y §8.6). La medición anterior, del 21/09 en el Editor con once escenas, también quedaba dentro: carga de `Level3_River` en 1,36 s, 1 226 MB y paquete de 217 MB. La mitad de dos equipos y red apagada la ejecuta Santiago (H3 y H4) | **Cumple en el equipo 1**; el segundo equipo y la red apagada, a cargo de Santiago (decisión D-b) |
+| 10 | **Datos.** Borrar un perfil es irreversible, exige confirmación explícita y no deja residuos (RF-47, RNF-11) | Checkpoint P-D: `EraseDialog_RF47_ExigeConfirmacionExplicitaYAdvierteIrreversibilidad`, `EraseDialog_CU12_CancelarNoRealizaNingunCambioEnDisco`, `EraseDialog_RF47_TrasConfirmarElPerfilDesapareceDeLaLista`, `SaveStore_RF47_BorraElPerfilDeLasDosRutas`, `SaveStore_RF47_NoAfectaAOtrosPerfiles` y `ProfileEraser_RNF11_SobreDiscoRealNoQuedaNingunaEntradaDelPerfil`, que borra sobre disco real en las dos rutas. Desde INC-104 los textos del diálogo viven en `ReportContent`. Sobre el ejecutable, PF-RF47-01 a 03 y PF-RNF11-01 en P (`claudeDocs/tasks/OE4/OE4-Resultados.md` §5 y §8.4). | **Cumple** |
+
+Ocho criterios se cumplen del todo. El 7 cumple con lo ejecutado del OE4, a falta del KPI final
+sobre el catálogo completo (T24), y el 9 cumple en el equipo 1, a falta del segundo equipo y de la
+red apagada, que ejecuta Santiago (decisión D-b; `claudeDocs/tasks/OE4/Hoja-HUM.md`, H3 y H4).
+
+---
+
+## Corrida completa de la suite (01/10/2026)
+
+Es la corrida vigente. Se hizo el 01/10/2026 entre las 00:48 y las 01:16, con el Editor abierto,
+la Game View a 1920 × 1080 y `Boot` activa y limpia, por la API HTTP del pipeline de pruebas que
+envuelve `claudeDocs/tasks/OE4/herramientas/editor.ps1`. El árbol es `359365e` más los cambios sin
+commit de los Niveles 1 y 2 y del registro de cargas del 01/10 (tarjetas D10-1, D10-2 y D10-5), sin
+los del Nivel 3. Resultados, en `claudeDocs/tasks/OE4/evidencias/`: `2026-10-01_004805_editmode.xml`,
+`2026-10-01_004831_playmode.xml` y la corrida aislada `2026-10-01_013043_playmode.xml`.
+
+| Assembly EditMode | 25/09 | 30/09 | 01/10 | Assembly PlayMode | 25/09 | 30/09 | 01/10 |
+|---|---|---|---|---|---|---|---|
+| `Game.Architecture.Tests` | 15 | 21 | 21 | `Game.Audio.PlayMode.Tests` | 4 | 4 | 4 |
+| `Game.Content.Tests` | 1 | 3 | 3 | `Game.Core.PlayMode.Tests` | 11 | 11 | 12 |
+| `Game.Core.Tests` | 60 | 67 | 67 | `Game.Levels.Fire.PlayMode.Tests` | 39 | 43 | 59 |
+| `Game.EditorTools.Tests` | 5 | 5 | 5 | `Game.Levels.River.PlayMode.Tests` | 44 | 47 | 47 |
+| `Game.Levels.Fire.Tests` | 49 | 49 | 49 | `Game.Levels.Wheel.PlayMode.Tests` | 89 | 92 | 93 |
+| `Game.Levels.River.Tests` | 41 | 41 | 41 | `Game.UI.PlayMode.Tests` | 119 | 135 | 136 |
+| `Game.Levels.Wheel.Tests` | 69 | 69 | 71 | | | | |
+| `Game.Reporting.Tests` | 14 | 14 | 14 | | | | |
+| `Game.Scaffolding.Tests` | 88 | 102 | 102 | | | | |
+| `Game.UI.Tests` | 19 | 20 | 20 | | | | |
+| **EditMode** | **361** | **391** | **393** | **PlayMode** | **306** | **332** | **351** |
+
+La columna del 25/09 es la de la sección anterior; la del 30/09, la línea base sobre `359365e`, también
+con el Editor abierto a 1920 × 1080: EditMode 391 = 390 + 1 omitida y PlayMode 332/332. Entre las dos entraron `44fd479`
+(+1 PlayMode), `d105838` (+2 PlayMode) y `37b3cb7` (+30 EditMode y +23 PlayMode). Del 30/09 al 01/10,
++2 EditMode y +19 PlayMode: las 16 del Nivel 1, `WorkshopScene_INC54_…`, `SceneLoader_RNF04_…` y
+`NarrativeScene_INC28_OfreceOmitir…`.
+
+| Modo | Casos | Superan | Fallan | Omitidas | Duración |
+|---|---|---|---|---|---|
+| EditMode | 393 | 392 | 0 | 1 | 14,5 s |
+| PlayMode | 351 | 350 | 1 | 0 | 1 660 s (28 min) |
+
+- **Omitida (EditMode):** `ProfileEraser_INC34_SobreDiscoRealCubreLosDosEscenariosDeAlmacenamiento`,
+  la de siempre: este equipo no hace cumplir el atributo de solo lectura sobre carpetas.
+- **Falla — `RiverLevel_RNF05_LaMemoriaQuedaBajoDosGigasConElNivel3Cargado`:** 2 127 MB reservados
+  frente a 2 048. Repetida con su filtro en el mismo Editor, 2 090 MB; y el Editor en reposo, sin el
+  nivel, ya reservaba 2 090 MB tras horas de corridas. Cerrado y reabierto (1 390 MB en reposo), la
+  prueba aislada pasa con **1 660 MB**. Mide la sesión del Editor, no el nivel: RNF-05 se mide sobre
+  el ejecutable (B.8).
+- **Sin intermitencias**: la prueba de destellos del N3 que falló el 25/09
+  (`RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos`) pasó en la corrida completa.
+
+Las correcciones del Nivel 3 del 01/10 suman pruebas a `Game.Levels.River.Tests`,
+`Game.Levels.River.PlayMode.Tests`, `Game.Scaffolding.Tests` y `Game.UI.PlayMode.Tests`: con
+«Probar balsa» ya aplicado, la suite EditMode completa dio 421 = 420 + 1 omitida, sin pérdidas ni
+cambios de estado. La cifra final de las dos suites con el Nivel 3 es la de la revisión de esa
+etapa, y la oficial, la de `unity test` en batchmode sobre el ejecutable candidato.
+
+*(01/10/2026, después: la revisión del Nivel 3 dio EditMode 427 = 426 + 1 omitida y PlayMode
+363/363, en `claudeDocs/tasks/OE4/evidencias/suites/W2-full/`. La cifra oficial no salió de
+`unity test` en batchmode sino de una última corrida completa con el Editor abierto, por la misma
+API, antes de compilar el ejecutable: es la sección siguiente. Los XML de esta sección están en
+`claudeDocs/tasks/OE4/evidencias/suites/W1-full/`.)*
+
+---
+
+## Verificación final y paquete (01/10/2026)
+
+Apartado nuevo. Después de la corrida de la sección anterior entraron las correcciones del Nivel 3
+(tarjeta D10-3), la verificación del arte (D10-4) y las licencias que viajan con el ejecutable; la
+suite completa se corrió una vez más, la última antes del build, y después solo cambió la
+importación de los cuadros del fuego (INC-130).
+
+**Corrida.** 01/10/2026, de 04:37 a 05:06, con el Editor reiniciado —el anterior llegaba a 3,9 GB de
+memoria—, la Game View a 1920 × 1080, `Boot` activa y limpia y compilación sin errores, por la API
+HTTP del pipeline de pruebas que envuelve `claudeDocs/tasks/OE4/herramientas/editor.ps1`. Árbol:
+`359365e` más las tarjetas D10-1 a D10-5 y las licencias, sin commit. Resultados:
+`claudeDocs/tasks/OE4/evidencias/suites/final/2026-10-01_043727_editmode.xml` y
+`…/final/2026-10-01_043749_playmode.xml`; el índice de todas las corridas del cierre está en
+`claudeDocs/tasks/OE4/evidencias/suites/README.md`.
+
+| Assembly EditMode | 01/10 00:48 | 01/10 03:28 | Final 04:37 | 08:29 | Assembly PlayMode | 01/10 00:48 | 01/10 03:28 | Final 04:37 |
+|---|---|---|---|---|---|---|---|---|
+| `Game.Architecture.Tests` | 21 | 21 | 22 | 23 | `Game.Audio.PlayMode.Tests` | 4 | 4 | 4 |
+| `Game.Content.Tests` | 3 | 3 | 3 | 3 | `Game.Core.PlayMode.Tests` | 12 | 12 | 12 |
+| `Game.Core.Tests` | 67 | 67 | 67 | 67 | `Game.Levels.Fire.PlayMode.Tests` | 59 | 59 | 59 |
+| `Game.EditorTools.Tests` | 5 | 5 | 9 | 9 | `Game.Levels.River.PlayMode.Tests` | 47 | 57 | 57 |
+| `Game.Levels.Fire.Tests` | 49 | 49 | 49 | 49 | `Game.Levels.Wheel.PlayMode.Tests` | 93 | 93 | 93 |
+| `Game.Levels.River.Tests` | 41 | 57 | 58 | 58 | `Game.UI.PlayMode.Tests` | 136 | 138 | 139 |
+| `Game.Levels.Wheel.Tests` | 71 | 71 | 71 | 71 | | | | |
+| `Game.Reporting.Tests` | 14 | 14 | 14 | 14 | | | | |
+| `Game.Scaffolding.Tests` | 102 | 120 | 120 | 120 | | | | |
+| `Game.UI.Tests` | 20 | 20 | 20 | 20 | | | | |
+| **EditMode** | **393** | **427** | **433** | **434** | **PlayMode** | **351** | **363** | **364** |
+
+- **De 00:48 a 03:28**, el Nivel 3: +16 en `Game.Levels.River.Tests` y +18 en
+  `Game.Scaffolding.Tests` (entre ellas las 15 de `ActorTimelineTests`); +10 en
+  `Game.Levels.River.PlayMode.Tests` y +2 en `Game.UI.PlayMode.Tests` (las dos
+  `NarrativeScene_RNF21_…` del cruce). Detalle en `Slice 3/Slice-3-Resultados.md`, Anexo B.
+- **De 03:28 a la final**, el arte y las licencias: `ArtImport_RNF23_LosNombresSiguenLaNomenclatura`
+  (INC-126), los cuatro `LicenseNotices_RNF23_*`, `RiverWalk_RNF14_MoveToColocaAMamaEnElModeloYRecortaALosLimites`
+  y, en PlayMode, la captura `NarrativeScene_RF05_CapturaDelPrimerCuadroDeLaEscena22`.
+- **A las 08:29**, `ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir` (INC-130).
+
+| Modo | Casos | Superan | Fallan | Omitidas | Duración |
+|---|---|---|---|---|---|
+| EditMode (final) | 433 | 432 | 0 | 1 | 8,4 s |
+| PlayMode (final) | 364 | 364 | 0 | 0 | 1 684 s (28 min) |
+| EditMode (08:29) | 434 | 433 | 0 | 1 | 7,8 s |
+
+- **Omitida**: `ProfileEraser_INC34_SobreDiscoRealCubreLosDosEscenariosDeAlmacenamiento`, la de
+  siempre.
+- **`RiverLevel_RNF05_…` pasa** con 1 966 MB reservados: con el Editor recién reiniciado la sesión
+  cabe. Sigue midiendo el Editor y no el nivel; RNF-05 se mide sobre el ejecutable.
+- **Después de la final** solo cambió la importación de los 67 cuadros del fuego y del humo del
+  Nivel 1, más su prueba: la corrida EditMode de las 08:29 (`…/suites/W4b/2026-10-01_082925_editmode.xml`)
+  la cubre. PlayMode no se repitió entera; la revisión de ese cambio corrió las pruebas que pintan
+  esos cuadros —`FirePanel_RF19_ElHiloDeHumoNaceEnElPuntoDelGolpeYNoEsMasAltoQueMedioMonton`,
+  `FirePanel_RF19_ElHiloDeHumoSeVeFinoYNaceEnElCentroDelMonton`,
+  `FireLevel_RF20_AlTerminarDePrenderElHumoAsomaPorLaCoronaDetrasDeLaLlama`,
+  `FireLevel_RNF21_SinDestellosDeAltaFrecuencia` y `NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes`
+  con `N1_NacimientoDelFuego`, `N2_Escena25_Cierre` y `N3_EscenaFinal`—: 7/7, y en las capturas
+  ampliadas el fuego y el humo se ven igual que antes.
+
+**Paquete (RNF-06).** El ejecutable candidato se compiló el 01/10/2026 a las 08:30 con las doce
+escenas de `EditorBuildSettings`, `Boot` primera, y su procedencia —HEAD, huellas del árbol y
+SHA-256 del `.exe`— está en `claudeDocs/tasks/OE4/evidencias/build-rc1.md`. La carpeta
+`Build/Algoritmia/` pesa **478 979 915 bytes = 479,0 MB (456,8 MiB)**, sin `Datos/`: cumple el
+límite de 500 MB con 21 MB de margen. Lleva junto al `.exe` la carpeta `Licencias/` con `OFL.txt` y
+`LICENSE-Phosphor.txt`. Un primer build de las 05:17 pesó 866,7 MB y se descartó: los cuadros del
+fuego y del humo sumaban 533 MB sin comprimir; con INC-130 se importan a 1024 px y suman 145,7 MB.
+El detalle está en `Slice 1/Fase-5-6-Resultados.md`, A.8. Las filas de la tabla de P12 (Anexo B,
+B.8) para el equipo 1 —cargas, memoria y paquete— las llena la pasada del OE4 sobre este
+ejecutable.
+
+*(01/10/2026, después: la pasada del OE4 las llenó con rc1 y con rc2, el ejecutable vigente, que
+corrige los defectos de rc1 y pesa lo mismo, 479,0 MB; su procedencia está en
+`claudeDocs/tasks/OE4/evidencias/build-rc2.md`.)*

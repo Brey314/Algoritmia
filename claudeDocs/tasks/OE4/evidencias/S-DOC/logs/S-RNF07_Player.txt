@@ -1,0 +1,91 @@
+Mono path[0] = 'D:/User/Desktop/Algoritmia prueba/Algoritmia_Data/Managed'
+Mono config path = 'D:/User/Desktop/Algoritmia prueba/MonoBleedingEdge/etc'
+CodeReloadManager initialized
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+[Subsystems] Discovering subsystems at path D:/User/Desktop/Algoritmia prueba/Algoritmia_Data/UnitySubsystems
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 5070 Ti
+[D3D12 Device Filter] Driver Version: 32.0.16.1692
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 15995 MB
+[D3D12 Device Filter] Processor Count: 12
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 5070 Ti (ID=0x2c05)
+    Vendor:          NVIDIA
+    VRAM:            15995 MB
+    App VRAM Budget: 15227 MB
+    Driver:          32.0.16.1692
+Begin MonoManager ReloadAssembly
+- Finished resetting the current domain, in  0.022 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+Using Windows.Gaming.Input
+UnloadTime: 0.655200 ms
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.199700 ms
+RNF-04: «MainMenu» cargó en 0.094 s
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 3638.
+Total: 1.153700 ms (FindLiveObjects: 0.124500 ms CreateObjectMapping: 0.078700 ms MarkObjects: 0.939400 ms  DeleteObjects: 0.009100 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 3.214100 ms
+RNF-04: «LevelSelect» cargó en 0.070 s
+Unloading 33 unused Assets to reduce memory usage. Loaded Objects now: 3497.
+Total: 1.137800 ms (FindLiveObjects: 0.133200 ms CreateObjectMapping: 0.085500 ms MarkObjects: 0.863800 ms  DeleteObjects: 0.055200 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.400400 ms
+RNF-04: «Narrative» cargó en 0.765 s
+Unloading 17 unused Assets to reduce memory usage. Loaded Objects now: 3832.
+Total: 1.222900 ms (FindLiveObjects: 0.128800 ms CreateObjectMapping: 0.094700 ms MarkObjects: 0.953800 ms  DeleteObjects: 0.045400 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.834000 ms
+RNF-04: «Narrative» cargó en 0.035 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 3847.
+Total: 1.087100 ms (FindLiveObjects: 0.131400 ms CreateObjectMapping: 0.091500 ms MarkObjects: 0.850300 ms  DeleteObjects: 0.013800 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.701300 ms
+RNF-04: «Narrative» cargó en 0.035 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 3847.
+Total: 1.350100 ms (FindLiveObjects: 0.129000 ms CreateObjectMapping: 0.088500 ms MarkObjects: 1.119100 ms  DeleteObjects: 0.013300 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.578800 ms
+RNF-04: «Level1_Cave» cargó en 0.155 s
+Unloading 316 unused Assets to reduce memory usage. Loaded Objects now: 4139.
+Total: 1.490200 ms (FindLiveObjects: 0.164000 ms CreateObjectMapping: 0.124500 ms MarkObjects: 1.025200 ms  DeleteObjects: 0.176400 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.882500 ms
+RNF-04: «LevelSelect» cargó en 0.068 s
+Unloading 287 unused Assets to reduce memory usage. Loaded Objects now: 3514.
+Total: 1.337600 ms (FindLiveObjects: 0.127700 ms CreateObjectMapping: 0.088200 ms MarkObjects: 0.926100 ms  DeleteObjects: 0.195400 ms)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.437500 ms
+RNF-04: «MainMenu» cargó en 0.068 s
+Unloading 16 unused Assets to reduce memory usage. Loaded Objects now: 3655.
+Total: 1.080600 ms (FindLiveObjects: 0.122900 ms CreateObjectMapping: 0.075000 ms MarkObjects: 0.860600 ms  DeleteObjects: 0.022000 ms)
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+CodeReloadManager destroyed
+GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+[d3d12] Unreleased non-evictable resource 000001F3D3C0BF20 (size 4096 B, lastUsedFence 9)

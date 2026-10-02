@@ -93,6 +93,31 @@ namespace Game.UI.Tests
             Assert.That(order, Is.Empty, "«Salir» guardó o cerró antes de confirmar");
         }
 
+        // DEF-SPER-01: «Cerrar el juego» llevaba la papelera (borrar) y su rótulo se partía en dos
+        // líneas, fuera del botón. Rojo esperado sin la corrección: aparece un hijo «Icono» y el
+        // rótulo mide más que su caja.
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_RF09_CerrarElJuegoNoLlevaPapeleraYSuRotuloCabeEnUnaLinea()
+        {
+            await LoadMainMenu();
+            Click(FindOption("Salir"));
+            await Awaitable.NextFrameAsync();
+            Canvas.ForceUpdateCanvases();
+
+            var cerrar = FindOption("Cerrar el juego");
+            var rotulo = cerrar.GetComponentInChildren<Text>();
+
+            Assert.That(cerrar.GetComponentsInChildren<Image>(true).Select(imagen => imagen.name), Has.None.EqualTo("Icono"),
+                "salir no se parece a borrar: sin papelera");
+            Assert.That(rotulo.preferredWidth, Is.LessThanOrEqualTo(rotulo.rectTransform.rect.width), "una sola línea");
+            var boton = ScreenRectOf(cerrar);
+            var caja = ScreenRectOf(rotulo.rectTransform);
+            Assert.That(caja.xMin, Is.GreaterThanOrEqualTo(boton.xMin), "el rótulo no sale por la izquierda");
+            Assert.That(caja.xMax, Is.LessThanOrEqualTo(boton.xMax), "ni por la derecha");
+            Assert.That(IsReachableByRaycast(cerrar), Is.True, "y se alcanza con un clic");
+        }
+
         [Test]
         [Timeout(20000)]
         public async Task MainMenu_HU18_QuedarmeVuelveAlMenuSinGuardarNiCerrar()
