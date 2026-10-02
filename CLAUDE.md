@@ -286,13 +286,17 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
   `Temp/claude-active` antes de cada llamada (`ClaudeSceneAutosave`); se niega a correr pruebas con
   escenas sucias —nunca pulsa el diálogo— o con errores de compilación vigentes, porque Unity
   conservaría los assemblies viejos y saldría un verde falso (tras editar código, `recompile`); y un
-  mutex rechaza una segunda invocación que modifique el Editor. `tests-play` fija la Game View a
+  mutex por proyecto rechaza una segunda invocación que modifique el mismo Editor. `tests-play` fija la Game View a
   1920×1080 —sin ella fallan las pruebas de disposición— y abre `Boot` antes; PlayMode se sondea por
   `Temp/pipeline_test_status.json`, porque durante la recarga de dominio el HTTP no responde. Salidas:
   0 bien, 1 fallos, 2 infraestructura, 3 guarda (no tocó nada); resultados en
   `%TEMP%\Algoritmia-editor-runs` o `-Out`. Si una corrida se interrumpe, `exec cancel_tests`, y
   `exec editor_stop` si quedó en Play. `exec build` compila el ejecutable sin cerrar el Editor, pero
   ignora `output_path` y deja la salida en `Builds/StandaloneWindows64/`: se mueve a `Build/Algoritmia/`.
+- **Cómo y cuándo correr las pruebas lo fija `claudeDocs/tasks/OE4/NORMA-PRUEBAS.md`**, con los comandos
+  listos para lanzar. La suite completa es un comando en segundo plano, `herramientas/suite2.ps1`, que
+  la reparte entre el Editor del proyecto y el de una copia desechable (`C:\Dev\Algoritmia-B`, que se
+  sincroniza sola) y la cruza con `list_tests`: 21 min frente a ~30 en un solo Editor.
 - **Si la API del pipeline no responde**, queda un camino más que tampoco obliga a cerrar
   el Editor: un script `[InitializeOnLoad]` efímero **dentro del proyecto** que re-registra
   `TestRunnerApi.RegisterCallbacks` tras cada recarga de dominio y escribe el resultado a un

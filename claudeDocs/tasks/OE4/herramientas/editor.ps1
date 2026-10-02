@@ -41,6 +41,7 @@
     otra invocación en curso; no se tocó nada).
     Para pruebas, `filter` `-` significa «sin filtro» (un `*` lo expandiría el shell).
     Resultados: <-Out | $env:EDITOR_RUNS_DIR | carpeta por defecto>\<fecha-hora>_<modo>.json (+ .xml).
+    $env:EDITOR_PROYECTO=<ruta> dirige el envoltorio a otra copia del proyecto (el segundo Editor de suite2.ps1).
 #>
 param(
     [Parameter(Position = 0)][string]$Sub = 'help',
@@ -60,6 +61,8 @@ $ProgressPreference = 'SilentlyContinue'
 # --- Rutas -------------------------------------------------------------------------------------
 $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..\..')).Path
 if (-not (Test-Path -LiteralPath (Join-Path $Root 'Assets'))) { $Root = 'C:\Dev\Algoritmia' }
+# Segundo Editor en paralelo (suite2.ps1): $env:EDITOR_PROYECTO apunta a la copia del proyecto.
+if ($env:EDITOR_PROYECTO) { $Root = (Resolve-Path -LiteralPath $env:EDITOR_PROYECTO).Path }
 $PortFile = Join-Path $Root 'Library\Pipeline\.unity-pipeline-port'
 $Marker = Join-Path $Root 'Temp\claude-active'
 $TestStatusFile = Join-Path $Root 'Temp\pipeline_test_status.json'
@@ -241,6 +244,13 @@ function Finish-Run($Run) {
     if ((Test-Path -LiteralPath $XmlSource) -and (Get-Item -LiteralPath $XmlSource).LastWriteTimeUtc -gt $Run.startedUtc) {
         Copy-Item -LiteralPath $XmlSource -Destination "$base.xml" -Force
         $xml = "$base.xml"
+        # Los dos Editores de suite2.ps1 comparten ese LocalLow (mismo productName): si el total no cuadra,
+        # el XML es de la otra corrida y se descarta. El JSON, que sale del Editor propio, es el que vale.
+        $head = [IO.File]::ReadAllText($xml); $head = $head.Substring(0, [Math]::Min(4000, $head.Length))
+        if ($head -match '<test-run[^>]*\stotal="(\d+)"' -and [int]$Matches[1] -ne [int]$Run.summary.Total) {
+            Remove-Item -LiteralPath $xml -Force; $xml = $null
+            Write-Host 'AVISO: TestResults.xml era de otra corrida (otro Editor en paralelo): se descarta; vale el JSON.'
+        }
     }
     $finished = [DateTime]::UtcNow
     $s = $Run.summary
@@ -399,11 +409,12 @@ Salida: 0 bien · 1 fallos/errores · 2 infraestructura · 3 guarda (escena suci
 '@
 }
 
-# El Editor es único: dos invocaciones que lo MODIFICAN a la vez (una corrida y un recompile, p. ej.) se
+# Cada Editor es único: dos invocaciones que lo MODIFICAN a la vez (una corrida y un recompile, p. ej.) se
 # pisan y la corrida sale corrupta. Las de solo lectura (status, scenes, console, commands, test-status,
-# wait-compile) no bloquean. Se libera sola al salir el proceso.
+# wait-compile) no bloquean. El mutex es por proyecto, para que la copia de suite2.ps1 corra en paralelo.
+# Se libera solo al salir el proceso.
 if ($Sub -in 'open', 'saveall', 'autotick', 'gameview1080', 'eval', 'exec', 'recompile', 'tests-edit', 'tests-play') {
-    $script:EditorLock = [Threading.Mutex]::new($false, 'Local\Algoritmia.editor.ps1')
+    $script:EditorLock = [Threading.Mutex]::new($false, 'Local\Algoritmia.editor.ps1.' + ($Root.ToLowerInvariant() -replace '[^a-z0-9]', '_'))
     $got = $false
     try { $got = $script:EditorLock.WaitOne(0) } catch [Threading.AbandonedMutexException] { $got = $true }
     if (-not $got) {

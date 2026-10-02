@@ -1,0 +1,1934 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="144" result="Passed" total="144" passed="144" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-02 05:51:23Z" end-time="2026-10-02 06:11:13Z" duration="1190,4355686">
+  <test-suite type="TestSuite" id="2068" name="Algoritmia" fullname="Algoritmia" runstate="Runnable" testcasecount="376" result="Passed" start-time="2026-10-02 05:51:23Z" end-time="2026-10-02 06:11:13Z" duration="1190.435569" total="144" passed="144" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="2059" name="Game.UI.PlayMode.Tests.dll" fullname="C:/Dev/Algoritmia/Library/ScriptAssemblies/Game.UI.PlayMode.Tests.dll" runstate="Runnable" testcasecount="144" result="Passed" start-time="2026-10-02 05:51:23Z" end-time="2026-10-02 06:11:13Z" duration="1190.429912" total="144" passed="144" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="21716" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="2060" name="Game" fullname="Game" runstate="Runnable" testcasecount="144" result="Passed" start-time="2026-10-02 05:51:23Z" end-time="2026-10-02 06:11:13Z" duration="1190.428778" total="144" passed="144" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="2061" name="UI" fullname="Game.UI" runstate="Runnable" testcasecount="144" result="Passed" start-time="2026-10-02 05:51:23Z" end-time="2026-10-02 06:11:13Z" duration="1190.427869" total="144" passed="144" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="2062" name="Tests" fullname="Game.UI.Tests" runstate="Runnable" testcasecount="144" result="Passed" start-time="2026-10-02 05:51:23Z" end-time="2026-10-02 06:11:13Z" duration="1190.426986" total="144" passed="144" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1900" name="CharacterCaptureTests" fullname="Game.UI.Tests.CharacterCaptureTests" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-02 05:51:23Z" end-time="2026-10-02 05:51:33Z" duration="10.479358" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-suite type="ParameterizedMethod" id="1906" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-02 05:51:23Z" end-time="2026-10-02 05:51:33Z" duration="10.478179" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="Category" value="VisualVerification" />
+                  <property name="Description" value="Verificar en las capturas Personajes_Mecanica_*: los personajes se ven enteros, a escala coherente, sin tapar la tablilla, los botones ni las piezas; el botón de ayuda es el círculo con Algoritm del nivel dentro." />
+                </properties>
+                <test-case id="1901" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level1_Cave&quot;)" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level1_Cave&quot;)" methodname="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" seed="1549623914" result="Passed" start-time="2026-10-02 05:51:23Z" end-time="2026-10-02 05:51:25Z" duration="2.207963" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1902" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Forest&quot;)" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Forest&quot;)" methodname="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" seed="2026491181" result="Passed" start-time="2026-10-02 05:51:25Z" end-time="2026-10-02 05:51:27Z" duration="2.124994" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1903" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Workshop&quot;)" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Workshop&quot;)" methodname="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" seed="1200768410" result="Passed" start-time="2026-10-02 05:51:27Z" end-time="2026-10-02 05:51:29Z" duration="2.052027" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1904" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Maze&quot;)" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Maze&quot;)" methodname="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" seed="370001707" result="Passed" start-time="2026-10-02 05:51:29Z" end-time="2026-10-02 05:51:31Z" duration="2.021221" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1905" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level3_River&quot;)" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level3_River&quot;)" methodname="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" seed="567217571" result="Passed" start-time="2026-10-02 05:51:31Z" end-time="2026-10-02 05:51:33Z" duration="2.069637" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+            </test-suite>
+            <test-suite type="TestFixture" id="1907" name="CreditsTests" fullname="Game.UI.Tests.CreditsTests" classname="Game.UI.Tests.CreditsTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-02 05:51:33Z" end-time="2026-10-02 05:51:35Z" duration="2.257053" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1908" name="Credits_RF08_MuestraElReconocimientoDeLaAutoria" fullname="Game.UI.Tests.CreditsTests.Credits_RF08_MuestraElReconocimientoDeLaAutoria" methodname="Credits_RF08_MuestraElReconocimientoDeLaAutoria" classname="Game.UI.Tests.CreditsTests" runstate="Runnable" seed="1009416761" result="Passed" start-time="2026-10-02 05:51:33Z" end-time="2026-10-02 05:51:34Z" duration="0.567925" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1910" name="Credits_RF08_VolverRegresaAlMenuPrincipal" fullname="Game.UI.Tests.CreditsTests.Credits_RF08_VolverRegresaAlMenuPrincipal" methodname="Credits_RF08_VolverRegresaAlMenuPrincipal" classname="Game.UI.Tests.CreditsTests" runstate="Runnable" seed="2013498936" result="Passed" start-time="2026-10-02 05:51:34Z" end-time="2026-10-02 05:51:34Z" duration="0.555463" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1911" name="Credits_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot" fullname="Game.UI.Tests.CreditsTests.Credits_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot" methodname="Credits_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot" classname="Game.UI.Tests.CreditsTests" runstate="Runnable" seed="1526978485" result="Passed" start-time="2026-10-02 05:51:34Z" end-time="2026-10-02 05:51:35Z" duration="0.557586" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Credits» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1909" name="Credits_RNF23_NombraALosAutoresDeLosPersonajesYLaObraDeOrigen" fullname="Game.UI.Tests.CreditsTests.Credits_RNF23_NombraALosAutoresDeLosPersonajesYLaObraDeOrigen" methodname="Credits_RNF23_NombraALosAutoresDeLosPersonajesYLaObraDeOrigen" classname="Game.UI.Tests.CreditsTests" runstate="Runnable" seed="1035882207" result="Passed" start-time="2026-10-02 05:51:35Z" end-time="2026-10-02 05:51:35Z" duration="0.573130" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1912" name="EraseDialogTests" fullname="Game.UI.Tests.EraseDialogTests" classname="Game.UI.Tests.EraseDialogTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-02 05:51:35Z" end-time="2026-10-02 05:51:37Z" duration="1.593174" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1914" name="EraseDialog_CU12_CancelarNoRealizaNingunCambioEnDisco" fullname="Game.UI.Tests.EraseDialogTests.EraseDialog_CU12_CancelarNoRealizaNingunCambioEnDisco" methodname="EraseDialog_CU12_CancelarNoRealizaNingunCambioEnDisco" classname="Game.UI.Tests.EraseDialogTests" runstate="Runnable" seed="1029193652" result="Passed" start-time="2026-10-02 05:51:35Z" end-time="2026-10-02 05:51:36Z" duration="0.576551" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1913" name="EraseDialog_RF47_ExigeConfirmacionExplicitaYAdvierteIrreversibilidad" fullname="Game.UI.Tests.EraseDialogTests.EraseDialog_RF47_ExigeConfirmacionExplicitaYAdvierteIrreversibilidad" methodname="EraseDialog_RF47_ExigeConfirmacionExplicitaYAdvierteIrreversibilidad" classname="Game.UI.Tests.EraseDialogTests" runstate="Runnable" seed="1760145947" result="Passed" start-time="2026-10-02 05:51:36Z" end-time="2026-10-02 05:51:36Z" duration="0.495364" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1915" name="EraseDialog_RF47_TrasConfirmarElPerfilDesapareceDeLaLista" fullname="Game.UI.Tests.EraseDialogTests.EraseDialog_RF47_TrasConfirmarElPerfilDesapareceDeLaLista" methodname="EraseDialog_RF47_TrasConfirmarElPerfilDesapareceDeLaLista" classname="Game.UI.Tests.EraseDialogTests" runstate="Runnable" seed="1035545861" result="Passed" start-time="2026-10-02 05:51:36Z" end-time="2026-10-02 05:51:37Z" duration="0.519091" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1916" name="LevelSelectTests" fullname="Game.UI.Tests.LevelSelectTests" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-10-02 05:51:37Z" end-time="2026-10-02 05:51:43Z" duration="6.424224" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1923" name="LevelSelect_HU14_ElNivelCompletadoSeMarcaEnElMenu" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_HU14_ElNivelCompletadoSeMarcaEnElMenu" methodname="LevelSelect_HU14_ElNivelCompletadoSeMarcaEnElMenu" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="850865950" result="Passed" start-time="2026-10-02 05:51:37Z" end-time="2026-10-02 05:51:37Z" duration="0.537507" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1924" name="LevelSelect_HU14_UnNivelConFasesPendientesNoSeMarcaCompletado" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_HU14_UnNivelConFasesPendientesNoSeMarcaCompletado" methodname="LevelSelect_HU14_UnNivelConFasesPendientesNoSeMarcaCompletado" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="1102341204" result="Passed" start-time="2026-10-02 05:51:37Z" end-time="2026-10-02 05:51:38Z" duration="0.538197" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1925" name="LevelSelect_HU14_UnPerfilNuevoNoMuestraNingunNivelCompletado" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_HU14_UnPerfilNuevoNoMuestraNingunNivelCompletado" methodname="LevelSelect_HU14_UnPerfilNuevoNoMuestraNingunNivelCompletado" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="2039530964" result="Passed" start-time="2026-10-02 05:51:38Z" end-time="2026-10-02 05:51:38Z" duration="0.547337" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1920" name="LevelSelect_RF03_CadaTarjetaMuestraUnaIlustracionSinCostura" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_RF03_CadaTarjetaMuestraUnaIlustracionSinCostura" methodname="LevelSelect_RF03_CadaTarjetaMuestraUnaIlustracionSinCostura" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="1850306330" result="Passed" start-time="2026-10-02 05:51:38Z" end-time="2026-10-02 05:51:39Z" duration="0.540046" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1921" name="LevelSelect_RF03_CompletarElNivel1HabilitaElNivel2" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_RF03_CompletarElNivel1HabilitaElNivel2" methodname="LevelSelect_RF03_CompletarElNivel1HabilitaElNivel2" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="592404354" result="Passed" start-time="2026-10-02 05:51:39Z" end-time="2026-10-02 05:51:40Z" duration="0.533626" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1917" name="LevelSelect_RF03_ElNivelAlcanzadoSeMuestraDesbloqueadoYSinCandado" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_RF03_ElNivelAlcanzadoSeMuestraDesbloqueadoYSinCandado" methodname="LevelSelect_RF03_ElNivelAlcanzadoSeMuestraDesbloqueadoYSinCandado" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="1170582271" result="Passed" start-time="2026-10-02 05:51:40Z" end-time="2026-10-02 05:51:40Z" duration="0.497799" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1918" name="LevelSelect_RF03_LosNivelesNoAlcanzadosSeMuestranBloqueadosConCandado" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_RF03_LosNivelesNoAlcanzadosSeMuestranBloqueadosConCandado" methodname="LevelSelect_RF03_LosNivelesNoAlcanzadosSeMuestranBloqueadosConCandado" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="417877491" result="Passed" start-time="2026-10-02 05:51:40Z" end-time="2026-10-02 05:51:41Z" duration="0.534225" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1919" name="LevelSelect_RF03_PulsarUnNivelBloqueadoNoCambiaElFlujo" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_RF03_PulsarUnNivelBloqueadoNoCambiaElFlujo" methodname="LevelSelect_RF03_PulsarUnNivelBloqueadoNoCambiaElFlujo" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="1021754704" result="Passed" start-time="2026-10-02 05:51:41Z" end-time="2026-10-02 05:51:41Z" duration="0.521274" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1928" name="LevelSelect_RF05_CadaNivelAbreLaSecuenciaDeAperturaDeSuFicha" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_RF05_CadaNivelAbreLaSecuenciaDeAperturaDeSuFicha" methodname="LevelSelect_RF05_CadaNivelAbreLaSecuenciaDeAperturaDeSuFicha" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="1036828995" result="Passed" start-time="2026-10-02 05:51:41Z" end-time="2026-10-02 05:51:42Z" duration="0.514480" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1927" name="LevelSelect_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot" methodname="LevelSelect_RNF13_VolverNoLanzaSiLaEscenaSeAbreSinPasarPorBoot" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="724667182" result="Passed" start-time="2026-10-02 05:51:42Z" end-time="2026-10-02 05:51:42Z" duration="0.547672" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«LevelSelect» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1922" name="LevelSelect_RNF14_UnNivelConTodasSusFasesConfirmadasDesbloqueaElSiguiente" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_RNF14_UnNivelConTodasSusFasesConfirmadasDesbloqueaElSiguiente" methodname="LevelSelect_RNF14_UnNivelConTodasSusFasesConfirmadasDesbloqueaElSiguiente" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="343771497" result="Passed" start-time="2026-10-02 05:51:42Z" end-time="2026-10-02 05:51:43Z" duration="0.546244" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1926" name="LevelSelect_RNF19_ElEstadoBloqueadoLlevaCandadoYTextoAdemasDelColor" fullname="Game.UI.Tests.LevelSelectTests.LevelSelect_RNF19_ElEstadoBloqueadoLlevaCandadoYTextoAdemasDelColor" methodname="LevelSelect_RNF19_ElEstadoBloqueadoLlevaCandadoYTextoAdemasDelColor" classname="Game.UI.Tests.LevelSelectTests" runstate="Runnable" seed="1299031625" result="Passed" start-time="2026-10-02 05:51:43Z" end-time="2026-10-02 05:51:43Z" duration="0.562073" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="Category" value="VisualVerification" />
+                  <property name="Description" value="Tras ejecutar esta prueba, revisar la captura: el nivel bloqueado se distingue por candado y la palabra «Bloqueado» además del color, no solo por color; contraste del texto suficiente; los glifos con tilde se dibujan." />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/LevelSelect_RNF19_NivelBloqueado.png
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1929" name="LevelSummaryTests" fullname="Game.UI.Tests.LevelSummaryTests" classname="Game.UI.Tests.LevelSummaryTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-02 05:51:43Z" end-time="2026-10-02 05:51:59Z" duration="15.777629" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1931" name="LevelSummary_CP07_ElCierreReflexivoNoEsOmitibleLaPrimeraVez" fullname="Game.UI.Tests.LevelSummaryTests.LevelSummary_CP07_ElCierreReflexivoNoEsOmitibleLaPrimeraVez" methodname="LevelSummary_CP07_ElCierreReflexivoNoEsOmitibleLaPrimeraVez" classname="Game.UI.Tests.LevelSummaryTests" runstate="Runnable" seed="169683901" result="Passed" start-time="2026-10-02 05:51:43Z" end-time="2026-10-02 05:51:49Z" duration="5.926612" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="Category" value="Acceptance" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «Narrative» cargó en 0.529 s
+]]></output>
+              </test-case>
+              <test-case id="1930" name="LevelSummary_RF03_DevuelveAlMenuConNivel2Desbloqueado" fullname="Game.UI.Tests.LevelSummaryTests.LevelSummary_RF03_DevuelveAlMenuConNivel2Desbloqueado" methodname="LevelSummary_RF03_DevuelveAlMenuConNivel2Desbloqueado" classname="Game.UI.Tests.LevelSummaryTests" runstate="Runnable" seed="1120259913" result="Passed" start-time="2026-10-02 05:51:49Z" end-time="2026-10-02 05:51:56Z" duration="6.403000" asserts="0">
+                <properties>
+                  <property name="Timeout" value="45000" />
+                  <property name="Category" value="Acceptance" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «Narrative» cargó en 0.505 s
+RNF-04: «LevelSummary» cargó en 0.552 s
+]]></output>
+              </test-case>
+              <test-case id="1933" name="LevelSummary_RF03_DevuelveAlMenuConNivel3Desbloqueado" fullname="Game.UI.Tests.LevelSummaryTests.LevelSummary_RF03_DevuelveAlMenuConNivel3Desbloqueado" methodname="LevelSummary_RF03_DevuelveAlMenuConNivel3Desbloqueado" classname="Game.UI.Tests.LevelSummaryTests" runstate="Runnable" seed="295034440" result="Passed" start-time="2026-10-02 05:51:56Z" end-time="2026-10-02 05:51:58Z" duration="2.250016" asserts="0">
+                <properties>
+                  <property name="Timeout" value="45000" />
+                  <property name="Category" value="Acceptance" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «LevelSelect» cargó en 0.546 s
+RNF-04: «LevelSummary» cargó en 0.426 s
+RNF-04: «LevelSelect» cargó en 0.552 s
+]]></output>
+              </test-case>
+              <test-case id="1932" name="LevelSummary_RF45_DobleClicEnContinuarMientrasCargaElResumenSeQuedaEnElResumen" fullname="Game.UI.Tests.LevelSummaryTests.LevelSummary_RF45_DobleClicEnContinuarMientrasCargaElResumenSeQuedaEnElResumen" methodname="LevelSummary_RF45_DobleClicEnContinuarMientrasCargaElResumenSeQuedaEnElResumen" classname="Game.UI.Tests.LevelSummaryTests" runstate="Runnable" seed="1490102573" result="Passed" start-time="2026-10-02 05:51:58Z" end-time="2026-10-02 05:51:59Z" duration="1.195837" asserts="0">
+                <properties>
+                  <property name="Timeout" value="45000" />
+                  <property name="Category" value="Acceptance" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «LevelSummary» cargó en 0.467 s
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1934" name="MainMenuTests" fullname="Game.UI.Tests.MainMenuTests" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-10-02 05:51:59Z" end-time="2026-10-02 05:52:06Z" duration="7.106174" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1941" name="MainMenu_HU18_AdvierteLaRutaDeRespaldoAntesDeCerrar" fullname="Game.UI.Tests.MainMenuTests.MainMenu_HU18_AdvierteLaRutaDeRespaldoAntesDeCerrar" methodname="MainMenu_HU18_AdvierteLaRutaDeRespaldoAntesDeCerrar" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="856922709" result="Passed" start-time="2026-10-02 05:51:59Z" end-time="2026-10-02 05:52:00Z" duration="0.562701" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1943" name="MainMenu_HU18_ElAvisoDeRespaldoConUnaRutaLargaNoTapaLosBotones" fullname="Game.UI.Tests.MainMenuTests.MainMenu_HU18_ElAvisoDeRespaldoConUnaRutaLargaNoTapaLosBotones" methodname="MainMenu_HU18_ElAvisoDeRespaldoConUnaRutaLargaNoTapaLosBotones" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="693159060" result="Passed" start-time="2026-10-02 05:52:00Z" end-time="2026-10-02 05:52:00Z" duration="0.551489" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1942" name="MainMenu_HU18_NoMuestraAvisoDeRespaldoConDatosEscribible" fullname="Game.UI.Tests.MainMenuTests.MainMenu_HU18_NoMuestraAvisoDeRespaldoConDatosEscribible" methodname="MainMenu_HU18_NoMuestraAvisoDeRespaldoConDatosEscribible" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="218458388" result="Passed" start-time="2026-10-02 05:52:00Z" end-time="2026-10-02 05:52:01Z" duration="0.546373" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1940" name="MainMenu_HU18_QuedarmeVuelveAlMenuSinGuardarNiCerrar" fullname="Game.UI.Tests.MainMenuTests.MainMenu_HU18_QuedarmeVuelveAlMenuSinGuardarNiCerrar" methodname="MainMenu_HU18_QuedarmeVuelveAlMenuSinGuardarNiCerrar" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="583412526" result="Passed" start-time="2026-10-02 05:52:01Z" end-time="2026-10-02 05:52:01Z" duration="0.546232" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1938" name="MainMenu_HU18_SalirPideConfirmacionAntesDeCerrar" fullname="Game.UI.Tests.MainMenuTests.MainMenu_HU18_SalirPideConfirmacionAntesDeCerrar" methodname="MainMenu_HU18_SalirPideConfirmacionAntesDeCerrar" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="986995319" result="Passed" start-time="2026-10-02 05:52:01Z" end-time="2026-10-02 05:52:02Z" duration="0.551338" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1945" name="MainMenu_RF01_LosBotonesCabenEnPantallaYNoSeSolapan" fullname="Game.UI.Tests.MainMenuTests.MainMenu_RF01_LosBotonesCabenEnPantallaYNoSeSolapan" methodname="MainMenu_RF01_LosBotonesCabenEnPantallaYNoSeSolapan" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="1240665115" result="Passed" start-time="2026-10-02 05:52:02Z" end-time="2026-10-02 05:52:02Z" duration="0.550672" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1935" name="MainMenu_RF01_MuestraJugarCreditosYSalirAlcanzablesPorRaycast" fullname="Game.UI.Tests.MainMenuTests.MainMenu_RF01_MuestraJugarCreditosYSalirAlcanzablesPorRaycast" methodname="MainMenu_RF01_MuestraJugarCreditosYSalirAlcanzablesPorRaycast" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="502817880" result="Passed" start-time="2026-10-02 05:52:02Z" end-time="2026-10-02 05:52:03Z" duration="0.552571" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1939" name="MainMenu_RF09_CerrarElJuegoNoLlevaPapeleraYSuRotuloCabeEnUnaLinea" fullname="Game.UI.Tests.MainMenuTests.MainMenu_RF09_CerrarElJuegoNoLlevaPapeleraYSuRotuloCabeEnUnaLinea" methodname="MainMenu_RF09_CerrarElJuegoNoLlevaPapeleraYSuRotuloCabeEnUnaLinea" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="1081902571" result="Passed" start-time="2026-10-02 05:52:03Z" end-time="2026-10-02 05:52:03Z" duration="0.480186" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1937" name="MainMenu_RF09_GuardaElPerfilActivoAntesDeCerrar" fullname="Game.UI.Tests.MainMenuTests.MainMenu_RF09_GuardaElPerfilActivoAntesDeCerrar" methodname="MainMenu_RF09_GuardaElPerfilActivoAntesDeCerrar" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="1934105215" result="Passed" start-time="2026-10-02 05:52:03Z" end-time="2026-10-02 05:52:04Z" duration="0.553395" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1936" name="MainMenu_RF46_OfreceLaOpcionDeProgresoDelDocente" fullname="Game.UI.Tests.MainMenuTests.MainMenu_RF46_OfreceLaOpcionDeProgresoDelDocente" methodname="MainMenu_RF46_OfreceLaOpcionDeProgresoDelDocente" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="1631582664" result="Passed" start-time="2026-10-02 05:52:04Z" end-time="2026-10-02 05:52:05Z" duration="0.549615" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1946" name="MainMenu_RNF13_SusBotonesNoLanzanSiLaEscenaSeAbreSinPasarPorBoot" fullname="Game.UI.Tests.MainMenuTests.MainMenu_RNF13_SusBotonesNoLanzanSiLaEscenaSeAbreSinPasarPorBoot" methodname="MainMenu_RNF13_SusBotonesNoLanzanSiLaEscenaSeAbreSinPasarPorBoot" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="2117504306" result="Passed" start-time="2026-10-02 05:52:05Z" end-time="2026-10-02 05:52:05Z" duration="0.530979" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«MainMenu» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«MainMenu» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«MainMenu» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1944" name="MainMenu_RNF18_ElTituloSeLeeDelScriptableObject" fullname="Game.UI.Tests.MainMenuTests.MainMenu_RNF18_ElTituloSeLeeDelScriptableObject" methodname="MainMenu_RNF18_ElTituloSeLeeDelScriptableObject" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="1448197958" result="Passed" start-time="2026-10-02 05:52:05Z" end-time="2026-10-02 05:52:06Z" duration="0.513097" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1947" name="MainMenu_RNF20_ContrasteTextoFondoSuficiente" fullname="Game.UI.Tests.MainMenuTests.MainMenu_RNF20_ContrasteTextoFondoSuficiente" methodname="MainMenu_RNF20_ContrasteTextoFondoSuficiente" classname="Game.UI.Tests.MainMenuTests" runstate="Runnable" seed="869749883" result="Passed" start-time="2026-10-02 05:52:06Z" end-time="2026-10-02 05:52:06Z" duration="0.592401" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="Category" value="VisualVerification" />
+                  <property name="Description" value="Tras ejecutar esta prueba, revisar la captura: contraste entre el texto (título y botones) y su fondo, que los glifos con tilde y «¿ ¡» se dibujen, y que nada se recorte ni deforme." />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/MainMenu_RNF20_ContrasteTextoFondo.png
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1948" name="NarrativeSceneTests" fullname="Game.UI.Tests.NarrativeSceneTests" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" testcasecount="80" result="Passed" start-time="2026-10-02 05:52:06Z" end-time="2026-10-02 06:10:59Z" duration="1132.355312" total="80" passed="80" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1957" name="NarrativeScene_HU17_NoHayBotonDePausaEnUnaEscenaNarrativa" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_HU17_NoHayBotonDePausaEnUnaEscenaNarrativa" methodname="NarrativeScene_HU17_NoHayBotonDePausaEnUnaEscenaNarrativa" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1701296342" result="Passed" start-time="2026-10-02 05:52:06Z" end-time="2026-10-02 05:52:07Z" duration="0.668055" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1954" name="NarrativeScene_INC28_NoMuestraOmitirLaPrimeraVezQueSeVeLaEscena" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_INC28_NoMuestraOmitirLaPrimeraVezQueSeVeLaEscena" methodname="NarrativeScene_INC28_NoMuestraOmitirLaPrimeraVezQueSeVeLaEscena" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="197974734" result="Passed" start-time="2026-10-02 05:52:07Z" end-time="2026-10-02 05:52:07Z" duration="0.487394" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1955" name="NarrativeScene_INC28_OfreceOmitirEnLaSegundaVisitaTrasTerminarElNivel1" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_INC28_OfreceOmitirEnLaSegundaVisitaTrasTerminarElNivel1" methodname="NarrativeScene_INC28_OfreceOmitirEnLaSegundaVisitaTrasTerminarElNivel1" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="514123713" result="Passed" start-time="2026-10-02 05:52:07Z" end-time="2026-10-02 05:52:08Z" duration="0.543913" asserts="0">
+                <properties>
+                  <property name="Category" value="Acceptance" />
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="2009" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" testcasecount="18" result="Passed" start-time="2026-10-02 05:52:08Z" end-time="2026-10-02 05:54:16Z" duration="128.325406" total="18" passed="18" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Timeout" value="240000" />
+                </properties>
+                <test-case id="1991" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N1_Apertura&quot;,Fire)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N1_Apertura&quot;,Fire)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1748968077" result="Passed" start-time="2026-10-02 05:52:08Z" end-time="2026-10-02 05:52:32Z" duration="24.222973" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1992" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N1_AparicionGuia&quot;,Fire)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N1_AparicionGuia&quot;,Fire)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="175213061" result="Passed" start-time="2026-10-02 05:52:32Z" end-time="2026-10-02 05:52:39Z" duration="6.895349" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1993" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N1_Hallazgo&quot;,Fire)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N1_Hallazgo&quot;,Fire)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="882129553" result="Passed" start-time="2026-10-02 05:52:39Z" end-time="2026-10-02 05:52:48Z" duration="8.905588" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1994" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N1_NacimientoDelFuego&quot;,Fire)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N1_NacimientoDelFuego&quot;,Fire)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="725898640" result="Passed" start-time="2026-10-02 05:52:48Z" end-time="2026-10-02 05:52:52Z" duration="3.951258" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1995" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_PuenteI&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_PuenteI&quot;,Wheel)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="718661733" result="Passed" start-time="2026-10-02 05:52:52Z" end-time="2026-10-02 05:52:56Z" duration="3.679623" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1996" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_PuenteI_Bosque&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_PuenteI_Bosque&quot;,Wheel)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1219600373" result="Passed" start-time="2026-10-02 05:52:56Z" end-time="2026-10-02 05:53:08Z" duration="12.319319" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1997" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_Escena21_Bosque&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_Escena21_Bosque&quot;,Wheel)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="750047428" result="Passed" start-time="2026-10-02 05:53:08Z" end-time="2026-10-02 05:53:12Z" duration="3.940843" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1998" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_Escena22_ElPatron&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_Escena22_ElPatron&quot;,Wheel)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="411249490" result="Passed" start-time="2026-10-02 05:53:12Z" end-time="2026-10-02 05:53:17Z" duration="5.233353" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1999" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_Escena23_Construccion&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_Escena23_Construccion&quot;,Wheel)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="568195482" result="Passed" start-time="2026-10-02 05:53:17Z" end-time="2026-10-02 05:53:23Z" duration="5.587387" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2000" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_Escena24_Regreso&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_Escena24_Regreso&quot;,Wheel)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1217005471" result="Passed" start-time="2026-10-02 05:53:23Z" end-time="2026-10-02 05:53:26Z" duration="3.757006" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2001" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_Escena25_Cierre&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N2_Escena25_Cierre&quot;,Wheel)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1468547776" result="Passed" start-time="2026-10-02 05:53:26Z" end-time="2026-10-02 05:53:30Z" duration="3.767575" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2002" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_PuenteII&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_PuenteII&quot;,River)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="912693544" result="Passed" start-time="2026-10-02 05:53:30Z" end-time="2026-10-02 05:53:31Z" duration="1.300992" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2003" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_PuenteII_Horizonte&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_PuenteII_Horizonte&quot;,River)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1855996795" result="Passed" start-time="2026-10-02 05:53:31Z" end-time="2026-10-02 05:53:33Z" duration="1.748665" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2004" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_PuenteII_Rio&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_PuenteII_Rio&quot;,River)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="165939678" result="Passed" start-time="2026-10-02 05:53:33Z" end-time="2026-10-02 05:53:43Z" duration="9.370023" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2005" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_Escena31_Llegada&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_Escena31_Llegada&quot;,River)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="986172639" result="Passed" start-time="2026-10-02 05:53:43Z" end-time="2026-10-02 05:53:47Z" duration="4.308966" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2006" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_Escena32_PrimerIntento&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_Escena32_PrimerIntento&quot;,River)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1148292829" result="Passed" start-time="2026-10-02 05:53:47Z" end-time="2026-10-02 05:53:54Z" duration="7.272501" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2007" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_Escena33_Cruce&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_Escena33_Cruce&quot;,River)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="372688619" result="Passed" start-time="2026-10-02 05:53:54Z" end-time="2026-10-02 05:54:09Z" duration="14.465267" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2008" name="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_EscenaFinal&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea(&quot;N3_EscenaFinal&quot;,River)" methodname="NarrativeScene_RF05_CadaPersonajeHaceLoQueDiceSuPasoCuandoSeLeeLaLinea" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="451736691" result="Passed" start-time="2026-10-02 05:54:09Z" end-time="2026-10-02 05:54:16Z" duration="7.595057" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+              </test-suite>
+              <test-suite type="ParameterizedMethod" id="2028" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" testcasecount="18" result="Passed" start-time="2026-10-02 05:54:16Z" end-time="2026-10-02 06:03:59Z" duration="583.056476" total="18" passed="18" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Timeout" value="240000" />
+                  <property name="Category" value="VisualVerification" />
+                  <property name="Description" value="Verificar en las capturas Personajes_*: cada personaje se ve entero, con los pies en el suelo pintado y por encima del cuadro de diálogo; hace lo que su línea cuenta; la escala entre adultos, niños y Algoritm es coherente; y nadie tapa lo que el texto nombra." />
+                </properties>
+                <test-case id="2010" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N1_Apertura&quot;,Fire)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N1_Apertura&quot;,Fire)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="813351112" result="Passed" start-time="2026-10-02 05:54:16Z" end-time="2026-10-02 05:54:48Z" duration="31.801057" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2011" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N1_AparicionGuia&quot;,Fire)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N1_AparicionGuia&quot;,Fire)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="727396045" result="Passed" start-time="2026-10-02 05:54:48Z" end-time="2026-10-02 05:55:15Z" duration="27.117050" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2012" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N1_Hallazgo&quot;,Fire)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N1_Hallazgo&quot;,Fire)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="2100520287" result="Passed" start-time="2026-10-02 05:55:15Z" end-time="2026-10-02 05:56:03Z" duration="47.950643" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2013" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N1_NacimientoDelFuego&quot;,Fire)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N1_NacimientoDelFuego&quot;,Fire)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1905122696" result="Passed" start-time="2026-10-02 05:56:03Z" end-time="2026-10-02 05:57:05Z" duration="61.810477" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2014" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_PuenteI&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_PuenteI&quot;,Wheel)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="343142624" result="Passed" start-time="2026-10-02 05:57:05Z" end-time="2026-10-02 05:57:21Z" duration="15.761457" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2015" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_PuenteI_Bosque&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_PuenteI_Bosque&quot;,Wheel)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1192484990" result="Passed" start-time="2026-10-02 05:57:21Z" end-time="2026-10-02 05:57:59Z" duration="38.807773" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2016" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_Escena21_Bosque&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_Escena21_Bosque&quot;,Wheel)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1862170286" result="Passed" start-time="2026-10-02 05:57:59Z" end-time="2026-10-02 05:58:29Z" duration="29.794088" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2017" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_Escena22_ElPatron&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_Escena22_ElPatron&quot;,Wheel)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1247102830" result="Passed" start-time="2026-10-02 05:58:29Z" end-time="2026-10-02 05:59:04Z" duration="35.101785" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2018" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_Escena23_Construccion&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_Escena23_Construccion&quot;,Wheel)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="642631148" result="Passed" start-time="2026-10-02 05:59:04Z" end-time="2026-10-02 05:59:47Z" duration="42.568099" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2019" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_Escena24_Regreso&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_Escena24_Regreso&quot;,Wheel)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1550568748" result="Passed" start-time="2026-10-02 05:59:47Z" end-time="2026-10-02 06:00:03Z" duration="16.350250" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2020" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_Escena25_Cierre&quot;,Wheel)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N2_Escena25_Cierre&quot;,Wheel)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1431499989" result="Passed" start-time="2026-10-02 06:00:03Z" end-time="2026-10-02 06:00:29Z" duration="26.078800" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2021" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_PuenteII&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_PuenteII&quot;,River)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="882875145" result="Passed" start-time="2026-10-02 06:00:29Z" end-time="2026-10-02 06:00:36Z" duration="6.842729" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2022" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_PuenteII_Horizonte&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_PuenteII_Horizonte&quot;,River)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1961994735" result="Passed" start-time="2026-10-02 06:00:36Z" end-time="2026-10-02 06:00:46Z" duration="10.245405" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2023" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_PuenteII_Rio&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_PuenteII_Rio&quot;,River)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="836823726" result="Passed" start-time="2026-10-02 06:00:46Z" end-time="2026-10-02 06:01:15Z" duration="28.537434" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2024" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_Escena31_Llegada&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_Escena31_Llegada&quot;,River)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="932979233" result="Passed" start-time="2026-10-02 06:01:15Z" end-time="2026-10-02 06:02:00Z" duration="45.109902" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2025" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_Escena32_PrimerIntento&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_Escena32_PrimerIntento&quot;,River)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="972021406" result="Passed" start-time="2026-10-02 06:02:00Z" end-time="2026-10-02 06:02:21Z" duration="20.837546" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2026" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_Escena33_Cruce&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_Escena33_Cruce&quot;,River)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1672061852" result="Passed" start-time="2026-10-02 06:02:21Z" end-time="2026-10-02 06:03:01Z" duration="40.047040" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="2027" name="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_EscenaFinal&quot;,River)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes(&quot;N3_EscenaFinal&quot;,River)" methodname="NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="147158682" result="Passed" start-time="2026-10-02 06:03:01Z" end-time="2026-10-02 06:03:59Z" duration="58.290755" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+              </test-suite>
+              <test-suite type="ParameterizedMethod" id="1981" name="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-02 06:03:59Z" end-time="2026-10-02 06:06:52Z" duration="172.603869" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Timeout" value="120000" />
+                  <property name="Category" value="VisualVerification" />
+                  <property name="Description" value="Verificar en las capturas N2_*: cada parada muestra lo que su línea cuenta, ningún objeto pintado queda bajo el cuadro de diálogo mientras se mueve, la línea de árboles nunca sale del cuadro (R1), ningún encuadre cruza el eje del espejo (R2), y el paso entre paradas es un solo gesto continuo." />
+                </properties>
+                <test-case id="1974" name="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_PuenteI&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_PuenteI&quot;)" methodname="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1617176336" result="Passed" start-time="2026-10-02 06:03:59Z" end-time="2026-10-02 06:04:11Z" duration="11.445416" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+N2_PuenteI L0 foco=(0.240,0.430) zoom=1.50 arriba=0.763 [0.073,0.407]
+   prop0 (0.105,0.453) y=[0.34,0.73] x=[0.00,0.21] visible
+   prop1 (0.140,0.435) y=[0.33,0.68] x=[0.11,0.31] visible
+   prop2 (0.220,0.345) y=[0.27,0.48] x=[0.38,0.50] visible
+   prop3 (0.219,0.432) y=[0.44,0.57] x=[0.42,0.46] visible
+   prop4 (0.220,0.390) y=[0.32,0.56] x=[0.37,0.51] visible
+   prop5 (0.150,0.368) y=[0.29,0.53] x=[0.17,0.30] visible
+   prop6 (0.180,0.363) y=[0.28,0.52] x=[0.26,0.39] visible
+   prop7 (0.220,0.475) y=[0.50,0.65] x=[0.40,0.48] visible
+N2_PuenteI L1 foco=(0.220,0.401) zoom=1.70 arriba=0.695 [0.073,0.368]
+   prop0 (0.105,0.453) y=[0.37,0.80] x=[0.65,0.89] visible
+   prop1 (0.140,0.435) y=[0.36,0.76] x=[0.79,1.02] visible
+   prop2 (0.220,0.345) y=[0.29,0.52] x=[0.43,0.57] visible
+   prop3 (0.219,0.432) y=[0.48,0.63] x=[0.47,0.52] visible
+   prop4 (0.220,0.390) y=[0.35,0.62] x=[0.42,0.57] visible
+   prop5 (0.150,0.368) y=[0.31,0.58] x=[0.60,0.75] visible
+   prop6 (0.180,0.363) y=[0.30,0.57] x=[0.51,0.67] visible
+   prop7 (0.220,0.475) y=[0.63,0.80] x=[0.45,0.55] visible
+N2_PuenteI L2 foco=(0.279,0.449) zoom=1.40 arriba=0.805 [0.101,0.457]
+   prop0 (0.105,0.453) y=[0.33,0.68] x=[0.46,0.66] visible
+   prop1 (0.140,0.435) y=[0.31,0.65] x=[0.58,0.76] visible
+   prop2 (0.220,0.345) y=[0.26,0.45] x=[0.28,0.39] visible
+   prop3 (0.219,0.432) y=[0.42,0.54] x=[0.31,0.35] visible
+   prop4 (0.220,0.390) y=[0.31,0.53] x=[0.27,0.40] visible
+   prop5 (0.150,0.368) y=[0.27,0.50] x=[0.42,0.54] visible
+   prop6 (0.180,0.363) y=[0.27,0.49] x=[0.35,0.47] visible
+   prop7 (0.220,0.475) y=[0.54,0.68] x=[0.29,0.37] visible
+
+]]></output>
+                </test-case>
+                <test-case id="1975" name="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_PuenteI_Bosque&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_PuenteI_Bosque&quot;)" methodname="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1903399874" result="Passed" start-time="2026-10-02 06:04:11Z" end-time="2026-10-02 06:04:38Z" duration="27.268516" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+N2_PuenteI_Bosque L0 foco=(0.760,0.490) zoom=1.28 arriba=0.881 [0.565,0.955]
+   prop0 (0.965,0.453) y=[0.29,0.62] x=[0.92,1.11] visible
+   prop1 (0.985,0.438) y=[0.28,0.58] x=[0.99,1.15] visible
+   prop2 (0.700,0.390) y=[0.28,0.46] x=[0.30,0.40] visible
+   prop3 (0.805,0.360) y=[0.29,0.38] x=[0.59,0.64] visible
+   prop4 (0.825,0.360) y=[0.27,0.40] x=[0.63,0.70] visible
+   prop5 (0.815,0.413) y=[0.35,0.45] x=[0.61,0.67] visible
+   prop6 (0.690,0.335) y=[0.26,0.34] x=[0.30,0.34] visible
+   prop7 (0.985,0.384) y=[0.26,0.46] x=[1.01,1.12] fuera
+   prop8 (0.975,0.399) y=[0.28,0.48] x=[0.98,1.09] visible
+   prop9 (0.655,0.575) y=[0.54,0.67] x=[0.20,0.27] visible
+   prop10 (0.624,0.325) y=[0.25,0.33] x=[0.13,0.17] visible
+   prop11 (0.872,0.330) y=[0.26,0.33] x=[0.77,0.81] visible
+N2_PuenteI_Bosque L1 foco=(0.760,0.490) zoom=1.28 arriba=0.881 [0.565,0.955]
+   prop0 (0.965,0.453) y=[0.29,0.62] x=[0.20,0.38] visible
+   prop1 (0.985,0.438) y=[0.28,0.58] x=[0.70,0.87] visible
+   prop2 (0.700,0.390) y=[0.28,0.46] x=[0.30,0.40] visible
+   prop3 (0.805,0.360) y=[0.29,0.38] x=[0.59,0.64] visible
+   prop4 (0.825,0.360) y=[0.27,0.40] x=[0.63,0.70] visible
+   prop5 (0.815,0.413) y=[0.35,0.45] x=[0.61,0.67] visible
+   prop6 (0.690,0.335) y=[0.26,0.34] x=[0.30,0.34] visible
+   prop7 (0.985,0.384) y=[0.26,0.46] x=[0.06,0.18] visible
+   prop8 (0.975,0.399) y=[0.28,0.48] x=[0.12,0.24] visible
+   prop9 (0.655,0.575) y=[0.54,0.67] x=[0.20,0.27] visible
+   prop10 (0.624,0.325) y=[0.25,0.33] x=[0.13,0.17] visible
+   prop11 (0.872,0.330) y=[0.26,0.33] x=[0.77,0.81] visible
+N2_PuenteI_Bosque L2 foco=(0.760,0.490) zoom=1.28 arriba=0.881 [0.565,0.955]
+   prop0 (0.965,0.453) y=[0.29,0.62] x=[0.21,0.40] visible
+   prop1 (0.985,0.438) y=[0.28,0.58] x=[0.70,0.87] visible
+   prop2 (0.700,0.390) y=[0.28,0.46] x=[0.30,0.40] visible
+   prop3 (0.805,0.360) y=[0.29,0.38] x=[0.59,0.64] visible
+   prop4 (0.825,0.360) y=[0.27,0.40] x=[0.63,0.70] visible
+   prop5 (0.815,0.413) y=[0.35,0.45] x=[0.61,0.67] visible
+   prop6 (0.690,0.335) y=[0.26,0.34] x=[0.30,0.34] visible
+   prop7 (0.985,0.384) y=[0.26,0.46] x=[0.06,0.18] visible
+   prop8 (0.975,0.399) y=[0.28,0.48] x=[0.14,0.25] visible
+   prop9 (0.655,0.575) y=[0.54,0.67] x=[0.20,0.27] visible
+   prop10 (0.624,0.325) y=[0.25,0.33] x=[0.13,0.17] visible
+   prop11 (0.872,0.330) y=[0.26,0.33] x=[0.77,0.81] visible
+N2_PuenteI_Bosque L3 foco=(0.760,0.490) zoom=1.28 arriba=0.881 [0.565,0.955]
+   prop0 (0.965,0.453) y=[0.29,0.62] x=[0.36,0.54] visible
+   prop1 (0.985,0.438) y=[0.28,0.58] x=[0.70,0.87] visible
+   prop2 (0.700,0.390) y=[0.28,0.46] x=[0.30,0.40] visible
+   prop3 (0.805,0.360) y=[0.29,0.38] x=[0.59,0.64] visible
+   prop4 (0.825,0.360) y=[0.27,0.40] x=[0.63,0.70] visible
+   prop5 (0.815,0.413) y=[0.35,0.45] x=[0.61,0.67] visible
+   prop6 (0.690,0.335) y=[0.26,0.34] x=[0.30,0.34] visible
+   prop7 (0.985,0.384) y=[0.26,0.46] x=[0.06,0.18] visible
+   prop8 (0.975,0.399) y=[0.28,0.48] x=[0.18,0.29] visible
+   prop9 (0.655,0.575) y=[0.54,0.67] x=[0.20,0.27] visible
+   prop10 (0.624,0.325) y=[0.25,0.33] x=[0.13,0.17] visible
+   prop11 (0.872,0.330) y=[0.26,0.33] x=[0.77,0.81] visible
+N2_PuenteI_Bosque L4 foco=(0.735,0.456) zoom=1.50 arriba=0.790 [0.568,0.903]
+   prop0 (0.965,0.453) y=[0.31,0.69] x=[0.39,0.61] visible
+   prop1 (0.985,0.438) y=[0.30,0.65] x=[0.81,1.01] visible
+   prop2 (0.700,0.390) y=[0.30,0.51] x=[0.34,0.45] visible
+   prop3 (0.805,0.360) y=[0.30,0.41] x=[0.68,0.74] visible
+   prop4 (0.825,0.360) y=[0.28,0.43] x=[0.73,0.81] visible
+   prop5 (0.815,0.413) y=[0.37,0.50] x=[0.70,0.77] visible
+   prop6 (0.690,0.335) y=[0.27,0.37] x=[0.34,0.39] visible
+   prop7 (0.985,0.384) y=[0.28,0.51] x=[0.06,0.20] visible
+   prop8 (0.975,0.399) y=[0.30,0.53] x=[0.23,0.36] visible
+   prop9 (0.655,0.575) y=[0.60,0.75] x=[0.22,0.30] visible
+   prop10 (0.624,0.325) y=[0.26,0.35] x=[0.14,0.19] visible
+   prop11 (0.872,0.330) y=[0.27,0.36] x=[0.88,0.93] visible
+N2_PuenteI_Bosque L5 foco=(0.718,0.440) zoom=1.70 arriba=0.735 [0.571,0.866]
+   prop0 (0.965,0.453) y=[0.31,0.74] x=[0.44,0.68] visible
+   prop1 (0.985,0.438) y=[0.30,0.70] x=[0.91,1.13] visible
+   prop2 (0.700,0.390) y=[0.30,0.53] x=[0.37,0.50] visible
+   prop3 (0.805,0.360) y=[0.30,0.42] x=[0.76,0.83] visible
+   prop4 (0.825,0.360) y=[0.28,0.45] x=[0.81,0.91] visible
+   prop5 (0.815,0.413) y=[0.38,0.52] x=[0.79,0.87] visible
+   prop6 (0.690,0.335) y=[0.27,0.38] x=[0.37,0.43] visible
+   prop7 (0.985,0.384) y=[0.27,0.54] x=[0.06,0.21] visible
+   prop8 (0.975,0.399) y=[0.30,0.56] x=[0.26,0.40] visible
+   prop9 (0.655,0.575) y=[0.64,0.81] x=[0.24,0.33] visible
+   prop10 (0.624,0.325) y=[0.26,0.35] x=[0.15,0.21] visible
+   prop11 (0.872,0.330) y=[0.26,0.36] x=[0.99,1.05] visible
+N2_PuenteI_Bosque L6 foco=(0.712,0.430) zoom=1.80 arriba=0.709 [0.573,0.851]
+   prop0 (0.965,0.453) y=[0.31,0.77] x=[0.46,0.71] visible
+   prop1 (0.985,0.438) y=[0.30,0.72] x=[0.95,1.19] visible
+   prop2 (0.700,0.390) y=[0.30,0.55] x=[0.39,0.53] visible
+   prop3 (0.805,0.360) y=[0.31,0.44] x=[0.80,0.87] visible
+   prop4 (0.825,0.360) y=[0.28,0.46] x=[0.86,0.96] visible
+   prop5 (0.815,0.413) y=[0.40,0.54] x=[0.83,0.91] visible
+   prop6 (0.690,0.335) y=[0.27,0.39] x=[0.39,0.45] visible
+   prop7 (0.985,0.384) y=[0.28,0.56] x=[0.06,0.22] visible
+   prop8 (0.975,0.399) y=[0.30,0.58] x=[0.28,0.44] visible
+   prop9 (0.655,0.575) y=[0.67,0.85] x=[0.24,0.34] visible
+   prop10 (0.624,0.325) y=[0.26,0.36] x=[0.15,0.21] visible
+   prop11 (0.872,0.330) y=[0.27,0.37] x=[1.04,1.10] fuera
+N2_PuenteI_Bosque L7 foco=(0.742,0.455) zoom=1.42 arriba=0.806 [0.566,0.917]
+   prop0 (0.965,0.453) y=[0.32,0.68] x=[0.38,0.59] visible
+   prop1 (0.985,0.438) y=[0.31,0.64] x=[0.78,0.97] visible
+   prop2 (0.700,0.390) y=[0.31,0.51] x=[0.33,0.44] visible
+   prop3 (0.805,0.360) y=[0.32,0.41] x=[0.65,0.71] visible
+   prop4 (0.825,0.360) y=[0.29,0.44] x=[0.70,0.78] visible
+   prop5 (0.815,0.413) y=[0.38,0.50] x=[0.68,0.74] visible
+   prop6 (0.690,0.335) y=[0.28,0.37] x=[0.33,0.38] visible
+   prop7 (0.985,0.384) y=[0.29,0.51] x=[0.07,0.19] visible
+   prop8 (0.975,0.399) y=[0.31,0.53] x=[0.24,0.37] visible
+   prop9 (0.655,0.575) y=[0.60,0.74] x=[0.21,0.29] visible
+   prop10 (0.624,0.325) y=[0.27,0.36] x=[0.14,0.19] visible
+   prop11 (0.872,0.330) y=[0.28,0.36] x=[0.85,0.89] visible
+N2_PuenteI_Bosque L8 foco=(0.715,0.489) zoom=1.22 arriba=0.898 [0.510,0.919]
+   prop0 (0.965,0.453) y=[0.30,0.61] x=[0.47,0.64] visible
+   prop1 (0.985,0.438) y=[0.29,0.58] x=[0.80,0.97] visible
+   prop2 (0.700,0.390) y=[0.29,0.46] x=[0.42,0.51] visible
+   prop3 (0.805,0.360) y=[0.30,0.38] x=[0.70,0.75] visible
+   prop4 (0.825,0.360) y=[0.28,0.40] x=[0.74,0.80] visible
+   prop5 (0.815,0.413) y=[0.36,0.46] x=[0.72,0.77] visible
+   prop6 (0.690,0.335) y=[0.27,0.35] x=[0.42,0.46] visible
+   prop7 (0.985,0.384) y=[0.28,0.47] x=[0.20,0.30] visible
+   prop8 (0.975,0.399) y=[0.29,0.48] x=[0.35,0.45] visible
+   prop9 (0.655,0.575) y=[0.60,0.73] x=[0.32,0.39] visible
+   prop10 (0.624,0.325) y=[0.26,0.33] x=[0.26,0.30] visible
+   prop11 (0.872,0.330) y=[0.27,0.34] x=[0.87,0.91] visible
+
+]]></output>
+                </test-case>
+                <test-case id="1976" name="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_Escena21_Bosque&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_Escena21_Bosque&quot;)" methodname="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1284270924" result="Passed" start-time="2026-10-02 06:04:38Z" end-time="2026-10-02 06:05:03Z" duration="25.374976" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+N2_Escena21_Bosque L0 foco=(0.330,0.400) zoom=1.62 arriba=0.709 [0.176,0.484]
+   prop0 (0.236,0.570) y=[0.59,0.96] x=[0.09,0.30] visible
+   prop1 (0.430,0.556) y=[0.65,0.86] x=[0.76,0.88] visible
+   prop2 (0.385,0.531) y=[0.54,0.88] x=[0.58,0.78] visible
+   prop3 (0.150,0.510) y=[0.57,0.79] x=[-0.15,-0.02] fuera
+   prop4 (0.207,0.465) y=[0.48,0.73] x=[0.03,0.17] visible
+   prop5 (0.155,0.398) y=[0.43,0.57] x=[-0.11,-0.03] fuera
+   prop6 (0.205,0.367) y=[0.33,0.57] x=[0.03,0.16] visible
+   prop7 (0.248,0.430) y=[0.49,0.60] x=[0.20,0.27] visible
+   prop8 (0.292,0.377) y=[0.36,0.57] x=[0.32,0.43] visible
+   prop9 (0.335,0.428) y=[0.45,0.64] x=[0.46,0.57] visible
+   prop10 (0.175,0.480) y=[0.57,0.69] x=[-0.03,0.03] visible
+   prop11 (0.225,0.408) y=[0.42,0.61] x=[0.11,0.21] visible
+   prop12 (0.268,0.357) y=[0.31,0.55] x=[0.23,0.36] visible
+   prop13 (0.140,0.387) y=[0.39,0.56] x=[-0.16,-0.07] fuera
+   prop14 (0.190,0.430) y=[0.48,0.62] x=[0.01,0.08] visible
+   prop15 (0.300,0.460) y=[0.53,0.67] x=[0.36,0.44] visible
+   prop16 (0.275,0.460) y=[0.54,0.65] x=[0.29,0.35] visible
+   prop17 (0.345,0.408) y=[0.44,0.58] x=[0.51,0.59] visible
+   prop18 (0.315,0.490) y=[0.57,0.72] x=[0.41,0.49] visible
+   prop19 (0.330,0.620) y=[0.78,0.94] x=[0.45,0.55] visible
+N2_Escena21_Bosque L1 foco=(0.330,0.400) zoom=1.62 arriba=0.709 [0.176,0.484]
+   prop0 (0.236,0.570) y=[0.59,0.96] x=[0.09,0.30] visible
+   prop1 (0.430,0.556) y=[0.65,0.86] x=[0.76,0.88] visible
+   prop2 (0.385,0.531) y=[0.54,0.88] x=[0.58,0.78] visible
+   prop3 (0.150,0.510) y=[0.57,0.79] x=[-0.15,-0.02] fuera
+   prop4 (0.207,0.465) y=[0.48,0.73] x=[0.03,0.17] visible
+   prop5 (0.155,0.398) y=[0.43,0.57] x=[-0.11,-0.03] fuera
+   prop6 (0.205,0.367) y=[0.33,0.57] x=[0.03,0.16] visible
+   prop7 (0.248,0.430) y=[0.49,0.60] x=[0.20,0.27] visible
+   prop8 (0.292,0.377) y=[0.36,0.57] x=[0.32,0.43] visible
+   prop9 (0.335,0.428) y=[0.45,0.64] x=[0.46,0.57] visible
+   prop10 (0.175,0.480) y=[0.57,0.69] x=[-0.03,0.03] visible
+   prop11 (0.225,0.408) y=[0.42,0.61] x=[0.11,0.21] visible
+   prop12 (0.268,0.357) y=[0.31,0.55] x=[0.23,0.36] visible
+   prop13 (0.140,0.387) y=[0.39,0.56] x=[-0.16,-0.07] fuera
+   prop14 (0.190,0.430) y=[0.48,0.62] x=[0.01,0.08] visible
+   prop15 (0.300,0.460) y=[0.53,0.67] x=[0.36,0.44] visible
+   prop16 (0.275,0.460) y=[0.54,0.65] x=[0.29,0.35] visible
+   prop17 (0.345,0.408) y=[0.44,0.58] x=[0.51,0.59] visible
+   prop18 (0.315,0.490) y=[0.57,0.72] x=[0.41,0.49] visible
+   prop19 (0.330,0.620) y=[0.78,0.94] x=[0.45,0.55] visible
+N2_Escena21_Bosque L2 foco=(0.299,0.429) zoom=1.52 arriba=0.757 [0.135,0.463]
+   prop0 (0.236,0.570) y=[0.54,0.89] x=[0.20,0.39] visible
+   prop1 (0.430,0.556) y=[0.59,0.79] x=[0.84,0.96] visible
+   prop2 (0.385,0.531) y=[0.49,0.82] x=[0.67,0.85] visible
+   prop3 (0.150,0.510) y=[0.52,0.73] x=[-0.01,0.10] visible
+   prop4 (0.207,0.465) y=[0.43,0.68] x=[0.15,0.29] visible
+   prop5 (0.155,0.398) y=[0.39,0.52] x=[0.02,0.10] visible
+   prop6 (0.205,0.367) y=[0.29,0.52] x=[0.15,0.28] visible
+   prop7 (0.248,0.430) y=[0.45,0.55] x=[0.31,0.37] visible
+   prop8 (0.292,0.377) y=[0.32,0.52] x=[0.42,0.53] visible
+   prop9 (0.335,0.428) y=[0.41,0.59] x=[0.56,0.66] visible
+   prop10 (0.175,0.480) y=[0.52,0.63] x=[0.09,0.15] visible
+   prop11 (0.225,0.408) y=[0.38,0.56] x=[0.22,0.32] visible
+   prop12 (0.268,0.357) y=[0.28,0.50] x=[0.34,0.47] visible
+   prop13 (0.140,0.387) y=[0.36,0.51] x=[-0.03,0.06] visible
+   prop14 (0.190,0.430) y=[0.44,0.56] x=[0.13,0.20] visible
+   prop15 (0.300,0.460) y=[0.48,0.61] x=[0.47,0.54] visible
+   prop16 (0.275,0.460) y=[0.49,0.60] x=[0.40,0.46] visible
+   prop17 (0.345,0.408) y=[0.40,0.53] x=[0.60,0.68] visible
+   prop18 (0.315,0.490) y=[0.52,0.66] x=[0.51,0.59] visible
+   prop19 (0.330,0.620) y=[0.71,0.87] x=[0.55,0.64] visible
+N2_Escena21_Bosque L3 foco=(0.259,0.406) zoom=1.60 arriba=0.719 [0.103,0.416]
+   prop0 (0.236,0.570) y=[0.58,0.94] x=[0.31,0.51] visible
+   prop1 (0.430,0.556) y=[0.63,0.85] x=[0.99,1.11] visible
+   prop2 (0.385,0.531) y=[0.53,0.87] x=[0.81,1.00] visible
+   prop3 (0.150,0.510) y=[0.56,0.78] x=[0.09,0.21] visible
+   prop4 (0.207,0.465) y=[0.47,0.72] x=[0.26,0.40] visible
+   prop5 (0.155,0.398) y=[0.42,0.56] x=[0.13,0.21] visible
+   prop6 (0.205,0.367) y=[0.32,0.56] x=[0.26,0.39] visible
+   prop7 (0.248,0.430) y=[0.48,0.59] x=[0.43,0.50] visible
+   prop8 (0.292,0.377) y=[0.35,0.56] x=[0.55,0.66] visible
+   prop9 (0.335,0.428) y=[0.44,0.63] x=[0.69,0.80] visible
+   prop10 (0.175,0.480) y=[0.56,0.67] x=[0.20,0.26] visible
+   prop11 (0.225,0.408) y=[0.41,0.60] x=[0.34,0.44] visible
+   prop12 (0.268,0.357) y=[0.31,0.54] x=[0.46,0.59] visible
+   prop13 (0.140,0.387) y=[0.39,0.55] x=[0.07,0.17] visible
+   prop14 (0.190,0.430) y=[0.47,0.60] x=[0.24,0.32] visible
+   prop15 (0.300,0.460) y=[0.52,0.66] x=[0.59,0.67] visible
+   prop16 (0.275,0.460) y=[0.53,0.64] x=[0.52,0.58] visible
+   prop17 (0.345,0.408) y=[0.43,0.57] x=[0.73,0.81] visible
+   prop18 (0.315,0.490) y=[0.56,0.71] x=[0.64,0.72] visible
+   prop19 (0.330,0.620) y=[0.76,0.92] x=[0.68,0.77] visible
+N2_Escena21_Bosque L4 foco=(0.229,0.395) zoom=1.68 arriba=0.694 [0.080,0.379]
+   prop0 (0.236,0.570) y=[0.61,0.98] x=[0.40,0.61] visible
+   prop1 (0.430,0.556) y=[0.63,0.85] x=[0.67,0.80] visible
+   prop2 (0.385,0.531) y=[0.55,0.91] x=[0.99,1.19] visible
+   prop3 (0.150,0.510) y=[0.58,0.81] x=[0.17,0.30] visible
+   prop4 (0.207,0.465) y=[0.48,0.75] x=[0.35,0.50] visible
+   prop5 (0.155,0.398) y=[0.43,0.58] x=[0.21,0.29] visible
+   prop6 (0.205,0.367) y=[0.33,0.57] x=[0.35,0.49] visible
+   prop7 (0.248,0.430) y=[0.50,0.62] x=[0.53,0.60] visible
+   prop8 (0.292,0.377) y=[0.36,0.58] x=[0.65,0.77] visible
+   prop9 (0.335,0.428) y=[0.46,0.65] x=[0.80,0.91] visible
+   prop10 (0.175,0.480) y=[0.58,0.70] x=[0.28,0.35] visible
+   prop11 (0.225,0.408) y=[0.42,0.62] x=[0.43,0.54] visible
+   prop12 (0.268,0.357) y=[0.31,0.56] x=[0.56,0.70] visible
+   prop13 (0.140,0.387) y=[0.40,0.57] x=[0.15,0.25] visible
+   prop14 (0.190,0.430) y=[0.49,0.63] x=[0.33,0.41] visible
+   prop15 (0.300,0.460) y=[0.53,0.68] x=[0.70,0.78] visible
+   prop16 (0.275,0.460) y=[0.55,0.67] x=[0.62,0.69] visible
+   prop17 (0.345,0.408) y=[0.45,0.59] x=[0.85,0.93] visible
+   prop18 (0.315,0.490) y=[0.58,0.74] x=[0.74,0.83] visible
+   prop19 (0.330,0.620) y=[0.79,0.96] x=[0.79,0.88] visible
+N2_Escena21_Bosque L5 foco=(0.191,0.424) zoom=1.45 arriba=0.768 [0.019,0.363]
+   prop0 (0.236,0.570) y=[0.55,0.87] x=[0.53,0.71] visible
+   prop1 (0.430,0.556) y=[0.57,0.76] x=[0.76,0.87] visible
+   prop2 (0.385,0.531) y=[0.50,0.81] x=[1.04,1.21] fuera
+   prop3 (0.150,0.510) y=[0.52,0.72] x=[0.33,0.44] visible
+   prop4 (0.207,0.465) y=[0.44,0.68] x=[0.48,0.61] visible
+   prop5 (0.155,0.398) y=[0.40,0.52] x=[0.36,0.43] visible
+   prop6 (0.205,0.367) y=[0.31,0.52] x=[0.48,0.60] visible
+   prop7 (0.248,0.430) y=[0.46,0.56] x=[0.64,0.70] visible
+   prop8 (0.292,0.377) y=[0.34,0.52] x=[0.74,0.85] visible
+   prop9 (0.335,0.428) y=[0.42,0.59] x=[0.87,0.97] visible
+   prop10 (0.175,0.480) y=[0.53,0.63] x=[0.43,0.48] visible
+   prop11 (0.225,0.408) y=[0.39,0.56] x=[0.55,0.65] visible
+   prop12 (0.268,0.357) y=[0.30,0.51] x=[0.67,0.78] visible
+   prop13 (0.140,0.387) y=[0.37,0.52] x=[0.31,0.39] visible
+   prop14 (0.190,0.430) y=[0.45,0.57] x=[0.46,0.53] visible
+   prop15 (0.300,0.460) y=[0.49,0.61] x=[0.78,0.85] visible
+   prop16 (0.275,0.460) y=[0.50,0.60] x=[0.72,0.77] visible
+   prop17 (0.345,0.408) y=[0.41,0.54] x=[0.91,0.98] visible
+   prop18 (0.315,0.490) y=[0.53,0.66] x=[0.82,0.90] visible
+   prop19 (0.330,0.620) y=[0.71,0.86] x=[0.86,0.95] visible
+N2_Escena21_Bosque L6 foco=(0.249,0.499) zoom=1.00 arriba=0.997 [0.000,0.498]
+   prop0 (0.236,0.570) y=[0.46,0.68] x=[0.40,0.53] visible
+   prop1 (0.430,0.556) y=[0.47,0.61] x=[0.56,0.64] visible
+   prop2 (0.385,0.531) y=[0.42,0.64] x=[0.75,0.87] visible
+   prop3 (0.150,0.510) y=[0.44,0.58] x=[0.26,0.34] visible
+   prop4 (0.207,0.465) y=[0.39,0.55] x=[0.37,0.46] visible
+   prop5 (0.155,0.398) y=[0.36,0.44] x=[0.29,0.33] visible
+   prop6 (0.205,0.367) y=[0.29,0.44] x=[0.37,0.45] visible
+   prop7 (0.248,0.430) y=[0.40,0.47] x=[0.48,0.52] visible
+   prop8 (0.292,0.377) y=[0.31,0.44] x=[0.55,0.62] visible
+   prop9 (0.335,0.428) y=[0.37,0.49] x=[0.64,0.71] visible
+   prop10 (0.175,0.480) y=[0.45,0.52] x=[0.33,0.37] visible
+   prop11 (0.225,0.408) y=[0.35,0.47] x=[0.42,0.48] visible
+   prop12 (0.268,0.357) y=[0.28,0.43] x=[0.50,0.58] visible
+   prop13 (0.140,0.387) y=[0.34,0.44] x=[0.25,0.31] visible
+   prop14 (0.190,0.430) y=[0.39,0.47] x=[0.36,0.40] visible
+   prop15 (0.300,0.460) y=[0.42,0.50] x=[0.58,0.63] visible
+   prop16 (0.275,0.460) y=[0.43,0.50] x=[0.53,0.57] visible
+   prop17 (0.345,0.408) y=[0.37,0.45] x=[0.67,0.72] visible
+   prop18 (0.315,0.490) y=[0.44,0.54] x=[0.61,0.66] visible
+   prop19 (0.330,0.620) y=[0.57,0.67] x=[0.63,0.69] visible
+
+]]></output>
+                </test-case>
+                <test-case id="1977" name="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_Escena22_ElPatron&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_Escena22_ElPatron&quot;)" methodname="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1162565751" result="Passed" start-time="2026-10-02 06:05:03Z" end-time="2026-10-02 06:05:36Z" duration="32.725052" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+N2_Escena22_ElPatron L0 foco=(0.232,0.420) zoom=1.58 arriba=0.736 [0.074,0.390]
+   prop0 (0.428,0.440) y=[0.35,0.72] x=[1.01,1.22] fuera
+   prop1 (0.366,0.444) y=[0.34,0.74] x=[0.81,1.04] visible
+   prop2 (0.141,0.398) y=[0.34,0.59] x=[0.14,0.28] visible
+   prop3 (0.174,0.565) y=[0.63,0.83] x=[0.48,0.60] visible
+   prop4 (0.200,0.457) y=[0.50,0.61] x=[0.37,0.43] visible SE_MUEVE
+   prop5 (0.218,0.457) y=[0.50,0.61] x=[0.42,0.49] visible SE_MUEVE
+   prop6 (0.235,0.457) y=[0.50,0.61] x=[0.48,0.54] visible SE_MUEVE
+   prop7 (0.253,0.457) y=[0.50,0.61] x=[0.53,0.60] visible SE_MUEVE
+   prop8 (0.270,0.457) y=[0.50,0.61] x=[0.59,0.65] visible SE_MUEVE
+   prop9 (0.200,0.509) y=[0.38,0.67] x=[0.67,0.83] visible SE_MUEVE
+   prop10 (0.168,0.372) y=[0.33,0.52] x=[0.24,0.35] visible
+   prop11 (0.337,0.360) y=[0.31,0.50] x=[0.78,0.88] visible
+   prop12 (0.318,0.625) y=[0.76,0.92] x=[0.73,0.82] visible
+N2_Escena22_ElPatron L1 foco=(0.169,0.440) zoom=1.95 arriba=0.697 [0.040,0.297]
+   prop0 (0.428,0.440) y=[0.27,0.73] x=[1.38,1.64] fuera
+   prop1 (0.366,0.444) y=[0.26,0.76] x=[1.13,1.41] fuera
+   prop2 (0.141,0.398) y=[0.27,0.57] x=[0.33,0.50] visible
+   prop3 (0.174,0.565) y=[0.62,0.87] x=[0.72,0.86] visible
+   prop4 (0.200,0.457) y=[0.47,0.60] x=[0.58,0.66] visible
+   prop5 (0.218,0.457) y=[0.47,0.60] x=[0.65,0.73] visible
+   prop6 (0.235,0.457) y=[0.47,0.60] x=[0.72,0.80] visible
+   prop7 (0.253,0.457) y=[0.47,0.60] x=[0.79,0.86] visible
+   prop8 (0.270,0.457) y=[0.47,0.60] x=[0.86,0.93] visible
+   prop9 (0.200,0.509) y=[0.31,0.67] x=[0.95,1.16] visible
+   prop10 (0.168,0.372) y=[0.25,0.49] x=[0.66,0.80] visible SE_MUEVE
+   prop11 (0.337,0.360) y=[0.23,0.46] x=[1.09,1.22] fuera
+   prop12 (0.318,0.625) y=[0.78,0.98] x=[1.03,1.14] fuera
+N2_Escena22_ElPatron L2 foco=(0.275,0.440) zoom=1.95 arriba=0.696 [0.146,0.403]
+   prop0 (0.428,0.440) y=[0.27,0.73] x=[0.97,1.23] visible
+   prop1 (0.366,0.444) y=[0.26,0.76] x=[0.70,0.98] visible
+   prop2 (0.141,0.398) y=[0.27,0.57] x=[-0.08,0.09] visible
+   prop3 (0.174,0.565) y=[0.62,0.87] x=[0.31,0.45] visible
+   prop4 (0.200,0.457) y=[0.46,0.60] x=[0.17,0.25] visible
+   prop5 (0.218,0.457) y=[0.46,0.60] x=[0.24,0.32] visible
+   prop6 (0.235,0.457) y=[0.46,0.60] x=[0.31,0.38] visible
+   prop7 (0.253,0.457) y=[0.46,0.60] x=[0.38,0.45] visible
+   prop8 (0.270,0.457) y=[0.46,0.60] x=[0.44,0.52] visible
+   prop9 (0.200,0.509) y=[0.31,0.67] x=[0.54,0.75] visible
+   prop10 (0.168,0.372) y=[0.25,0.49] x=[0.25,0.39] visible
+   prop11 (0.337,0.360) y=[0.23,0.46] x=[0.68,0.81] visible SE_MUEVE
+   prop12 (0.318,0.625) y=[0.78,0.98] x=[0.61,0.72] visible
+N2_Escena22_ElPatron L3 foco=(0.312,0.460) zoom=1.58 arriba=0.775 [0.154,0.469]
+   prop0 (0.428,0.440) y=[0.28,0.65] x=[0.76,0.97] visible
+   prop1 (0.366,0.444) y=[0.27,0.68] x=[0.55,0.77] visible
+   prop2 (0.141,0.398) y=[0.28,0.52] x=[-0.09,0.05] visible
+   prop3 (0.174,0.565) y=[0.56,0.77] x=[0.23,0.34] visible
+   prop4 (0.200,0.457) y=[0.44,0.55] x=[0.12,0.18] visible
+   prop5 (0.218,0.457) y=[0.44,0.55] x=[0.17,0.23] visible
+   prop6 (0.235,0.457) y=[0.44,0.55] x=[0.23,0.29] visible
+   prop7 (0.253,0.457) y=[0.44,0.55] x=[0.28,0.34] visible
+   prop8 (0.270,0.457) y=[0.44,0.55] x=[0.34,0.40] visible
+   prop9 (0.200,0.509) y=[0.31,0.61] x=[0.42,0.58] visible
+   prop10 (0.168,0.372) y=[0.26,0.46] x=[0.18,0.29] visible
+   prop11 (0.337,0.360) y=[0.25,0.43] x=[0.53,0.63] visible
+   prop12 (0.318,0.625) y=[0.70,0.86] x=[0.48,0.56] visible
+N2_Escena22_ElPatron L4 foco=(0.322,0.450) zoom=1.78 arriba=0.732 [0.181,0.463]
+   prop0 (0.428,0.440) y=[0.27,0.69] x=[0.76,0.99] visible
+   prop1 (0.366,0.444) y=[0.26,0.72] x=[0.51,0.77] visible
+   prop2 (0.141,0.398) y=[0.27,0.54] x=[-0.20,-0.04] fuera
+   prop3 (0.174,0.565) y=[0.59,0.82] x=[0.16,0.29] visible
+   prop4 (0.200,0.457) y=[0.45,0.57] x=[0.03,0.10] visible
+   prop5 (0.218,0.457) y=[0.45,0.57] x=[0.09,0.16] visible
+   prop6 (0.235,0.457) y=[0.45,0.57] x=[0.16,0.23] visible
+   prop7 (0.253,0.457) y=[0.45,0.57] x=[0.22,0.29] visible
+   prop8 (0.270,0.457) y=[0.45,0.57] x=[0.28,0.35] visible
+   prop9 (0.200,0.509) y=[0.31,0.64] x=[0.37,0.56] visible
+   prop10 (0.168,0.372) y=[0.25,0.47] x=[0.11,0.23] visible
+   prop11 (0.337,0.360) y=[0.24,0.44] x=[0.50,0.61] visible
+   prop12 (0.318,0.625) y=[0.74,0.92] x=[0.44,0.54] visible
+N2_Escena22_ElPatron L5 foco=(0.296,0.500) zoom=1.26 arriba=0.895 [0.098,0.494]
+   prop0 (0.428,0.440) y=[0.28,0.57] x=[0.75,0.92] visible
+   prop1 (0.366,0.444) y=[0.27,0.59] x=[0.58,0.76] visible
+   prop2 (0.141,0.398) y=[0.27,0.47] x=[0.07,0.18] visible
+   prop3 (0.174,0.565) y=[0.50,0.66] x=[0.32,0.41] visible
+   prop4 (0.200,0.457) y=[0.40,0.49] x=[0.23,0.28] visible
+   prop5 (0.218,0.457) y=[0.40,0.49] x=[0.28,0.33] visible
+   prop6 (0.235,0.457) y=[0.40,0.49] x=[0.32,0.37] visible
+   prop7 (0.253,0.457) y=[0.40,0.49] x=[0.36,0.41] visible
+   prop8 (0.270,0.457) y=[0.40,0.49] x=[0.41,0.46] visible
+   prop9 (0.200,0.509) y=[0.30,0.54] x=[0.47,0.61] visible
+   prop10 (0.168,0.372) y=[0.26,0.42] x=[0.28,0.37] visible
+   prop11 (0.337,0.360) y=[0.25,0.40] x=[0.56,0.64] visible
+   prop12 (0.318,0.625) y=[0.61,0.73] x=[0.52,0.59] visible
+N2_Escena22_ElPatron L6 foco=(0.296,0.500) zoom=1.26 arriba=0.896 [0.098,0.494]
+   prop0 (0.428,0.440) y=[0.28,0.57] x=[0.75,0.92] visible
+   prop1 (0.366,0.444) y=[0.27,0.59] x=[0.58,0.76] visible
+   prop2 (0.141,0.398) y=[0.27,0.47] x=[0.07,0.18] visible
+   prop3 (0.174,0.565) y=[0.50,0.66] x=[0.32,0.41] visible
+   prop4 (0.200,0.457) y=[0.40,0.49] x=[0.23,0.28] visible
+   prop5 (0.218,0.457) y=[0.40,0.49] x=[0.28,0.33] visible
+   prop6 (0.235,0.457) y=[0.40,0.49] x=[0.32,0.37] visible
+   prop7 (0.253,0.457) y=[0.40,0.49] x=[0.36,0.41] visible
+   prop8 (0.270,0.457) y=[0.40,0.49] x=[0.41,0.46] visible
+   prop9 (0.200,0.509) y=[0.30,0.54] x=[0.47,0.61] visible
+   prop10 (0.168,0.372) y=[0.26,0.42] x=[0.28,0.37] visible
+   prop11 (0.337,0.360) y=[0.25,0.40] x=[0.56,0.64] visible
+   prop12 (0.318,0.625) y=[0.61,0.73] x=[0.52,0.59] visible
+
+]]></output>
+                </test-case>
+                <test-case id="1978" name="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_Escena23_Construccion&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_Escena23_Construccion&quot;)" methodname="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1697398789" result="Passed" start-time="2026-10-02 06:05:36Z" end-time="2026-10-02 06:06:16Z" duration="39.637722" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+N2_Escena23_Construccion L0 foco=(0.700,0.450) zoom=1.62 arriba=0.759 [0.546,0.854]
+   prop0 (0.604,0.504) y=[0.48,0.70] x=[0.13,0.25] visible
+   prop1 (0.720,0.543) y=[0.46,0.84] x=[0.46,0.67] visible
+   prop2 (0.790,0.504) y=[0.48,0.70] x=[0.73,0.85] visible
+   prop3 (0.866,0.535) y=[0.47,0.81] x=[0.94,1.13] visible
+   prop4 (0.655,0.408) y=[0.33,0.53] x=[0.30,0.41] visible
+   prop5 (0.700,0.408) y=[0.33,0.53] x=[0.45,0.55] visible
+   prop6 (0.760,0.393) y=[0.27,0.55] x=[0.62,0.77] visible
+   prop7 (0.815,0.408) y=[0.34,0.52] x=[0.82,0.92] visible
+   prop8 (0.870,0.393) y=[0.28,0.54] x=[0.98,1.12] visible
+   prop9 (0.925,0.418) y=[0.36,0.54] x=[1.18,1.28] fuera
+   prop10 (0.600,0.408) y=[0.35,0.51] x=[0.13,0.22] visible
+   prop11 (0.660,0.620) y=[0.69,0.86] x=[0.32,0.42] visible
+N2_Escena23_Construccion L1 foco=(0.744,0.455) zoom=1.52 arriba=0.783 [0.579,0.908]
+   prop0 (0.604,0.504) y=[0.47,0.68] x=[0.02,0.13] visible
+   prop1 (0.720,0.543) y=[0.46,0.81] x=[0.33,0.53] visible
+   prop2 (0.790,0.504) y=[0.47,0.68] x=[0.58,0.70] visible
+   prop3 (0.866,0.535) y=[0.46,0.78] x=[0.78,0.96] visible
+   prop4 (0.655,0.408) y=[0.34,0.52] x=[0.18,0.28] visible
+   prop5 (0.700,0.408) y=[0.34,0.52] x=[0.32,0.42] visible
+   prop6 (0.760,0.393) y=[0.28,0.54] x=[0.48,0.62] visible
+   prop7 (0.815,0.408) y=[0.34,0.51] x=[0.67,0.76] visible
+   prop8 (0.870,0.393) y=[0.28,0.53] x=[0.82,0.95] visible
+   prop9 (0.925,0.418) y=[0.36,0.53] x=[1.01,1.10] fuera
+   prop10 (0.600,0.408) y=[0.35,0.50] x=[0.02,0.11] visible
+   prop11 (0.660,0.620) y=[0.68,0.83] x=[0.20,0.29] visible
+N2_Escena23_Construccion L2 foco=(0.762,0.435) zoom=1.78 arriba=0.717 [0.621,0.902]
+   prop0 (0.604,0.504) y=[0.50,0.74] x=[-0.13,0.01] visible
+   prop1 (0.720,0.543) y=[0.49,0.90] x=[0.24,0.47] visible
+   prop2 (0.790,0.504) y=[0.50,0.74] x=[0.53,0.67] visible
+   prop3 (0.866,0.535) y=[0.49,0.87] x=[0.76,0.98] visible
+   prop4 (0.655,0.408) y=[0.34,0.56] x=[0.06,0.18] visible
+   prop5 (0.700,0.408) y=[0.34,0.56] x=[0.22,0.34] visible
+   prop6 (0.760,0.393) y=[0.27,0.58] x=[0.41,0.58] visible
+   prop7 (0.815,0.408) y=[0.35,0.55] x=[0.63,0.74] visible
+   prop8 (0.870,0.393) y=[0.28,0.57] x=[0.80,0.96] visible
+   prop9 (0.925,0.418) y=[0.37,0.57] x=[1.03,1.13] fuera
+   prop10 (0.600,0.408) y=[0.36,0.54] x=[-0.12,-0.02] fuera
+   prop11 (0.660,0.620) y=[0.74,0.92] x=[0.09,0.19] visible
+N2_Escena23_Construccion L3 foco=(0.775,0.470) zoom=1.35 arriba=0.839 [0.590,0.960]
+   prop0 (0.604,0.504) y=[0.45,0.64] x=[-0.02,0.09] visible
+   prop1 (0.720,0.543) y=[0.44,0.76] x=[0.26,0.44] visible
+   prop2 (0.790,0.504) y=[0.45,0.64] x=[0.49,0.59] visible
+   prop3 (0.866,0.535) y=[0.44,0.73] x=[0.67,0.83] visible
+   prop4 (0.655,0.408) y=[0.34,0.50] x=[0.13,0.22] visible
+   prop5 (0.700,0.408) y=[0.34,0.50] x=[0.25,0.34] visible
+   prop6 (0.760,0.393) y=[0.28,0.51] x=[0.39,0.52] visible
+   prop7 (0.815,0.408) y=[0.34,0.49] x=[0.57,0.65] visible
+   prop8 (0.870,0.393) y=[0.29,0.50] x=[0.70,0.82] visible
+   prop9 (0.925,0.418) y=[0.36,0.50] x=[0.86,0.95] visible
+   prop10 (0.600,0.408) y=[0.35,0.48] x=[-0.01,0.06] visible
+   prop11 (0.660,0.620) y=[0.64,0.77] x=[0.15,0.23] visible
+N2_Escena23_Construccion L4 foco=(0.695,0.420) zoom=1.95 arriba=0.677 [0.566,0.823]
+   prop0 (0.604,0.504) y=[0.53,0.80] x=[0.07,0.22] visible
+   prop1 (0.720,0.543) y=[0.51,0.96] x=[0.47,0.73] visible
+   prop2 (0.790,0.504) y=[0.53,0.80] x=[0.80,0.95] visible
+   prop3 (0.866,0.535) y=[0.52,0.93] x=[1.18,1.42] fuera
+   prop4 (0.655,0.408) y=[0.36,0.59] x=[0.28,0.41] visible
+   prop5 (0.700,0.408) y=[0.36,0.59] x=[0.46,0.59] visible
+   prop6 (0.760,0.393) y=[0.28,0.61] x=[0.66,0.85] visible
+   prop7 (0.815,0.408) y=[0.37,0.58] x=[0.91,1.03] visible
+   prop8 (0.870,0.393) y=[0.29,0.60] x=[1.10,1.27] fuera
+   prop9 (0.925,0.418) y=[0.39,0.60] x=[1.34,1.46] fuera
+   prop10 (0.600,0.408) y=[0.38,0.57] x=[0.08,0.19] visible
+   prop11 (0.660,0.620) y=[0.57,0.76] x=[0.38,0.49] visible
+N2_Escena23_Construccion L5 foco=(0.747,0.420) zoom=1.95 arriba=0.676 [0.618,0.875]
+   prop0 (0.604,0.504) y=[0.53,0.80] x=[-0.13,0.02] visible
+   prop1 (0.720,0.543) y=[0.51,0.96] x=[0.27,0.52] visible
+   prop2 (0.790,0.504) y=[0.53,0.80] x=[0.59,0.75] visible
+   prop3 (0.866,0.535) y=[0.52,0.93] x=[0.98,1.22] visible
+   prop4 (0.655,0.408) y=[0.36,0.59] x=[0.08,0.21] visible
+   prop5 (0.700,0.408) y=[0.36,0.59] x=[0.25,0.38] visible
+   prop6 (0.760,0.393) y=[0.28,0.61] x=[0.46,0.65] visible
+   prop7 (0.815,0.408) y=[0.37,0.58] x=[0.71,0.83] visible
+   prop8 (0.870,0.393) y=[0.29,0.60] x=[0.89,1.07] visible
+   prop9 (0.925,0.418) y=[0.39,0.60] x=[1.14,1.26] fuera
+   prop10 (0.600,0.408) y=[0.38,0.57] x=[-0.13,-0.02] fuera
+   prop11 (0.660,0.620) y=[0.49,0.69] x=[0.50,0.61] visible
+N2_Escena23_Construccion L6 foco=(0.799,0.430) zoom=1.88 arriba=0.695 [0.666,0.931]
+   prop0 (0.604,0.504) y=[0.51,0.77] x=[-0.31,-0.16] fuera
+   prop1 (0.720,0.543) y=[0.50,0.93] x=[0.08,0.33] visible
+   prop2 (0.790,0.504) y=[0.51,0.77] x=[0.39,0.54] visible
+   prop3 (0.866,0.535) y=[0.50,0.90] x=[0.77,0.99] visible
+   prop4 (0.655,0.408) y=[0.35,0.57] x=[-0.10,0.02] visible
+   prop5 (0.700,0.408) y=[0.35,0.57] x=[0.07,0.19] visible
+   prop6 (0.760,0.393) y=[0.27,0.59] x=[0.27,0.44] visible
+   prop7 (0.815,0.408) y=[0.36,0.56] x=[0.50,0.62] visible
+   prop8 (0.870,0.393) y=[0.28,0.58] x=[0.68,0.85] visible
+   prop9 (0.925,0.418) y=[0.37,0.58] x=[0.92,1.03] visible
+   prop10 (0.600,0.408) y=[0.37,0.55] x=[-0.30,-0.19] fuera
+   prop11 (0.660,0.620) y=[0.46,0.65] x=[0.67,0.77] visible
+N2_Escena23_Construccion L7 foco=(0.750,0.500) zoom=1.00 arriba=0.998 [0.501,0.999]
+   prop0 (0.604,0.504) y=[0.43,0.57] x=[0.17,0.25] visible
+   prop1 (0.720,0.543) y=[0.43,0.66] x=[0.37,0.50] visible
+   prop2 (0.790,0.504) y=[0.43,0.57] x=[0.54,0.62] visible
+   prop3 (0.866,0.535) y=[0.43,0.64] x=[0.74,0.86] visible
+   prop4 (0.655,0.408) y=[0.35,0.47] x=[0.27,0.34] visible
+   prop5 (0.700,0.408) y=[0.35,0.47] x=[0.37,0.43] visible
+   prop6 (0.760,0.393) y=[0.31,0.48] x=[0.47,0.57] visible
+   prop7 (0.815,0.408) y=[0.35,0.46] x=[0.60,0.66] visible
+   prop8 (0.870,0.393) y=[0.31,0.47] x=[0.70,0.79] visible
+   prop9 (0.925,0.418) y=[0.36,0.47] x=[0.82,0.88] visible
+   prop10 (0.600,0.408) y=[0.36,0.46] x=[0.17,0.23] visible
+   prop11 (0.660,0.620) y=[0.46,0.56] x=[0.84,0.90] visible
+
+]]></output>
+                </test-case>
+                <test-case id="1979" name="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_Escena24_Regreso&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_Escena24_Regreso&quot;)" methodname="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="631245790" result="Passed" start-time="2026-10-02 06:06:16Z" end-time="2026-10-02 06:06:29Z" duration="13.669203" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+N2_Escena24_Regreso L0 foco=(0.665,0.445) zoom=1.60 arriba=0.758 [0.509,0.821]
+   prop0 (0.717,0.444) y=[0.29,0.70] x=[0.55,0.78] visible
+   prop1 (0.672,0.417) y=[0.28,0.63] x=[0.42,0.62] visible
+   prop2 (0.870,0.387) y=[0.34,0.48] x=[1.12,1.20] fuera
+   prop3 (0.600,0.384) y=[0.28,0.53] x=[0.22,0.36] visible
+   prop4 (0.760,0.384) y=[0.28,0.53] x=[0.73,0.87] visible
+   prop5 (0.875,0.435) y=[0.30,0.67] x=[1.07,1.28] fuera
+   prop6 (0.672,0.600) y=[0.67,0.83] x=[0.48,0.57] visible
+N2_Escena24_Regreso L1 foco=(0.665,0.445) zoom=1.60 arriba=0.758 [0.509,0.821]
+   prop0 (0.717,0.444) y=[0.29,0.70] x=[0.55,0.78] visible
+   prop1 (0.672,0.417) y=[0.28,0.63] x=[0.42,0.62] visible
+   prop2 (0.870,0.387) y=[0.34,0.48] x=[1.12,1.20] fuera
+   prop3 (0.600,0.384) y=[0.28,0.53] x=[0.22,0.36] visible
+   prop4 (0.760,0.384) y=[0.28,0.53] x=[0.73,0.87] visible
+   prop5 (0.875,0.435) y=[0.30,0.67] x=[1.07,1.28] fuera
+   prop6 (0.672,0.600) y=[0.67,0.83] x=[0.48,0.57] visible
+N2_Escena24_Regreso L2 foco=(0.699,0.440) zoom=1.68 arriba=0.738 [0.549,0.848]
+   prop0 (0.717,0.444) y=[0.29,0.72] x=[0.44,0.68] visible
+   prop1 (0.672,0.417) y=[0.28,0.65] x=[0.31,0.51] visible
+   prop2 (0.870,0.387) y=[0.34,0.49] x=[1.03,1.12] fuera
+   prop3 (0.600,0.384) y=[0.28,0.54] x=[0.10,0.24] visible
+   prop4 (0.760,0.384) y=[0.28,0.54] x=[0.63,0.78] visible
+   prop5 (0.875,0.435) y=[0.29,0.69] x=[0.77,0.99] visible
+   prop6 (0.672,0.600) y=[0.68,0.85] x=[0.36,0.46] visible
+N2_Escena24_Regreso L3 foco=(0.732,0.440) zoom=1.68 arriba=0.738 [0.583,0.880]
+   prop0 (0.717,0.444) y=[0.29,0.72] x=[0.33,0.57] visible
+   prop1 (0.672,0.417) y=[0.28,0.65] x=[0.20,0.40] visible
+   prop2 (0.870,0.387) y=[0.34,0.49] x=[0.92,1.01] visible
+   prop3 (0.600,0.384) y=[0.28,0.54] x=[-0.02,0.13] visible
+   prop4 (0.760,0.384) y=[0.28,0.54] x=[0.52,0.67] visible
+   prop5 (0.875,0.435) y=[0.29,0.69] x=[0.66,0.88] visible
+   prop6 (0.672,0.600) y=[0.68,0.85] x=[0.25,0.35] visible
+N2_Escena24_Regreso L4 foco=(0.765,0.440) zoom=1.68 arriba=0.738 [0.616,0.913]
+   prop0 (0.717,0.444) y=[0.29,0.72] x=[0.22,0.46] visible
+   prop1 (0.672,0.417) y=[0.28,0.65] x=[0.09,0.29] visible
+   prop2 (0.870,0.387) y=[0.34,0.49] x=[0.81,0.90] visible
+   prop3 (0.600,0.384) y=[0.28,0.54] x=[-0.13,0.02] visible
+   prop4 (0.760,0.384) y=[0.28,0.54] x=[0.41,0.56] visible
+   prop5 (0.875,0.435) y=[0.29,0.69] x=[0.55,0.77] visible
+   prop6 (0.672,0.600) y=[0.68,0.85] x=[0.14,0.24] visible
+N2_Escena24_Regreso L5 foco=(0.740,0.470) zoom=1.36 arriba=0.836 [0.557,0.924]
+   prop0 (0.717,0.444) y=[0.29,0.64] x=[0.34,0.53] visible
+   prop1 (0.672,0.417) y=[0.28,0.58] x=[0.23,0.40] visible
+   prop2 (0.870,0.387) y=[0.33,0.45] x=[0.82,0.89] visible
+   prop3 (0.600,0.384) y=[0.28,0.49] x=[0.06,0.18] visible
+   prop4 (0.760,0.384) y=[0.28,0.49] x=[0.49,0.61] visible
+   prop5 (0.875,0.435) y=[0.29,0.61] x=[0.61,0.79] visible
+   prop6 (0.672,0.600) y=[0.61,0.75] x=[0.28,0.35] visible
+N2_Escena24_Regreso L6 foco=(0.755,0.499) zoom=1.19 arriba=0.918 [0.545,0.964]
+   prop0 (0.717,0.444) y=[0.28,0.59] x=[0.32,0.50] visible
+   prop1 (0.672,0.417) y=[0.27,0.53] x=[0.23,0.38] visible
+   prop2 (0.870,0.387) y=[0.31,0.42] x=[0.75,0.81] visible
+   prop3 (0.600,0.384) y=[0.27,0.46] x=[0.08,0.18] visible
+   prop4 (0.760,0.384) y=[0.27,0.46] x=[0.46,0.57] visible
+   prop5 (0.875,0.435) y=[0.28,0.56] x=[0.56,0.72] visible
+   prop6 (0.672,0.600) y=[0.58,0.70] x=[0.48,0.55] visible
+N2_Escena24_Regreso L7 foco=(0.755,0.500) zoom=1.19 arriba=0.919 [0.545,0.964]
+   prop0 (0.717,0.444) y=[0.28,0.59] x=[0.32,0.50] visible
+   prop1 (0.672,0.417) y=[0.27,0.53] x=[0.23,0.38] visible
+   prop2 (0.870,0.387) y=[0.31,0.42] x=[0.74,0.81] visible
+   prop3 (0.600,0.384) y=[0.27,0.46] x=[0.08,0.18] visible
+   prop4 (0.760,0.384) y=[0.27,0.46] x=[0.46,0.56] visible
+   prop5 (0.875,0.435) y=[0.28,0.56] x=[0.56,0.72] visible
+   prop6 (0.672,0.600) y=[0.58,0.70] x=[0.48,0.55] visible
+
+]]></output>
+                </test-case>
+                <test-case id="1980" name="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_Escena25_Cierre&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2(&quot;N2_Escena25_Cierre&quot;)" methodname="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="182028050" result="Passed" start-time="2026-10-02 06:06:29Z" end-time="2026-10-02 06:06:52Z" duration="22.480175" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+N2_Escena25_Cierre L0 foco=(0.200,0.420) zoom=1.60 arriba=0.733 [0.044,0.356]
+   prop0 (0.117,0.400) y=[0.25,0.68] x=[0.11,0.36] visible
+   prop1 (0.213,0.360) y=[0.29,0.52] x=[0.48,0.60] visible
+   prop2 (0.214,0.476) y=[0.49,0.69] x=[0.51,0.57] visible
+   prop3 (0.215,0.418) y=[0.32,0.67] x=[0.45,0.65] visible
+   prop4 (0.160,0.370) y=[0.26,0.58] x=[0.28,0.46] visible
+   prop5 (0.262,0.414) y=[0.30,0.68] x=[0.59,0.81] visible
+   prop6 (0.248,0.296) y=[0.26,0.34] x=[0.63,0.68] visible
+   prop7 (0.075,0.358) y=[0.27,0.53] x=[0.03,0.17] visible
+   prop8 (0.295,0.360) y=[0.28,0.53] x=[0.73,0.88] visible
+   prop9 (0.333,0.300) y=[0.27,0.35] x=[0.90,0.95] visible
+   prop10 (0.350,0.300) y=[0.25,0.36] x=[0.95,1.01] visible
+   prop11 (0.342,0.337) y=[0.32,0.42] x=[0.93,0.98] visible
+   prop12 (0.215,0.505) y=[0.56,0.72] x=[0.50,0.59] visible
+N2_Escena25_Cierre L1 foco=(0.171,0.401) zoom=1.75 arriba=0.687 [0.028,0.314]
+   prop0 (0.117,0.400) y=[0.27,0.73] x=[0.18,0.44] visible
+   prop1 (0.213,0.360) y=[0.31,0.55] x=[0.58,0.72] visible
+   prop2 (0.214,0.476) y=[0.53,0.74] x=[0.62,0.68] visible
+   prop3 (0.215,0.418) y=[0.34,0.72] x=[0.55,0.76] visible
+   prop4 (0.160,0.370) y=[0.27,0.62] x=[0.36,0.56] visible
+   prop5 (0.262,0.414) y=[0.31,0.73] x=[0.70,0.94] visible
+   prop6 (0.248,0.296) y=[0.27,0.36] x=[0.74,0.79] visible
+   prop7 (0.075,0.358) y=[0.29,0.57] x=[0.09,0.24] visible
+   prop8 (0.295,0.360) y=[0.29,0.57] x=[0.86,1.01] visible
+   prop9 (0.333,0.300) y=[0.28,0.37] x=[1.04,1.09] fuera
+   prop10 (0.350,0.300) y=[0.26,0.39] x=[1.09,1.16] fuera
+   prop11 (0.342,0.337) y=[0.34,0.44] x=[1.07,1.13] fuera
+   prop12 (0.215,0.505) y=[0.60,0.77] x=[0.61,0.70] visible
+N2_Escena25_Cierre L2 foco=(0.200,0.450) zoom=1.30 arriba=0.833 [0.008,0.391]
+   prop0 (0.117,0.400) y=[0.26,0.61] x=[0.19,0.38] visible
+   prop1 (0.213,0.360) y=[0.29,0.47] x=[0.48,0.59] visible
+   prop2 (0.214,0.476) y=[0.46,0.61] x=[0.51,0.56] visible
+   prop3 (0.215,0.418) y=[0.32,0.60] x=[0.46,0.62] visible
+   prop4 (0.160,0.370) y=[0.27,0.53] x=[0.32,0.47] visible
+   prop5 (0.262,0.414) y=[0.30,0.61] x=[0.57,0.75] visible
+   prop6 (0.248,0.296) y=[0.27,0.33] x=[0.61,0.64] visible
+   prop7 (0.075,0.358) y=[0.28,0.49] x=[0.12,0.23] visible
+   prop8 (0.295,0.360) y=[0.28,0.49] x=[0.69,0.81] visible
+   prop9 (0.333,0.300) y=[0.27,0.34] x=[0.83,0.87] visible
+   prop10 (0.350,0.300) y=[0.26,0.35] x=[0.87,0.92] visible
+   prop11 (0.342,0.337) y=[0.31,0.39] x=[0.85,0.89] visible
+   prop12 (0.215,0.505) y=[0.57,0.70] x=[0.50,0.58] visible
+N2_Escena25_Cierre L3 foco=(0.200,0.450) zoom=1.30 arriba=0.833 [0.008,0.392]
+   prop0 (0.117,0.400) y=[0.26,0.61] x=[0.19,0.38] visible
+   prop1 (0.213,0.360) y=[0.29,0.47] x=[0.48,0.59] visible
+   prop2 (0.214,0.476) y=[0.46,0.61] x=[0.51,0.56] visible
+   prop3 (0.215,0.418) y=[0.32,0.60] x=[0.46,0.62] visible
+   prop4 (0.160,0.370) y=[0.27,0.53] x=[0.32,0.47] visible
+   prop5 (0.262,0.414) y=[0.30,0.61] x=[0.57,0.75] visible
+   prop6 (0.248,0.296) y=[0.27,0.33] x=[0.61,0.64] visible
+   prop7 (0.075,0.358) y=[0.28,0.49] x=[0.12,0.23] visible
+   prop8 (0.295,0.360) y=[0.28,0.49] x=[0.69,0.81] visible
+   prop9 (0.333,0.300) y=[0.27,0.34] x=[0.83,0.87] visible
+   prop10 (0.350,0.300) y=[0.26,0.35] x=[0.87,0.92] visible
+   prop11 (0.342,0.337) y=[0.31,0.39] x=[0.85,0.89] visible
+   prop12 (0.215,0.505) y=[0.57,0.70] x=[0.50,0.58] visible
+N2_Escena25_Cierre L4 foco=(0.200,0.450) zoom=1.30 arriba=0.833 [0.008,0.392]
+   prop0 (0.117,0.400) y=[0.26,0.61] x=[0.19,0.38] visible
+   prop1 (0.213,0.360) y=[0.29,0.47] x=[0.48,0.59] visible
+   prop2 (0.214,0.476) y=[0.46,0.61] x=[0.51,0.56] visible
+   prop3 (0.215,0.418) y=[0.32,0.60] x=[0.46,0.62] visible
+   prop4 (0.160,0.370) y=[0.27,0.53] x=[0.32,0.47] visible
+   prop5 (0.262,0.414) y=[0.30,0.61] x=[0.57,0.75] visible
+   prop6 (0.248,0.296) y=[0.27,0.33] x=[0.61,0.64] visible
+   prop7 (0.075,0.358) y=[0.28,0.49] x=[0.12,0.23] visible
+   prop8 (0.295,0.360) y=[0.28,0.49] x=[0.69,0.81] visible
+   prop9 (0.333,0.300) y=[0.27,0.34] x=[0.83,0.87] visible
+   prop10 (0.350,0.300) y=[0.26,0.35] x=[0.87,0.92] visible
+   prop11 (0.342,0.337) y=[0.31,0.39] x=[0.85,0.89] visible
+   prop12 (0.215,0.505) y=[0.58,0.71] x=[0.50,0.58] visible
+N2_Escena25_Cierre L5 foco=(0.200,0.450) zoom=1.30 arriba=0.833 [0.008,0.392]
+   prop0 (0.117,0.400) y=[0.26,0.61] x=[0.19,0.38] visible
+   prop1 (0.213,0.360) y=[0.29,0.47] x=[0.48,0.59] visible
+   prop2 (0.214,0.476) y=[0.46,0.61] x=[0.51,0.56] visible
+   prop3 (0.215,0.418) y=[0.32,0.60] x=[0.46,0.62] visible
+   prop4 (0.160,0.370) y=[0.27,0.53] x=[0.32,0.47] visible
+   prop5 (0.262,0.414) y=[0.30,0.61] x=[0.57,0.75] visible
+   prop6 (0.248,0.296) y=[0.27,0.33] x=[0.61,0.64] visible
+   prop7 (0.075,0.358) y=[0.28,0.49] x=[0.12,0.23] visible
+   prop8 (0.295,0.360) y=[0.28,0.49] x=[0.69,0.81] visible
+   prop9 (0.333,0.300) y=[0.27,0.34] x=[0.83,0.87] visible
+   prop10 (0.350,0.300) y=[0.26,0.35] x=[0.87,0.92] visible
+   prop11 (0.342,0.337) y=[0.31,0.39] x=[0.85,0.89] visible
+   prop12 (0.215,0.505) y=[0.58,0.71] x=[0.50,0.58] visible
+
+]]></output>
+                </test-case>
+              </test-suite>
+              <test-case id="2029" name="NarrativeScene_RF05_CapturaDelPrimerCuadroDeLaEscena22" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_CapturaDelPrimerCuadroDeLaEscena22" methodname="NarrativeScene_RF05_CapturaDelPrimerCuadroDeLaEscena22" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="2125204737" result="Passed" start-time="2026-10-02 06:06:52Z" end-time="2026-10-02 06:06:53Z" duration="0.674682" asserts="0">
+                <properties>
+                  <property name="Timeout" value="60000" />
+                  <property name="Category" value="VisualVerification" />
+                  <property name="Description" value="Verificar en la captura N2_Escena22_PrimerCuadro: la caja de la 2.2 está entera sobre el pasto, sin haber rodado, por encima del cuadro de diálogo y con el mismo dibujo que la caja del bosque." />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1963" name="NarrativeScene_RF05_ElCorteSecoFundeANegroSaltaAOscurasYVuelve" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_ElCorteSecoFundeANegroSaltaAOscurasYVuelve" methodname="NarrativeScene_RF05_ElCorteSecoFundeANegroSaltaAOscurasYVuelve" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="920926812" result="Passed" start-time="2026-10-02 06:06:53Z" end-time="2026-10-02 06:06:54Z" duration="1.164433" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1965" name="NarrativeScene_RF05_ElDestelloDuraSusSegundosYVuelveALaLuzAnterior" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_ElDestelloDuraSusSegundosYVuelveALaLuzAnterior" methodname="NarrativeScene_RF05_ElDestelloDuraSusSegundosYVuelveALaLuzAnterior" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="228836479" result="Passed" start-time="2026-10-02 06:06:54Z" end-time="2026-10-02 06:06:54Z" duration="0.643144" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1990" name="NarrativeScene_RF05_ElRetratoEsElDeQuienHablaYNoHayEnLasAcotaciones" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_ElRetratoEsElDeQuienHablaYNoHayEnLasAcotaciones" methodname="NarrativeScene_RF05_ElRetratoEsElDeQuienHablaYNoHayEnLasAcotaciones" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1020290052" result="Passed" start-time="2026-10-02 06:06:54Z" end-time="2026-10-02 06:06:55Z" duration="0.455168" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1962" name="NarrativeScene_RF05_LaCamaraSeMuevePorElEntornoAlRitmoDeLaNarrativa" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_LaCamaraSeMuevePorElEntornoAlRitmoDeLaNarrativa" methodname="NarrativeScene_RF05_LaCamaraSeMuevePorElEntornoAlRitmoDeLaNarrativa" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="912325322" result="Passed" start-time="2026-10-02 06:06:55Z" end-time="2026-10-02 06:06:56Z" duration="1.455129" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1968" name="NarrativeScene_RF05_LaEscena21MuestraLosObjetosRepartidosPorElSuelo" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_LaEscena21MuestraLosObjetosRepartidosPorElSuelo" methodname="NarrativeScene_RF05_LaEscena21MuestraLosObjetosRepartidosPorElSuelo" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="874186533" result="Passed" start-time="2026-10-02 06:06:56Z" end-time="2026-10-02 06:06:57Z" duration="0.461366" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="2032" name="NarrativeScene_RF05_LaEscena22EncadenaConLa23YEstaEntraAlTaller" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_LaEscena22EncadenaConLa23YEstaEntraAlTaller" methodname="NarrativeScene_RF05_LaEscena22EncadenaConLa23YEstaEntraAlTaller" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="163804240" result="Passed" start-time="2026-10-02 06:06:57Z" end-time="2026-10-02 06:06:58Z" duration="0.907187" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1969" name="NarrativeScene_RF05_LaEscena22NoMueveLaVistaHastaQueElNinoHablaYLuegoPaneaAPapa" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_LaEscena22NoMueveLaVistaHastaQueElNinoHablaYLuegoPaneaAPapa" methodname="NarrativeScene_RF05_LaEscena22NoMueveLaVistaHastaQueElNinoHablaYLuegoPaneaAPapa" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="722952791" result="Passed" start-time="2026-10-02 06:06:58Z" end-time="2026-10-02 06:07:00Z" duration="2.064824" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1960" name="NarrativeScene_RF05_LaEscenaPuenteEncadenaConLaEscena21" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_LaEscenaPuenteEncadenaConLaEscena21" methodname="NarrativeScene_RF05_LaEscenaPuenteEncadenaConLaEscena21" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="890442786" result="Passed" start-time="2026-10-02 06:07:00Z" end-time="2026-10-02 06:07:00Z" duration="0.474721" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1964" name="NarrativeScene_RF05_LaEscenaQueAbreEnNegroFundeAunqueSuPrimeraParadaSeaLaLinea0" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_LaEscenaQueAbreEnNegroFundeAunqueSuPrimeraParadaSeaLaLinea0" methodname="NarrativeScene_RF05_LaEscenaQueAbreEnNegroFundeAunqueSuPrimeraParadaSeaLaLinea0" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1563493099" result="Passed" start-time="2026-10-02 06:07:00Z" end-time="2026-10-02 06:07:01Z" duration="1.153402" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1952" name="NarrativeScene_RF05_LaPrimeraLineaEsLaDelAssetPedido" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_LaPrimeraLineaEsLaDelAssetPedido" methodname="NarrativeScene_RF05_LaPrimeraLineaEsLaDelAssetPedido" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="686966079" result="Passed" start-time="2026-10-02 06:07:01Z" end-time="2026-10-02 06:07:02Z" duration="0.449380" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="2030" name="NarrativeScene_RF05_QuienCaminaTerminaSuCaminoAunqueElTextoAvance" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_QuienCaminaTerminaSuCaminoAunqueElTextoAvance" methodname="NarrativeScene_RF05_QuienCaminaTerminaSuCaminoAunqueElTextoAvance" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1779591846" result="Passed" start-time="2026-10-02 06:07:02Z" end-time="2026-10-02 06:07:12Z" duration="9.757462" asserts="0">
+                <properties>
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1951" name="NarrativeScene_RF05_ResuelveLasCincoSecuenciasDelNivel3SinRamas" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_ResuelveLasCincoSecuenciasDelNivel3SinRamas" methodname="NarrativeScene_RF05_ResuelveLasCincoSecuenciasDelNivel3SinRamas" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="630302924" result="Passed" start-time="2026-10-02 06:07:12Z" end-time="2026-10-02 06:07:15Z" duration="3.231519" asserts="0">
+                <properties>
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1950" name="NarrativeScene_RF05_ResuelveLasSieteSecuenciasDelNivel2SinRamas" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_ResuelveLasSieteSecuenciasDelNivel2SinRamas" methodname="NarrativeScene_RF05_ResuelveLasSieteSecuenciasDelNivel2SinRamas" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1092855151" result="Passed" start-time="2026-10-02 06:07:15Z" end-time="2026-10-02 06:07:18Z" duration="3.253633" asserts="0">
+                <properties>
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1949" name="NarrativeScene_RF05_ResuelveTresSecuenciasDistintasSinRamas" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF05_ResuelveTresSecuenciasDistintasSinRamas" methodname="NarrativeScene_RF05_ResuelveTresSecuenciasDistintasSinRamas" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="421628541" result="Passed" start-time="2026-10-02 06:07:18Z" end-time="2026-10-02 06:07:19Z" duration="1.383398" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1953" name="NarrativeScene_RF10_LaAperturaEncadenaLasTresEscenasDelNivel1YEntraAJugar" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF10_LaAperturaEncadenaLasTresEscenasDelNivel1YEntraAJugar" methodname="NarrativeScene_RF10_LaAperturaEncadenaLasTresEscenasDelNivel1YEntraAJugar" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="565985155" result="Passed" start-time="2026-10-02 06:07:19Z" end-time="2026-10-02 06:07:20Z" duration="0.472917" asserts="0">
+                <properties>
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1959" name="NarrativeScene_RF10_TerminarLaEscena21EntraAJugarLaFase1DelBosque" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF10_TerminarLaEscena21EntraAJugarLaFase1DelBosque" methodname="NarrativeScene_RF10_TerminarLaEscena21EntraAJugarLaFase1DelBosque" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1232284034" result="Passed" start-time="2026-10-02 06:07:20Z" end-time="2026-10-02 06:07:20Z" duration="0.449878" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1967" name="NarrativeScene_RF20_ElCierreDelFuegoPintaElMontonConLaLlamaAnimada" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF20_ElCierreDelFuegoPintaElMontonConLaLlamaAnimada" methodname="NarrativeScene_RF20_ElCierreDelFuegoPintaElMontonConLaLlamaAnimada" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1205873619" result="Passed" start-time="2026-10-02 06:07:20Z" end-time="2026-10-02 06:07:21Z" duration="0.476850" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1970" name="NarrativeScene_RF23_LaEscena22AnimaLoQueCadaLineaCuenta" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF23_LaEscena22AnimaLoQueCadaLineaCuenta" methodname="NarrativeScene_RF23_LaEscena22AnimaLoQueCadaLineaCuenta" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1754623718" result="Passed" start-time="2026-10-02 06:07:21Z" end-time="2026-10-02 06:07:28Z" duration="7.636255" asserts="0">
+                <properties>
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1971" name="NarrativeScene_RF26_LaEscena22SuenaCuandoCadaObjetoTocaElSuelo" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF26_LaEscena22SuenaCuandoCadaObjetoTocaElSuelo" methodname="NarrativeScene_RF26_LaEscena22SuenaCuandoCadaObjetoTocaElSuelo" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="225557570" result="Passed" start-time="2026-10-02 06:07:28Z" end-time="2026-10-02 06:07:34Z" duration="5.981624" asserts="0">
+                <properties>
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1972" name="NarrativeScene_RF44_LaBalsaSuenaMientrasCruzaYAlLlegarVuelveElBosque" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF44_LaBalsaSuenaMientrasCruzaYAlLlegarVuelveElBosque" methodname="NarrativeScene_RF44_LaBalsaSuenaMientrasCruzaYAlLlegarVuelveElBosque" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="571426554" result="Passed" start-time="2026-10-02 06:07:34Z" end-time="2026-10-02 06:07:44Z" duration="9.762855" asserts="0">
+                <properties>
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1956" name="NarrativeScene_RF45_UnClicDeMasAlSalirDelCierreReflexivoYaVistoLlegaAlResumen" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RF45_UnClicDeMasAlSalirDelCierreReflexivoYaVistoLlegaAlResumen" methodname="NarrativeScene_RF45_UnClicDeMasAlSalirDelCierreReflexivoYaVistoLlegaAlResumen" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1264731140" result="Passed" start-time="2026-10-02 06:07:44Z" end-time="2026-10-02 06:07:45Z" duration="0.466736" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1958" name="NarrativeScene_RNF01_LaLineaMasLargaCabeEnSuCuadroDeDialogo" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF01_LaLineaMasLargaCabeEnSuCuadroDeDialogo" methodname="NarrativeScene_RNF01_LaLineaMasLargaCabeEnSuCuadroDeDialogo" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1330547950" result="Passed" start-time="2026-10-02 06:07:45Z" end-time="2026-10-02 06:07:45Z" duration="0.464668" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1966" name="NarrativeScene_RNF03_ElCuadroDeDialogoNoSuperaElCuartoDeLaPantalla" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF03_ElCuadroDeDialogoNoSuperaElCuartoDeLaPantalla" methodname="NarrativeScene_RNF03_ElCuadroDeDialogoNoSuperaElCuartoDeLaPantalla" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="2080176729" result="Passed" start-time="2026-10-02 06:07:45Z" end-time="2026-10-02 06:07:46Z" duration="0.458923" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-suite type="ParameterizedMethod" id="1989" name="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-02 06:07:46Z" end-time="2026-10-02 06:10:36Z" duration="170.934021" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Timeout" value="120000" />
+                </properties>
+                <test-case id="1982" name="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_PuenteI&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_PuenteI&quot;)" methodname="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="751947886" result="Passed" start-time="2026-10-02 06:07:46Z" end-time="2026-10-02 06:07:57Z" duration="11.349550" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1983" name="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_PuenteI_Bosque&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_PuenteI_Bosque&quot;)" methodname="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="2121734274" result="Passed" start-time="2026-10-02 06:07:57Z" end-time="2026-10-02 06:08:24Z" duration="26.863303" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1984" name="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_Escena21_Bosque&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_Escena21_Bosque&quot;)" methodname="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="711702851" result="Passed" start-time="2026-10-02 06:08:24Z" end-time="2026-10-02 06:08:49Z" duration="25.191005" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1985" name="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_Escena22_ElPatron&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_Escena22_ElPatron&quot;)" methodname="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="917632019" result="Passed" start-time="2026-10-02 06:08:49Z" end-time="2026-10-02 06:09:21Z" duration="32.525363" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1986" name="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_Escena23_Construccion&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_Escena23_Construccion&quot;)" methodname="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1142521968" result="Passed" start-time="2026-10-02 06:09:21Z" end-time="2026-10-02 06:10:01Z" duration="39.491827" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1987" name="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_Escena24_Regreso&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_Escena24_Regreso&quot;)" methodname="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1244164713" result="Passed" start-time="2026-10-02 06:10:01Z" end-time="2026-10-02 06:10:14Z" duration="13.386027" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+                <test-case id="1988" name="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_Escena25_Cierre&quot;)" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2(&quot;N2_Escena25_Cierre&quot;)" methodname="NarrativeScene_RNF03_NingunObjetoQueSeMueveQuedaBajoElCuadroDeDialogoEnElNivel2" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="690508666" result="Passed" start-time="2026-10-02 06:10:14Z" end-time="2026-10-02 06:10:36Z" duration="22.124934" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+                </test-case>
+              </test-suite>
+              <test-case id="2031" name="NarrativeScene_RNF21_AvanzarElTextoDuranteElCruceNoHaceSaltarALosViajeros" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF21_AvanzarElTextoDuranteElCruceNoHaceSaltarALosViajeros" methodname="NarrativeScene_RNF21_AvanzarElTextoDuranteElCruceNoHaceSaltarALosViajeros" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="842995656" result="Passed" start-time="2026-10-02 06:10:36Z" end-time="2026-10-02 06:10:49Z" duration="12.248679" asserts="0">
+                <properties>
+                  <property name="Category" value="Acceptance" />
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1973" name="NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos" methodname="NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1783775480" result="Passed" start-time="2026-10-02 06:10:49Z" end-time="2026-10-02 06:10:58Z" duration="9.291350" asserts="0">
+                <properties>
+                  <property name="Category" value="Acceptance" />
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1961" name="NarrativeScene_RNF23_LaIlustracionCubreLaPantallaSinDeformarse" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF23_LaIlustracionCubreLaPantallaSinDeformarse" methodname="NarrativeScene_RNF23_LaIlustracionCubreLaPantallaSinDeformarse" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="334881039" result="Passed" start-time="2026-10-02 06:10:58Z" end-time="2026-10-02 06:10:59Z" duration="0.488270" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="2033" name="PauseMenuTests" fullname="Game.UI.Tests.PauseMenuTests" classname="Game.UI.Tests.PauseMenuTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-02 06:10:59Z" end-time="2026-10-02 06:11:04Z" duration="5.334862" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="2036" name="PauseMenu_HU17_ConfirmarReiniciarReinicioElIntentoSinTocarElProgreso" fullname="Game.UI.Tests.PauseMenuTests.PauseMenu_HU17_ConfirmarReiniciarReinicioElIntentoSinTocarElProgreso" methodname="PauseMenu_HU17_ConfirmarReiniciarReinicioElIntentoSinTocarElProgreso" classname="Game.UI.Tests.PauseMenuTests" runstate="Runnable" seed="1977169558" result="Passed" start-time="2026-10-02 06:10:59Z" end-time="2026-10-02 06:11:00Z" duration="1.783124" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="Category" value="Acceptance" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «Level1_Cave» cargó en 0.414 s
+]]></output>
+              </test-case>
+              <test-case id="2034" name="PauseMenu_HU17_ContinuarRestituyeElEstadoExacto" fullname="Game.UI.Tests.PauseMenuTests.PauseMenu_HU17_ContinuarRestituyeElEstadoExacto" methodname="PauseMenu_HU17_ContinuarRestituyeElEstadoExacto" classname="Game.UI.Tests.PauseMenuTests" runstate="Runnable" seed="1877415593" result="Passed" start-time="2026-10-02 06:11:00Z" end-time="2026-10-02 06:11:02Z" duration="1.283564" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="Category" value="Acceptance" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2038" name="PauseMenu_HU17_NoSeMuestraEnEscenasNarrativas" fullname="Game.UI.Tests.PauseMenuTests.PauseMenu_HU17_NoSeMuestraEnEscenasNarrativas" methodname="PauseMenu_HU17_NoSeMuestraEnEscenasNarrativas" classname="Game.UI.Tests.PauseMenuTests" runstate="Runnable" seed="420276288" result="Passed" start-time="2026-10-02 06:11:02Z" end-time="2026-10-02 06:11:02Z" duration="0.502009" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="Category" value="Acceptance" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="2037" name="PauseMenu_HU17_OfreceExactamenteReanudarReiniciarYVolverAlMenuDeNiveles" fullname="Game.UI.Tests.PauseMenuTests.PauseMenu_HU17_OfreceExactamenteReanudarReiniciarYVolverAlMenuDeNiveles" methodname="PauseMenu_HU17_OfreceExactamenteReanudarReiniciarYVolverAlMenuDeNiveles" classname="Game.UI.Tests.PauseMenuTests" runstate="Runnable" seed="416086993" result="Passed" start-time="2026-10-02 06:11:02Z" end-time="2026-10-02 06:11:03Z" duration="0.483571" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="Category" value="Acceptance" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2035" name="PauseMenu_HU17_ReiniciarPideConfirmacionYCancelarNoCambiaNada" fullname="Game.UI.Tests.PauseMenuTests.PauseMenu_HU17_ReiniciarPideConfirmacionYCancelarNoCambiaNada" methodname="PauseMenu_HU17_ReiniciarPideConfirmacionYCancelarNoCambiaNada" classname="Game.UI.Tests.PauseMenuTests" runstate="Runnable" seed="2039884408" result="Passed" start-time="2026-10-02 06:11:03Z" end-time="2026-10-02 06:11:04Z" duration="1.280158" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="Category" value="Acceptance" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="2039" name="ProfileSelectTests" fullname="Game.UI.Tests.ProfileSelectTests" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" testcasecount="11" result="Passed" start-time="2026-10-02 06:11:04Z" end-time="2026-10-02 06:11:09Z" duration="5.242181" total="11" passed="11" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="2042" name="ProfileSelect_HU01_NombreDuplicadoMuestraAvisoYNoAvanza" fullname="Game.UI.Tests.ProfileSelectTests.ProfileSelect_HU01_NombreDuplicadoMuestraAvisoYNoAvanza" methodname="ProfileSelect_HU01_NombreDuplicadoMuestraAvisoYNoAvanza" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" seed="1342671032" result="Passed" start-time="2026-10-02 06:11:04Z" end-time="2026-10-02 06:11:04Z" duration="0.492276" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2041" name="ProfileSelect_HU01_NombreVacioMuestraAvisoYNoAvanza" fullname="Game.UI.Tests.ProfileSelectTests.ProfileSelect_HU01_NombreVacioMuestraAvisoYNoAvanza" methodname="ProfileSelect_HU01_NombreVacioMuestraAvisoYNoAvanza" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" seed="753513818" result="Passed" start-time="2026-10-02 06:11:04Z" end-time="2026-10-02 06:11:05Z" duration="0.460459" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2040" name="ProfileSelect_HU01_PerfilExistenteRestauraElProgresoExacto" fullname="Game.UI.Tests.ProfileSelectTests.ProfileSelect_HU01_PerfilExistenteRestauraElProgresoExacto" methodname="ProfileSelect_HU01_PerfilExistenteRestauraElProgresoExacto" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" seed="1066148587" result="Passed" start-time="2026-10-02 06:11:05Z" end-time="2026-10-02 06:11:05Z" duration="0.457616" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2043" name="ProfileSelect_HU01_PerfilNuevoAlcanzaSoloElNivel1YArrancaLaNarrativa" fullname="Game.UI.Tests.ProfileSelectTests.ProfileSelect_HU01_PerfilNuevoAlcanzaSoloElNivel1YArrancaLaNarrativa" methodname="ProfileSelect_HU01_PerfilNuevoAlcanzaSoloElNivel1YArrancaLaNarrativa" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" seed="2013483398" result="Passed" start-time="2026-10-02 06:11:05Z" end-time="2026-10-02 06:11:06Z" duration="0.465720" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2049" name="ProfileSelect_RF02_BorrarElUnicoPerfilDeLaUltimaPaginaVuelveALaAnterior" fullname="Game.UI.Tests.ProfileSelectTests.ProfileSelect_RF02_BorrarElUnicoPerfilDeLaUltimaPaginaVuelveALaAnterior" methodname="ProfileSelect_RF02_BorrarElUnicoPerfilDeLaUltimaPaginaVuelveALaAnterior" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" seed="1056199483" result="Passed" start-time="2026-10-02 06:11:06Z" end-time="2026-10-02 06:11:06Z" duration="0.482038" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2048" name="ProfileSelect_RF02_ConOchoPerfilesTodosSeAlcanzanConLasFlechas" fullname="Game.UI.Tests.ProfileSelectTests.ProfileSelect_RF02_ConOchoPerfilesTodosSeAlcanzanConLasFlechas" methodname="ProfileSelect_RF02_ConOchoPerfilesTodosSeAlcanzanConLasFlechas" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" seed="1323573616" result="Passed" start-time="2026-10-02 06:11:06Z" end-time="2026-10-02 06:11:07Z" duration="0.486394" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2046" name="ProfileSelect_RF47_BorrarPideConfirmacionAntesDeEliminarElPerfil" fullname="Game.UI.Tests.ProfileSelectTests.ProfileSelect_RF47_BorrarPideConfirmacionAntesDeEliminarElPerfil" methodname="ProfileSelect_RF47_BorrarPideConfirmacionAntesDeEliminarElPerfil" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" seed="1454696864" result="Passed" start-time="2026-10-02 06:11:07Z" end-time="2026-10-02 06:11:07Z" duration="0.466859" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2047" name="ProfileSelect_RF47_ConservarDejaElPerfilIntacto" fullname="Game.UI.Tests.ProfileSelectTests.ProfileSelect_RF47_ConservarDejaElPerfilIntacto" methodname="ProfileSelect_RF47_ConservarDejaElPerfilIntacto" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" seed="65437364" result="Passed" start-time="2026-10-02 06:11:07Z" end-time="2026-10-02 06:11:08Z" duration="0.478176" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2044" name="ProfileSelect_RNF09_ElFormularioPideUnSoloDato" fullname="Game.UI.Tests.ProfileSelectTests.ProfileSelect_RNF09_ElFormularioPideUnSoloDato" methodname="ProfileSelect_RNF09_ElFormularioPideUnSoloDato" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" seed="460821150" result="Passed" start-time="2026-10-02 06:11:08Z" end-time="2026-10-02 06:11:08Z" duration="0.482552" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2045" name="ProfileSelect_RNF13_ElPanelNoLanzaSiSeAbreSinPasarPorBoot" fullname="Game.UI.Tests.ProfileSelectTests.ProfileSelect_RNF13_ElPanelNoLanzaSiSeAbreSinPasarPorBoot" methodname="ProfileSelect_RNF13_ElPanelNoLanzaSiSeAbreSinPasarPorBoot" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" seed="858980583" result="Passed" start-time="2026-10-02 06:11:08Z" end-time="2026-10-02 06:11:09Z" duration="0.477695" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«MainMenu» se abrió sin pasar por «Boot»: no hay ProfileSession, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+«MainMenu» se abrió sin pasar por «Boot»: no hay ProfileSession, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="2050" name="ProfileSelect_RNF14_ElegirUnPerfilIlegibleAvisaYNoLanza" fullname="Game.UI.Tests.ProfileSelectTests.ProfileSelect_RNF14_ElegirUnPerfilIlegibleAvisaYNoLanza" methodname="ProfileSelect_RNF14_ElegirUnPerfilIlegibleAvisaYNoLanza" classname="Game.UI.Tests.ProfileSelectTests" runstate="Runnable" seed="252046980" result="Passed" start-time="2026-10-02 06:11:09Z" end-time="2026-10-02 06:11:09Z" duration="0.489385" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="2051" name="TeacherReportTests" fullname="Game.UI.Tests.TeacherReportTests" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-02 06:11:09Z" end-time="2026-10-02 06:11:13Z" duration="3.854360" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="2053" name="TeacherReport_CU11_SinPerfilesInformaYOfreceVolver" fullname="Game.UI.Tests.TeacherReportTests.TeacherReport_CU11_SinPerfilesInformaYOfreceVolver" methodname="TeacherReport_CU11_SinPerfilesInformaYOfreceVolver" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" seed="1639767687" result="Passed" start-time="2026-10-02 06:11:09Z" end-time="2026-10-02 06:11:10Z" duration="0.492296" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2056" name="TeacherReport_INC34_AdvierteAlDocenteCuandoElGuardadoUsaLaRutaDeRespaldo" fullname="Game.UI.Tests.TeacherReportTests.TeacherReport_INC34_AdvierteAlDocenteCuandoElGuardadoUsaLaRutaDeRespaldo" methodname="TeacherReport_INC34_AdvierteAlDocenteCuandoElGuardadoUsaLaRutaDeRespaldo" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" seed="280951163" result="Passed" start-time="2026-10-02 06:11:10Z" end-time="2026-10-02 06:11:11Z" duration="0.952330" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «MainMenu» cargó en 0.421 s
+]]></output>
+              </test-case>
+              <test-case id="2057" name="TeacherReport_INC34_NoMuestraElAvisoConDatosEscribible" fullname="Game.UI.Tests.TeacherReportTests.TeacherReport_INC34_NoMuestraElAvisoConDatosEscribible" methodname="TeacherReport_INC34_NoMuestraElAvisoConDatosEscribible" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" seed="521676835" result="Passed" start-time="2026-10-02 06:11:11Z" end-time="2026-10-02 06:11:11Z" duration="0.483318" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2058" name="TeacherReport_RF46_ConsultarNoAlteraNingunPerfil" fullname="Game.UI.Tests.TeacherReportTests.TeacherReport_RF46_ConsultarNoAlteraNingunPerfil" methodname="TeacherReport_RF46_ConsultarNoAlteraNingunPerfil" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" seed="592841906" result="Passed" start-time="2026-10-02 06:11:11Z" end-time="2026-10-02 06:11:12Z" duration="0.483644" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2055" name="TeacherReport_RF46_ElDetalleNombraElPerfilQueSeEstaMirando" fullname="Game.UI.Tests.TeacherReportTests.TeacherReport_RF46_ElDetalleNombraElPerfilQueSeEstaMirando" methodname="TeacherReport_RF46_ElDetalleNombraElPerfilQueSeEstaMirando" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" seed="1540013866" result="Passed" start-time="2026-10-02 06:11:12Z" end-time="2026-10-02 06:11:12Z" duration="0.491222" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2054" name="TeacherReport_RF46_PresentaLosCuatroIndicadoresPorNivelYPorFase" fullname="Game.UI.Tests.TeacherReportTests.TeacherReport_RF46_PresentaLosCuatroIndicadoresPorNivelYPorFase" methodname="TeacherReport_RF46_PresentaLosCuatroIndicadoresPorNivelYPorFase" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" seed="654333283" result="Passed" start-time="2026-10-02 06:11:12Z" end-time="2026-10-02 06:11:12Z" duration="0.467070" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="2052" name="TeacherReport_RF46_SeAlcanzaDesdeElMenuYVuelveSinPerderElPerfilActivo" fullname="Game.UI.Tests.TeacherReportTests.TeacherReport_RF46_SeAlcanzaDesdeElMenuYVuelveSinPerderElPerfilActivo" methodname="TeacherReport_RF46_SeAlcanzaDesdeElMenuYVuelveSinPerderElPerfilActivo" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" seed="522283119" result="Passed" start-time="2026-10-02 06:11:12Z" end-time="2026-10-02 06:11:13Z" duration="0.481676" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

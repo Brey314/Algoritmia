@@ -1,0 +1,440 @@
+{
+  "mode": "playmode",
+  "filter": "Game.Levels.Fire.PlayMode.Tests",
+  "filterType": "assembly",
+  "startedUtc": "2026-10-02T05:51:27.2493855Z",
+  "finishedUtc": "2026-10-02T05:53:19.7008017Z",
+  "elapsedSec": 112.5,
+  "status": "completed",
+  "error": "",
+  "summary": {
+    "Total": 60,
+    "Passed": 60,
+    "Failed": 0,
+    "Skipped": 0,
+    "Inconclusive": 0
+  },
+  "xml": "C:\\Users\\benab\\AppData\\Local\\Temp\\Algoritmia-suite\\validacion2-2026-10-02\\B\\2026-10-02_005127_playmode.xml",
+  "results": [
+    {
+      "FullName": "Game.Levels.Fire.Tests.CaveLightingTests.FireLevel_RF21_IluminacionSubeUnEscalonPorGolpeEfectivo",
+      "Status": "Passed",
+      "Duration": 4.9101369,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.CaveLightingTests.FirePanel_RNF20_ContrasteSuficienteEnElEstadoMasOscuro",
+      "Status": "Passed",
+      "Duration": 0.5179424,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_CP02_TrasUnGolpeSinChispaPapaSeAnimaYNuncaHaceUnGestoDeDerrota",
+      "Status": "Passed",
+      "Duration": 2.97782,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_DA133_LaFamiliaEsperaAtrasQuietaYElNinoObserva",
+      "Status": "Passed",
+      "Duration": 0.4413861,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_DA133_NingunPersonajeQuedaBajoLaInterfazNiLeQuitaElClic",
+      "Status": "Passed",
+      "Duration": 1.24694,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_DA133_PapaGolpeaAlPulsarGolpearYVuelveAlReposo",
+      "Status": "Passed",
+      "Duration": 1.9327865,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_DA133_PapaRecogeAlTomarUnaPiezaYVuelveAlReposo",
+      "Status": "Passed",
+      "Duration": 2.0578646,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_DA133_PapaSoplaYSeQuedaArrodilladoMirandoElFuego",
+      "Status": "Passed",
+      "Duration": 2.327359,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_AlPrenderElFuegoElHumoNoSobrepasaElBordeDeArribaDeLaTablilla",
+      "Status": "Passed",
+      "Duration": 4.7872055,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_AlPrenderElFuegoElHumoSubeALaCoronaDeLaLlama",
+      "Status": "Passed",
+      "Duration": 4.7940989,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_AlSoplarPrendeLaLlamaCenitalSobreElMonton",
+      "Status": "Passed",
+      "Duration": 1.2450101,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_AlTerminarDePrenderElHumoAsomaPorLaCoronaDetrasDeLaLlama",
+      "Status": "Passed",
+      "Duration": 4.8088983,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_DuranteElEncendidoLosDeslizantesSeVenAtenuados",
+      "Status": "Passed",
+      "Duration": 1.933788,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_DuranteElEncendidoLosMandosDelPanelNoResponden",
+      "Status": "Passed",
+      "Duration": 1.9433703,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_SoplarDosVecesCierraElNivelUnaSolaVez",
+      "Status": "Passed",
+      "Duration": 6.2365569,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_SoplarEncadenaAnimacionYEscenaDeCierre",
+      "Status": "Passed",
+      "Duration": 4.7677966,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RNF03_AlPrenderElFuegoLaTablillaQuedaPorEncimaDelHumo",
+      "Status": "Passed",
+      "Duration": 4.7707767,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RNF21_SinDestellosDeAltaFrecuencia",
+      "Status": "Passed",
+      "Duration": 1.3600835,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RNF21_SoplarDosVecesNoReiniciaElEncendido",
+      "Status": "Passed",
+      "Duration": 4.7674166,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_CT06_LasPiezasSeArrastranConClicSostenidoYNoSalenDelSuelo",
+      "Status": "Passed",
+      "Duration": 0.4819597,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_DA76_LaPistaMuestraAAlgoritmConSuFormaDeFuego",
+      "Status": "Passed",
+      "Duration": 0.468242,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF13_AlReunirLaPistaDibujaElCirculoConElBordeEnLaMitadDelBotonDeAbajo",
+      "Status": "Passed",
+      "Duration": 0.4915945,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF13_PistaADemandaEscribeLaInstruccionEnElRegistro",
+      "Status": "Passed",
+      "Duration": 0.4849461,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF13_TrasTresFallosSeguidosElRegistroSumaLaPista",
+      "Status": "Passed",
+      "Duration": 1.285566,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_AlAbrirSoloHayPiezasTablillaYPista",
+      "Status": "Passed",
+      "Duration": 0.4472134,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_AlEncenderPresentaLosDosDeslizantesGolpearYSoplar",
+      "Status": "Passed",
+      "Duration": 1.272001,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_ConUnaPiezaFueraDelCirculoNoPasaAlEncendido",
+      "Status": "Passed",
+      "Duration": 0.4589166,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_DuranteElAcercamientoLasPiedrasNuncaQuedanBajoLasHojas",
+      "Status": "Passed",
+      "Duration": 1.2495553,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_LasPiezasAparecenAlAzarFueraDeLaInterfazYDelCirculo",
+      "Status": "Passed",
+      "Duration": 0.9270322,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_LasPiezasAparecenGiradasAlAzarYCadaHojaEsUnMonton",
+      "Status": "Passed",
+      "Duration": 0.4638543,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_ReunirTodoDentroDelCirculoAcercaLaCamaraYArmaLaFogata",
+      "Status": "Passed",
+      "Duration": 1.2687797,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF15_ElDeslizanteDeCercaniaVaDeLaMitadDeSoplarALaMitadDeGolpearYMueveLasPiedras",
+      "Status": "Passed",
+      "Duration": 1.2671072,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF15_ElDeslizanteDeFuerzaTieneDiezMuescasYElAsaCreceYEnrojeceConLaFuerza",
+      "Status": "Passed",
+      "Duration": 1.2644297,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF15_MoverLaCercaniaNoSubeLasPiedrasSobreLaChispa",
+      "Status": "Passed",
+      "Duration": 1.2651727,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF15_MoverLosDeslizantesNoEjecutaNingunGolpe",
+      "Status": "Passed",
+      "Duration": 1.2679765,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_ConFuerzaDeMasElRayoPasaDeLasHojasYSeApagaEnElAire",
+      "Status": "Passed",
+      "Duration": 1.6149088,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_ConLasPiedrasSeparadasOEncimadasElGolpeNoPrendeNiPenaliza(0)",
+      "Status": "Passed",
+      "Duration": 1.2819691,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_ConLasPiedrasSeparadasOEncimadasElGolpeNoPrendeNiPenaliza(10)",
+      "Status": "Passed",
+      "Duration": 1.2806806,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_ElBrilloDeLaChispaDuraMasConCadaGolpeEfectivo",
+      "Status": "Passed",
+      "Duration": 1.8922934,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_ElRayoDeLaChispaSeVeSobreElMonton",
+      "Status": "Passed",
+      "Duration": 1.6291932,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_GolpearEscribeEnElRegistroElMensajeDeLaFuerza",
+      "Status": "Passed",
+      "Duration": 1.277041,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_LaChispaEsUnRayoDelCentroQueCaeEnLasHojasEnUnaDireccionAlAzar",
+      "Status": "Passed",
+      "Duration": 1.3199801,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_LaChispaSoloSeVeCuandoLasPiedrasChocanConFuerza",
+      "Status": "Passed",
+      "Duration": 1.2821527,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF17_LaTablillaMuestraElUltimoMensajeSinDesbordarTrasDiezIntentos",
+      "Status": "Passed",
+      "Duration": 1.2775308,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_AlConvergerElMontonEmpiezaAHumearYNoDejaDeHacerlo",
+      "Status": "Passed",
+      "Duration": 1.2631039,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_ElHiloDeHumoNaceEnElPuntoDelGolpeYNoEsMasAltoQueMedioMonton",
+      "Status": "Passed",
+      "Duration": 1.2638269,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_ElHiloDeHumoSeVeFinoYNaceEnElCentroDelMonton",
+      "Status": "Passed",
+      "Duration": 2.5170507,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_ElHumoSeDibujaEncimaDelMontonYDebajoDeLasPiedras",
+      "Status": "Passed",
+      "Duration": 1.2807238,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_SoplarAtenuadoNoRespondeNiRegistraError",
+      "Status": "Passed",
+      "Duration": 1.2838493,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_SoplarSeHabilitaAlAlcanzarElMinimoDeGolpesEfectivos",
+      "Status": "Passed",
+      "Duration": 1.2658928,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF02_ElMapaDeControlesNoTieneNingunBindingDeTeclado",
+      "Status": "Passed",
+      "Duration": 0.4748494,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF02_TomarUnaPiezaLaLevantaYSoltarlaLaPosa",
+      "Status": "Passed",
+      "Duration": 0.7014466,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF03_LaEscenaNoPresentaListaDeTareas",
+      "Status": "Passed",
+      "Duration": 0.4562605,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF03_ReuniendoUnaPiezaBajoLaTablillaQuedaEncimaYAlAlcanceDelClic",
+      "Status": "Passed",
+      "Duration": 0.4535858,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF19_ElEncendidoSeVeComoElMockupConElCandadoSinRotulo",
+      "Status": "Passed",
+      "Duration": 1.3294544,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF19_SoplarAtenuadoSeDistinguePorElCandadoAdemasDelColorYSinRotuloAunNo",
+      "Status": "Passed",
+      "Duration": 1.2619469,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF21_ElRayoDeLaChispaHaceUnSoloBarridoSinVolver",
+      "Status": "Passed",
+      "Duration": 1.8725742,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireSoundsTests.FirePanel_CP02_SeparadasNoSuenanEnContactoSuenanAPiedraYSoloElEfectivoAnadeLaChispa",
+      "Status": "Passed",
+      "Duration": 1.2618038,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireSoundsTests.FirePanel_RF14_UnaHojaSuenaMientrasSeArrastraYReunirTodoSuenaAlPasarAlEncendido",
+      "Status": "Passed",
+      "Duration": 1.2652072,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireSoundsTests.FirePanel_RF20_SoplarSuenaYLaHogueraEntraSobreLaCueva",
+      "Status": "Passed",
+      "Duration": 1.2540434,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}
