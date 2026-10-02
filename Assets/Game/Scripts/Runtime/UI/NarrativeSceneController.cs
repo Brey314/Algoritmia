@@ -461,6 +461,10 @@ namespace Game.UI
                 {
                     PlaceActor(prop, rect, image);
                 }
+                else
+                {
+                    PropShadow.Attach(go, prop.Art, rect.sizeDelta);
+                }
 
                 _props.Add((prop, rect));
             }
@@ -643,6 +647,7 @@ namespace Game.UI
         {
             var image = illustration.sprite.rect.size;
             var origin = rect.anchoredPosition;
+            var shadow = rect.GetComponent<PropShadow>();
             var drifts = prop.Motion == PropMotion.Drift;
             var lifted = !drifts && prop.Motion != PropMotion.Roll;
             var rolls = !drifts && prop.Motion != PropMotion.LiftAndStay;
@@ -698,6 +703,11 @@ namespace Game.UI
                     rect.anchoredPosition = origin + new Vector2(x, y);
                     rect.localRotation = Quaternion.Euler(0f, 0f, prop.RotationDegrees + spin);
 
+                    if (shadow != null)
+                    {
+                        shadow.UpdateMotion(height, lift, prop.RotationDegrees + spin);
+                    }
+
                     await Awaitable.NextFrameAsync(destroyCancellationToken);
                 } while (elapsed < seconds);
             }
@@ -705,6 +715,11 @@ namespace Game.UI
             {
                 // La escena se descargó a medias: nada que dejar en su sitio.
                 return;
+            }
+
+            if (shadow != null)
+            {
+                shadow.UpdateMotion(0f, lift, rect.localEulerAngles.z);
             }
 
             // Llegó: vuelve la capa de la escena, o se va si la escena no tiene (nulo funde a salida).

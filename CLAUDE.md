@@ -43,7 +43,7 @@ Además de los slices corre el **carril de arte y sonido** —toca `Assets/Game/
 25/09/2026)—, así que se pisa con los tres primeros slices. Lo que lleva hecho, archivo por archivo, está en
 `claudeDocs/tasks/Slice 3/Props-y-Sonidos-Resultados.md`; los personajes animados, que además tocan
 `Game.Scaffolding`, `Game.UI`, los tres niveles, las 18 narrativas y las cinco escenas jugables, en
-`claudeDocs/tasks/Personajes/Personajes-Resultados.md`. Una regla suya que no caduca: los cuadros
+`claudeDocs/tasks/Personajes/Personajes-Resultados.md`; lo que sigue —personajes finales, perfiles, expresiones, habla— está planeado en `Plan-Personajes-Finales.md` (02/10/2026, aún sin ejecutar). Una regla suya que no caduca: los cuadros
 de las animaciones del fuego y del humo conservan los nombres de entrega (`fuego_cenital_nivel_1_0000.png`, no
 el `prop_n1_…` de `Direccion_de_Arte.md`) y los referencia la curva del `.anim`: renombrarlos es
 trabajo del motor.
@@ -446,7 +446,7 @@ antes de escribir la primera línea:
   mecánicas, cada controlador llama `Play`/`PlayFor` en sus puntos de enganche; tras un fallo,
   `Encourage` y nunca otra cosa (CP-02). **Reconstruir un prefab de personaje cambia sus fileID y
   rompe las referencias** de las escenas y los 18 assets: para retocar animaciones se reescriben
-  los clips (`claudeDocs/tasks/Personajes/`).
+  los clips (`claudeDocs/tasks/Personajes/`). `CharacterRig` se re-sincroniza en `OnEnable`/`Start` (`Play` + `Update(0)`) para que reactivar la jerarquía no deje un cuadro en pose en T: la primera acción se aplica seca y las siguientes con `CrossFade`.
 - **Interfaz inyectada donde hay un consumidor conocido; evento solo con varios oyentes.** No hay
   `EventBus` global.
 - **Solo tres singletons con `DontDestroyOnLoad`**: `GameFlowRunner`, `SceneLoader`, `AudioManager`

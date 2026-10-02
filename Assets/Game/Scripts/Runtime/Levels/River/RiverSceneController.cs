@@ -326,6 +326,7 @@ namespace Game.Levels.River
             image.preserveAspect = true;
             image.color = Color.white;
             Place(image.rectTransform, collectible.Position);
+            PropShadow.Attach(image.gameObject, collectible.Art, image.rectTransform.sizeDelta);
             image.gameObject.SetActive(true);
             _spawned.Add((collectible, image));
         }
