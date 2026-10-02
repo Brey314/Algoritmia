@@ -74,6 +74,23 @@ namespace Game.Scaffolding
 
         private void Awake() => Fit(true);
 
+        private void OnEnable()
+        {
+            Fit(true);
+            if (animator != null && animator.runtimeAnimatorController != null && animator.isActiveAndEnabled)
+            {
+                Apply(Current, immediate: true);
+            }
+        }
+
+        private void Start()
+        {
+            if (!_started && animator != null && animator.runtimeAnimatorController != null && animator.isActiveAndEnabled)
+            {
+                Apply(Current, immediate: true);
+            }
+        }
+
         private void LateUpdate() => Fit(false);
 
         /// <summary>
@@ -115,16 +132,15 @@ namespace Game.Scaffolding
             Apply(then);
         }
 
-        private void Apply(ActorAction action)
+        private void Apply(ActorAction action, bool immediate = false)
         {
             // Pedir lo que ya hace no lo reinicia: una acción que se mantiene entre líneas —se
             // apagó, sigue arrodillado— no vuelve a empezar cada vez que avanza el texto.
-            if (action == Current && _started)
+            if (action == Current && _started && !immediate)
             {
                 return;
             }
 
-            _started = true;
             Current = action;
             if (animator == null || animator.runtimeAnimatorController == null || !animator.isActiveAndEnabled)
             {
@@ -137,7 +153,16 @@ namespace Game.Scaffolding
                 state = IdleState;
             }
 
-            animator.CrossFadeInFixedTime(state, BlendSeconds, 0);
+            if (!_started || immediate)
+            {
+                _started = true;
+                animator.Play(state, 0, 0f);
+                animator.Update(0f);
+            }
+            else
+            {
+                animator.CrossFadeInFixedTime(state, BlendSeconds, 0);
+            }
         }
 
         /// <summary>Si la línea la dice este personaje. Sin distinguir mayúsculas: el guion las escribe en versales.</summary>
