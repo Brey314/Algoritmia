@@ -34,6 +34,10 @@ namespace Game.UI
         [SerializeField] private GameObject dataPanel;
         [SerializeField] private IndicatorTableView tableView;
 
+        [SerializeField]
+        [Tooltip("Encabezado del detalle con el nombre del perfil que se está mirando (RF-46): sin él, las cifras podrían atribuirse a otro niño.")]
+        private Text selectedProfileLabel;
+
         [Header("Eliminación (RF-47)")]
         [SerializeField] private Button deleteButton;
         [SerializeField] private EraseConfirmationDialog eraseDialog;
@@ -70,6 +74,7 @@ namespace Game.UI
         internal Button BackButton => backButton;
         internal PlayerProfile Selected => _selected;
         internal Text FallbackNoticeLabel => fallbackNoticeLabel;
+        internal Text SelectedProfileLabel => selectedProfileLabel;
 #endif
 
         private void Awake()
@@ -153,6 +158,11 @@ namespace Game.UI
         private void Select(PlayerProfile profile)
         {
             _selected = profile;
+            if (selectedProfileLabel != null && content != null)
+            {
+                selectedProfileLabel.text = string.Format(content.SelectedProfileFormat, profile.Name);
+            }
+
             tableView.Render(IndicatorReport.For(profile));
         }
 

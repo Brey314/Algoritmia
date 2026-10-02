@@ -17,6 +17,12 @@ rediscute `claudeDocs/SPEC.md`.
 > [**Anexo**](#anexo--lo-que-cambió-después-del-cierre-25092026) al final. Cada afirmación que dejó de
 > ser cierta lleva al lado una nota fechada. La cifra de suite vigente está en
 > `claudeDocs/tasks/Slice 4/Slice-4-Resultados.md`, «Corrida completa de la suite (25/09/2026)».
+>
+> **01/10/2026:** lo que cambió del 25/09 al 01/10 —los props definitivos (`44fd479`), el recorrido
+> del nivel que exige ver la 2.5 y el doble clic al salir de un cierre (`d105838`), el cierre de
+> INC-46 a INC-117 (`37b3cb7`, `5a22df1`) y las correcciones de la caja de la 2.2 y de la carretilla
+> amarrada— está en el [Anexo B](#anexo-b--lo-que-cambió-después-del-25092026-01102026). La suite
+> vigente es la del 01/10/2026, en el mismo `Slice-4-Resultados.md`.
 
 | Campo | Dato |
 |---|---|
@@ -939,3 +945,203 @@ Casos por archivo del módulo, con el criterio de la §6 (cada `[Test]` más cad
   aplicado solo vive en los `N2_*.asset`.
 - Los puntos de la §8 que dependen de la build portable o del usuario (RNF-04..RNF-06, PG-05, la
   revisión con el usuario) no se revisaron para este anexo.
+
+*(01/10/2026: de esta lista, INC-50 e INC-54 se cerraron el 29/09/2026 corrigiendo los documentos, y
+la caja de la 2.2 volvió a ser la del bosque —la prueba lee ya el asset—. El resto sigue como está;
+ver Anexo B, B.5, B.6 y B.8.)*
+
+---
+
+## Anexo B — lo que cambió después del 25/09/2026 (01/10/2026)
+
+El Anexo A se verificó el 25/09/2026 sobre `ccf77e6`. Entre el 25/09 y el 01/10 el Nivel 2 cambió
+en cuatro commits que ya están en `main` —uno de ellos solo de documentos— y en la rama
+`feat/cierre-de-slices-y-oe3`, que entra en el commit de cierre con las tarjetas D10-2 y D10-5 del
+acta D10. Todo se comprobó contra el código, los assets, `git log` hasta `359365e` y la suite
+completa del 01/10/2026.
+
+### B.1 Qué cambió y dónde
+
+| Fecha | Commit | Qué cambió en el Nivel 2 |
+|---|---|---|
+| 25/09 | `44fd479` | Props definitivos a 256 y 512 px; las etapas del taller siguen al arte nuevo — B.2 |
+| 29/09 | `d105838` | El recorrido del nivel exige ver la 2.5 antes del desbloqueo; un doble clic al salir de un cierre reflexivo ya no salta el resumen — B.3 |
+| 30/09 | `37b3cb7` | Contorno en el lado de «Girar» y candado en «Empujar» (INC-58), rótulos del laberinto en `MazeLayout` (INC-104), la cuerda en la 2.3 (INC-54) y el mazo soltado lejos que no cuenta (INC-115) — B.4 |
+| 30/09 | `5a22df1` | Documentos: INC-49, INC-50 e INC-54 cerrados — B.5 |
+| 01/10 | sin hash, D10-2 y D10-5 | La 2.2 abre con la caja del bosque (INC-120), la carretilla pasa a `e5` al amarrar la cuerda (INC-121) y el contraste del nivel exige marco — B.6 |
+
+`44fd479` entró en `main` con el PR #87 (`995b26d`, 29/09); `d105838`, `37b3cb7` y `5a22df1`, con el
+PR #88 (`1c7f4ab`, 30/09).
+
+### B.2 `44fd479`: props definitivos y etapas del taller
+
+Los props del Nivel 2 bajan a 256 × 256, y a 512 × 512 donde se ven a más de 256 px a 1080p
+(`prop_n2_carretilla_e2` a `_e5`, `prop_n2_pieza_3` y `_4`); el recorte de las piedras, en modo
+Multiple, se escaló desde el motor conservando su `spriteID`. El arte nuevo corre las etapas del
+taller un puesto y `N2_AssemblyContent` lo sigue: `e1` es la rueda perforada, `e2` el eje, `e3` la
+tabla y `e4` la caja. `e5`, con la cuerda, quedó para las narrativas hasta el 01/10 (B.6). El detalle
+archivo por archivo está en `Slice 3/Props-y-Sonidos-Resultados.md`, Anexo B.
+
+### B.3 `d105838` (29/09/2026): la 2.5 se ve antes del desbloqueo, y el doble clic
+
+- `WheelLevel_RNF13_RecorreElNivel2CompletoHastaElMenuConNivel3Desbloqueado` exige ahora que, al
+  llegar a `N2_Escena25_Cierre`, el Nivel 3 siga bloqueado y no haya «Omitir» (CP-07, RF-12):
+  `NarrativeVisitPolicy` da el cierre reflexivo por visto cuando el nivel siguiente ya está abierto,
+  así que desbloquear al llegar al refugio le daría «Omitir» a la primera vuelta. Se validó con una
+  mutación de `MazeSceneController` que desbloqueaba antes de tiempo.
+- `NarrativeSceneController.Leave()` sale una sola vez: si el flujo ya no está en esa narrativa, no
+  hace nada. Un doble clic en «Continuar» u «Omitir» al salir de un cierre reflexivo llegaba dos veces
+  mientras cargaba el resumen; el segundo `GoTo(LevelSummary)` ya no era válido, el flujo caía al
+  menú de niveles y se saltaba el resumen donde se nombra la habilidad (RF-12, RF-45). Pruebas:
+  `LevelSummary_RF45_DobleClicEnContinuarMientrasCargaElResumenSeQuedaEnElResumen`, sobre la 2.5 y con
+  `SceneLoader` real, y `NarrativeScene_RF45_UnClicDeMasAlSalirDelCierreReflexivoYaVistoLlegaAlResumen`,
+  sobre `N1_NacimientoDelFuego` con «Continuar» y con «Omitir».
+- El mismo commit trajo el plan de pruebas del OE4; se registra en `Slice 4/Slice-4-Resultados.md`,
+  Anexo B.
+
+### B.4 `37b3cb7` (30/09/2026): lo que el Nivel 2 ganó al cerrar INC-46 a INC-117
+
+- **«Girar»** (INC-58, RNF-19): el lado elegido lleva contorno además del tinte.
+  `MazeScene_RNF19_ElLadoElegidoDeGirarSeDistingueSinColor`.
+- **«Empujar»** deshabilitado lleva candado, como «Soplar» (INC-58, completado el 30/09).
+  `ForestScene_RNF19_EmpujarDeshabilitadoLlevaCandado`.
+- **Rótulos del laberinto** («Avanzar», «Retroceder», «Girar»): salen del diccionario `Labels` de
+  `MazeSceneController` y pasan a `MazeLayout` (`ForwardLabel`, `BackwardLabel`, `TurnLabel` en
+  `N2_MazeLayout`), porque todo texto visible vive en datos (INC-104, CT-05).
+- **La 2.3 pinta la cuerda** que nombra Algoritm (INC-54): `N2_Escena23_Construccion` gana el objeto.
+  `Content_INC54_LaEscena23PintaTodasLasPiezasDelTaller`.
+- **El mazo soltado lejos** del tronco resaltado se describe con el mismo mensaje y ya no suma
+  intento, igual que las demás piezas (INC-115, decisión de Santiago del 30/09/2026).
+  `WorkshopScene_RF29_SoltarElMazoLejosNoCuentaComoIntento`.
+- **La pausa**: `PauseMenu_HU17_OfreceExactamenteReanudarReiniciarYVolverAlMenuDeNiveles` fija los tres
+  rótulos del mockup 6 (INC-49), y el comentario de `PauseMenuController` dice cinco escenas
+  jugables.
+
+### B.5 `5a22df1` (30/09/2026): INC-49, INC-50 e INC-54, cerrados
+
+Se cerraron el 29/09 corrigiendo los documentos, con la regla de ese día: gana el juego.
+
+- **INC-49**: RF-07, HU-17 y la arquitectura usan los rótulos del mockup 6. Corrige el punto de §8.
+- **INC-50**: RF-26, el guion §1.6.1.2, CU-06 y HU-08 dicen que «Empujar» confirma la fase y que la
+  2.2 muestra el rodado. Corrige A.1.
+- **INC-54**: el guion §1.6.2.1 y §1.6.2.2, RF-27, RF-29, HU-09 y CU-07 cuentan la cuerda como séptima
+  pieza. Corrige A.5.
+
+### B.6 Correcciones del 01/10/2026 (tarjetas D10-2 y D10-5)
+
+Las dos primeras son decisiones de Santiago del 30/09/2026 (acta D10, §5).
+
+- **La 2.2 abre con la caja del bosque** (INC-120). La caja de `N2_Escena22_ElPatron` vuelve a
+  `prop_n2_caja_suelo` en (0,2; 0,5089), con 0,14814815 del alto y `MotionDrop` 0,074074075: es
+  exactamente lo que `1d5ce58` había cambiado, puesto al revés —`git diff 1d5ce58~1` del asset sale
+  vacío—. Sigue deslizándose sin girar (A.8), y `prop_n2_caja_suelo_vacía` queda sin uso. Con esto
+  vuelve a ser cierto el tooltip de `WheelLevelConfig.CargoPlacedPosition`: es el punto donde la 2.2
+  dibuja la caja al abrir. Pruebas: `WheelLevelConfig_RF05_LaCajaColocadaEsLaQueLaEscena22DibujaAlAbrir`
+  (nueva) y `ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22`, que deja la
+  constante copiada `CajaColocadaDeLa22` y lee el asset.
+- **Al amarrar la cuerda, la carretilla pasa a `e5`** (INC-121). `AssemblyContent.TiedArt`
+  (`prop_n2_carretilla_e5`, el dibujo con que abre la 2.4) y `case Rope` en
+  `WorkshopSceneController.ShowAssembly`: la cuerda aceptada se desactiva como las demás piezas y la
+  carretilla cambia de dibujo en el sitio —`e4` y `e5` tienen la misma caja de alfa, así que no salta—.
+  Salen `RopePlacedPosition`, `RopePlacedSize` y la rama de la cuerda colgada de `Release`. Pruebas:
+  `AssemblyContent_INC54_LaCarretillaAmarradaEsElDibujoConElQueAbreLaEscena24` (EditMode) y
+  `WorkshopScene_INC54_AlAmarrarLaCuerdaLaCarretillaPasaAlDibujoConCuerda` (PlayMode); la de
+  `WorkshopScene_RF29_LaCarretillaCreceSobreLoAnteriorSinQueLaInterfazLaTape` exige ahora `TiedArt` y no
+  la cuerda colgada. Corrige A.5 («la carretilla no tiene dibujo con la cuerda»).
+- **El texto va siempre sobre marco** (D10-5). `WheelLevel_RNF20_ContrasteSuficienteEnLasTresEscenas`
+  mide cada texto del bosque, el taller y el laberinto contra su cara real y exige además que esa
+  cara no sea la ilustración del entorno, como la prueba del río. La aserción nueva se puso en rojo
+  con dos mutaciones —el mensaje del bosque colgado del entorno— antes de pasar.
+
+La revisión adversarial del 01/10/2026 comprobó en capturas la caja llena de la 2.2 por encima del
+cuadro de diálogo y el taller con `e4` y con `e5`. Faltan dos capturas en las pruebas de verificación
+visual: el primer cuadro de la 2.2, con la caja sobre el primer tronco antes de rodar —la de la
+prueba se toma con el rodado ya asentado—, y la del taller con la carretilla amarrada
+(`Workshop_04_carretilla_amarrada`).
+
+### B.7 Pruebas y cifras al 01/10/2026
+
+| Assembly | 25/09 (`ccf77e6`) | 30/09 (`359365e`) | 01/10 | Qué lo movió |
+|---|---|---|---|---|
+| `Game.Levels.Wheel.Tests` | 69 | 69 | 71 | D10-2: `WheelLevelConfig_RF05_…` y `AssemblyContent_INC54_…` |
+| `Game.Levels.Wheel.PlayMode.Tests` | 89 | 92 | 93 | `37b3cb7`: los dos RNF19 y `WorkshopScene_RF29_SoltarElMazoLejos…`; D10-2: `WorkshopScene_INC54_…` |
+
+Fuera del módulo tocan el Nivel 2 las dos RF45 de `d105838` (`Game.UI.PlayMode.Tests`) y
+`Content_INC54_…` (`Game.Content.Tests`). La suite completa del 01/10/2026, con el Editor abierto a
+1920 × 1080, dio EditMode 393 = 392 + 1 omitida y PlayMode 351 = 350 + `RiverLevel_RNF05_…`, que mide
+la memoria del Editor y pasa aislada; todas las del Nivel 2, en verde. El detalle está en
+`Slice 4/Slice-4-Resultados.md`, «Corrida completa de la suite (01/10/2026)».
+
+### B.8 Lo que queda abierto al 01/10/2026
+
+Frente a A.13:
+
+- **Cerrados**: INC-50 e INC-54 (B.5) y el desajuste entre la caja del bosque y la de la 2.2 (B.6).
+- **Siguen**: `WorkshopScene_RF27_PresentaLasSeisPiezas` con «Seis» en el nombre; los comentarios de
+  `RollMotion` y del tooltip de `NarrativeSequence.LightStart` («el Nivel 2 no usa la capa»); la
+  casilla de la franja lavanda en `todo.md`, y las hojas de verificación de encuadres por regenerar.
+- **Nuevos**: las dos capturas de B.6; el nombre de `prop_n2_caja_suelo_vacía`, que lleva tilde contra
+  `Direccion_de_Arte.md` §15.4 y ya no usa nadie.
+- **De la §8**, por decisión de Santiago del 30/09/2026 (acta D10, §5): las revisiones con el usuario
+  se marcan como hechas por él tras verificarlas con pruebas y capturas; RNF-04 a RNF-06 y la
+  exclusión de RNF-16 retirando un nivel se miden sobre el ejecutable candidato; **PG-05** queda a
+  cargo de Santiago, en la sesión con estudiantes (`claudeDocs/tasks/OE4/Hoja-HUM.md`, H1).
+
+### B.9 Lo que entró después, el mismo 01/10/2026 (tarjeta D10-4 y verificación final)
+
+Apartado nuevo. Cierra los dos «Nuevos» de B.8.
+
+- **Las dos capturas que faltaban.** `WorkshopScene_RNF20_CapturaDelTallerEnReposoYConLaCarretillaMontada`
+  toma una cuarta, `Workshop_04_carretilla_amarrada`, tras arrastrar la caja y la cuerda: la
+  carretilla en `e5`, con la caja atada. `NarrativeScene_RF05_CapturaDelPrimerCuadroDeLaEscena22`
+  (nueva, `Game.UI.PlayMode.Tests`) fotografía `N2_Escena22_PrimerCuadro` en el primer cuadro, antes
+  de que nadie lea: la caja llena entera sobre el pasto, sin rodar y por encima del cuadro de
+  diálogo. La revisión las vio así. Las dos son `[Category("VisualVerification")]`.
+- **Dos nombres del nivel, según la nomenclatura** (INC-126). `entorno_n2_laberinto` pasa a
+  `env_n2_laberinto` y `prop_n2_caja_suelo_vacía` a `prop_n2_caja_suelo_vacia`, renombrados desde el
+  motor con su GUID: escenas y assets los referencian por GUID y no cambian. Se corrige el comentario
+  de `MazeLayout.cs`, la única cita por nombre en el código. Lo vigila
+  `ArtImport_RNF23_LosNombresSiguenLaNomenclatura`. En este documento los nombres viejos (§7.4, A.8,
+  B.6 y B.8) quedan como registro. La caja vacía sigue sin uso (INC-120).
+- **Diez props del bosque siguen en modo `Multiple`** (excepción de INC-128). `env_enlace_n2`,
+  `prop_n2_herramienta_a` a `_c`, `prop_n2_piedra_a` y `_b`, `prop_n2_planta_a` a `_c` y
+  `prop_n2_tronco_a` llegaron con un solo sprite recortado (`<nombre>_0`), y las escenas y los assets
+  los referencian por ese sub-sprite: pasarlos a `Single` cambiaría su `fileID` y rompería esas
+  referencias. `prop_n2_piedra_c` y `_d` también están en `Multiple` y no los usa nadie.
+- **Cifras.** `Game.Levels.Wheel.Tests` sigue en 71 y `Game.Levels.Wheel.PlayMode.Tests` en 93, todas
+  en verde en la verificación final del 01/10/2026: EditMode 433 = 432 + 1 omitida y PlayMode
+  364/364. Detalle en `Slice 4/Slice-4-Resultados.md`, «Verificación final y paquete (01/10/2026)».
+- **Queda**: la `[Description]` de la prueba del taller dice que `_04` es «tras el empuje de
+  cierre», y la captura es del cuadro siguiente al amarre, cuando el empuje apenas empieza. Es solo
+  redacción de una prueba; se corrige después de la pasada del OE4, porque tocarla ahora cambia la
+  huella del ejecutable candidato.
+
+
+### B.10 Nota (01/10/2026, ~21:45): lo que añadió rc2 al laberinto
+
+Apartado nuevo. Las cifras de B.7 y B.9 son las de rc1; esta nota da las vigentes.
+
+- **`MazeSceneTests` tiene 33 pruebas** (cada `[UnityTest]`; el archivo no usa `[TestCase]`). Eran
+  26 al 25/09 (A.12) y 27 en `359365e`, por `MazeScene_RNF19_ElLadoElegidoDeGirarSeDistingueSinColor`
+  (`37b3cb7`). rc2 suma seis, que cubren los defectos que la pasada del OE4 encontró en rc1
+  (`OE4/OE4-Resultados.md` §8.3):
+  - DEF-GP1-01, el bloque que se quedaba pegado al cursor:
+    `MazeScene_RF34_ReordenarUnBloqueEsUnSoloGestoYNoQuedaPegado`,
+    `…_RetirarYReordenarArrastrandoCuentanSoloLasEdicionesHechas` y
+    `…_UnClicSinMoverSobreUnBloqueLoDejaDondeEstabaYNoCuentaEdicion`;
+  - DEF-GP1-02, el bloque en curso fuera de la vista al ejecutar:
+    `MazeScene_RF32_AlEjecutarLaListaMuestraElBloqueEnCurso`;
+  - DEF-GP1-03, la selección tras retirar un bloque:
+    `MazeScene_RF34_TrasLaPapeleraConElCajonCerradoLasFilasLaOfrecen` y
+    `…_TrasRetirarArrastrandoLasFilasOfrecenLaPapelera`. Además cambia la aserción de
+    `MazeScene_RF34_ElBloqueSeleccionadoMuestraLaPapeleraYEstaLoRetira`, que exigía el defecto.
+- **`SequenceListRulesTests` (10, EditMode, nueva)** prueba en C# plano `SequenceListRules`: el
+  desplazamiento mínimo con ▲/▼ que deja ver el bloque en curso (`RevealScroll`, sin `ScrollRect`) y
+  la fila que queda seleccionada tras retirar (`SelectionAfterRemoval`).
+- **Cifras del módulo:** `Game.Levels.Wheel.Tests` pasa de 71 a 81 y
+  `Game.Levels.Wheel.PlayMode.Tests` de 93 a 99. La suite completa antes del build de rc2 dio
+  PlayMode 376/376 y EditMode 470 = 469 + 1 omitida (`ProfileEraser_INC34`, por entorno)
+  (`OE4/evidencias/suites/rc2-final/`).
+- **Sobre el ejecutable rc2**, PF-RF34-02, PF-RF32-01 y PF-RF34-01 pasan (P): reordenar y retirar son
+  un solo gesto, nada sigue al cursor, la lista sube sola hasta el bloque en curso y tres papeleras
+  seguidas con el cajón cerrado vacían la secuencia.

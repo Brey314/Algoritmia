@@ -28,5 +28,9 @@ namespace Game.UI
         [field: SerializeField]
         [field: Tooltip("Aviso cuando el borrado deja rastro en disco (RNF-11): no admite «casi borrado».")]
         public string DeleteFailedMessage { get; private set; } = "No se pudo borrar del todo ese perfil. Avisa a tu profe.";
+
+        [field: SerializeField]
+        [field: Tooltip("Aviso cuando el archivo de un perfil no se puede leer (guardado interrumpido o dañado). Sin culpa ni cifras (CP-02, CP-03).")]
+        public string UnreadableProfileMessage { get; private set; } = "No se pudo abrir ese perfil. Avisa a tu profe.";
     }
 }

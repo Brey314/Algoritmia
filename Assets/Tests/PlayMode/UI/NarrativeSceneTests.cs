@@ -174,6 +174,19 @@ namespace Game.UI.Tests
         }
 
         [Test]
+        [Category("Acceptance")]
+        [Timeout(30000)]
+        public async Task NarrativeScene_INC28_OfreceOmitirEnLaSegundaVisitaTrasTerminarElNivel1()
+        {
+            // El perfil que deja el Nivel 1 terminado: su única fase confirmada y el Nivel 2 abierto
+            // por el resumen. «Ya vista» se deriva de ese progreso; no hay registro de escenas vistas
+            // (RNF-09).
+            var (controller, _) = await OpenNarrative("N1_Apertura", LevelId.Wheel, new PhaseId(LevelId.Fire, 1));
+
+            Assert.That(controller.SkipButton.gameObject.activeInHierarchy, Is.True);
+        }
+
+        [Test]
         [Timeout(30000)]
         public async Task NarrativeScene_RF45_UnClicDeMasAlSalirDelCierreReflexivoYaVistoLlegaAlResumen()
         {
@@ -681,6 +694,66 @@ namespace Game.UI.Tests
         }
 
         /// <summary>
+        /// La balsa cruza el río como un movimiento continuo y no como una sucesión de cortes
+        /// (RNF-21, RF-44): avanza sin retroceder y sin saltar más del 1 % de la ilustración por
+        /// cuadro, no gira, no se apaga ni un cuadro y llega a la otra orilla a la altura que dice
+        /// el asset. La familia viaja pegada a ella: bajar la balsa sin bajar a quien va encima los
+        /// dejaría flotando sobre la cubierta, y el cruce dejaría de ser un solo cuerpo que se
+        /// desliza (D-i, tarjeta D10-3).
+        /// </summary>
+        /// <remarks>
+        /// No se avanza el texto, a propósito: lo que le pasa a quien viaja si se lee antes de que
+        /// acabe el cruce lo cubre
+        /// <c>NarrativeScene_RNF21_AvanzarElTextoDuranteElCruceNoHaceSaltarALosViajeros</c>. Balsa
+        /// (<c>MoveAsync</c>) y viajeros (<c>WalkAsync</c>) arrancan en el mismo <c>Render</c> y
+        /// suman el mismo <c>Time.deltaTime</c> con <c>SmoothStep</c> sobre 9 s y 0.12 de recorrido,
+        /// así que su separación se mantiene constante salvo error de coma flotante.
+        /// </remarks>
+        [Test]
+        [Category("Acceptance")]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos()
+        {
+            var (controller, _) = await OpenNarrative("N3_Escena33_Cruce", LevelId.River);
+            var (balsa, rect) = controller.Props.Single(p => p.Prop.Motion == PropMotion.Drift);
+            var imagen = rect.GetComponent<Image>();
+            var lienzo = controller.IllustrationRect.rect.size; // tamaño nativo del sprite (IllustrationFraming.Apply)
+            var viajeros = controller.Actors.Where(actor => actor.Walking).ToArray();
+            Assert.That(viajeros, Has.Length.EqualTo(4), "la familia sube a la balsa");
+
+            Vector2 Balsa() => balsa.Position + rect.anchoredPosition / lienzo; // en fracciones de la ilustración
+            var separacion = viajeros.Select(v => v.Rect.anchorMin - Balsa()).ToArray();
+            var anterior = Balsa();
+            var llegada = balsa.Position.x + balsa.MotionDistance;
+            var tope = Time.realtimeSinceStartup + balsa.MotionSeconds * 3f;
+            var (salto, desvio, cuadros) = (0f, 0f, 0);
+            while (Balsa().x < llegada - 1e-4f && Time.realtimeSinceStartup < tope)
+            {
+                await Awaitable.NextFrameAsync();
+                cuadros++;
+                var ahora = Balsa();
+                salto = Mathf.Max(salto, Vector2.Distance(ahora, anterior));
+                Assert.That(ahora.x, Is.GreaterThanOrEqualTo(anterior.x - 1e-6f), "la balsa nunca retrocede");
+                anterior = ahora;
+                Assert.That(imagen.isActiveAndEnabled && imagen.sprite != null && imagen.color.a > 0.99f, Is.True,
+                    "la balsa no se apaga ni un cuadro (RNF-21)");
+                Assert.That(rect.localRotation, Is.EqualTo(Quaternion.Euler(0f, 0f, balsa.RotationDegrees)),
+                    "y no gira: se desliza (RF-44)");
+                for (var i = 0; i < viajeros.Length; i++)
+                {
+                    Assert.That(viajeros[i].Rig.isActiveAndEnabled, Is.True, $"«{viajeros[i].Prop.Actor.name}» no desaparece");
+                    desvio = Mathf.Max(desvio, Vector2.Distance(viajeros[i].Rect.anchorMin - ahora, separacion[i]));
+                }
+            }
+
+            Assert.That(Balsa().x, Is.EqualTo(llegada).Within(1e-3f), "la balsa llega a la otra orilla");
+            Assert.That(Balsa().y, Is.EqualTo(balsa.Position.y - balsa.MotionDrop).Within(1e-3f), "a la altura del asset");
+            Assert.That(cuadros, Is.GreaterThan(30), "el cruce dura muchos cuadros: es un movimiento, no un corte");
+            Assert.That(salto, Is.LessThan(0.01f), $"ningún cuadro salta más del 1 % de la ilustración (máximo {salto:F4})");
+            Assert.That(desvio, Is.LessThan(0.002f), $"la familia viaja pegada a la balsa (máximo {desvio:F4})");
+        }
+
+        /// <summary>
         /// Que el objeto no suene antes de caer y suene una vez al caer. <paramref name="alCaer"/>
         /// es la fracción de su movimiento en la que toca el suelo.
         /// </summary>
@@ -1042,6 +1115,27 @@ namespace Game.UI.Tests
         }
 
         /// <summary>
+        /// El primer cuadro de la 2.2, antes de que nadie lea: la caja todavía en su sitio, sin rodar.
+        /// La captura L00 de <see cref="NarrativeScene_RF05_CapturaCadaParadaDeLaEscenaDelNivel2"/> espera
+        /// a que se asiente la línea y sale con la caja ya rodada.
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        [Category("VisualVerification")]
+        [Description("Verificar en la captura N2_Escena22_PrimerCuadro: la caja de la 2.2 está entera sobre el pasto, " +
+                     "sin haber rodado, por encima del cuadro de diálogo y con el mismo dibujo que la caja del bosque.")]
+        public async Task NarrativeScene_RF05_CapturaDelPrimerCuadroDeLaEscena22()
+        {
+            var (controller, _) = await OpenNarrative("N2_Escena22_ElPatron", LevelId.Wheel);
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            Capturar("N2_Escena22_PrimerCuadro");
+
+            Assert.That(controller.Props.Count, Is.GreaterThan(0), "la escena tiene objetos que ver en el primer cuadro");
+        }
+
+        /// <summary>
         /// Quien va de camino termina su camino aunque el texto avance —la familia cruza con la
         /// balsa, que sigue deslizándose sola— y al llegar hace lo que mantiene en la línea que se
         /// esté leyendo.
@@ -1071,6 +1165,82 @@ namespace Game.UI.Tests
             Assert.That(sigue, Is.False, "llegó");
             Assert.That(Vector2.Distance(rectLlegado.anchorMin, paso.Destination), Is.LessThan(0.0001f), "a su sitio");
             Assert.That(rig.Current, Is.EqualTo(ahora.During), "y hace lo de la línea que se está leyendo");
+        }
+
+        /// <summary>
+        /// Avanzar el texto mientras la balsa cruza no hace saltar a los viajeros (RNF-21, RF-44):
+        /// aunque se pulse «Continuar» en cada cuadro, la familia cruza pegada a la balsa, al llegar
+        /// baja caminando a la orilla y termina haciendo lo de la última línea. Antes la Niña y el
+        /// Niño saltaban al final del cruce en la línea 1, Papá en la 2, los cuatro en la 3 y, ya
+        /// bajando, otra vez en la 4.
+        /// </summary>
+        /// <remarks>
+        /// Sin el arreglo no falla al compilar, solo al correr: la marca <c>FinishesSteps</c> de los
+        /// cuatro viajeros del asset es lo que decide. Con las marcas a 0 equivale al código de antes
+        /// y falla en «pulsar no mueve a nadie de la balsa» (salto ≈ 0.15).
+        /// </remarks>
+        [Test]
+        [Category("Acceptance")]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RNF21_AvanzarElTextoDuranteElCruceNoHaceSaltarALosViajeros()
+        {
+            var (controller, _) = await OpenNarrative("N3_Escena33_Cruce", LevelId.River);
+            var secuencia = SequenceNamed(controller, "N3_Escena33_Cruce");
+            var (balsa, rectBalsa) = controller.Props.Single(p => p.Prop.Motion == PropMotion.Drift);
+            var lienzo = controller.IllustrationRect.rect.size; // tamaño nativo del sprite (IllustrationFraming.Apply)
+            Vector2 Balsa() => balsa.Position + rectBalsa.anchoredPosition / lienzo; // en fracciones de la ilustración
+            var viajeros = controller.Actors.Where(actor => actor.Walking).ToArray();
+            Assert.That(viajeros, Has.Length.EqualTo(4), "la familia sube a la balsa");
+            var ultima = secuencia.Lines.Length - 1;
+            var separacion = viajeros.Select(v => v.Rect.anchorMin - Balsa()).ToArray();
+            var finDelCruce = viajeros.Select(v => ActorTimeline.PositionAfter(v.Prop, 0)).ToArray();
+            var orilla = viajeros.Select(v => ActorTimeline.PositionAfter(v.Prop, ultima)).ToArray();
+            var llegada = balsa.Position.x + balsa.MotionDistance;
+
+            // Una línea por cuadro, lo más deprisa que se puede pulsar: todo el texto se lee con la
+            // balsa a medio río, así que a cada viajero le queda pendiente bajar a la orilla.
+            var salto = 0f;
+            for (var linea = 1; linea <= ultima; linea++)
+            {
+                await Awaitable.NextFrameAsync();
+                var antes = viajeros.Select(v => v.Rect.anchorMin).ToArray();
+                Click(controller.AdvanceButton);
+                salto = Mathf.Max(salto, viajeros.Select((v, i) => Vector2.Distance(v.Rect.anchorMin, antes[i])).Max());
+            }
+
+            Assert.That(Balsa().x, Is.LessThan(llegada - 0.01f), "el texto se leyó entero con la balsa a medio río");
+            var tope = Time.realtimeSinceStartup + balsa.MotionSeconds * 3f;
+            var desvio = 0f;
+            while (Balsa().x < llegada - 1e-4f && Time.realtimeSinceStartup < tope)
+            {
+                desvio = Mathf.Max(desvio, viajeros.Select((v, i) => Vector2.Distance(v.Rect.anchorMin - Balsa(), separacion[i])).Max());
+                await Awaitable.NextFrameAsync();
+            }
+
+            var bajaCaminando = new bool[viajeros.Length];
+            while (controller.Actors.Any(actor => actor.Walking) && Time.realtimeSinceStartup < tope)
+            {
+                for (var i = 0; i < viajeros.Length; i++)
+                {
+                    var ahora = viajeros[i].Rect.anchorMin;
+                    bajaCaminando[i] |= Vector2.Distance(ahora, finDelCruce[i]) > 0.001f && Vector2.Distance(ahora, orilla[i]) > 0.001f;
+                }
+
+                await Awaitable.NextFrameAsync();
+            }
+
+            Assert.That(salto, Is.LessThan(0.0001f), $"pulsar no mueve a nadie de la balsa (máximo {salto:F4})");
+            Assert.That(desvio, Is.LessThan(0.002f), $"la familia cruza pegada a la balsa (máximo {desvio:F4})");
+            var hablante = secuencia.Lines[ultima].Speaker;
+            for (var i = 0; i < viajeros.Length; i++)
+            {
+                var (prop, rect, rig, _) = viajeros[i];
+                Assert.That(bajaCaminando[i], Is.True, $"«{prop.Actor.name}» baja caminando a la orilla, no aparece en ella");
+                Assert.That(controller.Actors.Single(actor => actor.Prop == prop).Walking, Is.False, $"«{prop.Actor.name}» llegó");
+                Assert.That(Vector2.Distance(rect.anchorMin, orilla[i]), Is.LessThan(0.0001f), $"«{prop.Actor.name}» está en la orilla");
+                Assert.That(rig.Current, Is.EqualTo(ActorTimeline.Cue(prop, ultima, rig.Speaks(hablante)).During),
+                    $"«{prop.Actor.name}» hace lo de la última línea");
+            }
         }
 
         /// <summary>Guarda una captura si hay Game View. En batchmode no la hay y se sigue sin ella.</summary>
@@ -1117,7 +1287,7 @@ namespace Game.UI.Tests
             controller.Sequences.First(sequence => sequence.Id == id);
 
         private static async Task<(NarrativeSceneController controller, GameFlowRunner runner)>
-            OpenNarrative(string sequenceId, LevelId reached = LevelId.Fire)
+            OpenNarrative(string sequenceId, LevelId reached = LevelId.Fire, params PhaseId[] confirmed)
         {
             LimpiarObjetosPersistentes();
 
@@ -1137,6 +1307,13 @@ namespace Game.UI.Tests
             // Una secuencia que desemboca en su fase necesita el nivel desbloqueado: entrar a
             // jugar sigue pasando por RF-03 y no lo esquiva la narrativa.
             profile.Reach(reached);
+            // Lo ya aprobado es lo que hace «ya vista» una escena (INC-28, NarrativeVisitPolicy): sin
+            // fases confirmadas toda visita es la primera.
+            foreach (var phase in confirmed)
+            {
+                profile.ConfirmPhase(phase, default);
+            }
+
             runner.SelectProfile(profile);
             runner.StartNarrative(sequenceId);
             // Assert y no Assume: un arreglo roto tiene que fallar fuerte. Con `Assume` esta

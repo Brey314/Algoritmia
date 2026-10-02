@@ -1,5 +1,7 @@
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEditor;
 
@@ -98,7 +100,7 @@ namespace Game.Levels.River.Tests
             Assert.That(test.Message, Is.EqualTo("se hunde: mira lo marcado"), "en la prueba, el suyo");
 
             // Y en el asset real, ninguna frase nombra la pieza que va en el espacio (CP-06).
-            foreach (var message in new[] { Asset().PhaseRejectedMessage, Asset().TestFailedMessage })
+            foreach (var message in new[] { Asset().PhaseRejectedMessage, Asset().TestFailedMessage, Asset().UnfinishedTestMessage })
             {
                 Assert.That(message, Does.Not.Match("(?i)tronco|soga|amarre|tela|vela|m[aá]stil"),
                     $"«{message}» orienta sin resolver: no nombra la pieza correcta");
@@ -113,11 +115,28 @@ namespace Game.Levels.River.Tests
             {
                 asset.PlacedMessage, asset.TakenBackMessage, asset.MissedMessage, asset.OccupiedMessage,
                 asset.PhaseRejectedMessage, asset.BaseConfirmedMessage, asset.LashingConfirmedMessage,
-                asset.TestFailedMessage, asset.TestPassedMessage, asset.ConfirmLabel, asset.TestLabel
+                asset.TestFailedMessage, asset.UnfinishedTestMessage, asset.TestPassedMessage, asset.ConfirmLabel, asset.TestLabel
             };
 
             Assert.That(messages, Has.All.Not.Empty, "todas las frases están escritas");
             Assert.That(messages.Where(message => Regex.IsMatch(message, @"\d")), Is.Empty, "ninguna cifra (RF-17, CP-03)");
+        }
+
+        /// <summary>
+        /// El texto de «Probar balsa» antes de tiempo vive en el asset (CT-05, RNF-18). Un asset al
+        /// que le falta la línea carga el inicializador de C# y todas las demás pruebas pasan igual:
+        /// por eso se mira el archivo y no solo el valor cargado.
+        /// </summary>
+        [Test]
+        public void RaftAssemblyContent_RF42_ElAssetTraeElMensajeDeLaBalsaSinTerminar()
+        {
+            var asset = Asset();
+            var yaml = File.ReadAllText(AssetDatabase.GetAssetPath(asset));
+
+            Assert.That(yaml, Does.Contain("<UnfinishedTestMessage>k__BackingField:"), "el texto está en el asset y no en el valor de C#");
+            Assert.That(asset.UnfinishedTestMessage, Is.Not.Empty, "está escrito");
+            Assert.That(new[] { asset.UnfinishedTestMessage, asset.TestFailedMessage, asset.PhaseRejectedMessage },
+                Is.Unique, "y se distingue de los otros dos rechazos: una balsa sin terminar no es una pieza mal puesta");
         }
 
         [Test]
@@ -141,6 +160,23 @@ namespace Game.Levels.River.Tests
                 Assert.That(art?.Silhouette, Is.Not.Null, $"y de silueta");
                 Assert.That(art.Silhouette, Is.Not.SameAs(art.Placed), "dibujadas aparte");
             }
+        }
+
+        /// <summary>
+        /// La balsa que se arma es la que cruza (RF-44): el área del ensamblaje mide, en fracción del
+        /// alto de la ilustración, lo que la balsa de la 3.3. Abrir el plano (lectura B) cambia la
+        /// cámara, no la balsa.
+        /// </summary>
+        [Test]
+        public void RaftAssemblyContent_RF44_LaBalsaDelEnsamblajeMideLoQueLaDelCruce()
+        {
+            var cruce = AssetDatabase.FindAssets($"t:{nameof(NarrativeSequence)}")
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Select(AssetDatabase.LoadAssetAtPath<NarrativeSequence>)
+                .Single(sequence => sequence.name == "N3_Escena33_Cruce");
+            var balsa = cruce.Props.Single(prop => prop.Motion == PropMotion.Drift);
+
+            Assert.That(Asset().RaftSize, Is.EqualTo(balsa.Size).Within(0.01f));
         }
     }
 }

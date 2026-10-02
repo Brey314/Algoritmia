@@ -19,6 +19,12 @@ de paso, `Game.Core`, `Game.Scaffolding` y `Game.UI`. No rediscute `claudeDocs/S
 > notas fechadas del 25/09 que ya tenían; lo que dejó de ser cierto lleva una nota *(Vencido…)*.
 > Los personajes animados (`88fe0ee`, PR #86) no son de este carril: están en
 > [`Personajes-Resultados.md`](../Personajes/Personajes-Resultados.md).
+>
+> **01/10/2026:** el Anexo B entró con `44fd479` y la rama está fusionada en `main` desde el PR #87
+> (`995b26d`, 29/09). Lo que llegó al arte y al sonido hasta el 01/10 —el arte de los menús de
+> `37b3cb7` y las correcciones del acta D10: el rayo del N1, la carretilla amarrada en el taller, la
+> salpicadura renombrada y cableada, la escena final con ambiente y la 3.1 en 3/4— está en el
+> [Anexo C](#anexo-c--lo-que-cambió-después-del-25092026-01102026).
 
 | Campo | Dato |
 |---|---|
@@ -525,3 +531,220 @@ capturas de `AssemblyPanel_HU12_*` y `Workshop_*` se revisaron a ojo.
 - En el taller la cuerda es la pieza colgada sobre `e4`, no el dibujo de `e5`. Usar `e5` como
   etapa de la cuerda es un campo más en `AssemblyContent` y cambiar
   `WorkshopScene_…` (la prueba que hoy exige la cuerda colgada).
+
+*(01/10/2026: este anexo entró con `44fd479` (25/09/2026, 23:43), con la tarjeta sin rellenar, y llegó
+a `main` con el PR #87 (`995b26d`, 29/09). De «Queda abierto»: la cuerda del taller pasa a `e5`
+(INC-121) y la ampliación del ensamblaje desaparece con el plano a ×1,6 (INC-118); la balsa hundida
+se acepta como definitiva y la balsa de cuatro troncos se acepta como está, pendiente de la entrega de
+la colaboradora (acta D10, §5); la 3.1 deja de usar `prop_n3_troncos`. Ver Anexo C.)*
+
+---
+
+## Anexo C — lo que cambió después del 25/09/2026 (01/10/2026)
+
+Lo que siguió en el carril de arte y sonido hasta el 01/10/2026: un commit del propio carril, el
+arte que tocó el cierre de inconsistencias (`37b3cb7`) y las correcciones del acta D10 en la rama
+`feat/cierre-de-slices-y-oe3`, que entran en el commit de cierre con las tarjetas D10-1, D10-2 y
+D10-3. La verificación del arte por programa (doble indicador, contraste y destellos), la limpieza de
+halos, los renombres de nomenclatura y el crédito de los glifos de la pausa son la tarjeta D10-4 y no
+están aquí.
+
+### C.1 Qué cambió y dónde
+
+| Fecha | Commit | Qué cambió |
+|---|---|---|
+| 25/09 | `44fd479` | El Anexo B: props del N2 a 256 y 512 px, la balsa del N3 en 3/4 — C.2 |
+| 29/09 | `995b26d` (PR #87) | La rama del carril se fusiona en `main` — C.2 |
+| 30/09 | `37b3cb7` | Arte real en los menús, sin rótulos de trabajo (INC-82); estela de Algoritm (INC-52) y sombra de contacto (INC-109); humo y chispa del N1 (INC-47, INC-68) — C.3 |
+| 01/10 | sin hash, D10-1 y D10-2 | La chispa del N1 como un rayo (INC-119) y el humo hasta la corona; `e5` en el taller (INC-121) y la caja vacía sin uso (INC-120) — C.4 |
+| 01/10 | sin hash, D10-3 | La salpicadura renombrada y cableada (INC-123), la escena final con ambiente (INC-125) y la 3.1 con el tronco y el mástil en 3/4 (INC-118) — C.5 |
+
+### C.2 `44fd479` y la fusión
+
+El Anexo B dejó de estar sin commit: es `44fd479`, que lleva `(tarjeta: <id>)` sin rellenar, como
+`b38c00b`, `1d5ce58` y `d3a6cc9`. El PR #87 (`995b26d`, 29/09/2026) llevó a `main` los cinco commits
+del Anexo A y `44fd479`; desde el PR #88 (`1c7f4ab`, 30/09) la rama y `main` vuelven a coincidir.
+Vence el segundo punto de A.10.
+
+### C.3 `37b3cb7` (30/09/2026): el arte que tocó el cierre de inconsistencias
+
+- **Menús** (INC-82): inicio, créditos y menú de niveles usan arte real en lugar de los rótulos
+  «… · placeholder», y la tarjeta del Nivel 2 del menú usa una ilustración 16:9 sin la costura de las
+  panorámicas de 3840. Ningún texto de escena usa la fuente integrada del motor ni Fredoka (INC-79).
+  Pruebas: `Scenes_RNF01_NingunTextoDeEscenaEsUnRotuloDeTrabajo`,
+  `LevelSelect_RF03_CadaTarjetaMuestraUnaIlustracionSinCostura` y
+  `Scenes_CN04_NingunTextoUsaLaFuenteIntegradaDelMotor`.
+- **Personajes**: la estela de puntos de Algoritm y la sombra de contacto de la familia entran como
+  hijos de los prefabs, sin reconstruirlos; el detalle está en `Personajes-Resultados.md`, Anexo B.
+- **Nivel 1**: el montón humea al converger con `fx_n1_humo_nacer`, y la chispa es una cruz de dos
+  `Image` `#FFE9A8` dibujada por el motor, sin sprite (`Fase-5-6-Resultados.md`, Anexo, A.3).
+- **Créditos**: nombran a los autores y la obra de origen de la Familia Anonaky (INC-78), y siguen
+  dando por originales del proyecto los entornos, los objetos y la interfaz.
+- `Assets/Game/Art/Inventario.md` se puso al día en el mismo commit.
+
+### C.4 Nivel 1 y Nivel 2 (D10-1 y D10-2, 01/10/2026)
+
+- **La chispa del N1 es un solo rayo** (INC-119): un trazo `#FFE9A8` de 4 u, sin sprite, que el motor
+  dibuja con `RayoH` estirado sobre `Chispa`; `RayoV` se borra de la escena. Contradice las «cuatro
+  líneas radiales» de `Direccion_de_Arte.md` §12.2 y la fila de `FX/` de `Inventario.md`, que INC-119
+  corrige.
+- **El humo del N1** (`Humo`, los clips `fx_n1_humo_nacer` y `fx_n1_humo`) nace en el punto del golpe
+  y, al prender, sube a la corona de la llama encogiéndose a 0,6, el factor «detrás de cada llama» que
+  ya usa `Inventario.md`. Los 33 cuadros conservan su nombre de entrega.
+- **`prop_n2_carretilla_e5`** se usa ahora también en el taller (`AssemblyContent.TiedArt`, INC-121):
+  la carretilla amarrada es el mismo dibujo con que abre la 2.4. Cierra el último punto del Anexo B.
+- **`prop_n2_caja_suelo_vacía`** queda sin referencias: la 2.2 vuelve a pintar `prop_n2_caja_suelo`
+  (INC-120).
+
+### C.5 Nivel 3 (D10-3, 01/10/2026)
+
+- **La salpicadura suena** (INC-123). `Level 3/sfx_n3_salpicadura_undimiento.wav` se renombró desde el
+  motor, con ensayo en seco antes, a `sfx_n3_hundimiento.wav`: mismo GUID
+  (`be2ba44e5cfd935448ca5a20ff9f2cb8`), `.meta` idéntico y los mismos 306 434 bytes. Es la pieza
+  `sfx_n3_hundimiento` de §13 de la dirección de sonido, de 1,74 s. `RiverSounds.RaftSinking`, en
+  `N3_Sonidos`, la hace sonar al empezar todo hundimiento: el de «Probar balsa» antes de la última fase
+  y el de la última fase. «Listo» rechazado y la zona sin materiales siguen mudos (§2.1, CP-02).
+  Pruebas: `RiverSounds_RF42_LaBalsaQueSeHundeSuenaASalpicadura` (EditMode) y
+  `AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas` (PlayMode); con el nombre nuevo
+  siguen en verde `AudioAssets_CP02_NingunaPiezaSeLlamaDerrotaNiError` y
+  `AudioImport_RNF06_CadaFamiliaEntraConLosAjustesDeSuTabla`. Vencen la fila de §7, el punto de §10 y
+  A.7.
+- **La escena final suena** (INC-125): `N3_EscenaFinal` pasa a `amb_n2_bosque_dia` con
+  `amb_n1_cueva_fuego` en la segunda capa, el par de `N2_PuenteI`. Prueba:
+  `RiverSounds_RF44_LaEscenaFinalSuenaAlBosqueConLasFogatas`. Vence la fila de `N3_EscenaFinal` de A.4.
+- **El arte del N3 a la escala de las narrativas** (INC-118). La 3.1 pinta `prop_n3_tronco` en 3/4 y
+  `prop_n3_mastil` (0,07 del alto, girado −50°) en lugar de `prop_n3_troncos`, que queda sin uso. Con
+  el ensamblaje a ×1,6 la casilla de un tronco mide 256 px y el sprite se ve 1:1. `PlayFraming` de la
+  recolección pasa a (0.3572, 0.3572) ×1.4: vencen las filas de `RiverLevelConfig` de A.2.1 y de A.4.
+
+### C.6 Lo que queda abierto al 01/10/2026
+
+- **Cuatro commits sin tarjeta**: `b38c00b`, `1d5ce58`, `d3a6cc9` y `44fd479`.
+- **Memoria** (RNF-05): la prueba del Editor mide la sesión y no el nivel —2 127 MB dentro de la suite
+  del 01/10, 1 660 MB aislada con el Editor recién abierto—; la medida que vale es la del ejecutable.
+- **`prop_n2_caja_suelo_vacía`** sigue con tilde (§15.4), ahora sin uso; los renombres de nomenclatura
+  son de la tarjeta D10-4.
+- **Los cuadros del fuego y del humo** conservan su nombre de entrega, como fija §15.4.
+- **Sonido**: `sfx_n3_probar_balsa` (§13) sigue sin entregar; `amb_balsa_movimiento` no lleva el `n3`
+  de §4.1; `amb_n2_noche_intemperie` sigue en disco sin referenciar, y faltan el ambiente nocturno del
+  Nivel 2, la música y el sonido del diálogo (D07-2, que sigue, acta D10 §6). El silencio S3 de la
+  escena final pide código en `AudioManager`.
+- **`NarrativeScene_RNF01_LaLineaMasLargaCabeEnSuCuadroDeDialogo`** pasa con el Editor abierto a
+  1920 × 1080 (suite del 01/10); en batchmode es una de las pruebas de disposición que fallan por
+  entorno.
+- **Arte del N3**: `prop_n3_balsa_cruzando` tiene cuatro troncos y la mecánica arma cinco; se acepta
+  como está y queda pendiente de la entrega de la colaboradora del 07/10/2026.
+
+*(01/10/2026, después: `prop_n2_caja_suelo_vacía` ya se llama `prop_n2_caja_suelo_vacia` (INC-126);
+lo registra el Anexo D, con el resto de la tarjeta D10-4.)*
+
+---
+
+## Anexo D — la verificación del arte y el peso de los cuadros del fuego (01/10/2026)
+
+Apartado nuevo, con lo que C.1 dejó fuera por ser de la tarjeta D10-4 —los renombres, la limpieza de
+halos, el crédito de los glifos de Phosphor y la verificación del arte por programa— y la excepción
+de importación de los cuadros del fuego y del humo (INC-130), que pidió el ejecutable candidato.
+Todo está en la rama `feat/cierre-de-slices-y-oe3`, sin commit.
+
+### D.1 Qué cambió y dónde
+
+| Qué | Hallazgo | Archivos |
+|---|---|---|
+| Cinco nombres según la nomenclatura, y una prueba que la vigila — D.2 | INC-126 | los cinco PNG con su `.meta`, el comentario de `MazeLayout.cs` y `ArtImportTest.cs` |
+| El halo de croma de siete PNG de personajes | — | tres Algoritm en reposo y los cuatro retratos; detalle en `Personajes/Personajes-Resultados.md`, B.6 |
+| Los glifos del menú de pausa, acreditados — D.3 | INC-127 | `CreditsContent.asset`, `CreditsContent.cs` y `Art/UI/Common/LICENSE-Phosphor.txt` |
+| Diez PNG del Nivel 2 se quedan en `Multiple` — D.4 | INC-128 | ninguno: solo documentos |
+| Nombres, alfa, halo, doble indicador, contraste y destellos, medidos por programa — D.5 | — | `claudeDocs/tasks/OE4/evidencias/arte/` |
+| Los cuadros del fuego y del humo, a 1024 px — D.6 | INC-130 | `ArtImportRules.cs`, `ArtImportTest.cs` y los 67 `.meta` de `Props/Fire/Animations/` |
+
+### D.2 Nomenclatura (INC-126)
+
+- **Los cinco nombres** que el informe del 30/09 marcó entre 96 PNG se renombraron desde el motor
+  (`AssetDatabase.RenameAsset`, primero en simulación): `entorno_n1_apertura`, `entorno_n1_cueva_2x`,
+  `entorno_n1_cueva_cenital` y `entorno_n2_laberinto` pasan a `env_n1_apertura`, `env_n1_cueva_2x`,
+  `env_n1_cueva_cenital` y `env_n2_laberinto`, y `prop_n2_caja_suelo_vacía` a
+  `prop_n2_caja_suelo_vacia`. Los `.meta` nuevos son idénticos byte a byte a los de antes, GUID
+  incluido, y el contenido es el mismo objeto LFS.
+- **Nada se rompe.** Escenas y assets citan los entornos por GUID y con el `fileID` 21300000 de un
+  sprite `Single` (2, 5, 2 y 2 referencias); la caja vacía no la usa nadie (INC-120). La única cita
+  por nombre en el código era un comentario de `MazeLayout.cs`, ya corregido.
+- **La prueba.** `ArtImport_RNF23_LosNombresSiguenLaNomenclatura` (`Game.Architecture.Tests`) recorre
+  los PNG de `Art/` y exige prefijo, minúsculas y nada de tildes ni espacios. Salió en rojo con
+  exactamente esos cinco nombres. Su única excepción, comentada, son los nombres de entrega de los
+  cuadros —`fuego_*_nivel_1_####` y `humo_nivel_1_####`—, que referencia la curva del `.anim` (§15.4).
+- **En git** cada renombre aparece como un archivo borrado y otro nuevo: hay que añadir las rutas
+  viejas y las nuevas, de `.png` y de `.meta`, para que el commit lo registre como renombre.
+
+### D.3 Los glifos del menú de pausa, acreditados (INC-127)
+
+`ui_pausa`, `ui_reanudar` y `ui_reiniciar` son los iconos `pause`, `play` y `arrow-counter-clockwise`
+de Phosphor Icons rasterizados a 128 px, y los créditos daban por original toda la interfaz. El
+cuerpo de `CreditsContent.asset`, y el valor por defecto de `CreditsContent.cs`, terminan ahora en
+dos oraciones:
+
+> «Entornos, objetos e interfaz: originales del proyecto, salvo los iconos de pausa.»
+>
+> «Iconos de pausa: Phosphor Icons, licencia MIT.»
+
+Tienen 12 y 7 palabras, dentro del límite de 20 (`CreditsContent_RNF01_NingunaOracionSupera20Palabras`).
+Una primera redacción —«Iconos de la interfaz: Phosphor Icons…»— se rechazó en la revisión, porque
+atribuía a Phosphor todos los iconos y `ui_alerta`, `ui_lock`, `ui_papelera`, `ui_circulo` y
+`ui_flecha` son del proyecto, como los cuatro indicadores del informe docente. El aviso MIT
+(«Copyright (c) 2023 Phosphor Icons») está en `Art/UI/Common/LICENSE-Phosphor.txt` y viaja con el
+ejecutable en `Licencias/`, junto al de la OFL de las tipografías (`Slice 1/Fase-5-6-Resultados.md`,
+A.8). En `Credits.unity` el texto ocupa una línea más y solo alarga el desplazamiento: no tapa ni
+recorta nada. Siguen en verde `CreditsTests` (4/4, PlayMode) y las tres `Content_*`.
+
+### D.4 La excepción de `Multiple` (INC-128)
+
+`CLAUDE.md` y `Direccion_de_Arte.md` §15.2 piden cada imagen en `Single`, pasada desde el motor
+—con `Multiple`, `LoadAssetAtPath<Sprite>` devuelve nulo—, pero doce PNG del Nivel 2
+llegaron en `Multiple` con un solo sprite recortado (`<nombre>_0`): `env_enlace_n2`,
+`prop_n2_herramienta_a` a `_c`, `prop_n2_piedra_a` a `_d`, `prop_n2_planta_a` a `_c` y
+`prop_n2_tronco_a`. Diez los referencian escenas y assets por ese sub-sprite, y pasarlos a `Single`
+cambiaría su `fileID` a 21300000 y rompería esas referencias: se quedan como están, como excepción
+documentada. `prop_n2_piedra_c` y `_d` tampoco se migraron y no los usa nadie. Son los doce `.meta`
+«desviados» del informe de sprites.
+
+### D.5 La verificación por programa
+
+`claudeDocs/tasks/OE4/herramientas/arte_check.py` midió el arte entero; los informes, cada uno con una
+sección «Lectura» escrita a mano y con sus archivos de entrada al lado para repetirlos, están en
+`claudeDocs/tasks/OE4/evidencias/arte/`.
+
+| Informe | Resultado |
+|---|---|
+| `sprites.md` | 96 PNG: 0 nombres fuera de la nomenclatura, 0 sin transparencia, 0 halos intensos; 27 halos tenues, informativos (partes de los rigs); 12 `.meta` desviados, la excepción de D.4 |
+| `rnf19.md` | Doble indicador: 48 parejas, 45 bien y 3 marcadas: una caja de medida desfasada (B8) y dos diferencias de color pequeñas que lleva el icono (C8 y A9) |
+| `rnf19-w3.md` | Con las cajas vueltas a apuntar tras mover la balsa y sortear el laberinto: B8 y C8 bien; la pareja vacío/incorrecto de C8 (Δ 24,8) la distingue el icono |
+| `rnf20.md` · `rnf20-extra.md` · `rnf20-w3.md` | Contraste: 10/10 (≥ 6,2:1) y 18/18; el «!» de la alerta, 5,6:1 |
+| `rnf21.md` | Destellos: el fuego normal, el cenital y el humo, como mucho un destello por segundo |
+
+Ningún sprite falla en nombre, alfa o halo intenso.
+
+### D.6 Los cuadros del fuego y del humo, a 1024 px (INC-130)
+
+El primer build del ejecutable candidato pesó 866,7 MB frente al límite de 500 MB (RNF-06): los 67
+cuadros de `Props/Fire/Animations/` —33 de humo, 13 de fuego normal y 21 de fuego cenital— sumaban
+533 MB sin comprimir y a tamaño completo. Ya eran un dibujo por clave, sin duplicados, así que la
+convención de los `.anim` no daba más. `ArtImportRules` hace una única excepción: esa carpeta se
+importa con `maxTextureSize` 1024, **sin comprimir**, como todo `Art/`. El fuego normal queda en
+1024 × 1007, el humo en 595 × 1024 y el cenital, de 500 × 278, no cambia; el tamaño en pantalla
+tampoco, porque los píxeles por unidad se escalan con la textura. Los cuadros conservan su nombre de
+entrega. Pruebas: `ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir` (nueva, en
+rojo antes del cambio) y `ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`, que admite
+esa carpeta y solo esa. Los cuadros pasan a 145,7 MB y el paquete a 479,0 MB, sin pérdida visible en
+las capturas ampliadas. Detalle en `Slice 1/Fase-5-6-Resultados.md`, A.8.
+
+### D.7 Pruebas y lo que queda
+
+- **Cifras.** Tras D.2 a D.4, EditMode 429 = 428 + 1 omitida; la verificación final antes del build,
+  EditMode 433 = 432 + 1 omitida y PlayMode 364/364; tras D.6, EditMode 434 = 433 + 1 omitida
+  (`Slice 4/Slice-4-Resultados.md`, «Verificación final y paquete (01/10/2026)»).
+- **Las motas verdes opacas** en las puntas del pelo de los retratos y de Algoritm (B.6 de
+  `Personajes-Resultados.md`) piden limpieza a mano del carril de arte.
+- **El comentario de `ArtImportRules`** habla de «134 texturas»; son 67 PNG, y 134 es el número de
+  entradas del informe del build. Se corrige después de la pasada del OE4, porque cambiar el archivo
+  cambia la huella del ejecutable candidato.
+- **Siguen** los puntos de C.6, salvo el de la tilde.

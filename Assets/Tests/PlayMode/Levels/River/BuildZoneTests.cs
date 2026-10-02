@@ -86,6 +86,77 @@ namespace Game.Levels.River.Tests
             Assert.That(abajo, Is.EqualTo(config.DepthScaleAt(river.Walk.Position.y)).Within(1e-4f), "con la escala del asset para su altura real");
         }
 
+        /// <summary>
+        /// Lo que está más abajo se dibuja delante (DA83, INC-118, lectura B): la perspectiva no es
+        /// solo escala. Mamá pasa por delante de los materiales y de la familia que tiene más arriba
+        /// y por detrás de los que tiene más abajo. Antes los materiales se instanciaban al final
+        /// del entorno y tapaban a Mamá siempre, aun recogiéndolos desde abajo; a ×2,3 su cuerpo
+        /// cubre un material entero, así que el orden se nota. La sombra y el área de la balsa
+        /// quedan por encima de todo: al abrirse el ensamblaje oscurecen a Mamá y a la familia
+        /// como antes.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task RiverScene_DA83_LoQueEstaMasAbajoSeDibujaDelante()
+        {
+            var river = await RiverMovementTests.OpenRiver();
+            var config = river.Config;
+            var sombra = river.Assembly.Shade.rectTransform;
+            var areaDeLaBalsa = river.Assembly.RaftArea;
+
+            // Cada cosa que pisa la orilla con la altura a la que pisa: la familia en el ancla de sus
+            // pies, los materiales donde los pone el asset y Mamá donde está ahora.
+            (string Nombre, RectTransform Rect, float Y)[] Pisan() => river.Family
+                .Select(rig => (rig.name, (RectTransform)rig.transform, ((RectTransform)rig.transform).anchorMin.y))
+                .Concat(river.Spawned.Select(entry => (entry.Image.name, entry.Image.rectTransform, entry.Collectible.Position.y)))
+                .Append(("Mamá", river.Player, river.Walk.Position.y))
+                .ToArray();
+
+            void AssertLoDeAbajoVaDelante(string donde)
+            {
+                var pisan = Pisan();
+                foreach (var (nombre, rect, y) in pisan)
+                {
+                    foreach (var (otroNombre, otro, otraY) in pisan.Where(otra => otra.Y < y - 1e-4f))
+                    {
+                        Assert.That(otro.GetSiblingIndex(), Is.GreaterThan(rect.GetSiblingIndex()),
+                            $"{donde}: «{otroNombre}» (y {otraY:0.000}) está más abajo que «{nombre}» (y {y:0.000}) y se dibuja detrás");
+                    }
+                }
+
+                var ultimo = pisan.Max(pisa => pisa.Rect.GetSiblingIndex());
+                Assert.That(sombra.GetSiblingIndex(), Is.GreaterThan(ultimo), $"{donde}: la sombra del ensamblaje queda sobre todos");
+                Assert.That(areaDeLaBalsa.GetSiblingIndex(), Is.GreaterThan(ultimo), $"{donde}: y el área de la balsa también");
+            }
+
+            AssertLoDeAbajoVaDelante("al abrir");
+
+            // Cuadro a cuadro, como Update: sube hasta el borde de arriba y baja hasta el de abajo, y en
+            // cada paso el orden sigue a las alturas. Mamá cruza la de cada material y la de la familia.
+            var paso = config.MoveSpeed * 0.02f;
+            var subida = Mathf.CeilToInt((config.WalkableArea.yMax - config.StartPosition.y) / paso) + 2;
+            for (var cuadro = 0; cuadro < subida; cuadro++)
+            {
+                river.Tick(Vector2.up, 0.02f);
+                AssertLoDeAbajoVaDelante($"subiendo, cuadro {cuadro}");
+            }
+
+            Assert.That(river.Walk.Position.y, Is.EqualTo(config.WalkableArea.yMax).Within(1e-4f), "llegó al borde de arriba");
+            Assert.That(river.Player.GetSiblingIndex(), Is.LessThan(river.Spawned.Min(entry => entry.Image.rectTransform.GetSiblingIndex())),
+                "con los pies más arriba que cualquier material, Mamá queda detrás de todos");
+
+            var bajada = Mathf.CeilToInt((config.WalkableArea.yMax - config.WalkableArea.yMin) / paso) + 2;
+            for (var cuadro = 0; cuadro < bajada; cuadro++)
+            {
+                river.Tick(Vector2.down, 0.02f);
+                AssertLoDeAbajoVaDelante($"bajando, cuadro {cuadro}");
+            }
+
+            Assert.That(river.Walk.Position.y, Is.EqualTo(config.WalkableArea.yMin).Within(1e-4f), "llegó al borde de abajo");
+            Assert.That(river.Player.GetSiblingIndex(), Is.GreaterThan(river.Spawned.Max(entry => entry.Image.rectTransform.GetSiblingIndex())),
+                "con los pies más abajo que cualquier material, Mamá queda delante de todos");
+        }
+
         [Test]
         [Timeout(30000)]
         public async Task BuildZone_CU09_SinTodosLosMaterialesIndicaCualesFaltanSinCifras()

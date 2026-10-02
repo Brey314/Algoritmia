@@ -11,7 +11,7 @@ namespace Game.Levels.Wheel
     /// <remarks>
     /// **La matriz se traza sobre el entorno, no sobre la pantalla.** <see cref="BoardMin"/> y
     /// <see cref="BoardMax"/> son las esquinas **exteriores** del seto de
-    /// <c>entorno_n2_laberinto.png</c>, en fracciones de la ilustración, y la matriz de
+    /// <c>env_n2_laberinto.png</c>, en fracciones de la ilustración, y la matriz de
     /// <see cref="Columns"/> × <see cref="Rows"/> (16 × 11, casillas de ~8 % del alto) la cubre
     /// entera: **el anillo exterior son los arbustos** y ya está ocupado, salvo las casillas de
     /// salida y de refugio, que son los dos huecos del seto y sí se pisan. Las casillas cuelgan

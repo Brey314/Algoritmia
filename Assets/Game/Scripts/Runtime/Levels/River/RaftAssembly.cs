@@ -11,7 +11,8 @@ namespace Game.Levels.River
     /// </summary>
     /// <remarks>
     /// C# plano, sin escena: la escena traduce el soltar a <see cref="Place"/>, el sacar a
-    /// <see cref="TakeBack"/> y el botón a <see cref="Confirm"/>, y pinta lo que se devuelve.
+    /// <see cref="TakeBack"/> y los botones a <see cref="Confirm"/> y <see cref="Test"/>, y pinta
+    /// lo que se devuelve.
     ///
     /// **Solo se muestran los espacios de la fase activa y de las ya confirmadas**, nunca los de
     /// la siguiente: es lo que convierte el ensamblaje en descomposición y no en un rompecabezas
@@ -112,9 +113,10 @@ namespace Game.Levels.River
         }
 
         /// <summary>
-        /// «Listo» o «Probar balsa»: valida la fase activa. Si pasa, la consolida y abre la
-        /// siguiente; si no, señala los espacios incorrectos y devuelve **solo** esas piezas al
-        /// inventario (RF-42, RF-43). La fase sigue abierta para otro intento (CP-02).
+        /// «Listo» o, en la última fase, «Probar balsa»: valida la fase activa. Si pasa, la
+        /// consolida y abre la siguiente; si no, señala los espacios incorrectos y devuelve
+        /// **solo** esas piezas al inventario (RF-42, RF-43). La fase sigue abierta para otro
+        /// intento (CP-02).
         /// </summary>
         public ValidationResult Confirm()
         {
@@ -126,14 +128,7 @@ namespace Game.Levels.River
             var wrong = RaftValidator.WrongSlots(_content.SlotsOf(ActivePhase), PlacedIn);
             if (wrong.Count > 0)
             {
-                foreach (var slotId in wrong)
-                {
-                    TakeBack(slotId); // Vacío no devuelve nada; mal puesto sí. Lo correcto se queda.
-                }
-
-                Rejections++;
-                var message = ActivePhase == RaftPhase.MastAndSail ? _content.TestFailedMessage : _content.PhaseRejectedMessage;
-                return new ValidationResult(false, wrong, message);
+                return Reject(wrong, ActivePhase == RaftPhase.MastAndSail ? _content.TestFailedMessage : _content.PhaseRejectedMessage);
             }
 
             _confirmed.Add(ActivePhase);
@@ -149,6 +144,50 @@ namespace Game.Levels.River
                 RaftPhase.Lashing => _content.LashingConfirmedMessage,
                 _ => _content.TestPassedMessage
             });
+        }
+
+        /// <summary>
+        /// «Probar balsa» antes de la última fase (RF-42, decisión D-j de Santiago del 30/09/2026):
+        /// se valida la fase abierta y la balsa, a medio armar, se hunde. Lo mal puesto vuelve al
+        /// inventario y lo bien puesto se queda (RF-43); cuenta como un rechazo más (RF-45) y
+        /// **nunca** consolida la fase ni abre la siguiente (RF-40). En la última fase probar y
+        /// confirmar son lo mismo.
+        /// </summary>
+        /// <remarks>
+        /// «Por qué no» pedagógico: una prueba anticipada no puede aprobar nada. Si consolidara la
+        /// fase, el botón sería un atajo de ensayo y error que se salta la descomposición por fases
+        /// (guion §1.8.3). El mensaje dice qué revisar o que falta armar, nunca qué pieza va (CP-06),
+        /// y no hay límite de pruebas (CP-02). Los espacios vacíos **sí** están en
+        /// <see cref="ValidationResult.WrongSlotIds"/> —es el contrato del resultado y lo que cuenta
+        /// el indicador de RF-45—, pero el panel solo señala los que tenían pieza: una balsa a medio
+        /// armar está incompleta por construcción, y marcar sus vacíos sería un mapa de dónde va
+        /// cada pieza.
+        /// </remarks>
+        public ValidationResult Test()
+        {
+            if (ActivePhase == RaftPhase.MastAndSail)
+            {
+                return Confirm();
+            }
+
+            var wrong = RaftValidator.WrongSlots(_content.SlotsOf(ActivePhase), PlacedIn);
+            var misplaced = wrong.Any(slotId => PlacedIn(slotId).HasValue);
+            return Reject(wrong, misplaced ? _content.TestFailedMessage : _content.UnfinishedTestMessage);
+        }
+
+        /// <summary>
+        /// Devuelve al inventario lo mal puesto —un espacio vacío no devuelve nada— y deja lo
+        /// correcto (RF-43). La fase sigue abierta para otro intento (CP-02).
+        /// </summary>
+        private ValidationResult Reject(IReadOnlyList<string> wrong, string message)
+        {
+            foreach (var slotId in wrong)
+            {
+                TakeBack(slotId); // Vacío no devuelve nada; mal puesto sí. Lo correcto se queda.
+            }
+
+            Rejections++;
+            return new ValidationResult(false, wrong, message);
         }
 
         /// <summary>

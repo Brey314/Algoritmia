@@ -17,23 +17,23 @@ MonoBehaviour:
   - Encontrar sogas
   - Ensamblar la balsa
   - "Colocar el m\xE1stil y la vela"
-  <ProximityRadius>k__BackingField: 0.04
+  <ProximityRadius>k__BackingField: 0.06
   <MoveSpeed>k__BackingField: 0.25
-  <StartPosition>k__BackingField: {x: 0.15, y: 0.15}
+  <StartPosition>k__BackingField: {x: 0.21, y: 0.19}
   <WalkableArea>k__BackingField:
     serializedVersion: 2
-    x: 0.13
+    x: 0.18
     y: 0.05
-    width: 0.23
-    height: 0.26
+    width: 0.22
+    height: 0.29
   <GroundTop>k__BackingField: 0.36
   <DepthScaleNear>k__BackingField: 1
   <DepthScaleFar>k__BackingField: 0.55
-  <BuildZonePosition>k__BackingField: {x: 0.35, y: 0.21}
-  <BuildZoneRadius>k__BackingField: 0.04
+  <BuildZonePosition>k__BackingField: {x: 0.395, y: 0.22}
+  <BuildZoneRadius>k__BackingField: 0.06
   <PlayFraming>k__BackingField:
-    <Focus>k__BackingField: {x: 0.2632, y: 0.2632}
-    <Zoom>k__BackingField: 1.9
+    <Focus>k__BackingField: {x: 0.3572, y: 0.3572}
+    <Zoom>k__BackingField: 1.4
   <CollectedFormat>k__BackingField: "{0}: al inventario. Mira la lista: \xBFqu\xE9
     falta?"
   <AllCollectedMessage>k__BackingField: Ya tienes todos los materiales. Ve a la zona
@@ -47,39 +47,39 @@ MonoBehaviour:
     <Kind>k__BackingField: 0
     <DisplayName>k__BackingField: Troncos
     <Art>k__BackingField: {fileID: 21300000, guid: c8bd1a75a5468034a8c323fd0de0756f, type: 3}
-    <Position>k__BackingField: {x: 0.28, y: 0.26}
+    <Position>k__BackingField: {x: 0.18, y: 0.125}
   - <Id>k__BackingField: tronco_2
     <Kind>k__BackingField: 0
     <DisplayName>k__BackingField: Troncos
     <Art>k__BackingField: {fileID: 21300000, guid: c8bd1a75a5468034a8c323fd0de0756f, type: 3}
-    <Position>k__BackingField: {x: 0.15, y: 0.07}
+    <Position>k__BackingField: {x: 0.27, y: 0.225}
   - <Id>k__BackingField: tronco_3
     <Kind>k__BackingField: 0
     <DisplayName>k__BackingField: Troncos
     <Art>k__BackingField: {fileID: 21300000, guid: c8bd1a75a5468034a8c323fd0de0756f, type: 3}
-    <Position>k__BackingField: {x: 0.22, y: 0.3}
+    <Position>k__BackingField: {x: 0.32, y: 0.33}
   - <Id>k__BackingField: tronco_4
     <Kind>k__BackingField: 0
     <DisplayName>k__BackingField: Troncos
     <Art>k__BackingField: {fileID: 21300000, guid: c8bd1a75a5468034a8c323fd0de0756f, type: 3}
-    <Position>k__BackingField: {x: 0.22, y: 0.07}
+    <Position>k__BackingField: {x: 0.255, y: 0.335}
   - <Id>k__BackingField: tronco_5
     <Kind>k__BackingField: 0
     <DisplayName>k__BackingField: Troncos
     <Art>k__BackingField: {fileID: 21300000, guid: c8bd1a75a5468034a8c323fd0de0756f, type: 3}
-    <Position>k__BackingField: {x: 0.15, y: 0.3}
+    <Position>k__BackingField: {x: 0.38, y: 0.075}
   - <Id>k__BackingField: sogas
     <Kind>k__BackingField: 1
     <DisplayName>k__BackingField: Sogas
     <Art>k__BackingField: {fileID: 21300000, guid: 672d31955189c3b419df9af728e5d57c, type: 3}
-    <Position>k__BackingField: {x: 0.27, y: 0.17}
+    <Position>k__BackingField: {x: 0.245, y: 0.06}
   - <Id>k__BackingField: tela
     <Kind>k__BackingField: 2
     <DisplayName>k__BackingField: Tela
     <Art>k__BackingField: {fileID: 21300000, guid: d66e8db05c7949f40b9a3727ffe7a848, type: 3}
-    <Position>k__BackingField: {x: 0.22, y: 0.23}
+    <Position>k__BackingField: {x: 0.31, y: 0.11}
   - <Id>k__BackingField: mastil
     <Kind>k__BackingField: 3
     <DisplayName>k__BackingField: "M\xE1stil"
     <Art>k__BackingField: {fileID: 21300000, guid: b0907bcac12e6b347b4fdd4dc8f86c26, type: 3}
-    <Position>k__BackingField: {x: 0.15, y: 0.23}
+    <Position>k__BackingField: {x: 0.18, y: 0.275}

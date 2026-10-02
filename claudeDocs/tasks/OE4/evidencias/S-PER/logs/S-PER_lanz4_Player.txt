@@ -1,0 +1,49 @@
+Mono path[0] = 'C:/Dev/Algoritmia/Build/Algoritmia/Algoritmia_Data/Managed'
+Mono config path = 'C:/Dev/Algoritmia/Build/Algoritmia/MonoBleedingEdge/etc'
+CodeReloadManager initialized
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+[Subsystems] Discovering subsystems at path C:/Dev/Algoritmia/Build/Algoritmia/Algoritmia_Data/UnitySubsystems
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 5070 Ti
+[D3D12 Device Filter] Driver Version: 32.0.16.1692
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 15995 MB
+[D3D12 Device Filter] Processor Count: 12
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 5070 Ti (ID=0x2c05)
+    Vendor:          NVIDIA
+    VRAM:            15995 MB
+    App VRAM Budget: 15227 MB
+    Driver:          32.0.16.1692
+Begin MonoManager ReloadAssembly
+- Finished resetting the current domain, in  0.024 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+Using Windows.Gaming.Input
+UnloadTime: 0.734400 ms
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.277100 ms
+RNF-04: «MainMenu» cargó en 0.090 s
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 3638.
+Total: 1.062100 ms (FindLiveObjects: 0.133500 ms CreateObjectMapping: 0.075600 ms MarkObjects: 0.843700 ms  DeleteObjects: 0.007000 ms)
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+CodeReloadManager destroyed
+GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+[d3d12] Unreleased non-evictable resource 000001C953B3ADD0 (size 4096 B, lastUsedFence 9)

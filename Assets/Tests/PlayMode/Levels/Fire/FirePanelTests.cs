@@ -32,6 +32,13 @@ namespace Game.Levels.Fire.Tests
         private const int EffectiveSpacing = 5;
         private const int CloseSpacing = 10;
 
+        // N1_Config.BurnExtent: hasta dónde llega el quemado cuando termina el encendido.
+        private const float BurnExtent = 0.5f;
+
+        // La corona de la llama cenital, en fracción de su alto sobre el centro: la punta de los
+        // cuadros del bucle (fuego_cenital_nivel_1_0095…0168) cae entre 0,22 y 0,32.
+        private const float FlameCrownFraction = 0.25f;
+
         [TearDown]
         public void DestruirLosObjetosPersistentes()
         {
@@ -117,6 +124,24 @@ namespace Game.Levels.Fire.Tests
             Assert.That(controller.Log.Entries, Is.Empty, "y no se regaña: no pasa nada (CP-02)");
         }
 
+        // Guarda de D10-1: la tablilla sube sobre el suelo por código al encender, no en la escena.
+        // Reuniendo, una pieza soltada bajo la tablilla tiene que seguir a la vista y al alcance del
+        // clic —el texto de la tablilla es raycastTarget—, o el nivel no se podría terminar (RNF-03).
+        [Test]
+        [Timeout(20000)]
+        public async Task FirePanel_RNF03_ReuniendoUnaPiezaBajoLaTablillaQuedaEncimaYAlAlcanceDelClic()
+        {
+            var controller = await LoadPanel();
+            var suelo = (RectTransform)controller.FireSpot.parent;
+            var piedra = controller.Pieces.First(piece => piece.Kind == PieceKind.Silex);
+            piedra.MoveTo(EnElSuelo(RectNamed("Mensaje"), suelo).center);
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(PrimeroBajoElPuntero((RectTransform)piedra.transform), Is.True,
+                "reuniendo, la tablilla no tapa la pieza ni le quita el clic (RNF-03)");
+        }
+
         [Test]
         [Timeout(20000)]
         [Category("Acceptance")]
@@ -151,6 +176,33 @@ namespace Game.Levels.Fire.Tests
             Assert.That((silex + pedernal) / 2f, Is.EqualTo(spot), "centradas en el punto del fuego");
             Assert.That(LogLines().text, Is.EqualTo(controller.Log.Latest).And.Not.Match(@"\d"),
                 "la tablilla pasa a la instrucción de golpear, sin cifras (CP-06)");
+        }
+
+        // Pedido de Santiago, 30/09/2026 (D10-1): al encender se veían las piedras bajo las hojas
+        // mientras duraba el acercamiento. La hoja que se arrastra al final queda la última del
+        // suelo (DraggablePiece.OnBeginDrag), que es el peor caso para el orden de dibujo.
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FirePanel_RF14_DuranteElAcercamientoLasPiedrasNuncaQuedanBajoLasHojas()
+        {
+            var controller = await LoadPanel();
+            var hoja = controller.Pieces.First(piece => piece.Kind == PieceKind.Leaf);
+            var origen = RectTransformUtility.WorldToScreenPoint(null, hoja.transform.position);
+            ExecuteEvents.Execute(hoja.gameObject, Pointer(origen, origen), ExecuteEvents.beginDragHandler);
+            ExecuteEvents.Execute(hoja.gameObject, Pointer(origen, origen), ExecuteEvents.endDragHandler);
+            JuntarLasPiezas(controller);
+            var piedras = controller.Pieces.Where(piece => piece.Kind != PieceKind.Leaf).ToArray();
+
+            controller.TryFinishGathering();
+            Assume.That(controller.IsTransitioning, Is.True, "empezó el acercamiento");
+            var cuadros = await ObservarMientras(() => controller.IsTransitioning,
+                cuadro => Assert.That(piedras.Select(piedra => piedra.transform.GetSiblingIndex()),
+                    Has.All.GreaterThan(LoMasAltoDeLasHojas(controller)),
+                    $"cuadro {cuadro}: las piedras se dibujan después del montón y de toda hoja visible"),
+                5f);
+
+            Assert.That(cuadros, Is.GreaterThan(1), "hubo acercamiento que mirar");
         }
 
         // --- encender (Fases 5 y 6) --------------------------------------------------------
@@ -224,6 +276,28 @@ namespace Game.Levels.Fire.Tests
             await Awaitable.NextFrameAsync();
             Assert.That(ScreenX(slider.handleRect), Is.EqualTo(ScreenX(golpear)).Within(2f), "la muesca diez queda sobre la mitad de «Golpear»");
             Assert.That(silex.Position, Is.EqualTo(pedernal.Position), "y deja una piedra encima de la otra");
+        }
+
+        // D10-1: PlaceStones solo mueve las piedras; su orden de dibujo lo fijó RaiseStones al pasar al
+        // encendido. Si cada cambio del deslizante las subiera al final, taparían la chispa del golpe.
+        [Test]
+        [Timeout(20000)]
+        public async Task FirePanel_RF15_MoverLaCercaniaNoSubeLasPiedrasSobreLaChispa()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+            Click(controller.StrikeButton);
+            Assume.That(controller.Spark.gameObject.activeSelf, Is.True, "el golpe efectivo lanzó la chispa");
+
+            var piedras = controller.Pieces.Where(piece => piece.Kind != PieceKind.Leaf);
+
+            controller.SpacingSlider.value = FarSpacing;
+
+            Assert.That(piedras.Select(piedra => piedra.transform.GetSiblingIndex()),
+                Has.All.LessThan(controller.Spark.GetSiblingIndex()),
+                "al mover la cercanía las piedras solo se mueven: siguen debajo de la chispa");
         }
 
         [Test]
@@ -332,6 +406,30 @@ namespace Game.Levels.Fire.Tests
             }
         }
 
+        // Pedido de Santiago, 30/09/2026 (D10-1): el humo de la mecánica era una columna de 300 px
+        // que nacía bajo el montón; ahora es un hilo que sale del punto del golpe, entre las piedras.
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FirePanel_RF19_ElHiloDeHumoNaceEnElPuntoDelGolpeYNoEsMasAltoQueMedioMonton()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+            ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes);
+            await Awaitable.NextFrameAsync();
+            Assume.That(controller.PileSmoke.gameObject.activeSelf, Is.True, "el montón humea al converger");
+            var suelo = (RectTransform)controller.FireSpot.parent;
+
+            var humo = EnElSuelo((RectTransform)controller.PileSmoke.transform, suelo);
+
+            Assert.That(Vector2.Distance(new Vector2(humo.center.x, humo.yMin), controller.FireSpot.anchoredPosition),
+                Is.LessThan(1f), "la base del hilo está en el punto del golpe");
+            Assert.That(humo.height, Is.LessThanOrEqualTo(controller.LeafPile.rectTransform.rect.height / 2f + 0.01f),
+                "y no es más alto que medio montón");
+        }
+
         [Test]
         [Timeout(20000)]
         [Category("Acceptance")]
@@ -359,12 +457,137 @@ namespace Game.Levels.Fire.Tests
             controller.ForceSlider.value = HardForce;
             Click(controller.StrikeButton);
             Assert.That(controller.Spark.gameObject.activeSelf, Is.True, "golpe de más: la chispa salta lejos y se apaga en el aire");
-            Assert.That(controller.Spark.anchoredPosition, Is.Not.EqualTo(fireSpot), "fuera del montón");
+            Assert.That(controller.Spark.anchoredPosition, Is.EqualTo(fireSpot),
+                "el rayo sale del punto del golpe; dónde cae lo prueba " +
+                "…ConFuerzaDeMasElRayoPasaDeLasHojasYSeApagaEnElAire");
 
             controller.ForceSlider.value = EffectiveForce;
             Click(controller.StrikeButton);
             Assert.That(controller.Spark.gameObject.activeSelf, Is.True, "golpe efectivo: la chispa cae en el montón");
-            Assert.That(controller.Spark.anchoredPosition, Is.EqualTo(fireSpot), "sobre el punto del fuego");
+            Assert.That(controller.Spark.anchoredPosition, Is.EqualTo(fireSpot), "el rayo sale del punto del golpe");
+        }
+
+        // Pedido de Santiago, 30/09/2026 (D10-1): la chispa era una cruz fija sobre el montón; ahora
+        // es un único rayo que sale del punto del golpe, entre las piedras, y cae en las hojas.
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FirePanel_RF16_LaChispaEsUnRayoDelCentroQueCaeEnLasHojasEnUnaDireccionAlAzar()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            controller.SparkRandom = new System.Random(7);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+            var fireSpot = controller.FireSpot.anchoredPosition;
+            var piedras = controller.Pieces.Where(piece => piece.Kind != PieceKind.Leaf).ToArray();
+            var arte = ArteDelMonton(controller);
+            try
+            {
+                var rayos = GolpearYMirarElRayo(controller, 12);
+
+                Assert.That(rayos, Has.All.Matches<(Vector2 Origen, Vector2 Caida)>(rayo => rayo.Origen == fireSpot),
+                    "cada rayo sale del punto del golpe");
+                Assert.That(rayos, Has.All.Matches<(Vector2 Origen, Vector2 Caida)>(
+                        rayo => HayHoja(arte, controller.LeafPile, rayo.Caida)),
+                    "y cae sobre hojas dibujadas del montón");
+                Assert.That(rayos, Has.All.Matches<(Vector2 Origen, Vector2 Caida)>(
+                        rayo => piedras.All(piedra => Vector2.Distance(rayo.Caida, piedra.Position) > piedra.Width / 2f)),
+                    "fuera de las piedras");
+                Assert.That(rayos.Select(rayo => rayo.Caida).Distinct().Count(), Is.EqualTo(rayos.Count),
+                    "en una dirección distinta cada vez: al azar");
+            }
+            finally
+            {
+                Object.Destroy(arte);
+            }
+        }
+
+        // «Por qué no» otro color ni otro trazo para el golpe de más: es el mismo rayo, más largo y
+        // hacia otro lado, que es lo que cuenta el guion; un rojo o un destello lo harían marca de
+        // error (CP-02, Dirección de arte §12.3).
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FirePanel_RF16_ConFuerzaDeMasElRayoPasaDeLasHojasYSeApagaEnElAire()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            controller.SparkRandom = new System.Random(11);
+            controller.ForceSlider.value = HardForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+            var fireSpot = controller.FireSpot.anchoredPosition;
+            var tablilla = EnElSuelo(RectNamed("Mensaje"), (RectTransform)controller.FireSpot.parent);
+            var medioMonton = controller.LeafPile.rectTransform.rect.width / 2f;
+            var arte = ArteDelMonton(controller);
+            try
+            {
+                var rayos = GolpearYMirarElRayo(controller, 12);
+
+                Assert.That(rayos, Has.All.Matches<(Vector2 Origen, Vector2 Caida)>(rayo => rayo.Origen == fireSpot),
+                    "cada rayo sale del punto del golpe");
+                Assert.That(rayos, Has.All.Matches<(Vector2 Origen, Vector2 Caida)>(
+                        rayo => Vector2.Distance(rayo.Caida, fireSpot) > medioMonton),
+                    "y pasa del montón");
+                Assert.That(rayos, Has.All.Matches<(Vector2 Origen, Vector2 Caida)>(
+                        rayo => !HayHoja(arte, controller.LeafPile, rayo.Caida)),
+                    "sin hojas debajo: se apaga en el aire");
+                Assert.That(rayos, Has.All.Matches<(Vector2 Origen, Vector2 Caida)>(
+                        rayo => rayo.Caida.y + controller.Spark.rect.height / 2f < tablilla.yMin),
+                    "y antes de llegar a la tablilla (RNF-03)");
+            }
+            finally
+            {
+                Object.Destroy(arte);
+            }
+
+            Assert.That(await WaitUntilAsync(() => !controller.Spark.gameObject.activeSelf, 2f), Is.True,
+                "al terminar el barrido, el rayo se apaga");
+        }
+
+        // RNF-21: un único barrido en una sola dirección. La cabeza avanza hasta la caída y la cola la
+        // sigue; nada oscila ni cambia de escala o de opacidad.
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FirePanel_RNF21_ElRayoDeLaChispaHaceUnSoloBarridoSinVolver()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            controller.SparkRandom = new System.Random(3);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+            ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes); // el tercero es el barrido más largo, de 0,6 s
+            var spark = controller.Spark;
+            var rayo = spark.GetComponentInChildren<Image>(true);
+            var origen = controller.FireSpot.anchoredPosition;
+            var largo = Vector2.Distance(controller.SparkLanding, origen);
+            Assert.That(spark.pivot, Is.EqualTo(new Vector2(0f, 0.5f)), "el pivote del rayo está en su cola: de ahí sale y gira");
+            var colaAnterior = 0f;
+            var cabezaAnterior = 0f;
+            var cabezaMaxima = 0f;
+
+            var cuadros = await ObservarMientras(() => spark.gameObject.activeSelf,
+                cuadro =>
+                {
+                    var cola = Vector2.Distance(spark.anchoredPosition, origen);
+                    var cabeza = Vector2.Distance(CabezaDelRayo(spark), origen);
+                    Assert.That(cola, Is.GreaterThanOrEqualTo(colaAnterior - 0.001f),
+                        $"cuadro {cuadro}: la cola solo se aleja del punto del fuego");
+                    Assert.That(cabeza, Is.GreaterThanOrEqualTo(cabezaAnterior - 0.001f),
+                        $"cuadro {cuadro}: la cabeza solo se aleja del punto del fuego");
+                    Assert.That(cabeza, Is.LessThanOrEqualTo(largo + 0.001f),
+                        $"cuadro {cuadro}: la cabeza llega a la caída y no la pasa");
+                    Assert.That(spark.localScale, Is.EqualTo(Vector3.one), $"cuadro {cuadro}: la escala del rayo no cambia (RNF-21)");
+                    Assert.That(rayo.color.a, Is.EqualTo(1f), $"cuadro {cuadro}: la opacidad del rayo no cambia (RNF-21)");
+                    colaAnterior = cola;
+                    cabezaAnterior = cabeza;
+                    cabezaMaxima = Mathf.Max(cabezaMaxima, cabeza);
+                },
+                2f);
+
+            Assert.That(cuadros, Is.GreaterThan(2), "el barrido dura varios cuadros");
+            Assert.That(cabezaMaxima, Is.EqualTo(largo).Within(0.01f), "la cabeza llega a la caída");
         }
 
         [Test]
@@ -385,16 +608,13 @@ namespace Game.Levels.Fire.Tests
             Assert.That(segundo, Is.GreaterThan(primero), "el segundo golpe efectivo brilla más tiempo que el primero");
         }
 
-        /// <summary>Espera a que la chispa se apague, comprobando en cada cuadro que su escala nunca sube (RNF-21), y devuelve cuánto tardó.</summary>
+        /// <summary>Espera a que la chispa se apague y devuelve cuánto tardó, en tiempo real.</summary>
         private static async Task<float> SparkDurationAsync(RectTransform spark, float timeoutSeconds)
         {
             Assume.That(spark.gameObject.activeSelf, Is.True, "la chispa debía estar visible al empezar a medir");
             var start = Time.realtimeSinceStartup;
-            var lastScale = spark.localScale.x;
             while (spark.gameObject.activeSelf)
             {
-                Assert.That(spark.localScale.x, Is.LessThanOrEqualTo(lastScale + 0.0001f), "la escala nunca sube mientras la chispa se apaga (RNF-21)");
-                lastScale = spark.localScale.x;
                 Assert.That(Time.realtimeSinceStartup - start, Is.LessThan(timeoutSeconds), "la chispa no se apagó a tiempo");
                 await Awaitable.NextFrameAsync();
             }
@@ -645,6 +865,68 @@ namespace Game.Levels.Fire.Tests
 
         [Test]
         [Timeout(20000)]
+        [Category("VisualVerification")]
+        [Description("Tras ejecutar esta prueba, revisar la captura: el rayo de la chispa es un trazo recto y " +
+                     "plano (#FFE9A8) que sale del centro, entre las piedras, y entra en las hojas del montón; " +
+                     "sin halo, destello ni deformación, y con contraste suficiente contra las hojas (RNF-20).")]
+        public async Task FirePanel_RF16_ElRayoDeLaChispaSeVeSobreElMonton()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            controller.SparkRandom = new System.Random(3);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+            ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes);
+            var origen = controller.FireSpot.anchoredPosition;
+            var largo = Vector2.Distance(controller.SparkLanding, origen);
+
+            Assume.That(await WaitUntilAsync(
+                    () => Vector2.Distance(CabezaDelRayo(controller.Spark), origen) >= largo - 0.5f, 2f),
+                Is.True, "la cabeza del rayo ya está en la caída");
+
+            CaptureScreenshot("FirePanel_RF16_RayoDeLaChispa");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("VisualVerification")]
+        [Description("Tras ejecutar esta prueba, revisar la captura: el humo del montón es un hilo fino que " +
+                     "nace en el centro, entre las piedras, y sube sobre las hojas; las piedras se ven encima " +
+                     "del humo y este encima del montón; la tablilla se lee entera.")]
+        public async Task FirePanel_RF19_ElHiloDeHumoSeVeFinoYNaceEnElCentroDelMonton()
+        {
+            var controller = await LoadPanel();
+            await Reunir(controller);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+            ClickTimes(controller.StrikeButton, MinimumEffectiveStrikes);
+
+            Assume.That(await WaitUntilAsync(
+                    () => controller.PileSmoke.GetCurrentAnimatorStateInfo(0).normalizedTime >= 0.6f, 4f),
+                Is.True, "el humo ya subió del hilo");
+
+            CaptureScreenshot("FirePanel_RF19_HiloDeHumo");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("VisualVerification")]
+        [Description("Tras ejecutar esta prueba, revisar la captura: el humo asoma por la punta de la llama, " +
+                     "detrás de ella, y no por debajo de su base; la tablilla se ve entera y legible por encima " +
+                     "del humo (contraste texto/tablilla, tipografía sin cajas vacías); el humo no aparece " +
+                     "cortado de forma extraña en la franja superior.")]
+        public async Task FireLevel_RF20_AlTerminarDePrenderElHumoAsomaPorLaCoronaDetrasDeLaLlama()
+        {
+            var controller = await LoadPanel();
+            await ConvergeAndBlow(controller);
+            await EsperarQueElFuegoTerminePrender(controller);
+            await Awaitable.NextFrameAsync();
+
+            CaptureScreenshot("FireLevel_RF20_HumoEnLaCorona");
+        }
+
+        [Test]
+        [Timeout(20000)]
         [Category("Acceptance")]
         public async Task FirePanel_CT06_LasPiezasSeArrastranConClicSostenidoYNoSalenDelSuelo()
         {
@@ -748,6 +1030,190 @@ namespace Game.Levels.Fire.Tests
                 "encima del montón y de las piedras");
             Assert.That(controller.LeafPile.gameObject.activeSelf, Is.True, "sobre el montón, que sigue ahí");
             Assert.That(controller.Burn.Extent, Is.GreaterThan(0f), "y las hojas empiezan a quemarse desde el centro");
+        }
+
+        // Hallazgo de la especificación de D10-1: «Soplar» admitía un segundo clic durante los 3,5 s
+        // del encendido; la segunda vuelta empezaba en cero y el quemado retrocedía de golpe, lo que
+        // choca con RNF-21 (un único barrido, sin volver). Se prueba por el clic del estudiante y
+        // llamando a Blow(): la guarda es del controlador, no solo del estado del botón.
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RNF21_SoplarDosVecesNoReiniciaElEncendido()
+        {
+            var controller = await LoadPanel();
+            await ConvergeAndBlow(controller);
+            await EsperarQueElFuegoEmpieceAPrender(controller);
+            var anterior = controller.Burn.Extent;
+
+            Click(controller.BlowButton);
+            controller.Blow();
+
+            await ObservarMientras(() => controller.Burn.Extent < BurnExtent - 0.0001f,
+                cuadro =>
+                {
+                    Assert.That(controller.Burn.Extent, Is.GreaterThanOrEqualTo(anterior - 0.0001f),
+                        $"cuadro {cuadro}: el quemado nunca retrocede (RNF-21)");
+                    anterior = controller.Burn.Extent;
+                },
+                8f);
+        }
+
+        // La misma causa, vista desde el cierre: dos vueltas del encendido son dos CompleteLevel, que
+        // encadenaría dos veces la escena de cierre. Cada CompleteLevel deja unos indicadores nuevos
+        // en el runner —con su tiempo de resolución—, así que verlos cambiar después del primer
+        // cierre es verlo correr otra vez. Son un struct: se comparan por valor, no por referencia.
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RF20_SoplarDosVecesCierraElNivelUnaSolaVez()
+        {
+            var (controller, runner) = await LoadPanelWithProfile(NewProfile());
+            await ConvergeAndBlow(controller);
+            await EsperarQueElFuegoEmpieceAPrender(controller);
+            controller.Blow();
+            Assume.That(await WaitUntilAsync(() => runner.Flow.Current == GameState.Narrative, 8f), Is.True,
+                "el primer encendido cierra el nivel");
+            var indicadores = runner.PendingIndicators;
+
+            var cerroOtraVez = await WaitUntilAsync(() => !runner.PendingIndicators.Equals(indicadores), 1.5f);
+
+            Assert.That(cerroOtraVez, Is.False, "el nivel se cierra una sola vez: CompleteLevel no corre por segunda vez");
+        }
+
+        // Hallazgo de la especificación de D10-1: durante los 3,5 s del encendido «Golpear» y los
+        // deslizantes seguían activos. Un golpe ponía la chispa sobre la llama y, si era flojo, bajaba
+        // la luz un cuadro —de la subida del encendido al escalón del golpe—: un parpadeo (RNF-21).
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RF20_DuranteElEncendidoLosMandosDelPanelNoResponden()
+        {
+            var controller = await LoadPanel();
+            await ConvergeAndBlow(controller);
+            await EsperarQueElFuegoEmpieceAPrender(controller);
+            controller.ForceSlider.value = SoftForce; // un golpe flojo es el que bajaría la luz
+            var luzAntes = controller.Lighting.Progress;
+            var entradasAntes = controller.Log.Entries.Count;
+
+            Click(controller.StrikeButton);
+            controller.Strike();
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(
+                new Selectable[] { controller.BlowButton, controller.StrikeButton, controller.ForceSlider, controller.SpacingSlider },
+                Has.All.Matches<Selectable>(mando => !mando.interactable),
+                "«Soplar», «Golpear» y los dos deslizantes descansan mientras nace el fuego");
+            Assert.That(controller.Spark.gameObject.activeSelf, Is.False,
+                "un golpe durante el encendido no pone la chispa sobre la llama");
+            Assert.That(controller.Log.Entries.Count, Is.EqualTo(entradasAntes), "ni escribe en la tablilla");
+            Assert.That(controller.Lighting.Progress, Is.GreaterThanOrEqualTo(luzAntes), "ni baja la luz un cuadro (RNF-21)");
+        }
+
+        // DEF-W5R-02: el ColorTint del Slider apunta al contorno del asa y la cara opaca lo tapa, así
+        // que «no responden» no se veía. Atenuados de verdad = la opacidad efectiva baja en todo el
+        // deslizante (su CanvasGroup), con el asa y el riel debajo; y antes de soplar siguen plenos.
+        // Rojo esperado sin la corrección: ningún CanvasGroup en los deslizantes (alfa efectivo 1).
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RF20_DuranteElEncendidoLosDeslizantesSeVenAtenuados()
+        {
+            var controller = await LoadPanel();
+            var deslizantes = new[] { controller.ForceSlider, controller.SpacingSlider };
+            Assert.That(deslizantes.Select(EfectiveAlpha), Has.All.EqualTo(1f), "antes de soplar se ven plenos");
+
+            await ConvergeAndBlow(controller);
+            await EsperarQueElFuegoEmpieceAPrender(controller);
+
+            foreach (var deslizante in deslizantes)
+            {
+                var asa = deslizante.handleRect.GetComponentInChildren<Graphic>();
+                Assert.That(EfectiveAlpha(deslizante), Is.LessThan(0.8f), $"{deslizante.name} atenuado");
+                Assert.That(asa.GetComponentInParent<CanvasGroup>().alpha, Is.LessThan(0.8f), $"y su asa ({deslizante.name}) cae bajo el mismo grupo");
+            }
+        }
+
+        private static float EfectiveAlpha(Slider slider) =>
+            slider.TryGetComponent<CanvasGroup>(out var group) ? group.alpha : 1f;
+
+        // Pedido de Santiago, 30/09/2026 (D10-1): al soplar, el humo sube con el fuego hasta la
+        // corona de la llama, detrás de ella. Sin runner: CompleteLevel solo deja un aviso.
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RF20_AlPrenderElFuegoElHumoSubeALaCoronaDeLaLlama()
+        {
+            var controller = await LoadPanel();
+            await ConvergeAndBlow(controller);
+            var humo = (RectTransform)controller.PileSmoke.transform;
+            var llama = (RectTransform)controller.FireFlame.transform;
+            var suelo = (RectTransform)controller.FireSpot.parent;
+            var corona = llama.anchoredPosition + new Vector2(0f, FlameCrownFraction * llama.rect.height);
+            var anterior = BaseDe(humo, suelo).y;
+
+            var cuadros = await ObservarMientras(() => controller.Burn.Extent < BurnExtent - 0.0001f,
+                cuadro =>
+                {
+                    var altura = BaseDe(humo, suelo).y;
+                    Assert.That(altura, Is.GreaterThanOrEqualTo(anterior - 0.001f),
+                        $"cuadro {cuadro}: la base del humo no baja (RNF-21)");
+                    Assert.That(humo.GetSiblingIndex(), Is.LessThan(llama.GetSiblingIndex()),
+                        $"cuadro {cuadro}: el humo va detrás de la llama");
+                    anterior = altura;
+                },
+                8f);
+
+            Assert.That(cuadros, Is.GreaterThan(10), "el humo sube durante el encendido, no de golpe");
+            Assert.That(Vector2.Distance(BaseDe(humo, suelo), corona), Is.LessThan(0.5f),
+                "y termina con la base en la corona de la llama");
+        }
+
+        // El humo llega hasta la franja de la tablilla: la tablilla va encima, o taparía su texto (RNF-03).
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RNF03_AlPrenderElFuegoLaTablillaQuedaPorEncimaDelHumo()
+        {
+            var controller = await LoadPanel();
+            await ConvergeAndBlow(controller);
+            await EsperarQueElFuegoTerminePrender(controller);
+            var tablilla = RectNamed("Mensaje");
+            var suelo = (RectTransform)controller.FireSpot.parent;
+            Assume.That(EnElSuelo((RectTransform)controller.PileSmoke.transform, suelo).Overlaps(EnElSuelo(tablilla, suelo)),
+                Is.True, "el humo llega a la franja de la tablilla");
+
+            Assert.That(tablilla.GetSiblingIndex(), Is.GreaterThan(suelo.GetSiblingIndex()),
+                "la tablilla se dibuja encima del suelo y, con él, del humo (RNF-03)");
+        }
+
+        // Captura del 30/09/2026 (D10-1): a tamaño completo, el remate del humo en la corona asomaba
+        // por la franja entre la tablilla y el borde de arriba y se cortaba contra él. Sube
+        // encogiéndose, como el que acompaña a cada llama en las narrativas (a 0,6 de su escala).
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RF20_AlPrenderElFuegoElHumoNoSobrepasaElBordeDeArribaDeLaTablilla()
+        {
+            var controller = await LoadPanel();
+            await ConvergeAndBlow(controller);
+            var humo = (RectTransform)controller.PileSmoke.transform;
+            var suelo = (RectTransform)controller.FireSpot.parent;
+            var tablilla = EnElSuelo(RectNamed("Mensaje"), suelo);
+            var altoAnterior = EnElSuelo(humo, suelo).height;
+
+            await ObservarMientras(() => controller.Burn.Extent < BurnExtent - 0.0001f,
+                cuadro =>
+                {
+                    var alto = EnElSuelo(humo, suelo).height;
+                    Assert.That(alto, Is.LessThanOrEqualTo(altoAnterior + 0.001f),
+                        $"cuadro {cuadro}: el humo solo se encoge mientras sube, sin volver a crecer (RNF-21)");
+                    altoAnterior = alto;
+                },
+                8f);
+
+            Assert.That(EnElSuelo(humo, suelo).yMax, Is.LessThanOrEqualTo(tablilla.yMax),
+                "al terminar de prender, el humo no pasa del borde de arriba de la tablilla");
         }
 
         // --- personajes (Dirección de arte §13.3) y la pista con Algoritm (§7.6) ---------------
@@ -927,14 +1393,56 @@ namespace Game.Levels.Fire.Tests
             }
         }
 
-        /// <summary>Reúne todas las piezas en el punto del fuego y espera el acercamiento (T25).</summary>
-        internal static async Task Reunir(FirePanelController controller)
+        /// <summary>Pone todas las piezas en el punto del fuego, sin esperar nada.</summary>
+        private static void JuntarLasPiezas(FirePanelController controller)
         {
             foreach (var piece in controller.Pieces)
             {
                 piece.MoveTo(controller.FireSpot.anchoredPosition);
             }
+        }
 
+        /// <summary>El índice más alto entre las hojas visibles y el montón: lo que las piedras tienen que superar para dibujarse encima.</summary>
+        private static int LoMasAltoDeLasHojas(FirePanelController controller) =>
+            controller.Pieces
+                .Where(piece => piece.Kind == PieceKind.Leaf && piece.gameObject.activeSelf)
+                .Select(piece => piece.transform.GetSiblingIndex())
+                .Append(controller.LeafPile.transform.GetSiblingIndex())
+                .Max();
+
+        /// <summary>Espera a que el quemado pase de 0,1 —el fuego ya está prendiendo—; si no llega, la prueba queda sin concluir.</summary>
+        private static async Task EsperarQueElFuegoEmpieceAPrender(FirePanelController controller) =>
+            Assume.That(await WaitUntilAsync(() => controller.Burn.Extent >= 0.1f, 3f), Is.True,
+                "el fuego ya está prendiendo");
+
+        /// <summary>Espera a que el quemado llegue a su extensión final —el fuego terminó de prender—; si no llega, la prueba queda sin concluir.</summary>
+        private static async Task EsperarQueElFuegoTerminePrender(FirePanelController controller) =>
+            Assume.That(await WaitUntilAsync(() => controller.Burn.Extent >= BurnExtent - 0.0001f, 8f), Is.True,
+                "el fuego terminó de prender");
+
+        /// <summary>
+        /// Mira cuadro a cuadro mientras <paramref name="mientras"/> sea verdadero, corre
+        /// <paramref name="alCuadro"/> con el número del cuadro y devuelve cuántos miró. Una animación
+        /// que no termina dentro del plazo (tiempo real) falla la prueba en vez de colgarla.
+        /// </summary>
+        private static async Task<int> ObservarMientras(Func<bool> mientras, Action<int> alCuadro, float plazoSegundos)
+        {
+            var limite = Time.realtimeSinceStartup + plazoSegundos;
+            var cuadros = 0;
+            while (mientras())
+            {
+                Assert.That(Time.realtimeSinceStartup, Is.LessThan(limite), "la animación no terminó dentro del plazo");
+                alCuadro(cuadros++);
+                await Awaitable.NextFrameAsync();
+            }
+
+            return cuadros;
+        }
+
+        /// <summary>Reúne todas las piezas en el punto del fuego y espera el acercamiento (T25).</summary>
+        internal static async Task Reunir(FirePanelController controller)
+        {
+            JuntarLasPiezas(controller);
             controller.TryFinishGathering();
             while (controller.IsTransitioning)
             {
@@ -952,6 +1460,54 @@ namespace Game.Levels.Fire.Tests
             var min = suelo.InverseTransformPoint(esquinas[0]);
             var max = suelo.InverseTransformPoint(esquinas[2]);
             return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
+        }
+
+        /// <summary>El centro del borde de abajo de un rect, en el espacio del suelo.</summary>
+        private static Vector2 BaseDe(RectTransform ui, RectTransform suelo)
+        {
+            var rect = EnElSuelo(ui, suelo);
+            return new Vector2(rect.center.x, rect.yMin);
+        }
+
+        /// <summary>La punta delantera del rayo de la chispa, en el espacio del suelo (pivote en la cola).</summary>
+        private static Vector2 CabezaDelRayo(RectTransform spark) =>
+            spark.anchoredPosition + (Vector2)(spark.localRotation * Vector3.right) * spark.rect.width;
+
+        /// <summary>Golpea <paramref name="veces"/> veces y, tras cada clic, anota dónde sale y dónde cae el rayo de la chispa.</summary>
+        private static List<(Vector2 Origen, Vector2 Caida)> GolpearYMirarElRayo(FirePanelController controller, int veces)
+        {
+            var rayos = new List<(Vector2 Origen, Vector2 Caida)>();
+            for (var i = 0; i < veces; i++)
+            {
+                Click(controller.StrikeButton);
+                rayos.Add((controller.Spark.anchoredPosition, controller.SparkLanding));
+            }
+
+            return rayos;
+        }
+
+        /// <summary>
+        /// El arte del montón leído del disco: el proyecto no marca Read/Write en los sprites, así
+        /// que el de la escena no deja leer sus píxeles. Se busca por el nombre del sprite, que
+        /// sobrevive a un movimiento o a un renombre hecho desde el motor. Solo vale en el Editor,
+        /// que es donde corren las pruebas de este proyecto.
+        /// </summary>
+        private static Texture2D ArteDelMonton(FirePanelController controller)
+        {
+            var path = Directory.GetFiles(Application.dataPath, controller.LeafPile.sprite.name + ".png",
+                SearchOption.AllDirectories).Single();
+            var arte = new Texture2D(2, 2);
+            arte.LoadImage(File.ReadAllBytes(path));
+            return arte;
+        }
+
+        /// <summary>¿Hay hoja dibujada en ese punto del suelo? El montón conserva su aspecto con un arte cuadrado, así que su rect es el dibujo.</summary>
+        private static bool HayHoja(Texture2D arte, Image monton, Vector2 enElSuelo)
+        {
+            var rect = monton.rectTransform;
+            var uv = (enElSuelo - rect.anchoredPosition - rect.rect.min) / rect.rect.size;
+            return uv.x is >= 0f and <= 1f && uv.y is >= 0f and <= 1f
+                   && arte.GetPixelBilinear(uv.x, uv.y).a >= 0.5f;
         }
 
         private static float ScreenX(RectTransform rect) =>
@@ -1071,6 +1627,23 @@ namespace Game.Levels.Fire.Tests
             raycaster.Raycast(pointer, results);
             return results.Exists(r => r.gameObject.transform == target
                                       || r.gameObject.transform.IsChildOf(target));
+        }
+
+        /// <summary>
+        /// ¿Es <paramref name="target"/> lo primero que toca un clic en su centro? A diferencia de
+        /// <see cref="ReachableByRaycast"/>, mira solo el primer resultado: lo que queda debajo de
+        /// otra cosa no recibe el clic. Va por <c>RaycastAll</c> y no por un <c>GraphicRaycaster</c>
+        /// suelto porque el menú de pausa puede traer el suyo.
+        /// </summary>
+        private static bool PrimeroBajoElPuntero(RectTransform target)
+        {
+            var pointer = new PointerEventData(EventSystem.current)
+            {
+                position = RectTransformUtility.WorldToScreenPoint(null, target.TransformPoint(target.rect.center))
+            };
+            var results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointer, results);
+            return results.Count > 0 && results[0].gameObject.transform.IsChildOf(target);
         }
 
         private static bool MentionsKeyboardOrGamepad(InputBinding binding)

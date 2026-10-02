@@ -36,7 +36,7 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       lo que convierte la exclusión de RNF-16 en real —antes solo había un nivel que comparar—.
       RED **3/4** (`Expected: collection containing "Game.Levels.Wheel"` y dos
       `KeyNotFoundException`) → GREEN **EditMode 63/63**, 0 fallos, 0 omitidas.
-- [~] **W02 · `PhaseId` y desbloqueo secuencial del Nivel 2** — `M` · `EM` (10/09/2026)
+- [x] **W02 · `PhaseId` y desbloqueo secuencial del Nivel 2** — `M` · `EM` (10/09/2026)
       RF-03, RF-04, RNF-09, RNF-14, HU-14, CU-06, INC-27, CP-02 · depende de: W01, Slice 1 T02/T07
       **La lógica está cerrada; falta el consumidor en juego, que no es de este slice** — ver
       «lo que queda pendiente» abajo.
@@ -60,16 +60,28 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       **PlayMode 33/35**, 0 fallos, las 2 omitidas son las `VisualVerification` de siempre, que
       batchmode no ejecuta. 0 errores y 0 warnings de compilación (`unity test`, Editor cerrado).
       **Lo que queda pendiente y por qué**
-      - `[ ]` **Nadie confirma una fase jugando todavía.** No hay una sola llamada a
+      - `[x]` **Nadie confirma una fase jugando todavía.** No hay una sola llamada a
         `ConfirmPhase` en runtime: la del Nivel 1 la trae **T17/T18** del Slice 1 y la del Nivel 2,
         **W05..W14**. Hasta entonces el desbloqueo real solo se puede verificar en pruebas, no
         jugando, y `NextPendingPhase` no tiene consumidor.
-      - `[ ]` El «cierre y reapertura» de RNF-14 verificado **sobre el ejecutable** — está probado
+        *(01/10/2026: hoy confirman fases en el juego `LevelSummaryController` —la última de cada
+        nivel, T18, 11/09—, `ForestSceneController`, `WorkshopSceneController` y
+        `MazeSceneController` —W05 a W14— y `AssemblyPanelController` —R11—, y `GameFlow` usa
+        `NextPendingPhase` para retomar.)*
+      - `[x]` El «cierre y reapertura» de RNF-14 verificado **sobre el ejecutable** — está probado
         contra el guardado (`SaveStore_RF04_ConfirmarFase1DelNivel2SobreviveAlCierre`), no sobre
         el `.exe`. Cae en el Checkpoint D del Slice 1, donde ya está la casilla de RNF-14.
+        *(01/10/2026: trasladada, como dice su texto, al Checkpoint D del Slice 1 —su casilla de
+        RNF-14—, que la comprueba sobre el ejecutable.)*
       **Aviso a quien haga T17**: `PlayerProfile` cambió de firma. `ConfirmPhase(LevelId, int, …)`
       ya no existe; se pasa un `PhaseId`. Es el cruce que la tabla de carriles anunciaba, y hoy se
       resuelve a favor de W02 porque T17 no había empezado a escribir el archivo.
+      *(01/10/2026: Implementación — la lógica y su consumidor en juego existen: el desbloqueo
+      secuencial lo vigilan `LevelUnlockPolicy_RF03_Nivel2BloqueadoHastaCompletarNivel1`,
+      `SaveStore_RF04_ConfirmarFase1DelNivel2SobreviveAlCierre`,
+      `PlayerProfile_CP02_UnaFaseConfirmadaNoSePierdeNunca` y
+      `GameFlowRunner_RNF14_ConLasDosPrimerasFasesConfirmadasEntrarAlNivel2RetomaEnElLaberinto`, en
+      verde en la suite completa del 01/10/2026.)*
 
 ### ✅ Checkpoint W-A — Cimientos
 - [x] Compila sin errores ni warnings nuevos — **0 errores, 0 warnings** (10/09/2026; declarado
@@ -78,12 +90,22 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 - [x] Prueba de exclusión RNF-16 con **dos niveles reales**, corrida y **declarada** —
       `Architecture_RNF16_NingunAssemblyDeNivelReferenciaAOtroNivel` verde con `Fire` y
       `Wheel` en la tabla (10/09/2026, `unity test --mode EditMode`, **63/63**)
-- [~] El menú habilita el Nivel 2 solo tras completar el Nivel 1 — la **regla** está cerrada y
+- [x] El menú habilita el Nivel 2 solo tras completar el Nivel 1 — la **regla** está cerrada y
       probada (`LevelUnlockPolicy_RF03_Nivel2BloqueadoHastaCompletarNivel1` en EditMode y
       `LevelSelect_RF03_CompletarElNivel1HabilitaElNivel2` en PlayMode, ambas verdes el
       10/09/2026). Falta verlo **jugando**, y eso no depende de este slice: nadie confirma una
       fase en runtime hasta T17/T18 del Slice 1
-- [ ] Revisado con el usuario
+      *(01/10/2026: Implementación — desde T17/T18 (11/09) `LevelSummaryController` confirma la fase
+      del Nivel 1 en el juego, y `LevelSummary_RF03_DevuelveAlMenuConNivel2Desbloqueado` juega el
+      Nivel 1 con la interfaz —reunir, deslizantes, «Golpear», «Soplar»—, recorre el cierre y el
+      resumen y vuelve al menú de niveles con el Nivel 2 habilitado;
+      `LevelSelect_RF03_CompletarElNivel1HabilitaElNivel2` comprueba el botón. Las dos, en verde en
+      la suite completa del 01/10/2026; revisado por Santiago el 30/09/2026 (acta D10, §5).)*
+- [x] Revisado con el usuario
+      *(01/10/2026: Decisión — revisado por Santiago el 30/09/2026 (acta D10, §5), tras comprobar en
+      verde en la suite completa del 01/10/2026 —que compila sin errores— la exclusión de RNF-16,
+      hoy con tres niveles (`Architecture_RNF16_NingunAssemblyDeNivelReferenciaAOtroNivel`), y el
+      desbloqueo del Nivel 2 de la casilla anterior.)*
 
 ---
 
@@ -153,7 +175,11 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 - [x] `DialogueRunner` no necesitó cambios — **confirmado, no los necesitó**. Quien sí estaba mal
       parametrizado era `NarrativeVisitPolicy`: ver W04. Se corrigió también el comentario de
       `DialogueRunner` que afirmaba que el cierre reflexivo no necesita regla propia
-- [ ] Revisado con el usuario
+- [x] Revisado con el usuario
+      *(01/10/2026: Decisión — revisado por Santiago el 30/09/2026 (acta D10, §5), tras comprobar en
+      verde en la suite completa del 01/10/2026 las narrativas del Nivel 2 —hoy siete, con el Puente
+      I: `NarrativeScene_RF05_ResuelveLasSieteSecuenciasDelNivel2SinRamas`— y las pistas por fase
+      (`HintPolicy_CP06_NingunaPistaDelNivel2NombraLaRespuesta`).)*
 
 ---
 
@@ -534,7 +560,18 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       al nivel con la fase 1 confirmada abre el taller:
       `WorkshopScene_RNF14_ConLaFase1EnDiscoEntrarAlNivelRetomaEnElTaller`, con la regla en
       `GameFlow` (`GameFlow_RNF14_…`).
-- [ ] Revisado con el usuario
+- [x] Revisado con el usuario
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de
+      Claude del 01/10/2026: el bosque se jugó sobre el ejecutable en GP1 y GP2 (rc1) y en GP3 (rc2)
+      —PF-RF22-01 a PF-RF26-01 en P— y la 2.2 abre con la misma caja que deja la fase (D10-2,
+      INC-120): en el primer cuadro grabado los cinco troncos están en los mismos píxeles y la caja
+      a la misma altura y del mismo tamaño que en el bosque
+      (`claudeDocs/tasks/OE4/evidencias/GP1/PF-RF26-01_e22_caja_sobre_troncos.png`; la x de
+      arranque se infiere, OBS-9). La posición exacta la fijan
+      `WheelLevelConfig_RF05_LaCajaColocadaEsLaQueLaEscena22DibujaAlAbrir` y
+      `ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22`, en verde en la
+      suite de rc2 (`claudeDocs/tasks/OE4/evidencias/suites/rc2-final/`;
+      `claudeDocs/tasks/OE4/OE4-Resultados.md` §5 y §8.5).
 
 ---
 
@@ -668,11 +705,27 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       perfil real hasta salir a la narrativa (12/09/2026)
 - [x] Cada intento fuera de orden da el mensaje del guion **y no deshace nada** (CP-02) —
       `AssemblySequence_RF29_…`, `_CP02_…` y `WorkshopScene_RF29_UnPasoFueraDeOrden…`
-- [~] Cierre forzado tras confirmar la fase 2 → retoma en la fase 3 (RNF-14) — **la mitad que
+- [x] Cierre forzado tras confirmar la fase 2 → retoma en la fase 3 (RNF-14) — **la mitad que
       existe está probada**: la fase 2 queda en disco (`Session.Load`) y la regla de retoma ya
       vive en `GameFlow` (`GameFlow_RNF14_…`). Retomar **en la fase 3** no se puede afirmar hasta
       que `Level2_Maze` exista (W13); hoy esa entrada cae al menú de niveles (RNF-13).
-- [ ] Revisado con el usuario
+      *(01/10/2026: Implementación — `Level2_Maze` existe desde W13 (`b1b423a`, 13/09) y la retoma
+      en la fase 3 la prueba
+      `GameFlowRunner_RNF14_ConLasDosPrimerasFasesConfirmadasEntrarAlNivel2RetomaEnElLaberinto`: con
+      las fases 1 y 2 confirmadas, entrar al Nivel 2 abre el laberinto; que la fase 2 queda en disco
+      lo prueba `WorkshopScene_RF29_LaSecuenciaCompletaConfirmaYGuardaLaFase2`. Las dos, en verde en
+      la suite completa del 01/10/2026.)*
+- [x] Revisado con el usuario
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de
+      Claude del 01/10/2026: el taller se jugó sobre el ejecutable —siete piezas, mazo, orden de la
+      tabla— y al amarrar la cuerda la carretilla pasa al dibujo amarrado con que abre la 2.4
+      (D10-2, INC-121; `claudeDocs/tasks/OE4/evidencias/GP1/PF-RF29-01_cuerda_amarrada_e5.png`,
+      PF-RF27-01 a PF-RF29-01 en P, confirmados en GP3 sobre rc2). Un cierre forzado tras confirmar
+      el taller retoma en el laberinto (S-PER, casilla S2,
+      `claudeDocs/tasks/OE4/evidencias/S-PER/S2-tras-fase2_relanzar_retoma_en_el_laberinto.png`).
+      Lo vigilan `WorkshopScene_INC54_AlAmarrarLaCuerdaLaCarretillaPasaAlDibujoConCuerda` y
+      `AssemblyContent_INC54_LaCarretillaAmarradaEsElDibujoConElQueAbreLaEscena24`, en verde en la
+      suite de rc2 (`claudeDocs/tasks/OE4/evidencias/suites/rc2-final/`).
 
 ---
 
@@ -778,13 +831,32 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       `_CP02_NoHayLimiteDeEjecucionesNiPantallaDeDerrota`, `_RF04_AlcanzarElRefugioConfirmaYGuardaLaFase3`.
 
 ### ✅ Checkpoint W-E — Fase 3 completa
-- [~] El laberinto se resuelve componiendo → ejecutando → corrigiendo → volviendo a ejecutar —
+- [x] El laberinto se resuelve componiendo → ejecutando → corrigiendo → volviendo a ejecutar —
       probado (`MazeScene_RF34_…`, `_RF04_…`); falta jugarlo en el Editor
-- [~] «Avanzar» produce desplazamientos distintos según la orientación, **verificado jugando** (INC-33) —
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de
+      Claude del 01/10/2026: jugado sobre el ejecutable rc2 en S-N2C-rc2 —«Girar» y «Avanzar» a la
+      secuencia, tres ejecuciones que chocan con el seto con la secuencia intacta y la pista, la
+      papelera y el reordenar en un solo gesto, y la secuencia corregida de nueve bloques que llega
+      al refugio a la primera, con el bloque en curso siempre a la vista—
+      (`claudeDocs/tasks/OE4/evidencias/rc2/S-N2C-rc2_registro_de_pasos.md`, pasos 5–15;
+      PF-RF32-01, PF-RF33-01, PF-RF34-01 y PF-RF34-02 en P, `claudeDocs/tasks/OE4/OE4-Resultados.md`
+      §8.3 y §8.4). La parte automática sigue en verde en la suite de rc2:
+      `MazeScene_RF34_TrasUnaEjecucionFallidaLaSecuenciaPermaneceEnPantalla`,
+      `MazeScene_RF04_AlcanzarElRefugioConfirmaYGuardaLaFase3` y
+      `MazeScene_RF32_AlEjecutarLaListaMuestraElBloqueEnCurso`.
+- [x] «Avanzar» produce desplazamientos distintos según la orientación, **verificado jugando** (INC-33) —
       la regla está probada (`CartState_RF31_…`); la verificación jugando es de Santiago
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de
+      Claude del 01/10/2026: jugado sobre rc2 en S-N2C-rc2, «Girar ‹» y después «Avanzar» llevan la
+      carretilla al norte y no al este, hacia el seto; en la secuencia ganadora cada «Avanzar» sigue
+      la orientación que dejó el giro anterior —×8 al este, ×7 al sur, ×6 al este—
+      (`claudeDocs/tasks/OE4/evidencias/rc2/S-N2C-rc2_registro_de_pasos.md`, pasos 5–7 y 14, y su
+      tablero; PF-RF31-01 en P). La regla la siguen vigilando
+      `CartState_RF31_AvanzarEsRelativoALaOrientacionNoAbsoluto` y
+      `MazeScene_RF31_LaOrientacionDeLaCarretillaEsVisibleYGiraACadaLado`, en verde en la suite de rc2.
 - [x] «Ejecutar» responde a **clic simple**, no a doble clic (PG-04, RNF-02)
 - [x] Ninguna retroalimentación nombra el bloque a corregir (CP-06)
-- [ ] **Decisión de Santiago (16/09/2026): el tablero deja franja lavanda arriba y abajo.**
+- [x] **Decisión de Santiago (16/09/2026): el tablero deja franja lavanda arriba y abajo.**
       Con el arte definitivo se nota. `MazeSceneController.FitEnvironment` **encaja** la
       ilustración entera en `Panel_World` (escala mínima, a propósito: el tablero se juega
       completo). `Panel_World` mide 1296×1080 y la ilustración 1920×1080 → escala 0,675 →
@@ -795,7 +867,21 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       (≈ 0.37, 0.37, 0.11) y que la franja se lea como pradera —una línea, reversible—;
       (b) ensanchar `Panel_World` a ≥ 1533 px y montar el panel de secuencia encima (cambia el
       mockup 10); (c) pedir el tablero con el seto en 16:9 hasta los bordes.
-- [ ] Revisado con el usuario
+      *(01/10/2026: Implementación — se aplicó la salida (a) en `d7ace67` (23/09):
+      `MazeSceneController` pinta `Panel_World` con `MazeLayout.BackdropColor` —(0.45, 0.45, 0.16)
+      en `N2_MazeLayout.asset`— por `LightTint`, el color del borde del entorno con su misma luz, y
+      la franja se lee como pradera. Lo vigila
+      `MazeScene_RF30_LaSalidaSeLeeEnElEntornoYElPanelLoContinua` («y ya no es azul»), en verde el
+      01/10/2026, y lo aprobó el acta D08 (23/09) con los demás ajustes del laberinto.)*
+- [x] Revisado con el usuario
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de
+      Claude del 01/10/2026: las casillas de este checkpoint están cerradas y el laberinto se jugó
+      entero sobre rc2 sin defectos nuevos; DEF-GP1-01, DEF-GP1-02 y DEF-GP1-03, que GP1 halló sobre
+      rc1, quedaron corregidos y reverificados sobre el ejecutable
+      (`claudeDocs/tasks/OE4/evidencias/rc2/S-N2C-rc2_registro_de_pasos.md`;
+      `claudeDocs/tasks/OE4/OE4-Resultados.md` §8.3). Quedan documentadas, sin corregir en este
+      corte, N2 (bajar un bloque una sola posición), N3 (doble clic en la papelera) y OBS-rc2-5 (la
+      papelera cambia de sitio tras un fallo), con su arreglo propuesto en §8.9 (decisión D-OBS).
 
 ---
 
@@ -900,21 +986,51 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       `MazeScene_RF04_…`) y la retoma vive en `GameFlow` (`GameFlow_RNF14_…`); con `Level2_Maze`
       ya existente, la mitad pendiente del Checkpoint W-D (retomar en la fase 3) queda cubierta
       por el recorrido completo. El clic manual sobre el ejecutable sigue siendo de Santiago.
-- [~] Prueba de exclusión RNF-16 en los dos sentidos: quitar `Wheel` y quitar `Fire` — la regla
+- [x] Prueba de exclusión RNF-16 en los dos sentidos: quitar `Wheel` y quitar `Fire` — la regla
       está probada en `Game.Architecture.Tests` (`_RNF16_…`, ningún nivel referencia a otro);
       retirar el assembly a mano y ejecutar es verificación manual de Santiago.
-- [ ] Carga de las tres escenas < 10 s y memoria < 2 GB, **medidas** (RNF-04, RNF-05) —
+      — cerrado el 01/10/2026: sobre una copia temporal del árbol de rc1 se retiró
+      `Game.Levels.Wheel` —con sus pruebas, `Game.Content.Tests` y las tres `Level2_*`— y, aparte,
+      `Game.Levels.Fire` con `Level1_Cave`. En los dos sentidos el proyecto compila con 0 errores y
+      pasan las pruebas de `Game.Core`, `Game.Scaffolding`, `Game.Audio`, `Game.Reporting`,
+      `Game.UI` y del nivel que queda, salvo las estructurales que exigen los tres niveles, las que
+      cargan por nombre una escena retirada y las de entorno que el control reproduce en el árbol
+      completo (PF-RNF16-01, P con reserva; `claudeDocs/tasks/OE4/evidencias/RNF16/README.md` y sus
+      XML; `claudeDocs/tasks/OE4/OE4-Resultados.md` §4.7). rc2 no cambia ningún `.asmdef` y las cinco
+      `Architecture_RNF16_*` pasan en su suite (`claudeDocs/tasks/OE4/evidencias/suites/rc2-final/`).
+- [x] Carga de las tres escenas < 10 s y memoria < 2 GB, **medidas** (RNF-04, RNF-05) —
       exige `unity build` con el Editor cerrado; no se hizo en esta sesión.
-- [ ] Paquete acumulado < 500 MB con el arte del Slice 2 incluido (RNF-06) — ídem, sobre la build.
+      — cerrado el 01/10/2026: medidas sobre el ejecutable en el equipo 1 con la línea `RNF-04`
+      que `SceneLoader` deja en `Player.log`. Peor carga de `Level2_Forest` 0,052 s, de
+      `Level2_Workshop` 0,069 s en rc1 y 0,086 s en rc2, y de `Level2_Maze` 0,071 s en rc1 y
+      0,088 s en rc2; memoria máxima de 425,5 MiB de trabajo y 1 124,6 MiB privada en rc2 (rc1:
+      435,7 y 1 140,1 MiB), < 2048 MiB (`claudeDocs/tasks/OE4/OE4-Resultados.md` §4.1, §4.2 y §8.6;
+      `claudeDocs/tasks/OE4/evidencias/S-RNF/S-RNF_cargas.csv`). La columna del segundo equipo es la
+      de P12 del Slice 4 (H3 de `claudeDocs/tasks/OE4/Hoja-HUM.md`).
+- [x] Paquete acumulado < 500 MB con el arte del Slice 2 incluido (RNF-06) — ídem, sobre la build.
+      — cerrado el 01/10/2026: la carpeta entregable de rc2, con el arte de los tres niveles y sin
+      `Datos/` ni `*_DoNotShip`, pesa 478 987 619 B = 479,0 MB (456,8 MiB), 21 MB por debajo del tope
+      (PF-RNF06-01; `claudeDocs/tasks/OE4/evidencias/build-rc2.md` y
+      `rc2/S-RNF-rc2_registro_de_pasos.md`, paso 2). Para entrar en él, los cuadros del fuego y del
+      humo del Nivel 1 se importan a 1024 px sin comprimir (INC-130).
 - [x] Mapa de controles de las tres escenas: solo clic y clic sostenido (RNF-02, CT-06) —
       `ForestScene_RNF02_…`, `WorkshopScene_RNF02_…`, `MazeScene_RNF02_…`; el prefab de pausa
       solo añade botones.
 - [ ] **PG-05** verificado: el paso del panel del N1 al arrastre del N2 no confunde. Anotarlo —
       es observación en la sesión de prueba con estudiantes.
+      — sigue abierta el 01/10/2026 por la decisión D-b (acta D10, §5): la observa Santiago con
+      estudiantes, con H1 de `claudeDocs/tasks/OE4/Hoja-HUM.md` y el consentimiento de RNF-12
+      (`claudeDocs/tasks/OE4/Consentimiento-RNF12.md`), y se marca con su plantilla.
 - [x] RF-22..RF-34 tienen cada uno al menos una prueba que los nombra (CT-10) — verificado con
       `grep` sobre `Assets/Tests`: RF-22 (11), RF-23 (10), RF-24 (6), RF-25 (6), RF-26 (7), RF-27 (1),
       RF-28 (4), RF-29 (5), RF-30 (2), RF-31 (6), RF-32 (1), RF-33 (2), RF-34 (3).
-- [ ] Revisado con el usuario antes de abrir el Slice 3
+- [x] Revisado con el usuario antes de abrir el Slice 3
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de
+      Claude del 01/10/2026: a posteriori, porque el Slice 3 se abrió el 16/09; la exclusión de
+      RNF-16 en los dos sentidos, las cargas y la memoria del Nivel 2 y el tamaño del paquete se
+      comprobaron sobre el ejecutable o su árbol (PF-RNF16-01, PF-RNF04-01, PF-RNF05-01 en el
+      equipo 1 y PF-RNF06-01; `claudeDocs/tasks/OE4/OE4-Resultados.md` §4 y §8.6), y el Nivel 2 se
+      jugó entero en los tres recorridos completos (§3 y §8.5). PG-05 queda con Santiago (H1).
 - [x] **W19 · «Empujar» sale directo a la narrativa y la fila va pegada** (15/09/2026, pedido de
       Santiago) — RF-26, RF-05. `ForestSceneController.Push` ya no anima el rodado: confirma la
       fase y sale a `ClosingSequenceId`; el rodado que se ve es el de `N2_Escena22_ElPatron`
@@ -936,7 +1052,7 @@ exige la build o al usuario: RNF-04/05/06, la exclusión a mano de RNF-16, PG-05
 
 ## Assets visuales — `plan.md` §Assets visuales del Slice 2
 
-- [ ] **TODO · Personajes de la familia y Chispa sobre el entorno del Nivel 2** — sin sprite
+- [x] **TODO · Personajes de la familia y Chispa sobre el entorno del Nivel 2** — sin sprite
       todavía; cuando existan, van como `NarrativeProp` en estas coordenadas de la ilustración
       (`Camara_Narrativa_N2.md` §7; `y` es la **base**, los personajes miden ~0.22 de alto):
       **Puente I** familia x 0.700–0.780 · y 0.30 · **2.2** niño con el tronco 0.168, papá con la
@@ -946,6 +1062,13 @@ exige la build o al usuario: RNF-04/05/06, la exclusión a mano de RNF-16, PG-05
       Las seis piezas del taller de la 2.3 (troncos cortos 0.690 · 0.706 · y 0.28, tronco largo
       0.748 · y 0.29, herramienta 0.772 · y 0.27, tabla 0.800 · y 0.30, caja 0.828 · y 0.31)
       tampoco existen como props: la tabla y el tronco largo no tienen sprite.
+      *(01/10/2026: Implementación — entraron con `88fe0ee` (24/09): Papá, Mamá, la Niña y el Niño
+      están en las siete narrativas `N2_*`, y Algoritm —la «Chispa» de antes de INC-44— en seis con
+      su forma de rueda; `N2_PuenteI` lleva la de fuego (INC-45). La 2.3 pinta las piezas del
+      taller, con la tabla y el eje definitivos (`44fd479`), y la 2.4 y la 2.5 la carretilla `e5`.
+      Las coordenadas las fijó la revisión visual y viven en cada asset; las siete pasan
+      `NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo`, en verde en la suite
+      completa del 01/10/2026.)*
 
 Escenarios, props e interfaz **originales del proyecto**. **Los personajes no se regeneran**: se
 reutilizan `A1`..`A5` del Slice 1, que son **obra derivada** de los diseños Anonaky con
@@ -964,26 +1087,131 @@ decorado la lleva (`Direccion_de_Arte.md` §8.2).
 **Chroma:** verde `#00FF00` por defecto; **magenta `#FF00FF`** donde hay verde en el propio asset
 (R5). Los fondos de escena no llevan chroma.
 
-- [ ] **B1 · Escenario del bosque** — chroma **no** — RF-22, guion §6.1.1
-- [ ] **B2 · Objetos del bosque: válidos y tres distractores** — chroma **magenta** — RF-22, RF-23, RNF-19
-- [ ] **B3 · Caja de alimentos, tres estados** — chroma verde — RF-25, RF-26, guion §6.1.2
-- [ ] **B4 · Escenario del área de trabajo** — chroma **no** — RF-27, guion §6.2.2
-- [ ] **B5 · Las seis piezas del taller** — chroma verde — RF-27, RF-28
-- [ ] **B6 · La rueda y la carretilla, cinco estados de ensamblaje** — chroma verde — RF-28, RF-29, HU-09
-- [ ] **B7 · Carretilla vista superior, cuatro orientaciones** — chroma **magenta** — RF-30, RF-31, **INC-33**
-- [ ] **B8 · Tablero del laberinto y tres obstáculos** — chroma **no** — RF-30, RF-33, guion §6.3.2
-- [ ] **B9 · Bloques Avanzar/Retroceder/Girar y botón Ejecutar** — chroma verde — RF-31, RF-32, **RNF-19**, PG-04
-- [ ] **B10 · Contador de acopio e iconos de resultado** — chroma verde — RF-24, RF-11, RNF-19, RNF-20
-- [ ] Postproceso: recorte del chroma, alfa, halo, **mismo `Pixels Per Unit` que el Slice 1**
-- [ ] Cada asset pasa la **checklist de `Direccion_de_Arte.md` §17** y su línea «Verificación»
-- [ ] Desaturar B2, B7, B8, B9 y B10 y verificar que se siguen distinguiendo (RNF-19)
-- [ ] Verificar RNF-20 sobre el arte final: el bosque es claro, el texto va siempre sobre marco
+- [x] **B1 · Escenario del bosque** — chroma **no** — RF-22, guion §6.1.1
+      *(01/10/2026: Implementación — `env_n2_bosque_claro.png` es el entorno final —3840×1080, en
+      `Single`, sin comprimir y a 4096—, recibido y aprobado en el acta D06 (15/09); el decorado no
+      lleva el acento `#C79A5E` (§8.2). Pruebas:
+      `ForestScene_RNF23_ElEntornoCubreLaPantallaSinDeformarse` y
+      `WorkshopScene_RNF23_ElEntornoEsElDelBosqueYCubreLaPantallaConElEncuadreDeLa23`, en verde en
+      la suite completa del 01/10/2026.)*
+- [x] **B2 · Objetos del bosque: válidos y tres distractores** — chroma **magenta** — RF-22, RF-23, RNF-19
+      *(01/10/2026: Implementación — props definitivos desde el 25/09 (`1d5ce58`, `44fd479`): el
+      tronco válido `prop_n2_tronco_a` —con la textura de `RollingLog`— y los distractores piedra
+      `_a` a `_d`, planta `_a` a `_c` y herramienta `_a` a `_c`. El acento `#C79A5E` es del tronco
+      válido —ningún distractor pasa del 5 % de sus píxeles— y las cuatro familias se distinguen por
+      silueta en grises, como pidió el acta D06. Pruebas:
+      `WheelLevelConfig_RNF23_CadaObjetoDelBosqueTraeSuIlustracion`,
+      `ForestScene_RNF23_CadaObjetoMuestraLaIlustracionDeSuAsset` y
+      `WheelLevelConfig_RF23_LosTroncosRedondosSeDibujanConUnSoloSprite`, en verde en la suite
+      completa del 01/10/2026.)*
+- [x] **B3 · Caja de alimentos, tres estados** — chroma verde — RF-25, RF-26, guion §6.1.2
+      *(01/10/2026: Corrección — `prop_n2_caja_suelo.png` es la caja con alimentos definitiva
+      (`1d5ce58`, 25/09), y los tres estados los compone el motor: en el suelo del bosque, sobre los
+      troncos y rodando en la 2.2 (INC-50). Desde D10-2 la 2.2 abre con esa misma caja, en el sitio
+      y con el tamaño con que la deja el bosque (INC-120):
+      `WheelLevelConfig_RF05_LaCajaColocadaEsLaQueLaEscena22DibujaAlAbrir` y
+      `ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22`, en verde en la
+      suite completa del 01/10/2026; la caja vacía queda sin uso.)*
+- [x] **B4 · Escenario del área de trabajo** — chroma **no** — RF-27, guion §6.2.2
+      *(01/10/2026: Decisión — el taller es el claro este del bosque: `Level2_Workshop` usa
+      `env_n2_bosque_claro.png` con el encuadre de `Camara_Narrativa_N2.md` §5.6 (W09, 12/09) y
+      `env_n2_taller.png` no se produce. Lo vigila
+      `WorkshopScene_RNF23_ElEntornoEsElDelBosqueYCubreLaPantallaConElEncuadreDeLa23`, en verde en
+      la suite completa del 01/10/2026.)*
+- [x] **B5 · Las seis piezas del taller** — chroma verde — RF-27, RF-28
+      *(01/10/2026: Implementación — `prop_n2_pieza_1` (los dos troncos cortos), `_3` (eje), `_4`
+      (tabla) y `_5` (herramienta) son definitivas (`44fd479`, 25/09); la caja es
+      `prop_n2_caja_suelo` (B5 = B3) y la cuerda `_2` es la séptima pieza (INC-54). Las referencia
+      `N2_AssemblyContent.asset`. Pruebas:
+      `WorkshopScene_RF29_LaSecuenciaCompletaConfirmaYGuardaLaFase2` y
+      `AssemblySequence_INC54_LaCuerdaAmarraLaCajaYCompletaLaCarretilla`, en verde en la suite
+      completa del 01/10/2026.)*
+- [x] **B6 · La rueda y la carretilla, cinco estados de ensamblaje** — chroma verde — RF-28, RF-29, HU-09
+      *(01/10/2026: Corrección — `prop_n2_carretilla_e1` a `_e5` son definitivas (`44fd479`, 25/09)
+      y desde D10-2 el taller recorre los cinco estados: al amarrar la cuerda pasa a `e5`, el mismo
+      dibujo con que abre la 2.4 (INC-121). Pruebas:
+      `WorkshopScene_INC54_AlAmarrarLaCuerdaLaCarretillaPasaAlDibujoConCuerda`,
+      `AssemblyContent_INC54_LaCarretillaAmarradaEsElDibujoConElQueAbreLaEscena24` y
+      `WorkshopScene_RF29_LaCarretillaCreceSobreLoAnteriorSinQueLaInterfazLaTape`, en verde en la
+      suite completa del 01/10/2026.)*
+- [x] **B7 · Carretilla vista superior, cuatro orientaciones** — chroma **magenta** — RF-30, RF-31, **INC-33**
+      *(01/10/2026: Decisión — un solo sprite cenital que la escena gira según la orientación, no
+      cuatro láminas: `prop_n2_laberinto_carretilla.png` (256², dibujado mirando al norte; `CartArt`
+      de `N2_MazeLayout.asset`), cuya versión vigente entró el 30/09 (`649b4d6`). Lo vigila
+      `MazeScene_RF31_LaOrientacionDeLaCarretillaEsVisibleYGiraACadaLado`, en verde en la suite
+      completa del 01/10/2026: la orientación se lee por la forma, no por el color (RNF-19).)*
+- [x] **B8 · Tablero del laberinto y tres obstáculos** — chroma **no** — RF-30, RF-33, guion §6.3.2
+      *(01/10/2026: Decisión — el laberinto es un seto con un solo tipo de obstáculo, el arbusto
+      `prop_n2_laberinto_obstaculo`, y su trazado se genera al azar con camino garantizado (INC-57):
+      no hay piedras, curvas ni pendientes. El tablero es el entorno del laberinto aprobado en el
+      acta D06, con el contraste 1,1 y la saturación 0,75 que aprobó el acta D08 —le quitan naranja
+      al suelo—, y la cuadrícula la dibuja el motor. Pruebas:
+      `MazeScene_RNF23_ElEntornoCabeEnteroEnSuPanelSinDeformarseYLaMatrizCubreElSeto`,
+      `MazeScene_RF31_LaCuadriculaDeLaMatrizSeDibujaDentroDelSeto` y
+      `MazeScene_RF30_LaSalidaSeLeeEnElEntornoYElPanelLoContinua`, en verde en la suite completa del
+      01/10/2026.)*
+- [x] **B9 · Bloques Avanzar/Retroceder/Girar y botón Ejecutar** — chroma verde — RF-31, RF-32, **RNF-19**, PG-04
+      *(01/10/2026: Decisión — Santiago aceptó el 30/09/2026 el conjunto genérico de interfaz como
+      arte final (acta D10, §5): los bloques y «Ejecutar» los arma el motor (mockup 10) con
+      `ui_boton` y `ui_circulo` teñidos, rombo, pestaña y contorno (INC-55, INC-58), sin láminas
+      `ui_n2_bloque_*`. Lo vigilan
+      `MazeScene_RNF19_LosTresBloquesSeDistinguenPorFormaYElCajonLosGuarda`,
+      `MazeScene_RNF19_ElLadoElegidoDeGirarSeDistingueSinColor` y
+      `WheelLevel_RNF20_ContrasteSuficienteEnLasTresEscenas`, en verde en la suite completa del
+      01/10/2026; PG-04 (clic simple) se cerró en W-E.)*
+- [x] **B10 · Contador de acopio e iconos de resultado** — chroma verde — RF-24, RF-11, RNF-19, RNF-20
+      *(01/10/2026: Decisión — Santiago aceptó el 30/09/2026 el conjunto genérico de interfaz como
+      arte final (acta D10, §5): el contador es texto sobre una tablilla de marfil, y el resultado
+      se marca con `ui_circulo` para el acierto y `ui_alerta` para el rechazo, que se distinguen por
+      forma. Lo vigilan `ForestScene_RNF19_ElRechazoSeDistingueSinDependerDelColor`,
+      `WheelLevel_RNF19_LosTresEstadosDeErrorSeLeenSinColor` y
+      `WheelLevel_RNF20_ContrasteSuficienteEnLasTresEscenas`, en verde en la suite completa del
+      01/10/2026.)*
+- [x] Postproceso: recorte del chroma, alfa, halo, **mismo `Pixels Per Unit` que el Slice 1**
+      — cerrado el 01/10/2026: medido con `arte_check.py`, todos los PNG de `Props/Wheel` y de los
+      entornos del Nivel 2 cumplen la nomenclatura, los props tienen canal alfa, ninguno lleva halo
+      de croma intenso —a lo sumo píxeles sueltos de α ≤ 6 en las carretillas, el obstáculo y el
+      tronco— y todos van a 100 PPU, como el Slice 1, sin comprimir y a 4096
+      (`claudeDocs/tasks/OE4/evidencias/arte/sprites.md`). `entorno_n2_laberinto` y
+      `prop_n2_caja_suelo_vacía` se renombraron desde el motor a `env_n2_laberinto` y
+      `prop_n2_caja_suelo_vacia` (INC-126). Los doce PNG del Nivel 2 que llegaron en `Multiple` son
+      la excepción de INC-128: diez se referencian por su sub-sprite, y `prop_n2_piedra_c` y `_d`,
+      sin uso, quedan documentados para pasarlos a `Single` antes de usarlos (decisión D-OBS).
+- [x] Cada asset pasa la **checklist de `Direccion_de_Arte.md` §17** y su línea «Verificación»
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de
+      Claude del 01/10/2026: las columnas que se miden, en verde sobre el arte del Nivel 2
+      —nomenclatura, alfa, halo y compresión (`claudeDocs/tasks/OE4/evidencias/arte/sprites.md`),
+      contraste de los textos del bosque y del laberinto ≥ 7,1:1 (`rnf20-extra.md`) y las parejas de
+      RNF-19 (`rnf19.md`, `rnf19-w3.md`)—; las de criterio quedan con la aceptación del arte
+      entregado (acta D10, §4: «tablero de arte B1 a B10»), sobre el bosque y el tablero aprobados en
+      el acta D06 y los props revisados con la colaboradora en el acta D09.
+- [x] Desaturar B2, B7, B8, B9 y B10 y verificar que se siguen distinguiendo (RNF-19)
+      — cerrado el 01/10/2026: desaturado con `arte_check.py`. B2: el tronco frente a las diez
+      piedras, plantas y herramientas y las tres categorías entre sí se separan por silueta y por
+      gris, también en la captura del bosque; B8: seto y camino del laberinto, Δ gris 85,0 y 133,9
+      (la caja del seto interior, re-apuntada en `rnf19-w3.md`); B10: acierto y rechazo, por forma y
+      por gris (`claudeDocs/tasks/OE4/evidencias/arte/rnf19.md`, `rnf19-w3.md`). B7 y B9 se
+      distinguen por forma, que el gris no cambia: la carretilla es un solo sprite que gira con la
+      orientación, y los tres bloques son rectángulo, píldora y rombo, con el lado de «Girar»
+      marcado por contorno. Lo vigilan
+      `MazeScene_RF31_LaOrientacionDeLaCarretillaEsVisibleYGiraACadaLado`,
+      `MazeScene_RNF19_LosTresBloquesSeDistinguenPorFormaYElCajonLosGuarda`,
+      `MazeScene_RNF19_ElLadoElegidoDeGirarSeDistingueSinColor`,
+      `ForestScene_RNF19_ElRechazoSeDistingueSinDependerDelColor` y
+      `WheelLevel_RNF19_LosTresEstadosDeErrorSeLeenSinColor`, en verde en la suite de rc2
+      (`claudeDocs/tasks/OE4/evidencias/suites/rc2-final/`).
+- [x] Verificar RNF-20 sobre el arte final: el bosque es claro, el texto va siempre sobre marco
+      *(01/10/2026: Implementación — `WheelLevel_RNF20_ContrasteSuficienteEnLasTresEscenas` mide
+      cada texto del bosque, el taller y el laberinto contra su cara real —≥ 4,5:1— y desde D10-5
+      exige además que esa cara no sea la ilustración del entorno, como la prueba del río: el texto
+      va siempre sobre marco. En verde en la suite completa del 01/10/2026; la aserción nueva se
+      puso en rojo con dos mutaciones antes de pasar.)*
 
 ---
 
 ## Bloqueantes y decisiones pendientes
 
-- [ ] **Dos pruebas del bosque dependen de dónde esté el ratón real (14/09/2026).**
+- [x] **Dos pruebas del bosque dependen de dónde esté el ratón real (14/09/2026).**
       `ForestScene_RF22_LosObjetosCaenEntreElCincoYElSesentaPorCientoDeLaPantalla` y
       `_RF22_LosObjetosMasAltosSeVenMasPequenos` fallaron en una corrida PlayMode completa
       (por 1 px y por 0,8 %) y pasan solas, 28/28. La causa no es aleatoria:
@@ -992,6 +1220,9 @@ decorado la lleva (`Direccion_de_Arte.md` §8.2).
       ese cursor está donde lo dejó el usuario. Arreglo de una línea cuando se aborde: que esas
       dos pruebas construyan el config con `HoverRadius = 0`, o que lleven el ratón fuera del
       suelo antes de medir. **No es regresión de W08/W09.**
+      *(01/10/2026: Corrección — corregido en `d81cfc7` (17/09) con la segunda salida: las dos
+      pruebas llaman a `ElCursorLejos` —el cursor fuera del suelo— antes de medir. Pasan dentro de
+      la suite PlayMode completa del 01/10/2026, con el Editor a 1920×1080.)*
 
 - [x] **El mazo del taller estaba inerte (14/09/2026).** Salió de revisar a mano las aristas
       AMBIGUOUS del grafo: «Ensamblaje de la carretilla ↔ Pieza 5 · mazo de piedra» era correcta y
@@ -1000,25 +1231,60 @@ decorado la lleva (`Direccion_de_Arte.md` §8.2).
       dice «el **botón** de mecanizar» y el guion §6.2.2 paso 2 también: ni el RF ni el guion
       necesitan corrección, y lo radicado se sigue cumpliendo al pie de la letra.
 
-- [~] **R2 · Cerrar el Slice 1** hasta su Checkpoint D. **Dejó de ser bloqueante duro para W02**
+- [x] **R2 · Cerrar el Slice 1** hasta su Checkpoint D. **Dejó de ser bloqueante duro para W02**
       (decisión del 10/09/2026): el freno real era la colisión con T17 sobre `PlayerProfile.cs` y
       `SaveStore.cs`, y T17 no había empezado, así que W02 escribió primero y T17 se apoya en su
       API. Lo que sigue dependiendo del Slice 1 es el **consumidor en juego** del modelo de fase
       (T17/T18) y la verificación de RNF-14 sobre el ejecutable, ambos en el Checkpoint D.
-- [~] **R1 · Instalar el servidor MCP de Unity** (`run_unity_tests`). Este slice tiene ocho
+      — cerrado el 01/10/2026: el consumidor en juego existe desde T17 y T18 (11/09), y RNF-14 se
+      verificó sobre el ejecutable en el Checkpoint D del Slice 1 —siete cierres forzados sobre rc1
+      y dos en el instante del guardado sobre rc2, sin perder nada confirmado—
+      (`claudeDocs/tasks/OE4/evidencias/S-PER/S-PER_registro_de_pasos.md`,
+      `claudeDocs/tasks/OE4/OE4-Resultados.md` §5 y §8.3). Del Checkpoint D solo sigue abierta la
+      ejecución sin red y en un segundo equipo (D-b, H3 y H4), que no frena ninguna tarea de este slice.
+- [x] **R1 · Instalar el servidor MCP de Unity** (`run_unity_tests`). Este slice tiene ocho
       tareas `MCP` contra las seis del Slice 1: el costo de no tenerlo crece. **Paliativo que
       funcionó el 15/09/2026** (W15–W18 y W-F): un script de editor efímero con `[InitializeOnLoad]`
       que registra `TestRunnerApi.RegisterCallbacks` tras cada recarga de dominio y escribe el
       resultado en un archivo; se lanza con `coplay-mcp` `execute_script` y se sondea el archivo
       desde la terminal. Sirve para EditMode y PlayMode con el Editor abierto; se borró al terminar.
+      *(01/10/2026: Implementación — el servidor está instalado desde el 06/09 (Rider 2026.2, plugin
+      30357) y responde con Rider abierto: W09 se corrió «8/8 por el corredor de Rider» (12/09). El
+      P00 del Slice 4 (23/09) fijó `unity test` como corredor confirmado y `CLAUDE.md` §Comandos
+      documenta los caminos. Desde el 30/09 `claudeDocs/tasks/OE4/herramientas/editor.ps1`
+      (`649b4d6`) corre las suites con el Editor abierto por la API de `com.unity.pipeline`: así se
+      corrió la suite completa del 01/10/2026.)*
 - [x] **Pregunta abierta 1 · `Pasos utilizados` de la fase 1** sin definir en OE1 §3.6.1.
       Es un entregable radicado: **no se decide desde el código**. W15 lo emite como **0 («no
       aplica»)** y lo deja escrito en `WheelIndicatorCollector` y en su prueba
       (`_RF45_PasosUtilizadosSigueLaDefinicionDeCadaFase`). Cerrada el 29/09/2026: OE1 §3.6.1 la
       define como cero.
-- [ ] **Pregunta abierta 3 · Trazado del laberinto.** Validar `N2_MazeLayout.asset` jugando: al
+- [x] **Pregunta abierta 3 · Trazado del laberinto.** Validar `N2_MazeLayout.asset` jugando: al
       menos una solución que **exija girar**, ninguna que se resuelva con «Avanzar» repetido.
-- [ ] **Pregunta abierta 4 · ¿Se adelantan W10..W12?** Recomendación: sí, para descargar INC-33.
-- [ ] **PG-02 · nombre del guía.** El documento fuente del Nivel 2 lo llamaba «Algorim»; el guion
+      *(01/10/2026: Decisión — el trazado dejó de ser fijo: `MazeGrid.Generate` lo siembra al cargar
+      la fase con camino garantizado y un rodeo mínimo de 2 (INC-57; guion §1.6.3.2). Los dos
+      criterios se cumplen por construcción: la carretilla sale de (0,8) mirando al este y el
+      refugio está en (15,2), en otra fila, así que toda solución gira y ninguna es «Avanzar»
+      repetido. Lo vigilan `MazeGrid_RNF13_ExisteUnaSecuenciaQueAlcanzaElRefugio` y
+      `MazeGrid_RNF18_LaMismaSemillaProduceElMismoTrazadoYSalidaYRefugioNoCambian`, en verde en la
+      suite completa del 01/10/2026.)*
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de Claude
+      del 01/10/2026: jugado sobre rc2 en S-N2C-rc2, con la carretilla en (0,8) mirando al este y el
+      refugio en (15,2). La secuencia ganadora, de nueve bloques, gira cuatro veces: Avanzar ×1,
+      Girar ‹, Avanzar ×1, Girar ›, Avanzar ×8, Girar ›, Avanzar ×7, Girar ‹, Avanzar ×6
+      (`claudeDocs/tasks/OE4/evidencias/rc2/S-N2C-rc2_registro_de_pasos.md`, tablero y secuencia
+      ganadora; PF-RF30-01 a PF-RF34-02 en P, `claudeDocs/tasks/OE4/OE4-Resultados.md` §8.4).
+- [x] **Pregunta abierta 4 · ¿Se adelantan W10..W12?** Recomendación: sí, para descargar INC-33.
+      *(01/10/2026: Decisión — sin objeto: W10 a W14 se hicieron el 13/09 (`b1b423a`) y W15 a W19 el
+      15/09, así que no quedó orden que decidir. INC-33 está cerrado y lo vigila
+      `CartState_RF31_AvanzarEsRelativoALaOrientacionNoAbsoluto`, en verde en la suite completa del
+      01/10/2026.)*
+- [x] **PG-02 · nombre del guía.** El documento fuente del Nivel 2 lo llamaba «Algorim»; el guion
       adopta «Chispa». Confirmar antes de generar el arte de la escena 2.1.
+      *(01/10/2026: Decisión — PG-02 se cerró el 02/09 con «Algoritm» y no con «Chispa» (INC-44;
+      guion §1.2): las narrativas `N2_*` hablan como `ALGORITM` y su arte es `Algoritm_Rueda`, salvo
+      el Puente I, que lleva la forma de fuego (INC-45).)*
 - [ ] **PG-05 · cambio de esquema de control** N1 → N2. Verificar en el Checkpoint W-F.
+      — sigue abierta el 01/10/2026 por la decisión D-b (acta D10, §5): es la misma observación
+      que la casilla PG-05 del Checkpoint W-F; la hace Santiago con estudiantes, con H1 de
+      `claudeDocs/tasks/OE4/Hoja-HUM.md` y el consentimiento de RNF-12, y se marca con su plantilla.

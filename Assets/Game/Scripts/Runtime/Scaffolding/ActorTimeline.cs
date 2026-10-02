@@ -11,6 +11,10 @@ namespace Game.Scaffolding
     /// Entre pasos el personaje **mantiene** lo último que hizo —arrodillado sigue arrodillado—
     /// y no vuelve al reposo solo. Así un paso describe un estado y no un instante, que es como
     /// las escribe el guion: «el niño se arrodilla» vale hasta que otra acotación lo levanta.
+    ///
+    /// Un paso nuevo interrumpe el camino en curso (<see cref="Interrupts"/>), salvo a quien termina
+    /// sus pasos (<see cref="NarrativeProp.FinishesSteps"/>): ese llega y después da el paso con
+    /// movimiento que se leyó mientras caminaba (<see cref="PendingStep"/>).
     /// </remarks>
     public static class ActorTimeline
     {
@@ -92,6 +96,44 @@ namespace Game.Scaffolding
             }
 
             return found;
+        }
+
+        /// <summary>
+        /// Si la línea interrumpe el camino en curso: un paso nuevo, sí; una línea sin paso, no
+        /// —quien camina termina su camino—. A quien termina sus pasos
+        /// (<see cref="NarrativeProp.FinishesSteps"/>) no lo interrumpe nada.
+        /// </summary>
+        public static bool Interrupts(NarrativeProp prop, int line) =>
+            !prop.FinishesSteps && BeatAt(prop, line) != null;
+
+        /// <summary>
+        /// El paso que le queda pendiente al llegar a quien termina sus pasos: el último con
+        /// movimiento de los que se leyeron mientras daba <paramref name="walked"/> —después de su
+        /// línea y hasta <paramref name="line"/>—, que es el que dice dónde acaba
+        /// (<see cref="PositionAfter"/>). Si se leyeron varios, va directo al destino del último.
+        /// <c>null</c> si no hay ninguno, y siempre para quien no termina sus pasos: a ese el paso
+        /// nuevo lo interrumpió al leerse (<see cref="Interrupts"/>).
+        /// </summary>
+        public static ActorBeat PendingStep(NarrativeProp prop, ActorBeat walked, int line)
+        {
+            if (!prop.FinishesSteps)
+            {
+                return null;
+            }
+
+            ActorBeat pending = null;
+            foreach (var beat in prop.Beats)
+            {
+                // Estricto: con «>=» el paso recién dado volvería a salir pendiente y el personaje
+                // lo repetiría en el sitio sin fin.
+                if (beat != null && beat.Moves && beat.Line > walked.Line && beat.Line <= line
+                    && (pending == null || beat.Line >= pending.Line))
+                {
+                    pending = beat;
+                }
+            }
+
+            return pending;
         }
 
         /// <summary>Lo que el personaje mantiene al llegar a la línea: lo que dejó el último paso anterior, o su salida.</summary>

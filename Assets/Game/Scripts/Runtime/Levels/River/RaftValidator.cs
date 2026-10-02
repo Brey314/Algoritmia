@@ -10,7 +10,7 @@ namespace Game.Levels.River
     /// le corresponde.
     /// </summary>
     /// <remarks>
-    /// Función pura, sin estado: <see cref="RaftAssembly"/> la llama al confirmar y aplica el
+    /// Función pura, sin estado: <see cref="RaftAssembly"/> la llama al confirmar y al probar, y aplica el
     /// resultado —devolver solo lo mal puesto y conservar lo aprobado (RF-43)—. Separada para que
     /// la regla de «qué está mal» se pruebe sola, sin fases ni inventario.
     /// </remarks>

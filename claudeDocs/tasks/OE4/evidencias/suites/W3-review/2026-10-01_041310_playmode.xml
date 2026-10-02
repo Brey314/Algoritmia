@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="13" result="Passed" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-01 09:13:16Z" end-time="2026-10-01 09:13:44Z" duration="28,0942601">
+  <test-suite type="TestSuite" id="2008" name="Algoritmia" fullname="Algoritmia" runstate="Runnable" testcasecount="364" result="Passed" start-time="2026-10-01 09:13:16Z" end-time="2026-10-01 09:13:44Z" duration="28.094260" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1736" name="Game.Levels.River.PlayMode.Tests.dll" fullname="C:/Dev/Algoritmia/Library/ScriptAssemblies/Game.Levels.River.PlayMode.Tests.dll" runstate="Runnable" testcasecount="57" result="Passed" start-time="2026-10-01 09:13:16Z" end-time="2026-10-01 09:13:44Z" duration="28.091624" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42352" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1737" name="Game" fullname="Game" runstate="Runnable" testcasecount="57" result="Passed" start-time="2026-10-01 09:13:16Z" end-time="2026-10-01 09:13:44Z" duration="28.090359" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1738" name="Levels" fullname="Game.Levels" runstate="Runnable" testcasecount="57" result="Passed" start-time="2026-10-01 09:13:16Z" end-time="2026-10-01 09:13:44Z" duration="28.089189" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1739" name="River" fullname="Game.Levels.River" runstate="Runnable" testcasecount="57" result="Passed" start-time="2026-10-01 09:13:16Z" end-time="2026-10-01 09:13:44Z" duration="28.088038" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1740" name="Tests" fullname="Game.Levels.River.Tests" runstate="Runnable" testcasecount="57" result="Passed" start-time="2026-10-01 09:13:16Z" end-time="2026-10-01 09:13:44Z" duration="28.087019" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1667" name="AssemblyPanelTests" fullname="Game.Levels.River.Tests.AssemblyPanelTests" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-10-01 09:13:16Z" end-time="2026-10-01 09:13:44Z" duration="28.085951" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1676" name="AssemblyPanel_DA133_AlAprobarUnaFaseMamaYLaFamiliaCelebran" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_DA133_AlAprobarUnaFaseMamaYLaFamiliaCelebran" methodname="AssemblyPanel_DA133_AlAprobarUnaFaseMamaYLaFamiliaCelebran" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="2104079413" result="Passed" start-time="2026-10-01 09:13:16Z" end-time="2026-10-01 09:13:18Z" duration="2.145047" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1677" name="AssemblyPanel_DA133_CuandoLaBalsaSeHundeLaFamiliaAnimaYNingunoHaceOtroGesto" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_DA133_CuandoLaBalsaSeHundeLaFamiliaAnimaYNingunoHaceOtroGesto" methodname="AssemblyPanel_DA133_CuandoLaBalsaSeHundeLaFamiliaAnimaYNingunoHaceOtroGesto" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1240947613" result="Passed" start-time="2026-10-01 09:13:18Z" end-time="2026-10-01 09:13:22Z" duration="3.536349" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1675" name="AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance" methodname="AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="133468645" result="Passed" start-time="2026-10-01 09:13:22Z" end-time="2026-10-01 09:13:25Z" duration="3.320319" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Revisar las tres capturas: la balsa crece de la base con siluetas, a la base con amarres, al mástil y la vela; la familia en la orilla a la izquierda y la balsa sobre el agua a la derecha, a la escala de la 3.3, sin tocar a la familia ni los botones; la casilla de tronco a 1:1, sin pixelado; la sombra al 30 % (lectura B, INC-118). En _Base y _Amarre se ven «Listo» y «Probar balsa» lado a lado, con la misma tipografía, sin solaparse con la balsa y con contraste legible; en _MastilYVela hay un solo «Probar balsa», centrado (D-j del 30/09/2026)." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/AssemblyPanel_HU12_Base.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/AssemblyPanel_HU12_Amarre.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/AssemblyPanel_HU12_MastilYVela.png
+]]></output>
+                </test-case>
+                <test-case id="1668" name="AssemblyPanel_RF40_MuestraSoloLosEspaciosDeLaFaseActiva" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF40_MuestraSoloLosEspaciosDeLaFaseActiva" methodname="AssemblyPanel_RF40_MuestraSoloLosEspaciosDeLaFaseActiva" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="98349657" result="Passed" start-time="2026-10-01 09:13:25Z" end-time="2026-10-01 09:13:28Z" duration="2.646743" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1670" name="AssemblyPanel_RF40_SoltarSobreLaPuntaDeUnTroncoLoPoneEnEseTroncoYNoEnElVecino" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF40_SoltarSobreLaPuntaDeUnTroncoLoPoneEnEseTroncoYNoEnElVecino" methodname="AssemblyPanel_RF40_SoltarSobreLaPuntaDeUnTroncoLoPoneEnEseTroncoYNoEnElVecino" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="605213088" result="Passed" start-time="2026-10-01 09:13:28Z" end-time="2026-10-01 09:13:29Z" duration="1.423391" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1678" name="AssemblyPanel_RF42_ElBotonProbarBalsaEstaDisponibleEnCadaFase" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF42_ElBotonProbarBalsaEstaDisponibleEnCadaFase" methodname="AssemblyPanel_RF42_ElBotonProbarBalsaEstaDisponibleEnCadaFase" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1255370365" result="Passed" start-time="2026-10-01 09:13:29Z" end-time="2026-10-01 09:13:32Z" duration="2.623328" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1680" name="AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto" methodname="AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1410478644" result="Passed" start-time="2026-10-01 09:13:32Z" end-time="2026-10-01 09:13:34Z" duration="2.005743" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1679" name="AssemblyPanel_RF42_ProbarLaBalsaIncompletaLaHundeYSigueEnLaFase" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF42_ProbarLaBalsaIncompletaLaHundeYSigueEnLaFase" methodname="AssemblyPanel_RF42_ProbarLaBalsaIncompletaLaHundeYSigueEnLaFase" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="173074063" result="Passed" start-time="2026-10-01 09:13:34Z" end-time="2026-10-01 09:13:36Z" duration="2.006319" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1671" name="AssemblyPanel_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" methodname="AssemblyPanel_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1431894616" result="Passed" start-time="2026-10-01 09:13:36Z" end-time="2026-10-01 09:13:37Z" duration="1.405608" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1672" name="AssemblyPanel_RNF02_LaCasillaDelInventarioRecibeElClicSostenidoPorRaycastYSueltaEnElEspacio" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF02_LaCasillaDelInventarioRecibeElClicSostenidoPorRaycastYSueltaEnElEspacio" methodname="AssemblyPanel_RNF02_LaCasillaDelInventarioRecibeElClicSostenidoPorRaycastYSueltaEnElEspacio" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="596625705" result="Passed" start-time="2026-10-01 09:13:37Z" end-time="2026-10-01 09:13:39Z" duration="1.402863" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1673" name="AssemblyPanel_RNF03_ConLaFase3AbiertaLaBalsaElBotonYLasTablillasCabenSinSolaparse" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF03_ConLaFase3AbiertaLaBalsaElBotonYLasTablillasCabenSinSolaparse" methodname="AssemblyPanel_RNF03_ConLaFase3AbiertaLaBalsaElBotonYLasTablillasCabenSinSolaparse" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="716785482" result="Passed" start-time="2026-10-01 09:13:39Z" end-time="2026-10-01 09:13:41Z" duration="2.626206" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1674" name="AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse" methodname="AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1222028381" result="Passed" start-time="2026-10-01 09:13:41Z" end-time="2026-10-01 09:13:43Z" duration="1.437240" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1669" name="AssemblyPanel_RNF19_ElEspacioIncorrectoSeResaltaConColorEIcono" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF19_ElEspacioIncorrectoSeResaltaConColorEIcono" methodname="AssemblyPanel_RNF19_ElEspacioIncorrectoSeResaltaConColorEIcono" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="127801233" result="Passed" start-time="2026-10-01 09:13:43Z" end-time="2026-10-01 09:13:44Z" duration="1.503628" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

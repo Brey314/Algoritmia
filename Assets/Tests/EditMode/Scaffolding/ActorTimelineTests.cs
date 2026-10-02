@@ -116,5 +116,108 @@ namespace Game.Scaffolding.Tests
             Assert.That(ActorTimeline.PositionBefore(sut, 2), Is.EqualTo(Entrada));
             Assert.That(ActorTimeline.PositionAfter(sut, 2), Is.EqualTo(Fondo));
         }
+
+        private static readonly Vector2 Orilla = new Vector2(0.20f, 0.47f);
+
+        /// <summary>
+        /// Un viajero como los de la 3.3: cruza en la línea 0, celebra en la 1, señala sin moverse en
+        /// la 2, baja a la orilla en la 3 y celebra en la 4. Devuelve también sus pasos con movimiento.
+        /// </summary>
+        private static (NarrativeProp Prop, ActorBeat Cruza, ActorBeat Senala, ActorBeat Baja) Viajero(bool terminaSusPasos)
+        {
+            var cruza = new ActorBeat(0, ActorAction.Idle).MovingTo(Fondo, 9f);
+            var senala = new ActorBeat(2, ActorAction.Point).MovingTo(Fondo, 1.2f);
+            var baja = new ActorBeat(3, ActorAction.Walk).MovingTo(Orilla, 2.5f);
+            var viajero = Personaje(ActorAction.Idle,
+                cruza, new ActorBeat(1, ActorAction.Celebrate), senala, baja, new ActorBeat(4, ActorAction.Celebrate));
+            return (terminaSusPasos ? viajero.FinishingSteps() : viajero, cruza, senala, baja);
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void ActorTimeline_RF05_UnPasoNuevoInterrumpeElCaminoDeQuienNoTerminaSusPasos(int linea)
+        {
+            var sut = Viajero(terminaSusPasos: false).Prop;
+
+            var interrumpe = ActorTimeline.Interrupts(sut, linea);
+
+            Assert.That(interrumpe, Is.True, "el paso nuevo manda: salta a donde tenía que llegar y lo empieza");
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ActorTimeline_RF05_UnaLineaSinPasoNoInterrumpeElCamino(bool terminaSusPasos)
+        {
+            var sut = Viajero(terminaSusPasos).Prop;
+
+            var interrumpe = ActorTimeline.Interrupts(sut, 5);
+
+            Assert.That(interrumpe, Is.False, "quien camina termina su camino aunque el texto avance");
+        }
+
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        public void ActorTimeline_RNF21_NingunPasoInterrumpeAQuienTerminaSusPasos(int linea)
+        {
+            var sut = Viajero(terminaSusPasos: true).Prop;
+
+            var interrumpe = ActorTimeline.Interrupts(sut, linea);
+
+            Assert.That(interrumpe, Is.False, "ni celebrar, ni señalar en el sitio, ni bajar a la orilla lo bajan de la balsa a medio río");
+        }
+
+        [TestCase(0)]
+        [TestCase(1)]
+        public void ActorTimeline_RNF21_SiNoSeLeyoNingunPasoQueLoMuevaNoQuedaNadaPendiente(int linea)
+        {
+            var (sut, cruza, _, _) = Viajero(terminaSusPasos: true);
+
+            var pendiente = ActorTimeline.PendingStep(sut, cruza, linea);
+
+            Assert.That(pendiente, Is.Null, "celebrar no lo mueve: al llegar hace lo de la línea en curso");
+        }
+
+        [Test]
+        public void ActorTimeline_RNF21_UnPasoEnElSitioLeidoMientrasCruzabaQuedaPendiente()
+        {
+            var (sut, cruza, senala, _) = Viajero(terminaSusPasos: true);
+
+            var pendiente = ActorTimeline.PendingStep(sut, cruza, 2);
+
+            Assert.That(pendiente, Is.SameAs(senala), "al llegar señala lo que dura su paso, y después dice su línea");
+        }
+
+        [TestCase(3)]
+        [TestCase(4)]
+        public void ActorTimeline_RNF21_QuedaPendienteElUltimoPasoQueLoMueve(int linea)
+        {
+            var (sut, cruza, _, baja) = Viajero(terminaSusPasos: true);
+
+            var pendiente = ActorTimeline.PendingStep(sut, cruza, linea);
+
+            Assert.That(pendiente, Is.SameAs(baja), "baja a la orilla: el último que lo mueve es el que dice dónde acaba");
+        }
+
+        [Test]
+        public void ActorTimeline_RNF21_ElPasoQueAcabaDeDarNoQuedaPendiente()
+        {
+            var (sut, _, _, baja) = Viajero(terminaSusPasos: true);
+
+            var pendiente = ActorTimeline.PendingStep(sut, baja, 4);
+
+            Assert.That(pendiente, Is.Null, "llegó a la orilla y ahí acaba: no repite el paso que acaba de dar");
+        }
+
+        [Test]
+        public void ActorTimeline_RF05_QuienNoTerminaSusPasosNoDejaNadaPendiente()
+        {
+            var (sut, cruza, _, _) = Viajero(terminaSusPasos: false);
+
+            var pendiente = ActorTimeline.PendingStep(sut, cruza, 4);
+
+            Assert.That(pendiente, Is.Null, "a ese el paso nuevo lo interrumpió al leerse");
+        }
     }
 }

@@ -1,0 +1,45 @@
+# arte_check.py rnf19 --file parejas-rnf19.txt   (generado por _gen_specs.py; cajas en coordenadas normalizadas)
+# Una línea con dos imágenes = una pareja; con tres o más = todas las parejas del grupo.
+
+# --- B2 · objetos del bosque (sprites): el válido frente a cada distractor, y las tres categorías entre sí
+B2 válido/distractor ; prop_n2_tronco_a.png ; prop_n2_piedra_a.png
+B2 válido/distractor ; prop_n2_tronco_a.png ; prop_n2_piedra_b.png
+B2 válido/distractor ; prop_n2_tronco_a.png ; prop_n2_piedra_c.png
+B2 válido/distractor ; prop_n2_tronco_a.png ; prop_n2_piedra_d.png
+B2 válido/distractor ; prop_n2_tronco_a.png ; prop_n2_planta_a.png
+B2 válido/distractor ; prop_n2_tronco_a.png ; prop_n2_planta_b.png
+B2 válido/distractor ; prop_n2_tronco_a.png ; prop_n2_planta_c.png
+B2 válido/distractor ; prop_n2_tronco_a.png ; prop_n2_herramienta_a.png
+B2 válido/distractor ; prop_n2_tronco_a.png ; prop_n2_herramienta_b.png
+B2 válido/distractor ; prop_n2_tronco_a.png ; prop_n2_herramienta_c.png
+B2 categorías ; prop_n2_piedra_a.png ; prop_n2_planta_a.png ; prop_n2_herramienta_a.png
+# --- B2 en pantalla: recortes de la captura del bosque (tronco redondo, piedra, brote, rama)
+B2 en captura ; WheelLevel_RNF19_Bosque_ObjetoNoValido.png@0.5911,0.5944,0.6573,0.7056 ; WheelLevel_RNF19_Bosque_ObjetoNoValido.png@0.4260,0.6222,0.4677,0.7019 ; WheelLevel_RNF19_Bosque_ObjetoNoValido.png@0.7490,0.6259,0.7906,0.7074 ; WheelLevel_RNF19_Bosque_ObjetoNoValido.png@0.5198,0.8380,0.5740,0.8981
+# --- B8 · tablero del laberinto: seto frente a camino (recortes de Maze_01_reposo.png)
+B8 seto interior/camino ; Maze_01_reposo.png@0.2177,0.4167,0.2479,0.6389 ; Maze_01_reposo.png@0.1589,0.4167,0.2083,0.6389
+B8 seto del borde/camino ; Maze_01_reposo.png@0.1562,0.1852,0.5208,0.2176 ; Maze_01_reposo.png@0.1589,0.4167,0.2083,0.6389
+# --- B10 · icono de acierto frente a icono de rechazo (sprites; el círculo se tiñe en el juego)
+B10 acierto/rechazo ; ui_circulo.png ; ui_alerta.png
+# --- C4 · los cuatro materiales (sprites)
+C4 materiales ; prop_n3_tronco.png ; prop_n3_sogas.png ; prop_n3_tela.png ; prop_n3_mastil.png
+# --- C5 · lista de tareas: casilla hecha frente a pendiente (recortes de la captura del río)
+C5 hecha/pendiente ; RiverLevel_RNF19_ColocacionIncorrecta.png@0.0469,0.0815,0.0698,0.1204 ; RiverLevel_RNF19_ColocacionIncorrecta.png@0.0469,0.1833,0.0698,0.2241
+# --- C8 · estados del panel: espacio vacío (silueta) frente a pieza correcta (sprites)
+C8 vacío/correcto (sprite tronco) ; prop_n3_tronco_silueta.png ; prop_n3_tronco.png
+C8 vacío/correcto (sprite amarre) ; prop_n3_amarre_silueta.png ; prop_n3_amarre.png
+C8 vacío/correcto (sprite mastil) ; prop_n3_mastil_silueta.png ; prop_n3_mastil.png
+C8 vacío/correcto (sprite vela) ; prop_n3_vela_silueta.png ; prop_n3_vela.png
+# --- C8 en pantalla: vacío / correcto / incorrecto (recortes de las capturas de la balsa)
+C8 vacío/correcto (casilla 5) ; AssemblyPanel_HU12_Base.png@0.4948,0.5324,0.6589,0.7685 ; RiverLevel_RNF19_ColocacionIncorrecta.png@0.4948,0.5324,0.6589,0.7685
+C8 vacío/incorrecto (casilla 1) ; AssemblyPanel_HU12_Base.png@0.3385,0.3704,0.5078,0.6185 ; RiverLevel_RNF19_ColocacionIncorrecta.png@0.3385,0.3704,0.5078,0.6185
+C8 incorrecto/correcto ; RiverLevel_RNF19_ColocacionIncorrecta.png@0.3385,0.3704,0.5078,0.6185 ; RiverLevel_RNF19_ColocacionIncorrecta.png@0.4948,0.5324,0.6589,0.7685
+# --- C9 · balsa que cruza frente a balsa hundida (sprites)
+C9 cruzando/hundida ; prop_n3_balsa_cruzando.png ; prop_n3_balsa_hundida.png
+# --- A7 · estados del montón de hojas del N1 (sprites: intacto, humo, fuego; frames con nombre de entrega)
+A7 montón/humo/fuego ; Props/Fire/prop_n1_monton_hojas_cenital.png ; Props/Fire/Animations/Smoke/humo_nivel_1_0067.png ; Props/Fire/Animations/Fuego cenital/fuego_cenital_nivel_1_0049.png
+# --- A9 · botón Soplar atenuado (con candado) frente a habilitado (recortes; el candado es un cambio pequeño y localizado)
+A9 soplar atenuado/habilitado ; FirePanel_RNF19_SoplarAtenuado.png@0.3281,0.8611,0.4922,0.9333 ; FireLevel_RNF21_ConvergenciaAMitad.png@0.3281,0.8611,0.4922,0.9333
+# --- D1 · los cuatro iconos de indicadores del informe docente (bocetos)
+D1 indicadores ; ui_ind_intentos_boceto.png ; ui_ind_errores_boceto.png ; ui_ind_pasos_boceto.png ; ui_ind_tiempo_boceto.png
+# --- D3 · icono de papelera frente al de alerta (el botón «Eliminar datos» completo necesita una captura del diálogo)
+D3 papelera/alerta ; ui_papelera.png ; ui_alerta.png

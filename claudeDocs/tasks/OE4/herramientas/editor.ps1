@@ -22,12 +22,23 @@
     recarga de dominio el HTTP no responde. Las corridas largas conviene lanzarlas en segundo plano.
 
     Un Editor único: NUNCA dos llamadas a la vez (el servidor serializa los exec, pero dos agentes sobre
-    el mismo Editor se pisan la escena activa).
+    el mismo Editor se pisan la escena activa). Las invocaciones que modifican el Editor toman un mutex y
+    la segunda se rechaza con salida 3; status, scenes, console, commands, test-status y wait-compile no.
+
+    Compilación: con errores vigentes Unity conserva los assemblies VIEJOS y las pruebas saldrían en verde
+    falso, así que tests-* se detiene (salida 3; -Force para correr igual). El Editor sin foco no
+    refresca solo: tras editar código ejecute `recompile` (tests-* avisa si hay fuentes más nuevas que los
+    assemblies). `wait-compile` no dispara nada: úselo tras `recompile` o tras algo que ya compila.
+
+    tests-play fija la Game View a 1920x1080 (sin ella, 13 pruebas de disposición fallan: medido con
+    RiverScene_RNF03 a 640x480) y deja Boot abierta antes de cada corrida.
+    Si una corrida se interrumpe (se mató el proceso): `exec cancel_tests`, y `exec editor_stop` si quedó en Play.
 
 .NOTES
     Códigos de salida: 0 bien · 1 pruebas con fallos, errores de compilación o eval con error ·
     2 fallo de infraestructura (Editor inaccesible, timeout, filtro sin coincidencias, comando
-    rechazado) · 3 guarda (escena sucia, Editor no listo o en Play; no se tocó nada).
+    rechazado) · 3 guarda (escena sucia, errores de compilación vigentes, Editor no listo o en Play,
+    otra invocación en curso; no se tocó nada).
     Para pruebas, `filter` `-` significa «sin filtro» (un `*` lo expandiría el shell).
     Resultados: <-Out | $env:EDITOR_RUNS_DIR | carpeta por defecto>\<fecha-hora>_<modo>.json (+ .xml).
 #>
@@ -39,7 +50,7 @@ param(
     [switch]$FileMode,           # tests-edit: por archivo (async) en vez de trabajo HTTP
     [switch]$NoGameView,         # tests-play: no fijar la Game View a 1920x1080
     [switch]$Raw,                # exec/console/commands: JSON crudo
-    [switch]$Force               # open: abrir aunque haya escenas sucias (puede abrir el aviso modal)
+    [switch]$Force               # open: aunque haya escenas sucias (puede abrir el aviso modal) · tests-*: aunque haya errores de compilación
 )
 
 $ErrorActionPreference = 'Stop'
@@ -56,8 +67,8 @@ $TestRequestFile = Join-Path $Root 'Temp\pipeline_test_request.json'
 $RecompileFile = Join-Path $Root 'Temp\pipeline_recompile_status.json'
 $XmlSource = Join-Path $env:USERPROFILE 'AppData\LocalLow\Universidad Catolica de Colombia\Algoritmia\TestResults.xml'
 $BootScene = 'Assets/Game/Scenes/Boot.unity'
-# Sesión del cierre (30/09/2026); se sobrescribe con -Out o $env:EDITOR_RUNS_DIR.
-$DefaultRunsDir = 'C:\Users\benab\AppData\Local\Temp\claude\c--Dev-Algoritmia\a5dca15e-0f11-4624-ba8a-5eb31dd2d2f0\scratchpad\cierre\runs'
+# Carpeta de resultados por defecto; se sobrescribe con -Out o $env:EDITOR_RUNS_DIR.
+$DefaultRunsDir = Join-Path $env:TEMP 'Algoritmia-editor-runs'
 $GameViewCode = 'UnityEditor.PlayModeWindow.SetCustomRenderingResolution(1920, 1080, "Pruebas 1080p"); ' +
                 'uint w, h; UnityEditor.PlayModeWindow.GetRenderingResolution(out w, out h); return w + "x" + h;'
 
@@ -120,6 +131,7 @@ function Invoke-Cmd {
     $r = Invoke-Api -Path '/api/exec' -Method POST -Body $body -TimeoutSec ($TimeoutSec + 20) -RetrySec $RetrySec
     if ($r.Code -ne 200 -or -not $r.Json -or -not $r.Json.success) {
         $why = if ($r.Json) { "$($r.Json.error): $($r.Json.errorDetails)" } else { $r.Text }
+        if ($why.Length -gt 600) { $why = $why.Substring(0, 600) + ' …' }   # «Command Not Found» lista los 150 comandos
         throw "HTTP $($r.Code) en '$Name': $why"
     }
     $r.Json
@@ -147,7 +159,7 @@ function Wait-Ready([int]$TimeoutSec = 180) {
 function Get-Scenes { (Invoke-Cmd 'list_open_scenes' -TimeoutSec 30).result }
 
 function Format-Scene($s) {
-    '{0} | {1} | activa={2} sucia={3}' -f $s.name, $(if ($s.path) { $s.path } else { '(sin ruta)' }), $s.isActive, $s.isDirty
+    '{0} | {1} | activa={2} sucia={3}' -f $(if ($s.name) { $s.name } else { '(sin nombre)' }), $(if ($s.path) { $s.path } else { '(sin ruta)' }), $s.isActive, $s.isDirty
 }
 
 # Ninguna escena sucia: con el marcador fresco ClaudeSceneAutosave limpia en <1 s lo que Claude ensució.
@@ -257,6 +269,20 @@ function Finish-Run($Run) {
     exit 0
 }
 
+# Primera fuente (.cs/.asmdef/.asmref) más nueva que el último assembly compilado, o $null. El Editor sin foco
+# no refresca solo: sin `recompile` las pruebas correrían contra lo compilado antes.
+function Get-StaleSource {
+    $dll = Get-ChildItem (Join-Path $Root 'Library\ScriptAssemblies') -Filter *.dll -ErrorAction SilentlyContinue |
+        Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
+    if (-not $dll) { return $null }
+    foreach ($pattern in '*.cs', '*.asmdef', '*.asmref') {
+        foreach ($f in [IO.Directory]::EnumerateFiles((Join-Path $Root 'Assets'), $pattern, [IO.SearchOption]::AllDirectories)) {
+            if ([IO.File]::GetLastWriteTimeUtc($f) -gt $dll.LastWriteTimeUtc) { return $f }
+        }
+    }
+    $null
+}
+
 function Do-Tests([string]$Mode) {
     $filter = if ($Rest.Count -gt 0 -and $Rest[0] -ne '-') { $Rest[0] } else { '' }
     $ft = if ($Rest.Count -gt 1 -and $Rest[1]) { $Rest[1] } else { 'testName' }
@@ -265,6 +291,14 @@ function Do-Tests([string]$Mode) {
 
     $s = Get-EditorState
     if ($s.status -ne 'ready') { Stop-With 3 "El Editor no está 'ready' (estado: $($s.status), playMode: $($s.playMode)). Espere (wait-compile) o deténgalo." }
+    # Con errores de compilación Unity conserva los assemblies VIEJOS y las pruebas saldrían en verde falso.
+    $c = Read-RecompileStatus
+    if ($c.failed -and -not $Force) {
+        Stop-With 3 ("HAY ERRORES DE COMPILACIÓN VIGENTES ($(@($c.errors).Count)): " + ((@($c.errors) | Select-Object -First 3) -join ' | ') +
+            ". Las pruebas correrían contra los assemblies VIEJOS. Corrija y ejecute 'recompile' (o -Force para correr igual).")
+    }
+    $stale = Get-StaleSource
+    if ($stale) { Write-Host "AVISO: $stale es más nuevo que los assemblies compilados. Si lo editó, ejecute 'recompile' antes de probar." }
     if ($Mode -eq 'playmode' -and -not $NoGameView) { Write-Host "Game View: $(Set-GameView1080)" }   # eval puede ensuciar la escena
     $sc = Assert-ScenesClean
     if ($Mode -eq 'playmode' -and -not (@($sc.scenes | Where-Object { $_.isActive -and $_.path -eq $BootScene }))) {
@@ -354,15 +388,28 @@ Uso: pwsh -NoProfile -File editor.ps1 <subcomando> [argumentos] [-Out <carpeta>]
   exec <cmd> [{json}|@archivo.json|clave=valor …]   cualquier comando del servidor (ver `commands`)
   commands [texto]                 lista los comandos disponibles
   recompile                        AssetDatabase.Refresh + espera a que compile (errores → salida 1)
-  wait-compile [timeoutSec=300]    espera a que el Editor termine de compilar
-  tests-edit <filter|-> [filter_type=testName] [timeoutSec=900]    EditMode (trabajo HTTP)
-  tests-play <filter|-> [filter_type=testName] [timeoutSec=1800]   PlayMode (asíncrono, sondea el archivo)
+  wait-compile [timeoutSec=300]    espera a que el Editor termine de compilar (no dispara nada)
+  tests-edit <filter|-> [filter_type=testName] [timeoutSec=900]    EditMode (trabajo HTTP); se detiene con errores de compilación (-Force)
+  tests-play <filter|-> [filter_type=testName] [timeoutSec=1800]   PlayMode (asíncrono); fija Game View 1080p y abre Boot antes
   test-status                      lee Temp/pipeline_test_status.json
   console [n=30] [level=log]       últimas líneas de la consola (level: log|warn|error)
 
 filter_type: testName (subcadena de FullName) | assembly (subcadena del assembly) | category.
-Salida: 0 bien · 1 fallos/errores · 2 infraestructura · 3 guarda (escena sucia, Editor no listo).
+Salida: 0 bien · 1 fallos/errores · 2 infraestructura · 3 guarda (escena sucia, errores de compilación, Editor no listo, otra invocación en curso).
 '@
+}
+
+# El Editor es único: dos invocaciones que lo MODIFICAN a la vez (una corrida y un recompile, p. ej.) se
+# pisan y la corrida sale corrupta. Las de solo lectura (status, scenes, console, commands, test-status,
+# wait-compile) no bloquean. Se libera sola al salir el proceso.
+if ($Sub -in 'open', 'saveall', 'autotick', 'gameview1080', 'eval', 'exec', 'recompile', 'tests-edit', 'tests-play') {
+    $script:EditorLock = [Threading.Mutex]::new($false, 'Local\Algoritmia.editor.ps1')
+    $got = $false
+    try { $got = $script:EditorLock.WaitOne(0) } catch [Threading.AbandonedMutexException] { $got = $true }
+    if (-not $got) {
+        Stop-With 3 ('Otra invocación de editor.ps1 que modifica el Editor sigue en curso (corrida, compilación o apertura). ' +
+            'El Editor es único y se usa en serie: espere a que termine (status, scenes, console y test-status no bloquean).')
+    }
 }
 
 try {
@@ -450,9 +497,11 @@ try {
                 Write-Host $(if (Test-Path -LiteralPath $TestRequestFile) { 'running (hay petición y aún no hay resultados)' } else { 'no_tests' })
                 break
             }
+            # Solo lo escriben las corridas asíncronas (PlayMode y -FileMode): un EditMode por trabajo HTTP no lo toca.
             $st = Get-Content -LiteralPath $TestStatusFile -Raw | ConvertFrom-Json -Depth 100
             $s = Get-Summary $st.summary
-            Write-Host ("status={0} | Total {1} Passed {2} Failed {3} Skipped {4} | {5}" -f $st.status, $s.Total, $s.Passed, $s.Failed, $s.Skipped, $st.message)
+            $age = ([DateTime]::UtcNow - (Get-Item -LiteralPath $TestStatusFile).LastWriteTimeUtc).TotalMinutes
+            Write-Host ("status={0} | Total {1} Passed {2} Failed {3} Skipped {4} | {5} | archivo de hace {6:N0} min" -f $st.status, $s.Total, $s.Passed, $s.Failed, $s.Skipped, $st.message, $age)
         }
 
         'console' {
@@ -470,4 +519,11 @@ try {
         default { Stop-With 2 "Subcomando desconocido '$Sub'. Use: help" }
     }
 }
-catch { Stop-With 2 "ERROR: $($_.Exception.Message)" }
+catch {
+    $m = $_.Exception.Message
+    if ($m -match 'Timeout|timed out|canceled') {
+        $m += ' — el Editor no respondió: puede haber un diálogo modal abierto (bloquea el hilo principal y el puente), ' +
+              'una corrida o un trabajo en curso (el servidor serializa los comandos) o una recarga de dominio.'
+    }
+    Stop-With 2 "ERROR: $m"
+}

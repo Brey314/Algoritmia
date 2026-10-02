@@ -21,7 +21,10 @@ namespace Game.Levels.River
 
         public bool Passed { get; }
 
-        /// <summary>Los espacios señalados: vacíos o con una pieza que no es la suya.</summary>
+        /// <summary>
+        /// Los espacios que no están bien: vacíos o con una pieza que no es la suya. Al confirmar se
+        /// señalan todos; en una prueba anticipada el panel señala solo los que tenían pieza (CP-06).
+        /// </summary>
         public IReadOnlyList<string> WrongSlotIds { get; }
 
         public string Message { get; }

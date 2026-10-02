@@ -134,6 +134,88 @@ namespace Game.Scaffolding.Tests
             Assert.That(recortados, Is.Empty);
         }
 
+        /// <summary>
+        /// El borde inferior de la espuma de la cascada de <c>env_n3_rio</c>, como fracción del alto de
+        /// la ilustración. env_n3_rio: espuma en y ∈ [0.403, 0.544], x ∈ [0.46, 0.67] (PIL,
+        /// 30/09/2026); se redondea hacia abajo.
+        /// </summary>
+        private const float BordeInferiorDeLaEspuma = 0.40f;
+
+        /// <summary>
+        /// La altura de cada viajero sobre el centro de la balsa, en fracciones del alto de la
+        /// ilustración: la composición aprobada sobre la balsa (capturas del 25/09/2026).
+        /// </summary>
+        private static readonly Dictionary<string, float> AlturaSobreLaBalsa = new Dictionary<string, float>
+        {
+            ["Papa"] = 0.002f, ["Mama"] = 0.002f, ["Nina"] = -0.050f, ["Nino"] = -0.054f
+        };
+
+        /// <summary>«¡Al otro lado!»: en la línea 3 la familia baja a la orilla.</summary>
+        private const int LineaDeDesembarco = 3;
+
+        /// <summary>
+        /// La balsa del cruce navega en la poza, por debajo de la espuma de la cascada, y no sobre
+        /// ella (RF-44, D-i de la tarjeta D10-3): con el centro más arriba la cubierta se pintaba
+        /// encima de la espuma blanca y se leía como si flotara en el aire.
+        /// </summary>
+        /// <remarks>
+        /// Con la balsa de 0.28 el pie del mástil queda 0.024 más abajo que el centro, y solo roza la
+        /// espuma el canto de los troncos de atrás (3,9 % de la cubierta, frente al 32 % de antes).
+        /// Si cambia el arte de la cascada hay que volver a medir (RNF-23).
+        /// </remarks>
+        [Test]
+        [Category("Acceptance")]
+        public void NarrativeSequence_RF44_LaBalsaDelCruceNavegaBajoLaEspumaDeLaCascada()
+        {
+            var cruce = TodasLasSecuencias().Single(sequence => sequence.Id == "N3_Escena33_Cruce");
+            var balsa = cruce.Props.Single(prop => prop.Motion == PropMotion.Drift);
+
+            Assert.That(cruce.Illustration.name, Is.EqualTo("env_n3_rio"), "la medida de la espuma es de esa ilustración");
+            Assert.That(balsa.Position.y, Is.LessThanOrEqualTo(BordeInferiorDeLaEspuma), "al empezar el cruce");
+            Assert.That(balsa.Position.y - balsa.MotionDrop, Is.LessThanOrEqualTo(BordeInferiorDeLaEspuma), "y al terminarlo");
+        }
+
+        /// <summary>
+        /// La familia baja con la balsa y viaja en su sitio (RF-44, D-i): cada viajero queda a la
+        /// altura aprobada sobre el centro de la balsa —con los pies sobre la cubierta— al subir y al
+        /// terminar cada paso del viaje. Bajar solo la balsa dejaría a Papá y a Mamá flotando 0.06
+        /// por encima de la cubierta.
+        /// </summary>
+        /// <remarks>
+        /// Los pasos de la línea 3 bajan de la balsa a la orilla y no viajan en ella: no se miden, y
+        /// no se bajan con la balsa, porque sus destinos están sobre el pasto y a 0.06 más abajo la
+        /// Niña pisaría el agua.
+        /// </remarks>
+        [Test]
+        public void NarrativeSequence_RF44_LaFamiliaBajaConLaBalsaYViajaEnSuSitio()
+        {
+            const float tolerancia = 0.0005f;
+            var cruce = TodasLasSecuencias().Single(sequence => sequence.Id == "N3_Escena33_Cruce");
+            var balsa = cruce.Props.Single(prop => prop.Motion == PropMotion.Drift);
+            var finDelCruce = balsa.Position.y - balsa.MotionDrop;
+            var viajeros = cruce.Props
+                .Where(prop => prop.Actor != null && AlturaSobreLaBalsa.ContainsKey(prop.Actor.name))
+                .ToArray();
+
+            var desviados = viajeros
+                .SelectMany(viajero =>
+                {
+                    var esperada = AlturaSobreLaBalsa[viajero.Actor.name];
+                    return new[] { ("al subir", viajero.Position.y - balsa.Position.y) }
+                        .Concat(viajero.Beats
+                            .Where(paso => paso.Moves && paso.Line < LineaDeDesembarco)
+                            .Select(paso => ($"en el paso de la línea {paso.Line}", paso.Destination.y - finDelCruce)))
+                        .Where(medida => Mathf.Abs(medida.Item2 - esperada) > tolerancia)
+                        .Select(medida => FormattableString.Invariant(
+                            $"«{viajero.Actor.name}» {medida.Item1}: queda a {medida.Item2:+0.000;-0.000} de la balsa y debía estar a {esperada:+0.000;-0.000}"));
+                })
+                .ToArray();
+
+            Assert.That(viajeros.Select(viajero => viajero.Actor.name), Is.EquivalentTo(AlturaSobreLaBalsa.Keys),
+                "los cuatro viajan en la balsa");
+            Assert.That(desviados, Is.Empty);
+        }
+
         [Test]
         public void NarrativeVisitPolicy_CP07_ElCruceYLaEscenaFinalNoSeOmitenLaPrimeraVez()
         {
@@ -161,6 +243,46 @@ namespace Game.Scaffolding.Tests
                 Assert.That(cierre.EndsInCredits, Is.EqualTo(cierre.Id == "N3_EscenaFinal"),
                     $"{cierre.Id}: solo la escena final sale a los créditos");
             }
+        }
+
+        /// <summary>
+        /// OBS-13: en <c>N3_EscenaFinal</c> la llama de la fogata central salía justo detrás de la
+        /// cabeza de la Niña y parecía salirle del pelo. Ninguna llama puede quedar cerca, en
+        /// horizontal, de la cabeza de un personaje si su base arranca a la altura de esa cabeza.
+        /// </summary>
+        /// <remarks>
+        /// «Cabeza» es una aproximación sobre datos del asset: la altura de los pies más la mitad del
+        /// tamaño del personaje. Las tolerancias son holgadas a propósito (un tercio de la
+        /// separación real): el aviso es para quien mueva la fogata o a la familia sin mirar.
+        /// </remarks>
+        [Test]
+        public void NarrativeSequence_OBS13_NingunaLlamaDeLaEscenaFinalSaleDeTrasLaCabezaDeLaFamilia()
+        {
+            const float margenHorizontal = 0.03f;
+            const float margenVertical = 0.03f;
+            var escena = TodasLasSecuencias().Single(sequence => sequence.Id == "N3_EscenaFinal");
+            var llamas = escena.Props.Where(prop => prop.Actor == null && prop.Art != null && prop.Art.name.StartsWith("fuego")).ToArray();
+            var cabezas = escena.Props
+                .Where(prop => prop.Actor != null)
+                .Select(prop => (
+                    // Donde termina de caminar: el último destino con movimiento, o donde empieza.
+                    x: prop.Beats.LastOrDefault(beat => beat.Moves)?.Destination.x ?? prop.Position.x,
+                    y: prop.Beats.LastOrDefault(beat => beat.Moves)?.Destination.y ?? prop.Position.y,
+                    size: prop.Size))
+                .ToArray();
+
+            Assume.That(llamas, Is.Not.Empty, "la escena final tiene fogatas");
+            Assume.That(cabezas, Has.Length.GreaterThanOrEqualTo(4), "y a la familia");
+
+            var detras = llamas
+                .SelectMany(llama => cabezas
+                    .Where(cabeza =>
+                        Mathf.Abs(llama.Position.x - cabeza.x) < margenHorizontal
+                        && llama.Position.y - llama.Size / 2f < cabeza.y + cabeza.size / 2f + margenVertical)
+                    .Select(cabeza => $"llama en ({llama.Position.x:0.###}, {llama.Position.y:0.###}) tras la cabeza en ({cabeza.x:0.###}, {cabeza.y + cabeza.size / 2f:0.###})"))
+                .ToArray();
+
+            Assert.That(detras, Is.Empty);
         }
 
         /// <summary>
@@ -245,6 +367,28 @@ namespace Game.Scaffolding.Tests
             prop.FrameAnimation != null && prop.FrameAnimation.name.StartsWith(clip, StringComparison.Ordinal);
 
         /// <summary>
+        /// Solo los cuatro que cruzan sobre la balsa de la 3.3 terminan sus pasos aunque el texto
+        /// avance (RF-44, RNF-21). En las demás escenas un paso nuevo interrumpe el camino, como
+        /// siempre: la marca en otra escena cambiaría lo que se ve en ella al avanzar deprisa.
+        /// </summary>
+        [Test]
+        [Category("Acceptance")]
+        public void NarrativeSequence_RF44_SoloLosViajerosDelCruceTerminanSusPasos()
+        {
+            var marcados = TodasLasSecuencias()
+                .SelectMany(sequence => sequence.Props
+                    .Where(prop => prop.FinishesSteps)
+                    .Select(prop => $"{sequence.Id} · {prop.Actor?.name ?? prop.Art?.name}"))
+                .ToArray();
+
+            Assert.That(marcados, Is.EquivalentTo(new[]
+            {
+                "N3_Escena33_Cruce · Papa", "N3_Escena33_Cruce · Mama",
+                "N3_Escena33_Cruce · Nina", "N3_Escena33_Cruce · Nino"
+            }));
+        }
+
+        /// <summary>
         /// Las secuencias cuyos encuadres están verificados contra el cuadro de diálogo. No es
         /// «todas» a propósito: una escena entra en la lista cuando se revisa su encuadre, no
         /// antes; una prueba que se salta lo que no cumple no comprueba nada.
@@ -308,7 +452,8 @@ namespace Game.Scaffolding.Tests
         /// posición. Un personaje, en todos los sitios por los que pasa entre esa parada y la
         /// siguiente —de dónde sale y a dónde llega en cada línea—, salvo en las líneas en que no
         /// se ve: la cámara no se mueve mientras camina, así que llegar debajo del cuadro también
-        /// es quedar tapado.
+        /// es quedar tapado. Quien termina sus pasos, además, en los de las líneas anteriores:
+        /// ningún paso nuevo lo interrumpe.
         /// </summary>
         private static IEnumerable<Vector2> Posiciones(NarrativeSequence sequence, NarrativeProp prop,
             (string, int Line, CameraFraming)[] encuadres, int k)
@@ -340,6 +485,17 @@ namespace Game.Scaffolding.Tests
                 if (enCurso != null)
                 {
                     yield return ActorTimeline.PositionBefore(prop, enCurso.Line);
+                }
+
+                // Quien termina sus pasos no se baja de ninguno (NarrativeProp.FinishesSteps): bajo
+                // esta parada puede seguir en cualquiera de los que empezó antes, de punta a punta.
+                if (prop.FinishesSteps)
+                {
+                    foreach (var paso in prop.Beats.Where(beat => beat != null && beat.Moves && beat.Line < linea))
+                    {
+                        yield return ActorTimeline.PositionBefore(prop, paso.Line);
+                        yield return paso.Destination;
+                    }
                 }
             }
         }

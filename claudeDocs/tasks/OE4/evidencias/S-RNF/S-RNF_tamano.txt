@@ -1,0 +1,29 @@
+# oe4.ps1 Tamano — 01/10/2026 12:45:29 (juego cerrado)
+Carpeta medida: C:\Dev\Algoritmia\Build\Algoritmia
+  Algoritmia_Data                                     390.7 MiB
+  (archivos de la raíz)                                52.8 MiB
+  MonoBleedingEdge                                      8.7 MiB
+  D3D12                                                 4.5 MiB
+  Licencias                                             0.0 MiB
+TOTAL (sin *_DoNotShip ni Datos): 456.8 MiB = 479.0 MB decimales = 478,979,915 bytes
+Aparte: *_DoNotShip 0.0 MiB · Datos 0.000 MiB · total con *_DoNotShip 456.8 MiB
+RNF-06: paquete < 500 MB: CUMPLE
+
+# Bytes por entrada (find -printf %s)
+   409720852  Algoritmia_Data/
+     9124694  MonoBleedingEdge/
+     4725304  D3D12/
+        5593  Licencias/
+      667648  Algoritmia.exe
+    14021152  DirectML.dll
+      206904  dstorage.dll
+     1482784  dstoragecore.dll
+     1736616  UnityCrashHandler64.exe
+    37288368  UnityPlayer.dll
+# Mayores de Algoritmia_Data
+   276394672  Algoritmia_Data/sharedassets4.assets.resS
+    27872608  Algoritmia_Data/sharedassets5.assets.resS
+    18793472  Algoritmia_Data/sharedassets2.assets.resS
+     9277516  Algoritmia_Data/resources.assets
+     6098320  Algoritmia_Data/Managed/Microsoft.CodeAnalysis.CSharp.dll
+    47069768  Algoritmia_Data/Managed/

@@ -10,6 +10,9 @@ namespace Game.Core
     /// </summary>
     public class DiskFileSystem : IFileSystem
     {
+        // No termina en la extensión de los perfiles: GetFiles("*.json") no lo lista.
+        private const string TempSuffix = ".tmp";
+
         public bool TryPrepareDirectory(string directory)
         {
             try
@@ -29,7 +32,61 @@ namespace Game.Core
             }
         }
 
-        public void WriteAllText(string path, string contents) => File.WriteAllText(path, contents);
+        /// <summary>
+        /// Escritura atómica (DEF-SPER-02): el contenido va a un archivo temporal contiguo y solo
+        /// cuando está completo reemplaza al original. Un cierre o un corte de luz a mitad de
+        /// guardado deja el perfil anterior intacto en vez de un JSON truncado que bloquearía todo
+        /// el progreso del estudiante (RNF-14, y lo aprobado no se pierde: invariante 3).
+        /// </summary>
+        public void WriteAllText(string path, string contents)
+        {
+            var temp = path + TempSuffix;
+            try
+            {
+                File.WriteAllText(temp, contents);
+                if (File.Exists(path))
+                {
+                    try
+                    {
+                        File.Replace(temp, path, null);
+                    }
+                    catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+                    {
+                        // File.Replace exige poder borrar el perfil; un antivirus, el indexador o un
+                        // cliente de sincronización con el archivo abierto sin FILE_SHARE_DELETE lo
+                        // impiden. Copiar encima solo pide escritura, como el guardado de antes
+                        // (rc1); el camino atómico sigue siendo el normal. El mismo escáner que
+                        // retuvo el perfil puede retener el temporal recién cerrado: una vez copiado
+                        // el perfil, borrarlo es de mejor esfuerzo (un .tmp huérfano no se lista
+                        // con GetFiles("*.json"), el siguiente guardado lo sobrescribe y
+                        // DeleteFile lo limpia, RNF-11).
+                        File.Copy(temp, path, true);
+                        TryDelete(temp);
+                    }
+                }
+                else
+                {
+                    File.Move(temp, path);
+                }
+            }
+            catch (Exception)
+            {
+                // Sin permisos para limpiar: el error que importa es el de la escritura.
+                TryDelete(temp);
+                throw;
+            }
+        }
+
+        private static void TryDelete(string path)
+        {
+            try
+            {
+                File.Delete(path);
+            }
+            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException)
+            {
+            }
+        }
 
         public string ReadAllText(string path) => File.ReadAllText(path);
 
@@ -39,6 +96,8 @@ namespace Game.Core
         {
             try
             {
+                // Un temporal huérfano de un cierre a mitad de guardado también es rastro (RNF-11).
+                File.Delete(path + TempSuffix);
                 File.Delete(path);
                 return !File.Exists(path);
             }

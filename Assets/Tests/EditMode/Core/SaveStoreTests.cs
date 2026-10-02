@@ -196,5 +196,29 @@ namespace Game.Core.Tests
             Assert.That(_fileSystem.Files.Keys, Is.EqualTo(new[] { $"{PortableRoot}/Ana.json" }));
         }
 
+
+        [Test]
+        public void SaveStore_RNF14_UnJsonTruncadoNoLanzaYSeReportaComoIlegible()
+        {
+            var sut = CreateStore();
+            _fileSystem.WriteAllText($"{PortableRoot}/Ana.json", "{\"name\":\"Ana\",\"reach");
+
+            var loaded = sut.TryLoad("Ana", out var profile);
+
+            Assert.That(loaded, Is.False);
+            Assert.That(profile, Is.Null);
+        }
+
+        [Test]
+        public void SaveStore_RNF14_UnPerfilSanoSeCargaPorTryLoad()
+        {
+            var sut = CreateStore();
+            sut.Save(ProfileWithProgress());
+
+            var loaded = sut.TryLoad("Ana", out var profile);
+
+            Assert.That(loaded, Is.True);
+            Assert.That(profile.ReachedLevel, Is.EqualTo(LevelId.Wheel));
+        }
     }
 }

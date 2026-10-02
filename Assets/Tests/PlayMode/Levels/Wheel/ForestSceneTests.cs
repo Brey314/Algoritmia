@@ -851,12 +851,13 @@ namespace Game.Levels.Wheel.Tests
         }
 
         // Lo que la escena 2.2 dibuja al abrir, en fracciones de la ilustración
-        // (`N2_Escena22_ElPatron`: los cinco troncos y la caja sobre el primero). El bosque termina
-        // en el encuadre con el que ella abre, así que hereda también estas posiciones.
+        // (`N2_Escena22_ElPatron`: los cinco troncos). El bosque termina en el encuadre con el que
+        // ella abre, así que hereda también estas posiciones. La caja no va aquí: su punto es
+        // `WheelLevelConfig.CargoPlacedPosition`, y que la 2.2 la dibuje ahí lo vigila
+        // `WheelLevelConfig_RF05_LaCajaColocadaEsLaQueLaEscena22DibujaAlAbrir` (EditMode).
         private static readonly Vector2 PrimerTroncoDeLa22 = new Vector2(0.2f, 0.457f);
         private const float SeparacionDeLa22 = 0.0175f;
         private const float AltoDelTroncoDeLa22 = 0.07f;
-        private static readonly Vector2 CajaColocadaDeLa22 = new Vector2(0.2f, 0.5089f);
 
         [Test]
         [Timeout(30000)]
@@ -910,9 +911,9 @@ namespace Game.Levels.Wheel.Tests
             Assume.That(forest.Cargo.IsPlaced, Is.True, "la caja quedó sobre los troncos");
 
             var colocada = SobreLaIlustracion(EnPantalla(forest.CargoRect));
-            Assert.That(colocada.x, Is.EqualTo(CajaColocadaDeLa22.x).Within(0.005f),
+            Assert.That(colocada.x, Is.EqualTo(forest.Config.CargoPlacedPosition.x).Within(0.005f),
                 "colocada, la caja queda donde la 2.2 la dibuja sobre el primer tronco");
-            Assert.That(colocada.y, Is.EqualTo(CajaColocadaDeLa22.y).Within(0.005f),
+            Assert.That(colocada.y, Is.EqualTo(forest.Config.CargoPlacedPosition.y).Within(0.005f),
                 "y a la altura con la que ella la dibuja");
         }
 

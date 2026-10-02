@@ -18,6 +18,13 @@ tablero— y el plan técnico es [`plan.md`](plan.md). Ninguno de los tres redis
 > cuándo se guarda cada fase del ensamblaje (§A.4). La corrida completa vigente de la suite está en
 > [`../Slice 4/Slice-4-Resultados.md`](../Slice%204/Slice-4-Resultados.md), «Corrida completa de la
 > suite (25/09/2026)».
+>
+> **01/10/2026:** lo que cambió del 25/09 al 01/10 —la balsa del ensamblaje en 3/4 (`44fd479`), el
+> cierre de INC-46 a INC-117 (`37b3cb7`, `5a22df1`) y las correcciones del Nivel 3 del acta D10: la
+> escena final con sonido, la balsa del cruce bajo la espuma, los viajeros que no saltan, «Probar
+> balsa» en base y amarre y el plano abierto a la escala de las narrativas— está en el
+> [Anexo B](#anexo-b--lo-que-cambió-después-del-25092026-01102026). La suite vigente es la del
+> 01/10/2026, en el mismo `Slice-4-Resultados.md`.
 
 | Campo | Dato |
 |---|---|
@@ -115,6 +122,11 @@ Ninguna salió del código; están registradas en el tablero con su fecha.
 7. **Reparto por assembly, no por slice** (heredado del 10/09): este carril tocó
    `Game.Levels.River`, `Game.Core`, `Game.Scaffolding`, `Game.UI` y las escenas, siempre con
    prueba, y lo cruzado quedó declarado en `CLAUDE.md`.
+
+*(01/10/2026: los encuadres de las decisiones 2 y 4 los sustituye la lectura B del Nivel 3, decisión
+de Santiago del 30/09/2026 (INC-118): la recolección pasa a (0.3572, 0.3572) ×1.4 —la orilla con el
+río y el pie de la cascada— y el ensamblaje a (0.50, 0.3125) ×1.6, con la balsa en (0.58, 0.23); la
+familia, los materiales y la zona toman la escala de las narrativas. Ver Anexo B, B.8.)*
 
 ---
 
@@ -393,6 +405,12 @@ referencia `Game.Audio`; ver §A.6.)*
 `Game.Reporting` todavía no existe en disco. *(Vencido el 25/09/2026: existe desde `9c34924`
 (24/09); ver `../Slice 4/Slice-4-Resultados.md`.)*
 
+*(01/10/2026: de esta sección quedan vencidos varios puntos. INC-46 a INC-54 se cerraron el 29/09 y
+PG-01 y PG-02 están cerrados; la analítica, la pantalla de Unity y Alt+Intro se apagaron en
+`37b3cb7` sin retirar ningún paquete (INC-97, decisión D3 del 29/09); el radio de proximidad y el
+encuadre del ensamblaje los rehízo la lectura B (B.8); y las revisiones con el usuario las resuelve
+la decisión D-a del acta D10. El estado de cada punto está en el Anexo B, B.10.)*
+
 ---
 
 ## 9. Cómo se reproduce
@@ -585,3 +603,279 @@ Para eso, `Game.Levels.River` referencia `Game.Audio`, y `Game.Audio` abre sus i
   (RNF-23), porque con compresión la ilustración plana muestra la rejilla de bloques de 4×4. Lo
   vigila `ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir` (`ArtImportTest`, en
   `Game.Architecture.Tests`).
+
+---
+
+## Anexo B — lo que cambió después del 25/09/2026 (01/10/2026)
+
+El Anexo A se verificó el 25/09/2026 sobre `ccf77e6`. Este anexo recoge lo que llegó al Nivel 3 y
+al cierre del juego hasta el 01/10/2026: tres commits que ya están en `main` —uno de ellos solo de
+documentos— y las correcciones del acta D10 en la rama `feat/cierre-de-slices-y-oe3`, que entran en
+el commit de cierre con la tarjeta D10-3. Las de B.5 a B.8 se comprobaron en EditMode y por réplica;
+sus pruebas PlayMode están escritas y se corren en la revisión de la etapa.
+
+*(01/10/2026, después: la revisión de la etapa las corrió y están en verde, con la suite PlayMode
+completa en 363/363; lo que entró tras la revisión está en B.11.)*
+
+### B.1 Qué cambió y dónde
+
+| Fecha | Commit | Qué cambió |
+|---|---|---|
+| 25/09 | `44fd479` | La balsa del ensamblaje se recompone sobre la forma de `prop_n3_balsa_cruzando` (3/4) y agarrar y soltar prueban el alfa — B.2 |
+| 30/09 | `37b3cb7` | «Recoger troncos» se marca con el último tronco (INC-46), el hallazgo del resumen en dos oraciones (INC-110), «Reiniciar» vuelve a la fase activa (INC-117) y los créditos nombran a los autores de la Familia Anonaky (INC-78) — B.3 |
+| 30/09 | `5a22df1` | Documentos: INC-46 a INC-54 cerrados — B.4 |
+| 01/10 | sin hash, D10-3 | La escena final suena (INC-125), la balsa del cruce baja bajo la espuma (INC-124) y sus viajeros no saltan, «Probar balsa» en base y amarre con un hundimiento que suena (INC-122, INC-123) y el plano abierto a la escala de las narrativas (INC-118) — B.5 a B.8 |
+
+`44fd479` entró en `main` con el PR #87 (`995b26d`, 29/09); `37b3cb7` y `5a22df1`, con el PR #88
+(`1c7f4ab`, 30/09).
+
+### B.2 `44fd479` (25/09/2026): la balsa del ensamblaje en 3/4
+
+Los diecisiete espacios de `N3_RaftAssemblyContent` se recompusieron sobre la forma de
+`prop_n3_balsa_cruzando`: cinco troncos en diagonal, de atrás a delante; dos lianas por tronco; el
+mástil plantado en el tronco del centro y la vela a su derecha. Ningún espacio gira. El orden del
+asset es el de dibujo, así que cada tronco va seguido de sus amarres y el de delante tapa las puntas
+de las lianas del de atrás. Con troncos en diagonal las cajas se solapan: los espacios prueban ahora
+el alfa del sprite y al soltar gana el de encima con dibujo bajo el puntero; el error medido pasó del
+34 % de lo visible de cada tronco a 0 %. Prueba:
+`AssemblyPanel_RF40_SoltarSobreLaPuntaDeUnTroncoLoPoneEnEseTroncoYNoEnElVecino`. El detalle de
+resoluciones y siluetas está en `Props-y-Sonidos-Resultados.md`, Anexo B.
+
+### B.3 `37b3cb7` (30/09/2026): lo que el Nivel 3 y el cierre ganaron al cerrar INC-46 a INC-117
+
+- **La tarea «Recoger troncos» se marca con el último tronco**, no antes (INC-46).
+  `RiverScene_RF36_RecogerTroncosSeMarcaConElUltimoTroncoYNoAntes`.
+- **El hallazgo del resumen, en dos oraciones** (INC-110, RNF-01): «Descubriste que una balsa grande
+  se arma por partes. Primero la base, luego el amarre y al final el mástil con la vela.».
+  `LevelSummaryContent_RNF01_NingunaOracionSupera20Palabras` ya no parte las oraciones por los dos
+  puntos.
+- **«Reiniciar» vuelve a la fase activa** y no a la recolección, también al repetir el nivel ya
+  completado (INC-117, decisión de Santiago del 30/09): al confirmar la base o el amarre,
+  `AssemblyPanelController` registra la fase siguiente como activa
+  (`GameFlowRunner.SetPlayingPhase`), sin cambiar de estado ni de escena. Pruebas:
+  `GameFlow_HU17_SetPlayingPhaseActualizaLaFaseActivaSinNavegar`,
+  `GameFlow_HU17_SetPlayingPhaseSeRechazaFueraDePlayingOEnOtroNivelOFaseInvalida` y
+  `RiverScene_HU17_ReiniciarEnElAmarreOElMastilVuelveALaFaseActivaYNoALaRecoleccion`.
+- **Los créditos** nombran a los autores y la obra de la Familia Anonaky, sin Fredoka y en oraciones
+  de veinte palabras como máximo (INC-78, INC-79), con arte real en lugar de rótulos de trabajo
+  (INC-82). Pruebas: `Credits_RNF23_NombraALosAutoresDeLosPersonajesYLaObraDeOrigen`,
+  `CreditsContent_RNF01_NingunaOracionSupera20Palabras` y
+  `Scenes_RNF01_NingunTextoDeEscenaEsUnRotuloDeTrabajo`.
+
+### B.4 `5a22df1` (30/09/2026): las inconsistencias de §8 y A.2, cerradas
+
+INC-46 a INC-54 se cerraron el 29/09 con la regla de ese día: gana el juego y se corrige el
+documento. INC-46 corrigió `Direccion_de_Arte.md` §10.2 y §14.2, que describen ya el panel de
+casillas del juego; INC-51 corrigió HU-14 FA-01 y CU-03 2a (nota de A.2); INC-52 e INC-53 corrigieron
+la dirección de arte, `Interfaces.md` y el guion. La tabla de A.2 y la lista de §8 quedan vencidas:
+desde el 30/09 solo siguen abiertos PG-05 y PG-06.
+
+### B.5 La escena final suena al bosque con las fogatas (INC-125)
+
+`N3_EscenaFinal` tenía `Ambient` y `AmbientLayer` vacíos (A.6). Ahora suena `amb_n2_bosque_dia` con
+`amb_n1_cueva_fuego` en la segunda capa, el mismo par que `N2_PuenteI`: la familia camina hacia las
+fogatas con el bosque de día detrás (guion §1.9). No hay código nuevo: `NarrativeSceneController`
+ya pedía los dos ambientes al empezar. Prueba: `RiverSounds_RF44_LaEscenaFinalSuenaAlBosqueConLasFogatas`.
+
+### B.6 El cruce de la 3.3: la balsa bajo la espuma (INC-124) y los viajeros que no saltan
+
+- **La balsa baja** de y 0,455 a 0,395 y navega por debajo de la espuma de la cascada, que ocupa
+  y ∈ [0,403; 0,544]; no baja a 0,39 porque tocaría el cuadro de diálogo en la parada L4. Con ella
+  bajan los cuatro viajeros: posición y pasos de las líneas 0 y 2, −0,06. Los pasos de la línea 3, el
+  desembarco, no se tocan: bajarlos metería a la Niña en el río. La parada L3 pasa de (0,65; 0,47) a
+  (0,65; 0,41), con el mismo zoom ×1,55. Es una excepción expresa de Santiago (D-i) a la regla del
+  acta D05 de mover el objeto y no el encuadre, y queda registrada en el asset porque el diseño de
+  cámara del N3 está perdido. Pruebas: `NarrativeSequence_RF44_LaBalsaDelCruceNavegaBajoLaEspumaDeLaCascada`
+  y `NarrativeSequence_RF44_LaFamiliaBajaConLaBalsaYViajaEnSuSitio`, y
+  `NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo` con la lista `Verificadas` entera
+  (EditMode); `NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos` (PlayMode).
+- **Los viajeros no saltan aunque el texto avance.** Pulsando «Continuar» durante los 9 s del cruce,
+  la Niña y el Niño saltaban a su destino en la línea 1, Papá en la 2 y los cuatro en la 3 y la 4:
+  cada paso nuevo cortaba el camino en curso. `NarrativeProp.FinishesSteps` marca a quien termina sus
+  pasos: un paso nuevo no le corta el camino (`ActorTimeline.Interrupts`), lo que se lee mientras
+  camina lo hace al llegar y, si algo lo movía, baja después desde donde llegó
+  (`ActorTimeline.PendingStep`, C# plano); `NarrativeSceneController` solo pregunta y ejecuta. Llevan
+  la marca los cuatro viajeros de la 3.3 y nadie más: las otras 17 narrativas siguen como estaban.
+  Pruebas: ocho métodos nuevos en `ActorTimelineTests` (15 casos),
+  `NarrativeSequence_RF44_SoloLosViajerosDelCruceTerminanSusPasos` y la ampliación de
+  `NarrativeSequence_RNF03_…` a los sitios de paso de quien termina sus pasos (EditMode);
+  `NarrativeScene_RNF21_AvanzarElTextoDuranteElCruceNoHaceSaltarALosViajeros` (PlayMode). La regla
+  está en `Personajes-Resultados.md`, Anexo B.
+
+### B.7 «Probar balsa» en base y amarre (INC-122) y la balsa que suena al hundirse (INC-123)
+
+Decisión de Santiago del 30/09/2026 (acta D10, §5).
+
+- **`RaftAssembly.Test()`** (C# plano). En la base y en el amarre valida la fase abierta, devuelve
+  al inventario solo lo mal puesto (RF-43), cuenta un rechazo (RF-45) y nunca consolida ni abre fase
+  (RF-40); en la fase de mástil y vela es `Confirm()`. Si solo había espacios vacíos, el mensaje es
+  `UnfinishedTestMessage` —«La balsa se hundió: todavía no está terminada. ¿Qué parte falta armar?»—,
+  que dice qué revisar sin cifras ni nombrar la pieza (CP-03, CP-06).
+- **El panel.** `Button_Test` («Probar balsa») aparece junto a «Listo» en la base y el amarre; en la
+  última fase el botón de confirmar sigue siendo «Probar balsa». Los dos botones pasan por un solo
+  `Validate`: la prueba anticipada cuenta como intento y para la pista de los tres intentos seguidos,
+  la familia anima y la balsa se hunde. Antes de la última fase solo se marca lo mal puesto y no los
+  vacíos, porque marcarlos sería un mapa de dónde va cada pieza (CP-06). No llama a `AfterAttempt`:
+  la 3.2 sigue saliendo solo con el primer fallo de la balsa terminada. «Listo» rechazado sigue sin
+  hundimiento ni sonido. Probar con la base entera y bien puesta tampoco la aprueba: solo «Listo»
+  consolida (RF-40).
+- **El sonido.** `sfx_n3_salpicadura_undimiento` se renombró desde el motor a `sfx_n3_hundimiento`,
+  con el mismo GUID, y es `RiverSounds.RaftSinking`: suena al empezar todo hundimiento, el anticipado y
+  el de la última fase. Describe y no castiga (dirección de sonido §2.1, CP-02). Corrige A.6, donde la
+  pieza estaba en disco sin referenciar.
+- **Pruebas.** EditMode, en verde: `RaftAssembly_RF42_ProbarLaBalsaIncompletaNoConfirmaNiAvanzaDeFase`
+  (3 casos), `RaftAssembly_RF43_ProbarAntesDeTiempoDevuelveSoloLoMalPuesto`,
+  `RaftAssembly_RF41_ProbarLaBalsaNoTocaLasFasesAprobadas`,
+  `RaftAssembly_RF42_EnLaUltimaFaseProbarEsConfirmar`,
+  `RaftAssembly_RF42_EnLaUltimaFaseProbarConUnVacioSenalaElVacioConElMensajeDeLaPrueba`,
+  `RaftAssemblyContent_RF42_ElAssetTraeElMensajeDeLaBalsaSinTerminar`,
+  `RiverSounds_RF42_LaBalsaQueSeHundeSuenaASalpicadura` y las ampliaciones de
+  `RaftValidator_RF17_NingunMensajeContieneDigitos` y
+  `RaftValidator_CP06_ElMensajeDiceQueRevisarNoCualEsLaPiezaCorrecta`. PlayMode:
+  `AssemblyPanel_RF42_ElBotonProbarBalsaEstaDisponibleEnCadaFase`,
+  `AssemblyPanel_RF42_ProbarLaBalsaIncompletaLaHundeYSigueEnLaFase`,
+  `AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto`,
+  `AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse`,
+  `AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas` (base y última fase),
+  `RiverScene_Guion841_ProbarAntesDeLaUltimaFaseNoGastaLaEscena32` y
+  `RiverIndicators_RF45_UnaPruebaDeBalsaIncompletaCuentaComoIntento`; siguen
+  `AssemblyPanel_CP02_UnaFaseQueNoPasaNoSuena` y `RaftAssembly_CP02_NoHayLimiteDeIntentosNiPantallaDeDerrota`.
+- **Los documentos.** RF-11, RF-40 y RF-42 de OE1, el guion §1.8.3 a §1.8.4.1, CU-10 y HU-12 y HU-13
+  describían «Probar balsa» solo en la última fase; INC-122 registra su corrección, cada uno con su
+  fila fechada en el control de cambios.
+
+### B.8 La lectura B: el plano abierto y la escala de las narrativas (INC-118)
+
+Decisión de Santiago del 30/09/2026 (D-c). Medida en la escena, la mecánica se veía a 0,4 de la
+escala de las narrativas del mismo río: la casilla de Papá medía 77,7 px de ilustración frente a
+191,5 en la 3.1.
+
+| Qué | Hasta el 30/09 | Desde el 01/10 |
+|---|---|---|
+| `PlayFraming` de la recolección | (0.2632, 0.2632) ×1.9 | (0.3572, 0.3572) ×1.4: la orilla con el río y el pie de la cascada |
+| `AssemblyFraming` | (0.50, 0.23) ×2.2 | (0.50, 0.3125) ×1.6 |
+| `RaftPosition` · `RaftSize` | (0.5, 0.23) · 0.28 | (0.58, 0.23) · 0.28: sobre el agua, del tamaño de la balsa de la 3.3 |
+| `WalkableArea` | x 0.13–0.36 · y 0.05–0.31 | x 0.18–0.40 · y 0.05–0.34, los pies de Mamá |
+| `StartPosition` · `BuildZonePosition` | (0.15, 0.15) · (0.35, 0.21) | (0.21, 0.19) · (0.395, 0.22) |
+| `ProximityRadius` · `BuildZoneRadius` | 0.04 · 0.04 | 0.06 · 0.06 |
+| Casilla de Mamá · Papá · Niña y Niño | 104 · 77,7 · 46,6 | 240, anclada por los pies · 178,75 · 107,25 |
+| Material · zona de construcción | 96 · 170 | 172,8 · 255 |
+
+- **En pantalla**, a 1920 × 1080: Papá pasa de 148 a 250 px, los niños de 89 a 150 y Mamá de 121–185
+  a 193–315 px según su altura. La balsa del ensamblaje pasa de 665 a 484 px, y la casilla de un
+  tronco mide 256 px, 1:1 con su sprite (antes se ampliaba ×1,38).
+- **La orilla.** Los ocho materiales se reacomodaron por la orilla, todos a más de
+  `ProximityRadius + BuildZoneRadius` (0,12) de la zona, porque la zona se abre al cruzar su borde.
+  La familia espera detrás de la zona.
+- **Mamá** se ancla por los pies (pivote 0,075, como la familia), espera en la zona al retomar el
+  ensamblaje —al volver de la 3.2, desde disco o al reiniciar la fase— (`RiverSceneController.ResumeAt`)
+  y se dibuja por profundidad con la familia y los materiales: lo que está más abajo, delante
+  (`DepthOrder`, C# plano). Los prefabs no se reconstruyeron: solo cambian los valores de las
+  instancias.
+- **La 3.1 coincide con la mecánica**: pinta `prop_n3_tronco` en 3/4 y `prop_n3_mastil` (0,07 del
+  alto) en lugar de `prop_n3_troncos`, que queda sin uso.
+- **Pruebas**: `RiverLevelConfig_Guion82_ElPlanoDeRecoleccionEsLaOrillaConElRio` (sustituye a
+  `…EsElBosqueConUnPocoDelRio` de A.5), `RiverLevelConfig_RF37_ElRepartoObligaARecorrerLaOrillaYCabeEnElPlanoFijo`
+  ampliada, `RiverScene_INC118_LosPersonajesDeLaMecanicaTienenLaEscalaDeLaNarrativa`,
+  `RiverScene_DA83_MamaSeAnclaPorLosPiesComoLaFamilia`,
+  `RiverLevelConfig_INC118_LaEscena31PintaCadaMaterialConElArteDeLaOrilla`,
+  `RaftAssemblyContent_RF44_LaBalsaDelEnsamblajeMideLoQueLaDelCruce` y `DepthOrder_DA83_*` (EditMode);
+  `RiverScene_RNF14_AlRetomarElEnsamblajeMamaEsperaEnLaZona` (PlayMode).
+- **Vence** las decisiones 2 y 4 de §3, el encuadre `(0.50, 0.23) ×2.2` de §7.3 y el radio de 0,04 de
+  §8. Entre el ensamblaje y la 3.3 la balsa salta de (0,58; 0,23) a (0,56; 0,395): lo cubre el fundido
+  a negro de `SceneLoader`.
+
+### B.9 Pruebas y cifras al 01/10/2026
+
+| Assembly | 25/09 (`ccf77e6`) | 30/09 (`359365e`) | 01/10, antes del N3 | Qué lo movió |
+|---|---|---|---|---|
+| `Game.Levels.River.Tests` (EditMode) | 41 | 41 | 41 | Las correcciones del N3 la amplían (B.5, B.7, B.8) |
+| `Game.Levels.River.PlayMode.Tests` | 44 | 47 | 47 | `44fd479`: `AssemblyPanel_RF40_SoltarSobreLaPunta…`; `37b3cb7`: `RiverScene_RF36_RecogerTroncos…` y `RiverScene_HU17_Reiniciar…` |
+
+La suite completa del 01/10/2026, con el Editor abierto a 1920 × 1080 y antes de las correcciones del
+N3, dio EditMode 393 = 392 + 1 omitida y PlayMode 351 = 350 + 1:
+`RiverLevel_RNF05_LaMemoriaQuedaBajoDosGigasConElNivel3Cargado` midió 2 127 MB porque el Editor
+llevaba horas abierto —en reposo y sin el nivel ya reservaba 2 090 MB— y, con el Editor recién
+abierto, pasa aislada con 1 660 MB. RNF-05 se mide sobre el ejecutable. Tras «Probar balsa» la suite
+EditMode completa dio 421 = 420 + 1 omitida, sin pérdidas ni cambios de estado; la cifra final, con
+la lectura B y las PlayMode del N3, es la de la revisión de la etapa.
+
+*(01/10/2026, después: la revisión de la etapa dio EditMode 427 = 426 + 1 omitida y PlayMode
+363/363, con `Game.Levels.River.Tests` en 57 y `Game.Levels.River.PlayMode.Tests` en 57;
+`RiverLevel_RNF05_…` pasó con 1 982 MB y el Editor reiniciado. La cifra final es la de B.11.)*
+
+### B.10 Lo que queda abierto al 01/10/2026
+
+Frente a §8 y a A.2:
+
+- **Golden Path del juego entero**: los dos recorridos sin incidencias se hacen sobre el ejecutable
+  candidato con el arnés (decisión de Santiago, acta D10); la duración de 20 a 40 minutos la
+  cronometra Santiago (`claudeDocs/tasks/OE4/Hoja-HUM.md`, H8).
+- **PG-05**, observación con estudiantes, a cargo de Santiago (H1).
+- **El ejecutable**: `Datos/` junto al `.exe`, cargas, memoria y paquete se miden sobre el candidato
+  (`Slice 4/Slice-4-Resultados.md`, Anexo B). Los trece fallos de disposición de §5.6 en batchmode
+  siguen siendo de entorno y se declaran en esa corrida.
+- **Revisiones con el usuario**: por decisión de Santiago del 30/09/2026 (acta D10, §5), se marcan
+  como hechas por él tras verificarlas con pruebas y capturas. El radio y el encuadre que nombra §8
+  son los de la lectura B.
+- **Arte**: la misma decisión acepta como definitivos el anillo de la zona y la balsa hundida.
+  `prop_n3_balsa_cruzando` tiene cuatro troncos y la mecánica arma cinco: se acepta como está y queda
+  pendiente del carril de arte para la entrega de la colaboradora del 07/10/2026.
+- **Sonido**: el silencio S3 de la escena final (dirección de sonido §5) no existe —`SilenceCut` no
+  tiene «ambiente al mínimo» y hacerlo pide código en `AudioManager`—. Santiago oye si
+  `amb_n1_cueva_fuego` suena a fogata al aire libre (H6) y si dos pruebas seguidas, con dos
+  salpicaduras de 1,74 s, molestan (H7).
+- **El salto de los viajeros en otras narrativas**: el mismo corte existe en otras 14 (68
+  situaciones; por ejemplo, `N1_Apertura`). Arreglarlo es marcar a esos personajes con `FinishesSteps`, pero cambia la
+  puesta en escena de escenas ya revisadas: queda recomendado, con el sí de Santiago. Con lectura
+  rápida en la 3.3, los niños celebran y Papá señala al llegar y no al leerse su línea; lo comprueba
+  Santiago jugando.
+- **Decisiones que siguen como en §8**: la plantilla `InputSystem_Actions.inputactions` y rehacer los
+  inventarios de cámara.
+
+### B.11 Lo que entró después de la revisión de la etapa (01/10/2026)
+
+Apartado nuevo. La revisión adversarial del Nivel 3 terminó sin bloqueantes: las dos suites en verde
+a la primera (EditMode 427 = 426 + 1 omitida y PlayMode 363/363, en
+`claudeDocs/tasks/OE4/evidencias/suites/W2-full/`) y las pruebas nuevas que más importaban puestas
+en rojo con una mutación y vueltas a verde al revertirla —la marca `FinishesSteps` a 0 rompe
+`NarrativeSequence_RF44_SoloLosViajerosDelCruceTerminanSusPasos` y
+`NarrativeScene_RNF21_AvanzarElTextoDuranteElCruceNoHaceSaltarALosViajeros`; marcar los vacíos antes
+de la última fase y gastar la 3.2 con la prueba anticipada rompen
+`AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto` y
+`RiverScene_Guion841_ProbarAntesDeLaUltimaFaseNoGastaLaEscena32`—. De sus hallazgos no
+bloqueantes, dos se corrigieron el mismo día con la tarjeta D10-4:
+
+- **Al retomar, Mamá se mueve en el modelo y no solo en pantalla.** `RiverSceneController.ResumeAt`
+  ponía la vista de Mamá en la zona, pero el modelo de caminata (`RiverWalk`) seguía en el arranque:
+  sin efecto mientras no se volviera a andar, pero el siguiente `Tick` la habría devuelto al
+  arranque de un salto. `RiverWalk.MoveTo` (C# plano) coloca a Mamá en el modelo y la recorta a
+  `WalkableArea`, y `ResumeAt` mueve modelo y vista juntos. `BuildZonePosition` (0,395; 0,22) cae
+  dentro del área, así que el recorte no la desplaza. Pruebas:
+  `RiverWalk_RNF14_MoveToColocaAMamaEnElModeloYRecortaALosLimites` (EditMode, nueva) y un aserto
+  nuevo sobre `river.Walk.Position` en `RiverScene_RNF14_AlRetomarElEnsamblajeMamaEsperaEnLaZona`,
+  que sin `MoveTo` falla con Mamá en `StartPosition`. Siguen en verde `RiverLevelJourneyTests` (7/7)
+  y `GameEndingTests` (2/2), que retoman por ese camino.
+- **Las capturas del panel, con los botones opacos.** `AssemblyPanel_HU12_*` capturaba dos cuadros
+  después de que el panel quedara quieto, con «Listo» y «Probar balsa» a mitad del fundido de 0,1 s
+  de `Selectable`; ahora espera 0,15 s antes de cada una de las tres. En las capturas, «Listo» y
+  «Probar balsa» van lado a lado en la base y el amarre, y en mástil y vela queda un solo «Probar
+  balsa», centrado.
+- **Cifras.** `Game.Levels.River.Tests` pasa de 57 a 58 y `Game.Levels.River.PlayMode.Tests` sigue en
+  57. La verificación final antes del build dio EditMode 433 = 432 + 1 omitida y PlayMode 364/364
+  —detalle en `Slice 4/Slice-4-Resultados.md`, «Verificación final y paquete (01/10/2026)»—, y el
+  ejecutable candidato pesa 479,0 MB (RNF-06).
+- **A la Hoja-HUM** (`claudeDocs/tasks/OE4/Hoja-HUM.md`) van las comprobaciones manuales que pidió la
+  revisión: H9, la 3.3 con lectura rápida (R-5, el punto del salto de B.10); H10, la recolección
+  jugada con el plano abierto, con «Recoger» a 0,06 y los tres puntos de escala de abajo; H11,
+  «Probar balsa» con la base completa y bien puesta, que la hunde y cuenta un intento porque solo
+  «Listo» aprueba (RF-40); H12, la lista de PF-SON pieza por pieza. H6 añade que el bosque de la
+  escena final es el de día en una escena al atardecer, y H7, la doble salpicadura de dos pruebas
+  seguidas (R-10).
+- **Para el visto bueno de Santiago (D-a)**, en H10: el tronco mide ≈ 0,6 de la altura de Papá en
+  la 3.1, ≈ 1 en la orilla y ≈ 1,3 en la balsa de la 3.3; el mástil de la orilla está de pie, porque
+  `Collectible` no tiene giro, y en la 3.1 está tumbado; la familia no se escala por profundidad.
+- **Solo registro.** El margen de RNF-03 en la 3.3 es fino —la balsa queda +0,0098 sobre el cuadro de
+  diálogo en L3 y +0,005 en L4—, así que cambiar el arte o el tamaño de la balsa obliga a
+  recalcularlo. La 3.2 pinta la balsa hundida en (0,55; 0,343) y el ensamblaje la arma en
+  (0,58; 0,23): como el salto hacia la 3.3 de B.8, lo cubre el fundido a negro.

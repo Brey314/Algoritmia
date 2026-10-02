@@ -24,8 +24,18 @@ namespace Game.Levels.Wheel
         public event Action Taken;
         public event Action Released;
 
+        /// <summary>
+        /// Como <see cref="Released"/>, con el punto de pantalla del soltar: el que trae el propio
+        /// evento y no el que se lee del dispositivo, que además es el que una prueba puede fijar.
+        /// </summary>
+        public event Action<Vector2> ReleasedAt;
+
         public void OnPointerDown(PointerEventData eventData) => Taken?.Invoke();
 
-        public void OnPointerUp(PointerEventData eventData) => Released?.Invoke();
+        public void OnPointerUp(PointerEventData eventData)
+        {
+            Released?.Invoke();
+            ReleasedAt?.Invoke(eventData.position);
+        }
     }
 }

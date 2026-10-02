@@ -7,14 +7,16 @@ RF/RNF/CP/CT/CN/CU/HU/PG remiten a esos documentos y son la unidad de trazabilid
 `Solución OE1_Requerimientos.docx`, y `Solucion_OE2_Diseno_final.docx` absorbe en un solo archivo
 el guion, los casos de uso, las historias de usuario, las matrices de trazabilidad y la
 arquitectura. El trabajo de grado sigue en `docs/`
-(`Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx`, con su conversión en `docs/md/`).
+(`Trabajo_de_Grado_Entrega_Plantilla_28jul.docx`, sobre la plantilla oficial del 28 de julio desde el
+30/09/2026, con su conversión en `docs/md/`; `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx` queda como
+versión anterior).
 
 **Orden de precedencia.** Cuando dos documentos se contradicen gana el de mayor prioridad, y se
 corrige el otro. Verificado contra su estado del 14/09/2026 (rev. 8):
 
 | # | Documento | Qué gobierna |
 |---|---|---|
-| 1 | Trabajo de grado — `docs/Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx` | Objetivos, KPI, alcance, marco jurídico, metodología Árcade |
+| 1 | Trabajo de grado — `docs/Trabajo_de_Grado_Entrega_Plantilla_28jul.docx` | Objetivos, KPI, alcance, marco jurídico, metodología Árcade |
 | 2 | `Solución OE1_Requerimientos.docx` | Lineamientos CP/CT/CN, RF-01..RF-47, RNF-01..RNF-23 |
 | 3 | `Solucion_OE2_Diseno_final.docx` §1 (guion) | Narrativa, mecánicas, parámetros y textos exactos |
 | 4 | `Solucion_OE2_Diseno_final.docx` §2–§3 | CU-01..CU-12, HU-01..HU-18, matrices de trazabilidad |

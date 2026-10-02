@@ -12,15 +12,15 @@ namespace Game.Levels.River
     /// <remarks>
     /// Un asset por nivel, como <see cref="WheelLevelConfig"/>. **Todas las posiciones son
     /// fracciones de la ilustración**, no píxeles ni fracciones de pantalla: la cámara de la
-    /// recolección es un plano fijo —el cuadrante del bosque apoyado en la esquina inferior
-    /// izquierda, desde el 25/09/2026 foco (0.2632, 0.2632) · zoom 1.9, con **un poco del río
-    /// asomando a la derecha** (del 20/09 al 25/09 fue ×2.5, sin río); el río entero entra con
-    /// el empuje del ensamblaje— y lo que se ve es el recorte <c>foco ± 0.5/zoom</c>; lo que
-    /// caiga fuera no aparece nunca, y
+    /// recolección es un plano fijo —la orilla con el río y el pie de la cascada, apoyado en la
+    /// esquina inferior izquierda: desde el 30/09/2026 foco (0.3572, 0.3572) · zoom 1.4 (lectura
+    /// B, INC-118; del 25/09 al 30/09 fue ×1.9 con un poco del río, y antes ×2.5 sin río)— y lo
+    /// que se ve es el recorte <c>foco ± 0.5/zoom</c>; lo que caiga fuera no aparece nunca, y
     /// <see cref="OnValidate"/> lo avisa. **El piso termina en <see cref="GroundTop"/>**: arriba
     /// empiezan los arbustos y los troncos de los árboles, y nada se coloca ahí. La perspectiva
     /// es por profundidad (<see cref="DepthScaleAt"/>): lo que está más abajo —más cerca— se ve
-    /// más grande, Mamá incluida. El radio de proximidad y la velocidad son la pregunta abierta 3
+    /// más grande y se dibuja delante (<see cref="DepthOrder"/>), Mamá incluida, que se ancla por
+    /// los pies como la familia. El radio de proximidad y la velocidad son la pregunta abierta 3
     /// del plan: se ajustan jugando, sin recompilar.
     /// </remarks>
     [CreateAssetMenu(menuName = "Algoritm/Configuración del Nivel 3", fileName = "N3_RiverLevelConfig")]
@@ -46,7 +46,7 @@ namespace Game.Levels.River
         public Vector2 StartPosition { get; private set; } = new Vector2(0.15f, 0.15f);
 
         [field: SerializeField]
-        [field: Tooltip("Por dónde se puede andar: el pasto del bosque, sin el seto de abajo a la izquierda, sin las raíces del árbol y sin pasar de donde termina el piso. Tiene que caber en el recorte de PlayFraming con margen para que Mamá entre entera en cámara.")]
+        [field: Tooltip("Por dónde pisa Mamá —su casilla se ancla por los pies—: el pasto de la orilla, sin el seto de abajo a la izquierda, sin meterse bajo el inventario ni en la curva del río y sin pasar de donde termina el piso. Tiene que caber en el recorte de PlayFraming con margen para que Mamá entre entera en cámara.")]
         public Rect WalkableArea { get; private set; } = new Rect(0.13f, 0.05f, 0.23f, 0.26f);
 
         [field: SerializeField]
@@ -66,12 +66,12 @@ namespace Game.Levels.River
         public Vector2 BuildZonePosition { get; private set; } = new Vector2(0.35f, 0.21f);
 
         [field: SerializeField]
-        [field: Tooltip("Radio de la zona de construcción, en fracción de la ilustración.")]
+        [field: Tooltip("Radio de la zona de construcción, en fracción de la ilustración. Ningún material a menos de este radio más ProximityRadius: la zona se abre al cruzar su borde, y recoger el último dentro de ella no la abriría hasta salir y volver a entrar.")]
         public float BuildZoneRadius { get; private set; } = 0.04f;
 
         [field: SerializeField]
-        [field: Tooltip("Plano fijo de toda la recolección: el cuadrante del bosque con un poco de la orilla asomando a la derecha (decisión de Santiago del 25/09/2026; antes, sin río). El río entero entra con el empuje de cámara del ensamblaje. El zoom no puede igualar al del ensamblaje: el empuje no tendría a dónde ir.")]
-        public CameraFraming PlayFraming { get; private set; } = new CameraFraming(new Vector2(0.2632f, 0.2632f), 1.9f);
+        [field: Tooltip("Plano fijo de toda la recolección: la orilla con el río y el pie de la cascada (lectura B, decisión de Santiago del 30/09/2026; antes ×1.9 con un poco del río). El zoom tiene que quedar por debajo del del ensamblaje: el empuje no tendría a dónde ir.")]
+        public CameraFraming PlayFraming { get; private set; } = new CameraFraming(new Vector2(0.3572f, 0.3572f), 1.4f);
 
         [field: SerializeField, TextArea(2, 3)]
         [field: Tooltip("Lo que se dice al recoger un material. {0} es su nombre. Describe, no felicita (RF-17).")]

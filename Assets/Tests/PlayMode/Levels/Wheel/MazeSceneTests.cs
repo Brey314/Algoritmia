@@ -438,8 +438,8 @@ namespace Game.Levels.Wheel.Tests
 
         /// <summary>
         /// Solo el bloque seleccionado lleva la papelera —el mismo icono que borra un perfil—, a
-        /// la derecha de su fila; pulsarla lo retira de la secuencia y no deja otra papelera a la
-        /// vista (RF-34).
+        /// la derecha de su fila; pulsarla lo retira de la secuencia y la papelera pasa a la fila que
+        /// ocupa su lugar (RF-34, DEF-GP1-03).
         /// </summary>
         [Test]
         [Timeout(30000)]
@@ -468,7 +468,11 @@ namespace Game.Levels.Wheel.Tests
 
             Assert.That(maze.Sequence.Blocks, Is.EqualTo(new[] { InstructionBlock.Forward(1), InstructionBlock.Backward(2) }),
                 "la papelera retira ese bloque y deja los demás en su orden");
-            Assert.That(Papeleras(maze), Is.Empty, "y no queda otra papelera a la vista");
+            // DEF-GP1-03: la selección pasa a la fila que ocupa su lugar, así que la papelera se
+            // desplaza con ella y es la única a la vista.
+            var tras = Papeleras(maze);
+            Assert.That(tras, Has.Length.EqualTo(1), "queda una sola papelera, la del bloque que ocupa el lugar");
+            Assert.That(tras[0].transform.parent, Is.SameAs(maze.Rows[1]), "en la fila que ocupa su lugar (Retroceder x2)");
         }
 
         private static Button[] Papeleras(MazeSceneController maze) =>
@@ -482,6 +486,35 @@ namespace Game.Levels.Wheel.Tests
         {
             var pointer = new PointerEventData(EventSystem.current) { position = punto };
             ExecuteEvents.Execute(objetivo.gameObject, pointer, ExecuteEvents.pointerClickHandler);
+        }
+
+        /// <summary>
+        /// Un clic sostenido sobre un bloque y su soltar, por el camino del <c>EventSystem</c>: el pulsar
+        /// y el soltar entran por el <c>CargoHandle</c> del mismo objeto, con fotogramas de por medio para
+        /// que corra el <c>Destroy</c> diferido de lo que el pulsar repinta.
+        /// </summary>
+        private static async Task Gesto(GameObject bloque, Vector2 hasta)
+        {
+            var puntero = new PointerEventData(EventSystem.current)
+            {
+                position = EnPantalla((RectTransform)bloque.transform).center,
+                button = PointerEventData.InputButton.Left
+            };
+
+            ExecuteEvents.Execute(bloque, puntero, ExecuteEvents.pointerDownHandler);
+            await Asentar();
+            puntero.position = hasta;
+            ExecuteEvents.Execute(bloque, puntero, ExecuteEvents.pointerUpHandler);
+            await Asentar();
+        }
+
+        /// <summary>Deja que se asiente la interfaz: layout reconstruido y el <c>Destroy</c> diferido ya ejecutado.</summary>
+        private static async Task Asentar()
+        {
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            await Awaitable.NextFrameAsync();
+            Canvas.ForceUpdateCanvases();
         }
 
         [Test]
@@ -537,6 +570,261 @@ namespace Game.Levels.Wheel.Tests
             maze.TakeFromPalette(InstructionBlock.Default(BlockKind.Backward));
             maze.Drop(new Vector2(10f, 10f));
             Assert.That(maze.Sequence.Count, Is.EqualTo(1), "un bloque de la paleta soltado fuera no hace nada");
+        }
+
+        /// <summary>
+        /// DEF-GP1-01 (OE4, GP#1). Un bloque tomado de «Tu secuencia» se queda pegado al cursor:
+        /// repintar la secuencia destruye la fila que recibió el pulsar, y el <c>EventSystem</c> entrega
+        /// el soltar al objeto que recibió el pulsar, no a otro. Las pruebas de arriba llaman a
+        /// <c>TakeFromSequence</c> y a <c>Drop</c> directamente y nunca pasaron por ese camino.
+        /// Aquí el pulsar y el soltar entran por el <c>CargoHandle</c> de la fila, con un fotograma de
+        /// por medio para que corra el <c>Destroy</c> diferido.
+        /// </summary>
+        /// <remarks>
+        /// Rojo esperado sin la corrección: la fila pulsada ya no existe tras el primer fotograma, el
+        /// soltar no se entrega y <c>Held</c> sigue ocupado.
+        /// </remarks>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RF34_ReordenarUnBloqueEsUnSoloGestoYNoQuedaPegado()
+        {
+            var maze = await OpenMaze();
+            maze.AddBlock(InstructionBlock.Forward(1));
+            maze.AddBlock(InstructionBlock.Turn(TurnDirection.Left));
+            maze.AddBlock(InstructionBlock.Forward(2));
+            await Asentar();
+
+            var tercera = maze.Rows[2].gameObject; // lo que el EventSystem guarda como «el que recibió el pulsar»
+            var puntero = new PointerEventData(EventSystem.current)
+            {
+                position = EnPantalla(maze.Rows[2]).center,
+                button = PointerEventData.InputButton.Left
+            };
+
+            ExecuteEvents.Execute(tercera, puntero, ExecuteEvents.pointerDownHandler); // clic sostenido sobre el tercero
+            await Asentar();
+
+            Assert.That(maze.Held, Is.Not.Null, "mientras se sostiene, el bloque sigue al cursor");
+            Assert.That(maze.Sequence.Blocks, Is.EqualTo(new[] { InstructionBlock.Forward(1), InstructionBlock.Turn(TurnDirection.Left) }),
+                "y salió de la secuencia");
+            Assert.That(tercera != null && tercera.activeInHierarchy, Is.True,
+                "la fila que recibió el pulsar sigue viva: es a ella a quien el EventSystem entrega el soltar");
+
+            // El soltar llega por donde llegaría de verdad: pointerUp al objeto que recibió el pulsar.
+            puntero.position = new Vector2(EnPantalla(maze.SequenceViewport).center.x, EnPantalla(maze.SequenceViewport).yMax - 1f);
+            ExecuteEvents.Execute(tercera, puntero, ExecuteEvents.pointerUpHandler);
+            await Asentar();
+
+            Assert.That(maze.Held, Is.Null, "un solo gesto: el soltar llegó y el bloque no se quedó pegado");
+            Assert.That(maze.Sequence.Blocks, Is.EqualTo(new[]
+                {
+                    InstructionBlock.Forward(2), InstructionBlock.Forward(1), InstructionBlock.Turn(TurnDirection.Left)
+                }),
+                "soltado encima del primero, queda el primero: se reordenó");
+            Assert.That(tercera == null, Is.True, "la fila apartada se destruyó al soltar");
+            Assert.That(maze.Rows.Count, Is.EqualTo(3), "y la lista vuelve a tener una fila por bloque");
+
+            // El siguiente arrastre toma el bloque que se pide, no el que quedó colgando.
+            maze.TogglePalette();
+            await Asentar();
+            var retroceder = maze.PaletteBlocks.Single(bloque => bloque.name == "Bloque_Backward").gameObject;
+            ExecuteEvents.Execute(retroceder, puntero, ExecuteEvents.pointerDownHandler);
+            Assert.That(maze.Held, Is.Not.Null);
+            Assert.That(maze.Held.GetComponentInChildren<Text>().text, Is.EqualTo(maze.Layout.BackwardLabel), "el sostenido es «Retroceder»");
+            puntero.position = new Vector2(EnPantalla(maze.SequenceViewport).center.x, EnPantalla(maze.SequenceViewport).yMin + 1f);
+            ExecuteEvents.Execute(retroceder, puntero, ExecuteEvents.pointerUpHandler);
+            await Asentar();
+
+            Assert.That(maze.Held, Is.Null);
+            Assert.That(maze.Sequence.Blocks.Last(), Is.EqualTo(InstructionBlock.Backward(1)), "entró «Retroceder», al final");
+            Assert.That(maze.Sequence.Count, Is.EqualTo(4));
+        }
+
+        /// <summary>
+        /// DEF-GP1-01, retirar: soltar fuera del panel un bloque tomado de la secuencia lo retira con
+        /// un solo gesto y no deja nada pegado. Y el indicador «errores corregidos» cuenta lo que se
+        /// hizo —retirar +1, reordenar +2 (tomarlo y soltarlo), añadir desde el cajón +1; así lo fija
+        /// <c>casos.md</c> S-N2C— y ya no las ediciones que el defecto provocaba: tomar el bloque
+        /// atascado, el enganche involuntario del siguiente arrastre y el segundo clic del reordenado.
+        /// </summary>
+        [Test]
+        [Timeout(90000)]
+        public async Task MazeScene_RF34_RetirarYReordenarArrastrandoCuentanSoloLasEdicionesHechas()
+        {
+            var maze = await OpenMaze();
+            maze.AddBlock(InstructionBlock.Turn(TurnDirection.Left));
+            maze.AddBlock(InstructionBlock.Forward(1));
+            maze.AddBlock(InstructionBlock.Forward(2));
+            await Asentar();
+
+            maze.Execute(); // girar a la izquierda y avanzar topa con el seto: falla, y desde aquí cuentan las ediciones
+            await Esperar(() => !maze.IsExecuting, 50f);
+            await Asentar();
+            Assert.That(maze.Indicators.Complete().Attempts, Is.EqualTo(1));
+
+            var arriba = new Vector2(EnPantalla(maze.SequenceViewport).center.x, EnPantalla(maze.SequenceViewport).yMax - 1f);
+            await Gesto(maze.Rows[2].gameObject, arriba); // reordenar: el tercero, encima del primero (+2)
+            Assert.That(maze.Held, Is.Null, "reordenar fue un solo gesto");
+            Assert.That(maze.Sequence.Blocks, Is.EqualTo(new[]
+            {
+                InstructionBlock.Forward(2), InstructionBlock.Turn(TurnDirection.Left), InstructionBlock.Forward(1)
+            }));
+
+            await Gesto(maze.Rows[0].gameObject, new Vector2(10f, 10f)); // retirar: soltarlo fuera (+1)
+            Assert.That(maze.Held, Is.Null, "retirar fue un solo gesto");
+            Assert.That(maze.Sequence.Blocks, Is.EqualTo(new[] { InstructionBlock.Turn(TurnDirection.Left), InstructionBlock.Forward(1) }));
+
+            maze.TogglePalette(); // abrir el cajón no es una edición
+            await Asentar();
+            var retroceder = maze.PaletteBlocks.Single(bloque => bloque.name == "Bloque_Backward").gameObject;
+            await Gesto(retroceder, new Vector2(EnPantalla(maze.SequenceViewport).center.x, EnPantalla(maze.SequenceViewport).yMin + 1f)); // añadir (+1)
+            Assert.That(maze.Sequence.Blocks.Last(), Is.EqualTo(InstructionBlock.Backward(1)),
+                "el arrastre siguiente toma el bloque pedido y no uno pegado");
+
+            maze.Execute();
+            await Esperar(() => !maze.IsExecuting, 50f);
+
+            Assert.That(maze.Indicators.Complete().CorrectedErrors, Is.EqualTo(4),
+                "2 del reordenado + 1 del retiro + 1 del añadido: ni una más por el bloque pegado");
+        }
+
+        /// <summary>
+        /// Con el soltar ya entregado (DEF-GP1-01), un clic sin mover sobre un bloque lo toma y lo suelta
+        /// en su propio hueco: se queda donde estaba y no cuenta como edición. Soltarlo en la mitad de
+        /// abajo de su fila, con el siguiente bloque ya subido a ese sitio, lo habría pasado detrás de
+        /// él: un clic habría cambiado el algoritmo sin avisar.
+        /// </summary>
+        [Test]
+        [Timeout(90000)]
+        public async Task MazeScene_RF34_UnClicSinMoverSobreUnBloqueLoDejaDondeEstabaYNoCuentaEdicion()
+        {
+            var maze = await OpenMaze();
+            maze.AddBlock(InstructionBlock.Turn(TurnDirection.Left));
+            maze.AddBlock(InstructionBlock.Forward(1));
+            maze.AddBlock(InstructionBlock.Forward(2));
+            await Asentar();
+            Assume.That(maze.IsCompact, Is.False, "con tres bloques las filas van desplegadas");
+
+            maze.Execute(); // falla: desde aquí cuentan las ediciones
+            await Esperar(() => !maze.IsExecuting, 50f);
+            await Asentar();
+
+            var segunda = EnPantalla(maze.Rows[1]);
+            await Gesto(maze.Rows[1].gameObject, new Vector2(segunda.center.x, segunda.yMin + segunda.height * 0.25f)); // mitad de abajo, sin salir de su fila
+
+            Assert.That(maze.Held, Is.Null, "el clic tomó y soltó: no quedó nada pegado");
+            Assert.That(maze.Sequence.Blocks, Is.EqualTo(new[]
+            {
+                InstructionBlock.Turn(TurnDirection.Left), InstructionBlock.Forward(1), InstructionBlock.Forward(2)
+            }), "y el bloque sigue donde estaba");
+            Assert.That(Papeleras(maze), Has.Length.EqualTo(1), "queda seleccionado: su fila ofrece la papelera");
+            Assert.That(maze.Rows[1].Find("Eliminar"), Is.Not.Null, "la de ese bloque");
+
+            maze.Execute();
+            await Esperar(() => !maze.IsExecuting, 50f);
+
+            Assert.That(maze.Indicators.Complete().CorrectedErrors, Is.Zero, "un clic sin mover no cambió la secuencia: no es una edición");
+        }
+
+        /// <summary>
+        /// DEF-GP1-02 (OE4, GP#2). Con la lista desplazada, el resaltado del bloque en curso no se ve:
+        /// la lista no sigue a la ejecución y los primeros bloques se recorren fuera de la ventana.
+        /// </summary>
+        /// <remarks>
+        /// Rojo esperado sin la corrección: tras añadir los bloques la lista queda abajo del todo y
+        /// el bloque 0, el primero en ejecutarse, queda por encima de la ventana.
+        /// </remarks>
+        [Test]
+        [Timeout(90000)]
+        public async Task MazeScene_RF32_AlEjecutarLaListaMuestraElBloqueEnCurso()
+        {
+            const int bloques = 12;
+            var maze = await OpenMaze();
+            for (var i = 0; i < bloques; i++)
+            {
+                maze.AddBlock(InstructionBlock.Turn()); // girar nunca choca: se recorren todos
+            }
+
+            await Asentar();
+            Assume.That(maze.ScrollDownButton.gameObject.activeSelf, Is.True, "doce bloques no caben en la ventana");
+            Assume.That(maze.ScrollDownButton.interactable, Is.False, "y la lista quedó abajo del todo, con los primeros bloques fuera de la vista");
+
+            var ventana = EnPantalla(maze.SequenceViewport);
+            var resaltados = new SortedSet<int>();
+            var fuera = new List<string>();
+
+            maze.Execute();
+            await Esperar(() =>
+            {
+                for (var i = 0; i < maze.Rows.Count; i++)
+                {
+                    if (!maze.Rows[i].GetComponent<Outline>().enabled)
+                    {
+                        continue;
+                    }
+
+                    resaltados.Add(i);
+                    var fila = EnPantalla(maze.Rows[i]);
+                    if (fila.yMin < ventana.yMin - 1f || fila.yMax > ventana.yMax + 1f)
+                    {
+                        fuera.Add($"Paso_{i} ({fila.yMin:F0}..{fila.yMax:F0} contra la ventana {ventana.yMin:F0}..{ventana.yMax:F0})");
+                    }
+                }
+
+                return !maze.IsExecuting;
+            }, 60f);
+
+            Assert.That(resaltados, Is.EquivalentTo(Enumerable.Range(0, bloques)), "se resaltó cada bloque, empezando por el primero");
+            Assert.That(fuera, Is.Empty, "y en todo momento el bloque resaltado estaba dentro de la ventana (RF-32)");
+        }
+
+        /// <summary>
+        /// DEF-GP1-03 (OE4, GP#1). Tras usar la papelera con el cajón cerrado ninguna fila la ofrece
+        /// y no hay flecha «→» para elegir otra: la secuencia solo se vacía abriendo el cajón.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RF34_TrasLaPapeleraConElCajonCerradoLasFilasLaOfrecen()
+        {
+            var maze = await OpenMaze();
+            maze.AddBlock(InstructionBlock.Forward(1));
+            maze.AddBlock(InstructionBlock.Turn());
+            maze.AddBlock(InstructionBlock.Backward(2));
+            maze.Expand(0); // el primero queda seleccionado: su fila lleva la papelera
+            await Asentar();
+            Assume.That(maze.IsPaletteOpen, Is.False, "el cajón está cerrado");
+            Assume.That(maze.IsCompact, Is.False, "con tres bloques las filas van desplegadas y no hay flecha «→»");
+
+            for (var quedan = 3; quedan > 0; quedan--)
+            {
+                var papeleras = Papeleras(maze);
+                Assert.That(papeleras, Has.Length.EqualTo(1), $"con {quedan} bloques y el cajón cerrado, una fila ofrece su papelera");
+
+                papeleras[0].onClick.Invoke();
+                await Asentar();
+                Assert.That(maze.Sequence.Count, Is.EqualTo(quedan - 1), "cada papelera retira un bloque");
+            }
+
+            Assert.That(maze.Sequence.IsEmpty, Is.True, "se vació sin abrir el cajón");
+            Assert.That(Papeleras(maze), Is.Empty, "y sin bloques no hay papelera que ofrecer");
+        }
+
+        /// <summary>DEF-GP1-03, la otra salida: retirar un bloque arrastrándolo fuera tampoco deja las filas sin papelera.</summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RF34_TrasRetirarArrastrandoLasFilasOfrecenLaPapelera()
+        {
+            var maze = await OpenMaze();
+            maze.AddBlock(InstructionBlock.Forward(1));
+            maze.AddBlock(InstructionBlock.Turn());
+            maze.AddBlock(InstructionBlock.Backward(2));
+            await Asentar();
+            Assume.That(maze.IsCompact, Is.False, "con tres bloques las filas van desplegadas y no hay flecha «→»");
+
+            await Gesto(maze.Rows[1].gameObject, new Vector2(10f, 10f));
+
+            Assert.That(maze.Sequence.Blocks, Is.EqualTo(new[] { InstructionBlock.Forward(1), InstructionBlock.Backward(2) }));
+            Assert.That(Papeleras(maze), Has.Length.EqualTo(1), "una fila ofrece la papelera, con el cajón cerrado");
         }
 
         [Test]

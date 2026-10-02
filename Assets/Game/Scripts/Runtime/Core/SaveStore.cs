@@ -56,6 +56,25 @@ namespace Game.Core
         public PlayerProfile Load(string profileName) =>
             JsonUtility.FromJson<PlayerProfile>(_fileSystem.ReadAllText(PathOf(profileName)));
 
+        /// <summary>
+        /// Como <see cref="Load"/>, pero un archivo ilegible —JSON truncado por un corte, vacío,
+        /// ilegible por permisos— devuelve <c>false</c> en vez de lanzar: elegir un perfil dañado
+        /// no puede dejar al estudiante sin respuesta (DEF-SPER-02, RNF-14).
+        /// </summary>
+        public bool TryLoad(string profileName, out PlayerProfile profile)
+        {
+            try
+            {
+                profile = Load(profileName);
+            }
+            catch (System.Exception)
+            {
+                profile = null;
+            }
+
+            return profile != null;
+        }
+
         public bool Exists(string profileName) => _fileSystem.FileExists(PathOf(profileName));
 
         /// <summary>Nombres de los perfiles guardados, para poder detectar duplicados (RF-02).</summary>

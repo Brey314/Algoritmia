@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -168,7 +169,143 @@ namespace Game.UI.Tests
             Assert.That(DeletePanel().activeInHierarchy, Is.False);
         }
 
+        // DEF-W5R-01: con ocho perfiles la lista desbordaba el panel (la 5.ª fila fuera, la papelera
+        // de la 6.ª bajo «Volver», la 8.ª invisible). Con las flechas todos se alcanzan con clic y
+        // cada fila se ve entera dentro del panel. Rojo esperado sin la corrección: no compila
+        // (PageDownButton) y, sin flechas, las filas de la 4.ª en adelante caen fuera del panel.
+        [Test]
+        [Timeout(30000)]
+        public async Task ProfileSelect_RF02_ConOchoPerfilesTodosSeAlcanzanConLasFlechas()
+        {
+            var nombres = new[] { "Ana", "Beto", "Caro", "Dani", "Eva", "Fede", "Gaby", "Hugo" };
+            foreach (var nombre in nombres)
+            {
+                _store.Save(PlayerProfile.Create(nombre, Array.Empty<string>()).Profile);
+            }
+
+            await OpenProfilePanel();
+            var panel = Object.FindAnyObjectByType<ProfileSelectController>(FindObjectsInactive.Include);
+            var marco = ScreenRect((RectTransform)panel.transform.Find("SavedPanel/Fondo"));
+            var vistos = new List<string>();
+
+            Assert.That(panel.PageUpButton.gameObject.activeSelf, Is.False, "en la primera página no hay a dónde subir");
+            Assert.That(panel.PageDownButton.gameObject.activeSelf, Is.True, "y sí hay más abajo");
+            vistos.AddRange(AssertEntriesFitInside(marco));
+
+            // Ocho perfiles a tres por página (DEF-W5R-01): la segunda es intermedia, con las dos flechas.
+            Click(panel.PageDownButton);
+            await Awaitable.NextFrameAsync();
+            Assert.That(panel.PageUpButton.gameObject.activeSelf, Is.True);
+            Assert.That(panel.PageDownButton.gameObject.activeSelf, Is.True, "aún queda una página");
+            vistos.AddRange(AssertEntriesFitInside(marco));
+
+            Click(panel.PageDownButton);
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(panel.PageUpButton.gameObject.activeSelf, Is.True);
+            Assert.That(panel.PageDownButton.gameObject.activeSelf, Is.False, "en la última no hay más");
+            vistos.AddRange(AssertEntriesFitInside(marco));
+            Assert.That(vistos, Is.EquivalentTo(nombres), "las ocho filas se ven, ninguna dos veces");
+
+            // El perfil de la última página se alcanza con un clic: su papelera pide confirmación.
+            ClickDeleteOn("Hugo");
+            Assert.That(DeletePanel().activeInHierarchy, Is.True);
+            Click(FindButtonByLabel("Conservar"));
+            Click(panel.PageUpButton);
+            Click(panel.PageUpButton);
+            await Awaitable.NextFrameAsync();
+            var primera = AssertEntriesFitInside(marco);
+            Assert.That(primera, Has.Count.EqualTo(3), "las flechas vuelven a la primera página");
+            Assert.That(primera, Does.Contain("Ana"));
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task ProfileSelect_RF02_BorrarElUnicoPerfilDeLaUltimaPaginaVuelveALaAnterior()
+        {
+            foreach (var nombre in new[] { "Ana", "Beto", "Caro", "Dani", "Eva", "Fede", "Gaby" })
+            {
+                _store.Save(PlayerProfile.Create(nombre, Array.Empty<string>()).Profile);
+            }
+
+            await OpenProfilePanel();
+            var panel = Object.FindAnyObjectByType<ProfileSelectController>(FindObjectsInactive.Include);
+            Click(panel.PageDownButton);
+            await Awaitable.NextFrameAsync();
+            Click(panel.PageDownButton);
+            await Awaitable.NextFrameAsync();
+            Assume.That(CountEntries(), Is.EqualTo(1));
+
+            ClickDeleteOn("Gaby");
+            Click(FindButtonByLabel("Borrar"));
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(CountEntries(), Is.EqualTo(3), "no queda una página vacía");
+            Assert.That(panel.PageDownButton.gameObject.activeSelf, Is.False);
+            Assert.That(panel.PageUpButton.gameObject.activeSelf, Is.True, "la página anterior sigue ahí");
+        }
+
+        // DEF-SPER-02: un JSON truncado por un corte de luz lanzaba una ArgumentException sin
+        // capturar y el clic no respondía nada. Rojo esperado sin la corrección: la excepción
+        // llega al registro y el aviso queda vacío.
+        [Test]
+        [Timeout(20000)]
+        public async Task ProfileSelect_RNF14_ElegirUnPerfilIlegibleAvisaYNoLanza()
+        {
+            Directory.CreateDirectory(_dataDirectory);
+            File.WriteAllText($"{_dataDirectory}/Ana.json", "{\"name\":\"Ana\",\"reach");
+            var runner = await OpenProfilePanel();
+            var panel = Object.FindAnyObjectByType<ProfileSelectController>(FindObjectsInactive.Include);
+
+            ClickProfileEntry("Ana");
+            await Awaitable.NextFrameAsync();
+
+            LogAssert.NoUnexpectedReceived();
+            var aviso = panel.transform.Find("NewPanel/Fondo/MessageLabel").GetComponent<Text>();
+            Assert.That(aviso.text, Is.Not.Empty, "el estudiante recibe un aviso");
+            Assert.That(aviso.text, Does.Not.Match(@"\d"), "sin cifras (CP-03)");
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.ProfileSelect), "y no avanza con un perfil a medias");
+            Assert.That(runner.Flow.ActiveProfile, Is.Null);
+        }
+
         // --- helpers -----------------------------------------------------------------------
+
+        private static int CountEntries() => Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude)
+            .Count(boton => boton.name.StartsWith("ProfileEntry("));
+
+        private static Rect ScreenRect(RectTransform rect)
+        {
+            var corners = new Vector3[4];
+            rect.GetWorldCorners(corners);
+            return new Rect(corners[0], corners[2] - corners[0]);
+        }
+
+        /// <summary>
+        /// Las filas visibles de la página: cada una entera dentro del panel, su papelera también y
+        /// ninguna sobre «Volver» (lo que DEF-W5R-01 mostró desbordado). Devuelve sus nombres.
+        /// </summary>
+        private static List<string> AssertEntriesFitInside(Rect marco)
+        {
+            var volver = ScreenRect((RectTransform)Object.FindAnyObjectByType<ProfileSelectController>(FindObjectsInactive.Include)
+                .transform.Find("BackButton"));
+            var filas = Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude)
+                .Where(boton => boton.name.StartsWith("ProfileEntry(")).ToList();
+            foreach (var fila in filas)
+            {
+                var caja = ScreenRect((RectTransform)fila.transform);
+                var papelera = ScreenRect((RectTransform)fila.transform.Find("DeleteButton"));
+                foreach (var parte in new[] { caja, papelera })
+                {
+                    Assert.That(parte.xMin, Is.GreaterThanOrEqualTo(marco.xMin - 0.5f), $"{fila.name} dentro por la izquierda");
+                    Assert.That(parte.xMax, Is.LessThanOrEqualTo(marco.xMax + 0.5f), $"{fila.name} dentro por la derecha");
+                    Assert.That(parte.yMin, Is.GreaterThanOrEqualTo(marco.yMin - 0.5f), $"{fila.name} dentro por abajo");
+                    Assert.That(parte.yMax, Is.LessThanOrEqualTo(marco.yMax + 0.5f), $"{fila.name} dentro por arriba");
+                    Assert.That(parte.Overlaps(volver), Is.False, $"{fila.name} no queda bajo «Volver»");
+                }
+            }
+
+            return filas.Select(fila => fila.name.Substring("ProfileEntry(".Length).TrimEnd(')')).ToList();
+        }
 
         private static GameObject DeletePanel() =>
             Object.FindAnyObjectByType<ProfileSelectController>(FindObjectsInactive.Include)

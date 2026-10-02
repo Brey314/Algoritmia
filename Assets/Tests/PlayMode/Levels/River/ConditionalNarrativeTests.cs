@@ -105,6 +105,83 @@ namespace Game.Levels.River.Tests
             Assert.That(river.Pads.All(pad => !pad.gameObject.activeSelf), Is.True, "no se vuelve a la orilla");
         }
 
+        /// <summary>
+        /// Retomar en el ensamblaje (RNF-14), volver de la 3.2 o reiniciar en el amarre deja a Mamá
+        /// donde abrió el panel la vez anterior: en la zona. Con el plano ×1.6 de la lectura B
+        /// (INC-118) el arranque queda a la vista del ensamblaje, cortado por el borde izquierdo y
+        /// con las piernas bajo el inventario.
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        public async Task RiverScene_RNF14_AlRetomarElEnsamblajeMamaEsperaEnLaZona()
+        {
+            await StartAt(RaftPhase.Lashing);
+            var river = await RiverMovementTests.OpenRiver();
+
+            Assume.That(river.Zone.IsOpen, Is.True, "retoma en el ensamblaje");
+            Assert.That(Vector2.Distance(river.Player.anchorMin, river.Config.BuildZonePosition), Is.LessThan(1e-4f),
+                "Mamá espera en la zona");
+            Assert.That(Vector2.Distance(river.Walk.Position, river.Config.BuildZonePosition), Is.LessThan(1e-4f),
+                "y el modelo de caminata lo sabe: el siguiente Tick no la devuelve a la orilla");
+            Assert.That(river.Player.localScale.x, Is.EqualTo(river.Config.DepthScaleAt(river.Config.BuildZonePosition.y)).Within(1e-4f),
+                "con la escala de esa altura (DA83)");
+        }
+
+        /// <summary>
+        /// «Probar balsa» antes de la última fase no gasta la escena 3.2 (guion §1.8.4.1, D-j del
+        /// 30/09/2026): la escena nombra la depuración del primer fallo de la balsa **terminada**, y
+        /// salir a ella desde la base o el amarre volvería a la fase 3 sin confirmar las anteriores
+        /// (RNF-14, CP-02). Se queda en el juego, y el primer fallo de la balsa terminada la dispara.
+        /// </summary>
+        [Test]
+        [Timeout(90000)]
+        [Category("Acceptance")]
+        public async Task RiverScene_Guion841_ProbarAntesDeLaUltimaFaseNoGastaLaEscena32()
+        {
+            var runner = await StartAt(RaftPhase.Base);
+            var (_, panel) = await AssemblyPanelTests.OpenAssembly();
+
+            await AssemblyPanelTests.Probar(panel); // la base vacía
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Playing), "probar en la base se queda en el juego");
+
+            await AssemblyPanelTests.FillPhase(panel, RaftPhase.Base);
+            await AssemblyPanelTests.Confirm(panel);
+            await AssemblyPanelTests.Probar(panel); // el amarre vacío
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Playing), "y probar en el amarre también");
+
+            await AssemblyPanelTests.FillPhase(panel, RaftPhase.Lashing);
+            await AssemblyPanelTests.Confirm(panel);
+            var (mastil, vela) = MastAndSail(panel);
+            await AssemblyPanelTests.Drag(panel, MaterialKind.Cloth, mastil);
+            await AssemblyPanelTests.Drag(panel, MaterialKind.Mast, vela);
+            await AssemblyPanelTests.Confirm(panel);
+
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Narrative), "el primer fallo de la balsa terminada sí sale a la narrativa");
+            Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo(panel.Content.FirstFailureSequenceId), "a la escena 3.2, que no se había gastado");
+        }
+
+        /// <summary>
+        /// Una prueba de balsa incompleta es un intento (RF-45, OE1 §3.6.1): «confirmaciones de fase
+        /// rechazadas y pruebas de balsa fallidas». El estudiante no ve la cifra (CP-03); queda en el
+        /// perfil, donde la lee el informe docente.
+        /// </summary>
+        [Test]
+        [Timeout(90000)]
+        [Category("Acceptance")]
+        public async Task RiverIndicators_RF45_UnaPruebaDeBalsaIncompletaCuentaComoIntento()
+        {
+            var runner = await StartAt(RaftPhase.Base);
+            var (_, panel) = await AssemblyPanelTests.OpenAssembly();
+
+            await AssemblyPanelTests.Probar(panel); // la base vacía: la balsa se hunde
+            await AssemblyPanelTests.FillPhase(panel, RaftPhase.Base);
+            await AssemblyPanelTests.Confirm(panel);
+
+            var registro = runner.Flow.ActiveProfile.IndicatorsFor(new PhaseId(LevelId.River, 1));
+            Assert.That(registro.Attempts, Is.EqualTo(1), "la prueba de la balsa incompleta es un intento (OE1 §3.6.1)");
+            Assert.That(registro.StepsUsed, Is.EqualTo(1), "y no un paso: solo la confirmación de la base lo es");
+        }
+
         /// <summary>Un runner de prueba con un perfil que tiene el Nivel 3 abierto y las fases anteriores confirmadas.</summary>
         internal static async Task<GameFlowRunner> StartAt(RaftPhase phase, string nombre = Nombre)
         {

@@ -193,6 +193,28 @@ namespace Game.Levels.Wheel
         private InstructionBlock _heldBlock;
         private int _expanded = -1;
 
+        /// <summary>De dónde salió el bloque sostenido: su índice en la secuencia, o -1 si viene de la paleta.</summary>
+        private int _heldOrigin = -1;
+
+        /// <summary>
+        /// La fila que recibió el pulsar al tomar un bloque de la secuencia. **Se aparta, no se
+        /// destruye**, hasta soltar (DEF-GP1-01): el <c>EventSystem</c> entrega el soltar al objeto
+        /// que recibió el pulsar, y si ese objeto ya no existe el soltar no llega nunca.
+        /// </summary>
+        private RectTransform _pressedRow;
+
+        /// <summary>
+        /// El hueco que ocupaba en pantalla la fila tomada. Soltar el bloque dentro de él es soltarlo
+        /// donde estaba: no lo mueve ni cuenta como edición.
+        /// </summary>
+        private Rect _pickupSlot;
+
+        /// <summary>
+        /// Lo que debe sobrar entre el bloque en curso y el borde de la ventana al desplazar la
+        /// lista hasta él: el resaltado crece un 4 % y lleva contorno, y no debe quedar recortado.
+        /// </summary>
+        private const float RevealMargin = 8f;
+
         /// <summary>El flujo del juego. Lo pone <c>Boot</c>; una prueba puede inyectar otro.</summary>
         internal GameFlowRunner Runner { get; set; }
 
@@ -242,6 +264,7 @@ namespace Game.Levels.Wheel
         internal Text MessageLabel => messageLabel;
         internal Image MessageIcon => messageIcon;
         internal RectTransform Held => _held;
+        internal WheelIndicatorCollector Indicators => _indicators;
         internal RectTransform ScrollBar => _scrollTrack;
         internal RectTransform ScrollThumb => _scrollThumb;
         internal WheelSounds Sounds => sounds;
@@ -309,7 +332,7 @@ namespace Game.Levels.Wheel
                 var taken = kind;
                 var handle = piece.GetComponent<CargoHandle>();
                 handle.Taken += () => TakeFromPalette(InstructionBlock.Default(taken));
-                handle.Released += Drop;
+                handle.ReleasedAt += Drop;
             }
 
             paletteToggle.onClick.AddListener(TogglePalette);
@@ -749,7 +772,7 @@ namespace Game.Levels.Wheel
                 var index = i;
                 var handle = row.GetComponent<CargoHandle>();
                 handle.Taken += () => TakeFromSequence(index);
-                handle.Released += Drop;
+                handle.ReleasedAt += Drop;
                 if (i == _expanded)
                 {
                     AddDeleteButton(row, i); // solo el bloque seleccionado lleva su papelera
@@ -867,7 +890,7 @@ namespace Game.Levels.Wheel
 
             _sequence.RemoveAt(index);
             _indicators.RecordEdit(); // Retirar un bloque (§3.6.1, fase 3).
-            _expanded = -1;
+            _expanded = SequenceListRules.SelectionAfterRemoval(index, _sequence.Count); // DEF-GP1-03
             RefreshRows();
         }
 
@@ -931,7 +954,9 @@ namespace Game.Levels.Wheel
         }
 
         /// <summary>Clic sostenido sobre un bloque de la paleta: se toma una copia; la paleta no se vacía.</summary>
-        internal void TakeFromPalette(InstructionBlock block)
+        internal void TakeFromPalette(InstructionBlock block) => Hold(block, -1);
+
+        private void Hold(InstructionBlock block, int origin)
         {
             if (IsExecuting || _held != null)
             {
@@ -939,6 +964,7 @@ namespace Game.Levels.Wheel
             }
 
             _heldBlock = block;
+            _heldOrigin = origin;
             _held = SpawnBlock(block, _canvas.transform, RowMode.Held);
             _held.name = "Bloque_Sostenido";
             _held.sizeDelta = new Vector2(blockTemplate.sizeDelta.x, expandedHeight);
@@ -949,36 +975,65 @@ namespace Game.Levels.Wheel
         }
 
         /// <summary>Clic sostenido sobre un bloque ya enganchado: sale de la secuencia mientras se sostiene (RF-34).</summary>
+        /// <remarks>
+        /// **Reordenar y retirar son un solo gesto** (DEF-GP1-01). Esto corre dentro del
+        /// <c>OnPointerDown</c> de la fila, y repintar la secuencia destruye sus filas: si cae la que
+        /// recibió el pulsar, el <c>EventSystem</c> ya no tiene a quién entregar el soltar, el bloque
+        /// se queda pegado al cursor y el siguiente arrastre engancha ese en lugar del pedido. Por eso
+        /// esa fila se aparta (invisible, fuera de la lista) en vez de destruirla, y <see cref="Drop(Vector2)"/>
+        /// la destruye al soltar. Diferir el repintado hasta soltar habría dejado la fila a la vista
+        /// duplicando el bloque que ya sigue al cursor.
+        /// </remarks>
         internal void TakeFromSequence(int index)
         {
-            if (IsExecuting || _held != null || index >= _sequence.Count)
+            if (IsExecuting || _held != null || index < 0 || index >= _sequence.Count)
             {
                 return;
             }
 
+            // La edición se cuenta al soltar (§3.6.1, fase 3): un clic sin mover deja el bloque donde
+            // estaba y no cambia nada.
             var block = _sequence.RemoveAt(index);
-            _indicators.RecordEdit(); // Retirar un bloque (§3.6.1, fase 3).
+            if (index < _rows.Count)
+            {
+                _pressedRow = _rows[index];
+                _pickupSlot = ScreenRect(_pressedRow);
+                _rows.RemoveAt(index); // RefreshRows destruye las filas de _rows: esta se queda
+                Park(_pressedRow);
+            }
+
             RefreshRows();
-            TakeFromPalette(block);
+            Hold(block, index);
+        }
+
+        /// <summary>El rectángulo de un elemento en píxeles de pantalla, medido igual que <see cref="IndexAt"/>.</summary>
+        private Rect ScreenRect(RectTransform rect)
+        {
+            var corners = new Vector3[4];
+            rect.GetWorldCorners(corners);
+            var min = RectTransformUtility.WorldToScreenPoint(UiCamera, corners[0]);
+            var max = RectTransformUtility.WorldToScreenPoint(UiCamera, corners[2]);
+            return Rect.MinMaxRect(min.x, min.y, max.x, max.y);
         }
 
         /// <summary>
-        /// Soltar el clic. Sobre la secuencia, el bloque se engancha donde cae; fuera, se
-        /// descarta —para el de la paleta no pasa nada, para el de la secuencia es retirarlo—.
-        /// Editar no reinicia nada: el laberinto sigue donde estaba (CU-08 FA-6a).
+        /// Saca la fila de la lista y la deja invisible, sin tocar su estado de activa: el soltar
+        /// del <c>EventSystem</c> solo llega a un objeto activo en la jerarquía.
         /// </summary>
-        internal void Drop()
+        private void Park(RectTransform row)
         {
-            if (_held == null)
-            {
-                return;
-            }
-
-            var mouse = Mouse.current;
-            var point = mouse != null ? mouse.position.ReadValue() : (Vector2)_held.position;
-            Drop(point);
+            row.SetParent(_canvas.transform, false);
+            var group = row.gameObject.AddComponent<CanvasGroup>();
+            group.alpha = 0f;
+            group.blocksRaycasts = false;
+            group.interactable = false;
         }
 
+        /// <summary>
+        /// Soltar el clic en ese punto de pantalla. Sobre la secuencia, el bloque se engancha donde
+        /// cae; fuera, se descarta —para el de la paleta no pasa nada, para el de la secuencia es
+        /// retirarlo—. Editar no reinicia nada: el laberinto sigue donde estaba (CU-08 FA-6a).
+        /// </summary>
         internal void Drop(Vector2 screenPoint)
         {
             if (_held == null)
@@ -988,17 +1043,51 @@ namespace Game.Levels.Wheel
 
             // La ventana y no la lista: la lista es más alta que su hueco cuando hay que
             // desplazarla, y soltar sobre la parte recortada no es soltar sobre la lista.
-            if (RectTransformUtility.RectangleContainsScreenPoint(sequenceViewport, screenPoint, UiCamera))
+            var fromSequence = _heldOrigin >= 0;
+            var inside = RectTransformUtility.RectangleContainsScreenPoint(sequenceViewport, screenPoint, UiCamera);
+
+            // Un clic sin mover sobre un bloque lo toma y lo suelta en su hueco: se queda donde estaba.
+            // Sin esto, soltarlo en la mitad de abajo de su fila lo pasaría detrás del siguiente, que
+            // para entonces ya ocupa ese sitio, y un clic cambiaría el algoritmo sin avisar.
+            var inPlace = fromSequence && inside && _pickupSlot.Contains(screenPoint);
+            if (inside)
             {
-                var index = IndexAt(screenPoint);
+                var index = inPlace ? _heldOrigin : IndexAt(screenPoint);
                 _sequence.Insert(index, _heldBlock);
-                _indicators.RecordEdit(); // Enganchar —o reordenar— un bloque (§3.6.1, fase 3).
                 _expanded = index;
-                _scrollToEnd = true; // la lista baja sola: lo siguiente se suelta al final
+            }
+            else if (fromSequence)
+            {
+                // Retirarlo arrastrándolo fuera también deja una fila con papelera (DEF-GP1-03).
+                _expanded = SequenceListRules.SelectionAfterRemoval(_heldOrigin, _sequence.Count);
+            }
+
+            if (!inPlace)
+            {
+                // Cada acción es una edición (§3.6.1, fase 3): sacarlo de la secuencia —retirar, o la
+                // primera mitad de reordenar— y enganchar —o reordenar— un bloque. Reordenar son dos.
+                if (fromSequence)
+                {
+                    _indicators.RecordEdit();
+                }
+
+                if (inside)
+                {
+                    _indicators.RecordEdit();
+                    _scrollToEnd = true; // la lista baja sola: lo siguiente se suelta al final
+                }
             }
 
             Destroy(_held.gameObject);
             _held = null;
+            _heldOrigin = -1;
+            _pickupSlot = default;
+            if (_pressedRow != null)
+            {
+                Destroy(_pressedRow.gameObject);
+                _pressedRow = null;
+            }
+
             RefreshRows();
         }
 
@@ -1200,7 +1289,12 @@ namespace Game.Levels.Wheel
             } while (elapsed < seconds);
         }
 
-        /// <summary>Resalta una fila con **dos** indicadores —contorno y tamaño—; -1 apaga todas (RNF-19).</summary>
+        /// <summary>
+        /// Resalta una fila con **dos** indicadores —contorno y tamaño—; -1 apaga todas (RNF-19). Y
+        /// **desplaza la lista hasta ella**: resaltar lo que queda fuera de la ventana no le dice nada
+        /// al estudiante, y con la lista abajo del todo los primeros bloques se ejecutaban sin verse
+        /// (DEF-GP1-02, RF-32).
+        /// </summary>
         private void Highlight(int index)
         {
             for (var i = 0; i < _rows.Count; i++)
@@ -1214,6 +1308,26 @@ namespace Game.Levels.Wheel
 
                 _rows[i].localScale = Vector3.one * (on ? highlightScale : 1f);
             }
+
+            if (index >= 0 && index < _rows.Count)
+            {
+                RevealRow(_rows[index]);
+            }
+        }
+
+        /// <summary>
+        /// Lleva la lista hasta que la fila quede dentro de su ventana. Se desplaza por código, con
+        /// el mismo <see cref="SetScroll"/> que usan «▲» y «▼»: nada de <c>ScrollRect</c> (RNF-02, CT-06).
+        /// </summary>
+        private void RevealRow(RectTransform row)
+        {
+            // Distancia desde el borde superior de la lista, medida en su propio espacio: incluye el
+            // 4 % que crece la fila resaltada y no depende de los márgenes ni del grupo vertical.
+            float FromListTop(float rowY) =>
+                sequenceList.rect.yMax - sequenceList.InverseTransformPoint(row.TransformPoint(new Vector3(0f, rowY, 0f))).y;
+
+            SetScroll(SequenceListRules.RevealScroll(_scroll, FromListTop(row.rect.yMax), FromListTop(row.rect.yMin),
+                sequenceViewport.rect.height, RevealMargin));
         }
 
         /// <summary>Confirma y guarda la fase 3 (RF-04) y sale al cierre del nivel que declara el asset.</summary>

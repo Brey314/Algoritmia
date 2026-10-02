@@ -33,16 +33,12 @@ namespace Game.Levels.Wheel
         public Sprite PlankArt { get; private set; }
 
         [field: SerializeField]
-        [field: Tooltip("La carretilla con la caja encima (estado 5). La cuerda se amarra encima de este dibujo.")]
+        [field: Tooltip("La carretilla con la caja encima, todavía sin amarrar (estado 5).")]
         public Sprite CompleteArt { get; private set; }
 
         [field: SerializeField]
-        [field: Tooltip("Dónde queda la cuerda amarrada, en fracciones de la ilustración: sobre la caja de la carretilla (INC-54).")]
-        public Vector2 RopePlacedPosition { get; private set; } = new Vector2(0.681f, 0.33f);
-
-        [field: SerializeField]
-        [field: Tooltip("Lado de la cuerda amarrada como fracción del alto de la ilustración.")]
-        public float RopePlacedSize { get; private set; } = 0.05f;
+        [field: Tooltip("La carretilla con la caja amarrada con la cuerda (estado 6, INC-54): el último dibujo del taller y el mismo con el que abre la escena 2.4.")]
+        public Sprite TiedArt { get; private set; }
 
         [field: SerializeField, TextArea(2, 3)]
         [field: Tooltip("Al seleccionar un tronco corto todavía macizo.")]

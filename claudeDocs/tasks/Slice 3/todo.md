@@ -53,7 +53,15 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       (ver R02); verlo jugando es de Santiago en la revisión
 - [x] **Pregunta abierta 1 resuelta con el usuario** — 16/09/2026: tres fases, sin guardado
       al terminar la recolección
-- [ ] Revisado con el usuario
+- [x] Revisado con el usuario
+      *(01/10/2026: Decisión — revisado por Santiago el 30/09/2026 (acta D10, §5), tras comprobar en
+      verde en la suite completa del 01/10/2026 la exclusión de RNF-16 con los tres niveles
+      (`Architecture_RNF16_NingunAssemblyDeNivelReferenciaAOtroNivel`,
+      `Architecture_RNF16_RetirarUnNivelNoAfectaALosOtrosDos`) y el desbloqueo del Nivel 3
+      (`LevelUnlockPolicy_RF03_ElNivel3EsperaLasTresFasesDelNivel2`,
+      `LevelSummary_RF03_DevuelveAlMenuConNivel3Desbloqueado`); desde INC-116 (30/09) el menú lo
+      desbloquea también si las tres fases del Nivel 2 quedaron confirmadas sin llegar al resumen
+      (`LevelSelect_RNF14_UnNivelConTodasSusFasesConfirmadasDesbloqueaElSiguiente`).)*
 
 ---
 
@@ -92,13 +100,36 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 
 ### ✅ Checkpoint R-B — Andamiaje del Nivel 3
 - [x] Las cinco escenas narrativas se recorren completas — PlayMode, 16/09/2026 (seis assets)
-- [~] La escena 3.2 aparece tras un fallo y **no aparece** si se acierta al primer intento — la
+- [x] La escena 3.2 aparece tras un fallo y **no aparece** si se acierta al primer intento — la
       **regla** está probada (`NarrativeTrigger_Guion841_…`, EM); conectarla a la prueba de la
       balsa es de R10, que es donde existe el fallo
-- [~] Ninguna pista del Nivel 3 resuelve la tarea (CP-06) — probado sobre `N3_Guia.asset`
+      *(01/10/2026: Implementación — R12 (`3fe1e2a`, 20/09) conectó la regla a la prueba de la
+      balsa: `RiverScene_Guion841_LaEscena32SeReproduceSoloTrasElPrimerFallo` y
+      `RiverScene_Guion841_AcertarAlPrimerIntentoVaDirectoAlCruce`, con
+      `RiverScene_CP02_LaEscena32NoReiniciaElEnsamblaje` y los dos
+      `RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio_*`. Con «Probar balsa» también en la
+      base y el amarre (INC-122, D10-3) la 3.2 sigue saliendo solo con el primer fallo de mástil y
+      vela: `RiverScene_Guion841_ProbarAntesDeLaUltimaFaseNoGastaLaEscena32` y las otras
+      `RiverScene_Guion841_*`, en verde en la suite completa del 01/10/2026.)*
+- [x] Ninguna pista del Nivel 3 resuelve la tarea (CP-06) — probado sobre `N3_Guia.asset`
       (materiales, ubicaciones y orden prohibidos en la pista); la lectura de los textos es de
       Santiago en la revisión
-- [ ] Revisado con el usuario
+      *(01/10/2026: Decisión — revisado por Santiago el 30/09/2026 (acta D10, §5), tras comprobar
+      que las cuatro instrucciones y las cuatro pistas de `N3_Guia.asset` no nombran material, sitio
+      ni orden —las del ensamblaje son texto del guion §1.8.4—:
+      `HintPolicy_RF13_PistaDeRecoleccionNoNombraLaUbicacionDelMaterial` y
+      `HintPolicy_CP06_PistaDeEnsamblajeNoDiceQuePiezaVaEnQueEspacio`, en verde en la suite completa
+      del 01/10/2026. La prueba anticipada de la balsa (INC-122) no cambia esos textos.)*
+- [x] Revisado con el usuario
+      *(01/10/2026: Decisión — revisado por Santiago el 30/09/2026 (acta D10, §5) tras los cambios
+      de D10-3 en las narrativas del río: la 3.1 muestra los materiales de la mecánica, la balsa de
+      la 3.3 navega bajo la espuma de la cascada (INC-124) y la escena final suena al bosque con
+      fogatas (INC-125); en verde en la suite completa del 01/10/2026
+      `NarrativeSequence_RF44_LaBalsaDelCruceNavegaBajoLaEspumaDeLaCascada`,
+      `RiverSounds_RF44_LaEscenaFinalSuenaAlBosqueConLasFogatas`,
+      `NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo` y
+      `NarrativeScene_RF05_ResuelveLasCincoSecuenciasDelNivel3SinRamas`, y revisadas en la revisión
+      adversarial de W2 las capturas `Personajes_N3_*`.)*
 
 ---
 
@@ -152,11 +183,30 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 - [x] Lista de tareas e inventario visibles todo el tiempo y sin solaparse —
       `RiverScene_RNF03_ControlesListaEInventarioCabenEnPantallaYNoSeSolapan`. Ojo: el hueco del panel
       de ensamblaje **tapa la lista** al abrirse (captura `RiverScene_RF39_ZonaAbierta`); R11 decide dónde va
-- [ ] Radio de proximidad de RF-37 validado jugando (pregunta abierta 3) — hoy `0.06` de la ilustración
+- [x] Radio de proximidad de RF-37 validado jugando (pregunta abierta 3) — hoy `0.06` de la ilustración
       (~170 px a 1920) y velocidad `0.25`/s en `N3_RiverLevelConfig.asset`; se ajusta sin recompilar
-- [ ] Revisado con el usuario — pregunta abierta 2: con el plano fijo **los ocho materiales se
+      *(01/10/2026: Decisión — el radio ya no era 0,06 sino 0,04 desde el plano del bosque del 20/09
+      (`3fe1e2a`, ≈145 px a ×1,9); con el plano abierto del 30/09 —decisión de Santiago, INC-118,
+      D10-3— vuelve a 0,06 de la ilustración, igual que el de la zona: `ProximityRadius` y
+      `BuildZoneRadius` valen 0,06 en `N3_RiverLevelConfig.asset`, ≈161 px a 1920×1080 con el plano
+      ×1,4 (`PlayFraming` (0,3572; 0,3572));
+      `Collectible_RF37_ElBotonRecogerSoloApareceDentroDelRadioDeProximidad` y
+      `RiverLevelConfig_RF37_ElRepartoObligaARecorrerLaOrillaYCabeEnElPlanoFijo` en verde en la
+      suite completa del 01/10/2026 —ningún material al alcance desde el arranque ni pegado a la
+      zona—; en el ejecutable, «Recoger» no aparece lejos y sí al llegar al material (PF-RF37-01 en
+      P, `claudeDocs/tasks/OE4/evidencias/GP1/PF-RF37-01_sin_recoger_lejos.png` y
+      `_tronco1_al_inventario.png`; GP3 lo confirma, `OE4-Resultados.md` §8.5); revisado por Santiago
+      el 30/09/2026 (acta D10, §5).)*
+- [x] Revisado con el usuario — pregunta abierta 2: con el plano fijo **los ocho materiales se
       ven desde el arranque** (no hay paneo); el reparto obliga a recorrer la orilla igual
       (`RiverLevelConfig_RF37_ElRepartoObligaARecorrerLaOrillaYCabeEnElPlanoFijo`)
+      *(01/10/2026: Decisión — revisado por Santiago el 30/09/2026 (acta D10, §5) sobre el plano
+      abierto del 30/09 (INC-118, D10-3): los ocho materiales se ven desde el arranque, ninguno se
+      recoge sin moverse y la zona se ve desde el principio (INC-66); en verde en la suite completa
+      del 01/10/2026 `RiverLevelConfig_RF37_ElRepartoObligaARecorrerLaOrillaYCabeEnElPlanoFijo` y
+      `RiverLevelConfig_Guion82_ElPlanoDeRecoleccionEsLaOrillaConElRio`, y revisada la captura de la
+      orilla al abrir (`RiverScene_RF36_CapturaDeLaOrillaAlAbrir`, que guarda
+      `RiverScene_RF36_OrillaAlAbrir`).)*
 - [x] **Plano de la recolección rehecho (20/09/2026, decisión de Santiago):** solo el bosque, sin río —
       foco `(0.20, 0.20) ×2.5`, el cuadrante inferior izquierdo de `env_n3_rio`; el río entra con el
       empuje del ensamblaje (`RiverLevelConfig_Guion82_ElPlanoDeRecoleccionMuestraSoloElBosqueSinElRio`).
@@ -242,11 +292,29 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
 - [x] La escena 3.2 aparece tras el primer fallo y no aparece si se acierta de una —
       `RiverScene_Guion841_…` (PM)
 - [x] Ningún mensaje nombra la pieza correcta (CP-06) — `RaftValidator_CP06_…` sobre el asset
-- [ ] Encuadre del ensamblaje validado jugando: `(0.50, 0.23) ×2.2` sale de medir el río en
+- [x] Encuadre del ensamblaje validado jugando: `(0.50, 0.23) ×2.2` sale de medir el río en
       `env_n3_rio` (≈ 38 % del ancho en el tramo bajo → 84 % de pantalla; la orilla a esa altura
       pasa por x ≈ 0.50 y parte la pantalla en dos); se ajusta en
       `N3_RaftAssemblyContent.asset` sin recompilar
-- [ ] Revisado con el usuario
+      *(01/10/2026: Decisión — el encuadre `(0.50, 0.23) ×2.2`, con la balsa en x 0,5 y medio casco
+      sobre el pasto, quedó atrás: Santiago decidió el 30/09 (INC-118, D10-3) abrir el plano del
+      ensamblaje y correr la balsa sobre el agua, en `N3_RaftAssemblyContent.asset` y sin
+      recompilar: el encuadre final es `AssemblyFraming` (0,50; 0,3125) ×1,6 y la balsa va en x 0,58
+      (`RaftPosition` (0,58; 0,23), `RaftSize` 0,28), con su área en (964, 156)–(1448, 639) px a
+      1920×1080; `RaftAssemblyContent_RF44_LaBalsaDelEnsamblajeMideLoQueLaDelCruce` y
+      `AssemblyPanel_RNF03_*` en verde en la suite completa del 01/10/2026, y revisadas las capturas
+      `AssemblyPanel_HU12_*` de las tres fases; revisado por Santiago el 30/09/2026 (acta D10,
+      §5).)*
+- [x] Revisado con el usuario
+      *(01/10/2026: Decisión — revisado por Santiago el 30/09/2026 (acta D10, §5) tras los cambios
+      de D10-3 en el ensamblaje: el plano abierto con la balsa sobre el agua y «Probar balsa»
+      también en la base y el amarre —la balsa incompleta se hunde y suena, cuenta como intento,
+      devuelve solo lo mal puesto y no aprueba la fase (INC-122, INC-123)— lo vigilan, en verde en
+      la suite completa del 01/10/2026, `RaftAssembly_RF42_*`,
+      `RaftAssembly_RF43_ProbarAntesDeTiempoDevuelveSoloLoMalPuesto`,
+      `RaftAssembly_RF41_ProbarLaBalsaNoTocaLasFasesAprobadas`, `AssemblyPanel_RF42_*`,
+      `RiverIndicators_RF45_UnaPruebaDeBalsaIncompletaCuentaComoIntento` y
+      `AssemblyPanel_CP02_UnaFaseQueNoPasaNoSuena`, y revisadas las capturas de las tres fases.)*
 
 ---
 
@@ -403,15 +471,34 @@ Cada tarea se cierra con su commit asociado (RNF-17, CT-11).
       del `manifest.json` es «preguntar primero» (RNF-08/RNF-10): decisión de Santiago
 - [ ] **PG-05** verificado sobre los tres niveles — observación en la sesión con estudiantes, no una
       aserción: queda para Santiago
+      — sigue abierta el 01/10/2026 por la decisión D-b (acta D10, §5): la observa Santiago con
+      estudiantes de cuarto en los tres niveles con el guion H1 de `claudeDocs/tasks/OE4/Hoja-HUM.md`,
+      en la misma sesión que H2 y precedida del consentimiento de los acudientes (RNF-12,
+      `claudeDocs/tasks/OE4/Consentimiento-RNF12.md`); se marca con lo que devuelva su plantilla.
 - [x] RF-35..RF-44 tienen cada uno al menos una prueba que los nombra (CT-10) — barrido sobre
       `Assets/Tests` el 21/09/2026: RF-35 (3), RF-36 (4), RF-37 (3), RF-38 (4), RF-39 (4), RF-40 (4),
       RF-41 (3), RF-42 (1), RF-43 (3), RF-44 (1)
 - [ ] **Golden Path del juego entero**, de la pantalla de inicio a los créditos, en 20–40 minutos —
       el recorrido está automatizado por tramos (`LevelSummaryTests` N1, `WheelLevelJourneyTests` N2,
       `RiverLevelJourneyTests` N3 + cierre) pero el tiempo lo mide una persona jugando: de Santiago
-- [ ] Revisado con el usuario antes de abrir el Slice 4 — pendiente también en R-A..R-D. Antes de la
+      — sigue abierta el 01/10/2026 por la decisión D-b (acta D10, §5): la duración la cronometra
+      Santiago con el guion H8 de `claudeDocs/tasks/OE4/Hoja-HUM.md`. Los tres recorridos de inicio a
+      créditos que hizo el arnés sobre el ejecutable —GP1 (87 min) y GP2 (33 min) sobre rc1, GP3
+      (16 min) sobre rc2— terminaron sin bloqueos, pero su duración no mide a un estudiante
+      (`claudeDocs/tasks/OE4/OE4-Resultados.md`, §3 y §8.5).
+- [x] Revisado con el usuario antes de abrir el Slice 4 — pendiente también en R-A..R-D. Antes de la
       revisión: repetir en el Editor con Rider (Game View 1920×1080) los trece de disposición/captura
       que batchmode no puede correr (ver R14 y R16)
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de Claude
+      del 01/10/2026: los trece de disposición y captura de R14 y R16 (`AssemblyPanel_RNF03_*`,
+      `AssemblyPanel_HU12_*`, `RiverScene_RF35_*`, `RiverScene_RNF03_*`, `RiverLevel_RNF19_*`,
+      `RiverLevel_RNF20_*`, `RiverScene_RF36_*`, `RiverScene_RF39_*`, `NarrativeScene_RNF01_*`,
+      `ForestScene_RF26_*`, `MazeScene_RNF03_*` y `WorkshopScene_RNF03_*`) pasaron en el Editor con la
+      Game View a 1920 × 1080 —por la API del pipeline (`editor.ps1`) en lugar de Rider— en la suite
+      completa previa al build rc2: PlayMode 376/376 y EditMode 470 = 469 + 1 omitida
+      (`claudeDocs/tasks/OE4/evidencias/suites/rc2-final/`). R-A a R-D están cerrados, y el juego
+      entero se recorrió sobre el ejecutable sin incidencias bloqueantes: GP1 y GP2 sobre rc1, GP3
+      sobre rc2 (`claudeDocs/tasks/OE4/OE4-Resultados.md`, §3 y §8.5).
 
 ---
 
@@ -433,40 +520,184 @@ ilustración lateral de la escena final.
 **Chroma:** verde `#00FF00` por defecto; **magenta `#FF00FF`** en `C2`, porque el personaje se
 recorta sobre un entorno de follaje. Los fondos de escena no llevan chroma.
 
-- [ ] **C1 · Escenario del río, vista superior** — chroma **no** — RF-35, RF-39, guion §8/§8.2
-- [ ] **C2 · Mamá vista superior, cuatro direcciones** — chroma **magenta** — RF-35, CU-09, HU-11
+- [x] **C1 · Escenario del río, vista superior** — chroma **no** — RF-35, RF-39, guion §8/§8.2
+      *(01/10/2026: Decisión — el Nivel 3 es un plano fijo a ras de suelo con perspectiva por
+      profundidad, no una vista cenital (INC-66; guion §1.8, fila «Escenario»): todo el nivel se
+      juega y se narra sobre `env_n3_rio.png` (1920×1080), entregado y aprobado en el acta D06, sin
+      el ámbar de interacción en el decorado. Lo vigila
+      `RiverScene_DA83_MamaYLosMaterialesSeVenMasGrandesCuantoMasAbajoEstan`, en verde en la suite
+      completa del 01/10/2026.)*
+- [x] **C2 · Mamá vista superior, cuatro direcciones** — chroma **magenta** — RF-35, CU-09, HU-11
       ⚠️ pegar el bloque «RASGOS FÍSICOS FIJOS» de `A3` (Slice 1) literalmente
-- [ ] **C3 · Botones de dirección y botón «Recoger»** — chroma verde — **RF-35**, RF-37, RNF-02,
+      *(01/10/2026: Decisión — con el plano a ras de suelo (INC-66), en el río Mamá es su rig
+      frontal (INC-53) dentro de `Personaje_Mama` y camina con un solo clip que se voltea a
+      izquierda o derecha; las cuatro vistas cenitales no se producen y `char_mama_cenital.png`
+      queda de reserva. Lo vigila
+      `RiverScene_DA133_MamaCaminaMientrasSeSostieneUnaFlechaYReposaAlSoltarla`, en verde en la
+      suite completa del 01/10/2026.)*
+- [x] **C3 · Botones de dirección y botón «Recoger»** — chroma verde — **RF-35**, RF-37, RNF-02,
       RNF-19, **INC-01**
-- [ ] **C4 · Los cuatro materiales + sus iconos de inventario** — chroma verde — RF-37, RF-38, RNF-19
-- [ ] **C5 · Lista de tareas e inventario** — chroma verde — RF-36, RF-38, RNF-19, RNF-20, INC-41
-- [ ] **C6 · Zona de construcción, dos estados** — chroma verde — RF-39, CU-09 (FA-6a)
-- [ ] **C7 · La balsa en tres estados: base / amarre / mástil y vela** — chroma verde — RF-40,
+      *(01/10/2026: Decisión — Santiago aceptó el 30/09/2026 el conjunto genérico de interfaz como
+      arte final (acta D10, §5): la cruceta es `ui_flecha` sobre `ui_boton` teñidos, abajo a la
+      derecha y con clic sostenido (INC-91), sin láminas `ui_n3_dir_*` ni `ui_n3_recoger_*`, y
+      «Recoger» se distingue por aparecer y desaparecer, no por color. Lo vigilan
+      `RiverScene_RF35_ElPersonajeSeDesplazaConLosBotonesEnPantalla`,
+      `RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles` y
+      `Collectible_RF37_ElBotonRecogerSoloApareceDentroDelRadioDeProximidad`, en verde en la suite
+      completa del 01/10/2026.)*
+- [x] **C4 · Los cuatro materiales + sus iconos de inventario** — chroma verde — RF-37, RF-38, RNF-19
+      *(01/10/2026: Implementación — `prop_n3_tronco`, `_sogas`, `_tela` y `_mastil` son definitivos
+      (`44fd479`, 25/09), sin croma, y hacen también de icono de inventario
+      (`N3_RiverLevelConfig.asset`). Con el plano abierto del 30/09 (INC-118, D10-3) se ven a ≈×1,8
+      y la 3.1 pinta el tronco y el mástil de la mecánica
+      (`RiverLevelConfig_INC118_LaEscena31PintaCadaMaterialConElArteDeLaOrilla`, en verde en la
+      suite completa del 01/10/2026); la captura `RiverScene_RF36_OrillaAlAbrir` se revisó en la
+      revisión de W2 («Cumple») y los materiales se ven también en el ejecutable
+      (`claudeDocs/tasks/OE4/evidencias/GP1/PF-RF37-01_sin_recoger_lejos.png`).)*
+- [x] **C5 · Lista de tareas e inventario** — chroma verde — RF-36, RF-38, RNF-19, RNF-20, INC-41
+      *(01/10/2026: Decisión — INC-46 fijó la lista como una tablilla de marfil con un círculo liso
+      para lo pendiente (`ui_circulo`) y un círculo verde con visto para lo hecho
+      (`ui_n3_casilla_hecha`), y el inventario como un panel arena en rejilla de 2×2 (dirección de
+      arte §10.2), así que `ui_n3_lista_marco` y `ui_n3_inventario` no se producen. Lo vigilan
+      `RiverLevel_RNF19_LaListaDeTareasSeLeeEnEscalaDeGrises` y
+      `RiverLevel_RNF20_ContrasteSuficienteSobreElEscenarioClaro`, en verde en la suite completa del
+      01/10/2026.)*
+- [x] **C6 · Zona de construcción, dos estados** — chroma verde — RF-39, CU-09 (FA-6a)
+      *(01/10/2026: Decisión — Santiago aceptó el 30/09/2026 (acta D10, §5) el anillo ámbar
+      discontinuo `env_n3_zona_disponible` como arte definitivo de la zona, y basta un estado porque
+      RF-39 solo pide señalizarla. Con la zona ≈×1,5 del plano abierto (D10-3) sigue a la vista
+      junto al agua: `BuildZone_RF39_AbreElPanelSoloConLosCuatroMateriales` en verde en la suite
+      completa del 01/10/2026 y revisada la captura `RiverScene_RF39_ZonaAbierta` de
+      `RiverScene_RF39_CapturaConTodoRecogidoYLaZonaAbierta`.)*
+- [x] **C7 · La balsa en tres estados: base / amarre / mástil y vela** — chroma verde — RF-40,
       RF-41, HU-12, guion §8.3
-- [ ] **C8 · Panel de ensamblaje: espacio vacío / correcto / incorrecto** — chroma verde — RF-40,
+      *(01/10/2026: Decisión — la balsa no son tres láminas sino diecisiete espacios que se pintan
+      uno a uno con ocho sprites (R11, decisión de Santiago del 20/09; INC-89):
+      `prop_n3_{tronco,amarre,mastil,vela}` y sus `_silueta`, definitivos en 3/4 (`44fd479`, 25/09).
+      Con el plano abierto la balsa del ensamblaje mide lo que la del cruce
+      (`RaftAssemblyContent_RF44_LaBalsaDelEnsamblajeMideLoQueLaDelCruce`, en verde en la suite
+      completa del 01/10/2026) y las capturas `AssemblyPanel_HU12_*` de las tres fases se revisaron.
+      Pruebas: `AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance` y
+      `AssemblyPanel_RF40_MuestraSoloLosEspaciosDeLaFaseActiva`.)*
+- [x] **C8 · Panel de ensamblaje: espacio vacío / correcto / incorrecto** — chroma verde — RF-40,
       RF-42, **RNF-19**, HU-13
-- [ ] **C9 · Balsa hundiéndose y balsa cruzando** — chroma verde — RF-42, RF-44, RNF-21, guion §8.4/§8.5
-- [ ] **C10 · Escenario de la escena final, las fogatas** — chroma **no** — RF-44, RF-12, guion §9
-- [ ] Postproceso: recorte del verde, alfa, halo, **mismo `Pixels Per Unit` que los Slices 1 y 2**
-- [ ] Desaturar `C3`, `C4`, `C5` y `C8` y verificar que se siguen distinguiendo (RNF-19)
-- [ ] Verificar RNF-20 sobre el arte final: escenario claro y cenital, el caso más expuesto
-- [ ] Verificar RNF-21 sobre las **animaciones** montadas con `C7` y `C9`, no sobre las láminas
+      *(01/10/2026: Decisión — desde R11 el panel es una sombra negra al 30 % sin marco: el espacio
+      vacío es la silueta de la pieza, el correcto la pieza y el incorrecto la pieza con `ui_alerta`
+      encima, así que no se producen láminas de panel ni de espacio. Probar antes de la última fase
+      señala solo lo mal puesto (INC-122):
+      `AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto` en verde en la suite completa
+      del 01/10/2026. Pruebas: `AssemblyPanel_RNF19_ElEspacioIncorrectoSeResaltaConColorEIcono` y
+      `RiverLevel_RNF19_LosEstadosDeErrorSeLeenSinColor`.)*
+- [x] **C9 · Balsa hundiéndose y balsa cruzando** — chroma verde — RF-42, RF-44, RNF-21, guion §8.4/§8.5
+      *(01/10/2026: Decisión — Santiago aceptó el 30/09/2026 (acta D10, §5) la balsa hundida
+      dibujada por código (`prop_n3_balsa_hundida`, la de la 3.2) como arte definitivo; la que cruza
+      es `prop_n3_balsa_cruzando`, definitiva desde el 25/09, y en la mecánica el hundimiento lo
+      anima el motor. La balsa que se hunde suena (`sfx_n3_hundimiento`, INC-123) y la del cruce
+      navega bajo la espuma (INC-124):
+      `AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas`,
+      `NarrativeSequence_RF44_LaBalsaDelCruceNavegaBajoLaEspumaDeLaCascada` y
+      `NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos`, en verde en la suite completa del
+      01/10/2026. La balsa del cruce tiene 4 troncos y la mecánica arma 5: queda documentado, con el
+      arreglo de redibujarla con cinco en una entrega del carril de arte (decisión D-OBS,
+      `claudeDocs/tasks/OE4/OE4-Resultados.md` §8.9).)*
+- [x] **C10 · Escenario de la escena final, las fogatas** — chroma **no** — RF-44, RF-12, guion §9
+      *(01/10/2026: Implementación — `env_final_fogatas.png` (1920×1080, vista lateral) se entregó y
+      aprobó en el acta D06 y su versión vigente es de `8ec5120` (22/09); la hoguera central es
+      animada y echa humo (`d3a6cc9`, 25/09), lo que vigila
+      `NarrativeSequence_RF05_CadaLlamaEchaHumoPorDetrasYPorEncima`, y `N3_EscenaFinal` está entre
+      las secuencias que comprueba
+      `NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo`; las dos, en verde en la
+      suite completa del 01/10/2026.)*
+- [x] Postproceso: recorte del verde, alfa, halo, **mismo `Pixels Per Unit` que los Slices 1 y 2**
+      — cerrado el 01/10/2026: `arte_check.py sprites` sobre los 13 PNG de `Props/River`, más
+      `env_n3_zona_disponible` y `ui_n3_casilla_hecha`: todos RGBA con transparencia, sin halo de
+      croma intenso —en `prop_n3_amarre`, 11 px tenues de α ≤ 32, informativos— y con el `.meta`
+      esperado, Sprite · Single · 100 PPU · Bilinear, el mismo de los Slices 1 y 2
+      (`claudeDocs/tasks/OE4/evidencias/arte/sprites.md`).
+- [x] Desaturar `C3`, `C4`, `C5` y `C8` y verificar que se siguen distinguiendo (RNF-19)
+      — cerrado el 01/10/2026: en escala de grises (`arte_check.py rnf19`: 1−IoU ≥ 0,20 o Δ gris
+      ≥ 25) los cuatro materiales de C4 se separan por forma y gris (1−IoU 0,70–0,95); en C5, tarea
+      hecha y pendiente, Δ 41,0; en C8, silueta y pieza, Δ 36–65 en los sprites y 46–47 en captura, y
+      vacío frente a incorrecto, Δ 24,8, lo distingue el icono de alerta (5,6:1, `rnf20-w3.md`)
+      (`claudeDocs/tasks/OE4/evidencias/arte/rnf19.md` y `rnf19-w3.md`). C3, sobre la captura en grises del ejecutable
+      `claudeDocs/tasks/OE4/evidencias/GP1/PF-RNF19-01_lista_N3_gris.png` (GP1, rc1): las cuatro
+      flechas de la cruceta se distinguen por la dirección del glifo, sin depender del color, y
+      «Recoger» por su rótulo y porque solo aparece dentro del radio de un material
+      (`GP1/PF-RF37-01_sin_recoger_lejos.png` frente a `GP1/PF-RF35-01_borde_izquierdo_recoger.png`). Lo vigilan además `RiverLevel_RNF19_LaListaDeTareasSeLeeEnEscalaDeGrises` y
+      `AssemblyPanel_RNF19_ElEspacioIncorrectoSeResaltaConColorEIcono`, en verde en la suite de rc2
+      (`claudeDocs/tasks/OE4/evidencias/suites/rc2-final/`).
+- [x] Verificar RNF-20 sobre el arte final: escenario claro y cenital, el caso más expuesto
+      *(01/10/2026: Implementación — el escenario es el plano a ras de suelo de `env_n3_rio`, no
+      cenital (INC-66). `RiverLevel_RNF20_ContrasteSuficienteSobreElEscenarioClaro` exige que ningún
+      texto vaya directo sobre la ilustración y ≥ 4,5:1 contra su cara real en la orilla, «Recoger»,
+      las tareas, «Listo» y la pausa y en «Probar balsa» de la base y el amarre (D10-3), a 1920×1080
+      con el plano abierto, en verde en la suite completa del 01/10/2026.)*
+- [x] Verificar RNF-21 sobre las **animaciones** montadas con `C7` y `C9`, no sobre las láminas
+      *(01/10/2026: Implementación — `RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos`
+      muestrea cuadro a cuadro el empuje de cámara, el pulso de fase aprobada (C7) y el hundimiento
+      (C9); el cruce de la 3.3 lo muestrea `NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos`
+      (D10-3), y el hundimiento de la prueba anticipada (INC-122) reusa el de la última fase y sigue
+      sin destellos: `AssemblyPanel_RF42_ProbarLaBalsaIncompletaLaHundeYSigueEnLaFase` comprueba que
+      gira y vuelve derecha; las dos pruebas, en verde en la suite completa del 01/10/2026.)*
 
 ---
 
 ## Bloqueantes y decisiones pendientes
 
-- [ ] **R2 · Cerrar los Slices 1 y 2** antes de abrir R02. Bloqueante duro.
-- [ ] **Pregunta abierta 1 · ¿Qué es una «fase» del Nivel 3 para el guardado?** CU-09/CU-10 dicen
+- [x] **R2 · Cerrar los Slices 1 y 2** antes de abrir R02. Bloqueante duro.
+      *(01/10/2026: Decisión — se cumplió: R02 se abrió el 16/09 con el código de los Slices 1 y 2
+      cerrado, que el acta D06 (15/09) dio por terminado al fusionar la rama del Slice 2 (aviso del
+      16/09 al principio de este tablero). Lo que sigue abierto en esos tableros es de ejecutable o
+      de revisión y se cierra en cada uno.)*
+- [x] **Pregunta abierta 1 · ¿Qué es una «fase» del Nivel 3 para el guardado?** CU-09/CU-10 dicen
       dos; RF-40 y §3.6.1 dicen tres de ensamblaje. Propuesta: cuatro puntos de guardado
       —recolección, base, amarre, mástil y vela— con `Pasos utilizados` contando solo los tres de
       ensamblaje. **Cambiar el formato de datos persistidos es «preguntar primero».** Bloquea R02.
-- [ ] **R1 · Instalar el servidor MCP de Unity** (`run_unity_tests`). Siete tareas `MCP` en el
+      *(01/10/2026: Decisión — resuelta con Santiago el 16/09: tres fases —base, amarre, mástil y
+      vela— y la recolección no se guarda, sin cambiar el formato persistido
+      (`PhaseId.PhasesPerLevel = {1, 3, 3}`, R02); el guion lo recoge en CU-09. Lo vigilan
+      `SaveStore_RF04_ConfirmarUnaFaseDelNivel3SobreviveAlCierre` y
+      `RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba_*`, en verde en la suite
+      completa del 01/10/2026.)*
+- [x] **R1 · Instalar el servidor MCP de Unity** (`run_unity_tests`). Siete tareas `MCP` en el
       slice que cierra el juego.
-- [ ] **Pregunta abierta 2 · Trazado del escenario del río.** Validar `N3_RiverLevelConfig.asset`
+      *(01/10/2026: Implementación — el MCP de Rider está instalado desde el 06/09 y corrió las
+      suites del 20 y el 21/09 con el Editor abierto (R12, R15); con Rider cerrado las pruebas van
+      por `unity test` (P00 del Slice 4, 23/09) y, desde el 30/09, por
+      `claudeDocs/tasks/OE4/herramientas/editor.ps1` (`649b4d6`) sobre la API de
+      `com.unity.pipeline`, con la que se corrió la suite completa del 01/10/2026.)*
+- [x] **Pregunta abierta 2 · Trazado del escenario del río.** Validar `N3_RiverLevelConfig.asset`
       jugando: ningún material visible desde la posición inicial, zona de construcción señalizada
       desde el principio.
-- [ ] **Pregunta abierta 3 · Radio de proximidad de RF-37**, sin validar. Revisar en R-C.
-- [ ] **Pregunta abierta 6 · ¿Se adelantan R09 y R10?** Recomendación: sí, para descargar INC-30.
-- [ ] **PG-02 · nombre del guía.** Última oportunidad antes de la entrega: la escena final lo nombra.
+      *(01/10/2026: Decisión — el plano fijo de la recolección (decisiones de Santiago del 20/09 y
+      del 25/09; INC-66) sustituyó «ningún material visible desde la posición inicial»: los
+      materiales se ven desde el arranque, pero ninguno queda al alcance y el reparto obliga a
+      recorrer la orilla; la zona se ve desde el principio (RF-39). Con el plano abierto del 30/09
+      (INC-118) lo vigilan
+      `RiverLevelConfig_RF37_ElRepartoObligaARecorrerLaOrillaYCabeEnElPlanoFijo`, con sus dos
+      aserciones nuevas —ningún alcance de material toca la zona y Mamá no arranca dentro de ella—,
+      y `RiverLevelConfig_Guion82_ElPlanoDeRecoleccionEsLaOrillaConElRio`, en verde en la suite
+      completa del 01/10/2026.)*
+      — revisado por Santiago el 30/09/2026 (acta D10, decisión D-a), tras la verificación de Claude
+      del 01/10/2026: en el ejecutable, al abrir la orilla los materiales se ven pero ninguno queda al
+      alcance —no aparece «Recoger»—, y la zona de construcción ya está señalizada
+      (`claudeDocs/tasks/OE4/evidencias/GP1/PF-RF37-01_sin_recoger_lejos.png`). PF-RF37-01 y
+      PF-RF39-01 están en P sobre rc1 y GP3 los confirma sobre rc2
+      (`claudeDocs/tasks/OE4/OE4-Resultados.md` §5 y §8.5).
+- [x] **Pregunta abierta 3 · Radio de proximidad de RF-37**, sin validar. Revisar en R-C.
+      *(01/10/2026: Decisión — se revisó en el Checkpoint R-C: el radio es 0,06 de la ilustración
+      con el plano abierto del 30/09 (INC-118, D10-3) ≈161 px en pantalla a 1920×1080 (plano ×1,4),
+      con `Collectible_RF37_ElBotonRecogerSoloApareceDentroDelRadioDeProximidad` y
+      `RiverLevelConfig_RF37_ElRepartoObligaARecorrerLaOrillaYCabeEnElPlanoFijo` en verde en la
+      suite completa del 01/10/2026; revisado por Santiago el 30/09/2026 (acta D10, §5).)*
+- [x] **Pregunta abierta 6 · ¿Se adelantan R09 y R10?** Recomendación: sí, para descargar INC-30.
+      *(01/10/2026: Decisión — sin objeto: R09 y R10 se hicieron el 20/09, después de R05 a R08
+      (17/09). INC-30 está cerrado y lo vigilan `TaskList_INC30_LaFaseDeBaseNoMarcaTareaPorSiSola` y
+      `RaftAssembly_INC30_ConfirmarElAmarreMarcaLaTarea3YLaBaseNoMarcaNada`, en verde en la suite
+      completa del 01/10/2026.)*
+- [x] **PG-02 · nombre del guía.** Última oportunidad antes de la entrega: la escena final lo nombra.
+      *(01/10/2026: Decisión — PG-02 se cerró el 02/09 con «Algoritm» (INC-44; guion §1.2): la
+      escena final habla como `ALGORITM` (`N3_EscenaFinal.asset`) y ningún asset de
+      `Assets/Game/Data` usa «Chispa» como nombre del guía; las «chispas» que quedan son las del
+      fuego del Nivel 1.)*
 - [x] **PG-01 · título del producto.** Sigue abierto y el juego ya estaría completo (RF-01, RF-08). *(Cerrado el 29/09/2026: «Algoritmia», guion §1.2.)*

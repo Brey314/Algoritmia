@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine;
@@ -38,6 +40,51 @@ namespace Game.Core.Tests
                 Is.GreaterThan(0.001).And.LessThanOrEqualTo(observedSeconds));
         }
 
+        [Test]
+        [Category("Acceptance")]
+        [Timeout(30000)]
+        public async Task SceneLoader_RNF04_CadaCargaDejaSuTiempoEnElRegistro()
+        {
+            // «Por qué no» LogAssert.Expect: pide el mensaje antes de que salga, y el tiempo de una
+            // carga solo se sabe después; con una expresión regular no se comprobaría que el número
+            // sea el de esa carga. Se escucha el mismo canal que escribe Player.log.
+            var registro = new List<string>();
+            Application.LogCallback anotar = (mensaje, _, tipo) =>
+            {
+                if (tipo == LogType.Log && mensaje.StartsWith("RNF-04: ", System.StringComparison.Ordinal))
+                {
+                    registro.Add(mensaje);
+                }
+            };
+
+            // Con coma decimal, como un Windows en es-CO: la línea tiene que salir igual, porque la
+            // lee el arnés del ejecutable.
+            var culturaDelEquipo = CultureInfo.CurrentCulture;
+            var conComa = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+            conComa.NumberFormat.NumberDecimalSeparator = ",";
+            CultureInfo.CurrentCulture = conComa;
+            Application.logMessageReceived += anotar;
+            try
+            {
+                var sut = new GameObject(nameof(SceneLoader)).AddComponent<SceneLoader>();
+
+                sut.Load("MainMenu");
+                await WaitUntil(() => sut.LastLoadSeconds > 0f);
+                Assert.That(registro, Is.EqualTo(new[] { Linea("MainMenu", sut.LastLoadSeconds) }),
+                    "la primera carga deja su línea");
+
+                sut.Load("Credits");
+                await WaitUntil(() => registro.Count == 2);
+                Assert.That(registro[1], Is.EqualTo(Linea("Credits", sut.LastLoadSeconds)),
+                    "y la segunda, la suya");
+            }
+            finally
+            {
+                Application.logMessageReceived -= anotar;
+                CultureInfo.CurrentCulture = culturaDelEquipo;
+            }
+        }
+
         /// <summary>
         /// Con fundido, la pantalla se va a negro **antes** de cargar y vuelve **después**: la
         /// escena nueva nunca aparece de golpe ni la vieja se corta sin cerrar.
@@ -73,6 +120,10 @@ namespace Game.Core.Tests
             await WaitUntil(() => sut.LastLoadSeconds > 0f);
             Assert.That(sut.FadeAlpha, Is.EqualTo(0f), "los menús cortan en seco");
         }
+
+        // La línea que lee el arnés del ejecutable: formato fijo, cultura invariante.
+        private static string Linea(string escena, float segundos) =>
+            System.FormattableString.Invariant($"RNF-04: «{escena}» cargó en {segundos:0.000} s");
 
         /// <summary>
         /// Espera a que se cumpla la condición, no a un número fijo de frames: cuántos hacen

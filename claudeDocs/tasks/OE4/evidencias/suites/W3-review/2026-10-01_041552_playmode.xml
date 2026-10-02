@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="5" result="Passed" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-01 09:15:53Z" end-time="2026-10-01 09:16:03Z" duration="10,1721514">
+  <test-suite type="TestSuite" id="2022" name="Algoritmia" fullname="Algoritmia" runstate="Runnable" testcasecount="364" result="Passed" start-time="2026-10-01 09:15:53Z" end-time="2026-10-01 09:16:03Z" duration="10.172151" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="2000" name="Game.UI.PlayMode.Tests.dll" fullname="C:/Dev/Algoritmia/Library/ScriptAssemblies/Game.UI.PlayMode.Tests.dll" runstate="Runnable" testcasecount="139" result="Passed" start-time="2026-10-01 09:15:53Z" end-time="2026-10-01 09:16:03Z" duration="10.170626" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="42352" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="2001" name="Game" fullname="Game" runstate="Runnable" testcasecount="139" result="Passed" start-time="2026-10-01 09:15:53Z" end-time="2026-10-01 09:16:03Z" duration="10.169705" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="2002" name="UI" fullname="Game.UI" runstate="Runnable" testcasecount="139" result="Passed" start-time="2026-10-01 09:15:53Z" end-time="2026-10-01 09:16:03Z" duration="10.168921" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="2003" name="Tests" fullname="Game.UI.Tests" runstate="Runnable" testcasecount="139" result="Passed" start-time="2026-10-01 09:15:53Z" end-time="2026-10-01 09:16:03Z" duration="10.168180" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1846" name="CharacterCaptureTests" fullname="Game.UI.Tests.CharacterCaptureTests" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-01 09:15:53Z" end-time="2026-10-01 09:16:03Z" duration="10.167368" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-suite type="ParameterizedMethod" id="1852" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" testcasecount="5" result="Passed" start-time="2026-10-01 09:15:53Z" end-time="2026-10-01 09:16:03Z" duration="10.166404" total="5" passed="5" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="Category" value="VisualVerification" />
+                  <property name="Description" value="Verificar en las capturas Personajes_Mecanica_*: los personajes se ven enteros, a escala coherente, sin tapar la tablilla, los botones ni las piezas; el botón de ayuda es el círculo con Algoritm del nivel dentro." />
+                </properties>
+                <test-case id="1847" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level1_Cave&quot;)" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level1_Cave&quot;)" methodname="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" seed="2115789619" result="Passed" start-time="2026-10-01 09:15:53Z" end-time="2026-10-01 09:15:55Z" duration="2.287856" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1848" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Forest&quot;)" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Forest&quot;)" methodname="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" seed="538809713" result="Passed" start-time="2026-10-01 09:15:55Z" end-time="2026-10-01 09:15:57Z" duration="1.995159" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1849" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Workshop&quot;)" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Workshop&quot;)" methodname="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" seed="1176484971" result="Passed" start-time="2026-10-01 09:15:57Z" end-time="2026-10-01 09:15:59Z" duration="1.977711" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1850" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Maze&quot;)" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level2_Maze&quot;)" methodname="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" seed="1141124032" result="Passed" start-time="2026-10-01 09:15:59Z" end-time="2026-10-01 09:16:01Z" duration="1.944553" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1851" name="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level3_River&quot;)" fullname="Game.UI.Tests.CharacterCaptureTests.Personajes_DA133_CapturaCadaMecanicaConSusPersonajes(&quot;Level3_River&quot;)" methodname="Personajes_DA133_CapturaCadaMecanicaConSusPersonajes" classname="Game.UI.Tests.CharacterCaptureTests" runstate="Runnable" seed="2145051920" result="Passed" start-time="2026-10-01 09:16:01Z" end-time="2026-10-01 09:16:03Z" duration="1.959814" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>
