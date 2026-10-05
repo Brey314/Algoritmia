@@ -240,6 +240,70 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
+        /// Con los brazos partidos, los brazos se dibujan DELANTE del torso y de la cabeza (Santiago,
+        /// 05/10/2026). uGUI pinta los hijos de atrás adelante y bajo Tronco nacieron primero: con BrazoIzq y
+        /// BrazoDer antes que Torso y Cuello quedaban detrás del cuerpo y se escondían. El arte final trae
+        /// hombros en cápsula con el contorno cerrado, que se ven bien encima del torso. «Partido» es lo que
+        /// ya usan las demás pruebas: las Image de ambos antebrazos con sprite y encendidas. Papá, Mamá y Niña
+        /// siguen con el arte provisional de una pieza y conservan los brazos detrás, porque delante enseñarían
+        /// el contorno cortado del hombro: ellos pasan por la rama «provisional» hasta que llegue su arte
+        /// final. El Niño, el único con arte final hoy, NO puede pasar por esa rama: si no está partido, falla
+        /// (la decisión no queda solo en este comentario). Lo fija el modo «orden» del generador con
+        /// SetSiblingIndex, que reordena y no cambia ningún fileID.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC132_ConLosBrazosPartidosLosBrazosSeDibujanDelanteDelTorsoYDeLaCabeza(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var rig = Rig(nombre);
+            var tronco = rig.transform.Find(Tronco);
+            Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
+
+            var partidos = TieneLosBrazosPartidos(rig);
+            if (nombre == "Nino")
+            {
+                Assert.That(partidos, Is.True, "Nino ya tiene el arte final: sus dos antebrazos llevan sprite y están encendidos");
+            }
+
+            if (!partidos)
+            {
+                Assert.Pass($"{nombre}: arte provisional de una pieza: sus brazos siguen detrás hasta que llegue el final");
+            }
+
+            var torso = Orden(tronco, nombre, "Torso");
+            var cuello = Orden(tronco, nombre, "Cuello");
+            foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
+            {
+                var indice = Orden(tronco, nombre, brazo);
+                Assert.That(indice, Is.GreaterThan(torso), $"{nombre}: {brazo} se dibuja después del torso, o queda escondido detrás");
+                Assert.That(indice, Is.GreaterThan(cuello), $"{nombre}: {brazo} se dibuja después del cuello, o la cabeza lo tapa");
+            }
+        }
+
+        /// <summary>
+        /// En Algoritm los brazos también van delante del cuerpo (INC-132), pero la cara va encima de
+        /// ellos: un brazo levantado nunca debe tapar los ojos con los que el guía mira al niño.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC132_AlgoritmPintaLosBrazosDelanteDelCuerpoYLaCaraEncima(
+            [Values("Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
+        {
+            var tronco = Rig(nombre).transform.Find(Tronco);
+            Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
+
+            var torso = Orden(tronco, nombre, "Torso");
+            foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
+            {
+                var indice = Orden(tronco, nombre, brazo);
+                Assert.That(indice, Is.GreaterThan(torso), $"{nombre}: {brazo} se dibuja después del torso, o queda escondido detrás");
+                foreach (var cara in new[] { "Ojos", "Boca" })
+                {
+                    Assert.That(Orden(tronco, nombre, cara), Is.GreaterThan(indice), $"{nombre}: {cara} se dibuja sobre {brazo}, no al revés");
+                }
+            }
+        }
+
+        /// <summary>
         /// Una curva que apunta a un nodo que no existe (o a un componente que ese nodo no tiene) no
         /// falla ni avisa: el Animator la ignora y la parte se queda en pose en T. Hasta ahora nada
         /// recorría los bindings de los clips.
@@ -376,6 +440,30 @@ namespace Game.Scaffolding.Tests
             var rig = AssetDatabase.LoadAssetAtPath<CharacterRig>($"{Carpeta}{nombre}.prefab");
             Assert.That(rig, Is.Not.Null, $"existe el prefab {nombre}");
             return rig;
+        }
+
+        /// <summary>Brazos partidos = las Image de los dos antebrazos tienen sprite y están encendidas (la misma condición que «segmentado» del generador para las piernas).</summary>
+        private static bool TieneLosBrazosPartidos(CharacterRig rig)
+        {
+            foreach (var ruta in new[] { Tronco + "/BrazoIzq/CodoIzq/AntebrazoIzq", Tronco + "/BrazoDer/CodoDer/AntebrazoDer" })
+            {
+                var antebrazo = rig.transform.Find(ruta);
+                var imagen = antebrazo == null ? null : antebrazo.GetComponent<Image>();
+                if (imagen == null || imagen.sprite == null || !imagen.enabled)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>El lugar de un hijo de Tronco en el orden de dibujo (0 = el más al fondo). Falla con su nombre si no existe.</summary>
+        private static int Orden(Transform tronco, string personaje, string hijo)
+        {
+            var nodo = tronco.Find(hijo);
+            Assert.That(nodo, Is.Not.Null, $"{personaje}: {Tronco} tiene {hijo}");
+            return nodo.GetSiblingIndex();
         }
 
         /// <summary>Los clips del controlador del personaje (sin repetidos: las tres formas de Algoritm comparten el suyo).</summary>

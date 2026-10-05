@@ -1,8 +1,9 @@
 // Constructor efímero (NO es código del juego): deja listos los siete prefabs de personajes para el
-// arte final —codos, rodillas, cuello, cabeza, ojos y boca— y reescribe la coreografía de sus clips.
+// arte final —codos, rodillas, cuello, cabeza, ojos y boca—, fija el orden de dibujo de sus partes y
+// vuelca en sus clips la coreografía que genera coreografia.py.
 //
 // QUÉ ES. Hijo de BuildRigs.cs.txt (que armó los prefabs de cinco partes), pero NUNCA los
-// reconstruye: solo AÑADE nodos y reescribe curvas. Tres modos, más dos de apoyo:
+// reconstruye: solo AÑADE nodos, reordena hermanos y reescribe curvas. Cuatro modos, más dos de apoyo:
 //   "nodos"   añade a los 7 prefabs (Papa, Mama, Nina, Nino, Algoritm_Fuego/Rueda/Gota) lo que la
 //             tabla rig_articulaciones.json pide y falta, y el componente CharacterFace. Idempotente:
 //             si un nodo existe no lo toca. Todo nodo nuevo lleva su Image apagada y sin sprite.
@@ -10,15 +11,35 @@
 //             pivote de la tabla, enciende las Image, crea <prefijo>_cara.asset (CharacterFaceSet) y
 //             apaga la Image de Cuerpo en Algoritm cuando sus partes ya están. Lo que no existe se
 //             deja apagado y se anota en el log.
-//   "clips"   reescribe EN SITIO las curvas de los 21 clips de cada miembro de la familia y de los 9
-//             de Algoritm. Exige haber corrido «nodos» antes (si no, se niega).
-//   "todo"    nodos y luego clips.      "estado"  solo informa, no escribe nada.
+//   "orden"   coloca los hijos de Lienzo/Cuerpo/Tronco en el orden de dibujo que fija «orden_tronco»
+//             en la tabla (los brazos DELANTE del torso solo en quien ya los tiene partidos y en Algoritm,
+//             donde además la cara va encima de los brazos; el arte provisional conserva los brazos detrás).
+//             Idempotente: solo guarda un prefab si el orden cambia, y registra antes → después. Un
+//             personaje sin «orden_tronco» no se toca y se anota.
+//   "clips"   reescribe EN SITIO las curvas de los .anim que ya existen con lo que diga
+//             clips_personajes.json: los 21 clips de cada miembro de la familia y los 9 de Algoritm.
+//             No crea ningún clip (si falta, lo anota) y no calcula nada: ver «DÓNDE VIVE LA
+//             COREOGRAFÍA». Avisa de rutas que el prefab no tiene y de claves fuera de la duración.
+//   "todo"    nodos → sprites → orden → clips.      "estado"  solo informa, no escribe nada
+//             (incluye el orden de dibujo actual de Tronco en cada prefab).
+//
+// DÓNDE VIVE LA COREOGRAFÍA. Ya NO está en este archivo: la escribe herramientas/coreografia.py y la
+// entrega como herramientas/clips_personajes.json, con las curvas ya calculadas de cada clip (ruta,
+// componente, propiedad y claves [tiempo, valor]). Se movió a Python para poder VERIFICARLA FUERA DE
+// UNITY: pose_preview.py dibuja la pose de cada clip desde ese mismo JSON, con el arte final y la tabla
+// de articulaciones, así que una pose rota se ve y se corrige antes de abrir el Editor y sin recompilar.
+// Aquí queda UNA sola fuente de verdad: este script no decide ni un grado, solo vuelca el JSON. Si un
+// movimiento no gusta, se edita coreografia.py y se vuelve a correr «clips»; los signos de los ejes, el
+// reposo de los codos y qué huesos lleva cada clip son asunto suyo (el que no se anima debe llevar una
+// curva constante en su reposo, o con writeDefaultValues cae a la pose en T: lo vigila
+// CharacterRig_DA131_CadaClipFijaTodasLasArticulaciones).
 //
 // CÓMO SE EJECUTA Y SE BORRA (lo hace la sesión local de Santiago, con el Editor abierto):
 //   1. Copiar este archivo a Assets/Editor/ClaudeBuildRigsFinal.cs (la clase se llama
 //      ClaudeBuildRigsFinal; el Editor genera el .meta solo, nunca a mano) y esperar a que compile.
 //   2. Llamar por coplay execute_script:  ClaudeBuildRigsFinal.Execute("nodos")  y después
-//      ClaudeBuildRigsFinal.Execute("clips"). Devuelve el log como texto.
+//      Execute("sprites"), Execute("orden") y Execute("clips") —o Execute("todo")—. Devuelve el log
+//      como texto. «clips» lee herramientas/clips_personajes.json: correr antes coreografia.py.
 //   3. Comprobar los fileID (abajo) y correr las pruebas CharacterRig_DA131_* / CharacterRig_DA73_*.
 //   4. Borrar Assets/Editor/ClaudeBuildRigsFinal.cs (y su .meta): es andamiaje, no código del juego.
 //      Este .txt es la copia que queda versionada.
@@ -27,7 +48,8 @@
 // fileID. Reconstruirlos (Root()/Finish() de BuildRigs) cambia todos y rompe esas referencias. Aquí:
 //   - los prefabs se abren con LoadPrefabContents, se añaden hijos y componentes y se guardan con
 //     SaveAsPrefabAsset sobre la misma ruta; los objetos que ya existían conservan su fileID;
-//   - no se destruye ni se recrea ningún objeto existente;
+//   - no se destruye ni se recrea ningún objeto existente; «orden» solo llama a SetSiblingIndex, que
+//     reordena m_Children del padre y no cambia ni un fileID;
 //   - los clips se cargan con LoadAssetAtPath y se les cambian las curvas: no se crean ni se tocan
 //     los .controller, así que los GUID de los .anim y los estados siguen iguales.
 //   Verificación: `git diff -U0 Assets/Game/Prefabs/Characters` no debe QUITAR ninguna línea que
@@ -70,6 +92,12 @@ public static class ClaudeBuildRigsFinal
     {
         public string id; public string prefab; public string carpeta; public string prefijo; public bool guia;
         public Nodo[] nodos; public Parte[] partes;
+
+        /// <summary>
+        /// «orden_tronco» (opcional): nombres de hijos directos de Lienzo/Cuerpo/Tronco en orden de dibujo,
+        /// de atrás adelante. null = la tabla no lo fija y el modo «orden» no toca ese prefab.
+        /// </summary>
+        public string[] ordenTronco;
     }
 
     /// <summary>
@@ -92,9 +120,41 @@ public static class ClaudeBuildRigsFinal
         public float[] rect; public float[] pivote;
     }
 
+    /// <summary>Lo que entrega coreografia.py: las curvas ya calculadas de cada clip de cada personaje.</summary>
+    public sealed class Coreografia
+    {
+        public string generadoPor; public PersonajeClips[] personajes;
+    }
+
+    /// <summary>
+    /// Los clips de un personaje. «id» es el de la tabla (papa, mama, nina, nino) o, para el guía, «algoritm»,
+    /// que cubre sus tres formas (algoritm_fuego, algoritm_rueda, algoritm_gota: comparten carpeta y clips).
+    /// «carpeta» es la de los .anim, una ruta del proyecto que empieza por Assets/.
+    /// </summary>
+    public sealed class PersonajeClips
+    {
+        public string id; public string carpeta; public ClipDef[] clips;
+    }
+
+    /// <summary>Un clip: «archivo» es el nombre del .anim sin carpeta ni extensión; «accion» es el ActorAction que anima.</summary>
+    public sealed class ClipDef
+    {
+        public string archivo; public string accion; public float duracion; public bool bucle; public CurvaDef[] curvas;
+    }
+
+    /// <summary>
+    /// Una curva. «tipo» es RectTransform o CanvasGroup; «claves» son parejas [tiempo, valor], con el tiempo
+    /// estrictamente creciente. «propiedad» es una de las seis de AnimatableProps.
+    /// </summary>
+    public sealed class CurvaDef
+    {
+        public string ruta; public string tipo; public string propiedad; public float[][] claves;
+    }
+
     /// <summary>
     /// Lee el texto de la tabla. Obligatorios: id, prefab, carpeta, prefijo y nodos por personaje; nombre,
     /// tipo y padre por nodo; nombre, ruta, rect y pivote por parte. «partes» ausente = lista vacía.
+    /// «orden_tronco» es opcional: ausente = null (lista de textos sin repetir; vacía es un error).
     /// Lanza InvalidOperationException con el motivo y el lugar exactos.
     /// </summary>
     public static Tabla ParseTable(string json)
@@ -133,7 +193,8 @@ public static class ClaudeBuildRigsFinal
             prefab = Str(d, "prefab", ctx, true),
             carpeta = Str(d, "carpeta", ctx, true),
             prefijo = Str(d, "prefijo", ctx, true),
-            guia = Flag(d, "guia", ctx),
+            guia = Flag(d, "guia", ctx, false),
+            ordenTronco = StringList(d, "orden_tronco", ctx),
         };
 
         var nodos = Items(d, "nodos", ctx, true);
@@ -195,6 +256,189 @@ public static class ClaudeBuildRigsFinal
         };
     }
 
+    /// <summary>Propiedad animable → componente al que pertenece: lo único que coreografia.py puede pedir.</summary>
+    private static readonly Dictionary<string, string> AnimatableProps = new Dictionary<string, string>
+    {
+        { "localEulerAnglesRaw.z", "RectTransform" },
+        { "m_AnchoredPosition.x", "RectTransform" }, { "m_AnchoredPosition.y", "RectTransform" },
+        { "m_LocalScale.x", "RectTransform" }, { "m_LocalScale.y", "RectTransform" },
+        { "m_Alpha", "CanvasGroup" },
+    };
+
+    /// <summary>
+    /// Lee clips_personajes.json (esquema en la versión 1). Obligatorios: «version» (= 1) y «personajes»;
+    /// por personaje id, carpeta y clips; por clip archivo, accion, duracion (&gt; 0), bucle y curvas (al
+    /// menos una); por curva ruta, tipo, propiedad y claves (al menos una, tiempo creciente). Un id de
+    /// personaje, un archivo de clip o una curva (ruta + propiedad) repetidos son un error: casi siempre
+    /// es una errata del generador, y la segunda curva pisaría a la primera sin avisar. Lo que el JSON
+    /// traiga de más («generado_por» se lee, lo demás se ignora) no estorba. Lanza InvalidOperationException
+    /// con el motivo y el lugar exactos (personaje, clip y curva).
+    /// </summary>
+    public static Coreografia ParseChoreography(string json)
+    {
+        var root = MiniJson.Parse(json) as Dictionary<string, object>;
+        if (root == null)
+        {
+            throw new InvalidOperationException("la raíz de la coreografía debe ser un objeto JSON");
+        }
+
+        const string top = "coreografía";
+        var version = Number(root, "version", top);
+        if (version != 1f)
+        {
+            throw new InvalidOperationException(top + ": «version» " + version + " no es la que lee este script (1)");
+        }
+
+        var items = Items(root, "personajes", top, true);
+        if (items.Count == 0)
+        {
+            throw new InvalidOperationException(top + ": «personajes» está vacío");
+        }
+
+        var result = new Coreografia { generadoPor = Str(root, "generado_por", top, false), personajes = new PersonajeClips[items.Count] };
+        var ids = new HashSet<string>();
+        for (var i = 0; i < items.Count; i++)
+        {
+            result.personajes[i] = ToPersonajeClips(items[i], i);
+            if (!ids.Add(result.personajes[i].id))
+            {
+                throw new InvalidOperationException(top + ": el personaje «" + result.personajes[i].id + "» está repetido");
+            }
+        }
+
+        return result;
+    }
+
+    private static PersonajeClips ToPersonajeClips(object raw, int index)
+    {
+        var ctx = "personajes[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var id = Str(d, "id", ctx, true);
+        ctx = "personaje «" + id + "»";
+
+        var carpeta = Str(d, "carpeta", ctx, true).TrimEnd('/');
+        if (!carpeta.StartsWith("Assets/", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(ctx + ": «carpeta» debe ser una ruta del proyecto que empiece por «Assets/», no «" + carpeta + "»");
+        }
+
+        var items = Items(d, "clips", ctx, true);
+        var result = new PersonajeClips { id = id, carpeta = carpeta, clips = new ClipDef[items.Count] };
+        var names = new HashSet<string>();
+        for (var k = 0; k < items.Count; k++)
+        {
+            result.clips[k] = ToClipDef(items[k], ctx, k);
+            if (!names.Add(result.clips[k].archivo))
+            {
+                throw new InvalidOperationException(ctx + ": el clip «" + result.clips[k].archivo + "» está repetido");
+            }
+        }
+
+        return result;
+    }
+
+    private static ClipDef ToClipDef(object raw, string owner, int index)
+    {
+        var ctx = owner + ", clips[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var archivo = Str(d, "archivo", ctx, true);
+        ctx = owner + ", clip «" + archivo + "»";
+        if (archivo.IndexOf('/') >= 0 || archivo.IndexOf('\\') >= 0 || archivo.EndsWith(".anim", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(ctx + ": «archivo» es el nombre del .anim sin carpeta ni extensión");
+        }
+
+        var clip = new ClipDef
+        {
+            archivo = archivo,
+            accion = Str(d, "accion", ctx, true),
+            duracion = Number(d, "duracion", ctx),
+            bucle = Flag(d, "bucle", ctx, true),
+        };
+        if (clip.duracion <= 0f)
+        {
+            throw new InvalidOperationException(ctx + ": «duracion» debe ser mayor que cero, no " + clip.duracion);
+        }
+
+        var items = Items(d, "curvas", ctx, true);
+        if (items.Count == 0)
+        {
+            throw new InvalidOperationException(ctx + ": «curvas» está vacío (un clip sin curvas dejaría el rig en pose en T)");
+        }
+
+        clip.curvas = new CurvaDef[items.Count];
+        var seen = new HashSet<string>();
+        for (var k = 0; k < items.Count; k++)
+        {
+            clip.curvas[k] = ToCurvaDef(items[k], ctx, k);
+            if (!seen.Add(clip.curvas[k].ruta + "|" + clip.curvas[k].propiedad))
+            {
+                throw new InvalidOperationException(ctx + ": la curva «" + clip.curvas[k].ruta + "» " + clip.curvas[k].propiedad + " está repetida");
+            }
+        }
+
+        return clip;
+    }
+
+    private static CurvaDef ToCurvaDef(object raw, string owner, int index)
+    {
+        var ctx = owner + ", curvas[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var ruta = Str(d, "ruta", ctx, true);
+        var propiedad = Str(d, "propiedad", ctx, true);
+        ctx = owner + ", curva «" + ruta + "» " + propiedad;
+
+        string owned;
+        if (!AnimatableProps.TryGetValue(propiedad, out owned))
+        {
+            throw new InvalidOperationException(ctx + ": propiedad desconocida (" + string.Join(" | ", AnimatableProps.Keys.ToArray()) + ")");
+        }
+
+        var tipo = Str(d, "tipo", ctx, true);
+        if (tipo != "RectTransform" && tipo != "CanvasGroup")
+        {
+            throw new InvalidOperationException(ctx + ": tipo «" + tipo + "» desconocido (RectTransform | CanvasGroup)");
+        }
+
+        if (tipo != owned)
+        {
+            throw new InvalidOperationException(ctx + ": la propiedad es de " + owned + " y la curva dice " + tipo);
+        }
+
+        return new CurvaDef { ruta = ruta, tipo = tipo, propiedad = propiedad, claves = Keys(d, "claves", ctx) };
+    }
+
+    /// <summary>Parejas [tiempo, valor] con el tiempo estrictamente creciente. Al menos una.</summary>
+    private static float[][] Keys(Dictionary<string, object> d, string key, string ctx)
+    {
+        var list = Items(d, key, ctx, true);
+        if (list.Count == 0)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» no tiene ninguna clave");
+        }
+
+        var result = new float[list.Count][];
+        for (var i = 0; i < list.Count; i++)
+        {
+            var pair = list[i] as List<object>;
+            if (pair == null || pair.Count != 2 || !(pair[0] is double) || !(pair[1] is double))
+            {
+                throw new InvalidOperationException(ctx + ": «" + key + "»[" + i + "] debe ser una pareja [tiempo, valor] de números");
+            }
+
+            var time = Finite((double)pair[0], ctx, key + "[" + i + "]");
+            var value = Finite((double)pair[1], ctx, key + "[" + i + "]");
+            if (i > 0 && time <= result[i - 1][0])
+            {
+                throw new InvalidOperationException(ctx + ": «" + key + "»[" + i + "] tiene el tiempo " + time + ", que no es mayor que el de la clave anterior (" + result[i - 1][0] + ")");
+            }
+
+            result[i] = new[] { time, value };
+        }
+
+        return result;
+    }
+
     private static Dictionary<string, object> AsObject(object raw, string ctx)
     {
         var d = raw as Dictionary<string, object>;
@@ -235,11 +479,13 @@ public static class ClaudeBuildRigsFinal
         return s;
     }
 
-    private static bool Flag(Dictionary<string, object> d, string key, string ctx)
+    /// <summary>true o false. Ausente o null: error si es obligatorio y false si no.</summary>
+    private static bool Flag(Dictionary<string, object> d, string key, string ctx, bool required)
     {
         object v;
         if (!d.TryGetValue(key, out v) || v == null)
         {
+            if (required) throw Missing(ctx, key);
             return false;
         }
 
@@ -249,6 +495,73 @@ public static class ClaudeBuildRigsFinal
         }
 
         return (bool)v;
+    }
+
+    /// <summary>Un número obligatorio (como float: ausente, null o no numérico es un error).</summary>
+    private static float Number(Dictionary<string, object> d, string key, string ctx)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null) throw Missing(ctx, key);
+        if (!(v is double))
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser un número");
+        }
+
+        return Finite((double)v, ctx, key);
+    }
+
+    private static float Finite(double v, string ctx, string what)
+    {
+        var f = (float)v;
+        if (float.IsInfinity(f) || float.IsNaN(f))
+        {
+            throw new InvalidOperationException(ctx + ": «" + what + "» no cabe en un float");
+        }
+
+        return f;
+    }
+
+    /// <summary>
+    /// Una lista de textos no vacíos y sin repetir. Ausente o null: null (la clave es opcional). Una lista
+    /// vacía es un error: si no hay nada que ordenar, se omite la clave.
+    /// </summary>
+    private static string[] StringList(Dictionary<string, object> d, string key, string ctx)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null)
+        {
+            return null;
+        }
+
+        var list = v as List<object>;
+        if (list == null)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser una lista de textos");
+        }
+
+        if (list.Count == 0)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» está vacío (omita la clave si no hay nada que fijar)");
+        }
+
+        var result = new string[list.Count];
+        for (var i = 0; i < list.Count; i++)
+        {
+            var s = list[i] as string;
+            if (string.IsNullOrEmpty(s))
+            {
+                throw new InvalidOperationException(ctx + ": «" + key + "»[" + i + "] debe ser un texto no vacío");
+            }
+
+            if (Array.IndexOf(result, s) >= 0)
+            {
+                throw new InvalidOperationException(ctx + ": «" + key + "» repite «" + s + "»");
+            }
+
+            result[i] = s;
+        }
+
+        return result;
     }
 
     /// <summary>Una lista de objetos. Ausente o null: error si es obligatoria y lista vacía si no.</summary>
@@ -560,51 +873,18 @@ public static class ClaudeBuildRigsFinal
     // --- fin del lector ---
 
     private const string Json = "claudeDocs/tasks/Personajes/herramientas/rig_articulaciones.json";
+    private const string ClipsJson = "claudeDocs/tasks/Personajes/herramientas/clips_personajes.json";
     private const string Art = "Assets/Game/Art/Characters";
     private const string Prefabs = "Assets/Game/Prefabs/Characters";
     private const float U = 1024f;
     private const float Fps = 30f;
+    private const float KeyTolerance = 1e-4f;
 
-    // Rutas de los huesos (iguales en la familia y en Algoritm, salvo Cuello y Cabeza).
+    // Rutas que usan los modos «sprites», «orden» y «estado» (iguales en la familia y en Algoritm). Las
+    // de los demás huesos viven en clips_personajes.json, que es quien las nombra.
     private const string C = "Lienzo/Cuerpo";
     private const string T = C + "/Tronco";
-    private const string LA = T + "/BrazoIzq";
-    private const string RA = T + "/BrazoDer";
-    private const string LE = LA + "/CodoIzq";
-    private const string RE = RA + "/CodoDer";
-    private const string LL = C + "/PiernaIzq";
-    private const string RL = C + "/PiernaDer";
-    private const string LK = LL + "/RodillaIzq";
-    private const string RK = RL + "/RodillaDer";
-    private const string NK = T + "/Cuello";
-    private const string HD = NK + "/Cabeza";
-
-    private const string RotZ = "localEulerAnglesRaw.z";
-    private const string PosY = "m_AnchoredPosition.y";
-    private const string ScaleX = "m_LocalScale.x";
-    private const string ScaleY = "m_LocalScale.y";
-    private const string Alpha = "m_Alpha";
-
-    private static readonly string[] BonesFamily = { C, T, LA, RA, LE, RE, LL, RL, LK, RK, NK, HD };
-    private static readonly string[] BonesGuide = { C, T, LA, RA, LE, RE, LL, RL, LK, RK };
-
-    // Tempo (>1 más lento), amplitud y flexión de reposo de los codos (grados, hacia arriba).
-    private sealed class FamilyInfo
-    {
-        public string Folder; public float Tempo; public float Amp; public float ElbowRest;
-        public FamilyInfo(string folder, float tempo, float amp, float elbowRest)
-        {
-            Folder = folder; Tempo = tempo; Amp = amp; ElbowRest = elbowRest;
-        }
-    }
-
-    private static readonly Dictionary<string, FamilyInfo> Family = new Dictionary<string, FamilyInfo>
-    {
-        { "papa", new FamilyInfo("Father", 1.15f, 1.1f, 4f) },
-        { "mama", new FamilyInfo("Mother", 1.0f, 0.9f, 7f) },
-        { "nina", new FamilyInfo("Girl", 0.95f, 1.0f, 9f) },
-        { "nino", new FamilyInfo("Boy", 0.8f, 1.2f, 6f) },
-    };
+    private const string LK = C + "/PiernaIzq/RodillaIzq";
 
     // ---------------------------------------------------------------- punto de entrada
 
@@ -623,18 +903,23 @@ public static class ClaudeBuildRigsFinal
                 case "sprites":
                     foreach (var p in tabla.personajes) ApplySprites(p, log);
                     break;
+                case "orden":
+                    ApplyOrderAll(tabla, log);
+                    break;
                 case "clips":
                     WriteClips(tabla, log);
                     break;
                 case "todo":
                     foreach (var p in tabla.personajes) AddNodes(p, log);
+                    foreach (var p in tabla.personajes) ApplySprites(p, log);
+                    ApplyOrderAll(tabla, log);
                     WriteClips(tabla, log);
                     break;
                 case "estado":
                     foreach (var p in tabla.personajes) Report(p, log);
                     break;
                 default:
-                    log.Add("modo desconocido «" + mode + "»: nodos | sprites | clips | todo | estado");
+                    log.Add("modo desconocido «" + mode + "»: nodos | sprites | orden | clips | todo | estado");
                     break;
             }
 
@@ -1150,6 +1435,135 @@ public static class ClaudeBuildRigsFinal
         return changed;
     }
 
+    // ---------------------------------------------------------------- modo «orden»
+    //
+    // POR QUÉ. Bajo Lienzo/Cuerpo/Tronco los hijos nacieron como BrazoIzq, BrazoDer, Torso y Cuello
+    // (familia) o Ojos y Boca (Algoritm), y uGUI dibuja de atrás adelante: los brazos quedaban DETRÁS del
+    // torso y de la cabeza y se escondían. Santiago no lo aceptó (05/10/2026): con el arte final los brazos
+    // van DELANTE. Sus hombros son cápsulas con el contorno cerrado y se ven bien encima del torso.
+    // LA REGLA ES POR PERSONAJE, no global: delante solo en quien tiene los brazos partidos (la Image de
+    // .../BrazoIzq/CodoIzq/AntebrazoIzq con sprite y encendida: hoy el Niño) y en Algoritm. Papá, Mamá y Niña
+    // siguen con el arte provisional de una pieza y conservan los brazos detrás —su «orden_tronco» es
+    // BrazoIzq, BrazoDer, Torso, Cuello—, porque delante enseñarían el contorno cortado del hombro; cuando
+    // llegue su arte final se les cambia la tabla y se corre «orden» otra vez. En Algoritm la cara (Ojos y
+    // Boca) se queda POR ENCIMA de los brazos, para que un brazo levantado nunca tape los ojos que miran al
+    // niño. El orden concreto vive en la tabla («orden_tronco»), no aquí; este modo no decide nada por su
+    // cuenta, y la prueba CharacterRig_INC132_ConLosBrazosPartidos… vigila que la tabla y el arte concuerden
+    // (un personaje partido con los brazos detrás falla, y el Niño no puede pasar por la rama provisional).
+    //
+    // CÓMO. SetSiblingIndex reordena m_Children del padre y no cambia ni un fileID: las referencias de
+    // las escenas y de los 18 assets narrativos siguen en pie. Los hijos listados van al final de Tronco
+    // en el orden dado; los que la tabla no lista conservan su orden relativo y quedan delante de ellos.
+
+    /// <summary>Los nombres de los hijos directos, en el orden en que se dibujan.</summary>
+    private static List<string> ChildNames(Transform parent)
+    {
+        var names = new List<string>();
+        for (var i = 0; i < parent.childCount; i++)
+        {
+            names.Add(parent.GetChild(i).name);
+        }
+
+        return names;
+    }
+
+    /// <summary>
+    /// El orden de Tronco que pide la tabla para este prefab, calculado sin tocar nada. Lanza
+    /// InvalidOperationException si no hay Tronco, si un nombre listado no es hijo directo (con los hijos
+    /// que sí hay) o si hay dos hijos con el mismo nombre entre los listados (SetSiblingIndex por nombre
+    /// sería ambiguo).
+    /// </summary>
+    private static List<string> TargetOrder(Transform root, Personaje c)
+    {
+        var tronco = root.Find(T);
+        if (tronco == null)
+        {
+            throw new InvalidOperationException(c.prefab + ": no existe «" + T + "» (¿corrió «nodos»?)");
+        }
+
+        var children = ChildNames(tronco);
+        foreach (var name in c.ordenTronco)
+        {
+            var count = children.Count(child => child == name);
+            if (count == 0)
+            {
+                throw new InvalidOperationException(c.prefab + ": «orden_tronco» nombra «" + name + "», que no es hijo directo de " + T
+                    + " (hijos: " + string.Join(", ", children.ToArray()) + ")");
+            }
+
+            if (count > 1)
+            {
+                throw new InvalidOperationException(c.prefab + ": hay " + count + " hijos de " + T + " llamados «" + name + "»");
+            }
+        }
+
+        var target = children.Where(child => Array.IndexOf(c.ordenTronco, child) < 0).ToList(); // sin listar: delante, en su orden
+        target.AddRange(c.ordenTronco);
+        return target;
+    }
+
+    /// <summary>
+    /// Primero se comprueba la tabla contra TODOS los prefabs y solo después se escribe: un nombre mal
+    /// escrito en el cuarto personaje no debe dejar a los tres primeros reordenados y al resto sin tocar.
+    /// </summary>
+    private static void ApplyOrderAll(Tabla tabla, List<string> log)
+    {
+        foreach (var p in tabla.personajes)
+        {
+            if (p.ordenTronco == null) continue;
+            var asset = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath(p));
+            if (asset == null)
+            {
+                throw new InvalidOperationException(p.prefab + ": no existe el prefab " + PrefabPath(p));
+            }
+
+            TargetOrder(asset.transform, p);
+        }
+
+        foreach (var p in tabla.personajes) ApplyOrder(p, log);
+    }
+
+    private static void ApplyOrder(Personaje c, List<string> log)
+    {
+        if (c.ordenTronco == null)
+        {
+            log.Add(c.prefab + ": la tabla no fija «orden_tronco»; no se toca");
+            return;
+        }
+
+        var path = PrefabPath(c);
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var tronco = root.transform.Find(T);
+            var target = TargetOrder(root.transform, c);
+            var before = ChildNames(tronco);
+            if (before.SequenceEqual(target))
+            {
+                log.Add(c.prefab + ": Tronco ya estaba en orden (" + string.Join(", ", before.ToArray()) + ")");
+                return;
+            }
+
+            for (var i = 0; i < target.Count; i++)
+            {
+                tronco.Find(target[i]).SetSiblingIndex(i); // los nombres son únicos: TargetOrder lo comprobó
+            }
+
+            var after = ChildNames(tronco);
+            if (!after.SequenceEqual(target))
+            {
+                throw new InvalidOperationException(c.prefab + ": el orden quedó en " + string.Join(", ", after.ToArray()) + " y no en " + string.Join(", ", target.ToArray()));
+            }
+
+            PrefabUtility.SaveAsPrefabAsset(root, path);
+            log.Add(c.prefab + ": Tronco " + string.Join(", ", before.ToArray()) + "  →  " + string.Join(", ", after.ToArray()));
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+    }
+
     // ---------------------------------------------------------------- modo «estado»
 
     private static void Report(Personaje c, List<string> log)
@@ -1170,121 +1584,34 @@ public static class ClaudeBuildRigsFinal
 
         var face = root.GetComponent<CharacterFace>();
         log.Add(c.prefab + " [" + c.nodos.Length + " nodos, " + c.partes.Length + " partes en la tabla]: " + (missing.Count == 0 ? "nodos completos" : "FALTAN " + string.Join(", ", missing.ToArray()))
-            + " | CharacterFace " + (face == null ? "no" : "sí") + " | segmentado " + (IsSegmented(root.transform) ? "sí" : "no"));
+            + " | CharacterFace " + (face == null ? "no" : "sí") + " | segmentado " + (IsSegmented(root.transform) ? "sí" : "no")
+            + " | " + OrderState(root.transform, c));
     }
 
-    // ================================================================ modo «clips»
-    //
-    // Reescribe las curvas de los .anim existentes (ClearCurves + SetEditorCurve sobre el asset
-    // cargado: GUID, controlador y eventos intactos). Cada clip lleva rotación en TODOS los huesos del
-    // personaje: un hueso que un clip no usa se queda en su pose de reposo y no vuelve a la pose en T
-    // del prefab (writeDefaultValues = true).
-    //
-    // Signos (el eje Z de Unity gira en sentido antihorario con valores positivos; la pantalla es
-    // el espejo del personaje que mira al jugador):
-    //   Brazo izquierdo/derecho (hombro): + en BrazoDer y − en BrazoIzq ABREN y SUBEN el brazo
-    //     (elevación). Al revés, el brazo se cierra contra el cuerpo. Con el brazo derecho en reposo
-    //     (cuelga hacia abajo y afuera), +42 lo deja casi horizontal (Point).
-    //   Codo: la flexión «hacia arriba» (la mano sube hacia el hombro) es − en CodoIzq y + en CodoDer,
-    //     o sea, el mismo signo que la elevación de su lado. El pliegue «hacia dentro» (manos a la
-    //     cintura) es el contrario. En el código se dan en grados de flexión y Sym los reparte.
-    //   Pierna: − en PiernaIzq y + en PiernaDer ABREN el muslo (rodillas hacia fuera).
-    //   Rodilla: + en RodillaIzq y − en RodillaDer devuelven la pantorrilla HACIA DENTRO.
-    //   Cuerpo/Tronco/Cuello/Cabeza: + inclina a la izquierda de la pantalla, − a la derecha. La
-    //     inclinación de Walk/Run («body lean») es negativa: hacia donde mira el personaje.
-    //
-    // «Sym(izq, der, t, v...)»: v > 0 abre/sube/flexiona hacia arriba; Izq recibe −v y Der +v. Para
-    // las rodillas, v < 0 es hacia dentro. «Rot» da el valor tal cual (se le suma el reposo).
-    //
-    // Posición: solo en Lienzo y Lienzo/Cuerpo, más las de Tronco y Piernas que BuildRigs ya ponía
-    // para agacharse y levantar el pie (son del prefab de cada miembro de la familia, que tiene su
-    // propio controlador). Las tres formas de Algoritm comparten controlador y prefabs distintos:
-    // allí la única posición está en Cuerpo.
-    //
-    // «segmentado» NO está en el JSON: se deduce del prefab (la Image de AntepiernaIzq con sprite y
-    // encendida). Con las piernas partidas, agacharse NO escala las piernas: baja el tronco, abre el
-    // muslo, devuelve la pantorrilla y la acorta con escala Y de Rodilla (CharacterRig_DA131_
-    // ConExtremidadesPartidas… lo vigila). Con el arte actual (no segmentado) se conserva el truco de
-    // BuildRigs: la pierna entera escala en Y y las curvas de rodilla existen pero no se ven.
-
-    /// <summary>Lo que cada clip necesita saber del personaje.</summary>
-    private sealed class Ctx
+    /// <summary>El orden de dibujo actual de Tronco y si cumple lo que la tabla pide. No lanza: «estado» no escribe ni falla.</summary>
+    private static string OrderState(Transform root, Personaje c)
     {
-        public string Id; public bool Guide; public bool Segmented;
-        public float K = 1f; public float A = 1f;
-        public float Leg;    // de la cadera al suelo
-        public float Thigh;  // de la cadera a la rodilla
-        public float Shin;   // de la rodilla al suelo
-        public float ElbowRest;
-    }
-
-    private static void WriteClips(Tabla tabla, List<string> log)
-    {
-        var guideDone = false;
-        foreach (var p in tabla.personajes)
+        var tronco = root.Find(T);
+        if (tronco == null)
         {
-            Ctx x;
-            string error;
-            if (!ReadContext(p, out x, out error))
-            {
-                log.Add(p.prefab + ": " + error);
-                continue;
-            }
-
-            if (p.guia)
-            {
-                if (guideDone) continue; // las tres formas comparten los nueve clips
-                guideDone = true;
-                WriteSpecs(Art + "/Algoritm/Animations", GuideClips(x), log, "Algoritm (3 formas)");
-            }
-            else
-            {
-                WriteSpecs(Art + "/" + Family[p.id].Folder + "/Animations", HumanClips(x), log, p.prefab + (x.Segmented ? " [segmentado]" : ""));
-            }
-        }
-    }
-
-    private static bool ReadContext(Personaje p, out Ctx x, out string error)
-    {
-        x = null;
-        error = null;
-        var go = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath(p));
-        if (go == null)
-        {
-            error = "no existe el prefab";
-            return false;
+            return "sin " + T;
         }
 
-        var root = go.transform;
-        var needed = p.guia ? new[] { LE, RE, LK, RK, T + "/Torso", T + "/Ojos" } : new[] { LE, RE, LK, RK, HD, NK + "/Cabeza/Ojos" };
-        foreach (var path in needed)
+        var now = ChildNames(tronco);
+        var text = "Tronco [" + string.Join(", ", now.ToArray()) + "]";
+        if (c.ordenTronco == null)
         {
-            if (root.Find(path) == null)
-            {
-                error = "falta «" + path + "»: corra primero Execute(\"nodos\")";
-                return false;
-            }
+            return text + " (la tabla no fija orden)";
         }
 
-        x = new Ctx { Id = p.id, Guide = p.guia };
-        if (p.guia)
+        try
         {
-            return true;
+            return text + (now.SequenceEqual(TargetOrder(root, c)) ? " (cumple la tabla)" : " (NO cumple la tabla: correr «orden»)");
         }
-
-        var info = Family[p.id];
-        x.K = info.Tempo;
-        x.A = info.Amp;
-        x.ElbowRest = info.ElbowRest;
-        x.Segmented = IsSegmented(root);
-
-        var hip = PivotDown((RectTransform)root.Find(LL));
-        var floor = PivotDown((RectTransform)root.Find(C)).y; // el pivote de Cuerpo está en el suelo
-        var knee = PivotDown((RectTransform)root.Find(LK)).y;
-        x.Leg = Mathf.Max(floor - hip.y, 1f);
-        x.Thigh = Mathf.Clamp(knee - hip.y, 0.25f * x.Leg, 0.75f * x.Leg);
-        x.Shin = x.Leg - x.Thigh;
-        return true;
+        catch (InvalidOperationException e)
+        {
+            return text + " (la tabla no se puede aplicar: " + e.Message + ")";
+        }
     }
 
     /// <summary>Segmentado = la antepierna ya se dibuja (Image con sprite y encendida).</summary>
@@ -1295,242 +1622,185 @@ public static class ClaudeBuildRigsFinal
         return image != null && image.sprite != null && image.enabled;
     }
 
-    // ---------------------------------------------------------------- curvas
+    // ================================================================ modo «clips»
+    //
+    // Vuelca en los .anim existentes las curvas de clips_personajes.json (ClearCurves + SetEditorCurve
+    // sobre el asset cargado: GUID, controlador y eventos intactos). El script no calcula movimiento: la
+    // coreografía —y con ella los signos de los ejes, el reposo de cada hueso y qué huesos lleva cada
+    // clip— se decide en coreografia.py y se verifica con pose_preview.py (ver la cabecera). Aquí solo se
+    // comprueba que lo recibido encaja con los prefabs y se escribe.
+    //
+    // Por cada clip hace lo mismo que hacía WriteClip cuando la coreografía vivía aquí: carga el .anim de
+    // «carpeta/archivo.anim» (si falta lo anota como FALTA y NO lo crea), conserva los fotogramas por
+    // segundo, los eventos y los AnimationClipSettings —salvo stopTime, que pasa a ser la duración—, borra
+    // las curvas y pone las nuevas con tangentes ClampedAuto. Si loopTime del asset difiere de «bucle»
+    // avisa y conserva el del asset.
+    //
+    // Avisos (no frenan la escritura): una ruta que el prefab no tiene o un componente que ese nodo no
+    // tiene (el Animator ignora la curva y la parte se queda en pose en T: lo vigila CharacterRig_DA131_
+    // TodaCurvaApuntaAUnaParteQueExiste), una clave fuera de [0, duración], un bucle cuyo último valor no
+    // vuelve al primero y una acción que no es un ActorAction. Las rutas se comprueban en cada prefab del
+    // personaje: el guía («algoritm») en Algoritm_Fuego, Algoritm_Rueda y Algoritm_Gota.
 
-    private sealed class Curve
+    /// <summary>Los personajes de la tabla que usa uno de la coreografía: el del mismo id y, para el guía, sus tres formas (algoritm_fuego, _rueda, _gota).</summary>
+    private static List<Personaje> TablePersonajes(Tabla tabla, string id)
     {
-        public string Path; public string Prop;
-        public readonly List<Vector2> Keys = new List<Vector2>(); // x = tiempo, y = valor
-
-        public Type BindingType { get { return Prop == Alpha ? typeof(CanvasGroup) : typeof(RectTransform); } }
-
-        public void Set(float t, float v)
+        var result = new List<Personaje>();
+        foreach (var p in tabla.personajes)
         {
-            for (var i = 0; i < Keys.Count; i++)
+            if (p.id == id || (p.guia && p.id.StartsWith(id + "_", StringComparison.Ordinal)))
             {
-                if (Mathf.Abs(Keys[i].x - t) < 1e-4f)
-                {
-                    Keys[i] = new Vector2(Keys[i].x, v);
-                    return;
-                }
+                result.Add(p);
+            }
+        }
 
-                if (Keys[i].x > t)
-                {
-                    Keys.Insert(i, new Vector2(t, v));
-                    return;
-                }
+        return result;
+    }
+
+    private static Coreografia LoadChoreography(List<string> log)
+    {
+        var path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", ClipsJson));
+        if (!File.Exists(path))
+        {
+            throw new InvalidOperationException("no existe " + path + ": lo genera herramientas/coreografia.py");
+        }
+
+        Coreografia coreo;
+        try
+        {
+            coreo = ParseChoreography(File.ReadAllText(path, System.Text.Encoding.UTF8));
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new InvalidOperationException("coreografía ilegible (" + path + "): " + e.Message, e);
+        }
+
+        var clips = 0;
+        foreach (var p in coreo.personajes) clips += p.clips.Length;
+        log.Add("coreografía: " + coreo.personajes.Length + " personajes, " + clips + " clips"
+            + (coreo.generadoPor == null ? "" : ", generada por " + coreo.generadoPor) + " (" + path + ")");
+        return coreo;
+    }
+
+    private static void WriteClips(Tabla tabla, List<string> log)
+    {
+        var coreo = LoadChoreography(log);
+        foreach (var p in coreo.personajes)
+        {
+            var roots = new List<KeyValuePair<string, Transform>>(); // nombre del prefab → raíz
+            var forms = TablePersonajes(tabla, p.id);
+            if (forms.Count == 0)
+            {
+                log.Add("AVISO " + p.id + ": la tabla no tiene ningún personaje con ese id; no se comprueban las rutas de sus curvas");
             }
 
-            Keys.Add(new Vector2(t, v));
+            foreach (var form in forms)
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath(form));
+                if (prefab == null)
+                {
+                    log.Add("AVISO " + p.id + ": no existe el prefab " + PrefabPath(form) + "; no se comprueban sus rutas");
+                    continue;
+                }
+
+                roots.Add(new KeyValuePair<string, Transform>(form.prefab, prefab.transform));
+            }
+
+            CheckRoutes(p, roots, log);
+
+            var written = 0;
+            foreach (var clip in p.clips)
+            {
+                WarnClip(p, clip, log);
+                if (WriteClip(p.carpeta, clip, log)) written++;
+            }
+
+            log.Add(p.id + ": " + written + "/" + p.clips.Length + " clips reescritos en " + p.carpeta);
         }
     }
 
-    private sealed class Spec
+    private static Type BindingType(CurvaDef curve)
     {
-        public readonly string Action;
-        public readonly string File;
-        public readonly float Length;
-        public readonly float K;
-        public readonly bool Loop;
-        private readonly Dictionary<string, float> _rest;
-        private readonly string[] _bones;
-        private readonly Dictionary<string, Curve> _curves = new Dictionary<string, Curve>();
-        private readonly List<Curve> _order = new List<Curve>();
+        return curve.tipo == "CanvasGroup" ? typeof(CanvasGroup) : typeof(RectTransform);
+    }
 
-        public Spec(string action, string file, float baseLength, float k, bool loop, Dictionary<string, float> rest, string[] bones)
+    /// <summary>Un aviso por ruta y prefab (no por clip), con los clips que la usan.</summary>
+    private static void CheckRoutes(PersonajeClips p, List<KeyValuePair<string, Transform>> roots, List<string> log)
+    {
+        foreach (var root in roots)
         {
-            Action = action; File = file; K = k; Length = baseLength * k; Loop = loop; _rest = rest; _bones = bones;
-        }
-
-        public IList<Curve> Curves { get { return _order; } }
-
-        private Curve Get(string path, string prop, bool create = true)
-        {
-            Curve curve;
-            var key = path + "|" + prop;
-            if (!_curves.TryGetValue(key, out curve))
+            var problems = new List<string>();
+            var users = new Dictionary<string, List<string>>();
+            foreach (var clip in p.clips)
             {
-                if (!create) return null;
-                curve = new Curve { Path = path, Prop = prop };
-                _curves[key] = curve;
-                _order.Add(curve);
-            }
-
-            return curve;
-        }
-
-        private float RestOf(string path)
-        {
-            float v;
-            return _rest.TryGetValue(path, out v) ? v : 0f;
-        }
-
-        private float BaseOf(string path, string prop)
-        {
-            if (prop == RotZ) return RestOf(path);
-            return prop == ScaleX || prop == ScaleY ? 1f : 0f;
-        }
-
-        /// <summary>Rotación en Z: pares (tiempo base, grados) SUMADOS a la pose de reposo del hueso. Los tiempos se multiplican por el tempo.</summary>
-        public Spec Rot(string path, params float[] tv)
-        {
-            var c = Get(path, RotZ);
-            for (var i = 0; i + 1 < tv.Length; i += 2) c.Set(tv[i] * K, tv[i + 1] + RestOf(path));
-            return this;
-        }
-
-        /// <summary>Cualquier otra propiedad, con el valor absoluto.</summary>
-        public Spec Raw(string path, string prop, params float[] tv)
-        {
-            var c = Get(path, prop);
-            for (var i = 0; i + 1 < tv.Length; i += 2) c.Set(tv[i] * K, tv[i + 1]);
-            return this;
-        }
-
-        /// <summary>Un movimiento simétrico: v &gt; 0 abre, sube o flexiona hacia arriba (Izq recibe −v, Der +v).</summary>
-        public Spec Sym(string left, string right, params float[] tv)
-        {
-            var l = Get(left, RotZ);
-            var r = Get(right, RotZ);
-            for (var i = 0; i + 1 < tv.Length; i += 2)
-            {
-                l.Set(tv[i] * K, RestOf(left) - tv[i + 1]);
-                r.Set(tv[i] * K, RestOf(right) + tv[i + 1]);
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Squash &amp; stretch de Cuerpo: pares (tiempo, escala Y). X compensa (1 − 0,5·(Y − 1)): con Y
-        /// entre 0,92 y 1,08 la X queda entre 1,04 y 0,96, y ninguna pasa del 15 % (DA §13.2).
-        /// </summary>
-        public Spec Vol(params float[] tv)
-        {
-            var y = Get(C, ScaleY);
-            var xs = Get(C, ScaleX);
-            for (var i = 0; i + 1 < tv.Length; i += 2)
-            {
-                y.Set(tv[i] * K, tv[i + 1]);
-                xs.Set(tv[i] * K, 1f - 0.5f * (tv[i + 1] - 1f));
-            }
-
-            return this;
-        }
-
-        public Spec Drop(string path, string prop)
-        {
-            var key = path + "|" + prop;
-            Curve c;
-            if (_curves.TryGetValue(key, out c))
-            {
-                _curves.Remove(key);
-                _order.Remove(c);
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        /// Movimiento secundario: la curva «dst» (rotación) copia la de «src» con unos cuadros de
-        /// retraso (2 a 4 en la cabeza) y una ganancia. Reemplaza lo que «dst» tuviera. En clips en
-        /// bucle el retraso da la vuelta; en los otros se sujeta a los extremos. «bias» resta una
-        /// media a la fuente (p. ej. la mitad de la altura de la flotación).
-        /// </summary>
-        public Spec Follow(string src, string srcProp, string dst, float frames, float gain, float bias = 0f)
-        {
-            var source = Get(src, srcProp, false);
-            if (source == null || source.Keys.Count == 0)
-            {
-                throw new InvalidOperationException(Action + ": Follow necesita primero la curva " + src + " " + srcProp);
-            }
-
-            Close(source);
-            var curve = Build(source.Keys);
-            var target = Get(dst, RotZ);
-            target.Keys.Clear();
-            var delay = frames / Fps;
-            var from = BaseOf(src, srcProp);
-            var to = RestOf(dst);
-            foreach (var t in SampleTimes(source.Keys))
-            {
-                var tt = Loop ? Mathf.Repeat(t - delay, Length) : Mathf.Clamp(t - delay, 0f, Length);
-                target.Set(t, to + gain * (curve.Evaluate(tt) - from - bias));
-            }
-
-            return this;
-        }
-
-        private List<float> SampleTimes(List<Vector2> keys)
-        {
-            var times = new List<float> { 0f };
-            for (var i = 0; i < keys.Count; i++)
-            {
-                if (i > 0) times.Add(0.5f * (keys[i - 1].x + keys[i].x));
-                times.Add(keys[i].x);
-            }
-
-            times.Add(Length);
-            return times.Where(t => t >= -1e-4f && t <= Length + 1e-4f).Select(t => Mathf.Clamp(t, 0f, Length)).Distinct().OrderBy(t => t).ToList();
-        }
-
-        /// <summary>En los bucles, que la curva empiece en 0 y acabe en Length (si falta, con el valor del otro extremo).</summary>
-        private void Close(Curve c)
-        {
-            if (!Loop || c.Keys.Count == 0) return;
-            if (c.Keys[0].x > 1e-4f) c.Keys.Insert(0, new Vector2(0f, c.Keys[c.Keys.Count - 1].y));
-            if (c.Keys[c.Keys.Count - 1].x < Length - 1e-4f) c.Keys.Add(new Vector2(Length, c.Keys[0].y));
-        }
-
-        /// <summary>
-        /// Último paso: todo hueso sin rotación se queda en su pose de reposo (anti pose en T), cada
-        /// curva cubre [0, Length] y, en los bucles, acaba donde empieza. Devuelve los avisos.
-        /// </summary>
-        public List<string> Finish()
-        {
-            var warnings = new List<string>();
-            foreach (var bone in _bones)
-            {
-                if (Get(bone, RotZ, false) == null)
+                foreach (var curve in clip.curvas)
                 {
-                    Get(bone, RotZ).Set(0f, RestOf(bone));
-                }
-            }
+                    var node = root.Value.Find(curve.ruta);
+                    var problem = node == null
+                        ? "no existe la ruta «" + curve.ruta + "»"
+                        : node.GetComponent(BindingType(curve)) == null ? "«" + curve.ruta + "» no tiene " + curve.tipo : null;
+                    if (problem == null) continue;
 
-            foreach (var c in _order)
-            {
-                if (c.Keys.Count == 1) c.Set(Length, c.Keys[0].y);
-                if (Loop)
-                {
-                    Close(c);
-                    var gap = c.Keys[c.Keys.Count - 1].y - c.Keys[0].y;
-                    if (c.Prop == RotZ) gap = Mathf.Repeat(gap + 180f, 360f) - 180f; // una vuelta entera (Spin) sí cierra
-                    if (Mathf.Abs(gap) > 1e-3f)
+                    List<string> list;
+                    if (!users.TryGetValue(problem, out list))
                     {
-                        warnings.Add(Action + " " + c.Path + " " + c.Prop + ": el bucle no cierra (" + c.Keys[0].y + " → " + c.Keys[c.Keys.Count - 1].y + ")");
+                        list = new List<string>();
+                        users[problem] = list;
+                        problems.Add(problem);
                     }
-                }
-                else
-                {
-                    if (c.Keys[0].x > 1e-4f) c.Keys.Insert(0, new Vector2(0f, c.Keys[0].y));
-                    if (c.Keys[c.Keys.Count - 1].x < Length - 1e-4f) c.Keys.Add(new Vector2(Length, c.Keys[c.Keys.Count - 1].y));
-                }
 
-                foreach (var k in c.Keys)
-                {
-                    if (k.x < -1e-4f || k.x > Length + 1e-4f) warnings.Add(Action + " " + c.Path + " " + c.Prop + ": clave fuera de [0, Length] en t=" + k.x);
+                    if (!list.Contains(clip.archivo)) list.Add(clip.archivo);
                 }
             }
 
-            return warnings;
+            foreach (var problem in problems)
+            {
+                log.Add("AVISO " + p.id + " en " + root.Key + ": " + problem + " (clips: " + string.Join(", ", users[problem].ToArray()) + ")");
+            }
+        }
+    }
+
+    /// <summary>Lo que se puede comprobar del clip sin tocar el asset: la acción, las claves y el cierre del bucle.</summary>
+    private static void WarnClip(PersonajeClips p, ClipDef clip, List<string> log)
+    {
+        if (!Enum.IsDefined(typeof(ActorAction), clip.accion))
+        {
+            log.Add("AVISO " + p.id + " " + clip.archivo + ": «" + clip.accion + "» no es un ActorAction (el controlador no tiene ese estado)");
+        }
+
+        foreach (var curve in clip.curvas)
+        {
+            var outside = new List<string>();
+            foreach (var key in curve.claves)
+            {
+                if (key[0] < -KeyTolerance || key[0] > clip.duracion + KeyTolerance) outside.Add(key[0].ToString(System.Globalization.CultureInfo.InvariantCulture));
+            }
+
+            if (outside.Count > 0)
+            {
+                log.Add("AVISO " + p.id + " " + clip.archivo + " " + curve.ruta + " " + curve.propiedad
+                    + ": clave fuera de [0, " + clip.duracion + "] en t=" + string.Join(", ", outside.ToArray()));
+            }
+
+            if (clip.bucle)
+            {
+                var first = curve.claves[0][1];
+                var last = curve.claves[curve.claves.Length - 1][1];
+                var gap = last - first;
+                if (curve.propiedad == "localEulerAnglesRaw.z") gap = Mathf.Repeat(gap + 180f, 360f) - 180f; // una vuelta entera (Spin) sí cierra
+                if (Mathf.Abs(gap) > 1e-3f)
+                {
+                    log.Add("AVISO " + p.id + " " + clip.archivo + " " + curve.ruta + " " + curve.propiedad + ": el bucle no cierra (" + first + " → " + last + ")");
+                }
+            }
         }
     }
 
     /// <summary>AnimationCurve con tangentes ClampedAuto, como en BuildRigs.</summary>
-    private static AnimationCurve Build(List<Vector2> keys)
+    private static AnimationCurve Build(float[][] keys)
     {
-        var frames = new Keyframe[keys.Count];
-        for (var i = 0; i < keys.Count; i++) frames[i] = new Keyframe(keys[i].x, keys[i].y);
+        var frames = new Keyframe[keys.Length];
+        for (var i = 0; i < keys.Length; i++) frames[i] = new Keyframe(keys[i][0], keys[i][1]);
         var curve = new AnimationCurve(frames);
         for (var i = 0; i < curve.length; i++)
         {
@@ -1541,21 +1811,9 @@ public static class ClaudeBuildRigsFinal
         return curve;
     }
 
-    private static void WriteSpecs(string folder, List<Spec> specs, List<string> log, string who)
+    private static bool WriteClip(string folder, ClipDef def, List<string> log)
     {
-        var written = 0;
-        foreach (var spec in specs)
-        {
-            foreach (var warning in spec.Finish()) log.Add("AVISO " + who + ": " + warning);
-            if (WriteClip(folder, spec, log)) written++;
-        }
-
-        log.Add(who + ": " + written + "/" + specs.Count + " clips reescritos en " + folder);
-    }
-
-    private static bool WriteClip(string folder, Spec spec, List<string> log)
-    {
-        var path = folder + "/" + spec.File + ".anim";
+        var path = folder + "/" + def.archivo + ".anim";
         var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
         if (clip == null)
         {
@@ -1568,534 +1826,21 @@ public static class ClaudeBuildRigsFinal
         var settings = AnimationUtility.GetAnimationClipSettings(clip);
         clip.ClearCurves();
         clip.frameRate = frameRate > 0f ? frameRate : Fps;
-        foreach (var c in spec.Curves)
+        foreach (var c in def.curvas)
         {
-            var binding = EditorCurveBinding.FloatCurve(c.Path, c.BindingType, c.Prop);
-            AnimationUtility.SetEditorCurve(clip, binding, Build(c.Keys));
+            var binding = EditorCurveBinding.FloatCurve(c.ruta, BindingType(c), c.propiedad);
+            AnimationUtility.SetEditorCurve(clip, binding, Build(c.claves));
         }
 
-        if (settings.loopTime != spec.Loop)
+        if (settings.loopTime != def.bucle)
         {
-            log.Add("AVISO " + spec.File + ": loopTime del asset (" + settings.loopTime + ") difiere del diseñado (" + spec.Loop + "); se conserva el del asset");
+            log.Add("AVISO " + def.archivo + ": loopTime del asset (" + settings.loopTime + ") difiere del diseñado (" + def.bucle + "); se conserva el del asset");
         }
 
-        settings.stopTime = spec.Length; // loopTime, eventos y fotogramas por segundo se conservan
+        settings.stopTime = def.duracion; // loopTime, eventos y fotogramas por segundo se conservan
         AnimationUtility.SetAnimationClipSettings(clip, settings);
         AnimationUtility.SetAnimationEvents(clip, events);
         EditorUtility.SetDirty(clip);
         return true;
-    }
-
-    // ---------------------------------------------------------------- la familia: 21 clips
-
-    private static Dictionary<string, float> HumanRest(Ctx x)
-    {
-        // La pose de reposo de cada hueso: los hombros y las piernas en cero (el arte provisional se
-        // ve igual que antes) y los codos con una flexión leve hacia arriba, propia de cada personaje.
-        return new Dictionary<string, float>
-        {
-            { C, 0f }, { T, 0f }, { LA, 0f }, { RA, 0f }, { LE, -x.ElbowRest }, { RE, x.ElbowRest },
-            { LL, 0f }, { RL, 0f }, { LK, 0f }, { RK, 0f }, { NK, 0f }, { HD, 0f },
-        };
-    }
-
-    private static Spec NewSpec(Ctx x, string action, string file, float baseLength, bool loop = true)
-    {
-        return new Spec(action, "char_" + x.Id + "_anim_" + file, baseLength, x.K, loop, HumanRest(x), BonesFamily);
-    }
-
-    /// <summary>La cabeza sigue al cuerpo con 2 y 4 cuadros de retraso: el movimiento secundario.</summary>
-    private static void HeadLags(Spec s, string srcPath, string srcProp, float neckGain, float headGain, float bias = 0f)
-    {
-        s.Follow(srcPath, srcProp, NK, 2, neckGain, bias);
-        s.Follow(srcPath, srcProp, HD, 4, headGain, bias);
-    }
-
-    /// <summary>
-    /// Agacharse a una profundidad. Devuelve la bajada efectiva del tronco (unidades del lienzo) para
-    /// que el clip baje Tronco lo mismo. «tw» son pares (tiempo base, peso 0..1).
-    /// No segmentado: las piernas bajan y se acortan con escala Y (el truco de BuildRigs), con el
-    /// muslo abierto «thighFlat» grados. Segmentado: el muslo se abre «thighSeg» grados, la
-    /// pantorrilla vuelve hacia dentro «kneeRatio» veces eso y se acorta con escala Y de la rodilla
-    /// lo justo para que el pie siga en el suelo; si hiciera falta menos de 0,4 se baja menos.
-    /// </summary>
-    private static float Crouch(Ctx x, Spec s, float depthFrac, float thighFlat, float thighSeg, float kneeRatio, params float[] tw)
-    {
-        const float minShin = 0.4f;
-        var depth = depthFrac * x.Leg;
-        if (x.Segmented)
-        {
-            var a = thighSeg * Mathf.Deg2Rad;
-            var net = (thighSeg - thighSeg * kneeRatio) * Mathf.Deg2Rad;
-            depth = Mathf.Max(0f, Mathf.Min(depth, x.Leg - x.Thigh * Mathf.Cos(a) - minShin * x.Shin * Mathf.Cos(net)));
-        }
-
-        for (var i = 0; i + 1 < tw.Length; i += 2)
-        {
-            var t = tw[i];
-            var w = tw[i + 1];
-            var d = depth * w;
-            s.Raw(LL, PosY, t, -d);
-            s.Raw(RL, PosY, t, -d);
-            if (!x.Segmented)
-            {
-                var ratio = (x.Leg - d) / x.Leg;
-                s.Raw(LL, ScaleY, t, ratio);
-                s.Raw(RL, ScaleY, t, ratio);
-                if (thighFlat > 0f) s.Sym(LL, RL, t, thighFlat * w);
-            }
-            else
-            {
-                var open = thighSeg * w;
-                var back = open * kneeRatio;
-                var cosOpen = Mathf.Cos(open * Mathf.Deg2Rad);
-                var cosNet = Mathf.Cos((open - back) * Mathf.Deg2Rad);
-                var shin = Mathf.Clamp((x.Leg - d - x.Thigh * cosOpen) / (x.Shin * cosNet), minShin, 1f);
-                s.Sym(LL, RL, t, open);
-                s.Sym(LK, RK, t, -back);
-                s.Raw(LK, ScaleY, t, shin);
-                s.Raw(RK, ScaleY, t, shin);
-            }
-        }
-
-        return depth;
-    }
-
-    private static List<Spec> HumanClips(Ctx x)
-    {
-        var list = new List<Spec>
-        {
-            Idle(x), Walk(x, "Walk", "caminar", 0.8f, x.A, 8f * x.A, -4f * x.A, 1.5f * x.A, 10f, 20f, 0.015f * x.A),
-            Walk(x, "Run", "correr", 0.5f, 1.6f * x.A, 20f * x.A, -6.5f * x.A, 2f * x.A, 50f, 70f, 0.04f * x.A),
-            Talk(x), Strike(x), Hammer(x), Blow(x), PickUp(x), Kneel(x), Carry(x), Push(x), Point(x), Observe(x),
-            Celebrate(x), Encourage(x), Hug(x), Surprise(x), Sleep(x),
-        };
-        AddVisibility(x, list);
-        return list;
-    }
-
-    /// <summary>Respiración de 3,2 s: pecho y hombros suben al inspirar, el peso pasa de una pierna a otra, la cabeza llega tarde.</summary>
-    private static Spec Idle(Ctx x)
-    {
-        var a = x.A;
-        var s = NewSpec(x, "Idle", "idle", 3.2f);
-        s.Vol(0, 1f, 1.28f, 1f + 0.010f * a, 3.2f, 1f);
-        s.Rot(T, 0, 0, 0.8f, 0.8f * a, 1.6f, 0, 2.4f, -0.8f * a, 3.2f, 0);
-        s.Sym(LA, RA, 0, 0, 1.28f, 1.5f * a, 3.2f, 0);
-        s.Sym(LE, RE, 0, 0, 1.28f, 1.0f * a, 3.2f, 0);
-        s.Sym(LL, RL, 0, 0, 0.8f, 0.6f * a, 1.6f, 0, 2.4f, -0.6f * a, 3.2f, 0);
-        s.Rot(NK, 0, 0, 1.0f, 0.9f, 2.2f, -0.6f, 3.2f, 0);
-        s.Follow(NK, RotZ, HD, 3, 1.2f);
-        return s;
-    }
-
-    /// <summary>
-    /// Caminar y correr (misma estructura que BuildRigs, con inclinación, rebote, codos, rodillas y cabeza).
-    /// Los pasos alternan: la pierna izquierda sube en 0,25·p y la derecha en 0,75·p.
-    /// </summary>
-    private static Spec Walk(Ctx x, string action, string file, float p, float amp, float armSwing, float lean, float sway, float flexLo, float flexHi, float squash)
-    {
-        var lift = 0.14f * x.Leg * amp;
-        var mid = 0.5f * (flexLo + flexHi);
-        var s = NewSpec(x, action, file, p);
-        s.Raw(LL, PosY, 0, 0, 0.25f * p, lift, 0.5f * p, 0, p, 0);
-        s.Raw(RL, PosY, 0, 0, 0.5f * p, 0, 0.75f * p, lift, p, 0);
-        s.Rot(LL, 0, 0, 0.25f * p, -4f * amp, 0.5f * p, 0, p, 0);
-        s.Rot(RL, 0, 0, 0.5f * p, 0, 0.75f * p, 4f * amp, p, 0);
-        // La rodilla del pie que vuela se dobla un poco hacia dentro (+ en Izq, − en Der).
-        s.Rot(LK, 0, 0, 0.25f * p, 6f * amp, 0.5f * p, 0, p, 0);
-        s.Rot(RK, 0, 0, 0.5f * p, 0, 0.75f * p, -6f * amp, p, 0);
-        if (x.Segmented)
-        {
-            s.Raw(LK, ScaleY, 0, 1, 0.25f * p, 0.9f, 0.5f * p, 1, p, 1);
-            s.Raw(RK, ScaleY, 0, 1, 0.5f * p, 1, 0.75f * p, 0.9f, p, 1);
-        }
-
-        s.Raw(C, PosY, 0, 0, 0.25f * p, 10f * amp, 0.5f * p, 0, 0.75f * p, 10f * amp, p, 0);
-        s.Rot(C, 0, lean, 0.25f * p, lean - sway, 0.5f * p, lean, 0.75f * p, lean + sway, p, lean);
-        s.Vol(0, 1f - squash, 0.25f * p, 1f + 0.7f * squash, 0.5f * p, 1f - squash, 0.75f * p, 1f + 0.7f * squash, p, 1f - squash);
-        s.Rot(T, 0, 0, 0.25f * p, 1.2f * amp, 0.5f * p, 0, 0.75f * p, -1.2f * amp, p, 0);
-        s.Rot(LA, 0, 0, 0.25f * p, armSwing, 0.5f * p, 0, 0.75f * p, -armSwing, p, 0);
-        s.Rot(RA, 0, 0, 0.25f * p, armSwing, 0.5f * p, 0, 0.75f * p, -armSwing, p, 0);
-        s.Rot(LE, 0, -mid, 0.25f * p, -flexHi, 0.5f * p, -mid, 0.75f * p, -flexLo, p, -mid);
-        s.Rot(RE, 0, mid, 0.25f * p, flexLo, 0.5f * p, mid, 0.75f * p, flexHi, p, mid);
-        HeadLags(s, C, RotZ, -0.35f, -0.2f);
-        return s;
-    }
-
-    private static Spec Talk(Ctx x)
-    {
-        var a = x.A;
-        var s = NewSpec(x, "Talk", "hablar", 1.6f);
-        s.Vol(0, 1f, 0.4f, 1.012f, 0.8f, 1f, 1.2f, 1.012f, 1.6f, 1f);
-        s.Rot(C, 0, 0, 0.8f, 1.5f, 1.6f, 0);
-        s.Rot(T, 0, 0, 0.4f, 1f, 0.8f, -1f, 1.2f, 1f, 1.6f, 0);
-        s.Rot(RA, 0, 0, 0.4f, 28f * a, 0.8f, 18f * a, 1.2f, 30f * a, 1.6f, 0);
-        s.Rot(RE, 0, 0, 0.4f, 22f * a, 0.8f, 12f * a, 1.2f, 26f * a, 1.6f, 0);
-        s.Rot(LA, 0, 0, 0.8f, -5f * a, 1.6f, 0);
-        s.Rot(LE, 0, 0, 0.8f, -6f * a, 1.6f, 0);
-        s.Sym(LL, RL, 0, 0, 0.8f, 0.8f * a, 1.6f, 0);
-        // Los cabeceos van con cada gesto de la mano.
-        s.Rot(NK, 0, 0, 0.4f, -2.5f * a, 0.6f, 0.5f, 1.2f, -2.8f * a, 1.4f, 0.5f, 1.6f, 0);
-        s.Follow(NK, RotZ, HD, 3, 1f);
-        return s;
-    }
-
-    /// <summary>Golpear piedras delante del pecho: se abren (anticipación), chocan, rebotan (0,6 s).</summary>
-    private static Spec Strike(Ctx x)
-    {
-        var s = NewSpec(x, "Strike", "golpear", 0.6f);
-        // LA + cierra el brazo contra el pecho; 16–22 es la anticipación (las piedras se separan) y 62 el choque.
-        s.Rot(LA, 0, 40f, 0.14f, 22f, 0.21f, 12f, 0.30f, 62f, 0.36f, 52f, 0.46f, 42f, 0.6f, 40f);
-        s.Rot(RA, 0, -40f, 0.14f, -22f, 0.21f, -12f, 0.30f, -62f, 0.36f, -52f, 0.46f, -42f, 0.6f, -40f);
-        s.Sym(LE, RE, 0, -12f, 0.21f, -30f, 0.30f, -8f, 0.36f, -14f, 0.6f, -12f); // pliegue hacia dentro, más al armar el golpe
-        s.Raw(T, PosY, 0, 0, 0.21f, 5f, 0.30f, -8f, 0.38f, -3f, 0.6f, 0);
-        s.Vol(0, 1f, 0.21f, 1.025f, 0.30f, 0.965f, 0.38f, 1.01f, 0.6f, 1f);
-        s.Rot(C, 0, 0, 0.21f, 1.2f, 0.30f, -1.5f, 0.6f, 0);
-        s.Follow(T, PosY, NK, 2, 0.25f);
-        s.Follow(T, PosY, HD, 4, 0.15f);
-        return s;
-    }
-
-    /// <summary>Martillar: retroceso, brazo arriba, golpe y asentamiento (0,7 s).</summary>
-    private static Spec Hammer(Ctx x)
-    {
-        var s = NewSpec(x, "Hammer", "martillar", 0.7f);
-        s.Rot(RA, 0, 0, 0.08f, -8f, 0.30f, 125f, 0.45f, 112f, 0.55f, -15f, 0.60f, -8f, 0.65f, 5f, 0.7f, 0);
-        s.Rot(RE, 0, 6f, 0.08f, 14f, 0.30f, 70f, 0.45f, 72f, 0.55f, 4f, 0.60f, 10f, 0.65f, 14f, 0.7f, 6f);
-        s.Rot(LA, 0, 20f, 0.30f, 24f, 0.55f, 28f, 0.65f, 21f, 0.7f, 20f);
-        s.Rot(LE, 0, 14f, 0.55f, 20f, 0.7f, 14f);
-        s.Rot(C, 0, 0, 0.30f, 1.5f, 0.55f, -3f, 0.65f, 0.6f, 0.7f, 0);
-        s.Vol(0, 1f, 0.30f, 1.03f, 0.55f, 0.955f, 0.62f, 1.012f, 0.7f, 1f);
-        s.Raw(T, PosY, 0, 0, 0.08f, 2f, 0.30f, 5f, 0.55f, -6f, 0.62f, -1f, 0.7f, 0);
-        HeadLags(s, C, RotZ, -0.5f, -0.3f);
-        return s;
-    }
-
-    /// <summary>Soplar agachado sobre el montón (0,9 s).</summary>
-    private static Spec Blow(Ctx x)
-    {
-        var s = NewSpec(x, "Blow", "soplar", 0.9f);
-        var d = Crouch(x, s, 0.3f, 0f, 8f, 1.5f, 0, 1, 0.9f, 1);
-        s.Raw(T, PosY, 0, -d, 0.9f, -d);
-        s.Vol(0, 1f, 0.45f, 0.95f, 0.9f, 1f);
-        s.Rot(LA, 0, 35f, 0.9f, 35f);
-        s.Rot(RA, 0, -35f, 0.9f, -35f);
-        s.Sym(LE, RE, 0, -25f, 0.45f, -35f, 0.9f, -25f);
-        s.Rot(T, 0, 0, 0.45f, 1.5f, 0.9f, 0);
-        s.Rot(NK, 0, 2f, 0.2f, 5f, 0.45f, -3f, 0.9f, 2f); // inspira con la cabeza atrás, sopla hacia abajo
-        s.Follow(NK, RotZ, HD, 3, 1f);
-        return s;
-    }
-
-    /// <summary>Recoger: un respingo de anticipación, se agacha, alcanza, se levanta con lo recogido (1,4 s).</summary>
-    private static Spec PickUp(Ctx x)
-    {
-        var s = NewSpec(x, "PickUp", "recoger", 1.4f);
-        var d = Crouch(x, s, 0.35f, 0f, 10f, 1.6f, 0, 0, 0.4f, 1, 0.7f, 1, 1.1f, 0, 1.4f, 0);
-        s.Raw(T, PosY, 0, 0, 0.1f, 4f, 0.4f, -d, 0.7f, -d, 1.1f, 3f, 1.25f, 0, 1.4f, 0);
-        s.Rot(RA, 0, 0, 0.1f, 8f, 0.4f, -25f, 0.7f, -25f, 1.1f, 40f, 1.2f, 44f, 1.4f, 0);
-        s.Rot(LA, 0, 0, 0.1f, -4f, 0.4f, 20f, 0.7f, 20f, 1.1f, -10f, 1.4f, 0);
-        s.Rot(RE, 0, 0, 0.4f, 22f, 0.7f, 22f, 1.1f, 45f, 1.4f, 0);
-        s.Rot(LE, 0, 0, 0.4f, 12f, 0.7f, 12f, 1.1f, -8f, 1.4f, 0);
-        s.Vol(0, 1f, 0.1f, 1.02f, 0.4f, 0.965f, 0.7f, 0.97f, 1.1f, 1.04f, 1.25f, 1.01f, 1.4f, 1f);
-        s.Rot(NK, 0, 0, 0.4f, 5f, 0.7f, 5f, 1.1f, -2f, 1.4f, 0);
-        s.Follow(NK, RotZ, HD, 3, 1f);
-        return s;
-    }
-
-    /// <summary>Arrodillado: la cadera baja y las rodillas se abren; de frente es lo que se lee como «de rodillas».</summary>
-    private static Spec Kneel(Ctx x)
-    {
-        var s = NewSpec(x, "Kneel", "arrodillarse", 3f);
-        var d = Crouch(x, s, 0.62f, 14f, 14f, 2.2f, 0, 1, 3, 1);
-        s.Raw(T, PosY, 0, -d, 3, -d);
-        s.Vol(0, 1f, 1.5f, 1.008f, 3f, 1f);
-        s.Sym(LA, RA, 0, -22f, 3, -22f);
-        s.Sym(LE, RE, 0, -15f, 1.5f, -18f, 3, -15f);
-        s.Rot(T, 0, 0, 1.5f, 0.8f, 3, 0);
-        s.Rot(NK, 0, 3f, 1.5f, 4.5f, 3, 3f);
-        s.Follow(NK, RotZ, HD, 4, 1f);
-        return s;
-    }
-
-    /// <summary>Cargar: el paso de caminar con los brazos en V sobre los hombros (no rectos: quedarían tras la cabeza).</summary>
-    private static Spec Carry(Ctx x)
-    {
-        var a = x.A;
-        var s = Walk(x, "Carry", "cargar", 0.95f, 0.8f * a, 0f, -2f * a, 1.2f * a, 0f, 0f, 0.01f * a);
-        s.Drop(LA, RotZ).Drop(RA, RotZ).Drop(LE, RotZ).Drop(RE, RotZ);
-        s.Sym(LA, RA, 0, 118f, 0.475f, 114f, 0.95f, 118f);
-        s.Sym(LE, RE, 0, 14f, 0.475f, 20f, 0.95f, 14f); // codos algo flexionados: sostienen el peso
-        return s;
-    }
-
-    /// <summary>Empujar: inclinado, las dos manos juntas delante, y el paso.</summary>
-    private static Spec Push(Ctx x)
-    {
-        var a = x.A;
-        var s = Walk(x, "Push", "empujar", 0.9f, 0.8f * a, 0f, 0f, 0f, 0f, 0f, 0.01f * a);
-        s.Drop(LA, RotZ).Drop(RA, RotZ).Drop(LE, RotZ).Drop(RE, RotZ).Drop(C, RotZ);
-        s.Sym(LA, RA, 0, -60f, 0.9f, -60f); // contra el pecho
-        s.Sym(LE, RE, 0, -22f, 0.45f, -26f, 0.9f, -22f);
-        s.Rot(C, 0, -4f, 0.45f, -5f, 0.9f, -4f);
-        HeadLags(s, C, RotZ, -0.35f, -0.2f);
-        return s;
-    }
-
-    /// <summary>Señalar: el brazo casi horizontal hacia lo que tiene delante; en diagonal parecía saludar.</summary>
-    private static Spec Point(Ctx x)
-    {
-        var s = NewSpec(x, "Point", "senalar", 1.2f);
-        s.Rot(RA, 0, 42f, 0.3f, 48f, 0.6f, 40f, 0.9f, 45f, 1.2f, 42f);
-        s.Rot(RE, 0, 6f, 0.3f, 2f, 0.6f, 8f, 0.9f, 3f, 1.2f, 6f); // el codo se extiende al señalar
-        s.Rot(LA, 0, 2f, 0.6f, 5f, 1.2f, 2f);
-        s.Rot(LE, 0, -3f, 0.6f, -5f, 1.2f, -3f);
-        s.Rot(C, 0, -3f, 0.6f, -3.5f, 1.2f, -3f);
-        s.Rot(T, 0, -1.2f, 0.6f, -1.5f, 1.2f, -1.2f);
-        s.Vol(0, 1f, 0.6f, 1.006f, 1.2f, 1f);
-        s.Rot(NK, 0, -2.5f, 0.6f, -3.2f, 1.2f, -2.5f);
-        s.Follow(NK, RotZ, HD, 3, 1f);
-        return s;
-    }
-
-    /// <summary>Observar: manos a la cintura y el cuerpo inclinado, mirando a un lado y a otro (2 s).</summary>
-    private static Spec Observe(Ctx x)
-    {
-        var a = x.A;
-        var s = NewSpec(x, "Observe", "observar", 2f);
-        s.Rot(C, 0, 5f, 1f, 8f, 2f, 5f);
-        s.Sym(LA, RA, 0, -34f, 2, -34f);
-        s.Sym(LE, RE, 0, -40f, 1f, -46f, 2, -40f); // pliegue hacia dentro: las manos a la cintura
-        s.Vol(0, 1f, 1f, 1.008f, 2f, 1f);
-        s.Rot(T, 0, 0, 1f, -1.2f * a, 2f, 0);
-        s.Sym(LL, RL, 0, 0, 1f, 1.2f * a, 2f, 0);
-        s.Rot(NK, 0, 0, 0.5f, -6f, 1f, 0, 1.5f, 6f, 2f, 0);
-        s.Follow(NK, RotZ, HD, 4, 1f);
-        return s;
-    }
-
-    /// <summary>Celebrar sin despegar los pies: brazos arriba y rebote de squash &amp; stretch (§13.2 ≤ 15 %).</summary>
-    private static Spec Celebrate(Ctx x)
-    {
-        var a = x.A;
-        var b = 0.06f * a;
-        var s = NewSpec(x, "Celebrate", "celebrar", 1.2f);
-        s.Sym(LA, RA, 0, 104f, 0.3f, 86f, 0.6f, 104f, 0.9f, 86f, 1.2f, 104f);
-        s.Sym(LE, RE, 0, 10f, 0.3f, 32f, 0.6f, 10f, 0.9f, 32f, 1.2f, 10f); // con los brazos abajo, los codos se flexionan
-        s.Vol(0, 1f, 0.15f, 1f - b, 0.3f, 1f + b, 0.6f, 1f, 0.75f, 1f - b, 0.9f, 1f + b, 1.2f, 1f);
-        s.Rot(C, 0, 0, 0.3f, 1.5f, 0.6f, 0, 0.9f, -1.5f, 1.2f, 0);
-        s.Rot(T, 0, 0, 0.3f, -2f, 0.6f, 0, 0.9f, 2f, 1.2f, 0);
-        s.Sym(LL, RL, 0, 0, 0.15f, 3f * a, 0.3f, 0, 0.6f, 0, 0.75f, 3f * a, 0.9f, 0, 1.2f, 0);
-        s.Sym(LK, RK, 0, 0, 0.15f, -5f * a, 0.3f, 0, 0.6f, 0, 0.75f, -5f * a, 0.9f, 0, 1.2f, 0);
-        s.Rot(NK, 0, 0, 0.3f, 4f, 0.6f, 0, 0.9f, -4f, 1.2f, 0);
-        s.Follow(NK, RotZ, HD, 3, 1.2f);
-        return s;
-    }
-
-    /// <summary>Ánimo: puño arriba con un bombeo; nunca un gesto de desánimo (§7.3, CP-02).</summary>
-    private static Spec Encourage(Ctx x)
-    {
-        var s = NewSpec(x, "Encourage", "animo", 0.9f);
-        s.Rot(RA, 0, 110f, 0.2f, 95f, 0.45f, 128f, 0.6f, 120f, 0.9f, 110f);
-        s.Rot(RE, 0, 40f, 0.2f, 70f, 0.45f, 25f, 0.6f, 35f, 0.9f, 40f); // se arma y se extiende al bombear
-        s.Rot(LA, 0, 3f, 0.45f, 8f, 0.9f, 3f);
-        s.Rot(LE, 0, -4f, 0.45f, -8f, 0.9f, -4f);
-        s.Vol(0, 1f, 0.2f, 0.97f, 0.45f, 1.04f, 0.6f, 1f, 0.9f, 1f);
-        s.Rot(C, 0, 0, 0.45f, -1.5f, 0.9f, 0);
-        s.Rot(NK, 0, 0, 0.2f, -1.5f, 0.45f, 3f, 0.9f, 0);
-        s.Follow(NK, RotZ, HD, 3, 1.1f);
-        return s;
-    }
-
-    /// <summary>Abrazar: brazos abiertos a la altura del pecho, meciéndose. Cerrarlos hacia dentro los escondía tras el torso.</summary>
-    private static Spec Hug(Ctx x)
-    {
-        var s = NewSpec(x, "Hug", "abrazar", 2f);
-        s.Sym(LA, RA, 0, 58f, 1f, 50f, 2f, 58f);
-        s.Sym(LE, RE, 0, 38f, 1f, 30f, 2f, 38f); // codos muy flexionados
-        s.Rot(C, 0, -2.5f, 1f, 2.5f, 2f, -2.5f);
-        s.Vol(0, 1f, 1f, 0.985f, 2f, 1f);
-        s.Rot(T, 0, 0, 1f, -1f, 2f, 0);
-        HeadLags(s, C, RotZ, -1f, -0.5f); // la cabeza se inclina al lado contrario del mecido
-        return s;
-    }
-
-    /// <summary>Sorpresa: pose sostenida con un temblor leve; el sobresalto lo da el fundido de entrada.</summary>
-    private static Spec Surprise(Ctx x)
-    {
-        var s = NewSpec(x, "Surprise", "sorpresa", 1f);
-        s.Sym(LA, RA, 0, 35f, 0.25f, 37.5f, 0.5f, 35f, 0.75f, 37.5f, 1f, 35f);
-        s.Sym(LE, RE, 0, 12f, 0.5f, 16f, 1f, 12f);
-        s.Vol(0, 1.03f, 0.5f, 1.04f, 1f, 1.03f);
-        s.Sym(LL, RL, 0, 2.5f, 0.5f, 3f, 1f, 2.5f);
-        s.Sym(LK, RK, 0, -3f, 0.5f, -3.5f, 1f, -3f);
-        s.Rot(T, 0, 0, 0.5f, -0.6f, 1f, 0);
-        s.Rot(NK, 0, -3f, 0.5f, -4f, 1f, -3f); // la cabeza hacia atrás
-        s.Follow(NK, RotZ, HD, 3, 1f);
-        return s;
-    }
-
-    /// <summary>
-    /// Dormir: sentado casi en el suelo, recostado de lado y respirando despacio (4 s). Tumbado del
-    /// todo, con los ojos abiertos del sprite, se leería como caído (CP-02).
-    /// </summary>
-    private static Spec Sleep(Ctx x)
-    {
-        var s = NewSpec(x, "Sleep", "dormir", 4f);
-        var d = Crouch(x, s, 0.66f, 16f, 16f, 2.0f, 0, 1, 4, 1);
-        s.Raw(T, PosY, 0, -d, 4, -d);
-        s.Rot(T, 0, 16f, 2f, 17.5f, 4, 16f);
-        s.Vol(0, 1f, 2f, 1.025f, 4f, 1f);
-        s.Rot(LA, 0, 12f, 4, 12f);
-        s.Rot(RA, 0, -38f, 4, -38f);
-        s.Rot(LE, 0, 10f, 2f, 12f, 4, 10f); // los brazos descansan: pliegue hacia dentro
-        s.Rot(RE, 0, -28f, 2f, -30f, 4, -28f);
-        s.Rot(NK, 0, 8f, 2f, 9.5f, 4, 8f); // la cabeza cae hacia el lado del recostado
-        s.Follow(NK, RotZ, HD, 4, 1f);
-        return s;
-    }
-
-    /// <summary>Oculto, aparecer y apagarse: alfa del lienzo y escala del cuerpo. Parpadeos lentos (RNF-21).</summary>
-    private static void AddVisibility(Ctx x, List<Spec> list)
-    {
-        var a = x.A;
-        list.Add(NewSpec(x, "Hidden", "oculto", 1f).Raw("Lienzo", Alpha, 0, 0f, 1, 0f));
-
-        // Aparecer: la escala sube con estiramiento (Y se pasa y X se afloja) y asienta con un
-        // bamboleo amortiguado del cuerpo, los brazos y la cabeza.
-        var appear = NewSpec(x, "Appear", "aparicion", 1f, false);
-        appear.Raw("Lienzo", Alpha, 0, 0f, 0.5f, 1f, 1, 1f);
-        appear.Raw(C, ScaleY, 0, 0.3f, 0.6f, 1.08f, 0.8f, 0.96f, 1, 1f);
-        appear.Raw(C, ScaleX, 0, 0.3f, 0.6f, 0.98f, 0.8f, 1.04f, 1, 1f);
-        appear.Rot(C, 0, 0, 0.65f, -2.5f * a, 0.8f, 1.8f * a, 0.92f, -0.7f * a, 1, 0);
-        appear.Sym(LA, RA, 0, 0, 0.7f, 6f, 0.85f, -2f, 1, 0);
-        HeadLags(appear, C, RotZ, -0.8f, -0.5f);
-        list.Add(appear);
-
-        list.Add(NewSpec(x, "Vanish", "apagado", 1.6f, false)
-            .Raw("Lienzo", Alpha, 0, 1f, 0.3f, 0.35f, 0.6f, 1f, 0.9f, 0.35f, 1.2f, 1f, 1.6f, 0f)
-            .Raw(C, ScaleX, 0, 1f, 1.2f, 1f, 1.6f, 0.6f)
-            .Raw(C, ScaleY, 0, 1f, 1.2f, 1f, 1.6f, 0.6f)
-            .Sym(LA, RA, 0, 0, 1.2f, 0, 1.6f, 10f));
-    }
-
-    // ---------------------------------------------------------------- Algoritm: 9 clips
-
-    private static Dictionary<string, float> GuideRest()
-    {
-        var rest = new Dictionary<string, float>();
-        foreach (var bone in BonesGuide) rest[bone] = 0f;
-        return rest;
-    }
-
-    private static Spec GuideSpec(string action, string file, float length, bool loop = true)
-    {
-        return new Spec(action, "char_algoritm_anim_" + file, length, 1f, loop, GuideRest(), BonesGuide);
-    }
-
-    /// <summary>
-    /// Los nueve clips del guía. Conservan la flotación senoidal, el giro de Spin sobre Cuerpo, el
-    /// alfa y los nombres de siempre; sobre eso, piernas que cuelgan y llegan tarde, brazos que
-    /// siguen al cuerpo y gestos en señalar, celebrar y ánimo. En hablar el gesto lo lleva el
-    /// tronco: Algoritm no tiene cuello. Con el sprite entero actual lo visible no cambia.
-    /// </summary>
-    private static List<Spec> GuideClips(Ctx x)
-    {
-        var list = new List<Spec>();
-
-        // Flota y se mece: ciclo de 2 s (§13.3).
-        var idle = GuideSpec("Idle", "flotar", 2f);
-        idle.Raw(C, PosY, 0, 0, 1, 24f, 2, 0).Rot(C, 0, -3f, 1, 3f, 2, -3f);
-        Dangle(idle, 12f);
-        list.Add(idle);
-
-        var talk = GuideSpec("Talk", "hablar", 1f);
-        talk.Raw(C, PosY, 0, 0, 0.5f, 18f, 1, 0)
-            .Raw(C, ScaleX, 0, 1f, 0.25f, 1.05f, 0.5f, 1f, 0.75f, 1.05f, 1, 1f)
-            .Raw(C, ScaleY, 0, 1f, 0.25f, 1.05f, 0.5f, 1f, 0.75f, 1.05f, 1, 1f)
-            .Rot(T, 0, 0, 0.25f, 2f, 0.5f, 0, 0.75f, -2f, 1, 0)
-            .Raw(T, ScaleY, 0, 1f, 0.25f, 1.03f, 0.5f, 1f, 0.75f, 1.03f, 1, 1f)
-            .Sym(LA, RA, 0, 0, 0.25f, 6f, 0.5f, 0, 0.75f, 6f, 1, 0)
-            .Sym(LE, RE, 0, 0, 0.25f, 8f, 0.5f, 0, 0.75f, 8f, 1, 0);
-        DangleLegs(talk, 9f);
-        list.Add(talk);
-
-        // Señala hacia la derecha de la pantalla: el brazo derecho casi horizontal (el cuerpo ya se inclina −10°).
-        var point = GuideSpec("Point", "senalar", 1.2f);
-        point.Rot(C, 0, -10f, 0.6f, -14f, 1.2f, -10f).Raw(C, PosY, 0, 10f, 0.6f, 24f, 1.2f, 10f)
-            .Rot(RA, 0, 60f, 0.6f, 56f, 1.2f, 60f)
-            .Rot(RE, 0, 3f, 0.6f, 6f, 1.2f, 3f)
-            .Rot(LA, 0, 4f, 0.6f, 8f, 1.2f, 4f)
-            .Rot(LE, 0, -4f, 0.6f, -6f, 1.2f, -4f);
-        DangleLegs(point, 17f);
-        point.Follow(C, RotZ, T, 2, 0.4f);
-        list.Add(point);
-
-        // Gira como un trompo feliz (§1.4.1): los brazos y las piernas salen despedidos.
-        var spin = GuideSpec("Spin", "girar", 1f);
-        spin.Rot(C, 0, 0f, 1, -360f).Raw(C, PosY, 0, 0, 0.5f, 20f, 1, 0)
-            .Sym(LA, RA, 0, 0, 0.15f, 35f, 0.85f, 35f, 1, 0)
-            .Sym(LE, RE, 0, 0, 0.2f, 10f, 0.8f, 10f, 1, 0)
-            .Sym(LL, RL, 0, 0, 0.15f, 18f, 0.85f, 18f, 1, 0)
-            .Sym(LK, RK, 0, 0, 0.2f, -8f, 0.8f, -8f, 1, 0);
-        list.Add(spin);
-
-        var celebrate = GuideSpec("Celebrate", "celebrar", 1.2f);
-        celebrate.Rot(C, 0, 0f, 1.2f, -360f)
-            .Raw(C, ScaleX, 0, 1f, 0.3f, 1.08f, 0.6f, 1f, 0.9f, 1.08f, 1.2f, 1f)
-            .Raw(C, ScaleY, 0, 1f, 0.3f, 1.08f, 0.6f, 1f, 0.9f, 1.08f, 1.2f, 1f)
-            .Sym(LA, RA, 0, 100f, 0.3f, 85f, 0.6f, 100f, 0.9f, 85f, 1.2f, 100f)
-            .Sym(LE, RE, 0, 12f, 0.3f, 30f, 0.6f, 12f, 0.9f, 30f, 1.2f, 12f)
-            .Sym(LL, RL, 0, 10f, 0.3f, 18f, 0.6f, 10f, 0.9f, 18f, 1.2f, 10f)
-            .Sym(LK, RK, 0, -6f, 0.3f, -14f, 0.6f, -6f, 0.9f, -14f, 1.2f, -6f)
-            .Rot(T, 0, 0, 0.3f, 2f, 0.6f, 0, 0.9f, -2f, 1.2f, 0);
-        list.Add(celebrate);
-
-        var encourage = GuideSpec("Encourage", "animo", 0.9f);
-        encourage.Raw(C, PosY, 0, 0, 0.45f, 30f, 0.9f, 0).Raw(C, ScaleY, 0, 1f, 0.45f, 1.06f, 0.9f, 1f)
-            .Rot(RA, 0, 100f, 0.2f, 88f, 0.45f, 122f, 0.6f, 114f, 0.9f, 100f)
-            .Rot(RE, 0, 40f, 0.2f, 64f, 0.45f, 24f, 0.6f, 34f, 0.9f, 40f)
-            .Rot(LA, 0, 4f, 0.45f, 10f, 0.9f, 4f)
-            .Rot(LE, 0, -4f, 0.45f, -8f, 0.9f, -4f);
-        DangleLegs(encourage, 15f);
-        list.Add(encourage);
-
-        list.Add(GuideSpec("Hidden", "oculto", 1f).Raw("Lienzo", Alpha, 0, 0f, 1, 0f));
-        var appear = GuideSpec("Appear", "aparicion", 1f, false);
-        appear.Raw("Lienzo", Alpha, 0, 0f, 0.5f, 1f, 1, 1f)
-            .Raw(C, ScaleX, 0, 0.3f, 0.7f, 1.06f, 1, 1f)
-            .Raw(C, ScaleY, 0, 0.3f, 0.7f, 1.06f, 1, 1f)
-            .Sym(LA, RA, 0, 0, 0.7f, 8f, 0.85f, -2f, 1, 0);
-        list.Add(appear);
-        list.Add(GuideSpec("Vanish", "apagado", 1.6f, false)
-            .Raw("Lienzo", Alpha, 0, 1f, 0.3f, 0.35f, 0.6f, 1f, 0.9f, 0.35f, 1.2f, 1f, 1.6f, 0f)
-            .Raw(C, ScaleX, 0, 1f, 1.2f, 1f, 1.6f, 0.6f)
-            .Raw(C, ScaleY, 0, 1f, 1.2f, 1f, 1.6f, 0.6f));
-        return list;
-    }
-
-    /// <summary>
-    /// Piernas que cuelgan: siguen la altura del cuerpo con 3 cuadros de retraso (juntas arriba,
-    /// abiertas abajo) y las rodillas devuelven lo que abre el muslo; los brazos suben un poco con
-    /// 4 cuadros de retraso, los codos siguen al brazo y el tronco, al giro del cuerpo. «mean» es la
-    /// altura media de la flotación.
-    /// </summary>
-    private static void Dangle(Spec s, float mean)
-    {
-        DangleLegs(s, mean);
-        s.Follow(C, PosY, LA, 4, -0.4f, mean);
-        s.Follow(C, PosY, RA, 4, 0.4f, mean);
-        s.Follow(LA, RotZ, LE, 3, 0.8f);
-        s.Follow(RA, RotZ, RE, 3, 0.8f);
-        s.Follow(C, RotZ, T, 2, 0.4f);
-    }
-
-    private static void DangleLegs(Spec s, float mean)
-    {
-        s.Follow(C, PosY, LL, 3, 0.5f, mean);
-        s.Follow(C, PosY, RL, 3, -0.5f, mean);
-        s.Follow(LL, RotZ, LK, 3, -0.8f);
-        s.Follow(RL, RotZ, RK, 3, -0.8f);
     }
 }

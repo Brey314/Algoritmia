@@ -13,6 +13,21 @@
 # Coordenadas: las de cut.py, en el lienzo de 1024 unidades con el origen arriba a la izquierda y
 # la y hacia ABAJO. La figura va de y = 77 (coronilla) a y = 947 (suelo).
 #
+# ARTE FINAL. Un personaje con arte final (hoy solo el Nino) NO sale de las formulas de este script —
+# esas son para el arte provisional—: sus piezas se miden sobre el alfa de los PNG y sus numeros viven
+# en ARTE_FINAL, que se vuelca tal cual. Sin esa entrada, regenerar la tabla pisaria las articulaciones
+# del Nino con las provisionales (cuello, codos y rodillas se recalcularian con la formula). Para
+# comprobar una entrada contra el arte: python3 pose_preview.py --mide nino.
+#
+# «orden_tronco»: el orden de dibujo (de atras adelante) de los hijos directos de Cuerpo/Tronco; lo
+# aplica BuildRigsFinal.cs.txt. En los prefabs los brazos van PRIMERO (BrazoIzq, BrazoDer, Torso,
+# Cuello), o sea detras del torso y de la cabeza, y se escondian. DECISION (05/10/2026): los brazos van
+# DELANTE solo en quien los tiene partidos (antebrazo con sprite y encendido: hoy el Nino) y en Algoritm,
+# donde la cara (Ojos, Boca) va ademas encima de todo. Papa, Mama y Nina, con arte provisional (un solo
+# sprite por brazo, con el arco del contorno del hombro y restos claros que el torso tapaba), llevan el
+# orden actual (brazos detras) y su coreografia mantiene los brazos fuera de la silueta del cuerpo y de la
+# cabeza; cuando llegue su arte final se cambian a brazos delante (ORDEN_TRONCO_FAMILIA).
+#
 # Por qué el JSON no lleva «segmentado»: se deduce del prefab. Un personaje está segmentado
 # cuando la Image de AntepiernaIzq tiene sprite y está encendida; guardarlo también en la tabla
 # sería una segunda fuente de verdad que se desincroniza al primer cambio de arte.
@@ -153,6 +168,64 @@ FAMILIA = [
 T = "Lienzo/Cuerpo/Tronco"
 C = "Lienzo/Cuerpo"
 
+ORDEN_TRONCO_FAMILIA = ["Torso", "Cuello", "BrazoIzq", "BrazoDer"]            # brazos delante (arte final, brazos partidos)
+ORDEN_TRONCO_PROVISIONAL = ["BrazoIzq", "BrazoDer", "Torso", "Cuello"]       # brazos detras (el orden de los prefabs)
+ORDEN_TRONCO = {"papa": ORDEN_TRONCO_PROVISIONAL, "mama": ORDEN_TRONCO_PROVISIONAL, "nina": ORDEN_TRONCO_PROVISIONAL,
+                "nino": ORDEN_TRONCO_FAMILIA}
+ORDEN_TRONCO_GUIA = ["Torso", "BrazoIzq", "BrazoDer", "Ojos", "Boca"]
+
+# Arte final del Nino (05/10/2026), medido sobre el alfa de las piezas de Assets/Game/Art/Characters/Boy.
+# Cada brazo es una capsula con el contorno cerrado en los dos extremos; el pivote del hombro es el
+# CENTRO del extremo redondo proximal del humero, y ese centro cae sobre la esquina superior del torso
+# (el torso mide x 451..575 de lado a lado y su hombro arranca en y = 557: izq (466, 560), der (556, 560)).
+# El codo es el centro del extremo distal del humero, y el antebrazo se coloca con el centro de su extremo
+# redondo proximal encima. Los rect conservan el tamano de los PNG (no se reescala ningun sprite):
+#   brazo_izq 156x105: extremo del hombro (126.6, 27.7), del codo (27.4, 77.3), radio 28.8
+#   brazo_der 167x99:  extremo del hombro (27.8, 28.3),  del codo (139.2, 73.3), radio 27.6
+#   antebrazo_izq 195x113: extremo del codo (171.2, 25.5) · antebrazo_der 197x100: extremo del codo (24.8, 24.5)
+# Antes (esquina del rect): hombros en (518, 539) y (507, 536), a 11 px uno del otro, o sea, en el centro
+# del pecho: dibujados delante del torso formaban un «yugo».
+# Rodillas: lo mismo. La antepierna es un tubo con la punta redonda arriba cuyo centro cae sobre el centro
+# del extremo inferior del muslo (izq: muslo (474.7, 841.0), antepierna (482.6, 844.6); der: (564.4, 834.0) y
+# (557.6, 842.4)); el pivote de la rodilla es el centro de la antepierna. Antes estaba en el borde del rect del
+# muslo (y = 876 y 869), 30 px por debajo de la articulacion: la antepierna giraba alrededor de un punto que
+# no es el suyo y se despegaba del muslo al doblar.
+# Ojos y boca (sin sprite aun): el ovalo de la cara va de x 100 a 455 y de y 270 (flequillo) a 450 (barbilla)
+# dentro de la cabeza (535x456 en (224, 77)); ojos y cejas (200x90, el 55 % del ancho de la cara) centrados en
+# (502, 425), boca (110x44) en (502, 490).
+ARTE_FINAL = {
+    "nino": {
+        "nodos": [
+            {"nombre": "CodoIzq", "tipo": "articulacion", "padre": T + "/BrazoIzq", "punto": [366, 609],
+             "imagen": "AntebrazoIzq", "sprite": "char_nino_parte_antebrazo_izq", "rect": [195, 584, 390, 697]},
+            {"nombre": "CodoDer", "tipo": "articulacion", "padre": T + "/BrazoDer", "punto": [667, 605],
+             "imagen": "AntebrazoDer", "sprite": "char_nino_parte_antebrazo_der", "rect": [642, 581, 839, 681]},
+            {"nombre": "RodillaIzq", "tipo": "articulacion", "padre": C + "/PiernaIzq", "punto": [483, 845],
+             "imagen": "AntepiernaIzq", "sprite": "char_nino_parte_antepierna_izq", "rect": [407, 813, 505, 947]},
+            {"nombre": "RodillaDer", "tipo": "articulacion", "padre": C + "/PiernaDer", "punto": [558, 842],
+             "imagen": "AntepiernaDer", "sprite": "char_nino_parte_antepierna_der", "rect": [535, 810, 640, 944]},
+            {"nombre": "Cuello", "tipo": "articulacion", "padre": T, "punto": [492, 533],
+             "imagen": "Cabeza", "sprite": "char_nino_parte_cabeza", "rect": [224, 77, 759, 533]},
+            {"nombre": "Ojos", "tipo": "imagen", "padre": T + "/Cuello/Cabeza", "punto": [502, 425],
+             "imagen": "Ojos", "sprite": "char_nino_ojos_neutra", "rect": [402, 380, 602, 470]},
+            {"nombre": "Boca", "tipo": "imagen", "padre": T + "/Cuello/Cabeza", "punto": [502, 490],
+             "imagen": "Boca", "sprite": "char_nino_boca_0", "rect": [447, 468, 557, 512]},
+        ],
+        "partes": [
+            {"nombre": "BrazoIzq", "ruta": T + "/BrazoIzq", "sprite": "char_nino_parte_brazo_izq",
+             "rect": [339, 532, 495, 637], "pivote": [466, 560]},
+            {"nombre": "BrazoDer", "ruta": T + "/BrazoDer", "sprite": "char_nino_parte_brazo_der",
+             "rect": [528, 532, 695, 631], "pivote": [556, 560]},
+            {"nombre": "PiernaIzq", "ruta": C + "/PiernaIzq", "sprite": "char_nino_parte_pierna_izq",
+             "rect": [438, 723, 511, 876], "pivote": [474, 723]},
+            {"nombre": "PiernaDer", "ruta": C + "/PiernaDer", "sprite": "char_nino_parte_pierna_der",
+             "rect": [522, 725, 596, 869], "pivote": [559, 725]},
+            {"nombre": "Torso", "ruta": T + "/Torso", "sprite": "char_nino_parte_torso",
+             "rect": [367, 527, 657, 799], "pivote": [512, 799]},
+        ],
+    },
+}
+
 
 def caja_de(rect):
     return [entero(rect[0]), entero(rect[1]), entero(rect[2]), entero(rect[3])]
@@ -233,9 +306,11 @@ def personaje_familia(pid, prefab, carpeta):
             "rect": rect_centrado(ox, oy, ow, oh),
         })
 
+    if pid in ARTE_FINAL:  # arte final: las medidas salen del alfa de las piezas, no de las formulas de arriba
+        nodos, partes = ARTE_FINAL[pid]["nodos"], ARTE_FINAL[pid]["partes"]
     return {
         "id": pid, "prefab": prefab, "carpeta": carpeta, "prefijo": pref, "guia": False,
-        "nodos": nodos, "partes": partes,
+        "orden_tronco": ORDEN_TRONCO[pid], "nodos": nodos, "partes": partes,
     }
 
 
@@ -348,7 +423,7 @@ def personaje_guia(forma, prefab):
 
     return {
         "id": "algoritm_" + forma, "prefab": prefab, "carpeta": "Algoritm", "prefijo": pref,
-        "guia": True, "nodos": nodos, "partes": [],
+        "guia": True, "orden_tronco": ORDEN_TRONCO_GUIA, "nodos": nodos, "partes": [],
     }
 
 
@@ -366,7 +441,7 @@ def compacto(valor, nivel=0):
                  for k, v in valor.items()]
         return "{\n" + ",\n".join(filas) + "\n" + sangria + "}"
     if isinstance(valor, list):
-        if all(isinstance(v, (int, float)) for v in valor):
+        if all(isinstance(v, (int, float, str)) for v in valor):
             return "[" + ", ".join(json.dumps(v) for v in valor) + "]"
         filas = ["%s  %s" % (sangria, compacto(v, nivel + 1)) for v in valor]
         return "[\n" + ",\n".join(filas) + "\n" + sangria + "]"
@@ -379,11 +454,15 @@ def main():
     # La nota va sin tildes ni eñes (y el volcado fuerza ASCII): el JSON debe ser ASCII puro.
     tabla = {
         "version": 1,
-        "nota": "Valores PROVISIONALES (articulaciones.py). Lienzo de 1024, origen arriba a la izquierda, "
+        "nota": "Valores PROVISIONALES salvo los del Nino (arte final: ARTE_FINAL en articulaciones.py). "
+                "Lienzo de 1024, origen arriba a la izquierda, "
                 "y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los "
                 "nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento "
                 "'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. "
-                "El estado 'segmentado' no se guarda: se deduce del prefab.",
+                "El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo "
+                "(de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: los brazos van DELANTE solo en quien "
+                "los tiene partidos (el Nino) y en Algoritm; Papa, Mama y Nina, con arte provisional de una pieza por "
+                "brazo, conservan el orden de los prefabs (brazos detras) hasta que llegue su arte final.",
         "personajes": personajes,
     }
     with open(SALIDA, "w", encoding="utf-8", newline="\n") as f:

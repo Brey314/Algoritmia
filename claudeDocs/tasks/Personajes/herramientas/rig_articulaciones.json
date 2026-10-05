@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "nota": "Valores PROVISIONALES (articulaciones.py). Lienzo de 1024, origen arriba a la izquierda, y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento 'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. El estado 'segmentado' no se guarda: se deduce del prefab.",
+  "nota": "Valores PROVISIONALES salvo los del Nino (arte final: ARTE_FINAL en articulaciones.py). Lienzo de 1024, origen arriba a la izquierda, y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento 'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo (de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: los brazos van DELANTE solo en quien los tiene partidos (el Nino) y en Algoritm; Papa, Mama y Nina, con arte provisional de una pieza por brazo, conservan el orden de los prefabs (brazos detras) hasta que llegue su arte final.",
   "personajes": [
     {
       "id": "papa",
@@ -8,6 +8,7 @@
       "carpeta": "Father",
       "prefijo": "char_papa",
       "guia": false,
+      "orden_tronco": ["BrazoIzq", "BrazoDer", "Torso", "Cuello"],
       "nodos": [
         {
           "nombre": "CodoIzq",
@@ -117,6 +118,7 @@
       "carpeta": "Mother",
       "prefijo": "char_mama",
       "guia": false,
+      "orden_tronco": ["BrazoIzq", "BrazoDer", "Torso", "Cuello"],
       "nodos": [
         {
           "nombre": "CodoIzq",
@@ -226,6 +228,7 @@
       "carpeta": "Girl",
       "prefijo": "char_nina",
       "guia": false,
+      "orden_tronco": ["BrazoIzq", "BrazoDer", "Torso", "Cuello"],
       "nodos": [
         {
           "nombre": "CodoIzq",
@@ -335,30 +338,31 @@
       "carpeta": "Boy",
       "prefijo": "char_nino",
       "guia": false,
+      "orden_tronco": ["Torso", "Cuello", "BrazoIzq", "BrazoDer"],
       "nodos": [
         {
           "nombre": "CodoIzq",
           "tipo": "articulacion",
           "padre": "Lienzo/Cuerpo/Tronco/BrazoIzq",
-          "punto": [362, 644],
+          "punto": [366, 609],
           "imagen": "AntebrazoIzq",
           "sprite": "char_nino_parte_antebrazo_izq",
-          "rect": [215, 595, 410, 708]
+          "rect": [195, 584, 390, 697]
         },
         {
           "nombre": "CodoDer",
           "tipo": "articulacion",
           "padre": "Lienzo/Cuerpo/Tronco/BrazoDer",
-          "punto": [674, 635],
+          "punto": [667, 605],
           "imagen": "AntebrazoDer",
           "sprite": "char_nino_parte_antebrazo_der",
-          "rect": [617, 587, 814, 687]
+          "rect": [642, 581, 839, 681]
         },
         {
           "nombre": "RodillaIzq",
           "tipo": "articulacion",
           "padre": "Lienzo/Cuerpo/PiernaIzq",
-          "punto": [474, 876],
+          "punto": [483, 845],
           "imagen": "AntepiernaIzq",
           "sprite": "char_nino_parte_antepierna_izq",
           "rect": [407, 813, 505, 947]
@@ -367,7 +371,7 @@
           "nombre": "RodillaDer",
           "tipo": "articulacion",
           "padre": "Lienzo/Cuerpo/PiernaDer",
-          "punto": [559, 869],
+          "punto": [558, 842],
           "imagen": "AntepiernaDer",
           "sprite": "char_nino_parte_antepierna_der",
           "rect": [535, 810, 640, 944]
@@ -385,19 +389,19 @@
           "nombre": "Ojos",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [512, 342],
+          "punto": [502, 425],
           "imagen": "Ojos",
           "sprite": "char_nino_ojos_neutra",
-          "rect": [397, 282, 627, 402]
+          "rect": [402, 380, 602, 470]
         },
         {
           "nombre": "Boca",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [512, 425],
+          "punto": [502, 490],
           "imagen": "Boca",
           "sprite": "char_nino_boca_0",
-          "rect": [437, 395, 587, 455]
+          "rect": [447, 468, 557, 512]
         }
       ],
       "partes": [
@@ -405,15 +409,15 @@
           "nombre": "BrazoIzq",
           "ruta": "Lienzo/Cuerpo/Tronco/BrazoIzq",
           "sprite": "char_nino_parte_brazo_izq",
-          "rect": [362, 539, 518, 644],
-          "pivote": [518, 539]
+          "rect": [339, 532, 495, 637],
+          "pivote": [466, 560]
         },
         {
           "nombre": "BrazoDer",
           "ruta": "Lienzo/Cuerpo/Tronco/BrazoDer",
           "sprite": "char_nino_parte_brazo_der",
-          "rect": [507, 536, 674, 635],
-          "pivote": [507, 536]
+          "rect": [528, 532, 695, 631],
+          "pivote": [556, 560]
         },
         {
           "nombre": "PiernaIzq",
@@ -444,6 +448,7 @@
       "carpeta": "Algoritm",
       "prefijo": "char_algoritm_fuego",
       "guia": true,
+      "orden_tronco": ["Torso", "BrazoIzq", "BrazoDer", "Ojos", "Boca"],
       "nodos": [
         {
           "nombre": "PiernaIzq",
@@ -562,6 +567,7 @@
       "carpeta": "Algoritm",
       "prefijo": "char_algoritm_rueda",
       "guia": true,
+      "orden_tronco": ["Torso", "BrazoIzq", "BrazoDer", "Ojos", "Boca"],
       "nodos": [
         {
           "nombre": "PiernaIzq",
@@ -680,6 +686,7 @@
       "carpeta": "Algoritm",
       "prefijo": "char_algoritm_gota",
       "guia": true,
+      "orden_tronco": ["Torso", "BrazoIzq", "BrazoDer", "Ojos", "Boca"],
       "nodos": [
         {
           "nombre": "PiernaIzq",

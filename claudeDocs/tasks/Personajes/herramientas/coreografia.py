@@ -1,0 +1,1882 @@
+#!/usr/bin/env python3
+# coreografia.py: la FUENTE UNICA de la coreografia de los siete personajes (Papa, Mama, Nina,
+# Nino y Algoritm, que comparte clips en sus tres formas). Escribe clips_personajes.json, que
+# BuildRigsFinal.cs.txt (modo «clips») lee y vuelca en los .anim existentes; el C# ya no lleva
+# la coreografia.
+#
+#     python3 claudeDocs/tasks/Personajes/herramientas/coreografia.py              # escribe el JSON y lo valida
+#     python3 claudeDocs/tasks/Personajes/herramientas/coreografia.py --autoprueba # valida() detecta JSON rotos
+#     python3 claudeDocs/tasks/Personajes/herramientas/pose_preview.py             # la prueba visual de los clips
+#     python3 claudeDocs/tasks/Personajes/herramientas/coreografia_v0.py           # regresion del motor
+#
+# Orden de trabajo cuando llega arte nuevo: articulaciones.py (o la entrada de ARTE_FINAL) -> rig_articulaciones.json
+# -> coreografia.py (la cinematica de los brazos y las medidas de las piernas salen de ese JSON y de los PNG)
+# -> pose_preview.py (la prueba) -> BuildRigsFinal.cs.txt, modos «sprites» y «clips». Los prefabs se leen con
+# prefabs.py. Pillow solo hace falta para medir la silueta de los pies (sin el se usan los rects) y para la prueba.
+#
+# Este archivo tiene tres capas:
+#   1. EL MOTOR (Curva, Spec, Ctx, Crouch...): port fiel de la clase Spec de BuildRigsFinal.cs.txt
+#      —Rot, Raw, Sym, Vol, Follow, Drop, Finish— y de la evaluacion de curvas ClampedAuto de Unity.
+#      coreografia_v0.py lo usa para reproducir la coreografia ANTERIOR y compararla con los .anim
+#      del repo (diferencia maxima en valores de clave < 0,01): eso demuestra que el port es fiel.
+#   2. LA COREOGRAFIA vigente (HumanClips, GuideClips y los clips de cada accion).
+#   3. La escritura y la validacion del JSON.
+#
+# SIGNOS (los mismos que el comentario de BuildRigsFinal.cs.txt; el eje Z de Unity gira en sentido
+# antihorario con valores positivos y la pantalla es el espejo del personaje que mira al jugador):
+#   Hombro (BrazoIzq/BrazoDer): + en BrazoDer y - en BrazoIzq ABREN y SUBEN el brazo (elevacion); al
+#     reves, el brazo se cierra contra el cuerpo. Una pose de reposo de +20 en BrazoIzq y -20 en
+#     BrazoDer deja los brazos 20 grados mas cerca del cuerpo que el A-pose del prefab.
+#   Codo: la flexion «hacia arriba» (la mano sube hacia el hombro) es - en CodoIzq y + en CodoDer;
+#     el pliegue «hacia dentro» (manos a la cintura) es el contrario.
+#   Pierna: - en PiernaIzq y + en PiernaDer ABREN el muslo (rodillas hacia fuera).
+#   Rodilla: + en RodillaIzq y - en RodillaDer devuelven la pantorrilla HACIA DENTRO.
+#   Cuerpo/Tronco/Cuello/Cabeza: + inclina a la izquierda de la pantalla, - a la derecha. La
+#     inclinacion de Walk/Run es negativa: hacia donde mira el personaje.
+#   «Sym(izq, der, t, v...)»: v > 0 abre/sube/flexiona hacia arriba; Izq recibe -v y Der +v (sobre la
+#     pose de reposo del hueso). «Rot» da el valor tal cual (SUMADO al reposo).
+#
+# Todo el texto de este archivo y del JSON que escribe es ASCII salvo los comentarios con tildes; el
+# JSON se escribe con ensure_ascii y se comprueba (--valida) porque el lector de C# es propio.
+
+import json
+import math
+import os
+import sys
+
+AQUI = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, AQUI)
+import prefabs as P  # noqa: E402
+
+FPS = 30.0
+SALIDA = os.path.join(AQUI, "clips_personajes.json")
+
+# Rutas de los huesos (iguales en la familia y en Algoritm, salvo Cuello y Cabeza).
+C, T, LA, RA, LE, RE = P.C, P.T, P.LA, P.RA, P.LE, P.RE
+LL, RL, LK, RK, NK, HD = P.LL, P.RL, P.LK, P.RK, P.NK, P.HD
+
+ROT = "localEulerAnglesRaw.z"
+POSX = "m_AnchoredPosition.x"
+POSY = "m_AnchoredPosition.y"
+ESCX = "m_LocalScale.x"
+ESCY = "m_LocalScale.y"
+ALFA = "m_Alpha"
+PROPIEDADES = (ROT, POSX, POSY, ESCX, ESCY, ALFA)
+
+HUESOS_FAMILIA = [C, T, LA, RA, LE, RE, LL, RL, LK, RK, NK, HD]
+HUESOS_GUIA = [C, T, LA, RA, LE, RE, LL, RL, LK, RK]
+
+
+class Familia:
+    """Tempo (>1 mas lento), amplitud y flexion de reposo de los codos (grados, hacia arriba)."""
+
+    def __init__(self, carpeta, tempo, amp, codo):
+        self.carpeta, self.tempo, self.amp, self.codo = carpeta, tempo, amp, codo
+
+
+FAMILIA = {
+    "papa": Familia("Father", 1.15, 1.1, 4.0),
+    "mama": Familia("Mother", 1.0, 0.9, 7.0),
+    "nina": Familia("Girl", 0.95, 1.0, 9.0),
+    "nino": Familia("Boy", 0.8, 1.2, 6.0),
+}
+
+
+# ============================================================================ 1. EL MOTOR
+
+
+def repeat(t, largo):
+    """Mathf.Repeat."""
+    return t - math.floor(t / largo) * largo
+
+
+def clamp(v, lo, hi):
+    return max(lo, min(hi, v))
+
+
+def pendiente_auto(p, k, n):
+    """
+    Tangente ClampedAuto de Unity en una clave interior (p, k, n son (tiempo, valor)). Se midio sobre
+    los 2584 puntos interiores de los .anim del repo y coincide con todos (error < 2e-6 relativo):
+      - extremo local o tramo plano (los dos saltos no tienen el mismo signo): 0;
+      - si no: el secante entre vecinos (d1 + d2) / (t_n - t_p), con el modulo recortado a
+        4 * min(|d1|, |d2|) / (t_n - t_p) para que la curva no se pase de los vecinos.
+    Las claves de los extremos llevan tangente 0.
+    """
+    d1 = k[1] - p[1]
+    d2 = n[1] - k[1]
+    if d1 * d2 <= 0:
+        return 0.0
+    m = min(abs(d1 + d2), 4.0 * min(abs(d1), abs(d2)))
+    return (m if d1 > 0 else -m) / (n[0] - p[0])
+
+
+class CurvaAuto:
+    """AnimationCurve con tangentes ClampedAuto; fuera del rango, ClampForever (el Evaluate por defecto)."""
+
+    def __init__(self, claves):
+        self.k = [(float(t), float(v)) for t, v in claves]
+        n = len(self.k)
+        self.m = [0.0] * n
+        for i in range(1, n - 1):
+            self.m[i] = pendiente_auto(self.k[i - 1], self.k[i], self.k[i + 1])
+
+    def evaluar(self, t):
+        k = self.k
+        if not k:
+            return 0.0
+        if t <= k[0][0]:
+            return k[0][1]
+        if t >= k[-1][0]:
+            return k[-1][1]
+        lo, hi = 0, len(k) - 1
+        while hi - lo > 1:
+            mid = (lo + hi) // 2
+            if k[mid][0] <= t:
+                lo = mid
+            else:
+                hi = mid
+        t0, v0 = k[lo]
+        t1, v1 = k[hi]
+        dt = t1 - t0
+        s = (t - t0) / dt
+        s2, s3 = s * s, s * s * s
+        return ((2 * s3 - 3 * s2 + 1) * v0 + (s3 - 2 * s2 + s) * dt * self.m[lo]
+                + (-2 * s3 + 3 * s2) * v1 + (s3 - s2) * dt * self.m[hi])
+
+
+class Curva:
+    def __init__(self, ruta, prop):
+        self.ruta, self.prop = ruta, prop
+        self.claves = []  # [tiempo, valor]
+
+    def set(self, t, v):
+        for i, c in enumerate(self.claves):
+            if abs(c[0] - t) < 1e-4:
+                self.claves[i] = [c[0], v]
+                return
+            if c[0] > t:
+                self.claves.insert(i, [t, v])
+                return
+        self.claves.append([t, v])
+
+
+class Spec:
+    """Un clip: curvas por (ruta, propiedad). Port de la clase Spec de BuildRigsFinal.cs.txt."""
+
+    def __init__(self, accion, archivo, largo_base, k, bucle, reposo, huesos):
+        self.accion, self.archivo, self.k, self.bucle = accion, archivo, k, bucle
+        self.largo = largo_base * k
+        self._reposo, self._huesos = reposo, huesos
+        self._curvas = {}
+        self.orden = []
+
+    # -- acceso
+    def _get(self, ruta, prop, crear=True):
+        clave = (ruta, prop)
+        c = self._curvas.get(clave)
+        if c is None:
+            if not crear:
+                return None
+            c = Curva(ruta, prop)
+            self._curvas[clave] = c
+            self.orden.append(c)
+        return c
+
+    def reposo(self, ruta):
+        return self._reposo.get(ruta, 0.0)
+
+    def _base(self, ruta, prop):
+        if prop == ROT:
+            return self.reposo(ruta)
+        return 1.0 if prop in (ESCX, ESCY) else 0.0
+
+    # -- API de coreografia
+    def rot(self, ruta, *tv):
+        """Rotacion en Z: pares (tiempo base, grados) SUMADOS a la pose de reposo del hueso. Tiempos x tempo."""
+        c = self._get(ruta, ROT)
+        for i in range(0, len(tv) - 1, 2):
+            c.set(tv[i] * self.k, tv[i + 1] + self.reposo(ruta))
+        return self
+
+    def raw(self, ruta, prop, *tv):
+        """Cualquier otra propiedad, con el valor absoluto."""
+        c = self._get(ruta, prop)
+        for i in range(0, len(tv) - 1, 2):
+            c.set(tv[i] * self.k, tv[i + 1])
+        return self
+
+    def sym(self, izq, der, *tv):
+        """Movimiento simetrico: v > 0 abre, sube o flexiona hacia arriba (Izq recibe -v, Der +v)."""
+        a = self._get(izq, ROT)
+        b = self._get(der, ROT)
+        for i in range(0, len(tv) - 1, 2):
+            a.set(tv[i] * self.k, self.reposo(izq) - tv[i + 1])
+            b.set(tv[i] * self.k, self.reposo(der) + tv[i + 1])
+        return self
+
+    def vol(self, *tv):
+        """
+        Squash & stretch de Cuerpo: pares (tiempo, escala Y). X compensa (1 - 0,5 (Y - 1)): con Y entre
+        0,92 y 1,08 la X queda entre 1,04 y 0,96 y ninguna pasa del 15 % (DA 13.2).
+        """
+        y = self._get(C, ESCY)
+        x = self._get(C, ESCX)
+        for i in range(0, len(tv) - 1, 2):
+            y.set(tv[i] * self.k, tv[i + 1])
+            x.set(tv[i] * self.k, 1.0 - 0.5 * (tv[i + 1] - 1.0))
+        return self
+
+    def drop(self, ruta, prop):
+        c = self._curvas.pop((ruta, prop), None)
+        if c is not None:
+            self.orden.remove(c)
+        return self
+
+    def follow(self, src, src_prop, dst, cuadros, ganancia, sesgo=0.0):
+        """
+        Movimiento secundario: la curva «dst» (rotacion) copia la de «src» con unos cuadros de retraso
+        (2 a 4 en la cabeza) y una ganancia. Sustituye lo que «dst» tuviera. En los bucles el retraso da
+        la vuelta; en los otros se sujeta a los extremos. «sesgo» resta una media a la fuente.
+        """
+        fuente = self._get(src, src_prop, False)
+        if fuente is None or not fuente.claves:
+            raise RuntimeError("%s: follow necesita primero la curva %s %s" % (self.accion, src, src_prop))
+        self._cerrar(fuente)
+        curva = CurvaAuto(fuente.claves)
+        destino = self._get(dst, ROT)
+        destino.claves = []
+        retraso = cuadros / FPS
+        desde = self._base(src, src_prop)
+        hasta = self.reposo(dst)
+        for t in self._tiempos_muestreo(fuente.claves):
+            tt = repeat(t - retraso, self.largo) if self.bucle else clamp(t - retraso, 0.0, self.largo)
+            destino.set(t, hasta + ganancia * (curva.evaluar(tt) - desde - sesgo))
+        return self
+
+    def _tiempos_muestreo(self, claves):
+        ts = [0.0]
+        for i, c in enumerate(claves):
+            if i > 0:
+                ts.append(0.5 * (claves[i - 1][0] + c[0]))
+            ts.append(c[0])
+        ts.append(self.largo)
+        ts = [clamp(t, 0.0, self.largo) for t in ts if -1e-4 <= t <= self.largo + 1e-4]
+        out = []
+        for t in sorted(ts):
+            if not out or abs(t - out[-1]) > 1e-6:
+                out.append(t)
+        return out
+
+    def _cerrar(self, c):
+        """En los bucles, que la curva empiece en 0 y acabe en largo (si falta, con el valor del otro extremo)."""
+        if not self.bucle or not c.claves:
+            return
+        if c.claves[0][0] > 1e-4:
+            c.claves.insert(0, [0.0, c.claves[-1][1]])
+        if c.claves[-1][0] < self.largo - 1e-4:
+            c.claves.append([self.largo, c.claves[0][1]])
+
+    def finish(self):
+        """
+        Ultimo paso: todo hueso sin rotacion se queda en su pose de reposo (anti pose en T), cada curva
+        cubre [0, largo] y, en los bucles, acaba donde empieza. Devuelve los avisos.
+        """
+        avisos = []
+        for hueso in self._huesos:
+            if self._get(hueso, ROT, False) is None:
+                self._get(hueso, ROT).set(0.0, self.reposo(hueso))
+        for c in self.orden:
+            if len(c.claves) == 1:
+                c.set(self.largo, c.claves[0][1])
+            if self.bucle:
+                self._cerrar(c)
+                brecha = c.claves[-1][1] - c.claves[0][1]
+                if c.prop == ROT:
+                    brecha = repeat(brecha + 180.0, 360.0) - 180.0  # una vuelta entera (Spin) si cierra
+                if abs(brecha) > 1e-3:
+                    avisos.append("%s %s %s: el bucle no cierra (%s -> %s)" % (
+                        self.accion, c.ruta, c.prop, c.claves[0][1], c.claves[-1][1]))
+            else:
+                if c.claves[0][0] > 1e-4:
+                    c.claves.insert(0, [0.0, c.claves[0][1]])
+                if c.claves[-1][0] < self.largo - 1e-4:
+                    c.claves.append([self.largo, c.claves[-1][1]])
+            for t, _ in c.claves:
+                if t < -1e-4 or t > self.largo + 1e-4:
+                    avisos.append("%s %s %s: clave fuera de [0, largo] en t=%s" % (self.accion, c.ruta, c.prop, t))
+        return avisos
+
+
+class Ctx:
+    """Lo que cada clip necesita saber del personaje (lo deduce de los prefabs y del rig, como ReadContext)."""
+
+    def __init__(self, pid, guia=False, segmentado=False, k=1.0, a=1.0, codo=0.0, pierna=1.0, muslo=1.0, canilla=1.0):
+        self.id, self.guia, self.segmentado = pid, guia, segmentado
+        self.k, self.a, self.codo = k, a, codo
+        self.pierna, self.muslo, self.canilla = pierna, muslo, canilla  # cadera-suelo, cadera-rodilla, rodilla-suelo
+        self.brazos = {}      # "Izq"/"Der" -> Brazo (geometria del brazo para la cinematica)
+        self.cx = 512.0       # eje del cuerpo
+        self.hombro_y = 0.0
+        self.suelo = P.SUELO
+        self.cara = None      # (x0, y0, x1, y1): la zona de ojos y boca
+        self.y_pecho = self.y_vientre = self.y_cadera = 0.0  # alturas de referencia del tronco
+        self.pie_x = {"Izq": 512.0, "Der": 512.0}  # x de cada pie (la cadera) en el lienzo
+        self.pie_piv = {}     # "Izq"/"Der" -> (x, y) del pivote que gira esa pieza (la cadera, o la rodilla con piernas partidas)
+        self.pie_casco = {}   # "Izq"/"Der" -> cierre convexo de la pieza que toca el suelo, relativo a ese pivote
+        self.pata = {}        # "Izq"/"Der" -> (pierna, muslo, canilla) de ESA pierna (el dibujo no es simetrico)
+        self.atras = False    # los brazos se dibujan DETRAS del torso y de la cabeza (arte provisional): fuera de la silueta
+        self.hang = 0.0       # reposo: angulo del brazo respecto a la vertical (0 = colgando pegado al cuerpo)
+        self.pliegue = 0.0    # reposo: flexion de los codos hacia dentro
+
+
+def leer_contexto_prefab(pid, rig=None):
+    """
+    Port exacto de ReadContext: las medidas de la pierna salen del PREFAB tal como esta hoy. Es lo que usa
+    la regresion (coreografia_v0.py): el C# que genero los .anim vigentes leyo el prefab.
+    """
+    rig = rig or P.cargar_rig()
+    prefab = P.PERSONAJES[pid][0]
+    arbol = P.leer_arbol(prefab)
+    guia = P.PERSONAJES[pid][2]
+    if guia:
+        return Ctx(pid, guia=True)
+    info = FAMILIA[pid]
+    seg = P.esta_segmentado(arbol)
+    cadera = arbol[LL].pivote[1]
+    suelo = arbol[C].pivote[1]  # el pivote de Cuerpo esta en el suelo
+    rodilla = arbol[LK].pivote[1]
+    pierna = max(suelo - cadera, 1.0)
+    muslo = clamp(rodilla - cadera, 0.25 * pierna, 0.75 * pierna)
+    return Ctx(pid, False, seg, info.tempo, info.amp, info.codo, pierna, muslo, pierna - muslo)
+
+
+# ---------------------------------------------------------------------------- cinematica de los brazos
+#
+# Los gestos se piden como «la mano va AQUI» y la cinematica inversa (dos segmentos: humero y antebrazo)
+# saca la rotacion del hombro y del codo. Asi un gesto vale para cualquier proporcion y para el arte que
+# llegue despues (se vuelve a correr este script con el JSON nuevo). Con el arte provisional, que no tiene
+# antebrazo, el brazo es UN segmento: el hombro apunta la mano hacia el objetivo y el codo no se ve.
+#
+# Angulos: «ang» es el angulo polar en pantalla (antihorario, y hacia arriba) de un vector del lienzo
+# (y hacia abajo); girar un nodo en Z por phi suma phi a ese angulo (la rotacion + de Unity es antihoraria).
+
+
+def _ang(v):
+    return math.degrees(math.atan2(-v[1], v[0]))
+
+
+def _norm(a):
+    return (a + 180.0) % 360.0 - 180.0
+
+
+def _pol(grados, largo):
+    r = math.radians(grados)
+    return (largo * math.cos(r), -largo * math.sin(r))
+
+
+MIN_ALCANCE = 0.45  # fraccion del largo del brazo a la que la mano puede acercarse al hombro sin doblar el codo en horquilla
+
+
+class Brazo:
+    """Un brazo en la pose del prefab (A-pose): hombro S, codo E, mano M (puntos del lienzo)."""
+
+    def __init__(self, lado, hombro, codo, mano, partido, arco=None):
+        self.lado, self.S, self.E, self.M, self.partido = lado, hombro, codo, mano, partido
+        self.arco = arco  # (min, max) de theta, o None
+        self.v1 = (codo[0] - hombro[0], codo[1] - hombro[1])
+        self.v2 = (mano[0] - codo[0], mano[1] - codo[1])
+        self.l1 = math.hypot(*self.v1)
+        self.l2 = math.hypot(*self.v2)
+        self.a1, self.a2 = _ang(self.v1), _ang(self.v2)
+        self.largo = math.hypot(mano[0] - hombro[0], mano[1] - hombro[1])  # alcance
+        self.lado_sig = -1.0 if lado == "Izq" else 1.0  # +1 = hacia la derecha de la pantalla
+        # angulo del humero respecto a la vertical hacia abajo, en la A-pose (positivo = hacia fuera)
+        self.alfa = math.degrees(math.atan2(abs(self.v1[0]), self.v1[1]))
+
+    # --- por angulo respecto a la vertical (0 = colgando, 90 = horizontal, 180 = en alto)
+    def hombro_rot(self, theta, libre=False):
+        """
+        Rotacion Z del hombro para que el humero forme theta con la vertical hacia abajo. Con los brazos
+        dibujados DETRAS del cuerpo (arte provisional) theta se sujeta al arco en que se ven (ARCO_ATRAS);
+        «libre» lo salta (para medir ese arco).
+        """
+        if self.arco and not libre:
+            theta = clamp(theta, self.arco[0], self.arco[1])
+        return self.alfa - theta if self.lado == "Izq" else theta - self.alfa
+
+    def codo_rot(self, theta, pliegue):
+        """
+        Rotacion Z del codo para plegar el antebrazo «pliegue» grados hacia el eje del cuerpo (con el brazo
+        colgando, theta < 30) o hacia la cabeza (con el brazo horizontal o en alto, theta > 90); entre
+        medias el sentido se funde, porque de frente ahi no hay uno que se vea mal. Con el brazo recto, 0.
+        """
+        s = clamp((60.0 - theta) / 30.0, -1.0, 1.0)  # el signo cambia sin salto cerca de la horizontal
+        return s * pliegue if self.lado == "Izq" else -s * pliegue
+
+    # --- directa
+    def fk(self, rot_hombro, rot_codo):
+        a1 = self.a1 + rot_hombro
+        e = (self.S[0] + _pol(a1, self.l1)[0], self.S[1] + _pol(a1, self.l1)[1])
+        a2 = self.a2 + rot_hombro + rot_codo
+        m = (e[0] + _pol(a2, self.l2)[0], e[1] + _pol(a2, self.l2)[1])
+        return e, m
+
+    # --- inversa
+    def ik(self, objetivo, codo_hacia=None):
+        """
+        (rot_hombro, rot_codo) para que la mano llegue a «objetivo» (o lo mas cerca que alcance). De las dos
+        posiciones posibles del codo elige la que queda mas del lado de «codo_hacia» (un vector del lienzo;
+        por defecto hacia fuera y un poco abajo: el codo en el interior pasaria por delante de la cara).
+        """
+        dx, dy = objetivo[0] - self.S[0], objetivo[1] - self.S[1]
+        if not self.partido:
+            return _norm(_ang((dx, dy)) - _ang((self.M[0] - self.S[0], self.M[1] - self.S[1]))), 0.0
+        d = max(abs(self.l1 - self.l2) + 1.0, MIN_ALCANCE * (self.l1 + self.l2),
+                min(self.l1 + self.l2 - 1.0, math.hypot(dx, dy)))
+        base = _ang((dx, dy))
+        cos_a = (self.l1 ** 2 + d ** 2 - self.l2 ** 2) / (2 * self.l1 * d)
+        alfa = math.degrees(math.acos(clamp(cos_a, -1.0, 1.0)))
+        cand = []
+        for signo in (1.0, -1.0):
+            a1 = base + signo * alfa  # direccion del humero
+            e = _pol(a1, self.l1)
+            e = (self.S[0] + e[0], self.S[1] + e[1])
+            hacia = codo_hacia or (self.lado_sig, 0.5)  # por defecto, el codo hacia fuera y un poco abajo
+            coste = (e[0] - self.S[0]) * hacia[0] + (e[1] - self.S[1]) * hacia[1]
+            cand.append((coste, a1, e))
+        _, a1, e = max(cand, key=lambda c: c[0])
+        mano = (self.S[0] + _pol(base, d)[0], self.S[1] + _pol(base, d)[1])  # el objetivo, acercado o alejado si no llega
+        a2 = _ang((mano[0] - e[0], mano[1] - e[1]))
+        return _norm(a1 - self.a1), _norm((a2 - a1) - (self.a2 - self.a1))
+
+
+def _brazos_de(rig, pid, arbol, arco=None):
+    """Construye los dos Brazo del personaje a partir del rig (hombro, codo) y de los rects (la mano)."""
+    p = P.personaje_rig(rig, pid)
+    partes = {q["nombre"]: q for q in p["partes"]}
+    nodos = {n["nombre"]: n for n in p["nodos"]}
+    guia = P.PERSONAJES[pid][2]
+    out = {}
+    for lado in ("Izq", "Der"):
+        codo = nodos["Codo" + lado]
+        if guia:
+            brazo = nodos["Brazo" + lado]
+            hombro, rect = brazo["punto"], brazo["rect"]
+        else:
+            brazo = partes["Brazo" + lado]
+            hombro, rect = brazo["pivote"], brazo["rect"]
+        e = codo["punto"]
+        partido = P.esta_segmentado(arbol) if not guia else False
+        if partido:
+            r = codo["rect"]  # el antebrazo: la mano esta al 80 % de su largo desde el codo
+            c = ((r[0] + r[2]) / 2.0, (r[1] + r[3]) / 2.0)
+            m = (e[0] + 1.6 * (c[0] - e[0]), e[1] + 1.6 * (c[1] - e[1]))
+        else:
+            # un solo sprite: la mano esta cerca de la esquina del rect mas lejana al hombro
+            esq = max(((rect[0], rect[1]), (rect[2], rect[1]), (rect[0], rect[3]), (rect[2], rect[3])),
+                      key=lambda q: (q[0] - hombro[0]) ** 2 + (q[1] - hombro[1]) ** 2)
+            m = (hombro[0] + 0.9 * (esq[0] - hombro[0]), hombro[1] + 0.9 * (esq[1] - hombro[1]))
+        out[lado] = Brazo(lado, tuple(hombro), tuple(e), m, partido, arco)
+    return out
+
+
+# Con los brazos DETRAS del torso y de la cabeza (orden_tronco de Papa, Mama y Nina: arte provisional de una pieza
+# por brazo), el humero solo se ve (>= 86 % de sus pixeles, con 1 punto de holgura sobre el 85 % de la prueba) si forma este arco con la vertical: menos y se mete
+# tras el torso, mas y sube tras la cabeza. Medido con  pose_preview.py --arco <personaje>. La coreografia
+# sujeta todos los angulos a el: los gestos de esos tres son mas abiertos, a los lados, nunca por delante.
+ARCO_ATRAS = {
+    "papa": (32.0, 120.0),
+    "mama": (24.0, 80.0),
+    "nina": (32.0, 86.0),
+}
+
+# Reposo de cada personaje: cuanto cuelgan los brazos respecto a la vertical (grados) y cuanto se
+# pliegan los codos hacia dentro. El A-pose del prefab (brazos casi horizontales) era una pose de T.
+PERFIL = {
+    "papa": (38.0, 6.0),
+    "mama": (34.0, 10.0),
+    "nina": (38.0, 12.0),
+    "nino": (28.0, 12.0),
+}
+
+
+def leer_contexto(pid, rig=None):
+    """
+    El contexto de la coreografia vigente. Como leer_contexto_prefab, pero la geometria sale del JSON del
+    rig (lo que el C# aplicara a los prefabs), no del prefab de hoy, que va un paso por detras: la rodilla
+    del Nino estaba en el borde del muslo y ahora esta en el centro de la articulacion.
+    """
+    rig = rig or P.cargar_rig()
+    prefab = P.PERSONAJES[pid][0]
+    arbol = P.leer_arbol(prefab)
+    guia = P.PERSONAJES[pid][2]
+    p = P.personaje_rig(rig, pid)
+    nodos = {n["nombre"]: n for n in p["nodos"]}
+    partes = {q["nombre"]: q for q in p["partes"]}
+    x = Ctx(pid, guia=guia)
+    orden = p.get("orden_tronco") or []
+    x.atras = bool(orden) and "Torso" in orden and "BrazoIzq" in orden and orden.index("BrazoIzq") < orden.index("Torso")
+    x.brazos = _brazos_de(rig, pid, arbol, ARCO_ATRAS.get(pid) if x.atras else None)
+    x.hombro_y = x.brazos["Izq"].S[1]
+    x.cx = 0.5 * (x.brazos["Izq"].S[0] + x.brazos["Der"].S[0])
+    alto = P.SUELO - x.hombro_y  # del hombro al suelo
+    b = x.brazos["Izq"]
+    semi = abs(b.S[0] - x.cx)
+    # Las manos solo se juntan comodamente a cierta distancia del hombro: con humero y antebrazo cortos (el Nino)
+    # el pecho de verdad queda tan cerca del hombro que el codo se doblaria en horquilla. «pecho» es la altura
+    # del eje a la que la mano queda al menos al 45 % del largo del brazo.
+    v_min = math.sqrt(max((MIN_ALCANCE * (b.l1 + b.l2)) ** 2 - semi ** 2, 0.0)) if b.partido else 0.0
+    x.y_pecho = x.hombro_y + max(0.12 * alto, v_min)
+    x.y_vientre = x.y_pecho + 0.14 * alto
+    x.y_cadera = x.y_vientre + 0.10 * alto
+    zona = [nodos[n]["rect"] for n in ("Ojos", "Boca") if n in nodos and nodos[n].get("rect")]
+    if zona:
+        x.cara = (min(r[0] for r in zona), min(r[1] for r in zona), max(r[2] for r in zona), max(r[3] for r in zona))
+    if guia:
+        return x
+    info = FAMILIA[pid]
+    x.k, x.a = info.tempo, info.amp
+    x.segmentado = P.esta_segmentado(arbol)
+    x.hang, x.pliegue = PERFIL[pid]
+    x.codo = x.pliegue
+    cadera = partes["PiernaIzq"]["pivote"][1]
+    x.pie_x = {"Izq": float(partes["PiernaIzq"]["pivote"][0]), "Der": float(partes["PiernaDer"]["pivote"][0])}
+    for lado in ("Izq", "Der"):
+        if x.segmentado:
+            ruta_pieza = (LK if lado == "Izq" else RK) + "/Antepierna" + lado
+            r = nodos["Rodilla" + lado]["rect"]
+            x.pie_piv[lado] = (float(nodos["Rodilla" + lado]["punto"][0]), float(nodos["Rodilla" + lado]["punto"][1]))
+        else:
+            ruta_pieza = LL if lado == "Izq" else RL
+            r = partes["Pierna" + lado]["rect"]
+            x.pie_piv[lado] = (float(partes["Pierna" + lado]["pivote"][0]), float(partes["Pierna" + lado]["pivote"][1]))
+        nodo = arbol.get(ruta_pieza)
+        png = P.sprite_por_guid(nodo.imagen["guid"]) if nodo is not None and nodo.imagen and nodo.imagen["guid"] else None
+        px, py = x.pie_piv[lado]
+        x.pie_casco[lado] = [(a - px, b - py) for a, b in P.casco_sprite(png, r)]
+        cad, rod = partes["Pierna" + lado]["pivote"][1], nodos["Rodilla" + lado]["punto"][1]
+        largo = max(P.SUELO - cad, 1.0)
+        mus = clamp(rod - cad, 0.25 * largo, 0.75 * largo)
+        x.pata[lado] = (largo, mus, largo - mus)
+    suelo = arbol[C].pivote[1]
+    rodilla = nodos["RodillaIzq"]["punto"][1]
+    x.pierna = max(suelo - cadera, 1.0)
+    x.muslo = clamp(rodilla - cadera, 0.25 * x.pierna, 0.75 * x.pierna)
+    x.canilla = x.pierna - x.muslo
+    return x
+
+
+# ---------------------------------------------------------------------------- la familia: reposo y utilidades
+
+
+def reposo_familia(x, brazo=0.0, codo=None):
+    """
+    Pose de reposo de cada hueso (los clips SUMAN sus valores a esta pose). «brazo» es lo que el hombro
+    se cierra contra el cuerpo respecto al A-pose del prefab (+ en BrazoIzq, - en BrazoDer) y «codo» la
+    flexion de reposo de los codos (hacia arriba); con brazo=0 y codo=x.codo es el reposo de antes.
+    """
+    codo = x.codo if codo is None else codo
+    return {C: 0.0, T: 0.0, LA: brazo, RA: -brazo, LE: -codo, RE: codo,
+            LL: 0.0, RL: 0.0, LK: 0.0, RK: 0.0, NK: 0.0, HD: 0.0}
+
+
+def nuevo(x, accion, archivo, largo_base, bucle=True, reposo=None):
+    r = reposo if reposo is not None else reposo_familia(x)
+    return Spec(accion, "char_%s_anim_%s" % (x.id, archivo), largo_base, x.k, bucle, r, HUESOS_FAMILIA)
+
+
+def cabeza_sigue(s, src, src_prop, ganancia_cuello, ganancia_cabeza, sesgo=0.0):
+    """La cabeza sigue al cuerpo con 2 y 4 cuadros de retraso: el movimiento secundario."""
+    s.follow(src, src_prop, NK, 2, ganancia_cuello, sesgo)
+    s.follow(src, src_prop, HD, 4, ganancia_cabeza, sesgo)
+
+
+def agacharse(x, s, profundidad_frac, muslo_plano, muslo_seg, razon_rodilla, *tw):
+    """
+    Agacharse a una profundidad. Devuelve la bajada efectiva del tronco (unidades del lienzo) para que
+    el clip baje Tronco lo mismo. «tw» son pares (tiempo base, peso 0..1).
+    No segmentado: las piernas bajan y se acortan con escala Y (el truco de BuildRigs), con el muslo
+    abierto «muslo_plano» grados. Segmentado: el muslo se abre «muslo_seg» grados, la pantorrilla vuelve
+    hacia dentro «razon_rodilla» veces eso y se acorta con escala Y de la rodilla lo justo para que el
+    pie siga en el suelo; si hiciera falta menos de 0,4 se baja menos. Con piernas partidas ningun clip
+    escala las piernas (solo la rodilla, que acorta la antepierna: es la rodilla en profundidad).
+    """
+    minimo = 0.4
+    d = profundidad_frac * x.pierna
+    if x.segmentado:
+        a = math.radians(muslo_seg)
+        neto = math.radians(muslo_seg - muslo_seg * razon_rodilla)
+        d = max(0.0, min(d, x.pierna - x.muslo * math.cos(a) - minimo * x.canilla * math.cos(neto)))
+    for i in range(0, len(tw) - 1, 2):
+        t, w = tw[i], tw[i + 1]
+        dd = d * w
+        s.raw(LL, POSY, t, -dd)
+        s.raw(RL, POSY, t, -dd)
+        if not x.segmentado:
+            razon = (x.pierna - dd) / x.pierna
+            s.raw(LL, ESCY, t, razon)
+            s.raw(RL, ESCY, t, razon)
+            if muslo_plano > 0.0:
+                s.sym(LL, RL, t, muslo_plano * w)
+        else:
+            abre = muslo_seg * w
+            atras = abre * razon_rodilla
+            cos_abre = math.cos(math.radians(abre))
+            cos_neto = math.cos(math.radians(abre - atras))
+            canilla = clamp((x.pierna - dd - x.muslo * cos_abre) / (x.canilla * cos_neto), minimo, 1.0)
+            s.sym(LL, RL, t, abre)
+            s.sym(LK, RK, t, -atras)
+            s.raw(LK, ESCY, t, canilla)
+            s.raw(RK, ESCY, t, canilla)
+    return d
+
+
+# ---------------------------------------------------------------------------- Algoritm: utilidades
+
+
+def reposo_guia(brazo=0.0):
+    r = {h: 0.0 for h in HUESOS_GUIA}
+    r[LA], r[RA] = brazo, -brazo
+    return r
+
+
+def guia_spec(accion, archivo, largo, bucle=True, reposo=None):
+    return Spec(accion, "char_algoritm_anim_" + archivo, largo, 1.0, bucle, reposo if reposo is not None else reposo_guia(), HUESOS_GUIA)
+
+
+def cuelga(s, media):
+    """
+    Piernas que cuelgan: siguen la altura del cuerpo con 3 cuadros de retraso (juntas arriba, abiertas
+    abajo) y las rodillas devuelven lo que abre el muslo; los brazos suben un poco con 4 cuadros de
+    retraso, los codos siguen al brazo y el tronco, al giro del cuerpo. «media» es la altura media de
+    la flotacion.
+    """
+    cuelga_piernas(s, media)
+    s.follow(C, POSY, LA, 4, -0.4, media)
+    s.follow(C, POSY, RA, 4, 0.4, media)
+    s.follow(LA, ROT, LE, 3, 0.8)
+    s.follow(RA, ROT, RE, 3, 0.8)
+    s.follow(C, ROT, T, 2, 0.4)
+
+
+def cuelga_piernas(s, media):
+    s.follow(C, POSY, LL, 3, 0.5, media)
+    s.follow(C, POSY, RL, 3, -0.5, media)
+    s.follow(LL, ROT, LK, 3, -0.8)
+    s.follow(RL, ROT, RK, 3, -0.8)
+
+
+# ============================================================================ 2. LA COREOGRAFIA vigente
+#
+# POSTURA DE REPOSO NUEVA. El prefab dibuja el A-pose (brazos casi horizontales). El reposo de ahora deja
+# los brazos relajados, cerca del cuerpo (hang grados respecto a la vertical, segun el personaje) con los
+# codos algo plegados hacia dentro; y el peso cargado sobre una pierna se ve en el balanceo del Idle.
+#
+# LOS BRAZOS SE VEN SIEMPRE (y nunca tapan la cara). Van DELANTE del torso y de la cabeza («orden_tronco»
+# del rig), asi que ya no se esconden; lo que queda es que no cubran la cara: los gestos que suben la mano
+# a la cabeza van por el costado o por encima. pose_preview.py lo comprueba cuadro a cuadro.
+#
+# LOS GESTOS SE PIDEN COMO «LA MANO VA AQUI» (manos(), cinematica inversa) o como angulos respecto a la
+# vertical (brazos()). Con el arte provisional (un solo sprite por brazo) el codo no se ve: el hombro apunta
+# la mano al objetivo. Con piernas partidas, ningun clip escala las piernas.
+
+TAU = 2.0 * math.pi
+
+
+def suave(t, a, b):
+    """Escalon suave (smoothstep) de 0 en a a 1 en b."""
+    if t <= a:
+        return 0.0
+    if t >= b:
+        return 1.0
+    u = (t - a) / (b - a)
+    return u * u * (3.0 - 2.0 * u)
+
+
+def pulso(t, t0, t1, t2, t3):
+    """0 antes de t0, sube suave hasta 1 en t1, se mantiene hasta t2 y baja suave hasta 0 en t3."""
+    return suave(t, t0, t1) * (1.0 - suave(t, t2, t3))
+
+
+def bump(t, c, w):
+    """Una campana de coseno de ancho 2w centrada en c (altura 1)."""
+    return 0.5 * (1.0 + math.cos(math.pi * (t - c) / w)) if abs(t - c) < w else 0.0
+
+
+def pendulo(t, t0, amp, periodo, vida):
+    """Oscilacion amortiguada que arranca en t0 (sin salto: sube con una rampa corta)."""
+    if t <= t0:
+        return 0.0
+    u = t - t0
+    return amp * math.exp(-u / vida) * math.sin(TAU * u / periodo) * suave(u, 0.0, 0.08) * (1.0 - suave(u, 1.5 * vida * 2, 2.5 * vida * 2))
+
+
+def muestrea(s, ruta, prop, f, largo, paso=0.1):
+    """Escribe la curva (ruta, prop) muestreando f(t) en t base cada «paso»; f debe cerrar en el bucle."""
+    n = max(1, int(round(largo / paso)))
+    tv = []
+    for i in range(n + 1):
+        t = min(largo, i * largo / n)
+        tv += [t, f(t)]
+    s.raw(ruta, prop, *tv)
+
+
+def reposo_nuevo(x):
+    """Pose de reposo de cada hueso: brazos colgando «hang» grados con los codos algo plegados."""
+    r = {C: 0.0, T: 0.0, LL: 0.0, RL: 0.0, LK: 0.0, RK: 0.0, NK: 0.0, HD: 0.0}
+    for lado, hom, cod in (("Izq", LA, LE), ("Der", RA, RE)):
+        b = x.brazos[lado]
+        r[hom], r[cod] = b.hombro_rot(x.hang), b.codo_rot(x.hang, x.pliegue)
+    return r
+
+
+def familia_spec(x, accion, archivo, largo_base, bucle=True):
+    return Spec(accion, "char_%s_anim_%s" % (x.id, archivo), largo_base, x.k, bucle, reposo_nuevo(x), HUESOS_FAMILIA)
+
+
+def brazos(x, s, izq=None, der=None):
+    """Brazos por angulo: listas de (t, theta, pliegue). theta: 0 colgando, 90 horizontal, 180 en alto."""
+    for lado, claves, hom, cod in (("Izq", izq, LA, LE), ("Der", der, RA, RE)):
+        if not claves:
+            continue
+        b = x.brazos[lado]
+        for c in claves:
+            s.raw(hom, ROT, c[0], b.hombro_rot(c[1]))
+            s.raw(cod, ROT, c[0], b.codo_rot(c[1], c[2]))
+
+
+def brazo_f(x, s, lado, f_theta, f_pliegue, largo, paso=0.1):
+    """Un brazo muestreado: theta(t) y pliegue(t) como funciones del tiempo base."""
+    b = x.brazos[lado]
+    hom, cod = (LA, LE) if lado == "Izq" else (RA, RE)
+    muestrea(s, hom, ROT, lambda t: b.hombro_rot(f_theta(t)), largo, paso)
+    muestrea(s, cod, ROT, lambda t: b.codo_rot(f_theta(t), f_pliegue(t)), largo, paso)
+
+
+def brazo_mix(x, s, lado, f_theta, f_pliegue, w, objetivo, largo, hacia=None, paso=0.1):
+    """
+    Un brazo que mezcla dos modos: por angulo (theta(t), pliegue(t)) con peso 1 - w(t) y por objetivo (la
+    mano va a objetivo(t), cinematica inversa) con peso w(t). Mezcla las rotaciones del hombro y del codo.
+    """
+    b = x.brazos[lado]
+    hom, cod = (LA, LE) if lado == "Izq" else (RA, RE)
+    previo = [None, None]
+    th_h, th_c, ik_h, ik_c = [], [], [], []
+    for t in _rejilla(largo, paso):
+        th = f_theta(t)
+        pos = objetivo(t) if callable(objetivo) else objetivo
+        rs, rc = b.ik(pos, hacia)
+        rs, rc = _desenrolla(previo[0], rs), _desenrolla(previo[1], rc)
+        previo = [rs, rc]
+        wt = w(t)
+        r0h, r0c = b.hombro_rot(th), b.codo_rot(th, f_pliegue(t))
+        # el modo por angulo puede quedar a una vuelta del IK: se acerca a la rama del IK
+        r0h = rs + _norm(r0h - rs) if wt > 0 else r0h
+        th_h += [t, (1 - wt) * r0h + wt * rs]
+        th_c += [t, (1 - wt) * r0c + wt * rc]
+    s.raw(hom, ROT, *th_h)
+    s.raw(cod, ROT, *th_c)
+
+
+def _desenrolla(previo, v):
+    return v if previo is None else v + 360.0 * round((previo - v) / 360.0)
+
+
+def _rejilla(largo, paso=0.1):
+    n = max(1, int(round(largo / paso)))
+    return [min(largo, i * largo / n) for i in range(n + 1)]
+
+
+def manos(x, s, izq=None, der=None):
+    """
+    Brazos por objetivo: listas de (t, (px, py)[, codo_hacia]) con el punto del lienzo adonde va la mano.
+    El codo se dobla en el sentido natural salvo que se pida otra direccion.
+    """
+    for lado, claves, hom, cod in (("Izq", izq, LA, LE), ("Der", der, RA, RE)):
+        if not claves:
+            continue
+        b = x.brazos[lado]
+        previo = [None, None]
+        for c in claves:
+            rs, rc = b.ik(c[1], c[2] if len(c) > 2 else None)
+            rs, rc = _desenrolla(previo[0], rs), _desenrolla(previo[1], rc)
+            previo = [rs, rc]
+            s.raw(hom, ROT, c[0], rs)
+            s.raw(cod, ROT, c[0], rc)
+
+
+def eje(x, lado, d, y):
+    """Punto a «d» px del eje del cuerpo hacia el lado de ese brazo (d < 0 cruza el eje), a altura y."""
+    return (x.cx + x.brazos[lado].lado_sig * d, y)
+
+
+def _escala_para(x, lado, resto, phi):
+    """
+    La escala Y mas grande de la pieza (pierna o antepierna) con la que ningun punto de su silueta pasa del
+    suelo, estando su pivote a «resto» px por encima de el y girada «phi» grados (antihorario +):
+    cada punto del cierre convexo, a (dx, dy) del pivote, queda a  s dy cos(phi) - dx sen(phi)  por debajo.
+    """
+    c, sn = math.cos(math.radians(phi)), math.sin(math.radians(phi))
+    mejor = 1.0
+    for dx, dy in x.pie_casco[lado]:
+        if dy * c > 1e-6:
+            mejor = min(mejor, (resto + dx * sn) / (dy * c))
+    return mejor
+
+
+def _bajada_min(x, lado, phi):
+    """Lo que baja la silueta de la pieza con la escala minima (0,4)."""
+    c, sn = math.cos(math.radians(phi)), math.sin(math.radians(phi))
+    return max(0.4 * dy * c - dx * sn for dx, dy in x.pie_casco[lado])
+
+
+def escala_pierna(x, lado, dd, abre, neto):
+    """
+    Escala Y de la pierna (no segmentado) o de la rodilla (segmentado) para que el punto mas bajo del pie
+    quede en el suelo cuando el tronco baja «dd» y el muslo se abre «abre» grados (la pantorrilla queda
+    «neto» grados): se calcula con la silueta del pie (su cierre convexo), no con el eje. Cada pierna con sus
+    medidas (el dibujo no es simetrico).
+    """
+    largo, muslo, canilla = x.pata[lado]
+    sg = -1.0 if lado == "Izq" else 1.0  # Izq abre con giro negativo, Der con positivo
+    dd = dd + 2.0 * min(1.0, (dd + 5.0 * abre) / 10.0)  # 2 px de holgura: el pie flota un pelo, no se hunde
+    if x.segmentado:
+        return clamp(_escala_para(x, lado, largo - dd - muslo * math.cos(math.radians(abre)), sg * neto), 0.4, 1.0)
+    return clamp(_escala_para(x, lado, largo - dd, sg * abre), 0.4, 1.0)
+
+
+def profundidad_max(x, abre, neto):
+    """Cuanto puede bajar el tronco con la escala minima (0,4) de la pierna o la rodilla, en la peor de las dos piernas."""
+    peor = 1e9
+    for lado in ("Izq", "Der"):
+        largo, muslo, canilla = x.pata[lado]
+        sg = -1.0 if lado == "Izq" else 1.0
+        if x.segmentado:
+            v = largo - muslo * math.cos(math.radians(abre)) - _bajada_min(x, lado, sg * neto)
+        else:
+            v = largo - _bajada_min(x, lado, sg * abre)
+        peor = min(peor, v)
+    return max(0.0, peor - 3.0)
+
+
+def agacha(x, s, prof, muslo_plano, muslo_seg, razon, *tw):
+    """
+    Agacharse a una profundidad, con las piernas ya contando el ancho del pie (escala_pierna): como
+    agacharse() pero los pies no se hunden al abrir el muslo. «tw»: pares (tiempo base, peso 0..1).
+    Devuelve la bajada del tronco (lo que Tronco debe bajar).
+    """
+    abre_max = muslo_seg if x.segmentado else muslo_plano
+    neto_max = muslo_seg - muslo_seg * razon if x.segmentado else 0.0
+    d = min(prof * x.pierna, profundidad_max(x, abre_max, neto_max))
+    for i in range(0, len(tw) - 1, 2):
+        t, w = tw[i], tw[i + 1]
+        dd = d * w
+        abre = abre_max * w
+        neto = abre - abre * razon if x.segmentado else 0.0
+        s.raw(LL, POSY, t, -dd)
+        s.raw(RL, POSY, t, -dd)
+        s.sym(LL, RL, t, abre)
+        if x.segmentado:
+            s.sym(LK, RK, t, -abre * razon)
+            s.raw(LK, ESCY, t, escala_pierna(x, "Izq", dd, abre, neto))
+            s.raw(RK, ESCY, t, escala_pierna(x, "Der", dd, abre, neto))
+        else:
+            s.raw(LL, ESCY, t, escala_pierna(x, "Izq", dd, abre, neto))
+            s.raw(RL, ESCY, t, escala_pierna(x, "Der", dd, abre, neto))
+    return d
+
+
+def piernas_f(x, s, largo, w, prof, muslo_plano, muslo_seg, razon, desl=None, paso=0.1):
+    """
+    Piernas muestreadas: «w(t)» (0..1) es cuanto esta agachado y «desl(t)» grados de apertura de los muslos
+    (peso cargado de un lado). Mismo reparto que agacharse(): no segmentado, las piernas bajan y se acortan
+    (escala Y); segmentado, el muslo se abre, la pantorrilla vuelve hacia dentro y se acorta con la escala
+    Y de la rodilla. Devuelve la bajada maxima del tronco.
+    """
+    desl = desl or (lambda t: 0.0)
+    abre_max = muslo_seg if x.segmentado else muslo_plano
+    neto_max = muslo_seg - muslo_seg * razon if x.segmentado else 0.0
+    d = min(prof * x.pierna, profundidad_max(x, abre_max, neto_max))
+
+    def abre(t):
+        return abre_max * w(t) + desl(t)
+
+    def neto(t):
+        return (muslo_seg * w(t) - muslo_seg * razon * w(t)) if x.segmentado else 0.0
+
+    muestrea(s, LL, ROT, lambda t: -abre(t), largo, paso)
+    muestrea(s, RL, ROT, lambda t: abre(t), largo, paso)
+    muestrea(s, LL, POSY, lambda t: -d * w(t), largo, paso)
+    muestrea(s, RL, POSY, lambda t: -d * w(t), largo, paso)
+    esc_i = lambda t: escala_pierna(x, "Izq", d * w(t), abre(t), neto(t))
+    esc_d = lambda t: escala_pierna(x, "Der", d * w(t), abre(t), neto(t))
+    if not x.segmentado:
+        muestrea(s, LL, ESCY, esc_i, largo, paso)
+        muestrea(s, RL, ESCY, esc_d, largo, paso)
+    else:
+        muestrea(s, LK, ROT, lambda t: muslo_seg * razon * w(t), largo, paso)
+        muestrea(s, RK, ROT, lambda t: -muslo_seg * razon * w(t), largo, paso)
+        muestrea(s, LK, ESCY, esc_i, largo, paso)
+        muestrea(s, RK, ESCY, esc_d, largo, paso)
+    return d
+
+
+def plantar(x, s):
+    """
+    Que los pies sigan en el suelo cuando Cuerpo se inclina. Cuerpo gira alrededor de su pivote, en el suelo,
+    y el borde del pie que queda del lado hacia el que baja el cuerpo se hundiria (dx * sen(giro): con 8
+    grados y 100 px son 14 px). A la altura de cada pierna se le suma lo que su pie baja por ese giro, con la
+    silueta del pie (su cierre convexo) girada alrededor del pivote de Cuerpo.
+    """
+    giro = s._get(C, ROT, False)
+    if giro is None or not giro.claves or x.guia:
+        return
+    curva = CurvaAuto(giro.claves)
+    for ruta, lado in ((LL, "Izq"), (RL, "Der")):
+        px, py = x.pie_piv[lado]
+        pts = [(a + px - 512.0, b + py - P.SUELO) for a, b in x.pie_casco[lado]]  # relativos al pivote de Cuerpo
+        reposo = max(b for _, b in pts)
+        base = s._get(ruta, POSY, False)
+        previa = CurvaAuto(base.claves) if base is not None and base.claves else None
+        tiempos = {c[0] for c in giro.claves} | ({c[0] for c in base.claves} if previa else set()) | {0.0, s.largo}
+        c = s._get(ruta, POSY)
+        c.claves = []
+        for t in sorted(t for t in tiempos if 0.0 <= t <= s.largo + 1e-9):
+            cs, sn = math.cos(math.radians(curva.evaluar(t))), math.sin(math.radians(curva.evaluar(t)))
+            baja = max(b * cs - a * sn for a, b in pts) - reposo  # cuanto baja (+) el punto mas bajo del pie
+            c.set(t, (previa.evaluar(t) if previa else 0.0) + baja)
+
+
+def cabeza_f(x, s, largo, f_cuello, f_sube=None, ganancia_cabeza=1.2, retraso=3, paso=0.1):
+    """
+    Cabeza muestreada. Con cabeza propia (arte final) gira el cuello (f_cuello, grados) y la cabeza llega
+    «retraso» cuadros tarde; con el arte provisional (la cabeza va dentro del torso) la inclinacion la
+    hace el tronco, un poco menos. Devuelve la funcion que el tronco debe SUMAR (0 con cabeza propia).
+    """
+    if x.segmentado:
+        muestrea(s, NK, ROT, f_cuello, largo, paso)
+        s.follow(NK, ROT, HD, retraso, ganancia_cabeza)
+        if f_sube:
+            muestrea(s, NK, POSY, f_sube, largo, paso)
+        return lambda t: 0.0
+    return lambda t: 0.5 * f_cuello(t)
+
+
+# ---------------------------------------------------------------------------- Idle: uno por personaje
+#
+# Dos respiraciones de 3,2 s (base) = 6,4 s x tempo, la respiracion de la direccion de arte (13.3), y encima
+# un «gesto de caracter» por ciclo con anticipacion, accion y asentamiento. Brazos y cabeza llegan tarde al
+# balanceo del tronco (movimiento secundario). Solo vista frontal.
+
+IDLE_BASE = 6.4
+
+
+def _respira(t):
+    """0 -> 1 -> 0 en cada 3,2 s."""
+    return 0.5 * (1.0 - math.cos(TAU * t / 3.2))
+
+
+def _volumen(s, f_y, largo):
+    """Squash & stretch de Cuerpo: Y = f_y(t); X compensa para conservar el volumen (DA 13.2, <= 15 %)."""
+    muestrea(s, C, ESCY, f_y, largo)
+    muestrea(s, C, ESCX, lambda t: 1.0 - 0.5 * (f_y(t) - 1.0), largo)
+
+
+def idle_nino(x):
+    """
+    Curioso e inquieto: respira, mira arriba a un lado y al otro, rebota sobre las rodillas con los brazos
+    colgando como pendulos y, una vez por ciclo, se rasca la cabeza (la mano sube POR EL COSTADO, sobre el
+    pelo, nunca sobre la cara).
+    """
+    a, h, pf, L = x.a, x.hang, x.pliegue, IDLE_BASE
+    s = familia_spec(x, "Idle", "idle", L)
+    # el peso pasa de una pierna a la otra despacio
+    bal = lambda t: 1.5 * math.sin(TAU * t / L)
+    # los rebotes: se hunde (anticipacion), se estira al subir y asienta
+    reb = lambda t: bump(t, 2.60, 0.26) + 0.8 * bump(t, 3.12, 0.26)
+    alza = lambda t: 0.9 * bump(t, 2.88, 0.2) + 0.55 * bump(t, 3.40, 0.2)
+    vy = lambda t: 1.0 + 0.013 * _respira(t) - 0.028 * reb(t) + 0.016 * alza(t)
+    _volumen(s, vy, L)
+    muestrea(s, C, ROT, bal, L)
+    s.follow(C, ROT, T, 2, -0.6)
+    d = piernas_f(x, s, L, reb, 0.05, 4.0, 5.0, 1.1, desl=lambda t: 0.8 * a * math.sin(TAU * t / L))
+    mira_izq = lambda t: pulso(t, 0.9, 1.45, 2.0, 2.45)
+    mira_der = lambda t: pulso(t, 3.7, 4.1, 4.5, 5.0)
+    rasca = lambda t: pulso(t, 3.75, 4.55, 5.35, 6.05)
+    f_cuello = lambda t: 5.5 * mira_izq(t) - 5.5 * mira_der(t) - 2.5 * reb(t) - 3.0 * rasca(t) * (1 - mira_der(t))
+    f_sube = lambda t: 6.0 * (mira_izq(t) + mira_der(t))
+    extra = cabeza_f(x, s, L, f_cuello, f_sube)
+    muestrea(s, T, POSY, lambda t: -d * reb(t), L)
+    if not x.segmentado:
+        muestrea(s, T, ROT, lambda t: -0.6 * bal(t) + extra(t), L)
+    # brazos: respiran, cuelgan como pendulos tras el rebote y la derecha sube a rascar
+    pend = lambda t: pendulo(t, 2.55, 10.0, 0.62, 0.55)
+    th_base = lambda t: h + 2.0 * _respira(t) + pend(t)
+    pl_base = lambda t: pf + 0.35 * pend(t) + 2.0 * _respira(t)
+    th_izq = lambda t: th_base(t) + 4.0 * rasca(t)
+    brazo_f(x, s, "Izq", th_izq, pl_base, L)
+    if x.segmentado:
+        # la mano sube POR EL COSTADO hasta el pelo, a la altura de la oreja, y se rasca con un vaiven corto
+        rasc = lambda t: pulso(t, 4.55, 4.75, 5.30, 5.40)
+        mueve = lambda t: 0.5 * (1.0 + math.sin(TAU * (t - 4.75) / 0.5 - math.pi / 2)) * rasc(t)
+        cab = x.cara
+        lado_der = (cab[2] + 85, cab[1] + 15)  # fuera del ovalo de la cara, junto a la oreja
+        brazo_mix(x, s, "Der", th_base, pl_base, rasca,
+                  lambda t: (lado_der[0] + 6 * mueve(t), lado_der[1] - 16 * mueve(t)), L, hacia=(1.0, 0.0))
+    else:
+        th_der = lambda t: th_base(t) + 70.0 * rasca(t)
+        brazo_f(x, s, "Der", th_der, lambda t: pf, L)
+    return s
+
+
+def idle_nina(x):
+    """
+    Alegre y decidida: se mece de lado a lado con las manos entrelazadas delante de la barriga (los
+    antebrazos hacia dentro), inclina la cabeza con gracia y encoge los hombros una vez.
+    """
+    a, h, pf, L = x.a, x.hang, x.pliegue, IDLE_BASE
+    s = familia_spec(x, "Idle", "idle", L)
+    bal = lambda t: 3.0 * a * math.sin(TAU * t / L)
+    vy = lambda t: 1.0 + 0.012 * _respira(t) + 0.014 * bump(t, 4.35, 0.5)
+    _volumen(s, vy, L)
+    muestrea(s, C, ROT, bal, L)
+    s.follow(C, ROT, T, 2, -0.7)
+    piernas_f(x, s, L, lambda t: 0.0, 0.0, 0.0, 0.0, 1.0, desl=lambda t: 1.0 * a * math.sin(TAU * t / L))
+    inclina = lambda t: pulso(t, 1.0, 1.6, 2.6, 3.2)
+    otro = lambda t: pulso(t, 3.5, 3.9, 4.7, 5.2)
+    f_cuello = lambda t: 7.0 * inclina(t) - 4.0 * otro(t)
+    extra = cabeza_f(x, s, L, f_cuello, None, 1.2, 3)
+    if not x.segmentado:
+        muestrea(s, T, ROT, lambda t: -0.7 * bal(t) + extra(t), L)
+    encoge = lambda t: pulso(t, 3.95, 4.25, 4.45, 4.85)
+    # manos entrelazadas delante de la barriga; el encogimiento sube un poco los brazos (los codos, mas)
+    if x.segmentado:
+        y = lambda t: x.y_vientre - 18 * encoge(t) - 4 * _respira(t)
+        for lado in ("Izq", "Der"):
+            brazo_mix(x, s, lado, lambda t: h, lambda t: pf, lambda t: 1.0, lambda t, lado=lado: eje(x, lado, -6, y(t)), L)
+    else:
+        # (con el arte provisional los brazos van detras: cuelgan de lado y el encogimiento los abre un poco)
+        th = lambda t: h + 1.5 * _respira(t) + 12.0 * encoge(t)
+        brazo_f(x, s, "Izq", th, lambda t: pf, L)
+        brazo_f(x, s, "Der", th, lambda t: pf, L)
+    return s
+
+
+def idle_papa(x):
+    """
+    Sereno y fuerte: brazos en jarra (manos en la cintura, codos hacia fuera), respiracion profunda con el
+    pecho hinchado (Vol hasta 1,03) y un asentimiento lento.
+    """
+    a, h, pf, L = x.a, x.hang, x.pliegue, IDLE_BASE
+    s = familia_spec(x, "Idle", "idle", L)
+    jarra = lambda t: pulso(t, 0.3, 1.3, 5.3, 6.3)  # se pone en jarra y los suelta al cerrar el ciclo
+    hondo = lambda t: bump(t, 1.9, 1.3) + 0.7 * bump(t, 5.0, 1.3)  # las dos respiraciones, la primera honda
+    vy = lambda t: 1.0 + 0.030 * hondo(t)
+    _volumen(s, vy, L)
+    bal = lambda t: 1.1 * a * math.sin(TAU * t / L)
+    muestrea(s, C, ROT, bal, L)
+    s.follow(C, ROT, T, 2, -0.5)
+    piernas_f(x, s, L, lambda t: 0.0, 0.0, 0.0, 0.0, 1.0, desl=lambda t: 0.6 * a * math.sin(TAU * t / L))
+    asiente = lambda t: bump(t, 3.0, 0.7) + 0.6 * bump(t, 3.9, 0.5)
+    f_cuello = lambda t: -1.5 * asiente(t) + 1.0 * math.sin(TAU * t / L)
+    extra = cabeza_f(x, s, L, f_cuello, lambda t: -7.0 * asiente(t), 1.2, 4)
+    if not x.segmentado:
+        muestrea(s, T, ROT, lambda t: -0.5 * bal(t) + extra(t) - 0.4 * asiente(t), L)
+    if x.segmentado:
+        # la mano en la cintura: a la altura de la cadera, justo fuera del costado; el codo hacia fuera
+        semi = abs(x.brazos["Izq"].S[0] - x.cx) + 10
+        for lado in ("Izq", "Der"):
+            b = x.brazos[lado]
+            brazo_mix(x, s, lado, lambda t: h + 1.5 * hondo(t), lambda t: pf, jarra,
+                      eje(x, lado, semi, x.y_cadera), L, hacia=(b.lado_sig, 0.15))
+    else:
+        th = lambda t: h + 9.0 * jarra(t) + 1.5 * hondo(t)
+        brazo_f(x, s, "Izq", th, lambda t: pf, L)
+        brazo_f(x, s, "Der", th, lambda t: pf, L)
+    return s
+
+
+def idle_mama(x):
+    """
+    Calida y atenta: manos juntas a la cintura, balanceo suave, mira con atencion inclinando la cabeza y, una
+    vez, lleva una mano a la altura de la oreja (como recogerse el pelo) sin tapar la cara.
+    """
+    a, h, pf, L = x.a, x.hang, x.pliegue, IDLE_BASE
+    s = familia_spec(x, "Idle", "idle", L)
+    vy = lambda t: 1.0 + 0.010 * _respira(t)
+    _volumen(s, vy, L)
+    bal = lambda t: 2.4 * a * math.sin(TAU * t / L)
+    muestrea(s, C, ROT, bal, L)
+    s.follow(C, ROT, T, 2, -0.6)
+    piernas_f(x, s, L, lambda t: 0.0, 0.0, 0.0, 0.0, 1.0, desl=lambda t: 0.8 * a * math.sin(TAU * t / L))
+    atenta = lambda t: pulso(t, 0.6, 1.4, 3.0, 3.8)
+    pelo = lambda t: pulso(t, 3.9, 4.5, 5.3, 5.9)
+    f_cuello = lambda t: 6.0 * atenta(t) + 3.0 * pelo(t)
+    extra = cabeza_f(x, s, L, f_cuello, None, 1.2, 3)
+    if not x.segmentado:
+        muestrea(s, T, ROT, lambda t: -0.6 * bal(t) + extra(t), L)
+    if x.segmentado:
+        y = x.y_cadera - 20
+        brazo_mix(x, s, "Der", lambda t: h, lambda t: pf, lambda t: 1.0, eje(x, "Der", -6, y), L)
+        # la izquierda se junta con la derecha y, una vez, sube junto a la oreja (fuera de la cara)
+        cara = x.cara
+        oreja = (cara[0] - 30, 0.5 * (cara[1] + cara[3]))
+        brazo_mix(x, s, "Izq", lambda t: h, lambda t: pf, lambda t: 1.0,
+                  lambda t: (eje(x, "Izq", -6, y)[0] + pelo(t) * (oreja[0] - eje(x, "Izq", -6, y)[0]),
+                             y + pelo(t) * (oreja[1] - y)), L)
+    else:
+        th = lambda t: h - 3.0 + 1.2 * _respira(t) + 10.0 * pelo(t)
+        brazo_f(x, s, "Izq", th, lambda t: pf, L)
+        brazo_f(x, s, "Der", lambda t: h - 3.0 + 1.2 * _respira(t), lambda t: pf, L)
+    return s
+
+
+def idle(x):
+    return {"nino": idle_nino, "nina": idle_nina, "papa": idle_papa, "mama": idle_mama}[x.id](x)
+
+
+# ---------------------------------------------------------------------------- caminar y correr
+
+
+def y_junta(x, y):
+    """
+    Altura a la que se pueden juntar las manos en el eje. Con el arte provisional el brazo es un palo
+    recto: si las manos se piden mas arriba de donde se cruzan las puntas, el brazo las pasaria de largo
+    y se formaria una X. Con antebrazo se doblan y llegan donde se pida.
+    """
+    if x.segmentado:
+        return y
+    b = x.brazos["Izq"]
+    semi = abs(b.S[0] - x.cx)
+    return max(y, b.S[1] + math.sqrt(max(b.largo ** 2 - semi ** 2, 0.0)))
+
+
+def ta(x, f, seg):
+    """
+    Angulo del humero (theta) para un gesto. Con los brazos delante, «seg». Con los brazos DETRAS del cuerpo
+    (arte provisional) el gesto se pide como la fraccion «f» (0 a 1) del arco en que el brazo se ve
+    (ARCO_ATRAS): 0 pegado al cuerpo, 1 lo mas abierto o alto que se ve entero.
+    """
+    arco = x.brazos["Izq"].arco
+    return seg if arco is None else arco[0] + f * (arco[1] - arco[0])
+
+
+def brazos_s(x, s, izq=None, der=None):
+    """Como brazos(), con el sentido del pliegue opcional: (t, theta, pliegue[, signo]); signo +1 dentro, -1 a la cabeza."""
+    for lado, claves, hom, cod in (("Izq", izq, LA, LE), ("Der", der, RA, RE)):
+        if not claves:
+            continue
+        b = x.brazos[lado]
+        for c in claves:
+            s.raw(hom, ROT, c[0], b.hombro_rot(c[1]))
+            if len(c) > 3:
+                s.raw(cod, ROT, c[0], c[3] * c[2] if lado == "Izq" else -c[3] * c[2])
+            else:
+                s.raw(cod, ROT, c[0], b.codo_rot(c[1], c[2]))
+
+
+def paso(x, accion, archivo, p, amp, vaiven, inclina, balanceo, flex_lo, flex_hi, aplasta):
+    """
+    Caminar y correr (misma estructura que BuildRigs, con inclinacion, rebote, codos, rodillas y cabeza).
+    Los pasos alternan: la pierna izquierda sube en 0,25 p y la derecha en 0,75 p. Los brazos cuelgan de la
+    pose de reposo y se balancean con el paso; los codos se pliegan mas cuanto mas adelante van.
+    """
+    sube = 0.14 * x.pierna * amp
+    medio = 0.5 * (flex_lo + flex_hi)
+    h = x.hang
+    s = familia_spec(x, accion, archivo, p)
+    s.raw(LL, POSY, 0, 0, 0.25 * p, sube, 0.5 * p, 0, p, 0)
+    s.raw(RL, POSY, 0, 0, 0.5 * p, 0, 0.75 * p, sube, p, 0)
+    s.rot(LL, 0, 0, 0.25 * p, -4 * amp, 0.5 * p, 0, p, 0)
+    s.rot(RL, 0, 0, 0.5 * p, 0, 0.75 * p, 4 * amp, p, 0)
+    # La rodilla del pie que vuela se dobla un poco hacia dentro (+ en Izq, - en Der).
+    s.rot(LK, 0, 0, 0.25 * p, 6 * amp, 0.5 * p, 0, p, 0)
+    s.rot(RK, 0, 0, 0.5 * p, 0, 0.75 * p, -6 * amp, p, 0)
+    if x.segmentado:
+        s.raw(LK, ESCY, 0, 1, 0.25 * p, 0.9, 0.5 * p, 1, p, 1)
+        s.raw(RK, ESCY, 0, 1, 0.5 * p, 1, 0.75 * p, 0.9, p, 1)
+    s.raw(C, POSY, 0, 0, 0.25 * p, 10 * amp, 0.5 * p, 0, 0.75 * p, 10 * amp, p, 0)
+    s.rot(C, 0, inclina, 0.25 * p, inclina - balanceo, 0.5 * p, inclina, 0.75 * p, inclina + balanceo, p, inclina)
+    s.vol(0, 1 - aplasta, 0.25 * p, 1 + 0.7 * aplasta, 0.5 * p, 1 - aplasta, 0.75 * p, 1 + 0.7 * aplasta, p, 1 - aplasta)
+    s.rot(T, 0, 0, 0.25 * p, 1.2 * amp, 0.5 * p, 0, 0.75 * p, -1.2 * amp, p, 0)
+    brazos(x, s,
+           [(0, h, medio), (0.25 * p, h - vaiven, flex_hi), (0.5 * p, h, medio), (0.75 * p, h + vaiven, flex_lo), (p, h, medio)],
+           [(0, h, medio), (0.25 * p, h + vaiven, flex_lo), (0.5 * p, h, medio), (0.75 * p, h - vaiven, flex_hi), (p, h, medio)])
+    cabeza_sigue(s, C, ROT, -0.35, -0.2)
+    return s
+
+
+def walk(x):
+    a = x.a
+    return paso(x, "Walk", "caminar", 0.8, a, 8 * a, -4 * a, 1.5 * a, 10, 20, 0.015 * a)
+
+
+def run(x):
+    a = x.a
+    return paso(x, "Run", "correr", 0.5, 1.6 * a, 16 * a, -6.5 * a, 2 * a, 30, 46, 0.04 * a)
+
+
+# ---------------------------------------------------------------------------- hablar, golpear, martillar
+
+
+def talk(x):
+    """Hablar: la mano derecha acompaña lo que dice (sube con la palma hacia dentro) y la cabeza asiente."""
+    a, h, pf = x.a, x.hang, x.pliegue
+    s = familia_spec(x, "Talk", "hablar", 1.6)
+    s.vol(0, 1.0, 0.4, 1.012, 0.8, 1.0, 1.2, 1.012, 1.6, 1.0)
+    s.rot(C, 0, 0, 0.8, 1.5, 1.6, 0)
+    s.rot(T, 0, 0, 0.4, 1, 0.8, -1, 1.2, 1, 1.6, 0)
+    g = 1.0 if x.segmentado else 0.8  # con el brazo entero (arte provisional) el gesto es mas corto
+    # la mano derecha se abre hacia fuera (el antebrazo sube con la palma hacia dentro), al ritmo de las palabras
+    brazos_s(x, s,
+             [(0, h, pf), (0.8, h + 5 * a, pf + 4), (1.6, h, pf)],
+             [(0, h, pf), (0.4, 52 * g, 62, -1), (0.8, 44 * g, 46, -1), (1.2, 58 * g, 70, -1), (1.6, h, pf)])
+    s.sym(LL, RL, 0, 0, 0.8, 0.8 * a, 1.6, 0)
+    s.rot(NK, 0, 0, 0.4, -2.5 * a, 0.6, 0.5, 1.2, -2.8 * a, 1.4, 0.5, 1.6, 0)
+    s.follow(NK, ROT, HD, 3, 1.0)
+    return s
+
+
+def strike(x):
+    """
+    Golpear las piedras delante del pecho (0,6 s): las manos se abren (anticipacion), chocan en el eje, rebotan.
+    Los brazos vienen de la pose de reposo y las manos se juntan POR DELANTE del pecho, no tras el torso
+    (con el arte provisional, que dibuja los brazos detras, chocan a los lados del cuerpo).
+    """
+    s = familia_spec(x, "Strike", "golpear", 0.6)
+    h, pf = x.hang, x.pliegue
+    ts = (0.0, 0.14, 0.21, 0.30, 0.36, 0.46, 0.6)
+    sep = (26, 62, 78, 22, 34, 26, 26)     # mitad de la separacion entre las manos (al chocar, una mano junto a la otra)
+    alto = (0, -4, -10, 4, 0, 0, 0)        # y la altura sobre el pecho (arriba al armar el golpe)
+    yy = y_junta(x, x.y_pecho + 14)
+    if x.segmentado:
+        for lado in ("Izq", "Der"):
+            tg = [(t, eje(x, lado, d, yy + dy)) for t, d, dy in zip(ts, sep, alto)]
+            manos(x, s, **{"izq" if lado == "Izq" else "der": tg})
+    else:
+        # Un solo palo por brazo y DETRAS del cuerpo: no se pueden juntar por delante. Las piedras chocan a los
+        # lados: los brazos se abren (anticipacion) y se cierran contra el costado (el choque) y rebotan.
+        izq = [(t, ta(x, 0.8 * (d - 22) / 56.0, h), pf) for t, d in zip(ts, sep)]
+        brazos(x, s, izq, izq)
+    s.raw(T, POSY, 0, 0, 0.21, 5, 0.30, -8, 0.38, -3, 0.6, 0)
+    s.vol(0, 1.0, 0.21, 1.025, 0.30, 0.965, 0.38, 1.01, 0.6, 1.0)
+    s.rot(C, 0, 0, 0.21, 1.2, 0.30, -1.5, 0.6, 0)
+    s.follow(T, POSY, NK, 2, 0.25)
+    s.follow(T, POSY, HD, 4, 0.15)
+    return s
+
+
+def hammer(x):
+    """
+    Martillar (0,7 s): retroceso, el brazo derecho sube POR EL COSTADO (el antebrazo vertical junto a la
+    cabeza, no por delante de la cara), golpe y asentamiento; la izquierda sostiene.
+    """
+    s = familia_spec(x, "Hammer", "martillar", 0.7)
+    h, pf = x.hang, x.pliegue
+    brazos_s(x, s, None, [(0, h, pf, 1), (0.08, h + 16, pf + 14, 1), (0.19, 108, 30, -1), (0.30, 140, 45, -1), (0.45, 136, 50, -1),
+                          (0.55, 34, 62, 1), (0.60, 28, 54, 1), (0.65, h + 6, pf + 20, 1), (0.7, h, pf, 1)])
+    brazos(x, s, [(0, h, pf), (0.30, h - 4, pf + 3), (0.55, h - 8, pf + 6), (0.65, h, pf), (0.7, h, pf)], None)
+    s.rot(C, 0, 0, 0.30, 1.5, 0.55, -3, 0.65, 0.6, 0.7, 0)
+    s.vol(0, 1.0, 0.30, 1.03, 0.55, 0.955, 0.62, 1.012, 0.7, 1.0)
+    s.raw(T, POSY, 0, 0, 0.08, 2, 0.30, 5, 0.55, -6, 0.62, -1, 0.7, 0)
+    cabeza_sigue(s, C, ROT, -0.5, -0.3)
+    return s
+
+
+def blow(x):
+    """
+    Soplar agachado sobre el monton (0,9 s): agachado, con el tronco inclinado hacia delante (de frente se
+    lee como un tronco mas corto), los brazos bajos por delante, junto a los muslos, y tres soplos: el pecho
+    se llena y se vacia (Vol) y la cabeza baja con cada soplo.
+    """
+    h, pf, L = x.hang, x.pliegue, 0.9
+    s = familia_spec(x, "Blow", "soplar", L)
+    d = agacha(x, s, 0.3, 0, 8, 1.15, 0, 1, 0.9, 1)
+    centros = (0.18, 0.46, 0.74)
+    llena = lambda t: sum(bump(t, c - 0.08, 0.08) for c in centros)       # inspira
+    sopla = lambda t: sum(bump(t, c + 0.03, 0.09) for c in centros)       # sopla
+    vy = lambda t: 1.0 + 0.03 * llena(t) - 0.05 * sopla(t)
+    _volumen(s, vy, L)
+    s.raw(T, POSY, 0, -d, 0.9, -d)
+    s.raw(T, ESCY, 0, 0.95, 0.9, 0.95)      # el tronco inclinado hacia delante, visto de frente
+    if x.segmentado:
+        muestrea(s, NK, ROT, lambda t: 2.0 * llena(t) - 3.0 * sopla(t), L, 0.05)
+        muestrea(s, NK, POSY, lambda t: 4.0 * llena(t) - 9.0 * sopla(t), L, 0.05)
+        s.follow(NK, ROT, HD, 3, 1.0)
+    else:
+        muestrea(s, T, ROT, lambda t: 0.0 * t, L)
+    # los brazos cuelgan por delante, casi estirados, y se mecen con cada soplo
+    k = ta(x, 0.0, 16)
+    brazo_f(x, s, "Izq", lambda t: k + 3.0 * sopla(t), lambda t: 16.0, L, 0.05)
+    brazo_f(x, s, "Der", lambda t: k + 3.0 * sopla(t), lambda t: 16.0, L, 0.05)
+    return s
+
+
+def pickup(x):
+    """Recoger: un respingo de anticipacion, se agacha, alcanza con la derecha, se levanta con lo recogido (1,4 s)."""
+    s = familia_spec(x, "PickUp", "recoger", 1.4)
+    h, pf = x.hang, x.pliegue
+    d = agacha(x, s, 0.35, 0, 10, 1.2, 0, 0, 0.4, 1, 0.7, 1, 1.1, 0, 1.4, 0)
+    s.raw(T, POSY, 0, 0, 0.1, 4, 0.4, -d, 0.7, -d, 1.1, 3, 1.25, 0, 1.4, 0)
+    brazos(x, s,
+           [(0, h, pf), (0.1, h + 5, pf), (0.4, h - 10, pf + 14), (0.7, h - 10, pf + 14), (1.1, h + 2, pf), (1.4, h, pf)],
+           [(0, h, pf), (0.1, h + 8, pf), (0.4, h + 14, 6), (0.7, h + 14, 6), (1.1, h - 4, pf + 70), (1.2, h - 8, pf + 80), (1.4, h, pf)])
+    s.vol(0, 1.0, 0.1, 1.02, 0.4, 0.965, 0.7, 0.97, 1.1, 1.04, 1.25, 1.01, 1.4, 1.0)
+    s.rot(NK, 0, 0, 0.4, 5, 0.7, 5, 1.1, -2, 1.4, 0)
+    s.follow(NK, ROT, HD, 3, 1.0)
+    return s
+
+
+def kneel(x):
+    """Arrodillado: la cadera baja y las rodillas se abren; de frente es lo que se lee como «de rodillas»."""
+    s = familia_spec(x, "Kneel", "arrodillarse", 3.0)
+    h, pf = x.hang, x.pliegue
+    d = agacha(x, s, 0.62, 14, 14, 1.25, 0, 1, 3, 1)
+    s.raw(T, POSY, 0, -d, 3, -d)
+    s.vol(0, 1.0, 1.5, 1.008, 3.0, 1.0)
+    # las manos descansan sobre los muslos
+    brazos(x, s, [(0, h - 2, pf + 8), (1.5, h - 4, pf + 12), (3, h - 2, pf + 8)], [(0, h - 2, pf + 8), (1.5, h - 4, pf + 12), (3, h - 2, pf + 8)])
+    s.rot(T, 0, 0, 1.5, 0.8, 3, 0)
+    s.rot(NK, 0, 3, 1.5, 4.5, 3, 3)
+    s.follow(NK, ROT, HD, 4, 1.0)
+    return s
+
+
+# ---------------------------------------------------------------------------- cargar, empujar, señalar, observar
+
+
+def carry(x):
+    """Cargar: el paso de caminar con los brazos en V sobre los hombros (por los lados de la cabeza, no sobre la cara)."""
+    a, h = x.a, x.hang
+    s = paso(x, "Carry", "cargar", 0.95, 0.8 * a, 0, -2 * a, 1.2 * a, 0, 0, 0.01 * a)
+    for r in (LA, RA, LE, RE):
+        s.drop(r, ROT)
+    arriba, medio = ta(x, 0.8, 122), ta(x, 0.6, 116)
+    brazos_s(x, s, [(0, arriba, 14, -1), (0.475, medio, 22, -1), (0.95, arriba, 14, -1)],
+             [(0, arriba, 14, -1), (0.475, medio, 22, -1), (0.95, arriba, 14, -1)])
+    return s
+
+
+def push(x):
+    """Empujar: inclinado, las dos manos juntas delante del pecho, y el paso."""
+    a, h, pf = x.a, x.hang, x.pliegue
+    s = paso(x, "Push", "empujar", 0.9, 0.8 * a, 0, 0, 0, 0, 0, 0.01 * a)
+    for r in (LA, RA, LE, RE, C):
+        s.drop(r, ROT)
+    yy = y_junta(x, x.y_pecho + 30)
+    if x.segmentado:
+        for lado in ("Izq", "Der"):
+            tg = [(0, eje(x, lado, 14, yy)), (0.45, eje(x, lado, 18, yy - 6)), (0.9, eje(x, lado, 14, yy))]
+            manos(x, s, **{"izq" if lado == "Izq" else "der": tg})
+    else:
+        # los brazos pegados al costado empujan con el paso (vaiven corto): por delante no se pueden ver
+        k = [(0, ta(x, 0.12, 0), pf), (0.45, ta(x, 0.0, 0), pf), (0.9, ta(x, 0.12, 0), pf)]
+        brazos(x, s, k, k)
+    s.rot(C, 0, -4, 0.45, -5, 0.9, -4)
+    cabeza_sigue(s, C, ROT, -0.35, -0.2)
+    return s
+
+
+def point(x):
+    """Señalar: el brazo derecho casi horizontal hacia lo que tiene delante; en diagonal parecia saludar."""
+    a, h, pf = x.a, x.hang, x.pliegue
+    s = familia_spec(x, "Point", "senalar", 1.2)
+    brazos_s(x, s,
+             [(0, h + 2, pf), (0.6, h + 5, pf), (1.2, h + 2, pf)],
+             [(0, 96, 4, -1), (0.3, 100, 3, -1), (0.6, 94, 6, -1), (0.9, 99, 3, -1), (1.2, 96, 4, -1)])
+    s.rot(C, 0, -3, 0.6, -3.5, 1.2, -3)
+    s.rot(T, 0, -1.2, 0.6, -1.5, 1.2, -1.2)
+    s.vol(0, 1.0, 0.6, 1.006, 1.2, 1.0)
+    s.rot(NK, 0, -2.5, 0.6, -3.2, 1.2, -2.5)
+    s.follow(NK, ROT, HD, 3, 1.0)
+    return s
+
+
+def observe(x):
+    """Observar: la derecha en la cintura y la izquierda de visera sobre los ojos (sin taparlos), mirando a un lado y a otro (2 s)."""
+    a, h, pf = x.a, x.hang, x.pliegue
+    s = familia_spec(x, "Observe", "observar", 2.0)
+    s.rot(C, 0, 5, 1, 8, 2, 5)
+    s.vol(0, 1.0, 1, 1.008, 2, 1.0)
+    s.rot(T, 0, 0, 1, -1.2 * a, 2, 0)
+    s.sym(LL, RL, 0, 0, 1, 1.2 * a, 2, 0)
+    if x.segmentado and x.cara:
+        c = x.cara
+        semi = abs(x.brazos["Izq"].S[0] - x.cx) + 10
+        # La visera por encima de los ojos: los hombros quedan debajo de la cara, y un brazo que sube a la frente
+        # pasaria por delante de ella. Se sombrea desde el costado, a la altura de la sien (fuera de la cara).
+        visera = (c[0] - 70, c[1] - 12)
+        fuera = (-1.0, -0.6)
+        manos(x, s, [(0, visera, fuera), (1.0, (visera[0] + 6, visera[1] + 2), fuera), (2.0, visera, fuera)],
+              [(0, eje(x, "Der", semi, x.y_cadera)), (2.0, eje(x, "Der", semi, x.y_cadera))])
+    else:
+        # sin antebrazo no hay visera que dibujar: los brazos se separan un poco del cuerpo (manos a la cintura)
+        brazos(x, s, [(0, h + 10, pf), (1.0, h + 12, pf), (2.0, h + 10, pf)], [(0, h + 10, pf), (2.0, h + 10, pf)])
+    s.rot(NK, 0, 0, 0.5, -6, 1, 0, 1.5, 6, 2, 0)
+    s.follow(NK, ROT, HD, 4, 1.0)
+    return s
+
+
+# ---------------------------------------------------------------------------- celebrar, animo, abrazar, sorpresa, dormir
+
+
+def celebrate(x):
+    """Celebrar sin despegar los pies: brazos arriba (en V, a los lados de la cabeza) y rebote de squash & stretch (<= 15 %)."""
+    a = x.a
+    b = 0.06 * a
+    s = familia_spec(x, "Celebrate", "celebrar", 1.2)
+    # los brazos se abren en V a los lados de la cabeza (el humero a 25-40 grados sobre la horizontal) y suben
+    # y bajan con el rebote; el antebrazo apenas se pliega, para que las manos no vuelvan a la cara
+    arriba, medio = ta(x, 1.0, 130), ta(x, 0.7, 112)  # con los brazos detras: lo mas alto que se ve entero, y un poco menos
+    brazos_s(x, s,
+             [(0, arriba, 8, -1), (0.3, medio, 16, -1), (0.6, arriba, 8, -1), (0.9, medio, 16, -1), (1.2, arriba, 8, -1)],
+             [(0, arriba, 8, -1), (0.3, medio, 16, -1), (0.6, arriba, 8, -1), (0.9, medio, 16, -1), (1.2, arriba, 8, -1)])
+    s.vol(0, 1.0, 0.15, 1 - b, 0.3, 1 + b, 0.6, 1.0, 0.75, 1 - b, 0.9, 1 + b, 1.2, 1.0)
+    s.rot(C, 0, 0, 0.3, 1.5, 0.6, 0, 0.9, -1.5, 1.2, 0)
+    s.rot(T, 0, 0, 0.3, -2, 0.6, 0, 0.9, 2, 1.2, 0)
+    s.sym(LL, RL, 0, 0, 0.15, 3 * a, 0.3, 0, 0.6, 0, 0.75, 3 * a, 0.9, 0, 1.2, 0)
+    s.sym(LK, RK, 0, 0, 0.15, -5 * a, 0.3, 0, 0.6, 0, 0.75, -5 * a, 0.9, 0, 1.2, 0)
+    s.rot(NK, 0, 0, 0.3, 4, 0.6, 0, 0.9, -4, 1.2, 0)
+    s.follow(NK, ROT, HD, 3, 1.2)
+    return s
+
+
+def encourage(x):
+    """
+    Animo tras un intento sin exito (CP-02: calido, nunca de reproche). Anticipacion (se agacha un poco y el
+    brazo baja), el puño sube por FUERA de la silueta de la cabeza, por encima del hombro, con un bombeo;
+    rebote alegre de rodillas, cabeceo afirmativo y la otra mano abierta y relajada. Nada cerca de la cara.
+    Dura 0,9 s x tempo, como siempre: los controladores de nivel lo reproducen con PlayFor un tiempo fijo
+    (EncourageSeconds = 0,9) y pasan a Idle; la anticipacion y el rebote son cortos para que el asentamiento
+    (de 0,52 a 0,9) quepa entero y el clip acabe en la pose de reposo.
+    """
+    h, pf, L = x.hang, x.pliegue, 0.9
+    s = familia_spec(x, "Encourage", "animo", L)
+    w = lambda t: bump(t, 0.13, 0.13) + 0.45 * bump(t, 0.50, 0.12)       # rodillas: anticipacion y rebote
+    estira = lambda t: bump(t, 0.33, 0.11)                               # se estira al subir el puño
+    vy = lambda t: 1.0 - 0.03 * w(t) + 0.04 * estira(t)
+    _volumen(s, vy, L)
+    d = piernas_f(x, s, L, w, 0.05, 3.0, 5.0, 1.1, paso=0.05)
+    muestrea(s, T, POSY, lambda t: -d * w(t), L, 0.05)
+    muestrea(s, C, ROT, lambda t: -1.5 * estira(t), L, 0.05)
+    asiente = lambda t: bump(t, 0.14, 0.09) + 0.7 * bump(t, 0.50, 0.09)    # cabeceo afirmativo: baja dos veces
+    if x.segmentado:
+        muestrea(s, NK, ROT, lambda t: 1.0 * estira(t), L, 0.05)
+        muestrea(s, NK, POSY, lambda t: -8.0 * asiente(t), L, 0.05)
+        s.follow(NK, ROT, HD, 3, 1.2)
+    else:
+        muestrea(s, T, ROT, lambda t: 0.0 * t, L, 0.05)
+    # el brazo derecho: baja (anticipacion), sube por fuera de la cabeza, bombea y vuelve
+    arriba = ta(x, 1.0, 122)
+    pf_up = 6.0 if x.segmentado else 0.0
+    bombeo = 8 if x.segmentado else 6
+    brazos_s(x, s,
+             [(0, h + 6, pf), (0.3, h + 8, pf), (0.52, h + 6, pf), (0.9, h + 6, pf)],       # izquierda: abierta y relajada
+             [(0, h, pf), (0.14, ta(x, 0.0, 14), pf + 8), (0.25, ta(x, 0.8, 100), pf_up + 10, -1), (0.33, arriba, pf_up, -1),
+              (0.41, arriba - bombeo, pf_up + 8, -1), (0.50, arriba, pf_up, -1), (0.66, ta(x, 0.5, 60), pf + 6, -1), (0.9, h, pf)])
+    return s
+
+
+def hug(x):
+    """Abrazar: los brazos rodean por delante del pecho (abiertos a la altura del pecho y cerrandose) y se mece."""
+    h, pf = x.hang, x.pliegue
+    s = familia_spec(x, "Hug", "abrazar", 2.0)
+    yy = y_junta(x, x.y_pecho)
+    if x.segmentado:
+        # los brazos se abren de par en par (esperando a quien llega) y se cierran rodeandolo por delante
+        for lado in ("Izq", "Der"):
+            tg = [(0, eje(x, lado, 150, yy - 10)), (0.8, eje(x, lado, 118, yy - 4)), (1.2, eje(x, lado, 36, yy + 6)),
+                  (1.6, eje(x, lado, 30, yy + 8)), (2.0, eje(x, lado, 150, yy - 10))]
+            manos(x, s, **{"izq" if lado == "Izq" else "der": tg})
+    else:
+        # los brazos se abren por los lados (esperando a quien llega) y se cierran contra el cuerpo
+        k = [(0, ta(x, 0.85, 0), pf), (0.8, ta(x, 0.7, 0), pf), (1.2, ta(x, 0.12, 0), pf), (1.6, ta(x, 0.05, 0), pf), (2.0, ta(x, 0.85, 0), pf)]
+        brazos(x, s, k, k)
+    s.rot(C, 0, -2.5, 1, 2.5, 2, -2.5)
+    s.vol(0, 1.0, 1, 0.985, 2, 1.0)
+    s.rot(T, 0, 0, 1, -1, 2, 0)
+    cabeza_sigue(s, C, ROT, -1.0, -0.5)  # la cabeza se inclina al lado contrario del mecido
+    return s
+
+
+def surprise(x):
+    """Sorpresa: pose sostenida con un temblor leve (los brazos se abren a los lados); el sobresalto lo da el fundido de entrada."""
+    h, pf = x.hang, x.pliegue
+    s = familia_spec(x, "Surprise", "sorpresa", 1.0)
+    brazos(x, s,
+           [(0, h + 26, pf + 8), (0.25, h + 29, pf + 8), (0.5, h + 26, pf + 12), (0.75, h + 29, pf + 8), (1, h + 26, pf + 8)],
+           [(0, h + 26, pf + 8), (0.25, h + 29, pf + 8), (0.5, h + 26, pf + 12), (0.75, h + 29, pf + 8), (1, h + 26, pf + 8)])
+    s.vol(0, 1.03, 0.5, 1.04, 1, 1.03)
+    s.sym(LL, RL, 0, 2.5, 0.5, 3, 1, 2.5)
+    s.sym(LK, RK, 0, -3, 0.5, -3.5, 1, -3)
+    s.rot(T, 0, 0, 0.5, -0.6, 1, 0)
+    s.rot(NK, 0, -3, 0.5, -4, 1, -3)  # la cabeza hacia atras
+    s.follow(NK, ROT, HD, 3, 1.0)
+    return s
+
+
+def sleep(x):
+    """
+    Dormir: sentado casi en el suelo, recostado de lado y respirando despacio (4 s). Tumbado del todo, con los
+    ojos abiertos del sprite, se leeria como caido (CP-02).
+    """
+    h, pf = x.hang, x.pliegue
+    s = familia_spec(x, "Sleep", "dormir", 4.0)
+    d = agacha(x, s, 0.66, 16, 16, 1.25, 0, 1, 4, 1)
+    s.raw(T, POSY, 0, -d, 4, -d)
+    s.rot(T, 0, 16, 2, 17.5, 4, 16)
+    s.vol(0, 1.0, 2, 1.025, 4, 1.0)
+    # los brazos descansan: uno sobre el regazo, otro caido junto al cuerpo
+    brazos(x, s, [(0, h - 6, pf + 16), (2, h - 6, pf + 20), (4, h - 6, pf + 16)], [(0, h + 8, pf + 6), (2, h + 8, pf + 8), (4, h + 8, pf + 6)])
+    s.rot(NK, 0, 8, 2, 9.5, 4, 8)  # la cabeza cae hacia el lado del recostado
+    s.follow(NK, ROT, HD, 4, 1.0)
+    return s
+
+
+def visibilidad(x, lista):
+    """Oculto, aparecer y apagarse: alfa del lienzo y escala del cuerpo. Parpadeos lentos (RNF-21)."""
+    a, h, pf = x.a, x.hang, x.pliegue
+    lista.append(familia_spec(x, "Hidden", "oculto", 1.0).raw("Lienzo", ALFA, 0, 0.0, 1, 0.0))
+    # Aparecer: la escala sube con estiramiento (Y se pasa y X se afloja) y asienta con un bamboleo
+    # amortiguado del cuerpo, los brazos y la cabeza.
+    ap = familia_spec(x, "Appear", "aparicion", 1.0, False)
+    ap.raw("Lienzo", ALFA, 0, 0.0, 0.5, 1.0, 1, 1.0)
+    ap.raw(C, ESCY, 0, 0.3, 0.6, 1.08, 0.8, 0.96, 1, 1.0)
+    ap.raw(C, ESCX, 0, 0.3, 0.6, 0.98, 0.8, 1.04, 1, 1.0)
+    ap.rot(C, 0, 0, 0.65, -2.5 * a, 0.8, 1.8 * a, 0.92, -0.7 * a, 1, 0)
+    brazos(x, ap, [(0, h, pf), (0.7, h + 6, pf), (0.85, h - 2, pf), (1, h, pf)], [(0, h, pf), (0.7, h + 6, pf), (0.85, h - 2, pf), (1, h, pf)])
+    cabeza_sigue(ap, C, ROT, -0.8, -0.5)
+    lista.append(ap)
+    van = familia_spec(x, "Vanish", "apagado", 1.6, False)
+    van.raw("Lienzo", ALFA, 0, 1.0, 0.3, 0.35, 0.6, 1.0, 0.9, 0.35, 1.2, 1.0, 1.6, 0.0)
+    van.raw(C, ESCX, 0, 1.0, 1.2, 1.0, 1.6, 0.6)
+    van.raw(C, ESCY, 0, 1.0, 1.2, 1.0, 1.6, 0.6)
+    brazos(x, van, [(0, h, pf), (1.2, h, pf), (1.6, h + 10, pf)], [(0, h, pf), (1.2, h, pf), (1.6, h + 10, pf)])
+    lista.append(van)
+
+
+def clips_familia(x):
+    lista = _clips_familia(x)
+    for sp in lista:
+        plantar(x, sp)
+    return lista
+
+
+def _clips_familia(x):
+    lista = [idle(x), walk(x), run(x), talk(x), strike(x), hammer(x), blow(x), pickup(x), kneel(x), carry(x), push(x),
+             point(x), observe(x), celebrate(x), encourage(x), hug(x), surprise(x), sleep(x)]
+    visibilidad(x, lista)
+    return lista
+
+
+
+
+# ---------------------------------------------------------------------------- Algoritm: 9 clips
+#
+# Una llama con extremidades que flota. Conserva la flotacion senoidal, el giro de Spin sobre Cuerpo, el alfa
+# y los nombres de siempre. Sus brazos son palitos que salen de los costados del vientre: nunca pasan por
+# delante de los ojos ni de la boca (la cara va encima de todo en «orden_tronco»). Con el sprite entero actual
+# lo visible no cambia; la prueba de pose_preview.py usa una maqueta recortada del sprite.
+
+
+def guia_idle(x):
+    """
+    Flota y se mece (ciclo de 2 s, 13.3). La llama parpadea: se estira y se aplasta a destiempo del vaiven, y
+    los brazos ondean alternados como lenguas de fuego (el antebrazo llega 3 cuadros tarde).
+    """
+    s = guia_spec("Idle", "flotar", 2.0)
+    s.raw(C, POSY, 0, 0, 1, 24, 2, 0).rot(C, 0, -3, 1, 3, 2, -3)
+    # parpadeo de llama: Cuerpo se estira cuando sube y Tronco se estira a otro ritmo (a destiempo)
+    s.vol(0, 1.0, 0.35, 1.045, 0.85, 0.972, 1.35, 1.04, 1.75, 0.985, 2.0, 1.0)
+    s.raw(T, ESCY, 0, 1, 0.55, 1.035, 1.0, 0.98, 1.5, 1.03, 2.0, 1)
+    # brazos que ondean, en oposicion
+    s.rot(LA, 0, 0, 0.5, -9, 1.0, 0, 1.5, 9, 2.0, 0)
+    s.rot(RA, 0, 0, 0.5, 9, 1.0, 0, 1.5, -9, 2.0, 0)
+    s.follow(LA, ROT, LE, 3, 1.0)
+    s.follow(RA, ROT, RE, 3, 1.0)
+    for ruta, delta in ((LE, 7.0), (RE, -7.0)):  # los codos siempre algo plegados hacia dentro: nunca se hiperextienden
+        for k in s._get(ruta, ROT).claves:
+            k[1] += delta
+    cuelga_piernas(s, 12)
+    s.follow(C, ROT, T, 2, 0.4)
+    return s
+
+
+def clips_guia(x):
+    lista = [guia_idle(x)]
+
+    talk_ = guia_spec("Talk", "hablar", 1.0)
+    (talk_.raw(C, POSY, 0, 0, 0.5, 18, 1, 0)
+     .raw(C, ESCX, 0, 1, 0.25, 1.05, 0.5, 1, 0.75, 1.05, 1, 1)
+     .raw(C, ESCY, 0, 1, 0.25, 1.05, 0.5, 1, 0.75, 1.05, 1, 1)
+     .rot(T, 0, 0, 0.25, 2, 0.5, 0, 0.75, -2, 1, 0)
+     .raw(T, ESCY, 0, 1, 0.25, 1.03, 0.5, 1, 0.75, 1.03, 1, 1)
+     .sym(LA, RA, 0, 0, 0.25, 6, 0.5, 0, 0.75, 6, 1, 0)
+     .sym(LE, RE, 0, 0, 0.25, 8, 0.5, 0, 0.75, 8, 1, 0))
+    cuelga_piernas(talk_, 9)
+    lista.append(talk_)
+
+    # Señala hacia la derecha de la pantalla: el brazo derecho casi horizontal (el cuerpo ya se inclina -10).
+    point_ = guia_spec("Point", "senalar", 1.2)
+    (point_.rot(C, 0, -10, 0.6, -14, 1.2, -10).raw(C, POSY, 0, 10, 0.6, 24, 1.2, 10)
+     .rot(RA, 0, 60, 0.6, 56, 1.2, 60)
+     .rot(RE, 0, 3, 0.6, 6, 1.2, 3)
+     .rot(LA, 0, 4, 0.6, 8, 1.2, 4)
+     .rot(LE, 0, -4, 0.6, -6, 1.2, -4))
+    cuelga_piernas(point_, 17)
+    point_.follow(C, ROT, T, 2, 0.4)
+    lista.append(point_)
+
+    # Gira como un trompo feliz (1.4.1): los brazos y las piernas salen despedidos.
+    spin = guia_spec("Spin", "girar", 1.0)
+    (spin.rot(C, 0, 0, 1, -360).raw(C, POSY, 0, 0, 0.5, 20, 1, 0)
+     .sym(LA, RA, 0, 0, 0.15, 35, 0.85, 35, 1, 0)
+     .sym(LE, RE, 0, 0, 0.2, 10, 0.8, 10, 1, 0)
+     .sym(LL, RL, 0, 0, 0.15, 18, 0.85, 18, 1, 0)
+     .sym(LK, RK, 0, 0, 0.2, -8, 0.8, -8, 1, 0))
+    lista.append(spin)
+
+    cel = guia_spec("Celebrate", "celebrar", 1.2)
+    (cel.rot(C, 0, 0, 1.2, -360)
+     .raw(C, ESCX, 0, 1, 0.3, 1.08, 0.6, 1, 0.9, 1.08, 1.2, 1)
+     .raw(C, ESCY, 0, 1, 0.3, 1.08, 0.6, 1, 0.9, 1.08, 1.2, 1)
+     .sym(LA, RA, 0, 100, 0.3, 85, 0.6, 100, 0.9, 85, 1.2, 100)
+     .sym(LE, RE, 0, 12, 0.3, 30, 0.6, 12, 0.9, 30, 1.2, 12)
+     .sym(LL, RL, 0, 10, 0.3, 18, 0.6, 10, 0.9, 18, 1.2, 10)
+     .sym(LK, RK, 0, -6, 0.3, -14, 0.6, -6, 0.9, -14, 1.2, -6)
+     .rot(T, 0, 0, 0.3, 2, 0.6, 0, 0.9, -2, 1.2, 0))
+    lista.append(cel)
+
+    # Animo (CP-02: calido): se hunde un poco (anticipacion), salta y el puño sube POR FUERA de la silueta de la
+    # llama, por encima del hombro, con un bombeo; rebota, asiente con el tronco y la otra mano queda abierta
+    # y relajada. 0,9 s como siempre (los controladores lo reproducen un tiempo fijo): anticipacion y rebote
+    # cortos, y el asentamiento (de 0,5 a 0,9) entero.
+    enc = guia_spec("Encourage", "animo", 0.9)
+    (enc.raw(C, POSY, 0, 0, 0.14, -14, 0.34, 34, 0.48, 6, 0.62, 14, 0.9, 0)
+     .raw(C, ESCY, 0, 1, 0.14, 0.96, 0.34, 1.06, 0.48, 0.985, 0.9, 1)
+     .raw(T, ESCY, 0, 1, 0.14, 0.97, 0.34, 1.03, 0.48, 0.98, 0.9, 1)   # el asentimiento del tronco: baja y sube
+     .rot(C, 0, 0, 0.34, -2, 0.9, 0)
+     .rot(RA, 0, 0, 0.14, -6, 0.25, 70, 0.34, 96, 0.42, 88, 0.50, 98, 0.66, 40, 0.9, 0)
+     .rot(RE, 0, 0, 0.14, 4, 0.34, 26, 0.42, 34, 0.50, 24, 0.9, 0)
+     .rot(LA, 0, 0, 0.34, -7, 0.9, 0)
+     .rot(LE, 0, 0, 0.34, 6, 0.9, 0))
+    cuelga_piernas(enc, 15)
+    for ruta, delta in ((LK, 4.0), (RK, -4.0)):  # las rodillas siempre algo hacia dentro: el rebote no las dobla al reves
+        for k in enc._get(ruta, ROT).claves:
+            k[1] += delta
+    lista.append(enc)
+
+    lista.append(guia_spec("Hidden", "oculto", 1.0).raw("Lienzo", ALFA, 0, 0.0, 1, 0.0))
+    ap = guia_spec("Appear", "aparicion", 1.0, False)
+    (ap.raw("Lienzo", ALFA, 0, 0.0, 0.5, 1.0, 1, 1.0)
+     .raw(C, ESCX, 0, 0.3, 0.7, 1.06, 1, 1.0)
+     .raw(C, ESCY, 0, 0.3, 0.7, 1.06, 1, 1.0)
+     .sym(LA, RA, 0, 0, 0.7, 8, 0.85, -2, 1, 0))
+    lista.append(ap)
+    lista.append(guia_spec("Vanish", "apagado", 1.6, False)
+                 .raw("Lienzo", ALFA, 0, 1.0, 0.3, 0.35, 0.6, 1.0, 0.9, 0.35, 1.2, 1.0, 1.6, 0.0)
+                 .raw(C, ESCX, 0, 1.0, 1.2, 1.0, 1.6, 0.6)
+                 .raw(C, ESCY, 0, 1.0, 1.2, 1.0, 1.6, 0.6))
+    return lista
+
+
+
+
+# ============================================================================ 3. ESCRITURA Y VALIDACION
+
+
+def redondea(v, n=5):
+    r = round(v, n)
+    return 0.0 if r == 0 else r  # sin «-0.0»
+
+
+def clip_a_json(spec, avisos):
+    """Un clip de Spec al contrato del JSON (claves ordenadas, tiempos a 4 decimales, dentro de [0, duracion])."""
+    avisos.extend(spec.finish())
+    duracion = redondea(spec.largo, 4)
+    curvas = []
+    for c in spec.orden:
+        claves = []
+        for t, v in c.claves:
+            t4 = clamp(redondea(t, 4), 0.0, duracion)
+            if claves and abs(claves[-1][0] - t4) < 1e-9:
+                claves[-1] = [t4, redondea(v)]
+            else:
+                claves.append([t4, redondea(v)])
+        curvas.append({
+            "ruta": c.ruta,
+            "tipo": "CanvasGroup" if c.prop == ALFA else "RectTransform",
+            "propiedad": c.prop,
+            "claves": claves,
+        })
+    return {"archivo": spec.archivo, "accion": spec.accion, "duracion": duracion, "bucle": spec.bucle, "curvas": curvas}
+
+
+def construir(rig=None, familia=clips_familia, guia=clips_guia):
+    """Todos los clips: devuelve (documento JSON, avisos)."""
+    rig = rig or P.cargar_rig()
+    avisos = []
+    personajes = []
+    for pid in P.FAMILIA:
+        x = leer_contexto(pid, rig)
+        clips = [clip_a_json(s, avisos) for s in familia(x)]
+        personajes.append({
+            "id": pid,
+            "carpeta": "Assets/Game/Art/Characters/%s/Animations" % FAMILIA[pid].carpeta,
+            "clips": clips,
+        })
+    x = leer_contexto("algoritm_fuego", rig)
+    personajes.append({
+        "id": "algoritm",
+        "carpeta": "Assets/Game/Art/Characters/Algoritm/Animations",
+        "clips": [clip_a_json(s, avisos) for s in guia(x)],
+    })
+    return {"version": 1, "generado_por": "coreografia.py", "personajes": personajes}, avisos
+
+
+def _j(v):
+    return json.dumps(v, ensure_ascii=True)
+
+
+def _num(v):
+    return _j(float(v) if isinstance(v, float) else v)
+
+
+def _curva(c):
+    claves = ", ".join("[%s, %s]" % (_num(t), _num(v)) for t, v in c["claves"])
+    return '{"ruta": %s, "tipo": %s, "propiedad": %s, "claves": [%s]}' % (_j(c["ruta"]), _j(c["tipo"]), _j(c["propiedad"]), claves)
+
+
+def serializa(doc):
+    """
+    El documento como texto: una curva por linea (el diff de un retoque se lee), indentado y solo ASCII
+    (ensure_ascii): el lector de C# es propio y los datos no llevan tildes.
+    """
+    out = ['{', '  "version": %s,' % _j(doc["version"]), '  "generado_por": %s,' % _j(doc["generado_por"]), '  "personajes": [']
+    pers = []
+    for p in doc["personajes"]:
+        clips = []
+        for c in p["clips"]:
+            curvas = ",\n".join("          " + _curva(k) for k in c["curvas"])
+            clips.append('        {"archivo": %s, "accion": %s, "duracion": %s, "bucle": %s,\n         "curvas": [\n%s\n         ]}' % (
+                _j(c["archivo"]), _j(c["accion"]), _num(c["duracion"]), _j(c["bucle"]), curvas))
+        pers.append('    {\n      "id": %s,\n      "carpeta": %s,\n      "clips": [\n%s\n      ]}' % (
+            _j(p["id"]), _j(p["carpeta"]), ",\n".join(clips)))
+    out.append(",\n".join(pers))
+    out += ['  ]', '}']
+    return "\n".join(out) + "\n"
+
+
+def escribe(doc, ruta=SALIDA):
+    with open(ruta, "w", encoding="ascii", newline="\n") as f:
+        f.write(serializa(doc))
+
+
+def valida(doc, ruta=SALIDA):
+    """Comprueba el contrato; devuelve la lista de problemas (vacia = bien)."""
+    errores = []
+    try:
+        with open(ruta, "rb") as f:
+            f.read().decode("ascii")
+    except UnicodeDecodeError as e:
+        errores.append("el JSON no es ASCII puro: %s" % e)
+    for p in doc["personajes"]:
+        huesos = HUESOS_GUIA if p["id"] == "algoritm" else HUESOS_FAMILIA
+        carpeta = os.path.join(P.RAIZ, p["carpeta"])
+        archivos = set()
+        for clip in p["clips"]:
+            ctx = "%s/%s" % (p["id"], clip["archivo"])
+            if clip["archivo"] in archivos:
+                errores.append("%s: clip repetido" % ctx)
+            archivos.add(clip["archivo"])
+            if not os.path.isfile(os.path.join(carpeta, clip["archivo"] + ".anim")):
+                errores.append("%s: no existe el .anim en %s" % (ctx, p["carpeta"]))
+            rutas_rot = set()
+            for c in clip["curvas"]:
+                if c["propiedad"] not in PROPIEDADES:
+                    errores.append("%s: propiedad no permitida %s" % (ctx, c["propiedad"]))
+                if (c["propiedad"] == ALFA) != (c["tipo"] == "CanvasGroup"):
+                    errores.append("%s: tipo %s para %s" % (ctx, c["tipo"], c["propiedad"]))
+                ts = [k[0] for k in c["claves"]]
+                if ts != sorted(ts) or len(set(ts)) != len(ts):
+                    errores.append("%s %s: claves desordenadas o repetidas" % (ctx, c["ruta"]))
+                if ts and (min(ts) < 0 or max(ts) > clip["duracion"] + 1e-9):
+                    errores.append("%s %s: claves fuera de [0, duracion]" % (ctx, c["ruta"]))
+                if c["propiedad"] == ROT:
+                    rutas_rot.add(c["ruta"])
+                if clip["bucle"] and c["propiedad"] != ALFA and len(c["claves"]) > 1:
+                    a, b = c["claves"][0][1], c["claves"][-1][1]
+                    if c["propiedad"] == ROT:
+                        b = a + (((b - a) + 180.0) % 360.0 - 180.0)
+                    if abs(a - b) > 1e-3:
+                        errores.append("%s %s %s: el bucle no cierra" % (ctx, c["ruta"], c["propiedad"]))
+            falta = [h for h in huesos if h not in rutas_rot]
+            if falta:
+                errores.append("%s: sin rotacion en %s" % (ctx, falta))
+    return errores
+
+
+def autoprueba():
+    """valida() tiene que encontrar lo que esta mal: se le dan cinco JSON rotos a proposito."""
+    import copy
+    import tempfile
+    doc, _ = construir()
+    casos = []
+    d = copy.deepcopy(doc)
+    d["personajes"][0]["clips"][1]["curvas"] = [c for c in d["personajes"][0]["clips"][1]["curvas"] if c["ruta"] != LL]
+    casos.append(("falta la rotacion de un hueso", d, "sin rotacion"))
+    d = copy.deepcopy(doc)
+    d["personajes"][3]["clips"][0]["curvas"][2]["claves"][-1][1] += 5.0
+    casos.append(("un bucle que no cierra", d, "no cierra"))
+    d = copy.deepcopy(doc)
+    d["personajes"][0]["clips"][2]["archivo"] = "char_papa_anim_noexiste"
+    casos.append(("un clip sin .anim", d, "no existe el .anim"))
+    d = copy.deepcopy(doc)
+    d["personajes"][1]["clips"][3]["curvas"][0]["claves"][0][0] = 9.0
+    casos.append(("claves fuera de la duracion", d, "fuera de"))
+    d = copy.deepcopy(doc)
+    d["personajes"][2]["clips"][4]["curvas"][0]["propiedad"] = "m_LocalScale.z"
+    casos.append(("una propiedad no permitida", d, "no permitida"))
+    malos = 0
+    for nombre, dd, esperado in casos:
+        ruta = os.path.join(tempfile.gettempdir(), "clips_autoprueba.json")
+        escribe(dd, ruta)
+        errores = valida(dd, ruta)
+        ok = any(esperado in e for e in errores)
+        malos += 0 if ok else 1
+        print("%-34s %s" % (nombre, "detectado" if ok else "NO SE DETECTA"))
+    # un caracter no ASCII
+    ruta = os.path.join(tempfile.gettempdir(), "clips_autoprueba.json")
+    with open(ruta, "w", encoding="utf-8") as f:
+        f.write(serializa(doc).replace("Idle", "Idl\u00e9", 1))
+    ok = any("ASCII" in e for e in valida(doc, ruta))
+    malos += 0 if ok else 1
+    print("%-34s %s" % ("un caracter con tilde", "detectado" if ok else "NO SE DETECTA"))
+    escribe(doc, ruta)
+    ok = not valida(doc, ruta)
+    malos += 0 if ok else 1
+    print("%-34s %s" % ("el documento bueno", "bien" if ok else "FALSO POSITIVO"))
+    os.remove(ruta)
+    return 1 if malos else 0
+
+
+def main(argv):
+    if "--autoprueba" in argv:
+        return autoprueba()
+    doc, avisos = construir()
+    escribe(doc)
+    print("escrito %s (%d personajes, %d clips)" % (os.path.relpath(SALIDA, P.RAIZ), len(doc["personajes"]),
+                                                    sum(len(p["clips"]) for p in doc["personajes"])))
+    for a in avisos:
+        print("AVISO", a)
+    errores = valida(doc)
+    for e in errores:
+        print("ERROR", e)
+    if "--valida" in argv or errores:
+        print("valida:", "bien" if not errores else "%d problemas" % len(errores))
+    return 1 if errores or avisos else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
