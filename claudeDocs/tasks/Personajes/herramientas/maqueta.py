@@ -165,8 +165,7 @@ def arbol_maqueta(pid, rig, orden=True):
     ENCENDIDAS (una Image con guid «maqueta:<ruta>») y el dict {ruta: Pieza} que las dibuja. Lo que el arte
     de hoy ya trae partido (el Nino) se deja como esta.
     """
-    prefab = P.PERSONAJES[pid][0]
-    arbol = P.leer_arbol(prefab)
+    arbol = P.arbol_vigente(pid, rig)
     p = P.personaje_rig(rig, pid)
     if orden and p.get("orden_tronco"):
         P.aplicar_orden_tronco(arbol, p["orden_tronco"])

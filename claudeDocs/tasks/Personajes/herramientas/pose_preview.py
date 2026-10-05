@@ -14,7 +14,8 @@
 #
 # Necesita Pillow (pip install pillow). Sale con codigo 1 si algun clip falla la prueba.
 #
-# DOS MODOS (Papa, Mama y Nina; el Nino ya tiene arte final y Algoritm es siempre maqueta):
+# DOS MODOS (Papa, Mama y Nina mientras tengan arte provisional; quien ya tiene arte final —el Nino, y los otros
+# tras preparar_arte_final.py --aplicar— se prueba una vez, y Algoritm es siempre maqueta):
 #   --hoy      el arte REAL de los prefabs (brazos y piernas de una pieza, la cabeza dentro del torso) con
 #              clips_personajes.json, que es lo que se vuelca al motor; comprueba antes que el JSON sea el que
 #              coreografia.py calcularia ahora. Hojas: <id>_hoy_idle_8.png, <id>_hoy_todos.png, <id>_hoy_idle.gif.
@@ -173,7 +174,7 @@ class Personaje:
         if maqueta and not self.guia:
             self.arbol, self.piezas = M.arbol_maqueta(pid, rig)
         else:
-            self.arbol = P.leer_arbol(self.prefab)
+            self.arbol = P.arbol_vigente(pid, rig)  # el prefab tal como quedara tras «sprites» (prefabs.simula_sprites)
             self.piezas = {}
             orden = self.rig.get("orden_tronco")
             if orden:
@@ -909,6 +910,15 @@ def autoprueba(rig):
 # --------------------------------------------------------------------------- principal
 
 
+def es_final(pid, rig):
+    """El personaje ya tiene arte final entero (brazos, piernas y cabeza partidos) en el estado de «tras sprites»."""
+    if P.PERSONAJES[pid][2]:
+        return False
+    a = P.arbol_vigente(pid, rig)
+    return (P.esta_segmentado(a) and a[P.HD].dibuja() and a[P.LE + "/AntebrazoIzq"].dibuja()
+            and a[P.RE + "/AntebrazoDer"].dibuja() and a[P.RK + "/AntepiernaDer"].dibuja())
+
+
 def clips_de_doc(doc):
     return {p["id"]: [Clip(c) for c in p["clips"]] for p in doc["personajes"]}
 
@@ -988,9 +998,9 @@ def main(argv=None):
             # Algoritm: su sprite es uno solo, asi que SIEMPRE es maqueta (pose_preview._capa_guia)
             print("--- %s: maqueta del sprite entero" % pid)
             fallos += corrida(pid, "guia", rig, clips, a)
-        elif pid == "nino":
-            # el Nino ya tiene arte final: lo que hay es lo que habra
-            print("--- nino: arte final (hoy = maqueta)")
+        elif es_final(pid, rig):
+            # ya tiene arte final (el Nino; Papa, Mama o Nina tras preparar_arte_final.py --aplicar): lo que hay es lo que habra
+            print("--- %s: arte final (hoy = maqueta)" % pid)
             fallos += corrida(pid, "final", rig, clips, a)
         else:
             for modo in modos:

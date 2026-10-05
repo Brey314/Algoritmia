@@ -11,12 +11,14 @@
 #     python3 claudeDocs/tasks/Personajes/herramientas/coreografia_v0.py           # regresion del motor
 #
 # Orden de trabajo cuando llega arte final de Papa, Mama o Nina:
-#   1. meter las piezas (antebrazos, antepiernas, cabeza) y encender sus Image en el prefab (BuildRigsFinal «sprites»);
-#   2. medir rect y punto de cada articulacion en articulaciones.py (entrada ARTE_FINAL, como la del Nino) y
-#      correrlo: rig_articulaciones.json; pose_preview.py --mide <personaje> comprueba que caen en la rotula;
-#   3. correr este script: la cinematica de los brazos y las medidas de las piernas salen de ese JSON y de los
-#      PNG, sin tocar la coreografia; 4. pose_preview.py (la prueba; --hoy ya es el arte final);
-#   5. BuildRigsFinal.cs.txt, modos «orden» (si hace falta), «sprites» y «clips».
+#   1. preparar_arte_final.py <id> <carpeta_entrega> [--aplicar]: reconoce las piezas, las limpia y normaliza,
+#      las mide (rect y punto de cada articulacion, entrada del personaje en arte_final.json) y, con --aplicar,
+#      copia los PNG al repo, regenera rig_articulaciones.json (articulaciones.py) y este JSON de clips, y corre
+#      pose_preview.py; imprime las ordenes para la sesion local. Es todo lo que hace falta antes de Unity;
+#   2. en el Editor, BuildRigsFinal.cs.txt, modos «sprites», «orden» (si hace falta) y «clips».
+# La coreografia no se toca: la cinematica de los brazos y las medidas de las piernas salen del JSON del rig y
+# de los PNG, y prefabs.simula_sprites hace que este script y pose_preview.py ya traten al personaje como
+# segmentado aunque el prefab del disco aun no haya pasado por «sprites».
 # Los prefabs se leen con prefabs.py. Pillow hace falta para medir la silueta de los pies y el grosor de los
 # brazos (sin el se usan los rects) y para la prueba.
 #
@@ -583,8 +585,7 @@ def leer_contexto(pid, rig=None, arbol=None, piezas=None):
     pasa el suyo, con esas piezas encendidas, y «piezas» con sus imagenes).
     """
     rig = rig or P.cargar_rig()
-    prefab = P.PERSONAJES[pid][0]
-    arbol = arbol if arbol is not None else P.leer_arbol(prefab)
+    arbol = arbol if arbol is not None else P.arbol_vigente(pid, rig)
     piezas = piezas or {}
     guia = P.PERSONAJES[pid][2]
     p = P.personaje_rig(rig, pid)

@@ -72,8 +72,13 @@ _GUIDS = None
 
 
 def sprite_por_guid(guid):
-    """Ruta del .png que tiene ese guid (busca en los .png.meta de Assets/Game/Art), o None."""
+    """
+    Ruta del .png que tiene ese guid (busca en los .png.meta de Assets/Game/Art), o None. Un «guid» que
+    empieza por «ruta:» (lo pone simula_sprites) ya es la ruta del PNG.
+    """
     global _GUIDS
+    if guid and guid.startswith("ruta:"):
+        return guid[5:]
     if _GUIDS is None:
         _GUIDS = {}
         for base, _, archivos in os.walk(ARTE):
@@ -192,6 +197,57 @@ def leer_arbol(prefab):
 
     visita(raiz, "", True)
     return nodos
+
+
+def _png_de(carpeta, nombre):
+    """Ruta del PNG «nombre» en la carpeta de arte del personaje o en sus subcarpetas, o None."""
+    base = os.path.join(PERSONAJES_ARTE, carpeta)
+    for dentro, _, archivos in os.walk(base):
+        if nombre + ".png" in archivos:
+            return os.path.join(dentro, nombre + ".png")
+    return None
+
+
+def simula_sprites(arbol, rig_pj):
+    """
+    El estado del prefab DESPUES de correr «sprites» en el Editor (BuildRigsFinal.cs.txt): cada parte y cada
+    nodo de imagen que el rig_articulaciones.json nombra y cuyo PNG existe en Assets/Game/Art/Characters/<carpeta>
+    queda con su Image encendida y con ese sprite. Asi, entre copiar el arte final al repo y correr el generador
+    (el prefab del disco aun es el provisional), coreografia.py y pose_preview.py ya tratan al personaje como
+    lo que sera: brazos y piernas partidos, cabeza propia. Es idempotente: sobre un prefab que ya paso por
+    «sprites» no cambia nada. Lo que no tiene PNG se deja como esta (apagado).
+    """
+    carpeta = rig_pj["carpeta"]
+    candidatos = []
+    for parte in rig_pj["partes"]:
+        candidatos.append((parte["ruta"], parte["sprite"]))
+    for nodo in rig_pj["nodos"]:
+        if not nodo.get("sprite"):
+            continue
+        base = nodo["padre"] + "/" + nodo["nombre"]
+        candidatos.append((base + "/" + nodo["imagen"] if nodo["tipo"] == "articulacion" else base, nodo["sprite"]))
+    for ruta, sprite in candidatos:
+        n = arbol.get(ruta)
+        png = _png_de(carpeta, sprite)
+        if n is None or png is None:
+            continue
+        previa = n.imagen or {}
+        n.activo = True
+        n.imagen = {"encendida": True, "guid": "ruta:" + png, "aspecto": previa.get("aspecto", False),
+                    "color": previa.get("color", (1.0, 1.0, 1.0, 1.0))}
+    return arbol
+
+
+def arbol_vigente(pid, rig=None):
+    """
+    El arbol del prefab del personaje tal como quedara tras «sprites» (simula_sprites). Algoritm no: su arte
+    es un solo sprite. Es el que usan coreografia.py (leer_contexto), pose_preview.py y maqueta.py.
+    """
+    rig = rig or cargar_rig()
+    arbol = leer_arbol(PERSONAJES[pid][0])
+    if not PERSONAJES[pid][2]:
+        simula_sprites(arbol, personaje_rig(rig, pid))
+    return arbol
 
 
 def esta_segmentado(arbol):

@@ -15,9 +15,10 @@
 #
 # ARTE FINAL. Un personaje con arte final (hoy solo el Nino) NO sale de las formulas de este script —
 # esas son para el arte provisional—: sus piezas se miden sobre el alfa de los PNG y sus numeros viven
-# en ARTE_FINAL, que se vuelca tal cual. Sin esa entrada, regenerar la tabla pisaria las articulaciones
-# del Nino con las provisionales (cuello, codos y rodillas se recalcularian con la formula). Para
-# comprobar una entrada contra el arte: python3 pose_preview.py --mide nino.
+# en arte_final.json (ARTE_FINAL), que se vuelca tal cual; preparar_arte_final.py los mide y los escribe.
+# Sin esa entrada, regenerar la tabla pisaria las articulaciones del Nino con las provisionales (cuello,
+# codos y rodillas se recalcularian con la formula). Para comprobar una entrada contra el arte:
+# python3 pose_preview.py --mide nino.
 #
 # «orden_tronco»: el orden de dibujo (de atras adelante) de los hijos directos de Cuerpo/Tronco; lo
 # aplica BuildRigsFinal.cs.txt. En los prefabs los brazos van PRIMERO (BrazoIzq, BrazoDer, Torso,
@@ -171,7 +172,8 @@ C = "Lienzo/Cuerpo"
 ORDEN_TRONCO_FAMILIA = ["Torso", "Cuello", "BrazoIzq", "BrazoDer"]            # brazos delante: Papa, Mama, Nina y Nino
 ORDEN_TRONCO_GUIA = ["Torso", "BrazoIzq", "BrazoDer", "Ojos", "Boca"]
 
-# Arte final del Nino (05/10/2026), medido sobre el alfa de las piezas de Assets/Game/Art/Characters/Boy.
+# Arte final del Nino (05/10/2026), medido sobre el alfa de las piezas de Assets/Game/Art/Characters/Boy;
+# los numeros viven en arte_final.json (abajo se cargan).
 # Cada brazo es una capsula con el contorno cerrado en los dos extremos; el pivote del hombro es el
 # CENTRO del extremo redondo proximal del humero, y ese centro cae sobre la esquina superior del torso
 # (el torso mide x 451..575 de lado a lado y su hombro arranca en y = 557: izq (466, 560), der (556, 560)).
@@ -190,38 +192,30 @@ ORDEN_TRONCO_GUIA = ["Torso", "BrazoIzq", "BrazoDer", "Ojos", "Boca"]
 # Ojos y boca (sin sprite aun): el ovalo de la cara va de x 100 a 455 y de y 270 (flequillo) a 450 (barbilla)
 # dentro de la cabeza (535x456 en (224, 77)); ojos y cejas (200x90, el 55 % del ancho de la cara) centrados en
 # (502, 425), boca (110x44) en (502, 490).
-ARTE_FINAL = {
-    "nino": {
-        "nodos": [
-            {"nombre": "CodoIzq", "tipo": "articulacion", "padre": T + "/BrazoIzq", "punto": [366, 609],
-             "imagen": "AntebrazoIzq", "sprite": "char_nino_parte_antebrazo_izq", "rect": [195, 584, 390, 697]},
-            {"nombre": "CodoDer", "tipo": "articulacion", "padre": T + "/BrazoDer", "punto": [667, 605],
-             "imagen": "AntebrazoDer", "sprite": "char_nino_parte_antebrazo_der", "rect": [642, 581, 839, 681]},
-            {"nombre": "RodillaIzq", "tipo": "articulacion", "padre": C + "/PiernaIzq", "punto": [483, 845],
-             "imagen": "AntepiernaIzq", "sprite": "char_nino_parte_antepierna_izq", "rect": [407, 813, 505, 947]},
-            {"nombre": "RodillaDer", "tipo": "articulacion", "padre": C + "/PiernaDer", "punto": [558, 842],
-             "imagen": "AntepiernaDer", "sprite": "char_nino_parte_antepierna_der", "rect": [535, 810, 640, 944]},
-            {"nombre": "Cuello", "tipo": "articulacion", "padre": T, "punto": [492, 533],
-             "imagen": "Cabeza", "sprite": "char_nino_parte_cabeza", "rect": [224, 77, 759, 533]},
-            {"nombre": "Ojos", "tipo": "imagen", "padre": T + "/Cuello/Cabeza", "punto": [502, 425],
-             "imagen": "Ojos", "sprite": "char_nino_ojos_neutra", "rect": [402, 380, 602, 470]},
-            {"nombre": "Boca", "tipo": "imagen", "padre": T + "/Cuello/Cabeza", "punto": [502, 490],
-             "imagen": "Boca", "sprite": "char_nino_boca_0", "rect": [447, 468, 557, 512]},
-        ],
-        "partes": [
-            {"nombre": "BrazoIzq", "ruta": T + "/BrazoIzq", "sprite": "char_nino_parte_brazo_izq",
-             "rect": [339, 532, 495, 637], "pivote": [466, 560]},
-            {"nombre": "BrazoDer", "ruta": T + "/BrazoDer", "sprite": "char_nino_parte_brazo_der",
-             "rect": [528, 532, 695, 631], "pivote": [556, 560]},
-            {"nombre": "PiernaIzq", "ruta": C + "/PiernaIzq", "sprite": "char_nino_parte_pierna_izq",
-             "rect": [438, 723, 511, 876], "pivote": [474, 723]},
-            {"nombre": "PiernaDer", "ruta": C + "/PiernaDer", "sprite": "char_nino_parte_pierna_der",
-             "rect": [522, 725, 596, 869], "pivote": [559, 725]},
-            {"nombre": "Torso", "ruta": T + "/Torso", "sprite": "char_nino_parte_torso",
-             "rect": [367, 527, 657, 799], "pivote": [512, 799]},
-        ],
-    },
-}
+ARTE_FINAL_JSON = os.path.join(AQUI, "arte_final.json")
+
+
+def cargar_arte_final(ruta=ARTE_FINAL_JSON):
+    """
+    {id: {"nodos": [...], "partes": [...]}} de arte_final.json (ASCII). Hoy solo el Nino; preparar_arte_final.py
+    --aplicar anade a quien entregue su arte. Sin el archivo, ninguno: todos salen de las formulas.
+    """
+    if not os.path.isfile(ruta):
+        return {}
+    with open(ruta, encoding="utf-8") as f:
+        return json.load(f)["personajes"]
+
+
+def guardar_arte_final(personajes, ruta=ARTE_FINAL_JSON):
+    """Escribe arte_final.json (ASCII, con el formato compacto de rig_articulaciones.json)."""
+    with open(ruta, encoding="utf-8") as f:
+        doc = json.load(f)
+    doc["personajes"] = personajes
+    with open(ruta, "w", encoding="utf-8", newline="\n") as f:
+        f.write(compacto(doc) + "\n")
+
+
+ARTE_FINAL = cargar_arte_final()  # los numeros del Nino (arriba) viven en arte_final.json
 
 
 def caja_de(rect):
@@ -451,7 +445,7 @@ def main():
     # La nota va sin tildes ni eñes (y el volcado fuerza ASCII): el JSON debe ser ASCII puro.
     tabla = {
         "version": 1,
-        "nota": "Valores PROVISIONALES salvo los del Nino (arte final: ARTE_FINAL en articulaciones.py). "
+        "nota": "Valores PROVISIONALES salvo los de quien tiene entrada en arte_final.json (hoy el Nino). "
                 "Lienzo de 1024, origen arriba a la izquierda, "
                 "y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los "
                 "nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento "

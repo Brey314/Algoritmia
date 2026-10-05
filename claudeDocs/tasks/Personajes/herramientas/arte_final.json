@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "nota": "Medidas del arte final de cada personaje de la familia (lienzo de 1024, origen arriba a la izquierda, y hacia abajo). Las escribe preparar_arte_final.py --aplicar a partir de las piezas entregadas (o se editan a mano) y las lee articulaciones.py: quien tiene entrada aqui NO sale de las formulas del arte provisional. 'nodos' y 'partes' tienen la forma de rig_articulaciones.json.",
+  "personajes": {
+    "nino": {
+      "nodos": [
+        {
+          "nombre": "CodoIzq",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco/BrazoIzq",
+          "punto": [366, 609],
+          "imagen": "AntebrazoIzq",
+          "sprite": "char_nino_parte_antebrazo_izq",
+          "rect": [195, 584, 390, 697]
+        },
+        {
+          "nombre": "CodoDer",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco/BrazoDer",
+          "punto": [667, 605],
+          "imagen": "AntebrazoDer",
+          "sprite": "char_nino_parte_antebrazo_der",
+          "rect": [642, 581, 839, 681]
+        },
+        {
+          "nombre": "RodillaIzq",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/PiernaIzq",
+          "punto": [483, 845],
+          "imagen": "AntepiernaIzq",
+          "sprite": "char_nino_parte_antepierna_izq",
+          "rect": [407, 813, 505, 947]
+        },
+        {
+          "nombre": "RodillaDer",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/PiernaDer",
+          "punto": [558, 842],
+          "imagen": "AntepiernaDer",
+          "sprite": "char_nino_parte_antepierna_der",
+          "rect": [535, 810, 640, 944]
+        },
+        {
+          "nombre": "Cuello",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco",
+          "punto": [492, 533],
+          "imagen": "Cabeza",
+          "sprite": "char_nino_parte_cabeza",
+          "rect": [224, 77, 759, 533]
+        },
+        {
+          "nombre": "Ojos",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [502, 425],
+          "imagen": "Ojos",
+          "sprite": "char_nino_ojos_neutra",
+          "rect": [402, 380, 602, 470]
+        },
+        {
+          "nombre": "Boca",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [502, 490],
+          "imagen": "Boca",
+          "sprite": "char_nino_boca_0",
+          "rect": [447, 468, 557, 512]
+        }
+      ],
+      "partes": [
+        {
+          "nombre": "BrazoIzq",
+          "ruta": "Lienzo/Cuerpo/Tronco/BrazoIzq",
+          "sprite": "char_nino_parte_brazo_izq",
+          "rect": [339, 532, 495, 637],
+          "pivote": [466, 560]
+        },
+        {
+          "nombre": "BrazoDer",
+          "ruta": "Lienzo/Cuerpo/Tronco/BrazoDer",
+          "sprite": "char_nino_parte_brazo_der",
+          "rect": [528, 532, 695, 631],
+          "pivote": [556, 560]
+        },
+        {
+          "nombre": "PiernaIzq",
+          "ruta": "Lienzo/Cuerpo/PiernaIzq",
+          "sprite": "char_nino_parte_pierna_izq",
+          "rect": [438, 723, 511, 876],
+          "pivote": [474, 723]
+        },
+        {
+          "nombre": "PiernaDer",
+          "ruta": "Lienzo/Cuerpo/PiernaDer",
+          "sprite": "char_nino_parte_pierna_der",
+          "rect": [522, 725, 596, 869],
+          "pivote": [559, 725]
+        },
+        {
+          "nombre": "Torso",
+          "ruta": "Lienzo/Cuerpo/Tronco/Torso",
+          "sprite": "char_nino_parte_torso",
+          "rect": [367, 527, 657, 799],
+          "pivote": [512, 799]
+        }
+      ]
+    }
+  }
+}
