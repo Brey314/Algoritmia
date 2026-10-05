@@ -4,6 +4,15 @@
 > **Proyecto:** Algoritmia (Unity 6000.5.10f1, URP 17.6.0, uGUI Canvas Overlay)  
 > **Módulos impactados:** `Game.Scaffolding`, `Game.UI`, `Game.Levels.*`, Assets de Arte y Animación, 18 Narrativas y 5 Escenas Jugables.  
 > **Estado:** Especificación técnica lista para ejecución directa paso a paso.
+>
+> **Actualización del 05/10/2026.** Las **Fases 2 y 3 están hechas** en el código y el generador
+> (commit `a12dbb3`, rama `feat/personajes-animados`), a falta del arte final y de la verificación
+> en el Editor: los prefabs y los clips todavía no se han regenerado. Lo que hizo y lo que
+> difiere de este plan está en `Personajes-Resultados.md`, Anexo C. Decisiones de Santiago del
+> mismo día: codos y rodillas, Algoritm articulado y sin cuello (§3.1), y los nombres de sprites
+> vigentes (§4.2 y §7, que sustituyen aquí a `Front/` y `frente_`; INC-131). Siguen **pendientes**
+> los perfiles (`CharacterOrientation`, Fase 4.4), el retrato animado del cuadro de diálogo
+> (4.1) y poblar emociones en los 18 `N*_*.asset`.
 
 ---
 
@@ -65,6 +74,25 @@ Se implementó en `Assets/Game/Scripts/Runtime/Scaffolding/CharacterRig.cs`:
 | **Alive Idle (Respiración y Micro-movimientos)** | El reposo nunca es una estatua congelada. | Ciclo de respiración en `Idle` de 3.2 s combinando elevación sutil de hombros, balanceo de peso entre piernas y micro-parpadeo. |
 | **Bending Limbs (Articulación fluida)** | Extremidades que no parecen varillas rígidas. | Separación de piernas y brazos en dos tramos (brazo/antebrazo y muslo/pantorrilla) o solapamiento circular con contorno limpio. |
 
+### 3.1 Codos, rodillas y Algoritm articulado, sin cuello (decisión de Santiago, 05/10/2026)
+
+Esto **no estaba en el plan maestro** y lo añade la decisión del 05/10/2026 (INC-131):
+
+- **Familia.** Cada extremidad va en **dos sprites**: húmero y antebrazo, muslo y antepierna. Hay
+  articulaciones en **codos y rodillas**, además de hombros, cadera y **cuello**, y la cabeza se
+  separa del torso con los ojos y la boca en capas propias.
+- **Algoritm** (las tres formas: fuego, rueda y gota) también: brazos, piernas, codos y rodillas en
+  dos tramos, y ojos y boca **sobre el cuerpo**. **No tiene cuello ni cabeza**: en `hablar`, el
+  gesto lo lleva el tronco.
+- **Mientras no llegue el arte**, codos, rodillas y cuello son **pivotes vacíos** y las capas nuevas
+  van apagadas: el arte provisional se ve igual. Los nodos se **añaden** a los siete prefabs sin
+  reconstruirlos (regla de los fileID) y sus posiciones viven en
+  `herramientas/rig_articulaciones.json`, provisional (`Personajes-Resultados.md`, C.2 y C.3).
+- **Rodillas en vista frontal.** La flexión ocurre en profundidad: el muslo se abre hacia fuera y la
+  antepierna se cierra hacia dentro y se acorta con la escala Y de la rodilla, no con un giro plano.
+  Los codos sí giran en el plano. Con el arte actual (sin segmentar) se mantiene el truco de escalar
+  la pierna entera en `Kneel` y `Sleep`; con las piernas partidas, ningún clip escala las piernas.
+
 ---
 
 ## 4. Vista de Perfil (Izquierda y Derecha)
@@ -81,14 +109,30 @@ Cada miembro de la familia dispondrá de tres vistas maestras:
 - **Perfil Derecho (`ProfileRight`):** Mirando hacia la derecha (vista canónica de avance en 2D).
 - **Perfil Izquierdo (`ProfileLeft`):** Mirando hacia la izquierda (o derivado mediante simetría controlada si el diseño no posee asimetrías críticas).
 
+> **Corrección del 05/10/2026 (INC-131).** La vista frontal **no lleva carpeta `Front/` ni el
+> nombre `frente_`**: sus partes se quedan en la carpeta del personaje con los nombres vigentes
+> (`char_<x>_parte_*`, con el mismo GUID), a los que se añaden `antebrazo`, `antepierna` y `cabeza`,
+> y la cara (`char_<x>_ojos_*`, `char_<x>_boca_*`) vive en la misma carpeta, sin `Face/`. La tabla
+> de nombres está en `Personajes-Resultados.md`, C.4. Los **perfiles siguen sin ejecutarse**: su
+> árbol, abajo, es el del plan original y se revisará cuando se aborden.
+
 ```
 Assets/Game/Art/Characters/{Father,Mother,Girl,Boy}/
-├── Front/
-│   ├── char_<id>_frente_torso.png
-│   ├── char_<id>_frente_cabeza.png
-│   ├── char_<id>_frente_brazo_izq.png
-│   └── char_<id>_frente_brazo_der.png
-└── Profile/
+├── char_<id>_parte_torso.png            (vigente)
+├── char_<id>_parte_cabeza.png           (nuevo)
+├── char_<id>_parte_brazo_izq.png        (vigente; ahora el húmero)
+├── char_<id>_parte_brazo_der.png
+├── char_<id>_parte_antebrazo_izq.png    (nuevo)
+├── char_<id>_parte_antebrazo_der.png
+├── char_<id>_parte_pierna_izq.png       (vigente; ahora el muslo)
+├── char_<id>_parte_pierna_der.png
+├── char_<id>_parte_antepierna_izq.png   (nuevo)
+├── char_<id>_parte_antepierna_der.png
+├── char_<id>_ojos_{neutra,alegria,sorpresa,preocupacion,concentracion,sueno}.png
+├── char_<id>_ojos_parpadeo_{medio,cerrado}.png
+├── char_<id>_boca_{0,a,e,u}.png
+├── char_<id>_boca_{alegria,sorpresa,preocupacion,concentracion}.png
+└── Profile/                             (pendiente, sin ejecutar)
     ├── char_<id>_perfil_torso.png
     ├── char_<id>_perfil_cabeza.png
     ├── char_<id>_perfil_brazo_cercano.png
@@ -110,6 +154,14 @@ Para la vista de perfil, el orden de dibujo (de atrás hacia adelante en uGUI) d
 ---
 
 ## 5. Sistema de Expresiones Faciales y Habla Dinámica
+
+> **Nota del 05/10/2026.** Lo implementado (`Personajes-Resultados.md`, C.7) difiere en poco de
+> este apartado: el parpadeo es `BlinkClock` y no `ProceduralBlink`, y baja y sube pasando por
+> medio → cerrado → medio; el habla es `MouthFlap` dentro de `CharacterFace`, sin
+> `SpeechMouthController`; la boca de `Worried` es «apenas curvada», nunca una mueca de llanto
+> (CP-02), y no «curvada abajo»; y `Encourage` lleva `Happy`. Los sprites de ojos y bocas se llaman
+> como en §4.2, uno por cada valor de `FacialEmotion` salvo las bocas de `Neutral` y `Sleeping`, que
+> usan `boca_0`. **El retrato del cuadro de diálogo aún no usa la cara** (Fase 4.1).
 
 ### 5.1 Arquitectura de Expresiones
 Para dotar a los personajes de expresividad sin aumentar drásticamente el peso de texturas (cumpliendo con RNF-06 < 500 MB):
@@ -163,24 +215,50 @@ Para sincronizar el habla con el diálogo sin requerir pistas de audio fonética
 - [ ] **1.3 Exportar láminas de rostros:** Sprites de ojos (6 emociones + 2 fases de parpadeo) y bocas (4 fonemas + 4 emociones).
 - [ ] **1.4 Limpieza de bordes y canales alfa:** Ejecutar `arte_check.py halo` para garantizar cero halos verdes de croma (conservando la aprobación de calidad de la entrega).
 
+> **Nota (05/10/2026).** Los nombres de las partes y de la cara que debe entregar 1.2 y 1.3 son los
+> de `Personajes-Resultados.md`, C.4 y `Assets/Game/Art/Inventario.md`: `parte_cabeza`,
+> `parte_antebrazo_*`, `parte_antepierna_*`, `ojos_*` y `boca_*`; `parte_brazo_*` es el húmero y
+> `parte_pierna_*` el muslo. Algoritm entrega lo mismo con el prefijo
+> `char_algoritm_<fuego|rueda|gota>_`, sin cabeza.
+
 ### Fase 2: Actualización de Scripts y Componentes Runtime (`Game.Scaffolding`)
-- [ ] **2.1 Crear `FacialEmotion.cs`:** Declarar el enum de emociones.
-- [ ] **2.2 Crear `CharacterFace.cs`:** MonoBehaviour encargado de gestionar los sprites de ojos y boca en tiempo de ejecución.
-- [ ] **2.3 Crear `SpeechMouthController.cs`:** Controlador del ritmo de fonemas mientras el texto se reproduce.
-- [ ] **2.4 Extender `CharacterRig.cs`:**
-  - Agregar soporte para `FacialEmotion CurrentEmotion { get; set; }`.
-  - Agregar soporte para `CharacterOrientation Facing { get; set; }` (Front, ProfileLeft, ProfileRight).
-  - Mantener intactas las firmas públicas y métodos probados (`Play`, `PlayFor`, `Speaks`, `Current`).
-- [ ] **2.5 Extender `ActorBeat.cs` y `NarrativeProp.cs`:**
+*Hecha el 05/10/2026 (commit `a12dbb3`); falta la verificación en el Editor.*
+- [x] **2.1 Crear `FacialEmotion.cs`:** Declarar el enum de emociones.
+  - Hecho, con los valores del §5.1. Se añadió `ActionEmotion.cs` (C# plano): la emoción que lleva
+    cada `ActorAction` cuando el guion no fija otra.
+- [x] **2.2 Crear `CharacterFace.cs`:** MonoBehaviour encargado de gestionar los sprites de ojos y boca en tiempo de ejecución.
+  - Hecho. Se apoya en dos clases nuevas de C# plano, `BlinkClock` y `MouthFlap`, y en un
+    ScriptableObject, `CharacterFaceSet` (CT-05). Sin set o sin sprite, la `Image` queda apagada.
+- [x] **2.3 Crear `SpeechMouthController.cs`:** Controlador del ritmo de fonemas mientras el texto se reproduce.
+  - **Difiere:** no existe ese archivo. El ritmo vive en `MouthFlap` (cicla A, E, U y cerrada a
+    0,09 s, sin azar) y lo ejecuta `CharacterFace`; el parpadeo del §5.2, que el plan llama
+    `ProceduralBlink`, es `BlinkClock`.
+- [x] **2.4 Extender `CharacterRig.cs`:** *(la emoción y el habla; los perfiles quedan pendientes)*
+  - [x] Agregar soporte para la emoción. **Difiere:** en lugar de `FacialEmotion CurrentEmotion
+    { get; set; }`, `CharacterRig` tiene `EmotionOverride` (`FacialEmotion?`), `Emotion` (el
+    override o, si no hay, la de la acción) y `Speaking`.
+  - [ ] Agregar soporte para `CharacterOrientation Facing { get; set; }` (Front, ProfileLeft, ProfileRight).
+    **NO se hizo:** queda pendiente con los perfiles (§4 y Fase 4.4).
+  - [x] Mantener intactas las firmas públicas y métodos probados (`Play`, `PlayFor`, `Speaks`, `Current`).
+- [x] **2.5 Extender `ActorBeat.cs` y `NarrativeProp.cs`:**
   - Permitir declarar opcionalmente `Emotion` por beat en los assets de narrativa.
+  - Hecho en `ActorBeat` (`SetsEmotion`, `Emotion`, `WithEmotion`), `ActorCue` (`Emotion`) y
+    `ActorTimeline.EmotionAt`; `NarrativeProp` no cambió, porque ya guarda los `Beats`.
+    `NarrativeSceneController` aplica la emoción de la línea y mueve la boca de quien habla.
+    **Pendiente:** poblar emociones explícitas en los 18 `N*_*.asset` (`SetsEmotion` vale `false`
+    por defecto, así que hoy ninguno cambia) y el retrato del cuadro de diálogo (Fase 4.1).
 
 ### Fase 3: Generación de Clips de Animación Completos
-- [ ] **3.1 Crear script editor `BuildRigsFinal.cs`:**
+*Hecha el 05/10/2026 en el generador (commit `a12dbb3`); los clips **aún no se han regenerado**: lo hace la sesión local en el Editor.*
+- [x] **3.1 Crear script editor `BuildRigsFinal.cs`:**
   - Basado en `BuildRigs.cs.txt`, pero con modo `"clips"` que reescribe únicamente las curvas sin cambiar los FileIDs de los prefabs.
-- [ ] **3.2 Clavar todas las propiedades básicas en cada clip:**
+  - **Difiere:** se versiona como `herramientas/BuildRigsFinal.cs.txt` (se copia al Editor para correrlo y se borra) y no tiene un modo sino cinco: `"nodos"` (añade los nodos y el `CharacterFace` a los 7 prefabs), `"sprites"` (asigna el arte final), `"clips"`, `"todo"` y `"estado"`. Lee la tabla `rig_articulaciones.json`, que se estima con `articulaciones.py`.
+- [x] **3.2 Clavar todas las propiedades básicas en cada clip:**
   - Garantizar que clips como `Idle`, `Walk`, `Run`, `Talk`, `Strike`, `Hammer`, `Point`, `Encourage`, `Celebrate` tengan curvas explícitas para todos los huesos del rig (evitando que `writeDefaultValues` provoque caídas a pose en T).
-- [ ] **3.3 Incorporar curvas elásticas de "Actions & Stuff":**
+  - Cada clip lleva rotación en todos los huesos de su personaje (12 en la familia, 10 en Algoritm); uno sin uso queda constante en su pose de reposo.
+- [x] **3.3 Incorporar curvas elásticas de "Actions & Stuff":**
   - Aplicar tangentes `ClampedAuto` y curvas armónicas para el balanceo y rebote elástico.
+  - Respiración de 3,2 s, inclinación al caminar y correr, anticipación, asentamiento, estirar y aplastar de hasta el 15 % y movimiento secundario de la cabeza con 2 a 4 cuadros de retraso.
 
 ### Fase 4: Integración en Escenas y Niveles
 - [ ] **4.1 Escena Narrativa (`NarrativeSceneController`):**
@@ -207,21 +285,26 @@ Para sincronizar el habla con el diálogo sin requerir pistas de audio fonética
 
 ## 7. Inventario y Nomenclatura de Archivos
 
+> **Corregido el 05/10/2026 (INC-131):** sin `Front/` ni `Face/`; los nombres vigentes y los
+> archivos de código que de verdad existen. `SpeechMouthController.cs` no se creó (§6, 2.3).
+
 ```
 Assets/Game/
 ├── Art/
 │   └── Characters/
 │       ├── Father/
-│       │   ├── Front/ (partes frontales)
-│       │   ├── Profile/ (partes de perfil)
-│       │   ├── Face/ (ojos y bocas)
+│       │   ├── char_papa_parte_*.png   (torso, cabeza, brazo/antebrazo, pierna/antepierna)
+│       │   ├── char_papa_ojos_*.png · char_papa_boca_*.png
+│       │   ├── char_papa_cara.asset    (CharacterFaceSet; lo crea el modo "sprites")
+│       │   ├── Profile/ (partes de perfil; pendiente)
 │       │   └── Animations/ (21 clips .anim + char_papa.controller)
 │       ├── Mother/
 │       ├── Girl/
 │       ├── Boy/
 │       └── Algoritm/
-│           ├── Animations/ (9 clips .anim + char_algoritm.controller)
-│           └── Forms/ (fuego, rueda, gota)
+│           ├── char_algoritm_<fuego|rueda|gota>_parte_*.png · _ojos_*.png · _boca_*.png
+│           ├── char_algoritm_<fuego|rueda|gota>_cara.asset
+│           └── Animations/ (9 clips .anim + char_algoritm.controller)
 ├── Prefabs/
 │   └── Characters/
 │       ├── Papa.prefab (fileIDs originales preservados)
@@ -233,12 +316,13 @@ Assets/Game/
 │       └── Algoritm_Gota.prefab
 └── Scripts/Runtime/
     └── Scaffolding/
-        ├── CharacterRig.cs (actualizado con OnEnable/Start/Play inmediato)
-        ├── CharacterFace.cs (nuevo: parpadeo y emociones)
-        ├── SpeechMouthController.cs (nuevo: fonemas de habla)
-        ├── FacialEmotion.cs (nuevo: enum)
+        ├── CharacterRig.cs (OnEnable/Start/Play inmediato; EmotionOverride, Emotion, Speaking)
+        ├── CharacterFace.cs (ojos y boca sobre dos Image)
+        ├── CharacterFaceSet.cs (sprites y tiempos de la cara; ScriptableObject)
+        ├── FacialEmotion.cs · ActionEmotion.cs (enum y emoción por acción)
+        ├── BlinkClock.cs · MouthFlap.cs (parpadeo y aleteo de la boca; C# plano)
         ├── ActorAction.cs (enum intacto)
-        ├── ActorBeat.cs
+        ├── ActorBeat.cs · ActorCue.cs
         └── ActorTimeline.cs
 ```
 

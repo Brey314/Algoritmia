@@ -35,7 +35,8 @@ Leyenda: **✓** en disco · **◐** provisional en disco (sustituir conservando
 **Cómo se animan (24/09/2026, INC-53).** Por **recorte**, como fija §13.1, y no con el rig de
 2D Animation: las escenas son uGUI en un Canvas overlay y `SpriteSkin` no deforma una `Image`. Cada
 miembro de la familia está cortado en cinco partes —`torso`, `brazo_izq`, `brazo_der`,
-`pierna_izq`, `pierna_der`, con izquierda y derecha **de pantalla**—. Son `Image` hijas con el
+`pierna_izq`, `pierna_der`, con izquierda y derecha **de pantalla**; con el arte final serán diez
+y una cara, más abajo—. Son `Image` hijas con el
 pivote en la articulación, sobre un lienzo de 1024 × 1024, el de los sprites base: la figura
 ocupa y 77..947. Un `Animator` las gira y desplaza con un clip por acción; el componente es
 `CharacterRig` (`Game.Scaffolding`) y los prefabs están en `Assets/Game/Prefabs/Characters/`. Las
@@ -49,9 +50,33 @@ cada `.png` conservando el nombre**; si cambia la silueta, hay que rehacer el pr
 tamaño y el pivote de cada parte viven en él.
 
 Retratos: solo existe `neutra`, un recorte de la cabeza de 320², que es el que usa el cuadro de
-diálogo. Es la única cara del juego: las otras cinco expresiones de `S03a`/`S03b` no se generan,
-porque la emoción la lleva el cuerpo con las acciones del rig (§7.3). **No hay tristeza ni
-enfado**: tras un intento sin éxito el personaje hace «ánimo» (`Encourage`, CP-02). **No existen saltar, caer, aterrizar ni derrota** (CT-06, RNF-02, CP-02).
+diálogo. **Con el arte actual es la única cara del juego**: la emoción la lleva el cuerpo con las
+acciones del rig (§7.3). **No hay tristeza ni enfado**: tras un intento sin éxito el personaje hace
+«ánimo» (`Encourage`, CP-02). **No existen saltar, caer, aterrizar ni derrota** (CT-06, RNF-02, CP-02).
+
+**Arte final: partes articuladas y cara (decisión de Santiago, 05/10/2026, INC-131).** Los
+personajes finales —Papá, Mamá, Niña y Niño, en vista frontal— llegan con más capas. Se **conservan
+los nombres actuales** (`char_<x>_parte_brazo_*` pasa a ser el húmero y `char_<x>_parte_pierna_*`
+el muslo, con el mismo GUID) y se **añaden** los siguientes. Hasta que lleguen, los nodos del prefab
+existen con la `Image` apagada y el arte de hoy se ve igual. Esto sustituye las carpetas `Front/` y
+los nombres `frente_` de `Plan-Personajes-Finales.md` §4.2. El estado de cada archivo es `○`
+(pendiente de entrega):
+
+| Qué | Archivos (`char_<x>_`, con `<x>` = `papa`, `mama`, `nina`, `nino`) |
+|---|---|
+| ○ Cabeza (separada del torso) | `parte_cabeza` |
+| ○ Antebrazo y antepierna (el segundo tramo) | `parte_antebrazo_izq`, `parte_antebrazo_der`, `parte_antepierna_izq`, `parte_antepierna_der` |
+| ○ Ojos, uno por expresión | `ojos_neutra`, `ojos_alegria`, `ojos_sorpresa`, `ojos_preocupacion`, `ojos_concentracion`, `ojos_sueno` |
+| ○ Ojos al parpadear | `ojos_parpadeo_medio`, `ojos_parpadeo_cerrado` |
+| ○ Boca al hablar | `boca_0` (cerrada, también el reposo de `neutra` y `sueno`), `boca_a`, `boca_e`, `boca_u` |
+| ○ Boca de reposo por expresión | `boca_alegria`, `boca_sorpresa`, `boca_preocupacion`, `boca_concentracion` |
+
+Las seis expresiones son las de `Direccion_de_Arte.md` §7.3 y **ninguna es de tristeza, enfado ni
+derrota** (CP-02). Todo vive en la carpeta del personaje, sin subcarpeta. La tabla de dónde va cada
+articulación es `claudeDocs/tasks/Personajes/herramientas/rig_articulaciones.json` (provisional), y
+el arte entra con los modos «sprites» y «clips» de `BuildRigsFinal.cs.txt`
+(`claudeDocs/tasks/Personajes/Personajes-Resultados.md`, Anexo C). El generador crea además
+`char_<x>_cara.asset`, un `CharacterFaceSet` que no es una imagen.
 
 **Clips (21 por miembro de la familia).** `char_<x>_anim_<accion>.anim`, uno por estado del
 `Animator`, cuyo nombre es el de `ActorAction`: `idle`, `caminar`, `correr`, `hablar`, `golpear`,
@@ -69,10 +94,28 @@ controlador `char_<x>.controller` está al lado.
 | ◐ `char_algoritm_n3_gota_reposo.png` | **Provisional**: el fuego recoloreado en agua. Ídem |
 | ○ `_girando`, `_atenuado`, `char_algoritm_n*_retrato_*` | `S15`/`S03b`. Hoy el retrato del guía **es** el sprite de su forma |
 
-Una sola `Image` por forma y ningún recorte, para que sustituir el archivo baste. Los tres prefabs
+**Arte actual:** una sola `Image` por forma y ningún recorte, para que sustituir el archivo baste. Los tres prefabs
 `Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` comparten `Animations/char_algoritm.controller`
 y sus clips `char_algoritm_anim_{flotar,hablar,senalar,girar,celebrar,animo,oculto,aparicion,apagado}`.
 El mismo sprite va dentro del botón de ayuda circular de las cinco mecánicas.
+
+**Arte final: recorte en partes (decisión de Santiago, 05/10/2026, INC-131).** Cada forma se
+entrega además cortada, con el prefijo `char_algoritm_<fuego|rueda|gota>_` —uno por forma, porque
+cada una va recoloreada (INC-52)—. Brazos, piernas, codos y rodillas en dos tramos, ojos y boca
+sobre el cuerpo y **sin cuello ni cabeza**. Estado `○`:
+
+| Qué | Archivos (`char_algoritm_<forma>_`) |
+|---|---|
+| ○ Torso (la llama y el vientre de colores, sin extremidades) | `parte_torso` |
+| ○ Brazos en dos tramos | `parte_brazo_izq`, `parte_brazo_der` (húmero), `parte_antebrazo_izq`, `parte_antebrazo_der` |
+| ○ Piernas en dos tramos | `parte_pierna_izq`, `parte_pierna_der` (muslo), `parte_antepierna_izq`, `parte_antepierna_der` |
+| ○ Ojos y su parpadeo | `ojos_neutra`, `ojos_alegria`, `ojos_sorpresa`, `ojos_preocupacion`, `ojos_concentracion`, `ojos_sueno`, `ojos_parpadeo_medio`, `ojos_parpadeo_cerrado` |
+| ○ Boca | `boca_0`, `boca_a`, `boca_e`, `boca_u`, `boca_alegria`, `boca_sorpresa`, `boca_preocupacion`, `boca_concentracion` |
+
+Hasta que lleguen, el prefab lleva los nodos con las capas apagadas y se sigue viendo el
+`_reposo`; cuando torso, brazos y piernas están puestos, el motor apaga la `Image` de `Cuerpo`. El
+`_reposo` se conserva mientras no se decida otra cosa: es hoy el retrato del guía y lo que va
+dentro del botón de ayuda.
 
 ### `Characters/Father/` · `Mother/` · `Girl/` · `Boy/`
 

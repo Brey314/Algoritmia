@@ -14,7 +14,7 @@ los dos tienen su conversión en `docs/md/`. Las citas por sección de este docu
 con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
 (control de cambios).
 
-**Verificación vigente: 01/10/2026, rev. 16.** La rev. 14 (29/09/2026) contrastó todos los
+**Verificación vigente: 05/10/2026, rev. 17.** La rev. 14 (29/09/2026) contrastó todos los
 documentos —los `.docx` de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago,
 **todos los hallazgos están cerrados**: ante un conflicto gana el juego y se edita el documento; lo
 que solo pide el documento se implementa en el juego; lo que solo tiene el juego se añade al
@@ -25,7 +25,10 @@ cierra **INC-115** a **INC-117**, tres puntos que la verificación final dejó a
 en los que él decidió corregir el juego. La rev. 16 (01/10/2026) registra y cierra con la misma regla
 **INC-118** a **INC-130**: los cambios de la sesión del 30/09/2026 (acta D10) que contradecían un
 documento —las correcciones de los tres niveles, la prueba anticipada de la balsa y su sonido—,
-cuatro hallazgos de la dirección de arte y el peso del paquete de entrega (RNF-06). Siguen abiertos
+cuatro hallazgos de la dirección de arte y el peso del paquete de entrega (RNF-06). La rev. 17
+(05/10/2026) registra y cierra **INC-131**, una decisión de Santiago que levanta **INC-108** y la
+regla de Algoritm de una sola imagen **para el arte final**: caras con seis expresiones y rig con
+codos y rodillas. Siguen abiertos
 solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
 **pendientes de Santiago** que el juego no zanja: tres del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
@@ -66,7 +69,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 
 ---
 
-## Resumen — estado a 01/10/2026 (rev. 16)
+## Resumen — estado a 05/10/2026 (rev. 17)
 
 | ID | Hallazgo | Documentos | Estado |
 |---|---|---|---|
@@ -181,6 +184,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-128 | La dirección de arte fijaba otros ajustes de importación que los que aplica el proyecto | Dirección de arte, Inventario de arte | **Cerrado** (01/10/2026) |
 | INC-129 | El diálogo se lee en un cuadro con retrato, no en un globo con cola | Dirección de arte, Interfaces | **Cerrado** (01/10/2026) |
 | INC-130 | El paquete de entrega superaba los 500 MB por los cuadros del fuego y del humo del Nivel 1 | Dirección de arte, Inventario de arte, CLAUDE.md | **Cerrado** (01/10/2026) |
+| INC-131 | El arte final trae seis expresiones y extremidades en dos tramos; INC-108 fijaba una sola cara y Algoritm una sola imagen | Interfaces, Dirección de arte, Inventario de arte, Plan de personajes finales, CLAUDE.md, juego | **Cerrado** (05/10/2026) |
 
 ---
 
@@ -1792,6 +1796,9 @@ llevan las acciones del rig (`Celebrate`, `Surprise`, `Observe`, `Encourage`…)
 **Corrección aplicada (29/09/2026).** Documentos: Interfaces: §4.2; §4; §5 · Dirección de arte:
 §7.3; §12.3 fila «Secuencia incorrecta» · Inventario de arte: Personajes.
 
+*Nota (05/10/2026): esta decisión vale para el **arte actual**. Para el arte final la levanta
+INC-131: seis expresiones, parpadeo y habla.*
+
 ### INC-109 · Los personajes no tenían sombra de contacto — cerrado (29/09/2026)
 
 **El conflicto.** La dirección de arte e Interfaces fijan una elipse hija del personaje al 25 %, y
@@ -2468,6 +2475,61 @@ paquete a 478 979 915 bytes (479,0 MB; 456,8 MiB), con 21 MB de margen
 entre sin comprimir y solo a ella le admite otro tope. La memoria (RNF-05) se mide sobre el
 ejecutable.
 
+### INC-131 · El arte final trae seis expresiones y extremidades en dos tramos — cerrado (05/10/2026)
+
+**El conflicto.** Santiago decidió el 05/10/2026 que los personajes finales llegan en vista frontal
+con más capas, y esa decisión contradice dos reglas que los documentos fijaban para el arte actual:
+**INC-108** («una sola cara, la neutra; la emoción la lleva el cuerpo») y la de Algoritm de «una
+sola imagen por forma, sin recorte en partes» (`Direccion_de_Arte.md` §7.6 y §13.1, `Inventario.md`).
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §7.3 (una sola cara), §7.6 «Nomenclatura» (una
+sola imagen por forma) y §13.1 (cinco partes por miembro de la familia; Algoritm, una `Image`);
+`Interfaces.md` §4 (ROSTRO) y §4.2; `Inventario.md`, `Characters/` (retratos y Algoritm).
+
+**Qué hace el juego.** Hasta ahora, cinco partes por miembro de la familia con la cara dentro del
+torso, y una `Image` por forma de Algoritm. `Plan-Personajes-Finales.md` §5 ya pedía seis
+expresiones, que INC-108 había rechazado.
+
+**Decisión de Santiago (05/10/2026).**
+- Papá, Mamá, Niña y Niño: vista frontal; **cabeza separada del torso**, con **ojos y boca en capas
+  propias**; seis expresiones (Neutral, Happy, Surprised, Worried, Focused, Sleeping), parpadeo y
+  cuatro bocas del habla; **extremidades en dos sprites** —húmero y antebrazo, muslo y antepierna—,
+  con codos y rodillas además de hombros, cadera y cuello.
+- Algoritm, en sus tres formas: brazos, piernas, codos y rodillas en dos tramos, y ojos y boca
+  sobre el cuerpo, **sin cuello**.
+- Mientras no llegue el arte, codos, rodillas y cuello son pivotes vacíos y las capas nuevas van
+  apagadas: el arte provisional se ve igual.
+- Nombres: se conservan los actuales (`char_<x>_parte_brazo_*` = húmero, `pierna_*` = muslo, mismo
+  GUID) y se añaden `antebrazo_izq/der`, `antepierna_izq/der` y `cabeza`; la cara es
+  `char_<x>_ojos_{neutra,alegria,sorpresa,preocupacion,concentracion,sueno}`,
+  `_ojos_parpadeo_{medio,cerrado}`, `_boca_{0,a,e,u}` y `_boca_{alegria,sorpresa,preocupacion,concentracion}`;
+  Algoritm lleva el prefijo `char_algoritm_<fuego|rueda|gota>_`. Esto sustituye las carpetas
+  `Front/` y los nombres `frente_` de `Plan-Personajes-Finales.md` §4.2.
+- **No cambia la regla de fondo**: ninguna expresión es de tristeza, enfado o derrota (CP-02), y
+  `Worried` es duda, sin lágrimas ni mueca de llanto. Un intento sin éxito sigue produciendo el
+  ánimo, ahora con la cara alegre.
+
+**Regla.** Decisión de Santiago, como INC-115 a INC-117: levanta INC-108 y la regla de Algoritm
+**para el arte final**; para el arte actual, ambas siguen valiendo. No hay `.docx` radicado que lo
+diga, y ninguno se edita desde código.
+
+**Corrección aplicada (05/10/2026).** Documentos: Dirección de arte: §7.3 (las seis expresiones, el
+límite y la regla de no tristeza), §7.6 «Nomenclatura» (Algoritm deja de ser «sin recorte en partes»
+para el arte final) y su introducción, §13.1 (diez partes y una cara; nombres), §15.4 (ejemplos de
+nomenclatura) y la lista de §17 «Personajes» · Interfaces: §4 (ROSTRO) y §4.2 · Inventario de arte:
+`Characters/` (cómo se animan, retratos, Algoritm y la tabla de nombres nuevos) · Plan de personajes
+finales: estado, Fases 2 y 3, §3.1, §4.2, §5 y §7 · `Personajes-Resultados.md`: Anexo C · CLAUDE.md:
+la viñeta de personajes, el párrafo del carril de arte y esta fila. En el código (commit `a12dbb3`,
+rama `feat/personajes-animados`): `FacialEmotion`, `ActionEmotion`, `BlinkClock`, `MouthFlap`,
+`CharacterFaceSet` y `CharacterFace`; `CharacterRig`, `ActorBeat`, `ActorCue`, `ActorTimeline` y
+`NarrativeSceneController` ganan la emoción y el habla sin cambiar sus firmas; y el generador
+`BuildRigsFinal.cs.txt`, con `rig_articulaciones.json` y `articulaciones.py`, que añade los nodos a
+los siete prefabs sin reconstruirlos y reescribe los 93 clips. **Pruebas:** `CharacterRig_DA131_*`,
+`CharacterRig_DA73_*`, `FacialEmotion_*`, `BlinkClock_*`, `MouthFlap_*`, `CharacterFace_*`,
+`ActorTimeline_RF05_*` y `NarrativeScene_RF05_QuienHablaHablaYCallaAlAvanzar`. **Verificación en el
+Editor: pendiente** (los prefabs y los clips aún no se han regenerado ni las pruebas se han
+corrido).
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -2535,6 +2597,12 @@ carril de sonido, que lleva Santiago desde el acta D08.
 
 ## Historial de revisiones
 
+- **rev. 17 (05/10/2026)** — Decisión de Santiago sobre el arte final de los personajes. Se registra
+  y cierra **INC-131**: cabeza separada, ojos y boca en capas propias, seis expresiones, y
+  extremidades en dos tramos con codos y rodillas, también en Algoritm (sin cuello). Levanta
+  **INC-108** y la regla de Algoritm de una sola imagen para el arte final, no para el actual;
+  mantiene CP-02 (ninguna expresión de tristeza, enfado o derrota). Su código entró en el commit
+  `a12dbb3` y su verificación en el Editor queda pendiente.
 - **rev. 16 (01/10/2026)** — Cierre de la sesión del 30/09/2026 (acta D10). Con la regla del 29/09
   se registran y cierran **INC-118** a **INC-130**, los cambios de la sesión que contradecían un
   documento: el plano abierto del Nivel 3, con la escala de las narrativas (118); la chispa del

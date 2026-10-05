@@ -332,10 +332,10 @@ al personaje de inmediato.
 
 ### 7.3 Expresión y emoción
 
-Cada personaje tiene **una sola cara, la neutra**, la del torso del rig y la del retrato del
-cuadro de diálogo (`char_<x>_retrato_neutra.png`): cejas separadas y algo curvas, ojos
-abiertos y redondos con brillo, sonrisa cerrada suave sin dientes. No se generan variantes
-faciales. La emoción la lleva el cuerpo, con un clip del rig por acción (§13.3, `ActorAction`):
+**Arte actual (provisional).** Cada personaje tiene **una sola cara, la neutra**, la del torso del
+rig y la del retrato del cuadro de diálogo (`char_<x>_retrato_neutra.png`): cejas separadas y algo
+curvas, ojos abiertos y redondos con brillo, sonrisa cerrada suave sin dientes. La emoción la lleva
+el cuerpo, con un clip del rig por acción (§13.3, `ActorAction`):
 
 | Emoción | Acción del rig | Uso en juego |
 | --- | --- | --- |
@@ -345,10 +345,35 @@ faciales. La emoción la lleva el cuerpo, con un clip del rig por acción (§13.
 | Atención | `Observe` | Al empezar un reto, al mirar algo |
 | Ánimo | `Encourage` | Tras un intento fallido |
 
-**Regla sobre la tristeza y el enfado:** no existen, ni en la cara ni en el cuerpo. Un
-intento fallido nunca produce un gesto negativo en los personajes; produce el de ánimo. Esta
-decisión conecta con el principio de ensayo y error en entorno seguro que sostiene el
-enfoque de Aprendizaje Basado en Juegos del proyecto.
+**Arte final: seis expresiones (decisión de Santiago, 05/10/2026, INC-131).** Los personajes
+finales traen la cabeza separada del torso, con **ojos y boca en capas propias** (§13.1), y la cara
+cambia de sprite según la emoción. La emoción deja de vivir solo en el cuerpo: la cara y el clip
+trabajan juntos, y el código elige la cara que corresponde a la acción
+(`ActionEmotion`) salvo que el guion fije otra en una línea. Son seis, y no se añaden más sin
+cambiar esta sección:
+
+| Expresión (`FacialEmotion`) | Ojos | Boca de reposo | Va con |
+| --- | --- | --- | --- |
+| Neutral | Mirada serena | Cerrada y relajada | `Idle` y el resto de acciones |
+| Happy (alegría) | Achinados y sonrientes | Sonrisa | `Celebrate`, `Hug`, `Encourage` |
+| Surprised (sorpresa) | Muy abiertos | En «O» | `Surprise` |
+| Worried (preocupación) | Cejas inclinadas hacia el centro | Casi recta, apenas curvada | La duda de quien pregunta o espera |
+| Focused (concentración) | Mirada concentrada, cejas bajas | Recta y apretada | `Strike`, `Hammer`, `Blow`, `Push`, `Carry`, `PickUp`, `Kneel` |
+| Sleeping (sueño) | Cerrados, pestañas hacia abajo | Cerrada | `Sleep` |
+
+Además, ojos a medio cerrar y cerrados para el **parpadeo** (cada 3,5 ± 1,2 s, 0,12 s; se apaga al
+dormir) y cuatro bocas del **habla**: cerrada, A, E y U, que ciclan mientras el personaje dice su
+línea. Los nombres están en el Inventario de arte y en §13.1. Hasta que llegue ese arte las capas
+van apagadas y el juego muestra la cara única de arriba: **todo lo de este párrafo es provisional
+hasta entonces**.
+
+**Regla sobre la tristeza y el enfado:** no existen, ni en la cara ni en el cuerpo, y **el arte
+final no las añade**. Un intento fallido nunca produce un gesto negativo en los personajes; produce
+el de ánimo, y su cara es la alegre. No hay expresión de tristeza, de enfado ni de derrota entre
+las seis, y `Worried` se dibuja como duda —cejas inclinadas, boca casi recta—, sin lágrimas, sin
+comisuras caídas y sin mueca de llanto: es lo que lo separa de la tristeza (CP-02). Esta decisión
+conecta con el principio de ensayo y error en entorno seguro que sostiene el enfoque de
+Aprendizaje Basado en Juegos del proyecto.
 
 ### 7.4 Lenguaje corporal
 
@@ -380,6 +405,10 @@ en cada nivel**: fuego, madera y agua, en ese orden (INC-45). Es el mismo person
 tres —lo exige CN-03— y conserva en los tres **el mismo cuerpo**: una llama con cara, brazos y
 piernas de palo, manos y una franja de colores en la base (INC-52). Entre niveles cambia solo
 el color de la llama; la cara, las extremidades y la franja no cambian.
+
+**Para el arte final deja de ser una sola imagen (05/10/2026, INC-131):** el cuerpo se corta en
+partes, con brazos y piernas **en dos tramos** y la cara en dos capas **sobre el cuerpo**. Está
+descrito en «Nomenclatura» y en §13.1. No cambia el núcleo de identidad de la tabla siguiente.
 
 El guion ya lo empujaba: en §4.4 el guía aparece «en el corazón de las llamas […] hecho de
 fuego esta vez». Su cuerpo es el material del descubrimiento que el nivel acaba de nombrar.
@@ -442,9 +471,32 @@ char_algoritm_n2_rueda_reposo.png
 char_algoritm_n3_gota_reposo.png
 ```
 
-Una sola imagen por forma, sin recorte en partes: los prefabs `Algoritm_Fuego`,
-`Algoritm_Rueda` y `Algoritm_Gota` animan el cuerpo entero con `char_algoritm.controller`, así
-que sustituir el archivo basta. «Rueda» y «gota» nombran el nivel, no la silueta.
+**Arte actual (provisional): una sola imagen por forma, sin recorte en partes.** Los prefabs
+`Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` animan el cuerpo entero con
+`char_algoritm.controller`, así que sustituir el archivo basta. «Rueda» y «gota» nombran el nivel,
+no la silueta.
+
+**Arte final: recorte en partes (decisión de Santiago, 05/10/2026, INC-131).** Cada forma se
+entrega, además de su `_reposo`, cortada en partes con el prefijo
+`char_algoritm_<fuego|rueda|gota>_` —una por forma, porque cada una va recoloreada (INC-52)—:
+
+```
+char_algoritm_<forma>_parte_torso.png           (la llama y el vientre de colores, sin extremidades)
+char_algoritm_<forma>_parte_brazo_{izq,der}.png      (húmero)
+char_algoritm_<forma>_parte_antebrazo_{izq,der}.png
+char_algoritm_<forma>_parte_pierna_{izq,der}.png     (muslo)
+char_algoritm_<forma>_parte_antepierna_{izq,der}.png
+char_algoritm_<forma>_ojos_{neutra,alegria,sorpresa,preocupacion,concentracion,sueno}.png
+char_algoritm_<forma>_ojos_parpadeo_{medio,cerrado}.png
+char_algoritm_<forma>_boca_{0,a,e,u}.png · _boca_{alegria,sorpresa,preocupacion,concentracion}.png
+```
+
+Brazos, piernas, codos y rodillas en dos tramos, **ojos y boca como capas sobre el cuerpo**, y **sin
+cuello ni cabeza**: la cara va en la propia llama. La cara admite las mismas seis expresiones de
+§7.3, con la regla de no tristeza, enfado ni derrota; la **neutra** sigue siendo la del núcleo de
+identidad (ojos crema con iris café, sonrisa cerrada). **Provisional hasta la entrega:** mientras
+no llegue, el prefab lleva los nodos con las capas apagadas y se ve el sprite entero de hoy.
+`Cuerpo` se apaga solo cuando torso, brazos y piernas están puestos.
 
 Sustituyen a `char_chispa_*`. La palabra `chispa` queda libre para lo que siempre fue en
 este juego: el rayo del golpe del Nivel 1 (§12.2), que dibuja el motor, no tiene archivo y no
@@ -921,16 +973,33 @@ rojo como escala de intensidad, no como error.
 ### 13.1 Enfoque técnico
 
 Animación por recorte (*cut-out*) en uGUI sobre los sprites base en A-pose, no
-animación fotograma a fotograma. Cada miembro de la familia se corta en cinco partes
-—torso, brazo izquierdo, brazo derecho, pierna izquierda y pierna derecha, con izquierda y
-derecha de pantalla— que son `Image` hijas de un lienzo de 1024 × 1024, el de los sprites
-base, con el pivote en la articulación (`char_<x>_parte_<parte>.png`). Un `Animator` las gira
-y desplaza con un estado por acción del juego (`ActorAction`) y un clip por estado
+animación fotograma a fotograma. Las partes son `Image` hijas de un lienzo de 1024 × 1024, el de
+los sprites base, con el pivote en la articulación (`char_<x>_parte_<parte>.png`). Un `Animator`
+las gira y desplaza con un estado por acción del juego (`ActorAction`) y un clip por estado
 (`char_<x>_anim_<accion>.anim`, 21 por miembro de la familia, con el controlador
 `char_<x>.controller` al lado). El componente es `CharacterRig` (`Game.Scaffolding`), hay un
 prefab por personaje en `Assets/Game/Prefabs/Characters/`, y lo usan igual la escena narrativa
-y las cinco mecánicas. Algoritm es una sola `Image` por forma, sin recorte, con nueve clips que
-comparten las tres formas, para que sustituir su arte sea cambiar un archivo.
+y las cinco mecánicas.
+
+**Arte actual (provisional).** Cada miembro de la familia se corta en **cinco partes** —torso
+(con la cabeza dentro), brazo izquierdo, brazo derecho, pierna izquierda y pierna derecha, con
+izquierda y derecha de pantalla— y Algoritm es una sola `Image` por forma, sin recorte, con nueve
+clips que comparten las tres formas, para que sustituir su arte sea cambiar un archivo.
+
+**Arte final: diez partes y una cara (decisión de Santiago, 05/10/2026, INC-131).** Cada miembro de
+la familia se corta en **diez partes** —torso, cabeza, húmero y antebrazo de cada brazo, muslo y
+antepierna de cada pierna— **más las capas de la cara, ojos y boca**, que cambian de sprite según
+la emoción (§7.3). Las articulaciones son hombro, **codo**, cadera, **rodilla** y **cuello**.
+`char_<x>_parte_brazo_*` pasa a ser el húmero y `char_<x>_parte_pierna_*` el muslo, con el mismo
+archivo y GUID; se añaden `char_<x>_parte_antebrazo_{izq,der}`, `char_<x>_parte_antepierna_{izq,der}`
+y `char_<x>_parte_cabeza`, y la cara es `char_<x>_ojos_<emocion>`, `char_<x>_ojos_parpadeo_{medio,cerrado}`,
+`char_<x>_boca_{0,a,e,u}` y `char_<x>_boca_<emocion>`. **Algoritm** se corta igual, con prefijo
+`char_algoritm_<forma>_`, en torso, húmero y antebrazo, muslo y antepierna (nueve partes) y los ojos
+y la boca sobre el cuerpo, **sin cuello ni cabeza** (§7.6). La posición de cada articulación vive en
+`claudeDocs/tasks/Personajes/herramientas/rig_articulaciones.json`, y es **provisional hasta que
+llegue el arte**: mientras tanto codos, rodillas y cuello son pivotes vacíos y las capas nuevas
+están apagadas, de modo que el arte actual se ve igual. Los prefabs no se reconstruyen: se les
+añaden nodos (regla de los fileID).
 
 Razones: el equipo es de dos personas con catorce semanas, y los generadores de imagen no
 producen secuencias de frames consistentes entre sí. No se usa el rigging con huesos del paquete
@@ -941,7 +1010,9 @@ cámara como cualquier otro objeto (INC-53).
 
 Consecuencia sobre el arte: los sprites base deben tener brazos y piernas
 completamente separados del torso, con fondo visible entre ellos. Un brazo fundido
-con el cuerpo obliga a inventar dónde termina al recortarlo en su parte.
+con el cuerpo obliga a inventar dónde termina al recortarlo en su parte. Con el arte final,
+además, el codo y la rodilla tienen que quedar donde termina el húmero o el muslo y empieza el
+tramo siguiente, para que los dos recortes se solapen sin dejar hueco al girar.
 
 ### 13.2 Principios de animación aplicados
 
@@ -1092,6 +1163,9 @@ sub-sprite se ajusta desde el motor conservando su `spriteID`, como se hizo con 
 char_nino_retrato_neutra.png
 char_mama_cenital.png
 char_papa_parte_brazo_der.png
+char_papa_parte_antebrazo_der.png
+char_papa_ojos_alegria.png
+char_papa_boca_a.png
 prop_n1_monton_hojas_cenital.png
 prop_n2_carretilla_e5.png
 env_n2_bosque_claro.png
@@ -1247,6 +1321,8 @@ Aplicar a cada pieza antes de darla por buena e importarla a Unity.
 - [ ] Cabello plano, sin degradado entre mechones
 - [ ] Escala relativa correcta respecto a la familia (§7.1)
 - [ ] Silueta distinguible de los otros tres personajes en negro sólido
+- [ ] Arte final: las diez partes (§13.1) con el codo y la rodilla donde dice la tabla de articulaciones; Algoritm, sin cabeza ni cuello
+- [ ] Arte final: las seis expresiones (§7.3) con ojos y bocas por sus nombres; ninguna es de tristeza, enfado ni derrota, y `Worried` no tiene lágrimas ni comisuras caídas
 
 ### Entornos
 

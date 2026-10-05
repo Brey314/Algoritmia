@@ -25,6 +25,11 @@ diálogo, y el botón de ayuda con la forma de Algoritm, listo para sustituir el
 > familia y Mamá toman la escala de las narrativas. Lo registra el
 > [Anexo B](#anexo-b--lo-que-cambió-después-del-25092026-01102026); la suite vigente es la del
 > 01/10/2026, en el mismo `Slice-4-Resultados.md`.
+>
+> **05/10/2026:** el rig gana codos, rodillas, cuello, cabeza, ojos y boca, y el código de cara,
+> a la espera del arte final de Santiago. Lo registra el
+> [Anexo C](#anexo-c--rig-articulado-y-caras-para-el-arte-final-05102026). La verificación en el
+> Editor está pendiente.
 
 ## Qué entró
 
@@ -112,6 +117,9 @@ temporal de la sesión: hay que ajustarlas antes de usarlas.
   madera y agua— y la animación por recorte con `CharacterRig`.)*
 - Arte de rueda y gota: sustituir los dos `.png` conservando nombre y `.meta`.
 - Expresiones del retrato distintas de `neutra`: ninguna línea las pide todavía.
+  *(05/10/2026: el código de las expresiones ya existe —`FacialEmotion`, `CharacterFace`— y se
+  aplica al personaje en escena; el retrato del cuadro de diálogo sigue siendo `neutra`. Anexo C,
+  C.7.)*
 - Objetos que el guion nombra y no tienen sprite: comida, humo, estela de Algoritm, maleza, piedras
   en la mano. Tampoco puede aparecer un objeto a mitad de escena (el montón de la 1.2).
   *(Vencido el 25/09/2026 en cuanto al humo: desde `f801186` (24/09/2026) es un sprite animado.
@@ -394,3 +402,296 @@ Apartado nuevo, de la tarjeta D10-4 (verificación del arte) y de las revisiones
   verde en la verificación final del 01/10/2026 (EditMode 433 = 432 + 1 omitida, PlayMode 364/364).
   En ella `RiverLevel_RNF05_…` pasó con 1 966 MB, con el Editor reiniciado; RNF-05 se mide sobre el
   ejecutable.
+
+---
+
+## Anexo C — Rig articulado y caras para el arte final (05/10/2026)
+
+Decisión de Santiago del 05/10/2026 (INC-131), ejecutada desde la nube en el commit `a12dbb3` de
+la rama `feat/personajes-animados` (Fase 2–3 de `Plan-Personajes-Finales.md`). El objetivo es que
+cambiar al arte final sea **asignar sprites y regenerar clips**, sin reconstruir prefabs ni
+tocar escenas o assets.
+
+> **Verificación en el Editor: pendiente.** Los prefabs y los clips **aún no se han regenerado**:
+> el generador (`BuildRigsFinal.cs.txt`) lo corre la sesión local de Santiago en el Editor, con los
+> modos «nodos» y «clips». Hasta entonces el disco conserva los siete prefabs de cinco partes y los
+> 93 clips de siempre, y este anexo describe lo que el generador **añade** y lo que los clips se
+> **reescriben** con, no un resultado comprobado. Las pruebas de C.8 tampoco se han corrido.
+
+### C.1 Qué decidió Santiago (05/10/2026)
+
+- **Los personajes finales** —Papá, Mamá, Niña y Niño— vienen en **vista frontal con más capas**:
+  la cabeza separada del torso, con ojos y boca en capas propias y las seis expresiones de
+  `Plan-Personajes-Finales.md` §5 (Neutral, Happy, Surprised, Worried, Focused, Sleeping), y las
+  extremidades en **dos sprites**: húmero y antebrazo, muslo y antepierna. Hay articulaciones en
+  codos y rodillas, además de hombros, cadera y cuello.
+- **Algoritm** —las tres formas: fuego, rueda y gota— entra en el alcance: brazos, piernas, codos y
+  rodillas en dos tramos, y ojos y boca **sobre el cuerpo**. **No tiene cuello**: la llama no lleva
+  cabeza aparte.
+- **Mientras no llegue el arte**, codos, rodillas y cuello son **pivotes vacíos** y las capas nuevas
+  van **apagadas**: el arte provisional se ve igual que antes.
+- **Nombres de sprites**: se conservan los actuales (`char_<x>_parte_brazo_*` pasa a ser el húmero y
+  `pierna_*` el muslo, con el mismo GUID) y se añaden los nuevos (C.4). Esto sustituye las carpetas
+  `Front/` y los nombres `frente_` de `Plan-Personajes-Finales.md` §4.2.
+- Corrige para el arte final la regla de «una sola cara, la neutra» (INC-108) y la de Algoritm de
+  «una sola imagen, sin recorte en partes»: INC-131.
+
+### C.2 La jerarquía: solo se añaden nodos
+
+Nada existente cambia de fileID; todo nodo nuevo lleva su `Image` **apagada y sin sprite** (una
+`Image` sin sprite pinta un recuadro blanco) y sin `raycastTarget` (RNF-02).
+
+**Familia** (Papá, Mamá, Niña, Niño). Lo nuevo va marcado con `+`:
+
+```
+Lienzo/Cuerpo
+├─ PiernaIzq (muslo)        + RodillaIzq → AntepiernaIzq (Image)
+├─ PiernaDer (muslo)        + RodillaDer → AntepiernaDer (Image)
+└─ Tronco
+   ├─ BrazoIzq (húmero)     + CodoIzq    → AntebrazoIzq  (Image)
+   ├─ BrazoDer (húmero)     + CodoDer    → AntebrazoDer  (Image)
+   ├─ Torso
+   └─ + Cuello  (después de Torso: la cabeza se dibuja encima)
+        └─ Cabeza (Image)
+             ├─ Ojos (Image)
+             └─ Boca (Image)
+```
+
+`CodoX`, `RodillaX` y `Cuello` son **pivotes de tamaño cero** colocados en la articulación; el
+segmento (`AntebrazoX`, `AntepiernaX`, `Cabeza`) cuelga de ellos, así que girar el pivote gira el
+segmento. `Sombra` y `Estela` (B.2) no se tocan.
+
+**Algoritm** (`Algoritm_Fuego`, `Algoritm_Rueda`, `Algoritm_Gota`). Hoy `Lienzo/Cuerpo` es una sola
+`Image`, y **sigue siendo lo visible**. Cuelga de `Cuerpo` la misma jerarquía, **sin `Cuello` ni
+`Cabeza`**, porque la cara va en el propio cuerpo de la llama:
+
+```
+Lienzo/Cuerpo  (Image con el sprite entero; se apaga cuando llegan las partes)
+├─ + PiernaIzq → + RodillaIzq → AntepiernaIzq
+├─ + PiernaDer → + RodillaDer → AntepiernaDer
+└─ + Tronco  (nodo estirado sin Image; pivote a la altura del vientre)
+   ├─ + BrazoIzq → + CodoIzq → AntebrazoIzq
+   ├─ + BrazoDer → + CodoDer → AntebrazoDer
+   ├─ + Torso   (la llama y el vientre de colores, sin extremidades)
+   ├─ + Ojos
+   └─ + Boca
+```
+
+Brazos, codos, piernas y rodillas siguen las **mismas rutas** que en la familia, así que
+`Lienzo/Cuerpo/Tronco/Cuello` no existe en Algoritm (lo vigila una prueba, C.8). Las tres formas
+comparten `char_algoritm.controller`: **sus clips solo giran y escalan articulaciones**; la posición
+de cada nodo vive en cada prefab, y la única curva de posición está en `Cuerpo` y `Lienzo`. La
+estela no se toca, y Algoritm sigue sin sombra.
+
+**El componente de cara.** Cada uno de los siete prefabs recibe además un `CharacterFace` en la raíz,
+añadido con `AddComponent` sobre el prefab cargado (lo que preserva los fileID), con sus campos
+`eyes` y `mouth` apuntando a las `Image` de `Ojos` y `Boca`. El generador solo los rellena si están
+vacíos: no pisa un cableado manual.
+
+### C.3 La tabla de articulaciones
+
+`herramientas/rig_articulaciones.json` es la fuente de **dónde va cada nodo**: el generador la lee y
+con el arte final es lo único que se edita. Los valores de hoy son **provisionales**.
+
+| Campo | Qué es |
+|---|---|
+| `version`, `nota` | Versión del esquema (1) y el aviso de que los valores son provisionales |
+| `personajes[]` | Siete entradas: `papa`, `mama`, `nina`, `nino`, `algoritm_fuego`, `algoritm_rueda`, `algoritm_gota` |
+| `id`, `prefab`, `carpeta`, `prefijo`, `guia` | El personaje, su prefab, su carpeta bajo `Assets/Game/Art/Characters/` (`Father`…), el prefijo de sus archivos (`char_papa`, `char_algoritm_fuego`) y si es Algoritm |
+| `nodos[]` | Lo que se **añade**, padre antes que hijo. Cada nodo: `nombre`, `tipo`, `padre` (ruta desde la raíz del prefab), `punto` `[x, y]` (donde cae su pivote), `imagen` (el segmento que cuelga), `sprite` (el PNG que se le asigna) y `rect` `[x0, y0, x1, y1]` (el rectángulo del segmento) |
+| `tipo` | `articulacion` = pivote de tamaño 0 en `punto` con un segmento `imagen` colgado de él · `imagen` = el propio nodo lleva la `Image` · `grupo` = nodo estirado sin `Image`, con el pivote en `punto` (el `Tronco` de Algoritm) |
+| `partes[]` | Lo que **ya existe** y se reajusta con el arte final: `nombre`, `ruta`, `sprite`, `rect` y `pivote`. Vacío en Algoritm, que no tenía partes |
+
+- **Coordenadas.** Las de `cut.py`: lienzo de 1024 × 1024, origen **arriba a la izquierda**, `y`
+  hacia abajo y suelo en `y = 947` (la figura va de 77 a 947). Unity usa `y` hacia arriba; el
+  generador convierte.
+- **`segmentado` no se guarda.** El plan lo pensaba como un campo por personaje; se **deduce del
+  prefab**: un personaje está segmentado cuando la `Image` de `AntepiernaIzq` tiene sprite y está
+  encendida. Guardarlo en la tabla sería una segunda fuente de verdad que se desincroniza al primer
+  cambio de arte.
+- **Cómo se estimaron.** `articulaciones.py` lee los prefabs YAML (sin dependencias, sin abrir
+  ninguna imagen) y calcula: el **codo**, en el punto medio entre el hombro y la esquina del rect
+  más lejana a él, con el antebrazo como cuadrante distal; la **rodilla**, en el punto medio entre la
+  cadera y la base del rect, con la antepierna como mitad inferior; el **cuello**, en la base de la
+  cabeza y un poco por dentro, para que no se vea el corte. Lo demás es medida a ojo, y está
+  marcada «a ojo» en el script: la fracción de la figura que ocupa la cabeza (`FRACCION_CABEZA`),
+  la posición y el tamaño de ojos y boca (`CARA`) y todas las medidas de Algoritm (`ALG`, sobre
+  `char_algoritm_n1_fuego_reposo.png`; la rueda y la gota son el mismo dibujo recoloreado, así que
+  la geometría es una).
+- **Cómo se reestima.** `python3 claudeDocs/tasks/Personajes/herramientas/articulaciones.py`
+  reescribe el JSON entero. Con el arte final lo normal es **editar el JSON a mano**, con el rect y
+  el pivote exactos de cada PNG, o ajustar las constantes del script y volver a correrlo; correrlo
+  sin más pisa lo editado a mano.
+
+### C.4 Nombres de los sprites
+
+Se conservan los actuales, con su GUID; se añaden los nuevos. Para Algoritm el prefijo es
+`char_algoritm_<fuego|rueda|gota>_`, **uno por forma**, porque cada forma va recoloreada (INC-52).
+Los nombres están también en `Assets/Game/Art/Inventario.md`.
+
+| Parte | Familia (`char_<x>_`) | Algoritm (`char_algoritm_<forma>_`) |
+|---|---|---|
+| Torso | `parte_torso` (existente) | `parte_torso` (la llama sin extremidades) |
+| Cabeza | `parte_cabeza` | — no tiene |
+| Brazo, tramo alto (húmero) | `parte_brazo_izq` · `parte_brazo_der` (existentes) | `parte_brazo_izq` · `parte_brazo_der` |
+| Antebrazo | `parte_antebrazo_izq` · `parte_antebrazo_der` | ídem |
+| Pierna, tramo alto (muslo) | `parte_pierna_izq` · `parte_pierna_der` (existentes) | ídem |
+| Antepierna | `parte_antepierna_izq` · `parte_antepierna_der` | ídem |
+| Ojos por emoción | `ojos_neutra`, `ojos_alegria`, `ojos_sorpresa`, `ojos_preocupacion`, `ojos_concentracion`, `ojos_sueno` | ídem |
+| Ojos al parpadear | `ojos_parpadeo_medio`, `ojos_parpadeo_cerrado` | ídem |
+| Boca al hablar | `boca_0` (cerrada), `boca_a`, `boca_e`, `boca_u` | ídem |
+| Boca de reposo por emoción | `boca_alegria`, `boca_sorpresa`, `boca_preocupacion`, `boca_concentracion` | ídem |
+
+`Neutral` y `Sleeping` no llevan boca propia: su reposo es `boca_0`. Los PNG se buscan por nombre en
+la carpeta del personaje y en sus subcarpetas, y el generador los pasa a `Sprite Mode: Single`.
+
+### C.5 El generador y el orden cuando llegue el arte
+
+`herramientas/BuildRigsFinal.cs.txt` es un constructor efímero (no es código del juego), hijo de
+`BuildRigs.cs.txt` pero **sin reconstruir nada**. Se copia a `Assets/Editor/ClaudeBuildRigsFinal.cs`
+(el Editor genera el `.meta` solo), se llama por coplay `execute_script` con
+`ClaudeBuildRigsFinal.Execute("<modo>")`, que devuelve el log como texto, y al terminar se **borra**
+la copia: el `.txt` es lo que queda versionado.
+
+| Modo | Qué hace |
+|---|---|
+| `"nodos"` | Abre los siete prefabs con `LoadPrefabContents`, **añade** los nodos de la tabla que falten y el `CharacterFace`, y guarda con `SaveAsPrefabAsset`. Idempotente: si un nodo existe no lo toca, y nunca borra ni recrea uno. Todo nodo nuevo nace con la `Image` apagada y sin sprite |
+| `"sprites"` | Para cuando llegue el arte. Asigna por nombre los PNG que existan, aplica el rect y el pivote de la tabla (también a las partes que ya existían), enciende las `Image` y crea `<prefijo>_cara.asset` (un `CharacterFaceSet`) asignado al `CharacterFace`. En Algoritm apaga la `Image` de `Cuerpo` cuando torso, brazos y piernas ya están. Lo que no existe queda apagado y se anota en el log |
+| `"clips"` | Reescribe en sitio las curvas de los 84 `.anim` de la familia y los 9 de Algoritm (C.6). Se niega si faltan los nodos: exige haber corrido «nodos» |
+| `"todo"` · `"estado"` | «Nodos» y luego «clips» · solo informa (nodos completos, `CharacterFace` sí o no, segmentado sí o no), sin escribir |
+
+**Orden mientras no hay arte:** `"nodos"` y después `"clips"`. **Orden cuando llegue el arte
+final:**
+
+1. Copiar los PNG a `Assets/Game/Art/Characters/<carpeta>/` con los nombres de C.4 (el motor los
+   importa; los existentes se sustituyen conservando nombre y `.meta`).
+2. Editar `rig_articulaciones.json` con el rect y el pivote de cada PNG (C.3).
+3. `"sprites"`.
+4. `"clips"` — **después** de «sprites», porque lee el prefab para saber si el personaje está
+   segmentado y la flexión de las rodillas depende de ello (C.6). También lee del propio prefab las
+   longitudes y los pivotes, no de `rigdata.txt`.
+5. Pruebas y capturas (C.8); borrar el andamiaje.
+
+**La regla de los fileID.** Dieciocho assets narrativos y cinco escenas referencian componentes de
+estos prefabs por fileID, y reconstruirlos (`Root()`/`Finish()` de `BuildRigs`) cambia todos. Aquí:
+los prefabs se abren, se les añaden hijos y componentes y se guardan sobre la misma ruta, y los
+clips se cargan con `LoadAssetAtPath` y solo se les cambian las curvas, sin tocar los `.controller`:
+los GUID de los `.anim` y los estados siguen iguales. **Comprobación tras correrlo:**
+`git diff -U0 Assets/Game/Prefabs/Characters` no debe **quitar** ninguna línea que empiece por
+`--- !u!` ni tocar `m_Controller`, `m_Script` o `m_Sprite` de lo que ya existía, y `git diff --stat`
+no debe mostrar `.meta` de clips. No hay `.meta` escritos a mano: los genera el Editor.
+
+### C.6 Qué cambió en los clips
+
+Los 93 clips (21 por miembro de la familia, 9 de Algoritm) se reescriben **en sitio** con
+`ClearCurves` y curvas nuevas, conservando el GUID, el controlador y los eventos.
+
+- **Una curva en cada hueso, contra la pose en T.** El hueco que cerró: los clips de Talk, Point o
+  Encourage dejaban huesos sin curva y, con `writeDefaultValues`, un hueso sin curva vuelve al
+  valor del prefab (rotación 0), la pose en T. Ahora **cada clip lleva rotación en todos los huesos
+  de su personaje** —doce en la familia: `Cuerpo`, `Tronco`, los dos brazos, los dos codos, las dos
+  piernas, las dos rodillas, `Cuello` y `Cabeza`; diez en Algoritm, que no tiene los dos últimos— y
+  uno que el clip no usa lleva una curva constante en su **pose de reposo**. En los bucles la curva
+  acaba donde empieza. Reposo: hombros y piernas en cero (el arte provisional se ve igual) y los
+  codos con una flexión leve propia del personaje (4° Papá, 7° Mamá, 9° Niña, 6° Niño).
+- **Se conserva** el tempo y la amplitud por personaje (Papá 1,15/1,1; Mamá 1,0/0,9; Niña 0,95/1,0;
+  Niño 0,8/1,2), las curvas de `m_Alpha` de `Hidden`, `Appear` y `Vanish`, y la ausencia de clips
+  de caída, salto o derrota. Las curvas usan tangentes `ClampedAuto`, como en `BuildRigs`.
+- **Principios «Actions & Stuff»** (`Plan-Personajes-Finales.md` §3):
+  - idle con respiración de 3,2 s: el pecho y los hombros suben al inspirar, el peso pasa de una
+    pierna a otra y la cabeza llega tarde;
+  - inclinación del cuerpo en caminar y correr, hacia donde mira (−4° a −8°);
+  - anticipación en golpear, martillar y recoger (un contramovimiento antes del impacto), y
+    asentamiento al parar;
+  - estirar y aplastar en `Cuerpo`: escala Y entre 0,92 y 1,08 con X compensada, así que ninguna
+    pasa del 15 % (Dirección de arte §13.2);
+  - movimiento secundario: la cabeza sigue al cuerpo con 2 a 4 cuadros de retraso.
+- **Segmentado deducido del prefab.** Con el arte actual (`segmentado = no`) se conserva el truco de
+  `BuildRigs`: en `Kneel` y `Sleep` la **pierna entera** escala en Y, y las curvas de rodilla
+  existen pero no se ven. Con las piernas partidas (`segmentado = sí`) **ningún clip escala las
+  piernas**: baja el tronco, el muslo se abre y la antepierna se cierra hacia dentro y se acorta con
+  la escala Y de la rodilla, lo justo para que el pie siga en el suelo.
+- **Rodillas y codos en vista frontal.** La flexión de la rodilla ocurre en profundidad, así que se
+  dibuja abriendo el muslo hacia fuera y cerrando la antepierna hacia dentro, no con un giro plano.
+  Los codos sí giran en el plano.
+- **Algoritm**, nueve clips (`flotar`, `hablar`, `senalar`, `girar`, `celebrar`, `animo`, `oculto`,
+  `aparicion`, `apagado`): conservan la flotación senoidal de 2 s, el giro de `Spin` sobre `Cuerpo`
+  y el alfa; añaden piernas que cuelgan con 3 cuadros de retraso (juntas arriba, abiertas abajo, y
+  las rodillas devuelven lo que abre el muslo), brazos que suben un poco con 4 cuadros de retraso y
+  gestos de brazos y codos en señalar, celebrar y ánimo. En `hablar` el gesto lo lleva el **tronco**,
+  porque no tiene cuello. Con el sprite entero de hoy, **lo visible no cambia**.
+- **CP-02**: el ánimo es un puño arriba con un bombeo y nunca un gesto de desánimo;
+  `Sleep` queda sentado y recostado, no tumbado, porque con los ojos abiertos se leería como caído.
+
+### C.7 La cara y el habla en el código
+
+Todo en `Game.Scaffolding`, salvo el último punto (`Game.UI`).
+
+- **`FacialEmotion`** — `Neutral = 0`, `Happy`, `Surprised`, `Worried`, `Focused`, `Sleeping = 5`, con
+  valores explícitos porque los assets los guardan como número. **No hay tristeza, enfado ni
+  derrota** (CP-02, Dirección de arte §7.3). `Worried` es la duda de quien pregunta o espera, con la
+  boca «apenas curvada, nunca una mueca de llanto»: más suave que el «curvada abajo» del plan.
+- **`ActionEmotion.For(ActorAction)`** (C# plano) — la emoción por defecto de cada acción, así que
+  las cinco mecánicas ganan expresión sin tocar sus controladores: `Celebrate`, `Hug` y `Encourage`
+  → `Happy`; `Surprise` → `Surprised`; `Sleep` → `Sleeping`; `Strike`, `Hammer`, `Blow`, `Push`,
+  `Carry`, `PickUp` y `Kneel` → `Focused`; el resto → `Neutral`. **`Encourage` → `Happy` no estaba
+  en el plan**: el ánimo viene tras un intento sin éxito, y la cara que lo acompaña es positiva.
+- **`BlinkClock`** (C# plano, azar inyectado) — parpadeo cada 3,5 ± 1,2 s que dura 0,12 s. Pasa por
+  medio → cerrado → medio → abierto, en tres tercios de la duración (el plan decía abierto → medio →
+  cerrado → abierto; un párpado que baja y sube pasa dos veces por la mitad). Se apaga en
+  `Sleeping`, cuyos ojos ya son los cerrados.
+- **`MouthFlap`** (C# plano) — mientras habla cicla A, E, U y cerrada, 0,09 s cada una, en orden
+  fijo y sin azar (la misma línea se ve igual cada vez; no hay audio fonético que seguir). Abre en A
+  de inmediato y, al callar, **cierra en seco** a la boca de reposo de la emoción.
+- **`CharacterFaceSet`** (ScriptableObject, CT-05) — ojos por emoción más medio y cerrado, bocas
+  0/A/E/U, una boca de reposo por emoción (`Neutral` y `Sleeping` usan la cerrada) y los tiempos
+  del parpadeo y del aleteo, todos con `[field: SerializeField]` y `[Tooltip]`. Un asset por
+  personaje y, en Algoritm, por forma. Todo campo puede quedar vacío.
+- **`CharacterFace`** (MonoBehaviour delgado) — pone el sprite de ojos y boca en las dos `Image`.
+  **Sin set o sin el sprite pedido, la `Image` queda desactivada**: no hay nunca un recuadro blanco,
+  y el arte provisional se sigue viendo entero. Si falta un cuadro del parpadeo o una boca del
+  habla, se queda lo de la emoción en vez de desaparecer. Avanza con tiempo escalado, así que la
+  pausa (RF-07) congela el parpadeo y la boca.
+- **`CharacterRig`** gana `EmotionOverride` (`FacialEmotion?`), `Emotion` (el override o, si no hay,
+  `ActionEmotion.For(Current)`) y `Speaking`, todo delegado en el `CharacterFace` opcional. **Las
+  firmas públicas existentes no cambian** (`Play`, `PlayFor`, `Speaks`, `Current`, `Mirrored`).
+- **`ActorBeat`** gana `SetsEmotion` y `Emotion` (más `WithEmotion(...)`); **`ActorCue`** gana
+  `Emotion` (`FacialEmotion?`, parámetro opcional del constructor); **`ActorTimeline.EmotionAt`**
+  devuelve la emoción del último paso que la fija en esa línea o antes, y se mantiene hasta que otro
+  la cambia, igual que la acción. `SetsEmotion` vale `false` por defecto: **los 18 assets no
+  cambian de comportamiento**.
+- **`NarrativeSceneController`** (`Game.UI`) aplica `EmotionOverride` al colocar cada línea y al
+  terminar un camino, y en `Render` marca `Speaking` en el rig de quien dice la línea
+  (`Rig.Speaks(speaker)`); `Leave` lo apaga en todos. El texto aparece entero de golpe, sin revelado
+  progresivo, así que «habla» dura hasta que se avanza la línea. Una acotación no tiene hablante y
+  no mueve ninguna boca.
+
+**Lo que este trabajo no hace** (sigue pendiente; ver `Plan-Personajes-Finales.md`): los perfiles
+(`CharacterOrientation`/`Facing`), el retrato animado del cuadro de diálogo, y poblar emociones
+explícitas en los 18 `N*_*.asset`.
+
+### C.8 Pruebas nuevas
+
+EditMode, en `Assets/Tests/EditMode/Scaffolding/`:
+
+| Clase | Pruebas |
+|---|---|
+| `CharacterRigTests` | `CharacterRig_DA131_LaFamiliaTieneCodosRodillasYCuello` · `…_AlgoritmTieneCodosYRodillasYCaraSinCuello` · `…_TodaCurvaApuntaAUnaParteQueExiste` (recorre los `GetCurveBindings` de cada clip: hasta ahora nada lo hacía y una curva colgada no avisaba) · `…_CadaClipFijaTodasLasArticulaciones` · `…_UnaCapaSinSpriteNoSeDibuja` · `…_ConExtremidadesPartidasNingunClipEstiraLasPiernas` · `CharacterRig_DA73_LaCaraDelRigApuntaASusCapasDeOjosYBoca` |
+| `FacialEmotionTests` | `FacialEmotion_DA73_CadaAccionTieneSuEmocionPorDefecto` · `…_LaTablaCubreTodasLasAcciones` · `FacialEmotion_CP02_NingunaEmocionEsDeDerrotaNiTristeza` · `…_TrasUnIntentoSinExitoElAnimoEsUnaCaraAlegre` · `BlinkClock_DA73_ParpadeaConElIntervaloYLaDuracion` · `…_ElAzarMueveElIntervaloDentroDelDesvio` · `…_ApagadoNoParpadea` · `MouthFlap_RF05_LaBocaSeMueveMientrasHablaYSeCierraAlCallar` |
+| `CharacterFaceTests` | `CharacterFace_DA73_SinSpritesNoDibujaNada` · `…_ToleraCapasSinAsignar` · `…_ConSetMuestraLosOjosDeLaEmocion` · `…_DormidoNoParpadea` · `CharacterFace_RF05_HablandoLaBocaCambiaYAlCallarVuelveAlReposo` · `CharacterRig_DA73_LaEmocionSigueALaAccionSalvoQueUnPasoLaFije` · `CharacterRig_DA73_SinCaraLaEmocionYElHabloSeGuardanSinFallar` |
+| `ActorTimelineTests` | `ActorTimeline_RF05_LaEmocionDeUnPasoSeMantieneHastaQueOtroLaCambie` · `…_SinEmocionDeclaradaElCueNoLaFija` |
+
+PlayMode, `Assets/Tests/PlayMode/UI/NarrativeSceneTests.cs`:
+`NarrativeScene_RF05_QuienHablaHablaYCallaAlAvanzar`, que recorre `N1_Hallazgo` línea a línea y
+comprueba que solo el hablante tiene `Speaking`. Comprueba el **estado del rig y no los sprites**
+(hasta que llegue el arte `CharacterFace` no dibuja nada), así que no necesita `Assert.Ignore`.
+
+Las de `CharacterRig_DA131_*` leen los prefabs y los clips del disco: miden el resultado del
+generador y no pueden darse por buenas antes de correr «nodos» y «clips». Deben seguir en verde las
+existentes: `CharacterRig_DA76_…` (la estela de Algoritm), `CharacterRig_DA53_AlgoritmNoLlevaSombra…`,
+las de `ActorTimeline`, las `NarrativeScene_RF05_*` y las `Personajes_DA133_*`.
+
+**Verificación en el Editor: pendiente.** Falta correr el generador, comprobar los fileID (C.5),
+EditMode de `Scaffolding`, PlayMode de las escenas con personajes, la suite completa por
+`NORMA-PRUEBAS.md` y revisar las capturas de `Personajes_DA133_*` (sin pose en T y con el arte
+provisional igual en reposo). Las cifras de esa corrida irán en este anexo cuando existan.
