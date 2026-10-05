@@ -52,6 +52,9 @@
 #     el contorno cerrado en sus dos extremos, y el centro del extremo redondo del antebrazo cae encima del
 #     centro del extremo redondo del humero (igual en la rodilla). Asi la articulacion no abre huecos al
 #     doblar. Si el antebrazo llega solo con la mano (sin su extremo del codo), la costura se vera.
+#   - Orden de dibujo (decision de Santiago, 05/10/2026): la cabeza al fondo, los brazos delante de ella y el TORSO delante
+#     de los brazos. Asi el extremo del hombro del humero queda bajo la esquina del torso (el hombro sale por detras) y el
+#     torso cubre la base de la cabeza: el cuello de la cabeza tiene que asomar bajo la barbilla sin costura.
 #   - Nombres sugeridos: torso_<personaje>, cabeza_<personaje>, brazo_<personaje>_derecho / _izquierdo,
 #     mano_<personaje>_derecho / _izquierdo (o antebrazo_...), muslo_<personaje>_derecho / _izquierdo,
 #     pie_<personaje>_derecho / _izquierdo (o antepierna_...). Derecho e izquierdo pueden hablar del
@@ -496,8 +499,9 @@ def renderiza(piezas, joints, giros, escala=0.5):
         m[("antebrazo", lado)] = M.mat_mul(m[("brazo", lado)], rot("codo_" + lado, joints["Codo" + lado]))
     m[("torso", None)] = ident
     m[("cabeza", None)] = rot("cuello", joints["Cuello"])
-    orden = [("muslo", "Izq"), ("antepierna", "Izq"), ("muslo", "Der"), ("antepierna", "Der"), ("torso", None),
-             ("cabeza", None), ("brazo", "Izq"), ("antebrazo", "Izq"), ("brazo", "Der"), ("antebrazo", "Der")]
+    # el orden de dibujo del rig (orden_tronco de la familia): piernas, cabeza al fondo, brazos, y el torso DELANTE de los brazos
+    orden = [("muslo", "Izq"), ("antepierna", "Izq"), ("muslo", "Der"), ("antepierna", "Der"), ("cabeza", None),
+             ("brazo", "Izq"), ("antebrazo", "Izq"), ("brazo", "Der"), ("antebrazo", "Der"), ("torso", None)]
     for clave in orden:
         pz = piezas[clave]
         capa = M.Capa(SimpleNamespace(ruta=str(clave)), tuple(pz.rect), pz.norm, (1, 1, 1, 1))

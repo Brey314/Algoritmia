@@ -195,9 +195,11 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// Codos, rodillas, cuello y cabeza con su cara existen en las rutas del plan, y el cuello se
-        /// dibuja después del torso (la cabeza va encima). Los nodos nuevos se añaden, nunca se
-        /// recrean: los fileID de lo que ya existía no cambian (Direccion_de_Arte §13.1).
+        /// Codos, rodillas, cuello y cabeza con su cara existen en las rutas del plan. El orden de dibujo
+        /// del cuello bajo Tronco ya no se comprueba aquí: lo fija, con el de los brazos y el torso,
+        /// CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza (cabeza al fondo, luego los
+        /// brazos y el torso delante; INC-132 sustituye lo que fijaba INC-131). Los nodos nuevos se añaden,
+        /// nunca se recrean: los fileID de lo que ya existía no cambian (Direccion_de_Arte §13.1).
         /// </summary>
         [Test]
         public void CharacterRig_DA131_LaFamiliaTieneCodosRodillasYCuello(
@@ -209,10 +211,6 @@ namespace Game.Scaffolding.Tests
             {
                 Assert.That(rig.transform.Find(ruta), Is.Not.Null, $"{nombre}: existe {ruta}");
             }
-
-            var tronco = rig.transform.Find(Tronco);
-            Assert.That(tronco.Find("Cuello").GetSiblingIndex(), Is.GreaterThan(tronco.Find("Torso").GetSiblingIndex()),
-                $"{nombre}: el cuello va después del torso, así la cabeza se dibuja encima");
         }
 
         /// <summary>
@@ -240,28 +238,28 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// Los brazos se dibujan DELANTE del torso y de la cabeza en los cuatro miembros de la familia
-        /// (Santiago, 05/10/2026). uGUI pinta los hijos de atrás adelante y bajo Tronco nacieron primero:
-        /// con BrazoIzq y BrazoDer antes que Torso y Cuello quedaban detrás del cuerpo y se escondían. El
-        /// orden vale ya, también para Papá, Mamá y Niña aunque su arte siga siendo provisional de una pieza,
-        /// para que todo quede listo cuando llegue el arte final: hasta entonces se ven los arcos del hombro
-        /// cortados sobre el torso, y eso es lo esperado. Lo fija el modo «orden» del generador con
+        /// En la familia los brazos se dibujan DETRÁS del torso y DELANTE de la cabeza (Santiago,
+        /// 05/10/2026): los hombros salen por detrás del torso y los brazos que suben pasan por delante de
+        /// la cara. uGUI pinta los hijos de atrás adelante, así que el orden bajo Tronco es Cuello (con la
+        /// cabeza dentro), BrazoIzq, BrazoDer y, al final, Torso. Con el arte provisional de una pieza la
+        /// cabeza está pintada dentro del torso, y la regla solo se nota cuando llega el arte final; vale ya
+        /// para los cuatro para que todo quede listo. Lo fija el modo «orden» del generador con
         /// SetSiblingIndex, que reordena y no cambia ningún fileID.
         /// </summary>
         [Test]
-        public void CharacterRig_INC132_LosBrazosSeDibujanDelanteDelTorsoYDeLaCabeza(
+        public void CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza(
             [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
         {
             var tronco = Rig(nombre).transform.Find(Tronco);
             Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
 
-            var torso = Orden(tronco, nombre, "Torso");
             var cuello = Orden(tronco, nombre, "Cuello");
+            var torso = Orden(tronco, nombre, "Torso");
             foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
             {
                 var indice = Orden(tronco, nombre, brazo);
-                Assert.That(indice, Is.GreaterThan(torso), $"{nombre}: {brazo} se dibuja después del torso, o queda escondido detrás");
                 Assert.That(indice, Is.GreaterThan(cuello), $"{nombre}: {brazo} se dibuja después del cuello, o la cabeza lo tapa");
+                Assert.That(indice, Is.LessThan(torso), $"{nombre}: {brazo} se dibuja antes del torso, para salir por detrás de él");
             }
         }
 

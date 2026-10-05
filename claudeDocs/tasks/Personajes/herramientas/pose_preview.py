@@ -7,8 +7,7 @@
 #     python3 .../pose_preview.py --sin-hojas                                          # solo la prueba
 #     python3 .../pose_preview.py --tira nino Idle 8 nino_idle.png                     # 8 instantes de un clip
 #     python3 .../pose_preview.py --salida /ruta/de/trabajo                            # donde dejar los PNG/GIF
-#     python3 .../pose_preview.py --orden-viejo                                        # el orden de dibujo de ANTES
-#                                                                                      # (los brazos tras el torso): la prueba debe fallar
+#     python3 .../pose_preview.py --orden Torso,Cuello,BrazoIzq,BrazoDer              # otro orden de dibujo de Tronco (el del JSON es el vigente)
 #     python3 .../pose_preview.py --autoprueba                                         # la prueba SI detecta poses malas a proposito
 #     python3 .../pose_preview.py --mide nino                                          # las articulaciones del rig caen en la rotula
 #
@@ -93,7 +92,13 @@ VELOCIDAD_MAX = 1300.0
 EXCEPCIONES_VEL = {
     ("*", "Hammer"): "el golpe del martillo es rapido a proposito (baja el brazo en 0,1 s)",
 }
-ORDEN_VIEJO = ["BrazoIzq", "BrazoDer", "Torso", "Cuello"]  # el de los prefabs antes de «orden_tronco»
+# (a') Los brazos van tras el torso, asi que un gesto que los junta delante del pecho los esconde. Estas acciones pueden
+# bajar del 85 % de brazo visible hasta el valor que se da, con su motivo; las demas, no.
+EXCEPCIONES_BRAZO = {
+    ("*", "Strike"): (15.0, "las piedras chocan delante del pecho: en el instante del choque (menos de 0,1 s) las manos pasan tras "
+                            "el torso. A la frente el choque tapa la cara y se lee como desesperacion (CP-02); a un lado, el brazo de lejos cruzaria tras el cuerpo"),
+}
+UMBRAL_TORSO = 5.0         # (g) como mucho este % de la caja de ojos y boca tapado por el torso (la cabeza va al fondo)
 ESCALA_PRUEBA = 0.25       # la prueba mide a 256 px (la mascara de cada capa)
 REGION = (40, 30, 984, 990)  # lo que se ve en las hojas: casi todo el lienzo (Sleep se sale de la figura de pie)
 REGION_GUIA = (0, -50, 1024, 1000)  # Algoritm flota: la llama sube por encima del lienzo
@@ -160,7 +165,7 @@ class Capa:
 class Personaje:
     """Todo lo que la vista previa necesita de un personaje; se arma una vez."""
 
-    def __init__(self, pid, rig, orden_viejo=False, maqueta=False):
+    def __init__(self, pid, rig, orden=None, maqueta=False):
         """
         «maqueta»: el arte final SIMULADO (maqueta.py): brazos, piernas y cabeza recortados del arte
         provisional por las articulaciones del rig, para probar la coreografia contra su geometria. Sin ella
@@ -179,9 +184,8 @@ class Personaje:
             orden = self.rig.get("orden_tronco")
             if orden:
                 P.aplicar_orden_tronco(self.arbol, orden)
-        if orden_viejo:
-            # el orden de ANTES (brazos tras el torso y la cabeza): la prueba tiene que fallar con el
-            P.aplicar_orden_tronco(self.arbol, ORDEN_VIEJO)
+        if orden:
+            P.aplicar_orden_tronco(self.arbol, orden)  # otro orden de dibujo (--orden, o una prueba que lo necesite)
         self.segmentado = P.esta_segmentado(self.arbol)
         self._ctx = None
         self._geometria()
@@ -490,6 +494,7 @@ class Resultado:
         self.suelo = (-999.0, 0.0)
         self.mano = (0, 0.0, "")  # cuadros con una mano en la caja de la cara, primer instante, lado
         self.vel = (0.0, 0.0, "")  # la mayor velocidad angular de un hombro o un codo, instante, hueso
+        self.torso = (0.0, 0.0)    # el mayor % de la caja de ojos y boca que tapa el torso (con la cabeza al fondo), instante
 
     def mejor_peor(self, nombre, valor, t, extra=""):
         if nombre == "brazo" and valor < self.brazo[0]:
@@ -502,6 +507,8 @@ class Resultado:
             self.suelo = (valor, t)
         elif nombre == "vel" and valor > self.vel[0]:
             self.vel = (valor, t, extra)
+        elif nombre == "torso" and valor > self.torso[0]:
+            self.torso = (valor, t)
 
 
 def _mascara(im):
@@ -651,6 +658,9 @@ def prueba_clip(pj, clip, tiempos=None):
             if area:
                 tapado = _cuenta(ImageChops.multiply(z, union_brazos))
                 res.mejor_peor("cara", 100.0 * (area - tapado) / area, t)
+                # (g) con la cabeza al fondo el torso (dibujado despues) puede tapar la barbilla y la boca al inclinarse
+                if lleva == HD and (T + "/Torso") in masc:
+                    res.mejor_peor("torso", 100.0 * _cuenta(ImageChops.multiply(z, masc[T + "/Torso"])) / area, t)
         # (e) manos fuera de la caja de la cara (ampliada un 10 %), salvo las excepciones explicitas
         if zona and not _excepcion_cara(pj.pid, clip.accion):
             x0 = min(r[0] for r in zona); y0 = min(r[1] for r in zona)
@@ -683,17 +693,18 @@ def prueba_clip(pj, clip, tiempos=None):
 
 
 def fila(pid, clip, r):
-    ok_b = r.brazo[0] >= UMBRAL_BRAZO * 100
+    ok_b = r.brazo[0] >= (EXCEPCIONES_BRAZO.get(("*", clip.accion), (UMBRAL_BRAZO * 100,))[0])
     ok_c = r.cara[0] >= UMBRAL_CARA * 100
     ok_k = r.codo[0] <= 1e-9
     ok_s = r.suelo[0] <= TOLERANCIA_SUELO
     ok_m = r.mano[0] == 0
     ok_v = r.vel[0] <= VELOCIDAD_MAX or ("*", clip.accion) in EXCEPCIONES_VEL
-    ok = ok_b and ok_c and ok_k and ok_s and ok_m and ok_v
+    ok_t = r.torso[0] <= UMBRAL_TORSO
+    ok = ok_b and ok_c and ok_k and ok_s and ok_m and ok_v and ok_t
     mano = "libre" if ok_m else "%d cuadros @%.2fs %s" % (r.mano[0], r.mano[1], r.mano[2])
-    return ok, ("%-14s %-10s %-8s brazo %5.1f%% @%.2fs %-5s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s | giro max %4.0f deg/s %s" % (
+    return ok, ("%-14s %-10s %-8s brazo %5.1f%% @%.2fs %-5s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s | giro max %4.0f deg/s %s | torso sobre la cara %4.1f%% %s" % (
         pid, clip.accion, "ok" if ok else "FALLA", r.brazo[0], r.brazo[1], r.brazo[2], r.cara[0], r.cara[1],
-        r.codo[0], r.codo[1], r.codo[2], r.suelo[0] if r.suelo[0] > -900 else 0.0, r.suelo[1], mano, r.vel[0], "" if ok_v else "FALLA"))
+        r.codo[0], r.codo[1], r.codo[2], r.suelo[0] if r.suelo[0] > -900 else 0.0, r.suelo[1], mano, r.vel[0], "" if ok_v else "FALLA", r.torso[0], "" if ok_t else "FALLA"))
 
 
 # --------------------------------------------------------------------------- hojas y GIF
@@ -846,11 +857,13 @@ def autoprueba(rig):
     """
     R = K.ROT
     nino = Personaje("nino", rig)
-    viejo = Personaje("nino", rig, orden_viejo=True)
-    b = K.leer_contexto("nino", rig).brazos
+    xn = K.leer_contexto("nino", rig)
+    b = xn.brazos
     casos = []
-    # 1. brazos colgando con el orden de dibujo de ANTES (tras el torso): se esconden
-    casos.append(("brazos tras el torso (orden viejo)", viejo, {(LA, R): b["Izq"].hombro_rot(8), (RA, R): b["Der"].hombro_rot(8)}, "brazo"))
+    # 1. brazos colgando pegados al cuerpo: van tras el torso y se esconden
+    casos.append(("brazos pegados, tras el torso", nino, {(LA, R): b["Izq"].hombro_rot(8), (RA, R): b["Der"].hombro_rot(8)}, "brazo"))
+    # 1b. la cabeza se hunde tras el torso: la boca queda tapada por el torso (la cabeza va al fondo)
+    casos.append(("barbilla y boca tras el torso", nino, {(NK, K.POSY): -70.0}, "torso"))
     # 2. un brazo en alto por delante de la cara
     casos.append(("brazo en alto delante de la cara", nino, {(RA, R): b["Der"].hombro_rot(165), (RE, R): 0.0}, "cara"))
     # 3. un codo al reves: brazo en alto y el antebrazo se dobla hacia fuera y abajo, no hacia la cabeza
@@ -865,7 +878,7 @@ def autoprueba(rig):
     rs, rc = bm["Der"].ik(((c[0] + c[2]) / 2.0 + 20, (c[1] + c[3]) / 2.0))
     casos.append(("maqueta de Mama: mano en la cara", mama, {(RA, R): rs, (RE, R): rc}, "mano"))
     casos.append(("maqueta de Mama: codo al reves", mama, {(LA, R): bm["Izq"].hombro_rot(170), (LE, R): 100.0}, "codo"))
-    casos.append(("maqueta de Mama: brazo tras el torso", Personaje("mama", rig, orden_viejo=True, maqueta=True),
+    casos.append(("maqueta de Mama: brazos pegados", mama,
                   {(LA, R): bm["Izq"].hombro_rot(8), (RA, R): bm["Der"].hombro_rot(8)}, "brazo"))
     # 4. el pie atraviesa el suelo
     casos.append(("pie bajo el suelo", nino, {(LL, K.POSY): -30.0, (RL, K.POSY): -30.0}, "suelo"))
@@ -899,7 +912,7 @@ def autoprueba(rig):
     print("%-40s %-9s %s" % ("salto de rama del codo (150 deg/cuadro)", "giro", "detectada" if not ok and r.vel[0] > VELOCIDAD_MAX else "NO SE DETECTA"))
     malos += 0 if not ok and r.vel[0] > VELOCIDAD_MAX else 1
     # y la pose buena no debe fallar
-    r = prueba_clip(nino, _clip_pose({(LA, R): b["Izq"].hombro_rot(28), (RA, R): b["Der"].hombro_rot(28)}), tiempos=[0.0])
+    r = prueba_clip(nino, _clip_pose({(LA, R): b["Izq"].hombro_rot(xn.hang), (RA, R): b["Der"].hombro_rot(xn.hang)}), tiempos=[0.0])
     ok, _ = fila("nino", _clip_pose({}), r)
     print("%-40s %-9s %s" % ("reposo de brazos colgando", "todas", "bien" if ok else "FALLA (falso positivo)"))
     malos += 0 if ok else 1
@@ -925,7 +938,7 @@ def clips_de_doc(doc):
 
 def corrida(pid, modo, rig, clips, a):
     """Prueba (y hojas) de un personaje con un arte («hoy», «maqueta» o «final»): devuelve cuantos clips fallan."""
-    pj = Personaje(pid, rig, a.orden_viejo, maqueta=(modo == "maqueta"))
+    pj = Personaje(pid, rig, a.orden, maqueta=(modo == "maqueta"))
     cl = clips_de(clips, pid)
     fallos = 0
     for clip in cl:
@@ -952,11 +965,12 @@ def main(argv=None):
     ap.add_argument("--maqueta", action="store_true",
                     help="el arte final SIMULADO (maqueta.py) con los clips que el solucionador calcula para el: la coreografia "
                          "tiene que pasar tambien con el")
-    ap.add_argument("--orden-viejo", action="store_true", help="sin «orden_tronco»: los brazos se dibujan tras el torso")
+    ap.add_argument("--orden", help="otro orden de dibujo de Tronco, de atras adelante (Cuello,BrazoIzq,BrazoDer,Torso); por defecto el del JSON")
     ap.add_argument("--tira", nargs=4, metavar=("PERSONAJE", "ACCION", "N", "PNG"))
     ap.add_argument("--mide", metavar="PERSONAJE", help="comprueba las articulaciones del rig contra el alfa de las piezas")
     ap.add_argument("--autoprueba", action="store_true", help="comprueba que la prueba SI falla con poses malas a proposito")
     a = ap.parse_args(argv)
+    a.orden = a.orden.split(",") if a.orden else None
     modos = [m for m, on in (("hoy", a.hoy), ("maqueta", a.maqueta)) if on] or ["hoy", "maqueta"]
 
     rig = P.cargar_rig()
@@ -969,7 +983,7 @@ def main(argv=None):
         return autoprueba(rig)
     if a.tira:
         pid, accion, n, png = a.tira
-        pj = Personaje(pid, rig, a.orden_viejo, maqueta=("maqueta" in modos and not a.hoy))
+        pj = Personaje(pid, rig, a.orden, maqueta=("maqueta" in modos and not a.hoy))
         cc = clips_de_doc(K.construir(rig, maqueta=True)[0]) if pj.maqueta else clips
         clip = next(c for c in clips_de(cc, pid) if c.accion.lower() == accion.lower())
         tira(pj, clip, int(n)).convert("RGB").save(png)
@@ -988,6 +1002,9 @@ def main(argv=None):
     print("excepciones de «mano en la caja de la cara»:")
     for (p_, c_), motivo in EXCEPCIONES_CARA.items():
         print("  %-8s %-8s %s" % (p_, c_, motivo))
+    print("excepciones de «brazo visible >= 85 %»:")
+    for (p_, c_), (minimo, motivo) in EXCEPCIONES_BRAZO.items():
+        print("  %-8s %-8s hasta %.0f %%: %s" % (p_, c_, minimo, motivo))
     print("excepciones de «giro maximo %.0f grados por segundo»:" % VELOCIDAD_MAX)
     for (p_, c_), motivo in EXCEPCIONES_VEL.items():
         print("  %-8s %-8s %s" % (p_, c_, motivo))

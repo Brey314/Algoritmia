@@ -335,6 +335,8 @@ class Ctx:
         self.pie_casco = {}   # "Izq"/"Der" -> cierre convexo de la pieza que toca el suelo, relativo a ese pivote
         self.pata = {}        # "Izq"/"Der" -> (pierna, muslo, canilla) de ESA pierna (el dibujo no es simetrico)
         self.muslo_bajo = {"Izq": 0.0, "Der": 0.0}  # con piernas partidas: cuanto baja el muslo (su rotula) por debajo del pivote de la rodilla
+        self.silueta = None   # Silueta del torso (lo que tapa a los brazos); None en Algoritm
+        self.y_frente = 0.0   # altura de la frente: por encima de ojos y boca y a un brazo estirado del hombro
         self.alcance = 0.0    # largo del brazo con antebrazo (humero + antebrazo): la escala de los gestos de los brazos
         self.hang = 0.0       # reposo: angulo del brazo respecto a la vertical (0 = colgando pegado al cuerpo)
         self.pliegue = 0.0    # reposo: flexion de los codos hacia dentro
@@ -395,6 +397,38 @@ def _dist_rect(p, r):
     return math.hypot(dx, dy)
 
 
+class Silueta:
+    """
+    La silueta opaca de lo que se dibuja DELANTE de los brazos (el torso: «orden_tronco» de la familia pone los brazos
+    detras del torso y delante de la cabeza), en el lienzo de 1024 a la mitad de resolucion. Con ella cada brazo sabe
+    cuanto de si queda tapado en una pose (Brazo.oculta). Con el arte provisional la cabeza esta pintada dentro del
+    torso, asi que su silueta incluye la cabeza.
+    """
+
+    ESC = 0.5
+
+    def __init__(self, imagen, rect):
+        from PIL import Image
+        a = imagen.getchannel("A").point(lambda v: 255 if v > 127 else 0)
+        lado = int(1024 * self.ESC) + 2
+        w = max(1, int(round((rect[2] - rect[0]) * self.ESC)))
+        h = max(1, int(round((rect[3] - rect[1]) * self.ESC)))
+        m = Image.new("L", (lado, lado), 0)
+        m.paste(a.resize((w, h), Image.BOX), (int(round(rect[0] * self.ESC)), int(round(rect[1] * self.ESC))))
+        self.px, self.lado = m.load(), lado
+
+    def dentro(self, x, y):
+        ix, iy = int(x * self.ESC), int(y * self.ESC)
+        return 0 <= ix < self.lado and 0 <= iy < self.lado and self.px[ix, iy] > 127
+
+
+UMBRAL_OCULTO = 0.125   # fraccion TOTAL del brazo que puede quedar tras el torso: la prueba deja el 15 %; el modelo de capsulas usa lo que sobra de la cupula del hombro
+PASO_MUESTRA = 9.0     # px entre muestras a lo largo del brazo
+ANCHOS_MUESTRA = (-0.4, -0.2, 0.0, 0.2, 0.4)  # a lo ancho, en fracciones del grosor
+ATRAS_HOMBRO = 0.0     # el modelo arranca esto (en grosores) por detras del pivote del hombro (la cupula se mide aparte: base_cap)
+EXTRA_PUNTA = 1.12     # la mano llega un poco mas alla del punto M del modelo
+
+
 MIN_ALCANCE = 0.45  # fraccion del largo del brazo a la que la mano puede acercarse al hombro sin doblar el codo en horquilla
 PASO_APUNTA = 0.5   # grados: el paso con que el brazo de una pieza busca una direccion que no cruce el eje ni la cara
 
@@ -420,6 +454,11 @@ class Brazo:
         self.cx = 512.0
         self.grosor = 0.0
         self.evita = []
+        self.silueta = None   # Silueta de lo que tapa al brazo (el torso); sin ella no hay restriccion de visibilidad
+        self.base_cap = 0.0   # fraccion del brazo que SIEMPRE queda tras el torso (la cupula del hombro): solo con el modelo de capsulas
+        self.pts_h = []       # pixeles del sprite del brazo (o del humero) relativos al hombro; los del antebrazo, relativos al codo
+        self.pts_f = []
+        self.tabla = None     # fraccion oculta por (giro del hombro, giro del codo): ver prepara()
         # el modelo de dos segmentos del mismo brazo: de el sale la curva del codo cuando todavia no hay antebrazo
         self.dos = None if partido else Brazo(lado, hombro, codo, mano_dos or mano, True)
 
@@ -437,6 +476,157 @@ class Brazo:
         s = clamp((60.0 - theta) / 30.0, -1.0, 1.0)  # el signo cambia sin salto cerca de la horizontal
         return s * pliegue if self.lado == "Izq" else -s * pliegue
 
+    # --- visibilidad: los brazos van tras el torso, asi que solo valen las poses en que se ven
+    def segmentos(self, rs, rc):
+        """[(p, q)] con los ejes del brazo (humero y antebrazo, o el brazo entero) para esos giros."""
+        if self.partido:
+            e, m = self.fk(rs, rc)
+            ux, uy = (e[0] - self.S[0]) / self.l1, (e[1] - self.S[1]) / self.l1
+            ini = (self.S[0] - ux * ATRAS_HOMBRO * self.grosor, self.S[1] - uy * ATRAS_HOMBRO * self.grosor)
+            return [(ini, e), (e, (e[0] + (m[0] - e[0]) * EXTRA_PUNTA, e[1] + (m[1] - e[1]) * EXTRA_PUNTA))]
+        base = _ang((self.M[0] - self.S[0], self.M[1] - self.S[1]))
+        p = _pol(base + rs, self.largo * EXTRA_PUNTA)
+        ux, uy = p[0] / (self.largo * EXTRA_PUNTA), p[1] / (self.largo * EXTRA_PUNTA)
+        ini = (self.S[0] - ux * ATRAS_HOMBRO * self.grosor, self.S[1] - uy * ATRAS_HOMBRO * self.grosor)
+        return [(ini, (self.S[0] + p[0], self.S[1] + p[1]))]
+
+    def oculta(self, rs, rc=0.0):
+        """
+        Fraccion de los pixeles del brazo que quedan tras el torso con esos giros. Sobre los pixeles del propio sprite (puntos
+        girados con la cinematica directa y buscados en la silueta del torso: lo mismo que mide pose_preview.py); si no se
+        pudieron leer, sobre un modelo de capsulas de ancho «grosor» en los ejes del brazo.
+        """
+        if self.silueta is None:
+            return 0.0
+        if self.pts_h:
+            return self._oculta_sprite(rs, rc)
+        return self._oculta_capsula(rs, rc)
+
+    def _oculta_sprite(self, rs, rc):
+        sil = self.silueta
+        g = math.radians(rs)
+        c, sn = math.cos(g), math.sin(g)
+        sx, sy = self.S
+        dentro = 0
+        for dx, dy in self.pts_h:
+            dentro += 1 if sil.dentro(sx + dx * c + dy * sn, sy - dx * sn + dy * c) else 0
+        if self.pts_f:
+            ex = sx + (self.E[0] - sx) * c + (self.E[1] - sy) * sn
+            ey = sy - (self.E[0] - sx) * sn + (self.E[1] - sy) * c
+            g2 = math.radians(rs + rc)
+            c2, s2 = math.cos(g2), math.sin(g2)
+            for dx, dy in self.pts_f:
+                dentro += 1 if sil.dentro(ex + dx * c2 + dy * s2, ey - dx * s2 + dy * c2) else 0
+        return dentro / float(len(self.pts_h) + len(self.pts_f))
+
+    def _oculta_capsula(self, rs, rc=0.0):
+        """Fraccion del brazo (capsulas de ancho «grosor» sobre sus ejes) que cae dentro de la silueta del torso."""
+        total = oculto = 0
+        for p, q in self.segmentos(rs, rc):
+            largo = math.hypot(q[0] - p[0], q[1] - p[1])
+            if largo < 1e-6:
+                continue
+            n = max(2, int(largo / PASO_MUESTRA))
+            nx, ny = -(q[1] - p[1]) / largo, (q[0] - p[0]) / largo
+            for i in range(n + 1):
+                cx, cy = p[0] + (q[0] - p[0]) * i / n, p[1] + (q[1] - p[1]) * i / n
+                for k in ANCHOS_MUESTRA:
+                    total += 1
+                    if self.silueta.dentro(cx + nx * k * self.grosor, cy + ny * k * self.grosor):
+                        oculto += 1
+        return oculto / float(total) if total else 0.0
+
+    def prepara(self, umbral=UMBRAL_OCULTO):
+        """
+        Tabla de lo oculto que queda el brazo con cada par de giros (hombro, codo; solo el hombro si es de una pieza), para
+        poder pedir despues «la pose visible mas cercana» sin recalcular. Paso de 3 grados en el hombro y 5 en el codo.
+        """
+        if self.silueta is None or self.pts_h:
+            self.umbral = umbral  # con los pixeles del sprite se mide lo mismo que la prueba: el umbral es el de la prueba
+            if self.silueta is None:
+                return
+        else:
+            self._umbral_capsulas(umbral)
+        self._tabla()
+
+    def _umbral_capsulas(self, umbral):
+        # Lo que el modelo de capsulas puede ocultar: el margen que deja la cupula del hombro (base_cap, medida sobre el
+        # sprite) mas lo que el propio modelo ya cuenta de ella con el brazo bien abierto (su minimo).
+        base_modelo = min(self.oculta(self.hombro_rot(float(t)), 0.0) for t in range(40, 131, 15))
+        self.umbral = max(0.02, umbral - self.base_cap + base_modelo)
+
+    def _tabla(self):
+        self.rs0, self.drs = -200.0, 3.0
+        self.nrs = int(400.0 / self.drs) + 1
+        if self.partido:
+            self.rc0, self.drc = (-170.0, 8.0) if self.pts_h else (-170.0, 5.0)
+            self.nrc = int(340.0 / self.drc) + 1
+            self.tabla = [[self.oculta(self.rs0 + i * self.drs, self.rc0 + j * self.drc) for j in range(self.nrc)]
+                          for i in range(self.nrs)]
+        else:
+            self.tabla = [self.oculta(self.rs0 + i * self.drs) for i in range(self.nrs)]
+
+    def _celda(self, rs, rc):
+        i = int(round((_norm(rs) - self.rs0) / self.drs))
+        i = max(0, min(self.nrs - 1, i))
+        if not self.partido:
+            return i, 0
+        j = max(0, min(self.nrc - 1, int(round((_norm(rc) - self.rc0) / self.drc))))
+        return i, j
+
+    def _oculto_celda(self, i, j):
+        return self.tabla[i][j] if self.partido else self.tabla[i]
+
+    def visible(self, rs, rc=0.0):
+        """El brazo con estos giros se ve (lo oculto no pasa del umbral). Sin silueta, siempre."""
+        if self.tabla is None:
+            return True
+        i, j = self._celda(rs, rc)
+        return self._oculto_celda(i, j) <= self.umbral
+
+    def repara(self, rs, rc=0.0):
+        """
+        (rs, rc) si ya se ven; si no, la pose visible mas cercana (el hombro pesa mas que el codo). Con un brazo de
+        una pieza solo cambia el hombro. Cerca de la frontera de lo visible es continua; entre dos zonas visibles
+        separadas por una oculta salta a la mas cercana (un gesto bien pensado no cruza esa franja).
+        """
+        rs, rc = _norm(rs), _norm(rc)
+        if self.visible(rs, rc):
+            return rs, rc
+        i0, j0 = self._celda(rs, rc)
+        mejor, quien = 1e18, None
+        radio = 0
+        while radio < max(self.nrs, getattr(self, "nrc", 0)):
+            radio += 1
+            if quien is not None and radio * min(self.drs, getattr(self, "drc", self.drs) * 0.5) > mejor:
+                break
+            for i in range(max(0, i0 - radio), min(self.nrs, i0 + radio + 1)):
+                if not self.partido:
+                    cand = [(i, 0)] if abs(i - i0) == radio else []
+                else:
+                    borde_i = abs(i - i0) == radio
+                    cand = [(i, j) for j in range(max(0, j0 - radio), min(self.nrc, j0 + radio + 1))
+                            if borde_i or abs(j - j0) == radio]
+                for ci, cj in cand:
+                    if self._oculto_celda(ci, cj) > self.umbral:
+                        continue
+                    d = math.hypot((ci - i0) * self.drs, ((cj - j0) * self.drc * 0.5) if self.partido else 0.0)
+                    if d < mejor:
+                        mejor, quien = d, (ci, cj)
+        if quien is None:
+            return rs, rc
+        ci, cj = quien
+        return self.rs0 + ci * self.drs, (self.rc0 + cj * self.drc) if self.partido else rc
+
+    def pose(self, theta, pliegue, signo=None):
+        """(rs, rc) de «el humero a theta grados de la vertical, el codo plegado pliegue» (con el sentido opcional), siempre visible."""
+        rs = self.hombro_rot(theta)
+        if signo is None:
+            rc = self.codo_rot(theta, pliegue)
+        else:
+            rc = signo * pliegue if self.lado == "Izq" else -signo * pliegue
+        return self.repara(rs, rc)
+
     # --- directa
     def fk(self, rot_hombro, rot_codo):
         a1 = self.a1 + rot_hombro
@@ -446,15 +636,17 @@ class Brazo:
         return e, m
 
     # --- inversa
-    def ik(self, objetivo, codo_hacia=None):
+    def ik(self, objetivo, codo_hacia=None, libre=False):
         """
         (rot_hombro, rot_codo) para que la mano llegue a «objetivo» (o lo mas cerca que alcance). De las dos
         posiciones posibles del codo elige la que queda mas del lado de «codo_hacia» (un vector del lienzo;
         por defecto hacia fuera y un poco abajo: el codo en el interior pasaria por delante de la cara) y, entre
-        las dos, la que no cruza el eje del cuerpo. Con un brazo de una pieza el hombro lo apunta (apunta()).
+        las dos, la que no cruza el eje del cuerpo. Con un brazo de una pieza el hombro lo apunta (apunta()). «libre»
+        deja la pose donde la pide el gesto aunque el torso tape el brazo (solo para lo que lo justifica: ver EXCEPCIONES_BRAZO
+        de pose_preview.py).
         """
         if not self.partido:
-            rs = self.apunta(objetivo)
+            rs = self.apunta(objetivo, libre)
             return rs, self.dos.ik(objetivo, codo_hacia)[1]
         dx, dy = objetivo[0] - self.S[0], objetivo[1] - self.S[1]
         d = max(abs(self.l1 - self.l2) + 1.0, MIN_ALCANCE * (self.l1 + self.l2),
@@ -475,10 +667,12 @@ class Brazo:
             # y esquivarla cambiaria de rama a mitad del gesto (un salto de 120 grados en un cuadro): la cara se
             # cuida eligiendo bien los objetivos y la prueba la vigila
             mal = self.lado_sig * (e[0] - self.cx) < -4.0
-            cand.append((0 if mal else 1, coste, a1, e))
-        _, _, a1, e = max(cand, key=lambda c: (c[0], c[1]))
-        a2 = _ang((mano[0] - e[0], mano[1] - e[1]))
-        return _norm(a1 - self.a1), _norm((a2 - a1) - (self.a2 - self.a1))
+            a2 = _ang((mano[0] - e[0], mano[1] - e[1]))
+            rs, rc = _norm(a1 - self.a1), _norm((a2 - a1) - (self.a2 - self.a1))
+            # y se prefiere la rama en que el brazo se ve (va tras el torso): la otra solo si ninguna se ve
+            cand.append((1 if (libre or self.visible(rs, rc)) else 0, 0 if mal else 1, coste, rs, rc))
+        _, _, _, rs, rc = max(cand, key=lambda c: (c[0], c[1], c[2]))
+        return (rs, rc) if libre else self.repara(rs, rc)
 
     def _choca(self, p, q):
         """El segmento p-q (su eje, a un cuarto de grosor: la caja ya lleva su holgura) entra en alguna de las cajas que el brazo no debe cruzar."""
@@ -492,13 +686,13 @@ class Brazo:
                 return True
         return False
 
-    def apunta(self, objetivo):
+    def apunta(self, objetivo, libre=False):
         """
         Rotacion del hombro de un brazo de UNA pieza: lo apunta hacia el objetivo (la mano queda a su alcance
         sobre esa recta, pasandose de largo si el objetivo esta mas cerca). Sin antebrazo no se puede doblar:
         lo que un brazo recto no puede hacer sin quedar mal se evita, no se finge. La direccion mas cercana a
-        la del objetivo que (1) no lleve la mano mas alla del eje del cuerpo —se formaria una X— y (2) no meta
-        el brazo en la cara (el brazo va delante de la cabeza).
+        la del objetivo que (1) no lleve la mano mas alla del eje del cuerpo —se formaria una X—, (2) no meta
+        el brazo en la cara y (3) deje el brazo VISIBLE (va detras del torso: Brazo.visible).
         """
         dx, dy = objetivo[0] - self.S[0], objetivo[1] - self.S[1]
         psi0 = _ang((dx, dy))
@@ -510,6 +704,8 @@ class Brazo:
                 p = _pol(c, self.largo)
                 tip = (self.S[0] + p[0], self.S[1] + p[1])
                 if self.lado_sig * (tip[0] - self.cx) < 0.5 * self.grosor or self._choca(self.S, tip):
+                    continue
+                if not libre and not self.visible(c - base):
                     continue
                 return _norm(c - base)
         return _norm(psi - base)
@@ -545,7 +741,75 @@ def _brazos_de(rig, pid, arbol, piezas=None):
     return out
 
 
-def _grosor_brazo(b, arbol, piezas):
+def _rects_json(p):
+    """{ruta del nodo con Image: rect} de una entrada del rig: lo que el sprite mide en el lienzo (el prefab del disco puede ir atras)."""
+    out = {q["ruta"]: q["rect"] for q in p["partes"]}
+    for n in p["nodos"]:
+        if n.get("rect"):
+            out[n["padre"] + "/" + n["nombre"] + ("/" + n["imagen"] if n["tipo"] == "articulacion" else "")] = n["rect"]
+    return out
+
+
+def _imagen_de(arbol, piezas, ruta, rects):
+    """(imagen RGBA, rect del JSON) del nodo: la pieza de la maqueta, o el PNG de su Image."""
+    import maqueta as M
+    im, rect = M.pieza_o_png(arbol, piezas or {}, ruta)
+    if im is None:
+        return None, None
+    if piezas and ruta in piezas:
+        return im, rect  # la pieza de la maqueta trae su propio rect (el del sprite entero recortado)
+    return im, rects.get(ruta) or rect
+
+
+def _puntos_brazo(b, arbol, piezas, rects, paso=6):
+    """Pixeles opacos del sprite del brazo (cada `paso` px): ([relativos al hombro], [del antebrazo, relativos al codo])."""
+    def de(ruta, ref):
+        im, rect = _imagen_de(arbol, piezas, ruta, rects)
+        if im is None:
+            return []
+        a = im.getchannel("A")
+        w, h = a.size
+        d = a.load()
+        kx, ky = (rect[2] - rect[0]) / float(w), (rect[3] - rect[1]) / float(h)
+        return [(rect[0] + x * kx - ref[0], rect[1] + y * ky - ref[1]) for y in range(0, h, max(1, int(round(paso / ky))))
+                for x in range(0, w, max(1, int(round(paso / kx)))) if d[x, y] > 127]
+    pts_h = de(LA if b.lado == "Izq" else RA, b.S)
+    pts_f = de((LE if b.lado == "Izq" else RE) + "/Antebrazo" + b.lado, b.E) if b.partido else []
+    return pts_h, pts_f
+
+
+def _base_cap(b, arbol, piezas, rects, silueta):
+    """
+    Fraccion de los pixeles del brazo que SIEMPRE quedan tras el torso: la cupula del hombro, porque el pivote cae dentro
+    de la silueta. Se mide sobre el sprite real (el modelo de capsulas no la ve) y es el MINIMO sobre varias aperturas
+    del brazo (de 40 a 130 grados con la vertical): donde el brazo ya no pisa el torso, lo oculto es solo la cupula.
+    """
+    rutas = [(LA if b.lado == "Izq" else RA)]
+    if b.partido:
+        rutas.append((LE if b.lado == "Izq" else RE) + "/Antebrazo" + b.lado)
+    puntos = []
+    for ruta in rutas:
+        im, rect = _imagen_de(arbol, piezas, ruta, rects)
+        if im is None:
+            continue
+        a = im.getchannel("A")
+        w, h = a.size
+        d = a.load()
+        kx, ky = (rect[2] - rect[0]) / float(w), (rect[3] - rect[1]) / float(h)
+        puntos += [(rect[0] + x * kx - b.S[0], rect[1] + y * ky - b.S[1]) for y in range(0, h, 4) for x in range(0, w, 4)
+                   if d[x, y] > 127]
+    if not puntos:
+        return 0.0
+    minimo = 1.0
+    for theta in range(40, 131, 15):
+        giro = math.radians(b.hombro_rot(float(theta)))
+        c, sn = math.cos(giro), math.sin(giro)
+        dentro = sum(1 for dx, dy in puntos if silueta.dentro(b.S[0] + dx * c + dy * sn, b.S[1] - dx * sn + dy * c))
+        minimo = min(minimo, dentro / float(len(puntos)))
+    return minimo
+
+
+def _grosor_brazo(b, arbol, piezas, rects=None):
     """Grosor medio del brazo (px): el area opaca de sus sprites entre su largo. Sin Pillow, un decimo del largo."""
     try:
         import maqueta as M
@@ -554,7 +818,7 @@ def _grosor_brazo(b, arbol, piezas):
             rutas.append((LE if b.lado == "Izq" else RE) + "/Antebrazo" + b.lado)
         area = 0.0
         for ruta in rutas:
-            im, rect = M.pieza_o_png(arbol, piezas or {}, ruta)
+            im, rect = _imagen_de(arbol, piezas, ruta, rects or {})
             if im is None:
                 continue
             a = im.getchannel("A")
@@ -574,6 +838,20 @@ PERFIL = {
     "nina": (24.0, 12.0),
     "nino": (28.0, 12.0),
 }
+
+
+def reposo_visible(x, pliegue):
+    """
+    El reposo de los brazos sale de la geometria: el menor angulo con la vertical (desde 10 grados, con un par de
+    grados de holgura) con que los DOS brazos se ven por completo detras del torso. Si el codo plegado del perfil
+    esconde el antebrazo, se afloja a la mitad y luego a cero. Con un torso estrecho (Mama, Nina) los brazos cuelgan
+    casi pegados; con uno ancho (Papa, el taparrabos del Nino) quedan mas abiertos: lo que dibuja el arte.
+    """
+    for pl in (pliegue, 0.5 * pliegue, 0.0):
+        for th in range(10, 90):
+            if all(b.visible(b.hombro_rot(th), b.codo_rot(th, pl)) for b in x.brazos.values()):
+                return float(th) + 2.0, pl
+    return 60.0, 0.0
 
 
 def leer_contexto(pid, rig=None, arbol=None, piezas=None):
@@ -610,9 +888,18 @@ def leer_contexto(pid, rig=None, arbol=None, piezas=None):
     zona = [nodos[n]["rect"] for n in ("Ojos", "Boca") if n in nodos and nodos[n].get("rect")]
     if zona:
         x.cara = (min(r[0] for r in zona), min(r[1] for r in zona), max(r[2] for r in zona), max(r[3] for r in zona))
+    rects = _rects_json(p)
+    # lo que tapa a los brazos: el torso (con la cabeza dentro, mientras sea arte provisional)
+    im_torso, rect_torso = _imagen_de(arbol, piezas, T + "/Torso", rects)
+    silueta = Silueta(im_torso, rect_torso) if im_torso is not None and not guia else None
     for lado, br in x.brazos.items():
         br.cx = x.cx
-        br.grosor = _grosor_brazo(br, arbol, piezas)
+        br.grosor = _grosor_brazo(br, arbol, piezas, rects)
+        br.silueta = silueta
+        if silueta is not None:
+            br.pts_h, br.pts_f = _puntos_brazo(br, arbol, piezas, rects)
+            if not br.pts_h:
+                br.base_cap = _base_cap(br, arbol, piezas, rects, silueta)
         if x.cara:
             c = x.cara
             mx, my = (c[2] - c[0]) * 0.55, (c[3] - c[1]) * 0.55  # la caja de la cara con el 10 % de la prueba, y un pelo mas
@@ -620,6 +907,13 @@ def leer_contexto(pid, rig=None, arbol=None, piezas=None):
             br.evita = [(ccx - mx - 4, ccy - my - 4, ccx + mx + 4, ccy + my + 4)]
             if br.dos:
                 br.dos.cx, br.dos.grosor, br.dos.evita = br.cx, br.grosor, br.evita
+    x.silueta = silueta
+    if x.cara:
+        c = x.cara
+        # La frente: un poco por encima de ojos y cejas (los brazos pueden pasar por delante de la cabeza pero no tapar
+        # ojos ni boca), y como mucho a donde llega la mano con el brazo casi estirado.
+        alcanzable = x.hombro_y - math.sqrt(max((0.93 * x.alcance) ** 2 - semi ** 2, 0.0))
+        x.y_frente = max(c[1] - 0.35 * (c[3] - c[1]), alcanzable)
     if guia:
         return x
     info = FAMILIA[pid]
@@ -627,6 +921,9 @@ def leer_contexto(pid, rig=None, arbol=None, piezas=None):
     x.segmentado = P.esta_segmentado(arbol)
     x.cabeza_propia = bool(arbol.get(HD) is not None and arbol[HD].dibuja())
     x.hang, x.pliegue = PERFIL[pid]
+    for br in x.brazos.values():
+        br.prepara()
+    x.hang, x.pliegue = reposo_visible(x, x.pliegue)
     x.codo = x.pliegue
     cadera = partes["PiernaIzq"]["pivote"][1]
     x.pie_x = {"Izq": float(partes["PiernaIzq"]["pivote"][0]), "Der": float(partes["PiernaDer"]["pivote"][0])}
@@ -771,21 +1068,25 @@ def cuelga_piernas(s, media):
 
 # ============================================================================ 2. LA COREOGRAFIA vigente
 #
-# POSTURA DE REPOSO NUEVA. El prefab dibuja el A-pose (brazos casi horizontales). El reposo de ahora deja
-# los brazos relajados, cerca del cuerpo (hang grados respecto a la vertical, segun el personaje) con los
-# codos algo plegados hacia dentro; y el peso cargado sobre una pierna se ve en el balanceo del Idle.
+# POSTURA DE REPOSO. El prefab dibuja el A-pose (brazos casi horizontales). El reposo sale de la geometria
+# (reposo_visible): el menor angulo con la vertical con que los brazos se ven enteros; el peso cargado sobre una
+# pierna se ve en el balanceo del Idle.
 #
-# LOS BRAZOS SE VEN SIEMPRE (y nunca tapan la cara). Van DELANTE del torso y de la cabeza en los cuatro de
-# la familia («orden_tronco» del rig), asi que no se esconden; lo que queda es que no cubran la cara: los
-# gestos que suben la mano a la cabeza van por el costado o por encima. pose_preview.py lo comprueba cuadro a
-# cuadro, con el arte de hoy y con el arte final simulado (maqueta.py).
+# LOS BRAZOS VAN DETRAS DEL TORSO Y DELANTE DE LA CABEZA (orden_tronco de la familia, decision de Santiago del 05/10/2026),
+# y se ven: la prueba de pose_preview.py exige >= 85 % de cada brazo visible. Cada Brazo conoce la silueta del torso
+# (Silueta) y los pixeles de su sprite, y Brazo.repara lleva cualquier pose pedida a la pose visible mas cercana
+# (Brazo.pose para los gestos por angulo, Brazo.ik y Brazo.apunta para los de «la mano va aqui»). Asi lo derivan de la
+# geometria el arte de hoy (la cabeza va pintada dentro del torso: hay que abrir mas los brazos) y el arte final. Los
+# gestos se piden donde SE VEN —fuera(): la mano que descansa en el costado— y los que no caben (Strike, delante del
+# pecho) llevan una excepcion con motivo (pose_preview.EXCEPCIONES_BRAZO). Los brazos SI pasan por delante de la cabeza,
+# pero no tapan ojos ni boca, y el torso (dibujado despues) tampoco debe tapar la cara al inclinarse la cabeza.
 #
 # LA COREOGRAFIA SE ESCRIBE UNA VEZ, PARA EL ARTE FINAL, Y SE ADAPTA A LO QUE LEE. Los gestos se piden como
 # «la mano va AQUI» (manos(), cinematica inversa) o como angulos respecto a la vertical (brazos()); las
 # medidas salen de la geometria (JSON del rig + prefab) y nada depende de «quien es provisional»:
 #   - brazo con antebrazo (Image con sprite, encendida): dos segmentos, el codo se dobla de verdad;
 #   - brazo de una pieza: el hombro apunta la mano al objetivo, sin pasar del eje del cuerpo ni cruzar la
-#     cara (Brazo.apunta), y el codo (un pivote vacio) lleva igual la curva que le toca con antebrazo;
+#     cara (Brazo.apunta), dejandose ver, y el codo (un pivote vacio) lleva igual la curva que le toca con antebrazo;
 #   - piernas partidas: la rodilla escala la antepierna; de una pieza, la pierna entera;
 #   - cabeza propia: el cuello gira y la cabeza llega tarde; si no, el torso se inclina un poco menos.
 # Cuando llega el arte final: se meten las piezas, se corrigen rect y punto en el JSON (articulaciones.py),
@@ -837,7 +1138,7 @@ def reposo_nuevo(x):
     r = {C: 0.0, T: 0.0, LL: 0.0, RL: 0.0, LK: 0.0, RK: 0.0, NK: 0.0, HD: 0.0}
     for lado, hom, cod in (("Izq", LA, LE), ("Der", RA, RE)):
         b = x.brazos[lado]
-        r[hom], r[cod] = b.hombro_rot(x.hang), b.codo_rot(x.hang, x.pliegue)
+        r[hom], r[cod] = b.pose(x.hang, x.pliegue)
     return r
 
 
@@ -852,16 +1153,17 @@ def brazos(x, s, izq=None, der=None):
             continue
         b = x.brazos[lado]
         for c in claves:
-            s.raw(hom, ROT, c[0], b.hombro_rot(c[1]))
-            s.raw(cod, ROT, c[0], b.codo_rot(c[1], c[2]))
+            rs, rc = b.pose(c[1], c[2])
+            s.raw(hom, ROT, c[0], rs)
+            s.raw(cod, ROT, c[0], rc)
 
 
 def brazo_f(x, s, lado, f_theta, f_pliegue, largo, paso=0.1):
     """Un brazo muestreado: theta(t) y pliegue(t) como funciones del tiempo base."""
     b = x.brazos[lado]
     hom, cod = (LA, LE) if lado == "Izq" else (RA, RE)
-    muestrea(s, hom, ROT, lambda t: b.hombro_rot(f_theta(t)), largo, paso)
-    muestrea(s, cod, ROT, lambda t: b.codo_rot(f_theta(t), f_pliegue(t)), largo, paso)
+    muestrea(s, hom, ROT, lambda t: b.pose(f_theta(t), f_pliegue(t))[0], largo, paso)
+    muestrea(s, cod, ROT, lambda t: b.pose(f_theta(t), f_pliegue(t))[1], largo, paso)
 
 
 def brazo_mix(x, s, lado, f_theta, f_pliegue, w, objetivo, largo, hacia=None, paso=0.1, suaviza=0.0):
@@ -883,7 +1185,7 @@ def brazo_mix(x, s, lado, f_theta, f_pliegue, w, objetivo, largo, hacia=None, pa
         rs, rc = _desenrolla(previo[0], rs), _desenrolla(previo[1], rc)
         previo = [rs, rc]
         wt = w(t)
-        r0h, r0c = b.hombro_rot(th), b.codo_rot(th, f_pliegue(t))
+        r0h, r0c = b.pose(th, f_pliegue(t))
         # el modo por angulo puede quedar a una vuelta del IK: se acerca a la rama del IK
         r0h = rs + _norm(r0h - rs) if wt > 0 else r0h
         th_h += [t, (1 - wt) * r0h + wt * rs]
@@ -924,7 +1226,7 @@ def _rejilla(largo, paso=0.1):
 PASO_MANOS = 0.04  # s base entre dos muestras de la cinematica inversa de manos()
 
 
-def manos(x, s, izq=None, der=None):
+def manos(x, s, izq=None, der=None, libre=False):
     """
     Brazos por objetivo: listas de (t, (px, py)[, codo_hacia]) con el punto del lienzo adonde va la mano.
     El codo se dobla en el sentido natural salvo que se pida otra direccion. La MANO sigue el camino que
@@ -945,11 +1247,25 @@ def manos(x, s, izq=None, der=None):
         for t in tiempos:
             previa = [c for c in claves if c[0] <= t + 1e-9][-1]
             pos = (cx.evaluar(t), cy.evaluar(t)) if cx is not None else previa[1]
-            rs, rc = b.ik(pos, previa[2] if len(previa) > 2 else None)
+            rs, rc = b.ik(pos, previa[2] if len(previa) > 2 else None, libre)
             rs, rc = _desenrolla(previo[0], rs), _desenrolla(previo[1], rc)
             previo = [rs, rc]
             s.raw(hom, ROT, t, rs)
             s.raw(cod, ROT, t, rc)
+
+
+def fuera(x, lado, y, extra=0.0):
+    """
+    El punto a la altura y justo FUERA de la silueta del torso por el lado de ese brazo, mas «extra» px hacia fuera: donde
+    descansa una mano (en la cadera, en la cintura) y se ve, porque los brazos van detras del torso.
+    """
+    sig = x.brazos[lado].lado_sig
+    px = x.cx
+    if x.silueta is not None:
+        paso = 2.0
+        while px > 0 and px < 1024 and x.silueta.dentro(px, y):
+            px += sig * paso
+    return (px + sig * extra, y)
 
 
 def eje(x, lado, d, y):
@@ -1176,8 +1492,9 @@ def idle_nino(x):
 
 def idle_nina(x):
     """
-    Alegre y decidida: se mece de lado a lado con las manos entrelazadas delante de la barriga (los
-    antebrazos hacia dentro), inclina la cabeza con gracia y encoge los hombros una vez.
+    Alegre y decidida: se mece de lado a lado con los brazos que se balancean como pendulos (cada uno llega tarde al
+    mecido del cuerpo), inclina la cabeza con gracia y encoge los hombros una vez. Los brazos van detras del torso: las
+    manos entrelazadas delante de la barriga no se verian, asi que el caracter lo da el balanceo.
     """
     a, h, pf, L = x.a, x.hang, x.pliegue, IDLE_BASE
     s = familia_spec(x, "Idle", "idle", L)
@@ -1194,10 +1511,10 @@ def idle_nina(x):
     if not x.cabeza_propia:
         muestrea(s, T, ROT, lambda t: -0.7 * bal(t) + extra(t), L)
     encoge = lambda t: pulso(t, 3.95, 4.25, 4.45, 4.85)
-    # manos entrelazadas delante de la barriga; el encogimiento sube un poco los brazos (los codos, mas)
-    y = lambda t: x.y_vientre - 18 * encoge(t) - 4 * _respira(t)
-    for lado in ("Izq", "Der"):
-        brazo_mix(x, s, lado, lambda t: h, lambda t: pf, lambda t: 1.0, lambda t, lado=lado: eje(x, lado, -6, y(t)), L)
+    # los brazos se balancean al reves del cuerpo, con medio segundo de retraso, y en el encogimiento se abren un poco
+    sway = lambda t, fase: 7.0 * math.sin(TAU * (t - 0.5) / L + fase)
+    brazo_f(x, s, "Izq", lambda t: h + sway(t, 0.0) + 9.0 * encoge(t) + 1.5 * _respira(t), lambda t: pf, L)
+    brazo_f(x, s, "Der", lambda t: h - sway(t, 0.0) + 9.0 * encoge(t) + 1.5 * _respira(t), lambda t: pf, L)
     return s
 
 
@@ -1221,12 +1538,11 @@ def idle_papa(x):
     extra = cabeza_f(x, s, L, f_cuello, lambda t: -7.0 * asiente(t), 1.2, 4)
     if not x.cabeza_propia:
         muestrea(s, T, ROT, lambda t: -0.5 * bal(t) + extra(t) - 0.4 * asiente(t), L)
-    # la mano en la cintura: a la altura de la cadera, justo fuera del costado; el codo hacia fuera
-    semi = abs(x.brazos["Izq"].S[0] - x.cx) + 10
+    # en jarra con los PUÑOS en las caderas, por fuera del torso (los brazos van detras de el: dentro no se verian)
     for lado in ("Izq", "Der"):
         b = x.brazos[lado]
         brazo_mix(x, s, lado, lambda t: h + 1.5 * hondo(t), lambda t: pf, jarra,
-                  eje(x, lado, semi, x.y_cadera), L, hacia=(b.lado_sig, 0.15))
+                  fuera(x, lado, x.y_cadera, 0.3 * b.grosor), L, hacia=(b.lado_sig, 0.15))
     return s
 
 
@@ -1250,15 +1566,17 @@ def idle_mama(x):
     if not x.cabeza_propia:
         muestrea(s, T, ROT, lambda t: -0.6 * bal(t) + extra(t), L)
     y = x.y_cadera - 20
-    brazo_mix(x, s, "Der", lambda t: h, lambda t: pf, lambda t: 1.0, eje(x, "Der", -6, y), L)
-    # la izquierda se junta con la derecha y, una vez, sube junto a la oreja (fuera de la cara). La mano sube
+    # las manos descansan a la cintura POR FUERA del torso (los brazos van detras: dentro no se verian)
+    brazo_mix(x, s, "Der", lambda t: h, lambda t: pf, lambda t: 1.0, fuera(x, "Der", y, 0.3 * x.brazos["Der"].grosor), L,
+              hacia=(1.0, 0.15))
+    # la izquierda, una vez, sube junto a la oreja (delante del pelo, nunca tapando ojos ni boca). La mano sube
     # RODEANDO el hombro por fuera (cintura -> brazo estirado hacia abajo y fuera -> oreja) y no en linea recta: la
     # recta de la cintura a la oreja pasa por el hombro y un brazo de una pieza daria media vuelta de golpe al
     # cruzarlo, y uno de dos segmentos cambiaria de rama el codo (con el brazo estirado las dos ramas coinciden)
     cara = x.cara
     oreja = (cara[0] - 60, 0.55 * cara[1] + 0.45 * cara[3])  # el costado de la cabeza, sobre el pelo, fuera de la cara
-    cintura = eje(x, "Izq", -6, y)
     b = x.brazos["Izq"]
+    cintura = fuera(x, "Izq", y, 0.3 * b.grosor)
     costado = (b.S[0] + b.lado_sig * 0.95 * x.alcance * math.cos(math.radians(30)), b.S[1] + 0.95 * x.alcance * math.sin(math.radians(30)))
 
     def sube(t):
@@ -1288,11 +1606,9 @@ def brazos_s(x, s, izq=None, der=None):
             continue
         b = x.brazos[lado]
         for c in claves:
-            s.raw(hom, ROT, c[0], b.hombro_rot(c[1]))
-            if len(c) > 3:
-                s.raw(cod, ROT, c[0], c[3] * c[2] if lado == "Izq" else -c[3] * c[2])
-            else:
-                s.raw(cod, ROT, c[0], b.codo_rot(c[1], c[2]))
+            rs, rc = b.pose(c[1], c[2], c[3] if len(c) > 3 else None)
+            s.raw(hom, ROT, c[0], rs)
+            s.raw(cod, ROT, c[0], rc)
 
 
 def paso(x, accion, archivo, p, amp, vaiven, inclina, balanceo, flex_lo, flex_hi, aplasta):
@@ -1358,21 +1674,25 @@ def talk(x):
 
 def strike(x):
     """
-    Golpear las piedras delante del pecho (0,6 s): las manos se abren (anticipacion), chocan en el eje, rebotan.
-    Los brazos vienen de la pose de reposo y las manos se juntan POR DELANTE del pecho (van delante del torso):
-    una mano por lado, a la altura del pecho, cada una a una distancia del eje que es una fraccion del alcance.
+    Golpear las piedras (0,6 s, en bucle) delante del pecho: de las manos en las caderas (por fuera del torso) suben, se
+    abren (anticipacion), CHOCAN sobre el eje, rebotan y vuelven. Es el unico gesto cuyo instante central pasa los brazos
+    por detras del torso (EXCEPCIONES_BRAZO de pose_preview.py): probado a la altura de la frente, el choque tapa la cara
+    con las manos y se lee como desesperacion (CP-02), y a un lado el brazo de lejos cruzaria tras el cuerpo. El resto del
+    clip (subida, apertura, rebote y vuelta) se ve; el choque dura menos de 0,1 s y lo remata el hundimiento del cuerpo.
     """
     s = familia_spec(x, "Strike", "golpear", 0.6)
     R = x.alcance
-    ts = (0.0, 0.14, 0.21, 0.30, 0.36, 0.46, 0.6)
-    sep = (0.097, 0.23, 0.29, 0.082, 0.126, 0.097, 0.097)  # mitad de la separacion entre las manos, en alcances (al chocar, una junto a la otra)
-    alto = (0, -4, -10, 4, 0, 0, 0)                        # y la altura sobre el pecho (arriba al armar el golpe)
+    ts = (0.0, 0.14, 0.24, 0.30, 0.38, 0.46, 0.6)
+    sep = (None, 0.30, 0.26, 0.04, 0.13, 0.20, None)    # mitad de la separacion entre las manos, en alcances (None: en la cadera)
+    alto = (0, -4, -10, 0, 0, 0, 0)                     # y la altura sobre el pecho
     yy = x.y_pecho + 14
     for lado in ("Izq", "Der"):
-        tg = [(t, eje(x, lado, d * R, yy + dy)) for t, d, dy in zip(ts, sep, alto)]
-        manos(x, s, **{"izq" if lado == "Izq" else "der": tg})
-    s.raw(T, POSY, 0, 0, 0.21, 5, 0.30, -8, 0.38, -3, 0.6, 0)
-    s.vol(0, 1.0, 0.21, 1.025, 0.30, 0.965, 0.38, 1.01, 0.6, 1.0)
+        b = x.brazos[lado]
+        reposo = fuera(x, lado, x.y_cadera - 10, 0.3 * b.grosor)
+        tg = [(t, reposo if d is None else eje(x, lado, d * R, yy + dy)) for t, d, dy in zip(ts, sep, alto)]
+        manos(x, s, libre=True, **{"izq" if lado == "Izq" else "der": tg})
+    s.raw(T, POSY, 0, 0, 0.24, 5, 0.30, -8, 0.38, -3, 0.6, 0)
+    s.vol(0, 1.0, 0.24, 1.025, 0.30, 0.965, 0.38, 1.01, 0.6, 1.0)
     s.rot(C, 0, 0, 0.21, 1.2, 0.30, -1.5, 0.6, 0)
     s.follow(T, POSY, NK, 2, 0.25)
     s.follow(T, POSY, HD, 4, 0.15)
@@ -1414,7 +1734,7 @@ def blow(x):
     s.raw(T, ESCY, 0, 0.95, 0.9, 0.95)      # el tronco inclinado hacia delante, visto de frente
     if x.cabeza_propia:
         muestrea(s, NK, ROT, lambda t: 2.0 * llena(t) - 3.0 * sopla(t), L, 0.05)
-        muestrea(s, NK, POSY, lambda t: 4.0 * llena(t) - 9.0 * sopla(t), L, 0.05)
+        muestrea(s, NK, POSY, lambda t: 3.0 * llena(t) - 5.0 * sopla(t), L, 0.05)
         s.follow(NK, ROT, HD, 3, 1.0)
     else:
         muestrea(s, T, ROT, lambda t: 0.0 * t, L)
@@ -1470,14 +1790,18 @@ def carry(x):
 
 
 def push(x):
-    """Empujar: inclinado, las dos manos juntas delante del pecho, y el paso."""
+    """
+    Empujar: inclinado hacia delante y con el paso, los brazos tensos con los puños a los lados de las caderas, POR FUERA
+    del torso (las manos juntas delante del pecho no se verian: los brazos van detras de el).
+    """
     a, h, pf = x.a, x.hang, x.pliegue
     s = paso(x, "Push", "empujar", 0.9, 0.8 * a, 0, 0, 0, 0, 0, 0.01 * a)
     for r in (LA, RA, LE, RE, C):
         s.drop(r, ROT)
-    yy = x.y_pecho + 30
     for lado in ("Izq", "Der"):
-        tg = [(0, eje(x, lado, 14, yy)), (0.45, eje(x, lado, 18, yy - 6)), (0.9, eje(x, lado, 14, yy))]
+        b = x.brazos[lado]
+        y = x.y_cadera - 10
+        tg = [(0, fuera(x, lado, y, 0.3 * b.grosor)), (0.45, fuera(x, lado, y + 8, 0.45 * b.grosor)), (0.9, fuera(x, lado, y, 0.3 * b.grosor))]
         manos(x, s, **{"izq" if lado == "Izq" else "der": tg})
     s.rot(C, 0, -4, 0.45, -5, 0.9, -4)
     cabeza_sigue(s, C, ROT, -0.35, -0.2)
@@ -1500,7 +1824,11 @@ def point(x):
 
 
 def observe(x):
-    """Observar: la derecha en la cintura y la izquierda de visera sobre los ojos (sin taparlos), mirando a un lado y a otro (2 s)."""
+    """
+    Observar: la izquierda de visera sobre los ojos —el brazo sube a la sien, a un lado de la cara y fuera de ella; los
+    brazos pasan por delante de la cabeza pero la mano plana en la frente tapaba ojos— y la derecha en la cintura, por
+    fuera del torso; mirando a un lado y a otro (2 s).
+    """
     a, h, pf = x.a, x.hang, x.pliegue
     s = familia_spec(x, "Observe", "observar", 2.0)
     s.rot(C, 0, 5, 1, 8, 2, 5)
@@ -1508,13 +1836,11 @@ def observe(x):
     s.rot(T, 0, 0, 1, -1.2 * a, 2, 0)
     s.sym(LL, RL, 0, 0, 1, 1.2 * a, 2, 0)
     c = x.cara
-    semi = abs(x.brazos["Izq"].S[0] - x.cx) + 10
-    # La visera por encima de los ojos: los hombros quedan debajo de la cara, y un brazo que sube a la frente
-    # pasaria por delante de ella. Se sombrea desde el costado, a la altura de la sien (fuera de la cara).
     visera = (c[0] - 70, c[1] - 12)
-    fuera = (-1.0, -0.6)
-    manos(x, s, [(0, visera, fuera), (1.0, (visera[0] + 6, visera[1] + 2), fuera), (2.0, visera, fuera)],
-          [(0, eje(x, "Der", semi, x.y_cadera)), (2.0, eje(x, "Der", semi, x.y_cadera))])
+    fuera_ = (-1.0, -0.6)
+    manos(x, s, [(0, visera, fuera_), (1.0, (visera[0] + 6, visera[1] + 2), fuera_), (2.0, visera, fuera_)],
+          [(0, fuera(x, "Der", x.y_cadera, 0.3 * x.brazos["Der"].grosor), (1.0, 0.15)),
+           (2.0, fuera(x, "Der", x.y_cadera, 0.3 * x.brazos["Der"].grosor), (1.0, 0.15))])
     s.rot(NK, 0, 0, 0.5, -6, 1, 0, 1.5, 6, 2, 0)
     s.follow(NK, ROT, HD, 4, 1.0)
     return s
@@ -1565,7 +1891,7 @@ def encourage(x):
     asiente = lambda t: bump(t, 0.14, 0.09) + 0.7 * bump(t, 0.50, 0.09)    # cabeceo afirmativo: baja dos veces
     if x.cabeza_propia:
         muestrea(s, NK, ROT, lambda t: 1.0 * estira(t), L, 0.05)
-        muestrea(s, NK, POSY, lambda t: -8.0 * asiente(t), L, 0.05)
+        muestrea(s, NK, POSY, lambda t: -4.0 * asiente(t), L, 0.05)
         s.follow(NK, ROT, HD, 3, 1.2)
     else:
         muestrea(s, T, ROT, lambda t: 0.0 * t, L, 0.05)
@@ -1579,23 +1905,24 @@ def encourage(x):
 
 
 def hug(x):
-    """Abrazar: los brazos rodean por delante del pecho (abiertos a la altura del pecho y cerrandose) y se mece."""
+    """
+    Abrazar: los brazos se abren de par en par (esperando a quien llega) y se CIERRAN rodeando el cuerpo por fuera, hasta las
+    manos a los costados a la altura de la cintura. Van detras del torso: cruzados por delante del pecho desapareceria
+    el brazo, asi que el abrazo se lee como brazos que se pliegan en torno a la silueta, sin esconderse. Se mece.
+    """
     h, pf = x.hang, x.pliegue
     s = familia_spec(x, "Hug", "abrazar", 2.0)
     R = x.alcance
     semi = abs(x.brazos["Izq"].S[0] - x.cx)
-    yy = x.y_pecho
-    # los brazos se abren de par en par (esperando a quien llega: casi el alcance entero, casi rectos) y se
-    # cierran rodeandolo por delante. El codo va SIEMPRE hacia fuera y un poco arriba (la misma rama de la
-    # cinematica inversa de principio a fin): si se deja elegir, a mitad del cierre cambia de rama y el brazo
-    # da un salto de 150 grados en un cuadro.
+    # abiertos: casi el alcance entero, casi rectos. El codo va SIEMPRE hacia fuera y un poco arriba (la misma rama de la
+    # cinematica inversa de principio a fin): si se deja elegir, a mitad del cierre cambia de rama y el brazo da un salto
     abierto = semi + 0.95 * R
     for lado in ("Izq", "Der"):
-        sig = x.brazos[lado].lado_sig
-        hacia = (sig, -0.4)
-        tg = [(0, eje(x, lado, abierto, yy - 10), hacia), (0.8, eje(x, lado, 0.8 * abierto, yy - 4), hacia),
-              (1.2, eje(x, lado, 0.13 * R, yy + 6), hacia), (1.6, eje(x, lado, 0.11 * R, yy + 8), hacia),
-              (2.0, eje(x, lado, abierto, yy - 10), hacia)]
+        b = x.brazos[lado]
+        hacia = (b.lado_sig, -0.4)
+        cintura = fuera(x, lado, x.y_vientre, 0.2 * b.grosor)
+        tg = [(0, eje(x, lado, abierto, x.y_pecho - 10), hacia), (0.8, eje(x, lado, 0.8 * abierto, x.y_pecho - 4), hacia),
+              (1.2, cintura, hacia), (1.6, cintura, hacia), (2.0, eje(x, lado, abierto, x.y_pecho - 10), hacia)]
         manos(x, s, **{"izq" if lado == "Izq" else "der": tg})
     s.rot(C, 0, -2.5, 1, 2.5, 2, -2.5)
     s.vol(0, 1.0, 1, 0.985, 2, 1.0)
