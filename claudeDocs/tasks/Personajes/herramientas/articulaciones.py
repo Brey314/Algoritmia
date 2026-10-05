@@ -356,12 +356,13 @@ def personaje_guia(forma, prefab):
 
 
 def compacto(valor, nivel=0):
-    """JSON con indentación, pero con las listas de números en una sola línea."""
+    """JSON con indentación, pero con las listas de números en una sola línea. Solo ASCII
+    (ensure_ascii=True): el lector de BuildRigsFinal.cs.txt no debe tropezar con tildes ni eñes."""
     sangria = "  " * nivel
     if isinstance(valor, dict):
         if not valor:
             return "{}"
-        filas = ['%s  %s: %s' % (sangria, json.dumps(k, ensure_ascii=False), compacto(v, nivel + 1))
+        filas = ['%s  %s: %s' % (sangria, json.dumps(k, ensure_ascii=True), compacto(v, nivel + 1))
                  for k, v in valor.items()]
         return "{\n" + ",\n".join(filas) + "\n" + sangria + "}"
     if isinstance(valor, list):
@@ -369,16 +370,17 @@ def compacto(valor, nivel=0):
             return "[" + ", ".join(json.dumps(v) for v in valor) + "]"
         filas = ["%s  %s" % (sangria, compacto(v, nivel + 1)) for v in valor]
         return "[\n" + ",\n".join(filas) + "\n" + sangria + "]"
-    return json.dumps(valor, ensure_ascii=False)
+    return json.dumps(valor, ensure_ascii=True)
 
 
 def main():
     personajes = [personaje_familia(*f) for f in FAMILIA]
     personajes += [personaje_guia(*f) for f in FORMAS]
+    # La nota va sin tildes ni eñes (y el volcado fuerza ASCII): el JSON debe ser ASCII puro.
     tabla = {
         "version": 1,
         "nota": "Valores PROVISIONALES (articulaciones.py). Lienzo de 1024, origen arriba a la izquierda, "
-                "y hacia abajo. 'nodos' se AÑADE a los prefabs (padre antes que hijo); 'partes' describe los "
+                "y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los "
                 "nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento "
                 "'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. "
                 "El estado 'segmentado' no se guarda: se deduce del prefab.",

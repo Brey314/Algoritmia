@@ -54,12 +54,19 @@ using UnityEngine.UI;
 
 public static class ClaudeBuildRigsFinal
 {
-    // ---------------------------------------------------------------- tabla (JsonUtility)
+    // ---------------------------------------------------------------- tabla (lector JSON propio)
+    //
+    // POR QUÉ NO JsonUtility. El 05/10/2026 JsonUtility.FromJson<Tabla> devolvió la tabla vacía en el
+    // Editor de Santiago (6000.5.10f1) con un JSON válido, sin excepción y sin causa a la vista. En vez de
+    // adivinar (tipos anidados en una clase estática, un carácter no ASCII…) la tabla se lee con un
+    // descenso recursivo que solo usa System.*: no depende del serializador de Unity y, si algo falla,
+    // dice en qué línea y columna o qué campo falta y en qué personaje y nodo.
 
-    [Serializable] public class Tabla { public Personaje[] personajes; }
+    // --- inicio del lector (solo System.*: se compila y se prueba fuera del Editor) ---
 
-    [Serializable]
-    public class Personaje
+    public sealed class Tabla { public Personaje[] personajes; }
+
+    public sealed class Personaje
     {
         public string id; public string prefab; public string carpeta; public string prefijo; public bool guia;
         public Nodo[] nodos; public Parte[] partes;
@@ -69,21 +76,488 @@ public static class ClaudeBuildRigsFinal
     /// Un nodo que se AÑADE. «tipo»: articulacion = pivote de tamaño 0 en «punto» con un segmento
     /// «imagen» colgado de él (con «rect»); imagen = el propio nodo lleva la Image; grupo = nodo
     /// estirado sin Image, con el pivote en «punto». «padre» es la ruta desde la raíz del prefab.
+    /// Según el tipo son obligatorios «punto» (todos), «imagen» (articulacion) y «rect» (grupo); lo que
+    /// el JSON omita o ponga en null queda en null, que es lo que el resto del script ya espera.
     /// </summary>
-    [Serializable]
-    public class Nodo
+    public sealed class Nodo
     {
         public string nombre; public string tipo; public string padre; public string imagen; public string sprite;
         public float[] punto; public float[] rect;
     }
 
     /// <summary>Una parte que YA existe: su ruta, su sprite y el rect y pivote con que se reajusta.</summary>
-    [Serializable]
-    public class Parte
+    public sealed class Parte
     {
         public string nombre; public string ruta; public string sprite;
         public float[] rect; public float[] pivote;
     }
+
+    /// <summary>
+    /// Lee el texto de la tabla. Obligatorios: id, prefab, carpeta, prefijo y nodos por personaje; nombre,
+    /// tipo y padre por nodo; nombre, ruta, rect y pivote por parte. «partes» ausente = lista vacía.
+    /// Lanza InvalidOperationException con el motivo y el lugar exactos.
+    /// </summary>
+    public static Tabla ParseTable(string json)
+    {
+        var root = MiniJson.Parse(json) as Dictionary<string, object>;
+        if (root == null)
+        {
+            throw new InvalidOperationException("la raíz de la tabla debe ser un objeto JSON");
+        }
+
+        var items = Items(root, "personajes", "tabla", true);
+        if (items.Count == 0)
+        {
+            throw new InvalidOperationException("tabla: «personajes» está vacío");
+        }
+
+        var tabla = new Tabla { personajes = new Personaje[items.Count] };
+        for (var i = 0; i < items.Count; i++)
+        {
+            tabla.personajes[i] = ToPersonaje(items[i], i);
+        }
+
+        return tabla;
+    }
+
+    private static Personaje ToPersonaje(object raw, int index)
+    {
+        var ctx = "personajes[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var id = Str(d, "id", ctx, true);
+        ctx = "personaje «" + id + "»";
+
+        var p = new Personaje
+        {
+            id = id,
+            prefab = Str(d, "prefab", ctx, true),
+            carpeta = Str(d, "carpeta", ctx, true),
+            prefijo = Str(d, "prefijo", ctx, true),
+            guia = Flag(d, "guia", ctx),
+        };
+
+        var nodos = Items(d, "nodos", ctx, true);
+        p.nodos = new Nodo[nodos.Count];
+        for (var k = 0; k < nodos.Count; k++)
+        {
+            p.nodos[k] = ToNodo(nodos[k], ctx, k);
+        }
+
+        var partes = Items(d, "partes", ctx, false);
+        p.partes = new Parte[partes.Count];
+        for (var k = 0; k < partes.Count; k++)
+        {
+            p.partes[k] = ToParte(partes[k], ctx, k);
+        }
+
+        return p;
+    }
+
+    private static Nodo ToNodo(object raw, string owner, int index)
+    {
+        var ctx = owner + ", nodos[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var nombre = Str(d, "nombre", ctx, true);
+        ctx = owner + ", nodo «" + nombre + "»";
+
+        var tipo = Str(d, "tipo", ctx, true);
+        if (tipo != "articulacion" && tipo != "imagen" && tipo != "grupo")
+        {
+            throw new InvalidOperationException(ctx + ": tipo «" + tipo + "» desconocido (articulacion | imagen | grupo)");
+        }
+
+        return new Nodo
+        {
+            nombre = nombre,
+            tipo = tipo,
+            padre = Str(d, "padre", ctx, true),
+            imagen = Str(d, "imagen", ctx, tipo == "articulacion"),
+            sprite = Str(d, "sprite", ctx, false),
+            punto = Numbers(d, "punto", ctx, 2, true),
+            rect = Numbers(d, "rect", ctx, 4, tipo == "grupo"),
+        };
+    }
+
+    private static Parte ToParte(object raw, string owner, int index)
+    {
+        var ctx = owner + ", partes[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var nombre = Str(d, "nombre", ctx, true);
+        ctx = owner + ", parte «" + nombre + "»";
+
+        return new Parte
+        {
+            nombre = nombre,
+            ruta = Str(d, "ruta", ctx, true),
+            sprite = Str(d, "sprite", ctx, false),
+            rect = Numbers(d, "rect", ctx, 4, true),
+            pivote = Numbers(d, "pivote", ctx, 2, true),
+        };
+    }
+
+    private static Dictionary<string, object> AsObject(object raw, string ctx)
+    {
+        var d = raw as Dictionary<string, object>;
+        if (d == null)
+        {
+            throw new InvalidOperationException(ctx + ": debe ser un objeto JSON");
+        }
+
+        return d;
+    }
+
+    private static InvalidOperationException Missing(string ctx, string key)
+    {
+        return new InvalidOperationException(ctx + ": falta el campo obligatorio «" + key + "»");
+    }
+
+    /// <summary>Un texto. Ausente o null: error si es obligatorio y null si no. Obligatorio y vacío también es error.</summary>
+    private static string Str(Dictionary<string, object> d, string key, string ctx, bool required)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null)
+        {
+            if (required) throw Missing(ctx, key);
+            return null;
+        }
+
+        var s = v as string;
+        if (s == null)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser texto");
+        }
+
+        if (required && s.Length == 0)
+        {
+            throw new InvalidOperationException(ctx + ": el campo obligatorio «" + key + "» está vacío");
+        }
+
+        return s;
+    }
+
+    private static bool Flag(Dictionary<string, object> d, string key, string ctx)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null)
+        {
+            return false;
+        }
+
+        if (!(v is bool))
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser true o false");
+        }
+
+        return (bool)v;
+    }
+
+    /// <summary>Una lista de objetos. Ausente o null: error si es obligatoria y lista vacía si no.</summary>
+    private static List<object> Items(Dictionary<string, object> d, string key, string ctx, bool required)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null)
+        {
+            if (required) throw Missing(ctx, key);
+            return new List<object>();
+        }
+
+        var list = v as List<object>;
+        if (list == null)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser una lista");
+        }
+
+        return list;
+    }
+
+    /// <summary>Una lista de exactamente «length» números. Ausente o null: error si es obligatoria y null si no.</summary>
+    private static float[] Numbers(Dictionary<string, object> d, string key, string ctx, int length, bool required)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null)
+        {
+            if (required) throw Missing(ctx, key);
+            return null;
+        }
+
+        var list = v as List<object>;
+        if (list == null || list.Count != length)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser una lista de " + length + " números");
+        }
+
+        var result = new float[length];
+        for (var i = 0; i < length; i++)
+        {
+            if (!(list[i] is double))
+            {
+                throw new InvalidOperationException(ctx + ": «" + key + "»[" + i + "] debe ser un número");
+            }
+
+            result[i] = (float)(double)list[i];
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Descenso recursivo sobre el texto. Objetos → Dictionary&lt;string, object&gt;, listas →
+    /// List&lt;object&gt;, números → double (cultura invariante), más string, bool y null. Estricto: sin
+    /// comas finales, sin comentarios, sin caracteres de control sueltos en las cadenas. Un campo repetido
+    /// en un objeto es un error (casi siempre es una errata). El BOM inicial se tolera.
+    /// </summary>
+    private sealed class MiniJson
+    {
+        private const int MaxDepth = 64;
+        private readonly string text;
+        private int pos;
+
+        private MiniJson(string text) { this.text = text; }
+
+        public static object Parse(string text)
+        {
+            if (text == null)
+            {
+                throw new InvalidOperationException("JSON ilegible: texto nulo");
+            }
+
+            var reader = new MiniJson(text);
+            reader.SkipWhite();
+            var value = reader.ReadValue(0);
+            reader.SkipWhite();
+            if (reader.pos < text.Length)
+            {
+                throw reader.Error("hay texto después del valor raíz");
+            }
+
+            return value;
+        }
+
+        /// <summary>Error con la línea y la columna (desde 1) de la posición actual.</summary>
+        private InvalidOperationException Error(string message)
+        {
+            var line = 1;
+            var lineStart = 0;
+            for (var k = 0; k < pos && k < text.Length; k++)
+            {
+                if (text[k] == '\n')
+                {
+                    line++;
+                    lineStart = k + 1;
+                }
+            }
+
+            return new InvalidOperationException(
+                "JSON ilegible en la línea " + line + ", columna " + (pos - lineStart + 1) + ": " + message);
+        }
+
+        private string Describe()
+        {
+            if (pos >= text.Length) return "el fin del texto";
+            var c = text[pos];
+            return c < ' ' ? "un carácter de control (U+" + ((int)c).ToString("X4") + ")" : "«" + c + "»";
+        }
+
+        private void SkipWhite()
+        {
+            while (pos < text.Length)
+            {
+                var c = text[pos];
+                if (c != ' ' && c != '\t' && c != '\n' && c != '\r' && c != '﻿') break;
+                pos++;
+            }
+        }
+
+        private bool At(char c) { return pos < text.Length && text[pos] == c; }
+
+        private void Expect(char c)
+        {
+            if (!At(c))
+            {
+                throw Error("se esperaba «" + c + "», no " + Describe());
+            }
+
+            pos++;
+        }
+
+        private object ReadValue(int depth)
+        {
+            if (depth > MaxDepth) throw Error("anidamiento excesivo");
+            if (pos >= text.Length) throw Error("el texto termina donde se esperaba un valor");
+
+            var c = text[pos];
+            switch (c)
+            {
+                case '{': return ReadObject(depth);
+                case '[': return ReadArray(depth);
+                case '"': return ReadString();
+                case 't': ReadLiteral("true"); return true;
+                case 'f': ReadLiteral("false"); return false;
+                case 'n': ReadLiteral("null"); return null;
+                default:
+                    if (c == '-' || (c >= '0' && c <= '9')) return ReadNumber();
+                    throw Error("carácter inesperado " + Describe());
+            }
+        }
+
+        private void ReadLiteral(string word)
+        {
+            if (string.CompareOrdinal(text, pos, word, 0, word.Length) != 0)
+            {
+                throw Error("se esperaba «" + word + "»");
+            }
+
+            pos += word.Length;
+        }
+
+        private Dictionary<string, object> ReadObject(int depth)
+        {
+            pos++; // «{»
+            var result = new Dictionary<string, object>(StringComparer.Ordinal);
+            SkipWhite();
+            if (At('}'))
+            {
+                pos++;
+                return result;
+            }
+
+            while (true)
+            {
+                SkipWhite();
+                if (!At('"')) throw Error("se esperaba el nombre de un campo entre comillas, no " + Describe());
+                var keyPos = pos;
+                var key = ReadString();
+                if (result.ContainsKey(key))
+                {
+                    pos = keyPos;
+                    throw Error("el campo «" + key + "» está repetido");
+                }
+
+                SkipWhite();
+                Expect(':');
+                SkipWhite();
+                result[key] = ReadValue(depth + 1);
+                SkipWhite();
+                if (At(',')) { pos++; continue; }
+                if (At('}')) { pos++; return result; }
+                throw Error("se esperaba «,» o «}», no " + Describe());
+            }
+        }
+
+        private List<object> ReadArray(int depth)
+        {
+            pos++; // «[»
+            var result = new List<object>();
+            SkipWhite();
+            if (At(']'))
+            {
+                pos++;
+                return result;
+            }
+
+            while (true)
+            {
+                SkipWhite();
+                result.Add(ReadValue(depth + 1));
+                SkipWhite();
+                if (At(',')) { pos++; continue; }
+                if (At(']')) { pos++; return result; }
+                throw Error("se esperaba «,» o «]», no " + Describe());
+            }
+        }
+
+        private string ReadString()
+        {
+            pos++; // comilla de apertura
+            var sb = new System.Text.StringBuilder();
+            while (true)
+            {
+                if (pos >= text.Length) throw Error("cadena sin cerrar");
+                var c = text[pos];
+                if (c == '"')
+                {
+                    pos++;
+                    return sb.ToString();
+                }
+
+                if (c < ' ') throw Error("carácter de control sin escapar dentro de una cadena");
+                if (c != '\\')
+                {
+                    sb.Append(c);
+                    pos++;
+                    continue;
+                }
+
+                pos++; // «\»
+                if (pos >= text.Length) throw Error("cadena sin cerrar");
+                switch (text[pos])
+                {
+                    case '"': sb.Append('"'); break;
+                    case '\\': sb.Append('\\'); break;
+                    case '/': sb.Append('/'); break;
+                    case 'b': sb.Append('\b'); break;
+                    case 'f': sb.Append('\f'); break;
+                    case 'n': sb.Append('\n'); break;
+                    case 'r': sb.Append('\r'); break;
+                    case 't': sb.Append('\t'); break;
+                    case 'u':
+                        int code;
+                        if (pos + 4 >= text.Length
+                            || !int.TryParse(text.Substring(pos + 1, 4), System.Globalization.NumberStyles.AllowHexSpecifier,
+                                System.Globalization.CultureInfo.InvariantCulture, out code))
+                        {
+                            throw Error("«\\u» debe llevar cuatro dígitos hexadecimales");
+                        }
+
+                        sb.Append((char)code); // un par sustituto llega como dos «\uXXXX» seguidos y se recompone solo
+                        pos += 4;
+                        break;
+                    default:
+                        throw Error("secuencia de escape inválida «\\" + text[pos] + "»");
+                }
+
+                pos++;
+            }
+        }
+
+        private bool AtDigit() { return pos < text.Length && text[pos] >= '0' && text[pos] <= '9'; }
+
+        private object ReadNumber()
+        {
+            var start = pos;
+            if (At('-')) pos++;
+            if (!AtDigit()) throw Error("número mal formado: falta un dígito");
+            if (At('0')) pos++;
+            else while (AtDigit()) pos++;
+
+            if (At('.'))
+            {
+                pos++;
+                if (!AtDigit()) throw Error("número mal formado: falta un dígito tras el punto decimal");
+                while (AtDigit()) pos++;
+            }
+
+            if (At('e') || At('E'))
+            {
+                pos++;
+                if (At('+') || At('-')) pos++;
+                if (!AtDigit()) throw Error("número mal formado: falta un dígito en el exponente");
+                while (AtDigit()) pos++;
+            }
+
+            double value;
+            if (!double.TryParse(text.Substring(start, pos - start), System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out value))
+            {
+                pos = start;
+                throw Error("número fuera de rango");
+            }
+
+            return value;
+        }
+    }
+
+    // --- fin del lector ---
 
     private const string Json = "claudeDocs/tasks/Personajes/herramientas/rig_articulaciones.json";
     private const string Art = "Assets/Game/Art/Characters";
@@ -177,10 +651,14 @@ public static class ClaudeBuildRigsFinal
     private static Tabla LoadTable(List<string> log)
     {
         var path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", Json));
-        var tabla = JsonUtility.FromJson<Tabla>(File.ReadAllText(path));
-        if (tabla == null || tabla.personajes == null || tabla.personajes.Length == 0)
+        Tabla tabla;
+        try
         {
-            throw new InvalidOperationException("tabla vacía o ilegible: " + path);
+            tabla = ParseTable(File.ReadAllText(path, System.Text.Encoding.UTF8));
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new InvalidOperationException("tabla ilegible (" + path + "): " + e.Message, e);
         }
 
         log.Add("tabla: " + tabla.personajes.Length + " personajes (" + path + ")");
@@ -679,7 +1157,7 @@ public static class ClaudeBuildRigsFinal
         var root = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath(c));
         if (root == null)
         {
-            log.Add(c.prefab + ": FALTA el prefab");
+            log.Add(c.prefab + " [" + c.nodos.Length + " nodos, " + c.partes.Length + " partes en la tabla]: FALTA el prefab");
             return;
         }
 
@@ -691,7 +1169,7 @@ public static class ClaudeBuildRigsFinal
         }
 
         var face = root.GetComponent<CharacterFace>();
-        log.Add(c.prefab + ": " + (missing.Count == 0 ? "nodos completos" : "FALTAN " + string.Join(", ", missing.ToArray()))
+        log.Add(c.prefab + " [" + c.nodos.Length + " nodos, " + c.partes.Length + " partes en la tabla]: " + (missing.Count == 0 ? "nodos completos" : "FALTAN " + string.Join(", ", missing.ToArray()))
             + " | CharacterFace " + (face == null ? "no" : "sí") + " | segmentado " + (IsSegmented(root.transform) ? "sí" : "no"));
     }
 
