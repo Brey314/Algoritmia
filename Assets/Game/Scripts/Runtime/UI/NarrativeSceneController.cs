@@ -532,6 +532,7 @@ namespace Game.UI
                 var cue = ActorTimeline.Cue(actor.Prop, line, actor.Rig.Speaks(speaker));
                 SetAnchor(actor.Rect, cue.From);
                 actor.Rig.Play(cue.During);
+                actor.Rig.EmotionOverride = cue.Emotion; // null = la de la acción
                 if (cue.Moves)
                 {
                     actor.Moving = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
@@ -580,6 +581,7 @@ namespace Game.UI
             {
                 // Sale de donde llegó y no de donde el paso decía empezar: así no salta (RNF-21).
                 actor.Rig.Play(pending.Action);
+                actor.Rig.EmotionOverride = ActorTimeline.EmotionAt(actor.Prop, Dialogue.Index);
                 actor.Moving = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
                 _ = WalkAsync(actor, new ActorCue(cue.To, pending.Destination, true, pending.Seconds, pending.Action, pending.Arrival),
                     pending, actor.Moving.Token);
@@ -588,6 +590,29 @@ namespace Game.UI
 
             var now = ActorTimeline.Cue(actor.Prop, Dialogue.Index, actor.Rig.Speaks(Dialogue.Current?.Speaker));
             actor.Rig.Play(now.Moves ? now.After : now.During);
+            actor.Rig.EmotionOverride = now.Emotion;
+        }
+
+        /// <summary>
+        /// Quien dice la línea mueve la boca mientras está en pantalla; los demás la cierran. El
+        /// texto aparece entero de golpe (no hay revelado progresivo), así que «mientras se lee» es
+        /// hasta que se avanza: la siguiente línea recalcula quién habla y <see cref="StopSpeaking"/>
+        /// lo apaga a todos al salir. Una acotación no tiene hablante y no mueve ninguna boca.
+        /// </summary>
+        private void UpdateSpeaking(string speaker)
+        {
+            foreach (var actor in _actors)
+            {
+                actor.Rig.Speaking = actor.Rig.Speaks(speaker);
+            }
+        }
+
+        private void StopSpeaking()
+        {
+            foreach (var actor in _actors)
+            {
+                actor.Rig.Speaking = false;
+            }
         }
 
         private static void SetAnchor(RectTransform rect, Vector2 position)
@@ -830,6 +855,7 @@ namespace Game.UI
             bodyLabel.text = line.Text;
             ShowPortrait(line);
             PlayMotions(Dialogue.Index);
+            UpdateSpeaking(line.Speaker);
             PlayActors(Dialogue.Index, line.Speaker);
 
             // Lo que dice el texto se oye cuando se lee, igual que los objetos se mueven cuando se
@@ -869,6 +895,7 @@ namespace Game.UI
         /// </remarks>
         private void Leave()
         {
+            StopSpeaking(); // ninguna boca queda abierta al salir ni al omitir
             // Se sale una sola vez: si el flujo ya no está en esta escena, ya se salió. La escena
             // sigue viva mientras carga la siguiente, y el doble clic de un niño llegaba aquí dos
             // veces: tras el cierre reflexivo el segundo `GoTo(LevelSummary)` ya era ilegal, caía a

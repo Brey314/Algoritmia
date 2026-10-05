@@ -51,9 +51,45 @@ namespace Game.Scaffolding
         private bool _mirrored;
         private bool _started;
         private CancellationTokenSource _returning;
+        private CharacterFace _face;
+        private FacialEmotion? _emotionOverride;
+        private bool _speaking;
 
         /// <summary>La última acción pedida.</summary>
         public ActorAction Current { get; private set; } = ActorAction.Idle;
+
+        /// <summary>
+        /// La emoción que el guion fija para este personaje (<see cref="ActorBeat.SetsEmotion"/>);
+        /// <c>null</c> = la que le corresponde a su acción (<see cref="ActionEmotion"/>). Asignarla
+        /// refresca la cara al instante.
+        /// </summary>
+        public FacialEmotion? EmotionOverride
+        {
+            get => _emotionOverride;
+            set
+            {
+                _emotionOverride = value;
+                PushToFace();
+            }
+        }
+
+        /// <summary>La emoción vigente: la que fija el guion o, si no, la de la acción en curso.</summary>
+        public FacialEmotion Emotion => EmotionOverride ?? ActionEmotion.For(Current);
+
+        /// <summary>
+        /// Si el personaje está diciendo su línea: la boca aletea hasta que se apaga. La pone quien
+        /// conduce la escena (<c>NarrativeSceneController</c>), no el rig, que no sabe qué línea se lee.
+        /// Sin <see cref="CharacterFace"/> —o sin sprites de cara— no se ve nada, pero el valor se guarda.
+        /// </summary>
+        public bool Speaking
+        {
+            get => _speaking;
+            set
+            {
+                _speaking = value;
+                PushToFace();
+            }
+        }
 
         /// <summary>El lienzo que contiene las partes.</summary>
         public RectTransform Stage => stage;
@@ -77,6 +113,7 @@ namespace Game.Scaffolding
         private void OnEnable()
         {
             Fit(true);
+            PushToFace();
             if (animator != null && animator.runtimeAnimatorController != null && animator.isActiveAndEnabled)
             {
                 Apply(Current, immediate: true);
@@ -142,6 +179,8 @@ namespace Game.Scaffolding
             }
 
             Current = action;
+            // La cara sigue a la acción aunque no haya Animator que la ejecute.
+            PushToFace();
             if (animator == null || animator.runtimeAnimatorController == null || !animator.isActiveAndEnabled)
             {
                 return;
@@ -163,6 +202,23 @@ namespace Game.Scaffolding
             {
                 animator.CrossFadeInFixedTime(state, BlendSeconds, 0);
             }
+        }
+
+        /// <summary>Le empuja a la cara opcional la emoción vigente y si habla.</summary>
+        private void PushToFace()
+        {
+            if (_face == null)
+            {
+                _face = GetComponent<CharacterFace>();
+            }
+
+            if (_face == null)
+            {
+                return; // sin cara (arte provisional): nada que refrescar
+            }
+
+            _face.Emotion = Emotion;
+            _face.Speaking = _speaking;
         }
 
         /// <summary>Si la línea la dice este personaje. Sin distinguir mayúsculas: el guion las escribe en versales.</summary>

@@ -219,5 +219,43 @@ namespace Game.Scaffolding.Tests
 
             Assert.That(pendiente, Is.Null, "a ese el paso nuevo lo interrumpió al leerse");
         }
+
+        [Test]
+        public void ActorTimeline_RF05_LaEmocionDeUnPasoSeMantieneHastaQueOtroLaCambie()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(1, ActorAction.Idle).WithEmotion(FacialEmotion.Worried),
+                new ActorBeat(4, ActorAction.Kneel),
+                new ActorBeat(6, ActorAction.Idle).WithEmotion(FacialEmotion.Happy),
+                new ActorBeat(8, ActorAction.Walk).WithEmotion(FacialEmotion.Surprised),
+                new ActorBeat(8, ActorAction.Walk).MovingTo(Fondo, 2f).WithEmotion(FacialEmotion.Focused));
+
+            Assert.That(ActorTimeline.Cue(sut, 0, speaking: false).Emotion, Is.Null, "antes del primer paso manda la acción");
+            Assert.That(ActorTimeline.Cue(sut, 1, speaking: false).Emotion, Is.EqualTo(FacialEmotion.Worried));
+            Assert.That(ActorTimeline.Cue(sut, 3, speaking: true).Emotion, Is.EqualTo(FacialEmotion.Worried), "una línea sin paso la mantiene");
+            Assert.That(ActorTimeline.Cue(sut, 4, speaking: false).Emotion, Is.EqualTo(FacialEmotion.Worried),
+                "un paso que no la fija no la cambia");
+            Assert.That(ActorTimeline.Cue(sut, 6, speaking: false).Emotion, Is.EqualTo(FacialEmotion.Happy));
+            Assert.That(ActorTimeline.Cue(sut, 7, speaking: false).Emotion, Is.EqualTo(FacialEmotion.Happy));
+            Assert.That(ActorTimeline.Cue(sut, 8, speaking: false).Emotion, Is.EqualTo(FacialEmotion.Focused),
+                "si hay dos en la misma línea, el último de la lista");
+            Assert.That(ActorTimeline.EmotionAt(sut, 5), Is.EqualTo(FacialEmotion.Worried));
+        }
+
+        [Test]
+        public void ActorTimeline_RF05_SinEmocionDeclaradaElCueNoLaFija()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(0, ActorAction.Celebrate),
+                new ActorBeat(2, ActorAction.Walk).MovingTo(Fondo, 2f, ActorAction.Kneel));
+
+            for (var linea = 0; linea < 5; linea++)
+            {
+                Assert.That(ActorTimeline.Cue(sut, linea, speaking: linea % 2 == 0).Emotion, Is.Null,
+                    $"línea {linea}: los assets que no declaran emociones siguen con la de la acción");
+            }
+
+            Assert.That(new ActorBeat(0, ActorAction.Idle).SetsEmotion, Is.False, "por defecto un paso no fija expresión");
+        }
     }
 }
