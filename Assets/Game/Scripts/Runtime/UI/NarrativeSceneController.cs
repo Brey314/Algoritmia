@@ -410,7 +410,11 @@ namespace Game.UI
         {
             foreach (Transform previous in illustration.transform)
             {
-                Destroy(previous.gameObject);
+                // La capa de sombras se queda: cada objeto destruido se lleva la suya.
+                if (!PropShadow.IsLayer(previous))
+                {
+                    Destroy(previous.gameObject);
+                }
             }
 
             _props.Clear();
@@ -463,10 +467,21 @@ namespace Game.UI
                 }
                 else
                 {
-                    PropShadow.Attach(go, prop.Art, rect.sizeDelta);
+                    PropShadow.Attach(go, prop.Art);
                 }
 
                 _props.Add((prop, rect));
+            }
+
+            // Las sombras están en el suelo: debajo de todo lo que cuelga de la ilustración,
+            // personajes incluidos, aunque el primer objeto de la escena sea un personaje.
+            foreach (Transform child in illustration.transform)
+            {
+                if (PropShadow.IsLayer(child))
+                {
+                    child.SetAsFirstSibling();
+                    break;
+                }
             }
         }
 
@@ -705,7 +720,7 @@ namespace Game.UI
 
                     if (shadow != null)
                     {
-                        shadow.UpdateMotion(height, lift, prop.RotationDegrees + spin);
+                        shadow.UpdateMotion(height, lift);
                     }
 
                     await Awaitable.NextFrameAsync(destroyCancellationToken);
@@ -719,7 +734,7 @@ namespace Game.UI
 
             if (shadow != null)
             {
-                shadow.UpdateMotion(0f, lift, rect.localEulerAngles.z);
+                shadow.UpdateMotion(0f, lift);
             }
 
             // Llegó: vuelve la capa de la escena, o se va si la escena no tiene (nulo funde a salida).

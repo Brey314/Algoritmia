@@ -246,6 +246,21 @@ materiales, lo que está más abajo se dibuja delante (`DepthOrder`). En las nar
 personajes sí caminan de una casilla a otra (`NarrativeSceneController.WalkAsync`), y la sombra,
 hija del lienzo del rig, viaja con ellos anclada a los pies.
 
+**Los objetos** (`PropShadow`, en las narrativas, el bosque, el taller y la orilla del N3) llevan
+la misma sombra plana `#000000` al 25 %, pero su forma depende de cómo los dibuja la ilustración:
+
+- **En picado** —troncos, tablas, cajas, la carretilla, la balsa que cruza—: el objeto está tendido
+  en el suelo y su sombra es **su propia silueta**, corrida hacia abajo y a la derecha (luz de
+  arriba a la izquierda, §5.2). Gira y se refleja con el objeto; la luz no. El tronco que rueda en
+  el motor (`RollingLog`) proyecta el contorno del cilindro.
+- **De pie** —las plantas—: la elipse de los personajes, en la base del dibujo, que no gira.
+
+La sombra **no es hija del objeto**: en uGUI un hijo se pinta encima del gráfico de su padre. Vive
+en una capa `Sombras`, hermana anterior de los objetos, y por eso queda debajo de todo lo que está
+de pie en el suelo. Si el objeto se levanta, la sombra se queda en el suelo y se encoge. No llevan
+sombra las siluetas del ensamblaje, la balsa hundida (trae el agua pintada) ni el fuego y lo que
+arde.
+
 ### 5.4 Iluminación ambiental por nivel
 
 Cada nivel tiene un color de luz ambiente que se aplica **solo al decorado**, nunca a

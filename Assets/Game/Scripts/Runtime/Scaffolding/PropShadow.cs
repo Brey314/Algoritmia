@@ -4,59 +4,96 @@ using UnityEngine.UI;
 
 namespace Game.Scaffolding
 {
+    /// <summary>Cómo cae la sombra de un objeto, según cómo lo dibuja su ilustración.</summary>
+    public enum PropShadowKind
+    {
+        /// <summary>
+        /// Vista en picado —troncos, tablas, cajas, la carretilla, la balsa—: el objeto está tendido
+        /// en el suelo y su sombra es su propia silueta, corrida hacia abajo y a la derecha porque la
+        /// luz llega de arriba a la izquierda (Dirección de Arte §5.2).
+        /// </summary>
+        Silhouette,
+
+        /// <summary>De pie —las plantas—: la elipse plana en la base del §5.3.</summary>
+        Contact,
+    }
+
     /// <summary>
-    /// Sombra de gota (drop shadow / contact shadow) para los props de la escena.
-    /// Crea una elipse plana semitransparente (#000000 al 25 %) en el suelo debajo del objeto
-    /// (Dirección de Arte §5.3).
+    /// Sombra de gota de los objetos de la escena: color plano <c>#000000</c> al 25 %
+    /// (Dirección de Arte §5.3), sin pintar en el sprite.
     /// </summary>
     /// <remarks>
-    /// Se excluyen explícitamente:
-    /// - Sprites de silueta (*silueta*).
-    /// - La balsa (*balsa*), tanto al navegar como durante el armado en el Nivel 3.
-    /// - Elementos de la fogata (*fogata*, *fuego*, *humo*, *monton_hojas*, *hoguera*), ya que el fuego emite luz y no proyecta sombra en el suelo.
-    /// - Personajes (ya poseen su sombra integrada en sus prefabs).
+    /// **La sombra no es hija del objeto.** En uGUI un hijo se dibuja siempre después —encima— del
+    /// gráfico de su padre, así que una sombra hija tapa el dibujo por mucho que sea el primer
+    /// hijo. Las sombras viven en una capa propia (<see cref="LayerName"/>), hermana de los objetos
+    /// y anterior a ellos: se pintan sobre el suelo y debajo de todo lo que está de pie en él. Este
+    /// componente, que sí va en el objeto, copia cada cuadro su posición, giro y escala en la
+    /// sombra, y la apaga o la destruye con él.
     ///
-    /// Comportamiento dinámico:
-    /// - Si el objeto se desplaza o escala por el suelo, la sombra acompaña posición y escala.
-    /// - Si el objeto rueda/gira, la sombra no gira (se mantiene horizontal respecto al plano del suelo).
-    /// - Si el objeto se levanta del suelo (como en el Nivel 2 al alzar troncos o piedras), la sombra
-    ///   permanece en el suelo en la posición inicial y su tamaño y opacidad se reducen conforme
-    ///   el objeto gana altura.
+    /// **La forma depende de la vista** (<see cref="PropShadowKind"/>): lo que se ve en picado
+    /// proyecta su silueta —la misma imagen en negro—, que es la única forma que concuerda con un
+    /// tronco en diagonal o con una tabla; una elipse solo le sirve a lo que está de pie. El tronco
+    /// que rueda (<see cref="RollingLog"/>) no tiene sprite que copiar: su sombra es la silueta del
+    /// cilindro, que gira y se refleja con él.
+    ///
+    /// Se excluyen:
+    /// - Las siluetas del ensamblaje (*silueta*): son el hueco donde va la pieza, no un objeto.
+    /// - La balsa hundida (*balsa_hundida*): trae el agua pintada y su silueta sombrearía el río.
+    /// - El fuego y lo que arde (*fogata*, *fuego*, *humo*, *monton_hojas*, *hoguera*): el fuego
+    ///   emite luz y no proyecta sombra en el suelo.
+    /// - Los personajes, que traen su sombra en el prefab.
+    ///
+    /// Si el objeto se levanta del suelo (<see cref="UpdateMotion"/>), la sombra se queda donde
+    /// estaba en el suelo y se encoge y aclara conforme gana altura.
     /// </remarks>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(RectTransform))]
     public class PropShadow : MonoBehaviour
     {
+        /// <summary>Nombre de la capa de sombras dentro del padre de los objetos.</summary>
+        public const string LayerName = "Sombras";
+
         private const float DefaultAlpha = 0.25f;
         private const float MinLiftAlpha = 0.08f;
         private const float MinLiftScale = 0.35f;
 
+        /// <summary>
+        /// Cuánto se corre la silueta, en fracción del lado menor del dibujo: hacia la derecha y
+        /// hacia abajo, opuesta a la luz de arriba a la izquierda (DA §5.2).
+        /// </summary>
+        internal static readonly Vector2 SilhouetteOffset = new Vector2(0.035f, -0.05f);
+
         private static Sprite s_circleSprite;
 
         [SerializeField] private RectTransform shadowRect;
-        [SerializeField] private Image shadowImage;
-        [SerializeField] private float baseLocalX;
-        [SerializeField] private float baseLocalY;
-        [SerializeField] private Vector2 baseSize;
-        [SerializeField] private float baseRotationDegrees;
-        [SerializeField] private float baseShadowAngle;
+        [SerializeField] private Graphic shadowGraphic;
+        [SerializeField] private PropShadowKind kind;
+        [SerializeField] private Vector2 contactCenter;
+        [SerializeField] private float contactWidth;
         [SerializeField] private float currentHeight;
-        [SerializeField] private float currentMaxLift = 100f;
+        [SerializeField] private float liftRatio;
 
-        private Canvas cachedCanvas;
+        private Image _art;
+        private Graphic _source;
+        private Canvas _canvas;
 
+        /// <summary>La sombra: vive en la capa <see cref="LayerName"/>, no bajo el objeto.</summary>
         public RectTransform ShadowRect => shadowRect;
-        public Image ShadowImage => shadowImage;
-        public float BaseLocalX => baseLocalX;
-        public float BaseLocalY => baseLocalY;
-        public Vector2 BaseSize => baseSize;
-        public float BaseShadowAngle => baseShadowAngle;
+
+        /// <summary>Lo que pinta la sombra: una <see cref="Image"/> o, en el tronco que rueda, un <see cref="RollingLog"/>.</summary>
+        public Graphic ShadowGraphic => shadowGraphic;
+
+        /// <summary>La capa de sombras en la que vive la de este objeto.</summary>
+        public RectTransform Layer => shadowRect != null ? shadowRect.parent as RectTransform : null;
+
+        public PropShadowKind Kind => kind;
+
+        /// <summary>Altura a la que está levantado el objeto, en unidades de su padre.</summary>
         public float CurrentHeight => currentHeight;
-        public float CurrentMaxLift => currentMaxLift;
 
         /// <summary>
         /// Comprueba si un sprite está excluido de proyectar sombra de gota
-        /// (siluetas, piezas de la balsa y elementos de la fogata/fuego).
+        /// (siluetas, balsa hundida y elementos de la fogata o del fuego).
         /// </summary>
         public static bool IsExcluded(Sprite sprite)
         {
@@ -66,50 +103,32 @@ namespace Game.Scaffolding
             }
 
             var name = sprite.name;
-            if (name.IndexOf("silueta", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return true;
-            }
-
-            if (name.IndexOf("balsa", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return true;
-            }
-
-            if (name.IndexOf("fogata", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return true;
-            }
-
-            if (name.IndexOf("fuego", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return true;
-            }
-
-            if (name.IndexOf("humo", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return true;
-            }
-
-            if (name.IndexOf("monton_hojas", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return true;
-            }
-
-            if (name.IndexOf("hoguera", StringComparison.OrdinalIgnoreCase) >= 0)
-            {
-                return true;
-            }
-
-            return false;
+            return Contains(name, "silueta")
+                   || Contains(name, "balsa_hundida")
+                   || Contains(name, "fogata")
+                   || Contains(name, "fuego")
+                   || Contains(name, "humo")
+                   || Contains(name, "monton_hojas")
+                   || Contains(name, "hoguera");
         }
 
         /// <summary>
-        /// Adjunta y configura la sombra de gota a un GameObject de prop si no está excluido.
+        /// Qué sombra le toca a un sprite: elipse a lo que está de pie, silueta a lo que se ve en
+        /// picado. Hoy de pie solo están las plantas; todo lo demás está tendido en el suelo.
         /// </summary>
-        public static PropShadow Attach(GameObject target, Sprite art, Vector2 sizeDelta)
+        public static PropShadowKind KindFor(Sprite sprite) =>
+            sprite != null && Contains(sprite.name, "planta") ? PropShadowKind.Contact : PropShadowKind.Silhouette;
+
+        /// <summary>¿Es <paramref name="candidate"/> una capa de sombras? Para quien recorre los hijos de un contenedor.</summary>
+        public static bool IsLayer(Transform candidate) => candidate != null && candidate.name == LayerName;
+
+        /// <summary>
+        /// Adjunta y configura la sombra de gota a un objeto si no está excluido. El objeto tiene
+        /// que tener padre: la sombra vive en una capa hermana suya.
+        /// </summary>
+        public static PropShadow Attach(GameObject target, Sprite art)
         {
-            if (target == null || IsExcluded(art))
+            if (target == null || IsExcluded(art) || !(target.transform.parent is RectTransform))
             {
                 return null;
             }
@@ -120,154 +139,94 @@ namespace Game.Scaffolding
                 shadow = target.AddComponent<PropShadow>();
             }
 
-            shadow.Initialize(art, sizeDelta);
+            shadow.Initialize(art);
             return shadow;
         }
 
-        public void Initialize(Sprite art, Vector2 sizeDelta)
+        /// <summary>
+        /// La capa de sombras de <paramref name="parent"/>; si no tiene, la crea en
+        /// <paramref name="index"/>, delante del primer objeto que la necesita. La rejilla de la
+        /// fila de troncos no la cuenta (<see cref="LayoutElement.ignoreLayout"/>).
+        /// </summary>
+        public static RectTransform LayerFor(RectTransform parent, int index)
         {
-            var targetRect = (RectTransform)transform;
-            if (shadowRect == null)
+            for (var i = 0; i < parent.childCount; i++)
             {
-                var existing = transform.Find("Sombra");
-                GameObject shadowGo;
-                if (existing != null)
+                var child = parent.GetChild(i);
+                if (IsLayer(child))
                 {
-                    shadowGo = existing.gameObject;
+                    return (RectTransform)child;
+                }
+            }
+
+            var go = new GameObject(LayerName, typeof(RectTransform), typeof(LayoutElement));
+            go.layer = parent.gameObject.layer;
+            go.GetComponent<LayoutElement>().ignoreLayout = true;
+            var layer = (RectTransform)go.transform;
+            layer.SetParent(parent, false);
+            layer.anchorMin = Vector2.zero;
+            layer.anchorMax = Vector2.one;
+            layer.pivot = new Vector2(0.5f, 0.5f);
+            layer.offsetMin = layer.offsetMax = Vector2.zero;
+            layer.SetSiblingIndex(Mathf.Clamp(index, 0, parent.childCount - 1));
+            return layer;
+        }
+
+        private void Initialize(Sprite art)
+        {
+            var target = (RectTransform)transform;
+            _art = GetComponent<Image>();
+            kind = KindFor(art);
+
+            if (shadowRect != null)
+            {
+                DestroyObject(shadowRect.gameObject);
+            }
+
+            var layer = LayerFor((RectTransform)target.parent, target.GetSiblingIndex());
+            var go = new GameObject($"Sombra_{name}", typeof(RectTransform));
+            go.layer = gameObject.layer;
+            shadowRect = (RectTransform)go.transform;
+            shadowRect.SetParent(layer, false);
+            shadowRect.anchorMin = shadowRect.anchorMax = new Vector2(0.5f, 0.5f);
+
+            var log = GetComponentInChildren<RollingLog>(true);
+            if (kind == PropShadowKind.Silhouette && log != null && log.Look != null && log.Face != null)
+            {
+                // El tronco que rueda se dibuja en el motor: su sombra es el contorno del cilindro.
+                shadowGraphic = RollingLog.AttachSilhouette(shadowRect, log.Face, log.Look, ShadowColor(DefaultAlpha));
+                _source = log;
+            }
+            else
+            {
+                go.AddComponent<CanvasRenderer>();
+                var image = go.AddComponent<Image>();
+                image.raycastTarget = false;
+                if (kind == PropShadowKind.Silhouette)
+                {
+                    image.sprite = art;
+                    image.preserveAspect = _art == null || _art.preserveAspect;
+                    image.useSpriteMesh = _art != null && _art.useSpriteMesh;
                 }
                 else
                 {
-                    shadowGo = new GameObject("Sombra", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-                    shadowGo.transform.SetParent(transform, false);
+                    image.sprite = GetOrCreateCircleSprite();
+                    image.preserveAspect = false;
+                    MeasureContact(art);
                 }
 
-                shadowGo.transform.SetAsFirstSibling(); // Se dibuja detrás del sprite del prop
-                shadowRect = (RectTransform)shadowGo.transform;
-                shadowImage = shadowGo.GetComponent<Image>();
+                image.color = ShadowColor(DefaultAlpha);
+                shadowGraphic = image;
+                _source = log != null ? log : _art;
             }
-
-            shadowImage.sprite = GetOrCreateCircleSprite();
-            shadowImage.color = new Color(0f, 0f, 0f, DefaultAlpha);
-            shadowImage.raycastTarget = false;
-            shadowImage.preserveAspect = false;
-
-            // Dimensiones proporcionales a la ilustración real dentro del rect (preserveAspect)
-            var artW = (art != null && art.rect.width > 0f) ? art.rect.width : sizeDelta.x;
-            var artH = (art != null && art.rect.height > 0f) ? art.rect.height : sizeDelta.y;
-            var spriteAspect = (artH > 0f) ? artW / artH : 1f;
-            var rectAspect = (sizeDelta.y > 0f) ? sizeDelta.x / sizeDelta.y : 1f;
-
-            float renderedWidth, renderedHeight;
-            if (rectAspect > spriteAspect)
-            {
-                renderedHeight = sizeDelta.y;
-                renderedWidth = sizeDelta.y * spriteAspect;
-            }
-            else
-            {
-                renderedWidth = sizeDelta.x;
-                renderedHeight = spriteAspect > 0f ? sizeDelta.x / spriteAspect : sizeDelta.y;
-            }
-
-            // Calculamos el contorno opaco real del objeto a partir de la malla de vértices del sprite
-            // (Unity genera la malla ajustada al contorno opaco con spriteMeshType: Tight).
-            // Esto evita que la sombra se dibuje muy abajo cuando el PNG tiene márgenes transparentes.
-            var verts = art != null ? art.vertices : null;
-            var ppu = (art != null && art.pixelsPerUnit > 0f) ? art.pixelsPerUnit : 100f;
-            var halfW = artW * 0.5f;
-            var halfH = artH * 0.5f;
-
-            float fracMinY = -0.84f;
-            float fracMinX = -0.85f;
-            float fracMaxX = 0.85f;
-
-            if (verts != null && verts.Length > 0)
-            {
-                var minY = float.MaxValue;
-                var minX = float.MaxValue;
-                var maxX = float.MinValue;
-
-                for (var i = 0; i < verts.Length; i++)
-                {
-                    var v = verts[i];
-                    if (v.y < minY) minY = v.y;
-                    if (v.x < minX) minX = v.x;
-                    if (v.x > maxX) maxX = v.x;
-                }
-
-                if (halfH > 0.001f)
-                {
-                    fracMinY = Mathf.Clamp(minY * ppu / halfH, -1f, 1f);
-                }
-
-                if (halfW > 0.001f)
-                {
-                    fracMinX = Mathf.Clamp(minX * ppu / halfW, -1f, 1f);
-                    fracMaxX = Mathf.Clamp(maxX * ppu / halfW, -1f, 1f);
-                }
-            }
-
-            var spriteName = art != null ? art.name : string.Empty;
-            var isRollingLog = (transform.GetComponentInChildren<RollingLog>() != null) ||
-                               spriteName.IndexOf("tronco_a", StringComparison.OrdinalIgnoreCase) >= 0;
-            var isRiverLog = spriteName.IndexOf("prop_n3_tronco", StringComparison.OrdinalIgnoreCase) >= 0 ||
-                             (spriteName.IndexOf("tronco", StringComparison.OrdinalIgnoreCase) >= 0 && !isRollingLog);
-            var isTela = spriteName.IndexOf("tela", StringComparison.OrdinalIgnoreCase) >= 0;
-
-            if (isRollingLog)
-            {
-                // Tronco cilíndrico en perspectiva (Nivel 2): eje a 35° extendiéndose hacia el fondo
-                baseShadowAngle = 35f;
-                baseLocalX = 0.49f * renderedWidth;
-                baseLocalY = -0.22f * renderedHeight;
-                var shadowWidth = Mathf.Max(renderedWidth * 1.15f, 10f);
-                var shadowHeight = Mathf.Max(shadowWidth * 0.38f, 6f);
-                baseSize = new Vector2(shadowWidth, shadowHeight);
-            }
-            else if (isRiverLog)
-            {
-                // Tronco alargado diagonal en perspectiva (Nivel 3): orientado a 35°
-                baseShadowAngle = 35f;
-                baseLocalX = 0f;
-                baseLocalY = -0.22f * renderedHeight;
-                var shadowWidth = Mathf.Max(renderedWidth * 1.15f, 10f);
-                var shadowHeight = Mathf.Max(shadowWidth * 0.38f, 6f);
-                baseSize = new Vector2(shadowWidth, shadowHeight);
-            }
-            else if (isTela)
-            {
-                // Tela (Nivel 3): la base de los pliegues se sitúa más arriba que la punta inferior aislada
-                baseShadowAngle = 0f;
-                baseLocalX = 0f;
-                var shadowWidth = Mathf.Max(renderedWidth * 0.95f, 10f);
-                var shadowHeight = Mathf.Max(shadowWidth * 0.38f, 6f);
-                baseLocalY = -0.15f * renderedHeight;
-                baseSize = new Vector2(shadowWidth, shadowHeight);
-            }
-            else
-            {
-                baseShadowAngle = 0f;
-                var objectWidth = Mathf.Max((fracMaxX - fracMinX) * 0.5f * renderedWidth, 10f);
-                var shadowWidth = Mathf.Max(objectWidth * 0.95f, 10f);
-                var shadowHeight = Mathf.Max(shadowWidth * 0.38f, 6f);
-
-                baseLocalX = ((fracMinX + fracMaxX) * 0.5f) * (renderedWidth * 0.5f);
-                // Elevamos el centro de la sombra para que abrace la base del objeto y no quede desprendida
-                baseLocalY = fracMinY * (renderedHeight * 0.5f) + shadowHeight * 0.35f;
-                baseSize = new Vector2(shadowWidth, shadowHeight);
-            }
-
-            baseRotationDegrees = targetRect.localEulerAngles.z;
 
             currentHeight = 0f;
-            currentMaxLift = 100f;
+            liftRatio = 0f;
+            ApplyTransform();
+        }
 
-            shadowRect.anchorMin = new Vector2(0.5f, 0.5f);
-            shadowRect.anchorMax = new Vector2(0.5f, 0.5f);
-            shadowRect.pivot = new Vector2(0.5f, 0.5f);
-            shadowRect.sizeDelta = baseSize;
-            shadowRect.localScale = Vector3.one;
-
+        private void OnEnable()
+        {
             ApplyTransform();
         }
 
@@ -276,65 +235,231 @@ namespace Game.Scaffolding
             ApplyTransform();
         }
 
-        /// <summary>
-        /// Aplica la posición y orientación de la sombra de gota fija en el plano del suelo
-        /// respecto al Canvas o espacio mundial, evitando que gire u orbite si el prop rota o rueda.
-        /// </summary>
-        public void ApplyTransform()
+        private void OnDisable()
         {
-            if (shadowRect == null)
+            // Apagar el gráfico y no el objeto: activar o desactivar otro objeto mientras Unity
+            // recorre una jerarquía que se apaga es un error, y la capa suele apagarse a la vez.
+            if (shadowGraphic != null)
             {
-                return;
+                shadowGraphic.enabled = false;
             }
+        }
 
-            var canvas = cachedCanvas != null ? cachedCanvas : (cachedCanvas = GetComponentInParent<Canvas>());
-            var canvasUp = canvas != null ? canvas.transform.up : Vector3.up;
-            var canvasRight = canvas != null ? canvas.transform.right : Vector3.right;
-            var canvasRot = canvas != null ? canvas.transform.rotation : Quaternion.identity;
-
-            var targetRect = (RectTransform)transform;
-            var scaleX = targetRect.lossyScale.x;
-            var scaleY = Mathf.Abs(targetRect.lossyScale.y);
-
-            // 1. Orientación de la sombra: los troncos siempre apuntan a 35° hacia el fondo (RollingLog
-            // cancela la inversión de espejo del padre, así que la perspectiva cilíndrica siempre va hacia la derecha)
-            var isLog = baseShadowAngle > 0.001f;
-            var shadowAngle = isLog ? baseShadowAngle : baseShadowAngle * Mathf.Sign(scaleX);
-            shadowRect.rotation = canvasRot * Quaternion.Euler(0f, 0f, shadowAngle);
-
-            // 2. La sombra se fija al suelo directamente debajo del objeto (no orbita con el giro)
-            // Para los troncos, la posición X de contacto siempre es hacia el eje del cilindro (+X en espacio del objeto)
-            var effectiveLocalX = isLog ? baseLocalX * Mathf.Abs(scaleX) : baseLocalX * scaleX;
-            shadowRect.position = targetRect.position
-                + canvasRight * effectiveLocalX
-                + canvasUp * ((baseLocalY - currentHeight) * scaleY);
+        private void OnDestroy()
+        {
+            if (shadowRect != null)
+            {
+                DestroyObject(shadowRect.gameObject);
+            }
         }
 
         /// <summary>
-        /// Actualiza la sombra durante el movimiento o elevación del objeto.
+        /// Lleva la sombra a donde está el objeto: la silueta copia su giro, su espejo y su escala;
+        /// la elipse solo su sitio y su tamaño, porque está en el plano del suelo y no gira. Las dos
+        /// se quedan en el suelo si el objeto está levantado.
         /// </summary>
-        /// <param name="height">Altura actual del objeto levantado del suelo en píxeles.</param>
-        /// <param name="maxLift">Altura máxima de despegue alcanzable.</param>
-        /// <param name="currentPropRotation">Rotación Z actual del objeto en grados (conservado por compatibilidad).</param>
-        public void UpdateMotion(float height, float maxLift, float currentPropRotation = 0f)
+        public void ApplyTransform()
         {
-            if (shadowRect == null || shadowImage == null)
+            if (shadowRect == null || shadowGraphic == null || !(transform.parent is RectTransform parent))
             {
                 return;
             }
 
+            var target = (RectTransform)transform;
+            KeepBehind(target, parent);
+
+            var source = _source != null ? _source : _art;
+            var visible = enabled && gameObject.activeInHierarchy &&
+                          (source == null || (source.enabled && source.gameObject.activeInHierarchy));
+            shadowGraphic.enabled = visible;
+            if (!visible)
+            {
+                return;
+            }
+
+            var sourceAlpha = source != null ? source.color.a : 1f;
+            shadowGraphic.color = ShadowColor(Mathf.Lerp(DefaultAlpha, MinLiftAlpha, liftRatio) * sourceAlpha);
+            if (kind == PropShadowKind.Silhouette && shadowGraphic is Image copy && _art != null && _art.sprite != null &&
+                copy.sprite != _art.sprite)
+            {
+                copy.sprite = _art.sprite; // el objeto cambió de dibujo: la silueta también
+            }
+
+            var canvas = _canvas != null ? _canvas : (_canvas = GetComponentInParent<Canvas>());
+            var screen = canvas != null ? canvas.rootCanvas.transform : null;
+            var right = screen != null ? screen.right : Vector3.right;
+            var up = screen != null ? screen.up : Vector3.up;
+
+            // Levantado, el objeto sube y su sombra no: se baja lo que subió, en unidades del padre.
+            var groundDrop = currentHeight * Mathf.Abs(parent.lossyScale.y);
+            var liftScale = Mathf.Lerp(1f, MinLiftScale, liftRatio);
+            var drawn = Drawn(target);
+            var lossy = target.lossyScale;
+
+            Vector2 pivot, size;
+            Quaternion rotation;
+            Vector3 scale, position;
+            if (kind == PropShadowKind.Silhouette)
+            {
+                // La capa está en el mismo padre que el objeto y sin transformación propia: el giro
+                // y la escala locales del objeto valen tal cual para su sombra.
+                pivot = target.pivot;
+                size = target.rect.size;
+                rotation = target.localRotation;
+                scale = target.localScale * liftScale;
+
+                var side = Mathf.Min(drawn.x, drawn.y) * Mathf.Abs(lossy.y);
+                position = target.position
+                           + right * (SilhouetteOffset.x * side)
+                           + up * (SilhouetteOffset.y * side - groundDrop);
+            }
+            else
+            {
+                var width = Mathf.Max(contactWidth * drawn.x, 10f);
+                var height = Mathf.Max(width * 0.38f, 6f);
+                pivot = new Vector2(0.5f, 0.5f);
+                size = new Vector2(width, height);
+                rotation = Quaternion.identity; // en el plano del suelo: no gira con la planta
+                scale = new Vector3(Mathf.Abs(target.localScale.x), Mathf.Abs(target.localScale.y), 1f) * liftScale;
+
+                // El centro de la elipse sube un poco sobre la base del dibujo para abrazarla y no
+                // quedar desprendida; se mide desde el centro de la casilla, no desde su pivote.
+                var local = new Vector2(contactCenter.x * drawn.x * 0.5f, contactCenter.y * drawn.y * 0.5f + height * 0.35f)
+                            + Vector2.Scale(new Vector2(0.5f, 0.5f) - target.pivot, target.rect.size);
+                position = target.position
+                           + right * (local.x * lossy.x)
+                           + up * (local.y * Mathf.Abs(lossy.y) - groundDrop);
+            }
+
+            // Solo lo que cambia: reasignar lo mismo cada cuadro haría rehacer el lienzo entero.
+            if (shadowRect.pivot != pivot)
+            {
+                shadowRect.pivot = pivot;
+            }
+
+            if (shadowRect.sizeDelta != size)
+            {
+                shadowRect.sizeDelta = size;
+            }
+
+            if (shadowRect.localRotation != rotation)
+            {
+                shadowRect.localRotation = rotation;
+            }
+
+            if (shadowRect.localScale != scale)
+            {
+                shadowRect.localScale = scale;
+            }
+
+            if (shadowRect.position != position)
+            {
+                shadowRect.position = position;
+            }
+        }
+
+        /// <summary>
+        /// Actualiza la sombra mientras el objeto se levanta del suelo.
+        /// </summary>
+        /// <param name="height">Altura del objeto sobre el suelo, en unidades de su padre.</param>
+        /// <param name="maxLift">Altura a la que la sombra llega a su tamaño y opacidad mínimos.</param>
+        public void UpdateMotion(float height, float maxLift)
+        {
             currentHeight = Mathf.Max(0f, height);
-            currentMaxLift = maxLift;
-
-            // El tamaño de la sombra y su opacidad disminuyen conforme el objeto se levanta
-            var liftRatio = (maxLift > 0.001f && currentHeight > 0f) ? Mathf.Clamp01(currentHeight / maxLift) : 0f;
-            var scale = Mathf.Lerp(1.0f, MinLiftScale, liftRatio);
-            shadowRect.localScale = new Vector3(scale, scale, 1f);
-
-            var alpha = Mathf.Lerp(DefaultAlpha, MinLiftAlpha, liftRatio);
-            shadowImage.color = new Color(0f, 0f, 0f, alpha);
-
+            liftRatio = maxLift > 0.001f ? Mathf.Clamp01(currentHeight / maxLift) : 0f;
             ApplyTransform();
+        }
+
+        /// <summary>
+        /// La capa va delante —antes— de todo objeto que sombrea. Quien reordena a los objetos
+        /// (el que se sostiene pasa al final, el Nivel 3 los ordena por profundidad) los deja
+        /// después de ella; si alguno queda antes, la capa se adelanta, nunca se atrasa.
+        /// </summary>
+        private void KeepBehind(RectTransform target, RectTransform parent)
+        {
+            var layer = shadowRect.parent as RectTransform;
+            if (layer == null || layer.parent != parent)
+            {
+                shadowRect.SetParent(LayerFor(parent, target.GetSiblingIndex()), false);
+                return;
+            }
+
+            var index = target.GetSiblingIndex();
+            if (index < layer.GetSiblingIndex())
+            {
+                layer.SetSiblingIndex(index);
+            }
+        }
+
+        /// <summary>El tamaño con que se dibuja la ilustración dentro de la casilla (con <c>preserveAspect</c>).</summary>
+        private Vector2 Drawn(RectTransform target)
+        {
+            var size = target.rect.size;
+            var sprite = _art != null ? _art.sprite : null;
+            if (sprite == null || _art == null || !_art.preserveAspect || sprite.rect.height <= 0f || size.y <= 0f)
+            {
+                return size;
+            }
+
+            var spriteAspect = sprite.rect.width / sprite.rect.height;
+            return size.x / size.y > spriteAspect
+                ? new Vector2(size.y * spriteAspect, size.y)
+                : new Vector2(size.x, size.x / spriteAspect);
+        }
+
+        /// <summary>
+        /// La base del dibujo, a partir de la malla del sprite (ajustada al contorno opaco): así la
+        /// elipse no cae en el margen transparente del PNG. En fracción de la media caja dibujada.
+        /// </summary>
+        private void MeasureContact(Sprite art)
+        {
+            var minX = -0.85f;
+            var maxX = 0.85f;
+            var minY = -0.84f;
+
+            var vertices = art != null ? art.vertices : null;
+            if (vertices != null && vertices.Length > 0 && art.rect.width > 0f && art.rect.height > 0f)
+            {
+                var halfW = art.rect.width * 0.5f;
+                var halfH = art.rect.height * 0.5f;
+                var ppu = art.pixelsPerUnit > 0f ? art.pixelsPerUnit : 100f;
+                minX = float.MaxValue;
+                maxX = float.MinValue;
+                minY = float.MaxValue;
+                foreach (var vertex in vertices)
+                {
+                    // Los vértices van en unidades desde el pivote del sprite; se pasan al centro.
+                    var x = (vertex.x * ppu + art.pivot.x - halfW) / halfW;
+                    var y = (vertex.y * ppu + art.pivot.y - halfH) / halfH;
+                    minX = Mathf.Min(minX, x);
+                    maxX = Mathf.Max(maxX, x);
+                    minY = Mathf.Min(minY, y);
+                }
+
+                minX = Mathf.Clamp(minX, -1f, 1f);
+                maxX = Mathf.Clamp(maxX, -1f, 1f);
+                minY = Mathf.Clamp(minY, -1f, 1f);
+            }
+
+            contactCenter = new Vector2((minX + maxX) * 0.5f, minY);
+            contactWidth = (maxX - minX) * 0.5f * 0.95f;
+        }
+
+        private static Color ShadowColor(float alpha) => new Color(0f, 0f, 0f, alpha);
+
+        private static bool Contains(string name, string part) =>
+            name.IndexOf(part, StringComparison.OrdinalIgnoreCase) >= 0;
+
+        private static void DestroyObject(UnityEngine.Object target)
+        {
+            if (Application.isPlaying)
+            {
+                Destroy(target);
+            }
+            else
+            {
+                DestroyImmediate(target);
+            }
         }
 
         /// <summary>
@@ -382,4 +507,3 @@ namespace Game.Scaffolding
         }
     }
 }
-

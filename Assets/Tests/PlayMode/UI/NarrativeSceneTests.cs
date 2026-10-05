@@ -497,8 +497,11 @@ namespace Game.UI.Tests
             Assert.That(secuencia.Props.Length, Is.GreaterThanOrEqualTo(15),
                 "la escena declara los catorce objetos del bosque y la caja");
 
+            // La capa de sombras de gota también cuelga de la ilustración, pero no es un objeto.
             var pintados = Enumerable.Range(0, controller.IllustrationRect.childCount)
-                .Select(i => controller.IllustrationRect.GetChild(i).GetComponent<Image>())
+                .Select(i => controller.IllustrationRect.GetChild(i))
+                .Where(hijo => !PropShadow.IsLayer(hijo))
+                .Select(hijo => hijo.GetComponent<Image>())
                 .ToArray();
             Assert.That(pintados.Select(p => p.sprite), Is.EqualTo(secuencia.Props.Select(p => p.Art)),
                 "cada objeto declarado se pinta con su ilustración, en orden");

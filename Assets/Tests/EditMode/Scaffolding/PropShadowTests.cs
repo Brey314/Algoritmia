@@ -1,339 +1,272 @@
-using System;
-using System.Linq;
-using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace Game.Scaffolding.Tests
 {
+    /// <summary>La sombra de gota de los objetos (Dirección de Arte §5.3).</summary>
     [TestFixture]
     public class PropShadowTests
     {
-        private GameObject _holder;
+        private GameObject _suelo;
         private RectTransform _rect;
-        private Sprite _regularSprite;
-        private Sprite _siluetaSprite;
-        private Sprite _balsaSprite;
+        private Image _image;
 
         [SetUp]
         public void SetUp()
         {
-            _holder = new GameObject("TestProp", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-            _rect = (RectTransform)_holder.transform;
+            _suelo = new GameObject("Suelo", typeof(RectTransform));
+            var objeto = new GameObject("Objeto", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            _rect = (RectTransform)objeto.transform;
+            _rect.SetParent(_suelo.transform, false);
             _rect.sizeDelta = new Vector2(200f, 200f);
-
-            var tex = new Texture2D(32, 32);
-            _regularSprite = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f));
-            _regularSprite.name = "prop_n2_caja_suelo";
-
-            _siluetaSprite = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f));
-            _siluetaSprite.name = "prop_n3_tronco_silueta";
-
-            _balsaSprite = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f));
-            _balsaSprite.name = "prop_n3_balsa_cruzando";
+            _image = objeto.GetComponent<Image>();
+            _image.preserveAspect = true;
         }
 
         [TearDown]
         public void TearDown()
         {
-            if (_holder != null)
+            Object.DestroyImmediate(_suelo);
+        }
+
+        [Test]
+        public void PropShadow_RNF23_LaSombraSeDibujaDetrasDelObjetoYNoEncima()
+        {
+            var antes = new GameObject("Fondo", typeof(RectTransform));
+            antes.transform.SetParent(_suelo.transform, false);
+            antes.transform.SetAsFirstSibling();
+
+            var sombra = Adjuntar("prop_n2_caja_suelo");
+
+            Assert.That(sombra.ShadowRect.IsChildOf(_rect), Is.False,
+                "en uGUI un hijo se pinta encima del gráfico de su padre: la sombra no puede colgar del objeto");
+            Assert.That(sombra.Layer.name, Is.EqualTo(PropShadow.LayerName));
+            Assert.That(sombra.Layer.parent, Is.SameAs(_suelo.transform), "la capa es hermana del objeto");
+            Assert.That(sombra.Layer.GetSiblingIndex(), Is.EqualTo(_rect.GetSiblingIndex() - 1),
+                "y va justo antes que él: se pinta debajo del objeto y encima de lo que ya había");
+            Assert.That(sombra.ShadowGraphic.raycastTarget, Is.False, "la sombra no se lleva los clics");
+        }
+
+        [Test]
+        public void PropShadow_RNF23_SiElObjetoPasaDelanteDeLaCapaLaCapaSeAdelanta()
+        {
+            var sombra = Adjuntar("prop_n2_caja_suelo");
+
+            _rect.SetAsFirstSibling(); // como quien reordena los objetos por profundidad
+            sombra.ApplyTransform();
+
+            Assert.That(sombra.Layer.GetSiblingIndex(), Is.LessThan(_rect.GetSiblingIndex()),
+                "la sombra sigue debajo del objeto");
+        }
+
+        [Test]
+        public void PropShadow_RNF23_ElObjetoEnPicadoProyectaSuPropiaSiluetaCorridaHaciaAbajoYALaDerecha()
+        {
+            foreach (var nombre in new[] { "prop_n2_caja_suelo", "prop_n3_tronco", "prop_n2_pieza_4", "prop_n2_carretilla_e5", "prop_n3_balsa_cruzando" })
             {
-                UnityEngine.Object.DestroyImmediate(_holder);
+                var sombra = Adjuntar(nombre);
+
+                Assert.That(sombra.Kind, Is.EqualTo(PropShadowKind.Silhouette), $"{nombre} se ve en picado");
+                var copia = sombra.ShadowGraphic as Image;
+                Assert.That(copia, Is.Not.Null);
+                Assert.That(copia.sprite, Is.SameAs(_image.sprite), $"la sombra de {nombre} tiene la forma de su dibujo");
+                Assert.That(copia.preserveAspect, Is.EqualTo(_image.preserveAspect));
+                Assert.That(copia.color, Is.EqualTo(new Color(0f, 0f, 0f, 0.25f)), "negro al 25 % (DA §5.3)");
+                Assert.That(sombra.ShadowRect.rect.size, Is.EqualTo(_rect.rect.size));
+
+                var desplazamiento = sombra.ShadowRect.position - _rect.position;
+                Assert.That(desplazamiento.x, Is.GreaterThan(0f), "la luz llega de arriba a la izquierda: la sombra cae a la derecha");
+                Assert.That(desplazamiento.y, Is.LessThan(0f), "y hacia abajo");
+                Assert.That(desplazamiento.magnitude, Is.LessThan(_rect.rect.height * 0.1f), "pegada al objeto, no desprendida");
             }
         }
 
         [Test]
-        public void PropShadow_RNF23_CreaSombraDeGotaComoHijoConSpriteCirculoYOpacidad25PorCiento()
+        public void PropShadow_RNF23_LaSiluetaGiraYSeReflejaConElObjetoPeroLaLuzNoCambia()
         {
-            var shadow = PropShadow.Attach(_holder, _regularSprite, _rect.sizeDelta);
+            var sombra = Adjuntar("prop_n3_tronco");
+            var enReposo = sombra.ShadowRect.position - _rect.position;
 
-            Assert.That(shadow, Is.Not.Null, "debe adjuntar el componente PropShadow");
-            Assert.That(shadow.ShadowRect, Is.Not.Null, "debe crear el RectTransform de la sombra");
-            Assert.That(shadow.ShadowImage, Is.Not.Null, "debe crear la Image de la sombra");
-            Assert.That(shadow.ShadowRect.name, Is.EqualTo("Sombra"));
-            Assert.That(shadow.ShadowRect.parent, Is.SameAs(_rect), "la sombra es hija del prop");
-            Assert.That(shadow.ShadowImage.sprite, Is.Not.Null, "posee sprite circular");
-            Assert.That(shadow.ShadowImage.color.r, Is.EqualTo(0f));
-            Assert.That(shadow.ShadowImage.color.g, Is.EqualTo(0f));
-            Assert.That(shadow.ShadowImage.color.b, Is.EqualTo(0f));
-            Assert.That(shadow.ShadowImage.color.a, Is.EqualTo(0.25f).Within(0.01f), "opacidad del 25 % según DA §5.3");
-            Assert.That(shadow.ShadowRect.GetSiblingIndex(), Is.EqualTo(0), "se posiciona como primer hijo (detrás del sprite)");
-        }
-
-        [Test]
-        public void PropShadow_RNF23_ExcluyeSpritesDeSilueta()
-        {
-            var shadow = PropShadow.Attach(_holder, _siluetaSprite, _rect.sizeDelta);
-
-            Assert.That(shadow, Is.Null, "no debe crear sombra para sprites de silueta");
-            Assert.That(_holder.transform.Find("Sombra"), Is.Null, "no debe existir el hijo Sombra");
-            Assert.That(PropShadow.IsExcluded(_siluetaSprite), Is.True);
-        }
-
-        [Test]
-        public void PropShadow_RNF23_ExcluyeSpritesDeLaBalsa()
-        {
-            var shadow = PropShadow.Attach(_holder, _balsaSprite, _rect.sizeDelta);
-
-            Assert.That(shadow, Is.Null, "no debe crear sombra para la balsa");
-            Assert.That(_holder.transform.Find("Sombra"), Is.Null, "no debe existir el hijo Sombra");
-            Assert.That(PropShadow.IsExcluded(_balsaSprite), Is.True);
-        }
-
-        [Test]
-        public void PropShadow_RNF23_ExcluyeSpritesDeFogataYFuego()
-        {
-            var tex = new Texture2D(32, 32);
-            var fuegoNormal = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f));
-            fuegoNormal.name = "fuego_normal_nivel_1_0000";
-
-            var fuegoCenital = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f));
-            fuegoCenital.name = "prop_n1_fuego_cenital";
-
-            var humo = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f));
-            humo.name = "humo_nivel_1_0009";
-
-            var montonHojas = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f));
-            montonHojas.name = "prop_n1_monton_hojas";
-
-            var fogata = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f));
-            fogata.name = "env_final_fogatas";
-
-            var hoguera = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f));
-            hoguera.name = "hoguera_central";
-
-            var spritesFogata = new[] { fuegoNormal, fuegoCenital, humo, montonHojas, fogata, hoguera };
-
-            foreach (var sprite in spritesFogata)
+            foreach (var espejo in new[] { false, true })
             {
-                Assert.That(PropShadow.IsExcluded(sprite), Is.True, $"sprite {sprite.name} debe estar excluido");
+                foreach (var giro in new[] { 0f, 30f, 90f, 215f })
+                {
+                    _rect.localScale = new Vector3(espejo ? -1f : 1f, 1f, 1f);
+                    _rect.localRotation = Quaternion.Euler(0f, 0f, giro);
+                    sombra.ApplyTransform();
 
-                var shadow = PropShadow.Attach(_holder, sprite, _rect.sizeDelta);
-                Assert.That(shadow, Is.Null, $"no debe crear sombra de gota para {sprite.name}");
-                Assert.That(_holder.transform.Find("Sombra"), Is.Null, $"no debe existir el hijo Sombra para {sprite.name}");
+                    Assert.That(Quaternion.Angle(sombra.ShadowRect.rotation, _rect.rotation), Is.LessThan(0.1f),
+                        $"espejo={espejo}, giro={giro}°: la silueta gira con el tronco");
+                    Assert.That(Vector3.Distance(sombra.ShadowRect.lossyScale, _rect.lossyScale), Is.LessThan(1e-4f), "y se refleja con él");
+                    Assert.That(Vector3.Distance(sombra.ShadowRect.position - _rect.position, enReposo), Is.LessThan(0.01f),
+                        "pero cae siempre hacia el mismo lado: la luz no gira con el objeto");
+                }
             }
         }
 
         [Test]
-        public void PropShadow_RNF23_SombraSeMantieneEnElSueloCuandoElObjetoSeLevanta()
+        public void PropShadow_RNF23_ElTroncoQueRuedaProyectaLaSiluetaDelCilindro()
         {
-            var shadow = PropShadow.Attach(_holder, _regularSprite, _rect.sizeDelta);
-            var baseLocalY = shadow.BaseLocalY;
+            var vista = ScriptableObject.CreateInstance<RollingLogLook>();
+            try
+            {
+                _image.sprite = Dibujo("prop_n2_tronco_a");
+                var tronco = RollingLog.Attach(_image, vista);
 
-            // Simula el objeto levantándose 60 píxeles del suelo
-            const float liftHeight = 60f;
-            const float maxLift = 120f;
-            _rect.anchoredPosition = new Vector2(100f, liftHeight);
+                var sombra = PropShadow.Attach(_rect.gameObject, _image.sprite);
 
-            shadow.UpdateMotion(liftHeight, maxLift, 0f);
-
-            // Al subir el padre +liftHeight, la sombra se desplaza localmente -liftHeight,
-            // de modo que su posición absoluta en Y respecto al suelo es:
-            // anchoredPosition.y del padre + anchoredPosition.y de la sombra = liftHeight + (baseLocalY - liftHeight) = baseLocalY
-            var yEnSuelo = _rect.anchoredPosition.y + shadow.ShadowRect.anchoredPosition.y;
-            Assert.That(yEnSuelo, Is.EqualTo(baseLocalY).Within(0.01f),
-                "la sombra se queda exactamente en el suelo en la posición que tenía antes de levantarse");
+                var cilindro = sombra.ShadowGraphic as RollingLog;
+                Assert.That(cilindro, Is.Not.Null, "el tronco que rueda no tiene sprite que copiar: su sombra es el cilindro");
+                Assert.That(cilindro, Is.Not.SameAs(tronco));
+                Assert.That(cilindro.SilhouetteOnly, Is.True, "solo el contorno");
+                Assert.That(cilindro.Face, Is.SameAs(_image), "que lee el giro del mismo objeto");
+                Assert.That(cilindro.color, Is.EqualTo(new Color(0f, 0f, 0f, 0.25f)));
+                Assert.That(cilindro.transform.IsChildOf(_rect), Is.False, "y que no cuelga del objeto");
+                Assert.That(tronco.SilhouetteOnly, Is.False, "el tronco se sigue dibujando entero");
+            }
+            finally
+            {
+                Object.DestroyImmediate(vista);
+            }
         }
 
         [Test]
-        public void PropShadow_RNF23_TamanoDeLaSombraDisminuyeConformeElObjetoSeLevanta()
+        public void PropShadow_RNF23_LasPlantasDePieProyectanUnaElipseQueNoGira()
         {
-            var shadow = PropShadow.Attach(_holder, _regularSprite, _rect.sizeDelta);
-            const float maxLift = 100f;
+            var sombra = Adjuntar("prop_n2_planta_a");
 
-            // En el suelo
-            shadow.UpdateMotion(0f, maxLift, 0f);
-            var escalaEnSuelo = shadow.ShadowRect.localScale.x;
-            Assert.That(escalaEnSuelo, Is.EqualTo(1.0f).Within(0.01f), "en el suelo escala es 1.0");
+            Assert.That(sombra.Kind, Is.EqualTo(PropShadowKind.Contact), "la planta está de pie: elipse en la base");
+            var elipse = (Image)sombra.ShadowGraphic;
+            Assert.That(elipse.sprite, Is.Not.SameAs(_image.sprite));
+            Assert.That(sombra.ShadowRect.rect.width, Is.GreaterThan(sombra.ShadowRect.rect.height), "plana sobre el suelo");
 
-            // A media altura
-            shadow.UpdateMotion(50f, maxLift, 0f);
-            var escalaMedio = shadow.ShadowRect.localScale.x;
-            Assert.That(escalaMedio, Is.LessThan(escalaEnSuelo), "a media altura la sombra se reduce");
-
-            // En la altura máxima
-            shadow.UpdateMotion(100f, maxLift, 0f);
-            var escalaCima = shadow.ShadowRect.localScale.x;
-            Assert.That(escalaCima, Is.LessThan(escalaMedio), "en la cima la sombra es mínima");
-            Assert.That(escalaCima, Is.EqualTo(0.35f).Within(0.05f), "llega al factor mínimo de escala");
-        }
-
-        [Test]
-        public void PropShadow_RNF23_LaSombraNoGiraCuandoElObjetoRueda()
-        {
-            var shadow = PropShadow.Attach(_holder, _regularSprite, _rect.sizeDelta);
-
-            // Simula el objeto rodando e inclinándose 45 grados
             _rect.localRotation = Quaternion.Euler(0f, 0f, 45f);
-            shadow.UpdateMotion(0f, 100f, 45f);
-
-            // La rotación combinada (padre * local) debe ser 0 grados (plano horizontal del suelo)
-            var rotacionMundialZ = _rect.localEulerAngles.z + shadow.ShadowRect.localEulerAngles.z;
-            Assert.That(Mathf.DeltaAngle(0f, rotacionMundialZ), Is.EqualTo(0f).Within(0.1f),
-                "la sombra proyectada se mantiene horizontal en el suelo sin girar con el objeto");
+            sombra.ApplyTransform();
+            Assert.That(Mathf.DeltaAngle(0f, sombra.ShadowRect.eulerAngles.z), Is.EqualTo(0f).Within(0.1f),
+                "la elipse está en el plano del suelo y no gira con la planta");
         }
 
         [Test]
-        public void PropShadow_RNF23_SombraAcompanaElDesplazamientoYLaEscalaDelObjeto()
+        public void PropShadow_RNF23_LaElipseSeApoyaEnLaBaseDelDibujoYNoEnElMargenDelPng()
         {
-            var shadow = PropShadow.Attach(_holder, _regularSprite, _rect.sizeDelta);
+            var entera = AlturaDeLaElipse(Dibujo("prop_n2_planta_a", desdeFila: 0));
+            var conMargen = AlturaDeLaElipse(Dibujo("prop_n2_planta_b", desdeFila: 32));
 
-            // Desplazamiento por el suelo
-            _rect.anchoredPosition = new Vector2(250f, 50f);
-            // Sombra es hija de _rect, por lo que su posición mundial acompaña al objeto automáticamente
-            Assert.That(shadow.ShadowRect.parent, Is.SameAs(_rect));
-
-            // Cambio de tamaño del objeto (escala)
-            _rect.localScale = new Vector3(1.5f, 1.5f, 1f);
-            // Al ser hija, su escala efectiva proyectada escala idénticamente en 1.5x
-            Assert.That(shadow.ShadowRect.lossyScale.x, Is.EqualTo(_rect.lossyScale.x).Within(0.01f),
-                "la sombra de gota escala proporcionalmente con el objeto al aumentar o disminuir su tamaño");
+            Assert.That(conMargen, Is.GreaterThan(entera + 50f),
+                "con la mitad inferior del PNG transparente la elipse sube hasta donde empieza el dibujo");
         }
 
         [Test]
-        public void PropShadow_RNF23_SombraSePosicionaEnLaBaseDelDibujoYNoEnElFondoDelCanvas()
+        public void PropShadow_RNF23_ExcluyeSiluetasBalsaHundidaYFuego()
         {
-#if UNITY_EDITOR
-            var herramientaSprite = UnityEditor.AssetDatabase
-                .LoadAllAssetsAtPath("Assets/Game/Art/Props/Wheel/prop_n2_herramienta_c.png")
-                .OfType<Sprite>()
-                .FirstOrDefault();
-
-            var cajaSprite = UnityEditor.AssetDatabase
-                .LoadAllAssetsAtPath("Assets/Game/Art/Props/Wheel/prop_n2_caja_suelo.png")
-                .OfType<Sprite>()
-                .FirstOrDefault();
-
-            if (herramientaSprite != null && cajaSprite != null)
+            foreach (var nombre in new[]
+                     {
+                         "prop_n3_tronco_silueta", "prop_n3_balsa_hundida", "fuego_normal_nivel_1_0000",
+                         "prop_n1_fuego_cenital", "humo_nivel_1_0009", "prop_n1_monton_hojas", "env_final_fogatas",
+                         "hoguera_central",
+                     })
             {
-                var shadowHerramienta = PropShadow.Attach(_holder, herramientaSprite, _rect.sizeDelta);
-                var baseYHerramienta = shadowHerramienta.BaseLocalY;
-
-                // Destruimos la sombra previa para probar con la caja
-                UnityEngine.Object.DestroyImmediate(shadowHerramienta);
-                UnityEngine.Object.DestroyImmediate(_holder.transform.Find("Sombra").gameObject);
-
-                var shadowCaja = PropShadow.Attach(_holder, cajaSprite, _rect.sizeDelta);
-                var baseYCaja = shadowCaja.BaseLocalY;
-
-                // La herramienta tiene ~40 % de margen transparente inferior en su PNG,
-                // mientras que la caja llega hasta abajo. La sombra de la herramienta debe colocarse
-                // considerablemente más arriba que la de la caja (en la base del dibujo y no en el fondo del PNG).
-                Assert.That(baseYHerramienta, Is.GreaterThan(baseYCaja + 30f),
-                    "la sombra de la herramienta con margen transparente inferior se sitúa en la base del objeto y no en el fondo del PNG");
-                Assert.That(baseYHerramienta, Is.GreaterThan(-40f),
-                    "la sombra de la herramienta no cae al fondo del canvas (-84 o -100 px), sino cerca de -23 px");
+                var sprite = Dibujo(nombre);
+                Assert.That(PropShadow.IsExcluded(sprite), Is.True, $"{nombre} no proyecta sombra");
+                Assert.That(PropShadow.Attach(_rect.gameObject, sprite), Is.Null);
+                Assert.That(_suelo.transform.Find(PropShadow.LayerName), Is.Null, "y no deja capa");
             }
-#endif
+
+            Assert.That(PropShadow.IsExcluded(Dibujo("prop_n3_balsa_cruzando")), Is.False,
+                "la balsa que cruza sí: está en picado sobre el agua");
         }
 
         [Test]
-        public void PropShadow_RNF23_LaSombraPermaneceHorizontalYEnElSueloCuandoElTroncoRuedaCompleto()
+        public void PropShadow_RNF23_AlLevantarseElObjetoLaSombraSeQuedaEnElSueloYSeEncoge()
         {
-            var shadow = PropShadow.Attach(_holder, _regularSprite, _rect.sizeDelta);
-            var baseLocalY = shadow.BaseLocalY;
-            var angles = new[] { 0f, 30f, 45f, 90f, 180f, 270f, 360f };
+            const float alto = 120f;
+            var sombra = Adjuntar("prop_n2_caja_suelo");
+            var enSuelo = sombra.ShadowRect.position;
 
-            // 1. Tronco sin espejo (escala 1.0)
+            _rect.anchoredPosition += new Vector2(0f, alto / 2f);
+            sombra.UpdateMotion(alto / 2f, alto);
+
+            Assert.That(Vector3.Distance(sombra.ShadowRect.position, enSuelo), Is.LessThan(0.01f),
+                "el objeto sube y su sombra se queda donde estaba");
+            Assert.That(sombra.ShadowRect.localScale.x, Is.LessThan(1f), "más pequeña");
+            Assert.That(sombra.ShadowGraphic.color.a, Is.LessThan(0.25f), "y más clara");
+
+            _rect.anchoredPosition += new Vector2(0f, alto / 2f);
+            sombra.UpdateMotion(alto, alto);
+            Assert.That(sombra.ShadowRect.localScale.x, Is.EqualTo(0.35f).Within(0.01f), "en lo más alto, la mínima");
+
+            _rect.anchoredPosition -= new Vector2(0f, alto);
+            sombra.UpdateMotion(0f, alto);
+            Assert.That(Vector3.Distance(sombra.ShadowRect.position, enSuelo), Is.LessThan(0.01f));
+            Assert.That(sombra.ShadowRect.localScale.x, Is.EqualTo(1f).Within(0.001f), "de vuelta al suelo, entera");
+            Assert.That(sombra.ShadowGraphic.color.a, Is.EqualTo(0.25f).Within(0.001f));
+        }
+
+        [Test]
+        public void PropShadow_RNF23_LaSombraSeApagaConElObjeto()
+        {
+            var sombra = Adjuntar("prop_n2_caja_suelo");
+
+            _rect.gameObject.SetActive(false);
+            sombra.ApplyTransform();
+            Assert.That(sombra.ShadowGraphic.enabled, Is.False, "el objeto recogido no deja su sombra en el suelo");
+
+            _rect.gameObject.SetActive(true);
+            sombra.ApplyTransform();
+            Assert.That(sombra.ShadowGraphic.enabled, Is.True);
+        }
+
+        private PropShadow Adjuntar(string nombre)
+        {
+            var anterior = _rect.GetComponent<PropShadow>();
+            if (anterior != null)
+            {
+                Object.DestroyImmediate(anterior.ShadowRect.gameObject);
+                Object.DestroyImmediate(anterior);
+            }
+
             _rect.localScale = Vector3.one;
-            foreach (var angle in angles)
-            {
-                _rect.localRotation = Quaternion.Euler(0f, 0f, angle);
-                shadow.UpdateMotion(0f, 80f, angle);
-
-                var rotZ = Mathf.DeltaAngle(0f, shadow.ShadowRect.eulerAngles.z);
-                Assert.That(rotZ, Is.EqualTo(0f).Within(0.1f),
-                    $"la sombra debe permanecer horizontal (0°) con giro {angle}°");
-
-                Assert.That(shadow.ShadowRect.position.x, Is.EqualTo(_rect.position.x).Within(0.1f),
-                    $"la sombra no debe orbitar horizontalmente con giro {angle}°");
-
-                Assert.That(shadow.ShadowRect.position.y, Is.EqualTo(_rect.position.y + baseLocalY).Within(0.1f),
-                    $"la sombra debe permanecer en el suelo debajo del objeto con giro {angle}°");
-            }
-
-            // 2. Tronco con espejo (escala negativa en X, como en el Nivel 2)
-            _rect.localScale = new Vector3(-1.5f, 1.5f, 1f);
-            foreach (var angle in angles)
-            {
-                _rect.localRotation = Quaternion.Euler(0f, 0f, angle);
-                shadow.UpdateMotion(0f, 80f, angle);
-
-                var rotZ = Mathf.DeltaAngle(0f, shadow.ShadowRect.eulerAngles.z);
-                Assert.That(rotZ, Is.EqualTo(0f).Within(0.1f),
-                    $"la sombra debe permanecer horizontal (0°) con espejo y giro {angle}°");
-
-                Assert.That(shadow.ShadowRect.position.x, Is.EqualTo(_rect.position.x).Within(0.1f),
-                    $"la sombra no debe orbitar horizontalmente con espejo y giro {angle}°");
-
-                Assert.That(shadow.ShadowRect.position.y, Is.EqualTo(_rect.position.y + baseLocalY * 1.5f).Within(0.1f),
-                    $"la sombra debe permanecer en el suelo debajo del objeto con espejo y giro {angle}°");
-            }
+            _rect.localRotation = Quaternion.identity;
+            _image.sprite = Dibujo(nombre);
+            return PropShadow.Attach(_rect.gameObject, _image.sprite);
         }
 
-        [Test]
-        public void PropShadow_RNF23_SombraDeTroncoAlargadaYConMismoAnguloAlRodar()
+        /// <summary>La altura del centro de la elipse respecto al centro del objeto.</summary>
+        private float AlturaDeLaElipse(Sprite sprite)
         {
-            var tex = new Texture2D(32, 32);
-            var troncoSprite = Sprite.Create(tex, new Rect(0, 0, 32, 32), new Vector2(0.5f, 0.5f));
-            troncoSprite.name = "prop_n3_tronco";
-
-            var shadow = PropShadow.Attach(_holder, troncoSprite, _rect.sizeDelta);
-            var baseLocalY = shadow.BaseLocalY;
-            var angles = new[] { 0f, 30f, 45f, 90f, 180f, 270f, 360f };
-
-            Assert.That(shadow.BaseShadowAngle, Is.EqualTo(35f), "el ángulo base de los troncos es 35°");
-            Assert.That(shadow.BaseSize.x, Is.GreaterThan(shadow.BaseSize.y * 2.5f), "la sombra de los troncos es alargada");
-
-            // 1. Tronco sin espejo (ángulo +35°)
-            _rect.localScale = Vector3.one;
-            foreach (var angle in angles)
+            var anterior = _rect.GetComponent<PropShadow>();
+            if (anterior != null)
             {
-                _rect.localRotation = Quaternion.Euler(0f, 0f, angle);
-                shadow.UpdateMotion(0f, 80f, angle);
-
-                var rotZ = Mathf.DeltaAngle(35f, shadow.ShadowRect.eulerAngles.z);
-                Assert.That(rotZ, Is.EqualTo(0f).Within(0.1f),
-                    $"la sombra del tronco debe permanecer a 35° al rodar con giro {angle}°");
-
-                Assert.That(shadow.ShadowRect.position.y, Is.EqualTo(_rect.position.y + baseLocalY).Within(0.1f),
-                    $"la sombra debe permanecer en la base de contacto debajo del tronco");
+                Object.DestroyImmediate(anterior.ShadowRect.gameObject);
+                Object.DestroyImmediate(anterior);
             }
 
-            // 2. Tronco con espejo (la perspectiva del cilindro siempre se orienta a +35° hacia el fondo)
-            _rect.localScale = new Vector3(-1.5f, 1.5f, 1f);
-            foreach (var angle in angles)
-            {
-                _rect.localRotation = Quaternion.Euler(0f, 0f, angle);
-                shadow.UpdateMotion(0f, 80f, angle);
-
-                var rotZ = Mathf.DeltaAngle(35f, shadow.ShadowRect.eulerAngles.z);
-                Assert.That(rotZ, Is.EqualTo(0f).Within(0.1f),
-                    $"la sombra del tronco reflejado debe permanecer a 35° hacia el fondo sin renderizarse al lado opuesto");
-
-                Assert.That(shadow.ShadowRect.position.y, Is.EqualTo(_rect.position.y + baseLocalY * 1.5f).Within(0.1f),
-                    $"la sombra debe permanecer en la base de contacto debajo del tronco reflejado");
-            }
+            _image.sprite = sprite;
+            var sombra = PropShadow.Attach(_rect.gameObject, sprite);
+            return sombra.ShadowRect.position.y - _rect.position.y;
         }
 
-        [Test]
-        public void PropShadow_RNF23_SombraDeTelaSePosicionaBajoLosPlieguesYNoEnLaPuntaAislada()
+        /// <summary>Un sprite de 64 × 64 opaco desde <paramref name="desdeFila"/> hacia arriba y transparente debajo.</summary>
+        private static Sprite Dibujo(string nombre, int desdeFila = 0)
         {
-#if UNITY_EDITOR
-            var telaSprite = UnityEditor.AssetDatabase
-                .LoadAssetAtPath<Sprite>("Assets/Game/Art/Props/River/prop_n3_tela.png");
-
-            if (telaSprite != null)
+            const int lado = 64;
+            var textura = new Texture2D(lado, lado, TextureFormat.RGBA32, false);
+            var pixeles = new Color32[lado * lado];
+            for (var y = 0; y < lado; y++)
             {
-                var shadowTela = PropShadow.Attach(_holder, telaSprite, _rect.sizeDelta);
-                // La tela tiene un pico alargado que baja a -68 %, pero sus pliegues principales
-                // se sitúan cerca de -15 %. Su BaseLocalY debe estar cerca de -30 px en 200x200 (no en -60 px ni -80 px).
-                Assert.That(shadowTela.BaseLocalY, Is.GreaterThan(-40f),
-                    "la sombra de la tela no se descuelga hasta la punta aislada, sino que abraza la base del dibujo");
+                for (var x = 0; x < lado; x++)
+                {
+                    pixeles[y * lado + x] = y >= desdeFila ? new Color32(255, 255, 255, 255) : new Color32(0, 0, 0, 0);
+                }
             }
-#endif
+
+            textura.SetPixels32(pixeles);
+            textura.Apply();
+            var sprite = UnityEngine.Sprite.Create(textura, new Rect(0f, 0f, lado, lado), new Vector2(0.5f, 0.5f), 100f, 0,
+                SpriteMeshType.Tight);
+            sprite.name = nombre;
+            return sprite;
         }
     }
 }
-

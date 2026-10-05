@@ -258,7 +258,7 @@ namespace Game.Levels.Wheel
 
             if (cargo != null && cargo.GetComponent<Image>() is { } cargoImage)
             {
-                PropShadow.Attach(cargo.gameObject, cargoImage.sprite, cargo.sizeDelta);
+                PropShadow.Attach(cargo.gameObject, cargoImage.sprite);
             }
 
             // Pedir ayuda no es un intento: repite la instrucción vigente y no toca ningún
@@ -308,7 +308,7 @@ namespace Game.Levels.Wheel
                 RollingLog.Attach(image, config.LogLook);
             }
 
-            PropShadow.Attach(button.gameObject, forestObject.Art, rect.sizeDelta);
+            PropShadow.Attach(button.gameObject, forestObject.Art);
 
             button.gameObject.SetActive(true);
             button.onClick.AddListener(() => Choose(forestObject, button));
@@ -670,7 +670,7 @@ namespace Game.Levels.Wheel
                         lift = Mathf.Max(0f, nudge.Offset.y * floorArea.rect.height);
                     }
 
-                    shadow.UpdateMotion(lift, 80f, buttonRect.localEulerAngles.z);
+                    shadow.UpdateMotion(lift, 80f);
                 }
             }
 
@@ -902,14 +902,10 @@ namespace Game.Levels.Wheel
                     button.gameObject.SetActive(false);
                 }
 
-                // La caja se colocará sobre los troncos alineados: pierde su sombra de gota
+                // La caja se colocará sobre los troncos alineados: pierde su sombra de gota (el
+                // componente se lleva la sombra al destruirse).
                 if (cargo != null && cargo.GetComponent<PropShadow>() is { } cargoShadow)
                 {
-                    if (cargoShadow.ShadowRect != null)
-                    {
-                        Destroy(cargoShadow.ShadowRect.gameObject);
-                    }
-
                     Destroy(cargoShadow);
                 }
 
@@ -944,7 +940,7 @@ namespace Game.Levels.Wheel
                 Canvas.ForceUpdateCanvases();
                 for (var i = 0; i < _row.Count && i < _collected.Count; i++)
                 {
-                    PropShadow.Attach(_row[i].gameObject, _collected[i].Art, _row[i].rectTransform.sizeDelta);
+                    PropShadow.Attach(_row[i].gameObject, _collected[i].Art);
                 }
 
                 var destinations = _row.Select(log => log.rectTransform.anchoredPosition).ToArray();

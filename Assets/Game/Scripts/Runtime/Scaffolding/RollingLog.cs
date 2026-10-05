@@ -34,6 +34,7 @@ namespace Game.Scaffolding
         private Image _face;
         private float _spin = float.NaN;
         private float _pixel;
+        private bool _silhouetteOnly;
 
 #if UNITY_INCLUDE_TESTS
         /// <summary>El giro que se pasa a la textura, en grados.</summary>
@@ -41,7 +42,17 @@ namespace Game.Scaffolding
 #endif
 
         /// <inheritdoc/>
-        public override Texture mainTexture => _look != null && _look.Texture != null ? _look.Texture : s_WhiteTexture;
+        public override Texture mainTexture =>
+            !_silhouetteOnly && _look != null && _look.Texture != null ? _look.Texture : s_WhiteTexture;
+
+        /// <summary>La vista con la que se dibuja.</summary>
+        internal RollingLogLook Look => _look;
+
+        /// <summary>La imagen del objeto, de la que se lee el giro y el espejo.</summary>
+        internal Image Face => _face;
+
+        /// <summary>Solo el contorno, de un color plano: la sombra de gota del tronco (<see cref="PropShadow"/>).</summary>
+        internal bool SilhouetteOnly => _silhouetteOnly;
 
         /// <summary>Radio exterior, en unidades locales del objeto: lo que avanza por vuelta dividido entre 2π.</summary>
         public float Radius
@@ -76,6 +87,33 @@ namespace Game.Scaffolding
             // Alfa en el color y no la imagen apagada: apagada dejaría de recibir el clic, y el
             // tinte del botón pisa el alfa del CanvasRenderer pero no el del color.
             face.color = new Color(face.color.r, face.color.g, face.color.b, 0f);
+            log.LateUpdate();
+            return log;
+        }
+
+        /// <summary>
+        /// La sombra del tronco de <paramref name="face"/>: el mismo cilindro reducido a su contorno,
+        /// de <paramref name="color"/> plano, colgado de <paramref name="parent"/>. Lee el giro y el
+        /// espejo de <paramref name="face"/> igual que el tronco, así que su padre tiene que copiar
+        /// el giro y la escala del objeto —lo hace <see cref="PropShadow"/>—; la imagen del objeto
+        /// no se toca.
+        /// </summary>
+        internal static RollingLog AttachSilhouette(RectTransform parent, Image face, RollingLogLook look, Color color)
+        {
+            var part = new GameObject("Tronco", typeof(RectTransform), typeof(CanvasRenderer));
+            part.layer = parent.gameObject.layer;
+            var rect = (RectTransform)part.transform;
+            rect.SetParent(parent, false);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+
+            var log = part.AddComponent<RollingLog>();
+            log._look = look;
+            log._face = face;
+            log._silhouetteOnly = true;
+            log.color = color;
+            log.raycastTarget = false;
             log.LateUpdate();
             return log;
         }
@@ -128,7 +166,7 @@ namespace Game.Scaffolding
         protected override void OnPopulateMesh(VertexHelper vh)
         {
             vh.Clear();
-            if (_look == null || _look.Texture == null || float.IsNaN(_spin))
+            if (_look == null || float.IsNaN(_spin) || (!_silhouetteOnly && _look.Texture == null))
             {
                 return;
             }
@@ -143,6 +181,13 @@ namespace Game.Scaffolding
             // σ, el ángulo en la textura, es ψ − turn: el corte gira con el objeto y el eje no.
             var turn = _spin - _look.AxisDegrees;
             Color32 tint = color;
+
+            if (_silhouetteOnly)
+            {
+                // La sombra: el contorno entero, en el color plano del gráfico y sin textura.
+                AddSilhouette(vh, toLocal, inner * Mathf.Cos(tilt * Mathf.Deg2Rad) + outline, outer, reach, tint, Vector2.zero);
+                return;
+            }
 
             // El corte es el cuadrado de la derecha; la corteza, el resto. Un texel de margen en la
             // corteza para que el filtrado no traiga el borde del corte.

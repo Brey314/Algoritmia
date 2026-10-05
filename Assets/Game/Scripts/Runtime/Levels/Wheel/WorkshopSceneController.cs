@@ -248,7 +248,7 @@ namespace Game.Levels.Wheel
             image.sprite = placement.Art;
             image.preserveAspect = true;
             image.color = Color.white;
-            PropShadow.Attach(rect.gameObject, placement.Art, rect.sizeDelta);
+            PropShadow.Attach(rect.gameObject, placement.Art);
 
             var outline = rect.GetComponent<Outline>();
             if (outline != null)

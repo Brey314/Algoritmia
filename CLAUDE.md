@@ -102,6 +102,8 @@ una sola textura (`prop_n2_tronco_textura`) y lee el giro que ya le dan `RollMot
 La vista vive en `N2_TroncoRodante.asset` y se engancha con `NarrativeProp.Rolling` en las
 narrativas y `WheelLevelConfig.LogLook` en el bosque — sin cámara ni modelo 3D.
 
+**Los props proyectan su sombra con `PropShadow`** (`Game.Scaffolding`, 02/10/2026): una elipse negra al 25 % anclada al suelo que se encoge y se aclara cuando el objeto se alza (`LiftAndRoll`/`LiftAndStay`) y no gira con él. Excluye por nombre las siluetas (`*silueta*`) y la balsa (`*balsa*`); la enganchan `NarrativeSceneController` y los controladores del bosque, el taller y el río.
+
 **Cuántas fases tiene cada nivel** lo fija `PhaseId.PhasesPerLevel = { 1, 3, 3 }` — el Nivel 3 son
 tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **Al consumir
 `PlayerProfile`:** `ConfirmPhase(LevelId, int, …)` no existe; se pasa un `PhaseId` (`Game.Core`).

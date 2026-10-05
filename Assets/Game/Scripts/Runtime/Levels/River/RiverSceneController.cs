@@ -326,7 +326,7 @@ namespace Game.Levels.River
             image.preserveAspect = true;
             image.color = Color.white;
             Place(image.rectTransform, collectible.Position);
-            PropShadow.Attach(image.gameObject, collectible.Art, image.rectTransform.sizeDelta);
+            PropShadow.Attach(image.gameObject, collectible.Art);
             image.gameObject.SetActive(true);
             _spawned.Add((collectible, image));
         }
@@ -368,6 +368,9 @@ namespace Game.Levels.River
         /// puestos se dan de menor a mayor y no relativos al vecino: quitar un hermano de en medio
         /// corre los índices de detrás y un destino calculado antes quedaría corto (como el humo
         /// del Nivel 1).
+        ///
+        /// La capa de sombras de los materiales (<see cref="PropShadow"/>) abre la banda: las
+        /// sombras están en el suelo y quedan debajo de Mamá, de la familia y de los materiales.
         /// </remarks>
         private void SortByDepth(float playerY)
         {
@@ -376,6 +379,15 @@ namespace Game.Levels.River
                 .Concat(_spawned.Select(entry => (entry.Image.rectTransform, entry.Collectible.Position.y)))
                 .Append((player, playerY));
             var ordered = DepthOrder.BackToFront(entries);
+            var shadows = _spawned
+                .Select(entry => entry.Image.GetComponent<PropShadow>())
+                .Where(shadow => shadow != null)
+                .Select(shadow => shadow.Layer)
+                .FirstOrDefault(layer => layer != null && layer.parent == environment.rectTransform);
+            if (shadows != null)
+            {
+                ordered.Insert(0, shadows);
+            }
 
             var first = ordered.Min(rect => rect.GetSiblingIndex());
             for (var i = 0; i < ordered.Count; i++)
