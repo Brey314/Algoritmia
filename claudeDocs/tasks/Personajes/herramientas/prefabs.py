@@ -233,17 +233,14 @@ def casco_convexo(puntos):
     return bajo[:-1] + alto[:-1]
 
 
-def casco_sprite(ruta_png, rect, paso=2):
+def casco_imagen(im, rect, paso=2):
     """
-    El cierre convexo de los pixeles opacos de un sprite, en coordenadas del lienzo (el sprite estirado a
-    «rect»). Necesita Pillow; sin el, o sin el PNG (un puntero de LFS), las cuatro esquinas del rect.
+    El cierre convexo de los pixeles opacos de una imagen PIL (RGBA), en coordenadas del lienzo (la imagen
+    estirada a «rect»). Lo usan casco_sprite (un PNG del repo) y la maqueta de pose_preview (una pieza
+    recortada en memoria).
     """
     x0, y0, x1, y1 = rect
-    try:
-        from PIL import Image
-        a = Image.open(ruta_png).convert("RGBA").getchannel("A")
-    except Exception:
-        return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+    a = im.convert("RGBA").getchannel("A")
     w, h = a.size
     datos = a.load()
     pts = []
@@ -252,4 +249,20 @@ def casco_sprite(ruta_png, rect, paso=2):
         if fila:
             pts.append((fila[0], y))
             pts.append((fila[-1], y))
+    if not pts:
+        return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
     return [(x0 + x * (x1 - x0) / w, y0 + y * (y1 - y0) / h) for x, y in casco_convexo(pts)]
+
+
+def casco_sprite(ruta_png, rect, paso=2):
+    """
+    El cierre convexo de los pixeles opacos de un sprite, en coordenadas del lienzo (el sprite estirado a
+    «rect»). Necesita Pillow; sin el, o sin el PNG (un puntero de LFS), las cuatro esquinas del rect.
+    """
+    x0, y0, x1, y1 = rect
+    try:
+        from PIL import Image
+        im = Image.open(ruta_png).convert("RGBA")
+    except Exception:
+        return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+    return casco_imagen(im, rect, paso)

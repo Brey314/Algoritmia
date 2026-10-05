@@ -21,12 +21,12 @@
 #
 # «orden_tronco»: el orden de dibujo (de atras adelante) de los hijos directos de Cuerpo/Tronco; lo
 # aplica BuildRigsFinal.cs.txt. En los prefabs los brazos van PRIMERO (BrazoIzq, BrazoDer, Torso,
-# Cuello), o sea detras del torso y de la cabeza, y se escondian. DECISION (05/10/2026): los brazos van
-# DELANTE solo en quien los tiene partidos (antebrazo con sprite y encendido: hoy el Nino) y en Algoritm,
-# donde la cara (Ojos, Boca) va ademas encima de todo. Papa, Mama y Nina, con arte provisional (un solo
-# sprite por brazo, con el arco del contorno del hombro y restos claros que el torso tapaba), llevan el
-# orden actual (brazos detras) y su coreografia mantiene los brazos fuera de la silueta del cuerpo y de la
-# cabeza; cuando llegue su arte final se cambian a brazos delante (ORDEN_TRONCO_FAMILIA).
+# Cuello), o sea detras del torso y de la cabeza, y se escondian. DECISION (05/10/2026): los CUATRO de
+# la familia llevan los brazos DELANTE (ORDEN_TRONCO_FAMILIA, una sola constante) y Algoritm lleva ademas
+# la cara (Ojos, Boca) encima de todo. Con el arte provisional de Papa, Mama y Nina (un sprite por brazo)
+# se ve el arco del contorno del hombro sobre el torso: es temporal y se acepta; desaparece cuando llegue
+# su arte final. La coreografia no depende de ello: se escribe una vez para el arte final y se adapta a lo
+# que lee del JSON y del prefab (brazo partido o de una pieza).
 #
 # Por qué el JSON no lleva «segmentado»: se deduce del prefab. Un personaje está segmentado
 # cuando la Image de AntepiernaIzq tiene sprite y está encendida; guardarlo también en la tabla
@@ -168,10 +168,7 @@ FAMILIA = [
 T = "Lienzo/Cuerpo/Tronco"
 C = "Lienzo/Cuerpo"
 
-ORDEN_TRONCO_FAMILIA = ["Torso", "Cuello", "BrazoIzq", "BrazoDer"]            # brazos delante (arte final, brazos partidos)
-ORDEN_TRONCO_PROVISIONAL = ["BrazoIzq", "BrazoDer", "Torso", "Cuello"]       # brazos detras (el orden de los prefabs)
-ORDEN_TRONCO = {"papa": ORDEN_TRONCO_PROVISIONAL, "mama": ORDEN_TRONCO_PROVISIONAL, "nina": ORDEN_TRONCO_PROVISIONAL,
-                "nino": ORDEN_TRONCO_FAMILIA}
+ORDEN_TRONCO_FAMILIA = ["Torso", "Cuello", "BrazoIzq", "BrazoDer"]            # brazos delante: Papa, Mama, Nina y Nino
 ORDEN_TRONCO_GUIA = ["Torso", "BrazoIzq", "BrazoDer", "Ojos", "Boca"]
 
 # Arte final del Nino (05/10/2026), medido sobre el alfa de las piezas de Assets/Game/Art/Characters/Boy.
@@ -310,7 +307,7 @@ def personaje_familia(pid, prefab, carpeta):
         nodos, partes = ARTE_FINAL[pid]["nodos"], ARTE_FINAL[pid]["partes"]
     return {
         "id": pid, "prefab": prefab, "carpeta": carpeta, "prefijo": pref, "guia": False,
-        "orden_tronco": ORDEN_TRONCO[pid], "nodos": nodos, "partes": partes,
+        "orden_tronco": ORDEN_TRONCO_FAMILIA, "nodos": nodos, "partes": partes,
     }
 
 
@@ -460,9 +457,9 @@ def main():
                 "nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento "
                 "'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. "
                 "El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo "
-                "(de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: los brazos van DELANTE solo en quien "
-                "los tiene partidos (el Nino) y en Algoritm; Papa, Mama y Nina, con arte provisional de una pieza por "
-                "brazo, conservan el orden de los prefabs (brazos detras) hasta que llegue su arte final.",
+                "(de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: los brazos van DELANTE en los cuatro de la "
+                "familia y en Algoritm (con la cara encima de todo). Con el arte provisional de Papa, Mama y Nina se ve el "
+                "arco del hombro sobre el torso hasta que llegue su arte final: es temporal.",
         "personajes": personajes,
     }
     with open(SALIDA, "w", encoding="utf-8", newline="\n") as f:

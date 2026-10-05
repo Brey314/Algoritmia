@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # pose_preview.py: vista previa y PRUEBA de los clips de clips_personajes.json, sin Unity.
 #
-#     python3 claudeDocs/tasks/Personajes/herramientas/pose_preview.py                 # prueba + hojas + GIF
+#     python3 claudeDocs/tasks/Personajes/herramientas/pose_preview.py                 # prueba + hojas + GIF, en los dos modos
+#     python3 .../pose_preview.py --hoy                                                # solo el arte que hay (clips_personajes.json)
+#     python3 .../pose_preview.py --maqueta                                            # solo el arte final simulado
 #     python3 .../pose_preview.py --sin-hojas                                          # solo la prueba
 #     python3 .../pose_preview.py --tira nino Idle 8 nino_idle.png                     # 8 instantes de un clip
 #     python3 .../pose_preview.py --salida /ruta/de/trabajo                            # donde dejar los PNG/GIF
@@ -11,6 +13,16 @@
 #     python3 .../pose_preview.py --mide nino                                          # las articulaciones del rig caen en la rotula
 #
 # Necesita Pillow (pip install pillow). Sale con codigo 1 si algun clip falla la prueba.
+#
+# DOS MODOS (Papa, Mama y Nina; el Nino ya tiene arte final y Algoritm es siempre maqueta):
+#   --hoy      el arte REAL de los prefabs (brazos y piernas de una pieza, la cabeza dentro del torso) con
+#              clips_personajes.json, que es lo que se vuelca al motor; comprueba antes que el JSON sea el que
+#              coreografia.py calcularia ahora. Hojas: <id>_hoy_idle_8.png, <id>_hoy_todos.png, <id>_hoy_idle.gif.
+#   --maqueta  el arte final SIMULADO (maqueta.py: el arte provisional recortado por las articulaciones del
+#              rig, con antebrazo, antepierna y cabeza propios) con los clips que el solucionador calcula
+#              para esa geometria. Es la prueba de que la coreografia, tal como esta escrita, pasa tambien
+#              con el arte final. Hojas: <id>_maqueta_*.
+#   Las mismas medidas en los dos: si pasan en «hoy» pero no en «maqueta», la coreografia depende del arte.
 #
 # QUE DIBUJA. Una cadena de transformaciones como la de uGUI: cada nodo gira y escala alrededor de SU
 # pivote y se desplaza con m_AnchoredPosition, y los hijos van dentro (y = abajo en el lienzo; la
@@ -34,6 +46,10 @@
 #       dentro y el codo sobresale hacia fuera y abajo de la recta hombro-mano (nunca se mete hacia el
 #       cuerpo o la cara); tolerancia de 6 grados sobre lo que ya trae el dibujo;
 #   (d) el pie de apoyo no atraviesa el suelo mas de 2 px (Algoritm flota: no se mide).
+#   (e) ninguna mano (la punta y la muñeca) dentro de la caja de la cara, ampliada un 10 %, salvo en las
+#       excepciones explicitas de EXCEPCIONES_CARA (la visera de Observe; el rascado del Nino);
+#   (f) ningun hombro ni codo gira mas de VELOCIDAD_MAX (1300 grados por segundo): atrapa el salto de rama de la
+#       cinematica inversa a mitad de un gesto (salvo el golpe del martillo, EXCEPCIONES_VEL).
 
 import argparse
 import json
@@ -50,6 +66,7 @@ except ImportError:  # pragma: no cover
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 import coreografia as K  # noqa: E402
+import maqueta as M  # noqa: E402
 import prefabs as P  # noqa: E402
 
 FPS = 30.0
@@ -69,6 +86,13 @@ EXCEPCIONES_CARA = {
     ("*", "Observe"): "visera: la mano va a la sien para mirar a lo lejos",
     ("nino", "Idle"): "se rasca el costado de la cabeza: con la cabeza mas ancha que el alcance del brazo, la mano solo llega al pelo junto a la oreja",
 }
+# (f) Ningun hombro ni codo gira mas de VELOCIDAD_MAX grados por segundo (medido cuadro a cuadro a 30 fps): una
+# rama de la cinematica inversa que cambia a mitad de un gesto da saltos de 150 grados en un cuadro.
+VELOCIDAD_MAX = 1300.0
+EXCEPCIONES_VEL = {
+    ("*", "Hammer"): "el golpe del martillo es rapido a proposito (baja el brazo en 0,1 s)",
+}
+ORDEN_VIEJO = ["BrazoIzq", "BrazoDer", "Torso", "Cuello"]  # el de los prefabs antes de «orden_tronco»
 ESCALA_PRUEBA = 0.25       # la prueba mide a 256 px (la mascara de cada capa)
 REGION = (40, 30, 984, 990)  # lo que se ve en las hojas: casi todo el lienzo (Sleep se sale de la figura de pie)
 REGION_GUIA = (0, -50, 1024, 1000)  # Algoritm flota: la llama sube por encima del lienzo
@@ -135,17 +159,39 @@ class Capa:
 class Personaje:
     """Todo lo que la vista previa necesita de un personaje; se arma una vez."""
 
-    def __init__(self, pid, rig, orden_viejo=False):
+    def __init__(self, pid, rig, orden_viejo=False, maqueta=False):
+        """
+        «maqueta»: el arte final SIMULADO (maqueta.py): brazos, piernas y cabeza recortados del arte
+        provisional por las articulaciones del rig, para probar la coreografia contra su geometria. Sin ella
+        («hoy»), el arte real del prefab. Algoritm siempre es maqueta (su sprite es uno solo).
+        """
         self.pid = pid
+        self.rig_todo = rig
         self.prefab, self.carpeta, self.guia = P.PERSONAJES[pid]
         self.rig = P.personaje_rig(rig, pid)
-        self.arbol = P.leer_arbol(self.prefab)
-        orden = self.rig.get("orden_tronco")
-        if orden and not orden_viejo:
-            P.aplicar_orden_tronco(self.arbol, orden)
+        self.maqueta = maqueta or self.guia
+        if maqueta and not self.guia:
+            self.arbol, self.piezas = M.arbol_maqueta(pid, rig)
+        else:
+            self.arbol = P.leer_arbol(self.prefab)
+            self.piezas = {}
+            orden = self.rig.get("orden_tronco")
+            if orden:
+                P.aplicar_orden_tronco(self.arbol, orden)
+        if orden_viejo:
+            # el orden de ANTES (brazos tras el torso y la cabeza): la prueba tiene que fallar con el
+            P.aplicar_orden_tronco(self.arbol, ORDEN_VIEJO)
         self.segmentado = P.esta_segmentado(self.arbol)
+        self._ctx = None
         self._geometria()
         self._dibujables()
+
+    @property
+    def ctx(self):
+        """El contexto de la coreografia (geometria del brazo, pierna y cabeza) con ESTE arte."""
+        if self._ctx is None:
+            self._ctx = K.leer_contexto(self.pid, self.rig_todo, self.arbol, self.piezas)
+        return self._ctx
 
     # ---- geometria: el JSON manda sobre el prefab
     def _geometria(self):
@@ -203,6 +249,9 @@ class Personaje:
             return self._capa_guia(n, rect, baked)
         if not n.dibuja() or rect is None:
             return None
+        if n.imagen["guid"].startswith("maqueta:"):
+            pieza = self.piezas[ruta]
+            return Capa(n, pieza.rect, pieza.imagen, n.imagen["color"], maqueta=True)
         arch = P.sprite_por_guid(n.imagen["guid"])
         if arch is None:
             return None
@@ -290,7 +339,7 @@ class Personaje:
         y de un punto mas atras, la muñeca.
         """
         if getattr(self, "_manos", None) is None:
-            x = K.leer_contexto(self.pid)
+            x = self.ctx
             self._manos = {}
             for lado, nodo_p, nodo_c in (("Izq", LA, LE), ("Der", RA, RE)):
                 b = x.brazos[lado]
@@ -439,6 +488,7 @@ class Resultado:
         self.codo = (0.0, 0.0, "")
         self.suelo = (-999.0, 0.0)
         self.mano = (0, 0.0, "")  # cuadros con una mano en la caja de la cara, primer instante, lado
+        self.vel = (0.0, 0.0, "")  # la mayor velocidad angular de un hombro o un codo, instante, hueso
 
     def mejor_peor(self, nombre, valor, t, extra=""):
         if nombre == "brazo" and valor < self.brazo[0]:
@@ -449,6 +499,8 @@ class Resultado:
             self.codo = (valor, t, extra)
         elif nombre == "suelo" and valor > self.suelo[0]:
             self.suelo = (valor, t)
+        elif nombre == "vel" and valor > self.vel[0]:
+            self.vel = (valor, t, extra)
 
 
 def _mascara(im):
@@ -553,7 +605,15 @@ def prueba_clip(pj, clip, tiempos=None):
     es_guia = pj.guia
     vacio = Clip({"archivo": "", "accion": "", "duracion": 1.0, "bucle": True, "curvas": []})
     reposo_nu = bisagras(pj, matrices(pj, vacio, 0.0)[0], vacio, 0.0)
+    previo = None
     for t in tiempos:
+        # (f) velocidad angular de hombros y codos entre cuadros
+        vals = {r: clip.valor(r, K.ROT, t, 0.0) for r in (LA, RA, LE, RE)}
+        if previo is not None and t > previo[0]:
+            for r in vals:
+                v = abs(vals[r] - previo[1][r]) / (t - previo[0])
+                res.mejor_peor("vel", v, t, r.split("/")[-1])
+        previo = (t, vals)
         mundo, _ = matrices(pj, clip, t)
         masc = {}
         for capa in pj.capas:
@@ -627,11 +687,12 @@ def fila(pid, clip, r):
     ok_k = r.codo[0] <= 1e-9
     ok_s = r.suelo[0] <= TOLERANCIA_SUELO
     ok_m = r.mano[0] == 0
-    ok = ok_b and ok_c and ok_k and ok_s and ok_m
+    ok_v = r.vel[0] <= VELOCIDAD_MAX or ("*", clip.accion) in EXCEPCIONES_VEL
+    ok = ok_b and ok_c and ok_k and ok_s and ok_m and ok_v
     mano = "libre" if ok_m else "%d cuadros @%.2fs %s" % (r.mano[0], r.mano[1], r.mano[2])
-    return ok, ("%-14s %-10s %-8s brazo %5.1f%% @%.2fs %-5s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s" % (
+    return ok, ("%-14s %-10s %-8s brazo %5.1f%% @%.2fs %-5s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s | giro max %4.0f deg/s %s" % (
         pid, clip.accion, "ok" if ok else "FALLA", r.brazo[0], r.brazo[1], r.brazo[2], r.cara[0], r.cara[1],
-        r.codo[0], r.codo[1], r.codo[2], r.suelo[0] if r.suelo[0] > -900 else 0.0, r.suelo[1], mano))
+        r.codo[0], r.codo[1], r.codo[2], r.suelo[0] if r.suelo[0] > -900 else 0.0, r.suelo[1], mano, r.vel[0], "" if ok_v else "FALLA"))
 
 
 # --------------------------------------------------------------------------- hojas y GIF
@@ -772,25 +833,6 @@ def mide(pj):
     return 1 if fallos else 0
 
 
-def arco(pj, rig, minimo=86.0):
-    """
-    Con los brazos dibujados DETRAS del torso y de la cabeza (arte provisional), un brazo solo se ve entero
-    si se aparta del cuerpo lo bastante y no sube tras la cabeza. Barre el angulo del humero respecto a la
-    vertical (0 colgando, 90 horizontal, 180 en alto) con los dos brazos a la vez y da el arco en que cada
-    brazo conserva al menos «minimo» % de sus pixeles; ese arco es lo que coreografia.py llama ARCO_ATRAS.
-    """
-    x = K.leer_contexto(pj.pid, rig)
-    bien = []
-    for th in range(-10, 181, 2):
-        c = _clip_pose({(LA, K.ROT): x.brazos["Izq"].hombro_rot(th, libre=True), (RA, K.ROT): x.brazos["Der"].hombro_rot(th, libre=True)})
-        r = prueba_clip(pj, c, tiempos=[0.0])
-        if r.brazo[0] >= minimo:
-            bien.append(th)
-    print("%s: los dos brazos se ven al menos al %.0f %% con theta entre %s y %s (ARCO_ATRAS)" % (
-        pj.pid, minimo, min(bien) if bien else "-", max(bien) if bien else "-"))
-    return 0
-
-
 def _clip_pose(valores, duracion=1.0):
     cur = [{"ruta": r, "propiedad": p, "claves": [[0.0, v], [duracion, v]]} for (r, p), v in valores.items()]
     return Clip({"archivo": "x", "accion": "x", "duracion": duracion, "bucle": True, "curvas": cur})
@@ -815,11 +857,32 @@ def autoprueba(rig):
     # 3b. la mano a la cara (brazo doblado: la mano sube hasta la boca)
     rs, rc = b["Der"].ik((530, 470))
     casos.append(("mano en la cara", nino, {(RA, R): rs, (RE, R): rc}, "mano"))
+    # 3c. lo mismo con el arte final SIMULADO de Mama (brazos, piernas y cabeza recortados del provisional)
+    mama = Personaje("mama", rig, maqueta=True)
+    bm = mama.ctx.brazos
+    c = mama.ctx.cara
+    rs, rc = bm["Der"].ik(((c[0] + c[2]) / 2.0 + 20, (c[1] + c[3]) / 2.0))
+    casos.append(("maqueta de Mama: mano en la cara", mama, {(RA, R): rs, (RE, R): rc}, "mano"))
+    casos.append(("maqueta de Mama: codo al reves", mama, {(LA, R): bm["Izq"].hombro_rot(170), (LE, R): 100.0}, "codo"))
+    casos.append(("maqueta de Mama: brazo tras el torso", Personaje("mama", rig, orden_viejo=True, maqueta=True),
+                  {(LA, R): bm["Izq"].hombro_rot(8), (RA, R): bm["Der"].hombro_rot(8)}, "brazo"))
     # 4. el pie atraviesa el suelo
     casos.append(("pie bajo el suelo", nino, {(LL, K.POSY): -30.0, (RL, K.POSY): -30.0}, "suelo"))
     # 5. la rodilla se dobla hacia fuera
     casos.append(("rodilla hacia fuera", nino, {(LK, R): -30.0, (RK, R): 30.0}, "codo"))
     malos = 0
+    # la maqueta, sumada, es el sprite original: sin eso la prueba con ella no vale (las piezas recortadas
+    # tienen que dar el mismo dibujo en reposo que el arte provisional entero)
+    vacio = Clip({"archivo": "x", "accion": "x", "duracion": 1.0, "bucle": True, "curvas": []})
+    print("%-40s %s" % ("la maqueta suma el sprite original", "diferencia de pixeles en reposo (tope 0,6 %)"))
+    for pid in ("papa", "mama", "nina"):
+        im_hoy = render(Personaje(pid, rig), vacio, 0.0, 0.5, alfa_grupo=False).convert("RGB")
+        im_maq = render(Personaje(pid, rig, maqueta=True), vacio, 0.0, 0.5, alfa_grupo=False).convert("RGB")
+        dif = ImageChops.difference(im_hoy, im_maq).convert("L").point(lambda v: 255 if v > 40 else 0)
+        frac = 100.0 * _cuenta(dif) / (dif.width * dif.height)
+        ok = frac < 0.6
+        malos += 0 if ok else 1
+        print("%-40s %.3f %%  %s" % (pid, frac, "bien" if ok else "LA MAQUETA NO SUMA EL SPRITE"))
     print("%-40s %-9s %s" % ("pose mala", "medida", "resultado"))
     for nombre, pj, vals, medida in casos:
         r = prueba_clip(pj, _clip_pose(vals), tiempos=[0.0])
@@ -827,6 +890,13 @@ def autoprueba(rig):
         detecta = not ok
         print("%-40s %-9s %s" % (nombre, medida, "detectada" if detecta else "NO SE DETECTA"))
         malos += 0 if detecta else 1
+    # 6. un salto de rama: el codo da 150 grados en un cuadro (clip de dos claves con 1/30 s entre ellas)
+    salto = Clip({"archivo": "x", "accion": "x", "duracion": 1.0, "bucle": True,
+                  "curvas": [{"ruta": RE, "propiedad": K.ROT, "claves": [[0.0, 0.0], [1.0 / 30.0, 150.0], [1.0, 150.0]]}]})
+    r = prueba_clip(nino, salto, tiempos=[0.0, 1.0 / 30.0, 2.0 / 30.0])
+    ok, _ = fila("nino", salto, r)
+    print("%-40s %-9s %s" % ("salto de rama del codo (150 deg/cuadro)", "giro", "detectada" if not ok and r.vel[0] > VELOCIDAD_MAX else "NO SE DETECTA"))
+    malos += 0 if not ok and r.vel[0] > VELOCIDAD_MAX else 1
     # y la pose buena no debe fallar
     r = prueba_clip(nino, _clip_pose({(LA, R): b["Izq"].hombro_rot(28), (RA, R): b["Der"].hombro_rot(28)}), tiempos=[0.0])
     ok, _ = fila("nino", _clip_pose({}), r)
@@ -839,18 +909,45 @@ def autoprueba(rig):
 # --------------------------------------------------------------------------- principal
 
 
+def clips_de_doc(doc):
+    return {p["id"]: [Clip(c) for c in p["clips"]] for p in doc["personajes"]}
+
+
+def corrida(pid, modo, rig, clips, a):
+    """Prueba (y hojas) de un personaje con un arte («hoy», «maqueta» o «final»): devuelve cuantos clips fallan."""
+    pj = Personaje(pid, rig, a.orden_viejo, maqueta=(modo == "maqueta"))
+    cl = clips_de(clips, pid)
+    fallos = 0
+    for clip in cl:
+        r = prueba_clip(pj, clip)
+        ok, linea = fila(pid + ("/" + modo if modo in ("hoy", "maqueta") else ""), clip, r)
+        fallos += 0 if ok else 1
+        print(linea)
+    if not a.sin_hojas:
+        base = pid if modo in ("final", "guia") else "%s_%s" % (pid, modo)
+        hoja_idle(pj, cl, os.path.join(a.salida, "%s_idle_8.png" % base))
+        hoja_todos(pj, cl, os.path.join(a.salida, "%s_todos.png" % base))
+        gif_idle(pj, cl, os.path.join(a.salida, "%s_idle.gif" % base))
+    return fallos
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Vista previa y prueba de visibilidad de clips_personajes.json")
     ap.add_argument("--json", default=CLIPS_JSON)
     ap.add_argument("--salida", default=os.path.join(tempfile.gettempdir(), "algoritmia_pose_preview"))
     ap.add_argument("--sin-hojas", action="store_true")
     ap.add_argument("--solo", nargs="*", help="ids de personaje (papa mama nina nino algoritm_fuego ...)")
+    ap.add_argument("--hoy", action="store_true",
+                    help="el arte que hay (el de los prefabs) con clips_personajes.json, que es lo que se vuelca al motor")
+    ap.add_argument("--maqueta", action="store_true",
+                    help="el arte final SIMULADO (maqueta.py) con los clips que el solucionador calcula para el: la coreografia "
+                         "tiene que pasar tambien con el")
     ap.add_argument("--orden-viejo", action="store_true", help="sin «orden_tronco»: los brazos se dibujan tras el torso")
     ap.add_argument("--tira", nargs=4, metavar=("PERSONAJE", "ACCION", "N", "PNG"))
     ap.add_argument("--mide", metavar="PERSONAJE", help="comprueba las articulaciones del rig contra el alfa de las piezas")
-    ap.add_argument("--arco", metavar="PERSONAJE", help="con los brazos DETRAS del torso: el arco de angulos en que se ven")
     ap.add_argument("--autoprueba", action="store_true", help="comprueba que la prueba SI falla con poses malas a proposito")
     a = ap.parse_args(argv)
+    modos = [m for m, on in (("hoy", a.hoy), ("maqueta", a.maqueta)) if on] or ["hoy", "maqueta"]
 
     rig = P.cargar_rig()
     clips = cargar_clips(a.json)
@@ -858,36 +955,53 @@ def main(argv=None):
 
     if a.mide:
         return mide(Personaje(a.mide, rig))
-    if a.arco:
-        return arco(Personaje(a.arco, rig, a.orden_viejo), rig)
     if a.autoprueba:
         return autoprueba(rig)
     if a.tira:
         pid, accion, n, png = a.tira
-        pj = Personaje(pid, rig, a.orden_viejo)
-        clip = next(c for c in clips_de(clips, pid) if c.accion.lower() == accion.lower())
+        pj = Personaje(pid, rig, a.orden_viejo, maqueta=("maqueta" in modos and not a.hoy))
+        cc = clips_de_doc(K.construir(rig, maqueta=True)[0]) if pj.maqueta else clips
+        clip = next(c for c in clips_de(cc, pid) if c.accion.lower() == accion.lower())
         tira(pj, clip, int(n)).convert("RGB").save(png)
         print("escrito", png)
         return 0
 
     ids = a.solo or list(P.PERSONAJES)
     fallos = 0
+    if "hoy" in modos and os.path.abspath(a.json) == os.path.abspath(CLIPS_JSON):
+        # «hoy» prueba el JSON que se vuelca al motor: si no es lo que el solucionador calcula ahora, la prueba
+        # diria algo de unos clips que ya no son los vigentes
+        with open(a.json, encoding="ascii") as f:
+            if f.read() != K.serializa(K.construir(rig)[0]):
+                print("ERROR clips_personajes.json esta DESACTUALIZADO respecto a coreografia.py: corre coreografia.py")
+                return 1
     print("excepciones de «mano en la caja de la cara»:")
     for (p_, c_), motivo in EXCEPCIONES_CARA.items():
         print("  %-8s %-8s %s" % (p_, c_, motivo))
-    print("%-14s %-10s %-8s %s" % ("personaje", "clip", "", "peor instante de cada medida"))
+    print("excepciones de «giro maximo %.0f grados por segundo»:" % VELOCIDAD_MAX)
+    for (p_, c_), motivo in EXCEPCIONES_VEL.items():
+        print("  %-8s %-8s %s" % (p_, c_, motivo))
+    print("%-18s %-10s %-8s %s" % ("personaje", "clip", "", "peor instante de cada medida"))
+    clips_maqueta = None
     for pid in ids:
-        pj = Personaje(pid, rig, a.orden_viejo)
-        cl = clips_de(clips, pid)
-        for clip in cl:
-            r = prueba_clip(pj, clip)
-            ok, linea = fila(pid, clip, r)
-            fallos += 0 if ok else 1
-            print(linea)
-        if not a.sin_hojas:
-            hoja_idle(pj, cl, os.path.join(a.salida, "%s_idle_8.png" % pid))
-            hoja_todos(pj, cl, os.path.join(a.salida, "%s_todos.png" % pid))
-            gif_idle(pj, cl, os.path.join(a.salida, "%s_idle.gif" % pid))
+        if P.PERSONAJES[pid][2]:
+            # Algoritm: su sprite es uno solo, asi que SIEMPRE es maqueta (pose_preview._capa_guia)
+            print("--- %s: maqueta del sprite entero" % pid)
+            fallos += corrida(pid, "guia", rig, clips, a)
+        elif pid == "nino":
+            # el Nino ya tiene arte final: lo que hay es lo que habra
+            print("--- nino: arte final (hoy = maqueta)")
+            fallos += corrida(pid, "final", rig, clips, a)
+        else:
+            for modo in modos:
+                if modo == "hoy":
+                    print("--- %s hoy: el arte provisional real, brazos delante (clips_personajes.json)" % pid)
+                    fallos += corrida(pid, "hoy", rig, clips, a)
+                else:
+                    if clips_maqueta is None:
+                        clips_maqueta = clips_de_doc(K.construir(rig, maqueta=True)[0])
+                    print("--- %s maqueta: el arte final simulado (brazos, piernas y cabeza partidos), clips calculados para el" % pid)
+                    fallos += corrida(pid, "maqueta", rig, clips_maqueta, a)
     print("\n%d clips con fallos" % fallos if fallos else "\nla prueba pasa en todos los clips")
     if not a.sin_hojas:
         print("hojas y GIF en", a.salida)

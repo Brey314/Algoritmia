@@ -240,35 +240,20 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// Con los brazos partidos, los brazos se dibujan DELANTE del torso y de la cabeza (Santiago,
-        /// 05/10/2026). uGUI pinta los hijos de atrás adelante y bajo Tronco nacieron primero: con BrazoIzq y
-        /// BrazoDer antes que Torso y Cuello quedaban detrás del cuerpo y se escondían. El arte final trae
-        /// hombros en cápsula con el contorno cerrado, que se ven bien encima del torso. «Partido» es lo que
-        /// ya usan las demás pruebas: las Image de ambos antebrazos con sprite y encendidas. Papá, Mamá y Niña
-        /// siguen con el arte provisional de una pieza y conservan los brazos detrás, porque delante enseñarían
-        /// el contorno cortado del hombro: ellos pasan por la rama «provisional» hasta que llegue su arte
-        /// final. El Niño, el único con arte final hoy, NO puede pasar por esa rama: si no está partido, falla
-        /// (la decisión no queda solo en este comentario). Lo fija el modo «orden» del generador con
+        /// Los brazos se dibujan DELANTE del torso y de la cabeza en los cuatro miembros de la familia
+        /// (Santiago, 05/10/2026). uGUI pinta los hijos de atrás adelante y bajo Tronco nacieron primero:
+        /// con BrazoIzq y BrazoDer antes que Torso y Cuello quedaban detrás del cuerpo y se escondían. El
+        /// orden vale ya, también para Papá, Mamá y Niña aunque su arte siga siendo provisional de una pieza,
+        /// para que todo quede listo cuando llegue el arte final: hasta entonces se ven los arcos del hombro
+        /// cortados sobre el torso, y eso es lo esperado. Lo fija el modo «orden» del generador con
         /// SetSiblingIndex, que reordena y no cambia ningún fileID.
         /// </summary>
         [Test]
-        public void CharacterRig_INC132_ConLosBrazosPartidosLosBrazosSeDibujanDelanteDelTorsoYDeLaCabeza(
+        public void CharacterRig_INC132_LosBrazosSeDibujanDelanteDelTorsoYDeLaCabeza(
             [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
         {
-            var rig = Rig(nombre);
-            var tronco = rig.transform.Find(Tronco);
+            var tronco = Rig(nombre).transform.Find(Tronco);
             Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
-
-            var partidos = TieneLosBrazosPartidos(rig);
-            if (nombre == "Nino")
-            {
-                Assert.That(partidos, Is.True, "Nino ya tiene el arte final: sus dos antebrazos llevan sprite y están encendidos");
-            }
-
-            if (!partidos)
-            {
-                Assert.Pass($"{nombre}: arte provisional de una pieza: sus brazos siguen detrás hasta que llegue el final");
-            }
 
             var torso = Orden(tronco, nombre, "Torso");
             var cuello = Orden(tronco, nombre, "Cuello");
@@ -440,22 +425,6 @@ namespace Game.Scaffolding.Tests
             var rig = AssetDatabase.LoadAssetAtPath<CharacterRig>($"{Carpeta}{nombre}.prefab");
             Assert.That(rig, Is.Not.Null, $"existe el prefab {nombre}");
             return rig;
-        }
-
-        /// <summary>Brazos partidos = las Image de los dos antebrazos tienen sprite y están encendidas (la misma condición que «segmentado» del generador para las piernas).</summary>
-        private static bool TieneLosBrazosPartidos(CharacterRig rig)
-        {
-            foreach (var ruta in new[] { Tronco + "/BrazoIzq/CodoIzq/AntebrazoIzq", Tronco + "/BrazoDer/CodoDer/AntebrazoDer" })
-            {
-                var antebrazo = rig.transform.Find(ruta);
-                var imagen = antebrazo == null ? null : antebrazo.GetComponent<Image>();
-                if (imagen == null || imagen.sprite == null || !imagen.enabled)
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
 
         /// <summary>El lugar de un hijo de Tronco en el orden de dibujo (0 = el más al fondo). Falla con su nombre si no existe.</summary>

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "nota": "Valores PROVISIONALES salvo los del Nino (arte final: ARTE_FINAL en articulaciones.py). Lienzo de 1024, origen arriba a la izquierda, y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento 'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo (de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: los brazos van DELANTE solo en quien los tiene partidos (el Nino) y en Algoritm; Papa, Mama y Nina, con arte provisional de una pieza por brazo, conservan el orden de los prefabs (brazos detras) hasta que llegue su arte final.",
+  "nota": "Valores PROVISIONALES salvo los del Nino (arte final: ARTE_FINAL en articulaciones.py). Lienzo de 1024, origen arriba a la izquierda, y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento 'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo (de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: los brazos van DELANTE en los cuatro de la familia y en Algoritm (con la cara encima de todo). Con el arte provisional de Papa, Mama y Nina se ve el arco del hombro sobre el torso hasta que llegue su arte final: es temporal.",
   "personajes": [
     {
       "id": "papa",
@@ -8,7 +8,7 @@
       "carpeta": "Father",
       "prefijo": "char_papa",
       "guia": false,
-      "orden_tronco": ["BrazoIzq", "BrazoDer", "Torso", "Cuello"],
+      "orden_tronco": ["Torso", "Cuello", "BrazoIzq", "BrazoDer"],
       "nodos": [
         {
           "nombre": "CodoIzq",
@@ -118,7 +118,7 @@
       "carpeta": "Mother",
       "prefijo": "char_mama",
       "guia": false,
-      "orden_tronco": ["BrazoIzq", "BrazoDer", "Torso", "Cuello"],
+      "orden_tronco": ["Torso", "Cuello", "BrazoIzq", "BrazoDer"],
       "nodos": [
         {
           "nombre": "CodoIzq",
@@ -228,7 +228,7 @@
       "carpeta": "Girl",
       "prefijo": "char_nina",
       "guia": false,
-      "orden_tronco": ["BrazoIzq", "BrazoDer", "Torso", "Cuello"],
+      "orden_tronco": ["Torso", "Cuello", "BrazoIzq", "BrazoDer"],
       "nodos": [
         {
           "nombre": "CodoIzq",

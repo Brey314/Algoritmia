@@ -8,9 +8,18 @@
 # Para que sirve: demostrar que el motor de coreografia.py (Spec, Follow, ClampedAuto, Crouch) es un
 # port fiel del C#. Si reproduce los .anim que genero el C# con una diferencia maxima < 0,01 en el valor
 # de cada clave, el motor se puede usar para la coreografia nueva con las mismas garantias.
-# Solo vale contra .anim que se hayan generado con la coreografia anterior: tras volcar
-# clips_personajes.json al repo, la comparacion fallara a proposito (los .anim ya seran los nuevos).
-# Entonces este archivo se puede borrar.
+# Solo vale contra .anim que se hayan generado con la coreografia anterior: desde que
+# clips_personajes.json se volco al repo (6f2b4cf) los .anim del arbol son los nuevos y la comparacion
+# falla a proposito. Para correrla contra los ULTIMOS .anim de la coreografia anterior (los de 8740a64) sin
+# tocar el arbol, se extraen a una carpeta aparte con la misma estructura y se corre alli:
+#
+#     git archive 8740a64 Assets/Game/Prefabs/Characters claudeDocs/tasks/Personajes/herramientas/rig_articulaciones.json | tar -x -C /tmp/regr
+#     for d in Father Mother Girl Boy Algoritm; do git archive 8740a64 Assets/Game/Art/Characters/$d/Animations | tar -x -C /tmp/regr; done
+#     cp claudeDocs/tasks/Personajes/herramientas/*.py /tmp/regr/claudeDocs/tasks/Personajes/herramientas/
+#     python3 /tmp/regr/claudeDocs/tasks/Personajes/herramientas/coreografia_v0.py     # 93 clips, 0 diferencias, dv < 0,0001
+#
+# (La raiz del repo se deduce de la ubicacion del script, asi que alli lee ese arbol.) Lo que demuestra es
+# que el MOTOR (Spec, Follow, ClampedAuto, Crouch) sigue siendo un port fiel aunque la coreografia cambie.
 
 import glob
 import os

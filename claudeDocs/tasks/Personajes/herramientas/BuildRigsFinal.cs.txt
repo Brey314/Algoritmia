@@ -12,8 +12,8 @@
 //             apaga la Image de Cuerpo en Algoritm cuando sus partes ya están. Lo que no existe se
 //             deja apagado y se anota en el log.
 //   "orden"   coloca los hijos de Lienzo/Cuerpo/Tronco en el orden de dibujo que fija «orden_tronco»
-//             en la tabla (los brazos DELANTE del torso solo en quien ya los tiene partidos y en Algoritm,
-//             donde además la cara va encima de los brazos; el arte provisional conserva los brazos detrás).
+//             en la tabla (los brazos DELANTE del torso en los siete personajes y, en Algoritm, la cara
+//             encima de los brazos).
 //             Idempotente: solo guarda un prefab si el orden cambia, y registra antes → después. Un
 //             personaje sin «orden_tronco» no se toca y se anota.
 //   "clips"   reescribe EN SITIO las curvas de los .anim que ya existen con lo que diga
@@ -1439,17 +1439,14 @@ public static class ClaudeBuildRigsFinal
     //
     // POR QUÉ. Bajo Lienzo/Cuerpo/Tronco los hijos nacieron como BrazoIzq, BrazoDer, Torso y Cuello
     // (familia) o Ojos y Boca (Algoritm), y uGUI dibuja de atrás adelante: los brazos quedaban DETRÁS del
-    // torso y de la cabeza y se escondían. Santiago no lo aceptó (05/10/2026): con el arte final los brazos
-    // van DELANTE. Sus hombros son cápsulas con el contorno cerrado y se ven bien encima del torso.
-    // LA REGLA ES POR PERSONAJE, no global: delante solo en quien tiene los brazos partidos (la Image de
-    // .../BrazoIzq/CodoIzq/AntebrazoIzq con sprite y encendida: hoy el Niño) y en Algoritm. Papá, Mamá y Niña
-    // siguen con el arte provisional de una pieza y conservan los brazos detrás —su «orden_tronco» es
-    // BrazoIzq, BrazoDer, Torso, Cuello—, porque delante enseñarían el contorno cortado del hombro; cuando
-    // llegue su arte final se les cambia la tabla y se corre «orden» otra vez. En Algoritm la cara (Ojos y
-    // Boca) se queda POR ENCIMA de los brazos, para que un brazo levantado nunca tape los ojos que miran al
-    // niño. El orden concreto vive en la tabla («orden_tronco»), no aquí; este modo no decide nada por su
-    // cuenta, y la prueba CharacterRig_INC132_ConLosBrazosPartidos… vigila que la tabla y el arte concuerden
-    // (un personaje partido con los brazos detrás falla, y el Niño no puede pasar por la rama provisional).
+    // torso y de la cabeza y se escondían. Santiago no lo aceptó (05/10/2026): los brazos van DELANTE en los
+    // siete personajes, también en Papá, Mamá y Niña aunque su arte siga siendo provisional de una pieza,
+    // para que todo quede listo cuando llegue el arte final (con el provisional se ven los arcos del hombro
+    // cortados sobre el torso hasta entonces; los hombros del arte final son cápsulas con el contorno
+    // cerrado y se ven bien encima). En Algoritm la cara (Ojos y Boca) se queda POR ENCIMA de los brazos,
+    // para que un brazo levantado nunca tape los ojos que miran al niño. El orden concreto vive en la tabla
+    // («orden_tronco»), no aquí; este modo no decide nada por su cuenta, y las pruebas
+    // CharacterRig_INC132_* vigilan que los prefabs lo cumplan.
     //
     // CÓMO. SetSiblingIndex reordena m_Children del padre y no cambia ni un fileID: las referencias de
     // las escenas y de los 18 assets narrativos siguen en pie. Los hijos listados van al final de Tronco
