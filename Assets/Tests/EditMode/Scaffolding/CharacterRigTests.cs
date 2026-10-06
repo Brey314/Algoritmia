@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
+using UnityEngine.TestTools;
 using UnityEngine.UI;
 
 namespace Game.Scaffolding.Tests
@@ -264,25 +267,173 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// En Algoritm los brazos también van delante del cuerpo (INC-132), pero la cara va encima de
-        /// ellos: un brazo levantado nunca debe tapar los ojos con los que el guía mira al niño.
+        /// En Algoritm los brazos van delante del cuerpo y la cara ENCIMA de ellos no: son las manos las
+        /// que se pintan encima de la cara (Santiago, 05/10/2026, INC-132). El orden bajo Tronco es Torso,
+        /// Ojos, Boca, BrazoIzq, BrazoDer: sin esto una mano que sube a la cara quedaría escondida detrás
+        /// de ella. Lo fija el modo «orden» del generador.
         /// </summary>
         [Test]
-        public void CharacterRig_INC132_AlgoritmPintaLosBrazosDelanteDelCuerpoYLaCaraEncima(
+        public void CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara(
             [Values("Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
         {
             var tronco = Rig(nombre).transform.Find(Tronco);
             Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
 
             var torso = Orden(tronco, nombre, "Torso");
-            foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
+            foreach (var cara in new[] { "Ojos", "Boca" })
             {
-                var indice = Orden(tronco, nombre, brazo);
-                Assert.That(indice, Is.GreaterThan(torso), $"{nombre}: {brazo} se dibuja después del torso, o queda escondido detrás");
-                foreach (var cara in new[] { "Ojos", "Boca" })
+                var indiceCara = Orden(tronco, nombre, cara);
+                Assert.That(indiceCara, Is.GreaterThan(torso), $"{nombre}: {cara} se dibuja sobre el torso");
+                foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
                 {
-                    Assert.That(Orden(tronco, nombre, cara), Is.GreaterThan(indice), $"{nombre}: {cara} se dibuja sobre {brazo}, no al revés");
+                    Assert.That(Orden(tronco, nombre, brazo), Is.GreaterThan(indiceCara), $"{nombre}: {brazo} se dibuja sobre {cara}: la mano tapa la cara, no al revés");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Al golpear las piedras las manos chocan delante del pecho, y con los brazos detrás del torso el
+        /// choque no se vería (Santiago, 05/10/2026, INC-132): mientras golpea, los brazos pasan delante del
+        /// torso, conservando el orden entre ellos, y el cuello —con la cabeza dentro— sigue detrás de ellos.
+        /// Se prueba sobre una copia del prefab, nunca sobre el asset.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC132_AlGolpearLosBrazosPasanDelanteDelTorso(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var copia = UnityEngine.Object.Instantiate(Rig(nombre).gameObject);
+            try
+            {
+                var tronco = copia.transform.Find(Tronco);
+                Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
+
+                new ArmLayering(tronco).Apply(true);
+
+                var cuello = Orden(tronco, nombre, "Cuello");
+                var torso = Orden(tronco, nombre, "Torso");
+                var izquierdo = Orden(tronco, nombre, "BrazoIzq");
+                var derecho = Orden(tronco, nombre, "BrazoDer");
+                Assert.That(izquierdo, Is.GreaterThan(torso), $"{nombre}: BrazoIzq se dibuja después del torso, para que se vea el choque");
+                Assert.That(derecho, Is.GreaterThan(izquierdo), $"{nombre}: entre los brazos se conserva el orden");
+                Assert.That(cuello, Is.LessThan(izquierdo), $"{nombre}: el cuello sigue detrás de los brazos");
+                Assert.That(cuello, Is.LessThan(derecho));
+                Assert.That(cuello, Is.LessThan(torso));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(copia);
+            }
+        }
+
+        /// <summary>
+        /// Lo que pasó delante vuelve a su sitio exacto al terminar el golpe, aunque se pida varias veces
+        /// lo mismo: no queda ningún brazo delante del torso para el resto de las acciones.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC132_AlTerminarElGolpeLosBrazosVuelvenDetrasDelTorso(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var copia = UnityEngine.Object.Instantiate(Rig(nombre).gameObject);
+            try
+            {
+                var tronco = copia.transform.Find(Tronco);
+                Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
+                var inicial = OrdenDeDibujo(tronco);
+                var capas = new ArmLayering(tronco);
+
+                capas.Apply(true);
+                capas.Apply(true);
+                Assert.That(OrdenDeDibujo(tronco), Is.Not.EqualTo(inicial), $"{nombre}: el golpe sí cambia el orden (si no, la prueba no prueba nada)");
+
+                capas.Apply(false);
+                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: al terminar el golpe vuelve el orden de origen");
+
+                capas.Apply(false);
+                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: devolverlo dos veces no lo cambia");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(copia);
+            }
+        }
+
+        /// <summary>
+        /// En Algoritm los brazos ya van después del torso: golpear no mueve nada, ni al empezar ni al
+        /// terminar. Así su cara (Ojos y Boca) tampoco se ve afectada.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC132_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo(
+            [Values("Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
+        {
+            var copia = UnityEngine.Object.Instantiate(Rig(nombre).gameObject);
+            try
+            {
+                var tronco = copia.transform.Find(Tronco);
+                Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
+                var inicial = OrdenDeDibujo(tronco);
+                var capas = new ArmLayering(tronco);
+
+                capas.Apply(true);
+                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: golpear no cambia el orden");
+
+                capas.Apply(false);
+                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: terminar de golpear tampoco");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(copia);
+            }
+        }
+
+        /// <summary>
+        /// Solo golpear las piedras pone los brazos delante del torso (valor por defecto del campo
+        /// armsInFrontActions): el choque de las manos delante del pecho es el único gesto que lo pide.
+        /// Los siete prefabs lo traen sin tenerlo serializado, así que mide lo que Unity entrega al
+        /// cargarlos. El nombre del campo es un contrato: la herramienta de Python lo lee de CharacterRig.cs.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC132_SoloElGolpePoneLosBrazosDelante(
+            [Values("Papa", "Mama", "Nina", "Nino", "Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
+        {
+            var campo = typeof(CharacterRig).GetField("armsInFrontActions", BindingFlags.NonPublic | BindingFlags.Instance);
+            Assert.That(campo, Is.Not.Null, "CharacterRig tiene el campo armsInFrontActions");
+
+            var acciones = (ActorAction[])campo.GetValue(Rig(nombre));
+            Assert.That(acciones, Is.EqualTo(new[] { ActorAction.Strike }), $"{nombre}: solo Strike pone los brazos delante");
+        }
+
+        /// <summary>
+        /// Un personaje al que le falta el torso o un brazo, o sin Tronco, no rompe la escena: avisa una
+        /// vez y deja la jerarquía como estaba. La acción del guion nunca debe lanzar.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC132_SiFaltaUnNodoElGolpeAvisaYNoMueveNada()
+        {
+            var tronco = new GameObject("Tronco", typeof(RectTransform));
+            try
+            {
+                foreach (var hijo in new[] { "Cuello", "BrazoIzq", "BrazoDer" })
+                {
+                    new GameObject(hijo, typeof(RectTransform)).transform.SetParent(tronco.transform, false);
+                }
+
+                var inicial = OrdenDeDibujo(tronco.transform);
+                var sinTorso = new ArmLayering(tronco.transform);
+
+                LogAssert.Expect(LogType.Warning, new Regex("ArmLayering"));
+                Assert.DoesNotThrow(() => sinTorso.Apply(true), "sin torso no lanza");
+                Assert.DoesNotThrow(() => sinTorso.Apply(true), "ni la segunda vez (y no repite el aviso)");
+                Assert.DoesNotThrow(() => sinTorso.Apply(false));
+                Assert.That(OrdenDeDibujo(tronco.transform), Is.EqualTo(inicial), "sin torso no se mueve nada");
+
+                var sinTronco = new ArmLayering(null);
+                LogAssert.Expect(LogType.Warning, new Regex("ArmLayering"));
+                Assert.DoesNotThrow(() => sinTronco.Apply(true), "sin Tronco no lanza");
+                Assert.DoesNotThrow(() => sinTronco.Apply(false));
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(tronco);
             }
         }
 
@@ -431,6 +582,18 @@ namespace Game.Scaffolding.Tests
             var nodo = tronco.Find(hijo);
             Assert.That(nodo, Is.Not.Null, $"{personaje}: {Tronco} tiene {hijo}");
             return nodo.GetSiblingIndex();
+        }
+
+        /// <summary>Los nombres de los hijos de Tronco, de atrás adelante, en una sola línea para comparar y para el mensaje.</summary>
+        private static string OrdenDeDibujo(Transform tronco)
+        {
+            var nombres = new List<string>();
+            for (var i = 0; i < tronco.childCount; i++)
+            {
+                nombres.Add(tronco.GetChild(i).name);
+            }
+
+            return string.Join(", ", nombres);
         }
 
         /// <summary>Los clips del controlador del personaje (sin repetidos: las tres formas de Algoritm comparten el suyo).</summary>

@@ -267,6 +267,72 @@ def aplicar_orden_tronco(arbol, orden):
     tronco.hijos = [por_nombre[n] for n in orden] + resto
 
 
+CHARACTER_RIG_CS = os.path.join(RAIZ, "Assets", "Game", "Scripts", "Runtime", "Scaffolding", "CharacterRig.cs")
+ACCIONES_DELANTE_POR_DEFECTO = {"Strike"}
+
+
+def lee_acciones_delante(texto):
+    """
+    Las acciones de la linea «private ActorAction[] armsInFrontActions = { ActorAction.Strike, ... };» de CharacterRig.cs
+    (el contrato: en ellas los brazos se dibujan DELANTE del torso, en tiempo de ejecucion), o None si no la encuentra.
+    """
+    m = re.search(r"ActorAction\s*\[\s*\]\s+armsInFrontActions\s*=\s*(?:new\s+ActorAction\s*\[\s*\]\s*)?\{([^}]*)\}", texto)
+    if not m:
+        return None
+    return set(re.findall(r"ActorAction\.(\w+)", m.group(1)))
+
+
+def acciones_brazos_delante(ruta=CHARACTER_RIG_CS):
+    """
+    (acciones, encontrada): las acciones en que los brazos pasan delante del torso, leidas de CharacterRig.cs. Si el
+    archivo aun no trae la lista, {«Strike»} y encontrada = False (quien llame lo avisa).
+    """
+    try:
+        with open(ruta, encoding="utf-8") as f:
+            acciones = lee_acciones_delante(f.read())
+    except OSError:
+        acciones = None
+    if acciones is None:
+        return set(ACCIONES_DELANTE_POR_DEFECTO), False
+    return acciones, True
+
+
+def orden_con_brazos_delante(nombres):
+    """
+    El orden de los hijos de Tronco en las acciones de «brazos delante» (el contrato de CharacterRig): cada BrazoIzq/BrazoDer
+    que se dibuja antes de Torso pasa inmediatamente despues de Torso; el que ya esta despues (Algoritm) no cambia.
+    """
+    if "Torso" not in nombres:
+        return list(nombres)
+    t = nombres.index("Torso")
+    mover = [n for n in nombres[:t] if n in ("BrazoIzq", "BrazoDer")]
+    resto = [n for n in nombres if n not in mover]
+    i = resto.index("Torso")
+    return resto[:i + 1] + mover + resto[i + 1:]
+
+
+def autoprueba_contrato():
+    """
+    Lo que la lectura de la lista tiene que cumplir, para las autopruebas de coreografia.py y pose_preview.py:
+    [(nombre, ok)]. Con CharacterRig.cs real: si menciona armsInFrontActions la regex TIENE que encontrarla (si no, la
+    coreografia seguiria con la lista por defecto sin enterarse de que el contrato cambio de forma).
+    """
+    casos = []
+    uno = "private ActorAction[] armsInFrontActions = { ActorAction.Strike };"
+    casos.append(("la linea del contrato", lee_acciones_delante(uno) == {"Strike"}))
+    dos = "[SerializeField] private static readonly ActorAction[] armsInFrontActions = new ActorAction[] {\n  ActorAction.Strike,\n  ActorAction.Hammer };"
+    casos.append(("varias acciones, con new y saltos", lee_acciones_delante(dos) == {"Strike", "Hammer"}))
+    casos.append(("sin la lista", lee_acciones_delante("private ActorAction[] otra = { ActorAction.Strike };") is None))
+    try:
+        with open(CHARACTER_RIG_CS, encoding="utf-8") as f:
+            real = f.read()
+    except OSError:
+        real = None
+    if real is not None and "armsInFrontActions" in real:
+        casos.append(("CharacterRig.cs trae la lista y se lee", lee_acciones_delante(real) is not None))
+    return casos
+
+
 def casco_convexo(puntos):
     """Cierre convexo (Andrew, monotone chain). Para saber el punto mas bajo de una pieza sin rasterizar."""
     pts = sorted(set(puntos))

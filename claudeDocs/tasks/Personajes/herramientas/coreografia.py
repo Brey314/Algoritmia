@@ -330,6 +330,7 @@ class Ctx:
         self.suelo = P.SUELO
         self.cara = None      # (x0, y0, x1, y1): la zona de ojos y boca
         self.y_pecho = self.y_vientre = self.y_cadera = 0.0  # alturas de referencia del tronco
+        self.y_cintura = 0.0  # lo mas bajo que puede quedar un choque de manos (Strike): la cadera del JSON menos MARGEN_CINTURA, o y_cadera si es mas alta
         self.pie_x = {"Izq": 512.0, "Der": 512.0}  # x de cada pie (la cadera) en el lienzo
         self.pie_piv = {}     # "Izq"/"Der" -> (x, y) del pivote que gira esa pieza (la cadera, o la rodilla con piernas partidas)
         self.pie_casco = {}   # "Izq"/"Der" -> cierre convexo de la pieza que toca el suelo, relativo a ese pivote
@@ -340,6 +341,8 @@ class Ctx:
         self.alcance = 0.0    # largo del brazo con antebrazo (humero + antebrazo): la escala de los gestos de los brazos
         self.hang = 0.0       # reposo: angulo del brazo respecto a la vertical (0 = colgando pegado al cuerpo)
         self.pliegue = 0.0    # reposo: flexion de los codos hacia dentro
+        self.delante = set()  # acciones en que los brazos van DELANTE del torso (CharacterRig.armsInFrontActions); las demas, detras
+        self.delante_hallada = False  # la lista se leyo de CharacterRig.cs (si no, la de por defecto)
 
 
 def leer_contexto_prefab(pid, rig=None):
@@ -431,6 +434,8 @@ EXTRA_PUNTA = 1.12     # la mano llega un poco mas alla del punto M del modelo
 
 MIN_ALCANCE = 0.45  # fraccion del largo del brazo a la que la mano puede acercarse al hombro sin doblar el codo en horquilla
 PASO_APUNTA = 0.5   # grados: el paso con que el brazo de una pieza busca una direccion que no cruce el eje ni la cara
+MARGEN_CINTURA = 45.0  # el choque de Strike queda por encima de la cintura: de la cadera del JSON menos esto (px del lienzo); pose_preview lo vigila
+ESC_MIN_BRAZO = 0.45  # un brazo de UNA pieza que se acerca la mano al hombro se ENCOGE (escala X e Y, como si apuntara hacia el espectador) hasta esta fraccion
 
 
 class Brazo:
@@ -455,6 +460,7 @@ class Brazo:
         self.grosor = 0.0
         self.evita = []
         self.silueta = None   # Silueta de lo que tapa al brazo (el torso); sin ella no hay restriccion de visibilidad
+        self.delante = False  # en la accion que se escribe los brazos van DELANTE del torso (pon_delante): lo tapado no cuenta
         self.base_cap = 0.0   # fraccion del brazo que SIEMPRE queda tras el torso (la cupula del hombro): solo con el modelo de capsulas
         self.pts_h = []       # pixeles del sprite del brazo (o del humero) relativos al hombro; los del antebrazo, relativos al codo
         self.pts_f = []
@@ -577,9 +583,18 @@ class Brazo:
     def _oculto_celda(self, i, j):
         return self.tabla[i][j] if self.partido else self.tabla[i]
 
+    def pon_delante(self, delante):
+        """
+        Los brazos de esta accion van delante del torso (CharacterRig.armsInFrontActions) o detras. Delante no hay nada
+        que los tape: no hay restriccion de visibilidad y el gesto se resuelve donde lo pide (Strike, delante del pecho).
+        """
+        self.delante = bool(delante)
+        if self.dos is not None:
+            self.dos.delante = self.delante
+
     def visible(self, rs, rc=0.0):
-        """El brazo con estos giros se ve (lo oculto no pasa del umbral). Sin silueta, siempre."""
-        if self.tabla is None:
+        """El brazo con estos giros se ve (lo oculto no pasa del umbral). Sin silueta, o con los brazos delante del torso, siempre."""
+        if self.delante or self.tabla is None:
             return True
         i, j = self._celda(rs, rc)
         return self._oculto_celda(i, j) <= self.umbral
@@ -636,20 +651,21 @@ class Brazo:
         return e, m
 
     # --- inversa
-    def ik(self, objetivo, codo_hacia=None, libre=False):
+    def ik(self, objetivo, codo_hacia=None, alcance=None, minimo=MIN_ALCANCE):
         """
         (rot_hombro, rot_codo) para que la mano llegue a «objetivo» (o lo mas cerca que alcance). De las dos
         posiciones posibles del codo elige la que queda mas del lado de «codo_hacia» (un vector del lienzo;
         por defecto hacia fuera y un poco abajo: el codo en el interior pasaria por delante de la cara) y, entre
-        las dos, la que no cruza el eje del cuerpo. Con un brazo de una pieza el hombro lo apunta (apunta()). «libre»
-        deja la pose donde la pide el gesto aunque el torso tape el brazo (solo para lo que lo justifica: ver EXCEPCIONES_BRAZO
-        de pose_preview.py).
+        las dos, la que no cruza el eje del cuerpo. Con un brazo de una pieza el hombro lo apunta (apunta()). Si los
+        brazos van detras del torso se prefiere la rama en que se ven (visible()); si van delante, esa restriccion no existe.
+        «alcance» (solo con brazo de una pieza): el largo con que se dibuja el brazo (acortado); por defecto el entero.
+        «minimo»: la fraccion del largo del brazo a la que la mano puede acercarse al hombro (MIN_ALCANCE: sin codo en horquilla).
         """
         if not self.partido:
-            rs = self.apunta(objetivo, libre)
-            return rs, self.dos.ik(objetivo, codo_hacia)[1]
+            rs = self.apunta(objetivo, alcance)
+            return rs, self.dos.ik(objetivo, codo_hacia, None, minimo)[1]
         dx, dy = objetivo[0] - self.S[0], objetivo[1] - self.S[1]
-        d = max(abs(self.l1 - self.l2) + 1.0, MIN_ALCANCE * (self.l1 + self.l2),
+        d = max(abs(self.l1 - self.l2) + 1.0, minimo * (self.l1 + self.l2),
                 min(self.l1 + self.l2 - 1.0, math.hypot(dx, dy)))
         base = _ang((dx, dy))
         cos_a = (self.l1 ** 2 + d ** 2 - self.l2 ** 2) / (2 * self.l1 * d)
@@ -670,9 +686,9 @@ class Brazo:
             a2 = _ang((mano[0] - e[0], mano[1] - e[1]))
             rs, rc = _norm(a1 - self.a1), _norm((a2 - a1) - (self.a2 - self.a1))
             # y se prefiere la rama en que el brazo se ve (va tras el torso): la otra solo si ninguna se ve
-            cand.append((1 if (libre or self.visible(rs, rc)) else 0, 0 if mal else 1, coste, rs, rc))
+            cand.append((1 if self.visible(rs, rc) else 0, 0 if mal else 1, coste, rs, rc))
         _, _, _, rs, rc = max(cand, key=lambda c: (c[0], c[1], c[2]))
-        return (rs, rc) if libre else self.repara(rs, rc)
+        return self.repara(rs, rc)
 
     def _choca(self, p, q):
         """El segmento p-q (su eje, a un cuarto de grosor: la caja ya lleva su holgura) entra en alguna de las cajas que el brazo no debe cruzar."""
@@ -686,26 +702,32 @@ class Brazo:
                 return True
         return False
 
-    def apunta(self, objetivo, libre=False):
+    def escala_para(self, objetivo, minimo=ESC_MIN_BRAZO):
+        """La escala (X e Y: el dibujo del brazo va en diagonal) del brazo de UNA pieza para que su mano llegue a «objetivo» (entre «minimo» y 1): un brazo rigido no se dobla, se encoge."""
+        d = math.hypot(objetivo[0] - self.S[0], objetivo[1] - self.S[1])
+        return clamp(d / self.largo, minimo, 1.0)
+
+    def apunta(self, objetivo, alcance=None):
         """
         Rotacion del hombro de un brazo de UNA pieza: lo apunta hacia el objetivo (la mano queda a su alcance
         sobre esa recta, pasandose de largo si el objetivo esta mas cerca). Sin antebrazo no se puede doblar:
         lo que un brazo recto no puede hacer sin quedar mal se evita, no se finge. La direccion mas cercana a
         la del objetivo que (1) no lleve la mano mas alla del eje del cuerpo —se formaria una X—, (2) no meta
-        el brazo en la cara y (3) deje el brazo VISIBLE (va detras del torso: Brazo.visible).
+        el brazo en la cara y (3) deje el brazo VISIBLE (si va detras del torso: Brazo.visible; en las acciones con los brazos delante no hay nada que tape).
         """
         dx, dy = objetivo[0] - self.S[0], objetivo[1] - self.S[1]
         psi0 = _ang((dx, dy))
         base = _ang((self.M[0] - self.S[0], self.M[1] - self.S[1]))
         psi = psi0  # si ninguna direccion cumple, la del objetivo
+        largo = alcance or self.largo
         for k in range(int(360.0 / PASO_APUNTA) + 1):
             for signo in ((1.0,) if k == 0 else (1.0, -1.0)):
                 c = psi0 + signo * k * PASO_APUNTA
-                p = _pol(c, self.largo)
+                p = _pol(c, largo)
                 tip = (self.S[0] + p[0], self.S[1] + p[1])
-                if self.lado_sig * (tip[0] - self.cx) < 0.5 * self.grosor or self._choca(self.S, tip):
+                if self.lado_sig * (tip[0] - self.cx) < 0.5 * self.grosor * (largo / self.largo) or self._choca(self.S, tip):
                     continue
-                if not libre and not self.visible(c - base):
+                if not self.visible(c - base):
                     continue
                 return _norm(c - base)
         return _norm(psi - base)
@@ -870,6 +892,7 @@ def leer_contexto(pid, rig=None, arbol=None, piezas=None):
     nodos = {n["nombre"]: n for n in p["nodos"]}
     partes = {q["nombre"]: q for q in p["partes"]}
     x = Ctx(pid, guia=guia)
+    x.delante, x.delante_hallada = P.acciones_brazos_delante()
     x.brazos = _brazos_de(rig, pid, arbol, piezas)
     x.hombro_y = x.brazos["Izq"].S[1]
     x.alcance = x.brazos["Izq"].l1 + x.brazos["Izq"].l2
@@ -885,6 +908,8 @@ def leer_contexto(pid, rig=None, arbol=None, piezas=None):
     x.y_pecho = x.hombro_y + max(0.12 * alto, v_min)
     x.y_vientre = x.y_pecho + 0.14 * alto
     x.y_cadera = x.y_vientre + 0.10 * alto
+    cadera_json = next((q["pivote"][1] for q in p["partes"] if q["nombre"] == "PiernaIzq"), x.y_cadera + MARGEN_CINTURA)
+    x.y_cintura = min(x.y_cadera, cadera_json - MARGEN_CINTURA)
     zona = [nodos[n]["rect"] for n in ("Ojos", "Boca") if n in nodos and nodos[n].get("rect")]
     if zona:
         x.cara = (min(r[0] for r in zona), min(r[1] for r in zona), max(r[2] for r in zona), max(r[3] for r in zona))
@@ -1073,12 +1098,13 @@ def cuelga_piernas(s, media):
 # pierna se ve en el balanceo del Idle.
 #
 # LOS BRAZOS VAN DETRAS DEL TORSO Y DELANTE DE LA CABEZA (orden_tronco de la familia, decision de Santiago del 05/10/2026),
-# y se ven: la prueba de pose_preview.py exige >= 85 % de cada brazo visible. Cada Brazo conoce la silueta del torso
+# salvo en las acciones de CharacterRig.armsInFrontActions (hoy Strike), donde el motor los pasa DELANTE del torso: ahi no hay
+# restriccion de visibilidad (Brazo.pon_delante, que familia_spec fija accion por accion). Detras, se ven: la prueba de pose_preview.py exige >= 85 % de cada brazo visible. Cada Brazo conoce la silueta del torso
 # (Silueta) y los pixeles de su sprite, y Brazo.repara lleva cualquier pose pedida a la pose visible mas cercana
 # (Brazo.pose para los gestos por angulo, Brazo.ik y Brazo.apunta para los de «la mano va aqui»). Asi lo derivan de la
 # geometria el arte de hoy (la cabeza va pintada dentro del torso: hay que abrir mas los brazos) y el arte final. Los
-# gestos se piden donde SE VEN —fuera(): la mano que descansa en el costado— y los que no caben (Strike, delante del
-# pecho) llevan una excepcion con motivo (pose_preview.EXCEPCIONES_BRAZO). Los brazos SI pasan por delante de la cabeza,
+# gestos se piden donde SE VEN —fuera(): la mano que descansa en el costado—, y el que necesita las manos delante del
+# pecho (Strike) es de los que van delante, no una excepcion. Los brazos SI pasan por delante de la cabeza,
 # pero no tapan ojos ni boca, y el torso (dibujado despues) tampoco debe tapar la cara al inclinarse la cabeza.
 #
 # LA COREOGRAFIA SE ESCRIBE UNA VEZ, PARA EL ARTE FINAL, Y SE ADAPTA A LO QUE LEE. Los gestos se piden como
@@ -1143,6 +1169,10 @@ def reposo_nuevo(x):
 
 
 def familia_spec(x, accion, archivo, largo_base, bucle=True):
+    # el solucionador sabe, accion por accion, si los brazos van delante del torso o detras (la lista de CharacterRig.cs): de
+    # ello depende si un gesto debe verse al pasar tras el torso o no; el clip lo escribe despues de esta llamada
+    for b in x.brazos.values():
+        b.pon_delante(accion in x.delante)
     return Spec(accion, "char_%s_anim_%s" % (x.id, archivo), largo_base, x.k, bucle, reposo_nuevo(x), HUESOS_FAMILIA)
 
 
@@ -1226,13 +1256,18 @@ def _rejilla(largo, paso=0.1):
 PASO_MANOS = 0.04  # s base entre dos muestras de la cinematica inversa de manos()
 
 
-def manos(x, s, izq=None, der=None, libre=False):
+def manos(x, s, izq=None, der=None, acorta=None, minimo=MIN_ALCANCE):
     """
     Brazos por objetivo: listas de (t, (px, py)[, codo_hacia]) con el punto del lienzo adonde va la mano.
     El codo se dobla en el sentido natural salvo que se pida otra direccion. La MANO sigue el camino que
     dicen los puntos (una curva ClampedAuto por eje, como la que dibuja Unity) y la cinematica inversa se
     resuelve cada PASO_MANOS: interpolar los ANGULOS entre dos poses lejanas barre la mano por donde sea
     (con las manos que van de los brazos abiertos al pecho, por delante de la barbilla).
+    «acorta» (una fraccion minima de escala, ESC_MIN_BRAZO): con un brazo de UNA pieza, que no se dobla, la mano solo llega a
+    los puntos a un largo de brazo del hombro; para llevarla mas cerca el brazo se ENCOGE (escala X e Y de su nodo, como si
+    apuntara hacia el espectador) hasta esa fraccion. Solo en Y se aplastaria: el dibujo del brazo va en diagonal. Con brazo
+    partido no hace nada: el codo se dobla. «minimo»: lo mas cerca del hombro que puede quedar la mano, en fracciones del
+    alcance (Brazo.ik).
     """
     for lado, claves, hom, cod in (("Izq", izq, LA, LE), ("Der", der, RA, RE)):
         if not claves:
@@ -1247,11 +1282,15 @@ def manos(x, s, izq=None, der=None, libre=False):
         for t in tiempos:
             previa = [c for c in claves if c[0] <= t + 1e-9][-1]
             pos = (cx.evaluar(t), cy.evaluar(t)) if cx is not None else previa[1]
-            rs, rc = b.ik(pos, previa[2] if len(previa) > 2 else None, libre)
+            esc = b.escala_para(pos, acorta) if (acorta and not b.partido) else None
+            rs, rc = b.ik(pos, previa[2] if len(previa) > 2 else None, None if esc is None else esc * b.largo, minimo)
             rs, rc = _desenrolla(previo[0], rs), _desenrolla(previo[1], rc)
             previo = [rs, rc]
             s.raw(hom, ROT, t, rs)
             s.raw(cod, ROT, t, rc)
+            if esc is not None:
+                s.raw(hom, ESCX, t, esc)
+                s.raw(hom, ESCY, t, esc)
 
 
 def fuera(x, lado, y, extra=0.0):
@@ -1674,25 +1713,45 @@ def talk(x):
 
 def strike(x):
     """
-    Golpear las piedras (0,6 s, en bucle) delante del pecho: de las manos en las caderas (por fuera del torso) suben, se
-    abren (anticipacion), CHOCAN sobre el eje, rebotan y vuelven. Es el unico gesto cuyo instante central pasa los brazos
-    por detras del torso (EXCEPCIONES_BRAZO de pose_preview.py): probado a la altura de la frente, el choque tapa la cara
-    con las manos y se lee como desesperacion (CP-02), y a un lado el brazo de lejos cruzaria tras el cuerpo. El resto del
-    clip (subida, apertura, rebote y vuelta) se ve; el choque dura menos de 0,1 s y lo remata el hundimiento del cuerpo.
+    Golpear las piedras delante del pecho (0,6 s): las manos se abren (anticipacion: las piedras se separan), chocan
+    en el eje y rebotan. En esta accion los brazos pasan DELANTE del torso (CharacterRig.armsInFrontActions: lo decide
+    el motor, accion por accion, y el solucionador lo sabe): el choque ocurre donde se ve, a la altura del pecho, una
+    mano por lado, cada una a una distancia del eje que es una fraccion del alcance. A la altura de la frente taparia la
+    cara con las manos y se leeria como desesperacion (CP-02): por eso el choque queda en el pecho y nunca sube a la cara.
+
+    BRAZO DE UNA PIEZA (arte provisional de Papa, Mama y Nina). Un brazo rigido no se dobla, y dos brazos iguales solo
+    se encuentran sobre el eje a un largo de brazo del hombro: ENCIMA de la cabeza (probado: los brazos cruzan por delante
+    de la cara y la tapan, pose_preview lo rechaza) o DEBAJO, a la altura de la ingle (inaceptable en un juego de cuarto).
+    Dos manos al mismo costado del cuerpo, con las dos por encima de la cintura, tampoco se tocan (quedan a mas de
+    110 px). Lo que si cabe es ENCOGER el brazo (escala X e Y, como si apuntara hacia el espectador: ESC_MIN_BRAZO): el choque
+    sube hasta el pecho-vientre y las manos se encuentran ahi, siempre por encima de la cintura (pose_preview lo vigila). Con
+    brazo partido el codo se dobla y el choque queda en el pecho, sin acortar nada.
     """
     s = familia_spec(x, "Strike", "golpear", 0.6)
     R = x.alcance
-    ts = (0.0, 0.14, 0.24, 0.30, 0.38, 0.46, 0.6)
-    sep = (None, 0.30, 0.26, 0.04, 0.13, 0.20, None)    # mitad de la separacion entre las manos, en alcances (None: en la cadera)
-    alto = (0, -4, -10, 0, 0, 0, 0)                     # y la altura sobre el pecho
+    ts = (0.0, 0.14, 0.21, 0.30, 0.36, 0.46, 0.6)
+    sep = (0.097, 0.23, 0.29, 0.082, 0.126, 0.097, 0.097)  # mitad de la separacion entre las manos, en alcances (al chocar, una junto a la otra)
+    alto = (0, -4, -10, 4, 0, 0, 0)                        # y la altura sobre el pecho (arriba al armar el golpe)
     yy = x.y_pecho + 14
+    acorta = None
+    minimo = MIN_ALCANCE
+    if x.brazos["Izq"].partido:
+        # el choque por encima de la cintura (x.y_cintura): con un torso corto (el Nino) el pecho que pide MIN_ALCANCE queda
+        # bajo, asi que se sube el choque y se deja que el codo se cierre algo mas
+        if yy + 4 > x.y_cintura - 40:
+            yy = x.y_cintura - 40 - 4
+            minimo = 0.34
+    else:
+        # el choque, lo mas arriba que deja el encogimiento: ahi el brazo mide ESC_MIN_BRAZO de su largo
+        acorta = ESC_MIN_BRAZO
+        for b in x.brazos.values():
+            dx = abs(abs(b.S[0] - x.cx) - max(0.082 * R, 0.5 * b.grosor * ESC_MIN_BRAZO + 1.0))
+            yy = max(yy, b.S[1] + math.sqrt(max((ESC_MIN_BRAZO * b.largo) ** 2 - dx ** 2, 0.0)))
     for lado in ("Izq", "Der"):
-        b = x.brazos[lado]
-        reposo = fuera(x, lado, x.y_cadera - 10, 0.3 * b.grosor)
-        tg = [(t, reposo if d is None else eje(x, lado, d * R, yy + dy)) for t, d, dy in zip(ts, sep, alto)]
-        manos(x, s, libre=True, **{"izq" if lado == "Izq" else "der": tg})
-    s.raw(T, POSY, 0, 0, 0.24, 5, 0.30, -8, 0.38, -3, 0.6, 0)
-    s.vol(0, 1.0, 0.24, 1.025, 0.30, 0.965, 0.38, 1.01, 0.6, 1.0)
+        tg = [(t, eje(x, lado, d * R, yy + dy)) for t, d, dy in zip(ts, sep, alto)]
+        manos(x, s, acorta=acorta, minimo=minimo, **{"izq" if lado == "Izq" else "der": tg})
+    s.raw(T, POSY, 0, 0, 0.21, 5, 0.30, -8, 0.38, -3, 0.6, 0)
+    s.vol(0, 1.0, 0.21, 1.025, 0.30, 0.965, 0.38, 1.01, 0.6, 1.0)
     s.rot(C, 0, 0, 0.21, 1.2, 0.30, -1.5, 0.6, 0)
     s.follow(T, POSY, NK, 2, 0.25)
     s.follow(T, POSY, HD, 4, 0.15)
@@ -2006,9 +2065,10 @@ def _clips_familia(x):
 # ---------------------------------------------------------------------------- Algoritm: 9 clips
 #
 # Una llama con extremidades que flota. Conserva la flotacion senoidal, el giro de Spin sobre Cuerpo, el alfa
-# y los nombres de siempre. Sus brazos son palitos que salen de los costados del vientre: nunca pasan por
-# delante de los ojos ni de la boca (la cara va encima de todo en «orden_tronco»). Con el sprite entero actual
-# lo visible no cambia; la prueba de pose_preview.py usa una maqueta recortada del sprite.
+# y los nombres de siempre. Sus brazos son palitos que salen de los costados del vientre y sus MANOS van por ENCIMA de
+# la cara (decision de Santiago, 05/10/2026: «orden_tronco» = Torso, Ojos, Boca, BrazoIzq, BrazoDer): lo que cruce los ojos o
+# la boca los tapa de verdad, asi que ningun gesto pasa por ellos —pose_preview.py exige el 99,5 % de la caja de ojos y boca,
+# ampliada un 30 %, sin brazo encima—. Con el sprite entero actual lo visible no cambia; la prueba usa una maqueta recortada.
 
 
 def guia_idle(x):
@@ -2299,6 +2359,10 @@ def autoprueba():
     malos += 0 if ok else 1
     print("%-34s %s" % ("el documento bueno", "bien" if ok else "FALSO POSITIVO"))
     os.remove(ruta)
+    # la lectura de la lista de acciones con los brazos delante (el contrato con CharacterRig.cs)
+    for nombre, ok in P.autoprueba_contrato():
+        malos += 0 if ok else 1
+        print("%-34s %s" % ("contrato: " + nombre, "bien" if ok else "FALLA"))
     return 1 if malos else 0
 
 
@@ -2311,6 +2375,12 @@ def main(argv):
                                                     sum(len(p["clips"]) for p in doc["personajes"])))
     for a in avisos:
         print("AVISO", a)
+    acciones, hallada = P.acciones_brazos_delante()
+    if not hallada:
+        # no es un error: CharacterRig.cs aun no trae la lista y se sigue con la del contrato acordado
+        print("AVISO CharacterRig.cs no trae armsInFrontActions: se usa la lista por defecto %s" % sorted(acciones))
+    else:
+        print("brazos delante del torso en: %s (leido de CharacterRig.cs)" % ", ".join(sorted(acciones)))
     errores = valida(doc)
     for e in errores:
         print("ERROR", e)

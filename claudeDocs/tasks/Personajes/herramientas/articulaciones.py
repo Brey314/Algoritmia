@@ -27,9 +27,13 @@
 # Torso] —la cabeza al fondo, los brazos, el torso delante—. Con el arte final los hombros salen por
 # detras de las esquinas del torso y el cuello queda bajo la barbilla sin costura. Con el arte provisional
 # de Papa, Mama y Nina la cabeza esta pintada DENTRO del torso: sus brazos quedan detras del torso y de la
-# cara (hasta que llegue su arte final, que cumple la regla). Algoritm NO cambia: [Torso, BrazoIzq,
-# BrazoDer, Ojos, Boca], su cara va sobre el cuerpo y la regla no cabe. La coreografia lo respeta: los
-# brazos solo van donde se ven (Brazo.oculta, derivado de la silueta del torso).
+# cara (hasta que llegue su arte final, que cumple la regla). En Strike (CharacterRig.armsInFrontActions) el
+# motor pasa los brazos DELANTE del torso mientras dura la accion: [Cuello, Torso, BrazoIzq, BrazoDer].
+# Algoritm (decision de Santiago, 05/10/2026): sus MANOS van por ENCIMA de la cara: [Torso, Ojos, Boca,
+# BrazoIzq, BrazoDer] —el cuerpo al fondo, la cara, y los brazos encima de todo—; lo que ya va despues del torso
+# no se mueve en Strike. Por eso ninguna mano de Algoritm puede pasar por ojos ni boca (pose_preview.py lo exige,
+# mas estricto que en la familia). La coreografia de la familia lo respeta: los brazos solo van donde se ven
+# cuando van detras del torso (Brazo.visible, derivado de la silueta del torso) y delante no hay restriccion.
 #
 # Por qué el JSON no lleva «segmentado»: se deduce del prefab. Un personaje está segmentado
 # cuando la Image de AntepiernaIzq tiene sprite y está encendida; guardarlo también en la tabla
@@ -172,7 +176,7 @@ T = "Lienzo/Cuerpo/Tronco"
 C = "Lienzo/Cuerpo"
 
 ORDEN_TRONCO_FAMILIA = ["Cuello", "BrazoIzq", "BrazoDer", "Torso"]            # brazos tras el torso y delante de la cabeza: Papa, Mama, Nina y Nino
-ORDEN_TRONCO_GUIA = ["Torso", "BrazoIzq", "BrazoDer", "Ojos", "Boca"]
+ORDEN_TRONCO_GUIA = ["Torso", "Ojos", "Boca", "BrazoIzq", "BrazoDer"]            # Algoritm: las manos por ENCIMA de la cara (Santiago, 05/10/2026)
 
 # Arte final del Nino (05/10/2026), medido sobre el alfa de las piezas de Assets/Game/Art/Characters/Boy;
 # los numeros viven en arte_final.json (abajo se cargan).
@@ -455,7 +459,8 @@ def main():
                 "El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo "
                 "(de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: en la familia los brazos van DETRAS DEL TORSO y "
                 "DELANTE DE LA CABEZA (decision de Santiago, 05/10/2026: Cuello, BrazoIzq, BrazoDer, Torso); en Algoritm, Torso, "
-                "los brazos y la cara (Ojos, Boca) encima. Con el arte provisional de Papa, Mama y Nina la cabeza esta pintada "
+                "la cara (Ojos, Boca) y, encima de todo, los brazos (decision de Santiago, 05/10/2026: sus manos van por encima de la cara y no la tapan en ningun clip). "
+                "En las acciones de CharacterRig.armsInFrontActions (Strike) los brazos de la familia pasan delante del torso. Con el arte provisional de Papa, Mama y Nina la cabeza esta pintada "
                 "dentro del torso: sus brazos quedan tras torso y cara hasta que llegue su arte final.",
         "personajes": personajes,
     }

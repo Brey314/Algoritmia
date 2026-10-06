@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "nota": "Valores PROVISIONALES salvo los de quien tiene entrada en arte_final.json (hoy el Nino). Lienzo de 1024, origen arriba a la izquierda, y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento 'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo (de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: en la familia los brazos van DETRAS DEL TORSO y DELANTE DE LA CABEZA (decision de Santiago, 05/10/2026: Cuello, BrazoIzq, BrazoDer, Torso); en Algoritm, Torso, los brazos y la cara (Ojos, Boca) encima. Con el arte provisional de Papa, Mama y Nina la cabeza esta pintada dentro del torso: sus brazos quedan tras torso y cara hasta que llegue su arte final.",
+  "nota": "Valores PROVISIONALES salvo los de quien tiene entrada en arte_final.json (hoy el Nino). Lienzo de 1024, origen arriba a la izquierda, y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento 'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo (de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: en la familia los brazos van DETRAS DEL TORSO y DELANTE DE LA CABEZA (decision de Santiago, 05/10/2026: Cuello, BrazoIzq, BrazoDer, Torso); en Algoritm, Torso, la cara (Ojos, Boca) y, encima de todo, los brazos (decision de Santiago, 05/10/2026: sus manos van por encima de la cara y no la tapan en ningun clip). En las acciones de CharacterRig.armsInFrontActions (Strike) los brazos de la familia pasan delante del torso. Con el arte provisional de Papa, Mama y Nina la cabeza esta pintada dentro del torso: sus brazos quedan tras torso y cara hasta que llegue su arte final.",
   "personajes": [
     {
       "id": "papa",
@@ -448,7 +448,7 @@
       "carpeta": "Algoritm",
       "prefijo": "char_algoritm_fuego",
       "guia": true,
-      "orden_tronco": ["Torso", "BrazoIzq", "BrazoDer", "Ojos", "Boca"],
+      "orden_tronco": ["Torso", "Ojos", "Boca", "BrazoIzq", "BrazoDer"],
       "nodos": [
         {
           "nombre": "PiernaIzq",
@@ -567,7 +567,7 @@
       "carpeta": "Algoritm",
       "prefijo": "char_algoritm_rueda",
       "guia": true,
-      "orden_tronco": ["Torso", "BrazoIzq", "BrazoDer", "Ojos", "Boca"],
+      "orden_tronco": ["Torso", "Ojos", "Boca", "BrazoIzq", "BrazoDer"],
       "nodos": [
         {
           "nombre": "PiernaIzq",
@@ -686,7 +686,7 @@
       "carpeta": "Algoritm",
       "prefijo": "char_algoritm_gota",
       "guia": true,
-      "orden_tronco": ["Torso", "BrazoIzq", "BrazoDer", "Ojos", "Boca"],
+      "orden_tronco": ["Torso", "Ojos", "Boca", "BrazoIzq", "BrazoDer"],
       "nodos": [
         {
           "nombre": "PiernaIzq",

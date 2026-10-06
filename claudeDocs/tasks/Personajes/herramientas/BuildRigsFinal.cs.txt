@@ -13,8 +13,10 @@
 //             deja apagado y se anota en el log.
 //   "orden"   coloca los hijos de Lienzo/Cuerpo/Tronco en el orden de dibujo que fija «orden_tronco»
 //             en la tabla: en la familia los brazos DETRÁS del torso y DELANTE de la cabeza (Cuello,
-//             BrazoIzq, BrazoDer, Torso) y en Algoritm los brazos delante del torso y la cara encima
-//             de ellos (Torso, BrazoIzq, BrazoDer, Ojos, Boca).
+//             BrazoIzq, BrazoDer, Torso) y en Algoritm las manos ENCIMA de la cara (Torso, Ojos, Boca,
+//             BrazoIzq, BrazoDer). Es el orden de REPOSO: en tiempo de ejecución, mientras el personaje
+//             golpea (Strike), CharacterRig pasa los brazos de la familia delante del torso (ArmLayering)
+//             y al terminar los devuelve; este modo no sabe nada de eso.
 //             Idempotente: solo guarda un prefab si el orden cambia, y registra antes → después. Un
 //             personaje sin «orden_tronco» no se toca y se anota.
 //   "clips"   reescribe EN SITIO las curvas de los .anim que ya existen con lo que diga
@@ -1446,8 +1448,14 @@ public static class ClaudeBuildRigsFinal
     //     delante de la cara—. Con el arte provisional de una pieza la cabeza está pintada dentro del torso,
     //     así que la regla solo se nota con el arte final; se aplica ya a Papá, Mamá, Niña y Niño para que
     //     todo quede listo cuando llegue.
-    //   - Algoritm: Torso, BrazoIzq, BrazoDer, Ojos, Boca. Los brazos van DELANTE del cuerpo y la cara
-    //     queda POR ENCIMA de ellos, para que un brazo levantado nunca tape los ojos que miran al niño.
+    //   - Algoritm: Torso, Ojos, Boca, BrazoIzq, BrazoDer. Los brazos van DELANTE del cuerpo y las manos se
+    //     pintan ENCIMA de la cara (decisión de Santiago, 05/10/2026, INC-132: la cara con la que el guía
+    //     mira al niño queda detrás de la mano que se lleva a ella, no al revés).
+    //   - En Strike (golpear las piedras: las manos chocan delante del pecho) los brazos de la familia
+    //     pasan DELANTE del torso mientras dura la acción, para que el choque se vea, y al terminar vuelven
+    //     a este orden. Eso NO lo hace este modo ni se guarda en el prefab: lo hace CharacterRig en tiempo
+    //     de ejecución (ArmLayering, campo armsInFrontActions). Este orden es el de reposo y es el que
+    //     recuerda ArmLayering al nacer el personaje.
     // El orden concreto vive en la tabla («orden_tronco»), no aquí; este modo no decide nada por su cuenta,
     // y las pruebas CharacterRig_INC132_* vigilan que los prefabs lo cumplan.
     //
