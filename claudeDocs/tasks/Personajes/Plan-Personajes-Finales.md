@@ -21,6 +21,19 @@
 > Fase 3 se escribe ahora en `herramientas/coreografia.py` (→ `clips_personajes.json`) en vez de en
 > el C#, y `herramientas/preparar_arte_final.py` es la entrada del arte final. Detalle en
 > `Personajes-Resultados.md`, C.9. Este plan no se reescribe.
+>
+> **Actualización del 06/10/2026 (INC-133).** Este plan no se reescribe; esta nota fija lo que cambió.
+> (1) El arte de cada personaje se reparte en subcarpetas `Frontal/`, `Expresiones/` y `Perfil/`
+> (`OrganizarArtePersonajes.cs.txt`, `63ed2fc`); el árbol de §7 (hacia la línea 307) sitúa
+> `char_<x>_cara.asset` y las partes en la raíz de la carpeta del personaje, y hoy el set de cara es
+> `<Art>/<Carpeta>/Expresiones/char_<x>_cara.asset`. (2) Los originales de la entrega del 06/10/2026
+> están en `claudeDocs/tasks/Personajes/entregas/2026-10-06/` (`d26ea8f`). (3) Las caras de la familia
+> se colocan por registro (`preparar_expresion.py --registrada`, `233f2e5`), no por la heurística de
+> escala. (4) INC-133: en la familia el húmero va detrás del torso y el antebrazo delante del torso,
+> de la cara y de las piernas, con `AnclaAntebrazoX` y `LimbFollower` (`ef37dd9`); acota la regla de
+> INC-132 en la familia, que sigue vigente para `Strike` y Algoritm. Entró el arte final frontal de
+> Papá, Mamá, Niña y Niño; falta el de Algoritm, y la ronda del Editor (nodos, sprites, orden, clips,
+> pruebas `INC133`, capturas) está pendiente. Detalle en `Personajes-Resultados.md`, C.10.
 
 ---
 

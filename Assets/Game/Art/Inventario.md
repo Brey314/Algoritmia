@@ -72,7 +72,8 @@ los nombres `frente_` de `Plan-Personajes-Finales.md` §4.2. El estado de cada a
 | ○ Boca de reposo por expresión | `boca_alegria`, `boca_sorpresa`, `boca_preocupacion`, `boca_concentracion` |
 
 Las seis expresiones son las de `Direccion_de_Arte.md` §7.3 y **ninguna es de tristeza, enfado ni
-derrota** (CP-02). Todo vive en la carpeta del personaje, sin subcarpeta. La tabla de dónde va cada
+derrota** (CP-02). Desde el 06/10/2026 cada personaje se reparte en subcarpetas (apartado
+siguiente). La tabla de dónde va cada
 articulación es `claudeDocs/tasks/Personajes/herramientas/rig_articulaciones.json` (provisional), y
 el arte entra con los modos «sprites» y «clips» de `BuildRigsFinal.cs.txt`
 (`claudeDocs/tasks/Personajes/Personajes-Resultados.md`, Anexo C). El generador crea además
@@ -118,6 +119,16 @@ Hasta que lleguen, el prefab lleva los nodos con las capas apagadas y se sigue v
 dentro del botón de ayuda.
 
 ### `Characters/Father/` · `Mother/` · `Girl/` · `Boy/`
+
+**Subcarpetas (06/10/2026, `63ed2fc` y `64e4b37`).** `OrganizarArtePersonajes.cs.txt` reparte el arte de cada personaje en tres carpetas, moviendo con `AssetDatabase` para que los GUID no cambien. Las cuatro de la familia y `Algoritm/` las tienen:
+
+| Carpeta | Qué va |
+|---|---|
+| `Frontal/` | Las partes `char_<x>_parte_*.png` de la vista frontal (torso, cabeza, brazos y antebrazos, piernas y antepiernas) |
+| `Expresiones/` | Ojos, bocas, `char_<x>_cara_base.png` y el set de cara `char_<x>_cara.asset` (`CharacterFaceSet`) |
+| `Perfil/` | Vacía, con `.gitkeep`, hasta que haya arte de perfil |
+
+Siguen en la raíz de la carpeta del personaje los retratos `char_<x>_retrato_neutra.png`, el cenital de Mamá, los reposos de Algoritm y `Animations/`. Los originales de cada entrega, sin tocar y fuera de `Assets`, viven en `claudeDocs/tasks/Personajes/entregas/<fecha>/` (la del 06/10/2026 trae Papá, Mamá, Niña y Niño, 45 PNG). Las tablas de abajo nombran los archivos sin la subcarpeta.
 
 | Carpeta | Partes (✓) | Retrato (✓) | Prefab |
 |---|---|---|---|

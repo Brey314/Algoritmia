@@ -14,7 +14,7 @@ los dos tienen su conversión en `docs/md/`. Las citas por sección de este docu
 con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
 (control de cambios).
 
-**Verificación vigente: 05/10/2026, rev. 18.** La rev. 14 (29/09/2026) contrastó todos los
+**Verificación vigente: 06/10/2026, rev. 19.** La rev. 14 (29/09/2026) contrastó todos los
 documentos —los `.docx` de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago,
 **todos los hallazgos están cerrados**: ante un conflicto gana el juego y se edita el documento; lo
 que solo pide el documento se implementa en el juego; lo que solo tiene el juego se añade al
@@ -31,7 +31,9 @@ regla de Algoritm de una sola imagen **para el arte final**: caras con seis expr
 codos y rodillas. La rev. 18
 (05/10/2026) registra y cierra **INC-132**, otra decisión suya: en la familia los brazos se dibujan detrás del
 torso y delante de la cabeza (delante del torso al golpear); Algoritm, delante del cuerpo con las
-manos sobre la cara. Siguen abiertos
+manos sobre la cara. La rev. 19 (06/10/2026) registra y cierra **INC-133**, decisión de Santiago que
+acota INC-132 en la familia: el húmero queda detrás del torso y el antebrazo se dibuja delante del
+torso, de la cara y de las piernas. Siguen abiertos
 solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
 **pendientes de Santiago** que el juego no zanja: tres del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
@@ -72,7 +74,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 
 ---
 
-## Resumen — estado a 05/10/2026 (rev. 18)
+## Resumen — estado a 06/10/2026 (rev. 19)
 
 | ID | Hallazgo | Documentos | Estado |
 |---|---|---|---|
@@ -189,6 +191,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-130 | El paquete de entrega superaba los 500 MB por los cuadros del fuego y del humo del Nivel 1 | Dirección de arte, Inventario de arte, CLAUDE.md | **Cerrado** (01/10/2026) |
 | INC-131 | El arte final trae seis expresiones y extremidades en dos tramos; INC-108 fijaba una sola cara y Algoritm una sola imagen | Interfaces, Dirección de arte, Inventario de arte, Plan de personajes finales, CLAUDE.md, juego | **Cerrado** (05/10/2026) |
 | INC-132 | Los brazos se escondían detrás de la cabeza y del cuerpo; la jerarquía los pintaba antes | Plan de personajes finales, Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (05/10/2026) |
+| INC-133 | En la familia el antebrazo debe dibujarse delante del torso, de la cara y de las piernas, con el húmero detrás del torso | Plan de personajes finales, Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (06/10/2026) |
 
 ---
 
@@ -2597,6 +2600,37 @@ manos de Algoritm sobre la cara; 3 prefabs de Algoritm, 4 `.anim` de golpear y e
 `ArmLayering.cs`): `Game.Scaffolding.Tests` 234/234 y suite completa en un solo Editor 960/961 (1
 omitida preexistente, 0 fallos; `ForestScene_RF22` y `RiverLevel_RNF05` en verde).
 
+### INC-133 · Antebrazo delante del torso, de la cara y de las piernas — cerrado (06/10/2026)
+
+**El conflicto.** Con el arte final de la familia, el brazo en dos tramos pedía dos órdenes de dibujo
+distintos, y uGUI pinta por orden de jerarquía: con INC-132 el brazo entero iba detrás del torso, y
+el antebrazo quedaba tapado por el cuerpo cuando debía verse (cara, torso y piernas por detrás de la
+mano).
+
+**Decisión de Santiago (06/10/2026).** En la familia (Papá, Mamá, Niña y Niño) el **húmero** se dibuja
+detrás del torso y el **antebrazo** delante del torso, de la cara y de las piernas. Papá, además, con
+la cabeza (`Cuello`) delante del torso. **Acota INC-132** en la familia, que sigue vigente para
+`Strike` (el húmero pasa delante del torso al golpear, siempre detrás de los antebrazos) y para
+Algoritm, donde no hay anclas ni cambio.
+
+**Corrección aplicada (commit `ef37dd9`, rama `feat/personajes-animados`).** `AntebrazoX` (mismo
+objeto y mismo fileID) pasa a ser hijo de `Tronco`, al final de su lista, y sigue a un nodo vacío,
+`AnclaAntebrazoX`, que queda bajo `CodoX` con la pose local anterior del antebrazo. `LimbFollower`
+(C# plano, `Game.Scaffolding`) compone `BrazoX`, `CodoX` y el ancla respecto de `Tronco` y escribe la
+pose local del antebrazo; `CharacterRig` descubre los pares por nombre y los sincroniza tras
+`Play` + `Update(0)` y en `LateUpdate`. No se añade ningún campo serializado y los clips no cambian
+(no animan el antebrazo). Los personajes sin anclas (arte provisional, Algoritm) no se tocan.
+`ArmLayering` no cambia de lógica. El modo `"orden"` de `BuildRigsFinal.cs.txt` crea las anclas y mueve
+los antebrazos cuando `orden_tronco` los lista, sin reconstruir nada. El commit `233f2e5` pone
+`AntebrazoIzq` y `AntebrazoDer` al final de `orden_tronco` de la familia y separa en `pose_preview.py` la
+visibilidad del húmero (40 %) y del antebrazo (85 %).
+**Pruebas:** `CharacterRigLimbTests` (jerarquía armada en código; pasan al escribirse) y
+`CharacterRig_INC133_*` sobre los prefabs reales; `CharacterRig_DA131_*` y `CharacterRig_INC132_*` se
+ajustaron para aceptar la jerarquía nueva. Las de prefabs fallan hasta correr el modo `"orden"` en el
+Editor. **Verificación en el Editor: pendiente** (nodos, orden, clips, pruebas `INC133` y capturas aún
+no se han corrido). Fuera del Editor: `pose_preview.py` 21/21 por miembro de la familia y 9/9 por
+Algoritm (`233f2e5`).
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -2664,6 +2698,10 @@ carril de sonido, que lleva Santiago desde el acta D08.
 
 ## Historial de revisiones
 
+- **rev. 19 (06/10/2026)** — Decisión de Santiago sobre el antebrazo de la familia. Se registra y cierra
+  **INC-133**: el húmero detrás del torso y el antebrazo delante del torso, de la cara y de las piernas
+  (Papá con la cabeza delante del torso), con `AnclaAntebrazoX` y `LimbFollower`. Acota INC-132 en la
+  familia; no la levanta para `Strike` ni para Algoritm. Mantiene CP-02.
 - **rev. 18 (05/10/2026)** — Decisión de Santiago sobre el orden de dibujo de los personajes. Se
   registra y cierra **INC-132**: en la familia, los brazos detrás del torso y delante de la cabeza
   (delante del torso solo al golpear, 06/10)

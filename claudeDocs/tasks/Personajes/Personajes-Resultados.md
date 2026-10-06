@@ -556,7 +556,7 @@ la copia: el `.txt` es lo que queda versionado.
 | Modo | Qué hace |
 |---|---|
 | `"nodos"` | Abre los siete prefabs con `LoadPrefabContents`, **añade** los nodos de la tabla que falten y el `CharacterFace`, y guarda con `SaveAsPrefabAsset`. Idempotente: si un nodo existe no lo toca, y nunca borra ni recrea uno. Todo nodo nuevo nace con la `Image` apagada y sin sprite |
-| `"sprites"` | Para cuando llegue el arte. Asigna por nombre los PNG que existan, aplica el rect y el pivote de la tabla (también a las partes que ya existían), enciende las `Image` y crea `<prefijo>_cara.asset` (un `CharacterFaceSet`) asignado al `CharacterFace`. En Algoritm apaga la `Image` de `Cuerpo` cuando torso, brazos y piernas ya están. Lo que no existe queda apagado y se anota en el log |
+| `"sprites"` | Para cuando llegue el arte. Asigna por nombre los PNG que existan, aplica el rect y el pivote de la tabla (también a las partes que ya existían), enciende las `Image` y crea `<Art>/<Carpeta>/Expresiones/char_<x>_cara.asset` (un `CharacterFaceSet`; desde `63ed2fc` y `64e4b37` vive en `Expresiones/`, y un asset de la raíz se mueve con `MoveAsset`, mismo GUID) asignado al `CharacterFace`. En Algoritm apaga la `Image` de `Cuerpo` cuando torso, brazos y piernas ya están. Lo que no existe queda apagado y se anota en el log |
 | `"orden"` | Desde INC-132 (C.9). Reordena con `SetSiblingIndex` los hijos de `Tronco` según `orden_tronco` de la tabla: familia con los brazos detrás del torso y delante de la cabeza; Algoritm con los brazos delante del cuerpo y la cara encima. No crea ni borra nodos: los fileID no cambian |
 | `"clips"` | Reescribe en sitio las curvas de los 84 `.anim` de la familia y los 9 de Algoritm (C.6), **aplicando `clips_personajes.json`** (C.9): el modo ya no contiene coreografía. Se niega si faltan los nodos: exige haber corrido «nodos» |
 | `"todo"` · `"estado"` | «Nodos», «sprites», «orden» y «clips», en ese orden · solo informa (nodos completos, `CharacterFace` sí o no, segmentado sí o no), sin escribir |
@@ -814,3 +814,30 @@ completa en un solo Editor (`tests-edit -` y `tests-play -`) 960/961 (1 omitida 
 fallos; `ForestScene_RF22` y `RiverLevel_RNF05` en verde). `suite2.ps1` murió dos veces por memoria al
 abrir el segundo Editor; `RiverLevel_RNF05` falla con un Editor abierto muchas horas (2199 MB) y pasa
 recién abierto (1533 MB), así que conviene reiniciar el Editor antes de la suite.
+
+### C.10 Subcarpetas, caras por registro y antebrazo delante (INC-133, 06/10/2026)
+
+Rama `feat/personajes-animados`, de `63ed2fc` a `233f2e5`. Lo que sigue se verificó contra `git log` y `git show` de cada commit; lo que no se ha corrido en el Editor se marca como pendiente.
+
+**Por commit**
+
+- `63ed2fc`: `CharacterFaceSet` cae a los ojos neutros y la boca cerrada cuando una emoción no tiene sprite propio, de modo que una sola expresión entregada ya muestra cara en todas las acciones. `CaraBase` pasa a ser el primer hijo de `Cabeza`. `BuildRigsFinal.cs.txt` guarda el set de cara en `Expresiones/` y prefiere la copia de la subcarpeta. Nuevo `OrganizarArtePersonajes.cs.txt`, que reparte el arte de cada personaje en `Frontal/`, `Expresiones/` y `Perfil/` usando solo `AssetDatabase`. Pruebas: `CharacterFace_DA73_SinLaExpresionDeLaEmocionUsaLaNeutra`, `CharacterFace_DA73_UnaEmocionAMediasCompletaConLaNeutra` y `CharacterRig_DA131_LaCaraBaseVaDetrasDeLosOjosYDeLaBoca`.
+- `a538ab6`: primera cara neutra del Niño, con una heurística de escala (60 % del óvalo). Superada por `233f2e5`.
+- `d26ea8f`: entrega original del 06/10/2026 de Papá, Mamá, Niña y Niño (carpetas Frente y Expresiones; 45 PNG, 2,4 MB) en `claudeDocs/tasks/Personajes/entregas/2026-10-06/`, fuera de `Assets`.
+- `64e4b37` (WIP, sesión local): el organizador corrido movió 25 PNG a `Frontal/` con los GUID intactos; `CaraBase` entró en los cuatro prefabs de la familia (cuatro objetos nuevos por prefab, ningún fileID perdido); el Niño tiene su cara en el prefab y en `char_nino_cara.asset`; partes finales de Papá, Mamá y Niña; Papá con la cabeza delante del torso. Sus `sprites`, `orden` y `clips` quedaron pendientes.
+- `ef37dd9` (INC-133): decisión de Santiago del 06/10/2026. En la familia el húmero se dibuja detrás del torso y el antebrazo delante del torso, de la cara y de las piernas. Como uGUI pinta por orden de jerarquía, `AntebrazoX` (mismo objeto y fileID) pasa a hijo de `Tronco`, al final, y sigue a un nodo vacío `AnclaAntebrazoX` que se deja bajo `CodoX` con la pose local anterior del antebrazo. `LimbFollower` (C# plano, `Game.Scaffolding`) compone `BrazoX`, `CodoX` y el ancla respecto de `Tronco` y escribe la pose local del antebrazo; `CharacterRig` descubre los pares por nombre y los sincroniza tras `Play` + `Update(0)` y en `LateUpdate`. No hay campos serializados nuevos y los clips no cambian, porque no animan el antebrazo. Los personajes sin anclas (arte provisional, Algoritm) no se tocan. `ArmLayering` conserva su lógica: al golpear sigue poniendo el húmero justo tras `Torso`, todavía detrás de los antebrazos. El modo `"orden"` crea las anclas y mueve los antebrazos cuando `orden_tronco` los lista, sin reconstruir nada.
+- `233f2e5`: caras de los cuatro por registro. Los lienzos de 1300×1500 de la entrega están registrados entre sí, así que `preparar_expresion.py --registrada` coloca `Ojos`, `Boca` y `CaraBase` con la misma transformación con que `preparar_arte_final.py` colocó las partes de ese personaje (guardada como `registro` en `arte_final.json`), en lugar de la heurística de escala. El Niño coincide con la foto de Santiago dentro del 0,6 % de la altura (ojos de 295 px de ancho en vez de 188; brazos 20 a 25 px hacia adentro, como en la entrega). Se sustituyeron en su sitio 12 PNG de `Expresiones/` (mismos nombres, `.meta` y GUID). `orden_tronco` de la familia lista los antebrazos al final (Papá: `BrazoIzq`, `BrazoDer`, `Torso`, `Cuello`, antebrazos). `pose_preview.py` mide aparte la visibilidad del húmero (40 %) y la del antebrazo (85 %). El cuello de los personajes con melena o barba gira a la altura de la barbilla. `Strike` mantiene las manos dentro del ancho de hombros y el choque sobre la cintura; los gestos cerca de la cabeza rodean la cara. Se reconocen las piezas `pies_*`.
+
+**Disposición del arte.** Cada personaje queda en `Assets/Game/Art/Characters/<Carpeta>/` con `Frontal/` (partes `char_<x>_parte_*.png`), `Expresiones/` (ojos, bocas, `char_<x>_cara_base.png` y `char_<x>_cara.asset`) y `Perfil/` (vacía, con `.gitkeep`, hasta que haya arte). Los retratos, los reposos de Algoritm y `Animations/` siguen en la raíz de la carpeta. Los originales de entrega viven en `claudeDocs/tasks/Personajes/entregas/<fecha>/`.
+
+**Corridas**
+
+| Corrida | Alcance | Resultado |
+|---|---|---|
+| `64e4b37`, Editor local | EditMode | 589 pasan, 1 omitida, 0 fallos |
+| `64e4b37`, Editor local | PlayMode | 376/377; falla `RiverLevel_RNF05` con 2084 MB, en un Editor de larga duración |
+| `233f2e5`, fuera del Editor | `--autoprueba` (cuatro), `coreografia.py --valida`, `pose_preview.py` | 21/21 por miembro de la familia y 9/9 por Algoritm; sin curvas sobre `AntebrazoX` ni su ancla |
+| `ef37dd9`, `CharacterRigLimbTests` | EditMode, jerarquía armada en código | pasan al escribirse (según el mensaje del commit) |
+| `ef37dd9`, `CharacterRig_INC133_*` | EditMode, prefabs reales | fallan hasta correr `orden`; pendiente |
+
+**Pendiente en el Editor** (ronda en curso): `nodos`, `sprites`, `orden` y `clips` para la familia (con las anclas de INC-133), las pruebas `INC133` sobre los prefabs, y las capturas. Falta el arte final de Algoritm. Hasta que esa ronda termine, no hay cifra de pruebas posterior a `64e4b37` que citar para estos cambios.
