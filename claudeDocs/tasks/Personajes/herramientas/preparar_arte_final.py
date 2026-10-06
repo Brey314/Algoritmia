@@ -37,7 +37,8 @@
 #   existe» y no del prefab del disco; despues de «sprites» el resultado es el mismo.
 #
 # MEDIDAS (las mismas reglas que dieron los numeros del Nino; --autoprueba lo demuestra con el):
-#   hombro = centro del extremo redondo del humero que queda lejos del antebrazo; codo = centro del extremo
+#   hombro = centro del extremo redondo del humero que queda lejos del antebrazo (esta herramienta mide ESE centro, el centro del pecho; despues
+#   de escribir arte_final.json, --aplicar corre hombro.py, que lleva el pivote al borde del torso, donde esta un hombro: 06/10/2026); codo = centro del extremo
 #   del antebrazo que toca al humero (si no comparten extremo —la pieza es solo la mano—, avisa y lo pone en
 #   el punto de contacto mas cercano); rodilla, igual con muslo y antepierna; cadera = centro del borde de
 #   arriba del muslo (--cadera capsula: el centro del extremo redondo, unos 30 px mas abajo: el torso lo tapa y
@@ -90,6 +91,7 @@ except ImportError:  # pragma: no cover
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 import articulaciones as A  # noqa: E402
+import hombro as H  # noqa: E402
 import prefabs as P  # noqa: E402
 import pose_preview as V  # noqa: E402
 
@@ -751,6 +753,9 @@ def aplica(res, args):
     print("  arte_final.json: entrada de %s" % pid)
     py = sys.executable
     fallos = 0
+    # el pivote del hombro: de aqui sale el centro del extremo redondo del humero (el centro del pecho); hombro.py lo lleva al borde del torso, donde esta un
+    # hombro, para que los brazos cuelguen relajados y no abiertos en A (Santiago, 06/10/2026). Con los PNG ya en el repo y antes de regenerar nada
+    fallos += 1 if corre([py, os.path.join(AQUI, "hombro.py"), pid, "--aplica"], "hombro") else 0
     fallos += 1 if corre([py, os.path.join(AQUI, "articulaciones.py")], "articulaciones") else 0
     fallos += 1 if corre([py, os.path.join(AQUI, "coreografia.py"), "--valida"], "coreografia") else 0
     fallos += 1 if corre([py, os.path.join(AQUI, "pose_preview.py"), "--solo", pid, "--salida", args.salida], "pose_preview") else 0
@@ -859,6 +864,12 @@ def autoprueba():
                     continue
                 compara(e["nombre"] + " rect", n["rect"], e["rect"])
                 clave = "punto" if kind == "nodos" else "pivote"
+                if kind == "partes" and e["nombre"] in ("BrazoIzq", "BrazoDer"):
+                    # el pivote del hombro de la tabla no es lo que mide esta herramienta (el centro del extremo redondo del humero): hombro.py lo lleva
+                    # al borde del torso despues (aplica). Lo que se recupera es ese centro, que hombro.py mide del mismo arte
+                    centro = H.piezas_de("nino", esperado)[e["nombre"][5:]].centro
+                    compara(e["nombre"] + " pivote (centro redondo)", n[clave], [int(round(centro[0])), int(round(centro[1]))])
+                    continue
                 compara(e["nombre"] + " " + clave, n[clave], e[clave])
         # el SUCESO de cada aviso esperado: el duplicado y los nombres
         textos = " | ".join(res.avisos)

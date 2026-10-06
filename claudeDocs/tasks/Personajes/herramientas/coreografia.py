@@ -13,8 +13,9 @@
 # Orden de trabajo cuando llega arte final de Papa, Mama o Nina:
 #   1. preparar_arte_final.py <id> <carpeta_entrega> [--aplicar]: reconoce las piezas, las limpia y normaliza,
 #      las mide (rect y punto de cada articulacion, entrada del personaje en arte_final.json) y, con --aplicar,
-#      copia los PNG al repo, regenera rig_articulaciones.json (articulaciones.py) y este JSON de clips, y corre
-#      pose_preview.py; imprime las ordenes para la sesion local. Es todo lo que hace falta antes de Unity;
+#      copia los PNG al repo, lleva el pivote del hombro al borde del torso (hombro.py: Santiago, 06/10/2026; el arte entrega el humero con su
+#      extremo redondo en el centro del pecho y, girando desde ahi, el reposo salia en A), regenera rig_articulaciones.json (articulaciones.py)
+#      y este JSON de clips, y corre pose_preview.py; imprime las ordenes para la sesion local. Es todo lo que hace falta antes de Unity;
 #   2. en el Editor, BuildRigsFinal.cs.txt, modos «sprites», «orden» (si hace falta) y «clips».
 # La coreografia no se toca: la cinematica de los brazos y las medidas de las piernas salen del JSON del rig y
 # de los PNG, y prefabs.simula_sprites hace que este script y pose_preview.py ya traten al personaje como
@@ -22,8 +23,10 @@
 # INC-133 y la cara registrada (06/10/2026). En la familia el HUMERO va detras del torso (y, en Papa, de la cabeza: su Cuello va despues de los
 # brazos) y el ANTEBRAZO delante de todo: el solucionador solo cuenta como oculto el humero (Brazo.oculta, UMBRAL_OCULTO; el reposo es mas estricto,
 # UMBRAL_OCULTO_REPOSO) y lo que lo tapa es la silueta del torso mas, en Papa, la de la cabeza. Con la cara de la entrega (ojos y cejas de lado a
-# lado del ovalo) una mano o un antebrazo cerca de la cabeza tapa rasgos: Brazo.pose desvia los gestos por angulo que cruzarian la caja de la cara
-# y junto_a_la_cabeza lleva a un lado de ella los gestos por objetivo (Observe, el rascado del Nino). Los clips NUNCA animan AntebrazoX ni su
+# lado del ovalo) una mano o un antebrazo cerca de la cabeza tapa rasgos: Brazo.pose desvia los gestos por angulo que cruzarian la caja de la cara.
+# EXCEPCION (Santiago, 06/10/2026, «acepto que cubra el rostro»): los gestos de CARA_TAPADA (visera de Observe, Celebrate, Hammer, Encourage, Carry
+# y el rascado del Nino) ya no se desvian: el brazo hace lo que el gesto pide, la mano llega de verdad a la sien o a la frente (cabeza_objetivo) y
+# pose_preview.py solo les relaja la cara (nunca los dos ojos a la vez). Los clips NUNCA animan AntebrazoX ni su
 # ancla: solo BrazoX y BrazoX/CodoX (el ancla vive bajo el codo y el motor copia su pose al antebrazo).
 #
 # Los prefabs se leen con prefabs.py. Pillow hace falta para medir la silueta de los pies y el grosor de los
@@ -437,13 +440,17 @@ class Silueta:
 
 
 # El REPOSO es mas estricto que el gesto: los clips mueven los brazos unos grados alrededor de el sin pasar por el solucionador (el vaiven del
-# Idle, el balanceo del Walk), y un reposo justo en el borde de lo visible los empujaria al otro lado. Con el humero tras el torso, el reposo
-# deja ver al menos el 60 % del humero; el gesto, el 45 % (la prueba, el 40 %).
-UMBRAL_OCULTO_REPOSO = 0.40
+# Idle, el balanceo del Walk), y un reposo justo en el borde de lo visible los empujaria al otro lado.
+# HOMBRO EN EL HOMBRO (Santiago, 06/10/2026, hombro.py): el pivote del humero ya no esta en el centro del pecho sino en el borde del torso, donde
+# esta un hombro, y con el brazo cerca del cuerpo el borde del torso y de la falda (Mama, el Nino) tapan siempre parte del humero, que va detras
+# de ellos: con el humero a 10 grados queda a la vista entre el 30 y el 60 % segun el personaje (a 20, entre el 40 y el 70 %). Por eso los
+# umbrales bajan de 40/45/60 % a 30/34/40 % a la vista: la prueba (pose_preview.UMBRAL_HUMERO) pide el 30 %, el solucionador de los gestos el 34 %
+# y el reposo el 40 %. El antebrazo, que va delante de todo, sigue pidiendo el 85 % y es lo que se lee como brazo.
+UMBRAL_OCULTO_REPOSO = 0.60
 # INC-133: el ANTEBRAZO va delante de todo y nunca queda tras el torso; solo el HUMERO puede quedar tras el (y, en Papa, tras la cabeza). La
-# fraccion que puede ocultarse es la del humero: la prueba (pose_preview.UMBRAL_HUMERO) deja el 60 % y el modelo, un poco menos, para que el
+# fraccion que puede ocultarse es la del humero: la prueba (pose_preview.UMBRAL_HUMERO) deja el 70 % y el modelo, un poco menos, para que el
 # giro del cuello y el redondeo no la pasen. Con arte provisional (una sola pieza por brazo, sin antebrazo suelto) se mide el brazo entero.
-UMBRAL_OCULTO = 0.55    # fraccion del HUMERO que puede quedar tras el torso: la prueba deja el 60 %; el modelo de capsulas usa lo que sobra de la cupula del hombro
+UMBRAL_OCULTO = 0.66    # fraccion del HUMERO que puede quedar tras el torso: la prueba deja el 70 %; el modelo de capsulas usa lo que sobra de la cupula del hombro
 PASO_MUESTRA = 9.0     # px entre muestras a lo largo del brazo
 ANCHOS_MUESTRA = (-0.4, -0.2, 0.0, 0.2, 0.4)  # a lo ancho, en fracciones del grosor
 ATRAS_HOMBRO = 0.0     # el modelo arranca esto (en grosores) por detras del pivote del hombro (la cupula se mide aparte: base_cap)
@@ -477,7 +484,8 @@ class Brazo:
         # del brazo y las cajas que no debe cruzar (la cara)
         self.cx = 512.0
         self.grosor = 0.0
-        self.evita = []
+        self.evita = []       # las cajas que el brazo no debe cruzar AHORA (vacia en los gestos que dejan tapar la cara: permite_tapar_cara)
+        self.evita_cara = []  # la caja de la cara, siempre: lo que evita cuando el gesto no deja tapar la cara
         self.silueta = None   # Silueta de lo que tapa al brazo (el torso); sin ella no hay restriccion de visibilidad
         self.delante = False  # en la accion que se escribe los brazos van DELANTE del torso (pon_delante): lo tapado no cuenta
         self.antebrazo_delante = False  # INC-133: el antebrazo se dibuja delante del torso y la cabeza (orden_tronco lo lista): solo el humero puede quedar tapado
@@ -609,6 +617,16 @@ class Brazo:
 
     def _oculto_celda(self, i, j):
         return self.tabla[i][j] if self.partido else self.tabla[i]
+
+    def permite_tapar_cara(self, tapa):
+        """
+        El gesto que se escribe deja que la mano y el antebrazo tapen parte de la cara (CARA_TAPADA): el brazo ya no se desvia de la caja de la
+        cara (pose() devuelve lo que el gesto pide) y la mano llega a la sien o a la frente (cabeza_objetivo). Santiago, 06/10/2026:
+        «acepto que cubra el rostro». Los demas gestos siguen esquivandola.
+        """
+        self.evita = [] if tapa else list(self.evita_cara)
+        if self.dos is not None:
+            self.dos.evita = list(self.evita)
 
     def pon_delante(self, delante):
         """
@@ -921,27 +939,30 @@ def _grosor_brazo(b, arbol, piezas, rects=None):
         return 0.1 * (b.l1 + b.l2)
 
 
-# Reposo de cada personaje: cuanto cuelgan los brazos respecto a la vertical (grados) y cuanto se
-# pliegan los codos hacia dentro. El A-pose del prefab (brazos casi horizontales) era una pose de T.
+# Reposo de cada personaje: el MENOR angulo con la vertical con que cuelgan sus brazos (grados; 0 = pegados al cuerpo) y cuanto se pliegan los
+# codos hacia dentro. El angulo que se usa es el mayor entre este y el que deja el humero a la vista (reposo_visible). Con el hombro en el hombro
+# (hombro.py, 06/10/2026) los brazos cuelgan relajados, entre 12 y 25 grados, y no abiertos en A: un adulto no los pega al cuerpo ni los abre.
+# Papa, de pecho ancho, los lleva un poco separados; la Nina, ligera, casi pegados; Mama y el Nino los llevan donde los deja ver su torso.
 PERFIL = {
-    "papa": (24.0, 6.0),
-    "mama": (22.0, 10.0),
-    "nina": (24.0, 12.0),
-    "nino": (28.0, 12.0),
+    "papa": (15.0, 6.0),
+    "mama": (14.0, 10.0),
+    "nina": (13.0, 12.0),
+    "nino": (16.0, 12.0),
 }
 
 
-def reposo_visible(x, pliegue):
+def reposo_visible(x, pliegue, minimo=0.0):
     """
     El reposo de los brazos sale de la geometria: el menor angulo con la vertical (desde 10 grados, con un par de
-    grados de holgura) con que los DOS brazos se ven (el humero, tras el torso: UMBRAL_OCULTO_REPOSO; el antebrazo va delante). Si el codo plegado del perfil
-    esconde el antebrazo, se afloja a la mitad y luego a cero. Con un torso estrecho (Mama, Nina) los brazos cuelgan
-    casi pegados; con uno ancho (Papa, el taparrabos del Nino) quedan mas abiertos: lo que dibuja el arte.
+    grados de holgura) con que los DOS brazos se ven (el humero, tras el torso: UMBRAL_OCULTO_REPOSO; el antebrazo va delante), y nunca
+    menos de «minimo» (el perfil del personaje). Si el codo plegado del perfil esconde el antebrazo, se afloja a la mitad y luego a cero.
+    Con un torso estrecho (Mama, Nina) los brazos cuelgan casi pegados; con uno ancho (Papa, el taparrabos del Nino) quedan mas abiertos:
+    lo que dibuja el arte.
     """
     for pl in (pliegue, 0.5 * pliegue, 0.0):
         for th in range(10, 90):
             if all(b.visible(b.hombro_rot(th), b.codo_rot(th, pl), UMBRAL_OCULTO_REPOSO) for b in x.brazos.values()):
-                return float(th) + 2.0, pl
+                return max(float(th) + 2.0, minimo), pl
     return 60.0, 0.0
 
 
@@ -1018,8 +1039,10 @@ def leer_contexto(pid, rig=None, arbol=None, piezas=None):
             mx, my = (c[2] - c[0]) * 0.55, (c[3] - c[1]) * 0.55  # la caja de la cara con el 10 % de la prueba, y un pelo mas
             ccx, ccy = (c[0] + c[2]) / 2.0, (c[1] + c[3]) / 2.0
             br.evita = [(ccx - mx - 4, ccy - my - 4, ccx + mx + 4, ccy + my + 4)]
+            br.evita_cara = list(br.evita)
             if br.dos:
                 br.dos.cx, br.dos.grosor, br.dos.evita = br.cx, br.grosor, br.evita
+                br.dos.evita_cara = list(br.evita)
     x.silueta = silueta
     if x.cara:
         c = x.cara
@@ -1036,7 +1059,7 @@ def leer_contexto(pid, rig=None, arbol=None, piezas=None):
     x.hang, x.pliegue = PERFIL[pid]
     for br in x.brazos.values():
         br.prepara()
-    x.hang, x.pliegue = reposo_visible(x, x.pliegue)
+    x.hang, x.pliegue = reposo_visible(x, x.pliegue, x.hang)
     x.codo = x.pliegue
     cadera = partes["PiernaIzq"]["pivote"][1]
     x.pie_x = {"Izq": float(partes["PiernaIzq"]["pivote"][0]), "Der": float(partes["PiernaDer"]["pivote"][0])}
@@ -1256,11 +1279,35 @@ def reposo_nuevo(x):
     return r
 
 
+# Los gestos junto a la cabeza que dejan tapar parte de la cara (Santiago, 06/10/2026: «acepto que cubra el rostro»). Antes la mano se desviaba a un
+# lado de la cara (pose() y una funcion que bajaba el objetivo esquivaban su caja) y con una cabeza ancha y brazos cortos el gesto no llegaba a la sien. Ahora la
+# mano llega de verdad a la sien o a la frente, o lo mas cerca que alcance, y la mano y el antebrazo pueden quedar delante de parte de la cara.
+# La clave es (personaje o «*», accion); pose_preview.EXCEPCIONES_CARA_TAPADA tiene las MISMAS claves (lo vigila) y, para cada una, hasta donde
+# puede bajar la cara a la vista. Todo lo demas sigue esquivando la cara (pose_preview exige el 90 %). Una mano en la cara se leia como
+# desesperacion (CP-02): por eso es una lista cerrada de gestos de alegria, animo y vigilancia, no un cambio general, y nunca se tapan los dos ojos a
+# la vez (pose_preview, «ojos»).
+CARA_TAPADA = {
+    ("*", "Observe"): "visera: la mano va a la frente o a la sien para mirar a lo lejos",
+    ("*", "Celebrate"): "los brazos se abren en V a los lados de la cabeza: con una cabeza ancha el antebrazo pasa por delante de la mejilla",
+    ("*", "Hammer"): "el brazo del martillo sube junto a la cabeza y el antebrazo cruza el borde de la cara",
+    ("*", "Encourage"): "el puño del animo sube junto a la cabeza, por encima del hombro",
+    ("*", "Carry"): "las manos sostienen la carga a los lados de la cabeza",
+    ("nino", "Idle"): "se rasca el costado de la cabeza: la mano llega a la sien y la mano y el antebrazo cruzan el borde de la cara",
+}
+
+
+def tapa_cara(pid, accion):
+    """El gesto de esa accion deja que la mano y el antebrazo tapen parte de la cara (CARA_TAPADA)."""
+    return (pid, accion) in CARA_TAPADA or ("*", accion) in CARA_TAPADA
+
+
 def familia_spec(x, accion, archivo, largo_base, bucle=True):
     # el solucionador sabe, accion por accion, si los brazos van delante del torso o detras (la lista de CharacterRig.cs): de
     # ello depende si un gesto debe verse al pasar tras el torso o no; el clip lo escribe despues de esta llamada
+    tapa = tapa_cara(x.id, accion)
     for b in x.brazos.values():
         b.pon_delante(accion in x.delante)
+        b.permite_tapar_cara(tapa)
     return Spec(accion, "char_%s_anim_%s" % (x.id, archivo), largo_base, x.k, bucle, reposo_nuevo(x), HUESOS_FAMILIA)
 
 
@@ -1381,28 +1428,24 @@ def manos(x, s, izq=None, der=None, acorta=None, minimo=MIN_ALCANCE):
                 s.raw(hom, ESCY, t, esc)
 
 
-def junto_a_la_cabeza(x, lado, objetivo, hacia=None):
+def cabeza_objetivo(x, lado, frente=True):
     """
-    El punto donde llevar la mano de ese brazo para que quede junto a la cabeza SIN cruzar la caja de la cara. «objetivo» es donde el gesto
-    la quiere (la sien, el pelo junto a la oreja); si el brazo que llega alli (cinematica inversa) pasa por la cara, se baja el objetivo
-    por el arco de su alcance —el mismo radio, menos elevacion— hasta el primero que no la cruza. Con una cabeza ancha y brazos cortos
-    (el Nino) eso lleva la mano a la mandibula, a un lado del ovalo, en vez de a la sien: llegar a la sien exigiria cruzar la cara.
-    Con el brazo de una pieza o sin cara, el objetivo tal cual.
+    Donde lleva la mano ese brazo para quedar de verdad junto a la cabeza (los gestos de CARA_TAPADA: la visera de Observe, el rascado del Nino).
+    «frente»: la FRENTE (por encima de los ojos y a un 12 % del ancho de la cara del borde de ese lado) si el brazo llega hasta alli con el codo
+    algo doblado (el 97 % de su largo), y si no la SIEN (junto al borde de la cara de ese lado, a la altura de la ceja). Con una cabeza ancha y
+    brazos cortos (el Nino) la frente no se alcanza ni con el brazo estirado y la mano queda en la sien, o lo mas cerca que llegue en esa direccion
+    (ik acerca el objetivo al alcance sin cambiar de direccion): ya no se esquiva la cara, como antes (Santiago, 06/10/2026).
+    Con «frente» falso, siempre la sien.
     """
     b = x.brazos[lado]
-    if not b.evita or not b.partido:
-        return objetivo
-    dx, dy = objetivo[0] - b.S[0], objetivo[1] - b.S[1]
-    r = min(math.hypot(dx, dy), 0.97 * (b.l1 + b.l2))
-    phi0 = math.degrees(math.atan2(-dy, abs(dx)))   # elevacion sobre la horizontal, hacia fuera o hacia dentro del cuerpo segun el signo de dx
-    sig = 1.0 if dx >= 0 else -1.0
-    for k in range(0, 91):
-        phi = phi0 - k
-        p = (b.S[0] + sig * r * math.cos(math.radians(phi)), b.S[1] - r * math.sin(math.radians(phi)))
-        rs, rc = b.ik(p, hacia)
-        if not b.pega_en_la_cara(rs, rc):
-            return p
-    return objetivo
+    c = x.cara
+    ancho, alto = c[2] - c[0], c[3] - c[1]
+    borde = c[0] if b.lado_sig < 0 else c[2]
+    arriba = (borde - b.lado_sig * 0.12 * ancho, c[1] - 0.20 * alto)
+    sien = (borde + b.lado_sig * 0.02 * ancho, c[1] + 0.12 * alto)
+    if frente and math.hypot(arriba[0] - b.S[0], arriba[1] - b.S[1]) <= 0.97 * (b.l1 + b.l2):
+        return arriba
+    return sien
 
 
 def fuera(x, lado, y, extra=0.0):
@@ -1601,8 +1644,8 @@ def _volumen(s, f_y, largo):
 def idle_nino(x):
     """
     Curioso e inquieto: respira, mira arriba a un lado y al otro, rebota sobre las rodillas con los brazos
-    colgando como pendulos y, una vez por ciclo, se rasca la cabeza (la mano sube POR EL COSTADO, sobre el
-    pelo, nunca sobre la cara).
+    colgando como pendulos y, una vez por ciclo, se rasca la cabeza (la mano sube POR EL COSTADO hasta la sien: con su cabeza ancha y sus
+    brazos cortos llega con el brazo casi estirado, y la mano y el antebrazo pueden tapar parte de la cara: CARA_TAPADA).
     """
     a, h, pf, L = x.a, x.hang, x.pliegue, IDLE_BASE
     s = familia_spec(x, "Idle", "idle", L)
@@ -1631,11 +1674,10 @@ def idle_nino(x):
     pl_base = lambda t: pf + 0.35 * pend(t) + 2.0 * _respira(t)
     th_izq = lambda t: th_base(t) + 4.0 * rasca(t)
     brazo_f(x, s, "Izq", th_izq, pl_base, L)
-    # la mano sube POR EL COSTADO hasta el pelo, a la altura de la oreja, y se rasca con un vaiven corto
+    # la mano sube POR EL COSTADO hasta la sien (cabeza_objetivo), a la altura de la ceja, y se rasca con un vaiven corto
     rasc = lambda t: pulso(t, 4.55, 4.75, 5.30, 5.40)
     mueve = lambda t: 0.5 * (1.0 + math.sin(TAU * (t - 4.75) / 0.5 - math.pi / 2)) * rasc(t)
-    cab = x.cara
-    lado_der = junto_a_la_cabeza(x, "Der", (cab[2] + 85, cab[1] + 15), (1.0, 0.0))  # fuera del ovalo de la cara, junto a la oreja (o lo mas cerca que deja la cara libre)
+    lado_der = cabeza_objetivo(x, "Der", False)  # la sien: la mano llega de verdad (o lo mas cerca que alcance) y puede tapar parte de la cara
     brazo_mix(x, s, "Der", th_base, pl_base, rasca,
               lambda t: (lado_der[0] + 6 * mueve(t), lado_der[1] - 16 * mueve(t)), L, hacia=(1.0, 0.0))
     return s
@@ -1699,8 +1741,10 @@ def idle_papa(x):
 
 def idle_mama(x):
     """
-    Calida y atenta: manos juntas a la cintura, balanceo suave, mira con atencion inclinando la cabeza y, una
-    vez, lleva una mano a la altura de la oreja (como recogerse el pelo) sin tapar la cara.
+    Calida y atenta: brazos relajados que respiran, balanceo suave, mira con atencion inclinando la cabeza y, una vez, lleva una mano a la altura
+    de la oreja (como recogerse el pelo). Antes las manos descansaban en la cintura POR FUERA del torso (los brazos iban detras de el y dentro no
+    se verian); con el hombro en el hombro (hombro.py, 06/10/2026) esa pose saca los codos y se lee como brazos en jarra, que es de Papa: sus manos
+    cuelgan junto a la falda, que es donde las dejan los brazos relajados (y ahora se ven, el antebrazo va delante del torso).
     """
     a, h, pf, L = x.a, x.hang, x.pliegue, IDLE_BASE
     s = familia_spec(x, "Idle", "idle", L)
@@ -1716,30 +1760,28 @@ def idle_mama(x):
     extra = cabeza_f(x, s, L, f_cuello, None, 1.2, 3)
     if not x.cabeza_propia:
         muestrea(s, T, ROT, lambda t: -0.6 * bal(t) + extra(t), L)
-    y = x.y_cadera - 20
-    # las manos descansan a la cintura POR FUERA del torso (los brazos van detras: dentro no se verian)
-    brazo_mix(x, s, "Der", lambda t: h, lambda t: pf, lambda t: 1.0, fuera(x, "Der", y, 0.3 * x.brazos["Der"].grosor), L,
-              hacia=(1.0, 0.15))
-    # la izquierda, una vez, sube junto a la oreja (delante del pelo, nunca tapando ojos ni boca). La mano sube
-    # RODEANDO el hombro por fuera (cintura -> brazo estirado hacia abajo y fuera -> oreja) y no en linea recta: la
-    # recta de la cintura a la oreja pasa por el hombro y un brazo de una pieza daria media vuelta de golpe al
-    # cruzarlo, y uno de dos segmentos cambiaria de rama el codo (con el brazo estirado las dos ramas coinciden)
+    # los brazos cuelgan relajados, se abren un poco al inspirar y los antebrazos se pliegan un par de grados hacia dentro: las manos junto a la falda
+    th_base = lambda t: h + 1.5 * _respira(t)
+    pl_base = lambda t: pf + 3.0 * _respira(t)
+    brazo_f(x, s, "Der", th_base, pl_base, L)
+    # la izquierda, una vez, sube junto a la oreja (el pelo, nunca tapando los dos ojos). La mano sube RODEANDO el hombro por fuera (brazo estirado
+    # hacia abajo y fuera -> oreja) y no en linea recta: la recta del costado a la oreja pasa por el hombro y un brazo de una pieza daria media vuelta
+    # de golpe al cruzarlo, y uno de dos segmentos cambiaria de rama el codo (con el brazo estirado las dos ramas coinciden). El peso es el del
+    # propio gesto: fuera de el manda el reposo, y el brazo sale de el y vuelve a el sin saltos
     cara = x.cara
     oreja = (cara[0] - 60, 0.55 * cara[1] + 0.45 * cara[3])  # el costado de la cabeza, sobre el pelo, fuera de la cara
     b = x.brazos["Izq"]
-    cintura = fuera(x, "Izq", y, 0.3 * b.grosor)
     costado = (b.S[0] + b.lado_sig * 0.95 * x.alcance * math.cos(math.radians(30)), b.S[1] + 0.95 * x.alcance * math.sin(math.radians(30)))
 
     def sube(t):
         u = pelo(t)
         if u < 0.5:
-            f = 2.0 * u
-            return (cintura[0] + f * (costado[0] - cintura[0]), cintura[1] + f * (costado[1] - cintura[1]))
+            return costado
         f = 2.0 * u - 1.0
         return (costado[0] + f * (oreja[0] - costado[0]), costado[1] + f * (oreja[1] - costado[1]))
 
     # el codo siempre hacia fuera y abajo de la mano (la misma rama de principio a fin: el antebrazo sube a la oreja)
-    brazo_mix(x, s, "Izq", lambda t: h, lambda t: pf, lambda t: 1.0, sube, L, hacia=(b.lado_sig, 0.4), suaviza=0.3)
+    brazo_mix(x, s, "Izq", th_base, pl_base, lambda t: min(1.0, 2.0 * pelo(t)), sube, L, hacia=(b.lado_sig, 0.4), suaviza=0.3)
     return s
 
 
@@ -1886,8 +1928,8 @@ def strike(x):
 
 def hammer(x):
     """
-    Martillar (0,7 s): retroceso, el brazo derecho sube POR EL COSTADO (el antebrazo vertical junto a la
-    cabeza, no por delante de la cara), golpe y asentamiento; la izquierda sostiene.
+    Martillar (0,7 s): retroceso, el brazo derecho sube POR EL COSTADO (el antebrazo junto a la cabeza; el antebrazo puede cruzar el borde de
+    la cara: CARA_TAPADA), golpe y asentamiento; la izquierda sostiene.
     """
     s = familia_spec(x, "Hammer", "martillar", 0.7)
     h, pf = x.hang, x.pliegue
@@ -1963,7 +2005,7 @@ def kneel(x):
 
 
 def carry(x):
-    """Cargar: el paso de caminar con los brazos en V sobre los hombros (por los lados de la cabeza, no sobre la cara)."""
+    """Cargar: el paso de caminar con los brazos en V sobre los hombros (por los lados de la cabeza; los antebrazos pueden rozar la cara: CARA_TAPADA)."""
     a, h = x.a, x.hang
     s = paso(x, "Carry", "cargar", 0.95, 0.8 * a, 0, -2 * a, 1.2 * a, 0, 0, 0.01 * a)
     for r in (LA, RA, LE, RE):
@@ -2010,9 +2052,9 @@ def point(x):
 
 def observe(x):
     """
-    Observar: la izquierda de visera sobre los ojos —el brazo sube a la sien, a un lado de la cara y fuera de ella; los
-    brazos pasan por delante de la cabeza pero la mano plana en la frente tapaba ojos— y la derecha en la cintura, por
-    fuera del torso; mirando a un lado y a otro (2 s).
+    Observar: la izquierda de visera —la mano llega de verdad a la frente, por encima de los ojos, o a la sien si el brazo no alcanza la frente
+    (el Nino): cabeza_objetivo; la mano y el antebrazo pueden tapar parte de la cara (CARA_TAPADA) pero nunca los dos ojos— y la derecha en la
+    cintura, por fuera del torso; mirando a un lado y a otro (2 s).
     """
     a, h, pf = x.a, x.hang, x.pliegue
     s = familia_spec(x, "Observe", "observar", 2.0)
@@ -2020,9 +2062,8 @@ def observe(x):
     s.vol(0, 1.0, 1, 1.008, 2, 1.0)
     s.rot(T, 0, 0, 1, -1.2 * a, 2, 0)
     s.sym(LL, RL, 0, 0, 1, 1.2 * a, 2, 0)
-    c = x.cara
     fuera_ = (-1.0, -0.6)
-    visera = junto_a_la_cabeza(x, "Izq", (c[0] - 70, c[1] - 12), fuera_)   # a la sien, o donde la cara quede libre (el Nino no llega a la sien sin cruzarla)
+    visera = cabeza_objetivo(x, "Izq")   # a la frente, o a la sien si el brazo no llega a la frente (el Nino): la mano puede tapar parte de la cara
     manos(x, s, [(0, visera, fuera_), (1.0, (visera[0] + 6, visera[1] + 2), fuera_), (2.0, visera, fuera_)],
           [(0, fuera(x, "Der", x.y_cadera, 0.3 * x.brazos["Der"].grosor), (1.0, 0.15)),
            (2.0, fuera(x, "Der", x.y_cadera, 0.3 * x.brazos["Der"].grosor), (1.0, 0.15))])
@@ -2040,7 +2081,7 @@ def celebrate(x):
     b = 0.06 * a
     s = familia_spec(x, "Celebrate", "celebrar", 1.2)
     # los brazos se abren en V a los lados de la cabeza (el humero a 25-40 grados sobre la horizontal) y suben
-    # y bajan con el rebote; el antebrazo apenas se pliega, para que las manos no vuelvan a la cara
+    # y bajan con el rebote; el antebrazo apenas se pliega (con una cabeza ancha, la del Nino, las manos quedan junto a las mejillas: CARA_TAPADA)
     arriba, medio = 130, 112
     brazos_s(x, s,
              [(0, arriba, 8, -1), (0.3, medio, 16, -1), (0.6, arriba, 8, -1), (0.9, medio, 16, -1), (1.2, arriba, 8, -1)],
@@ -2063,7 +2104,7 @@ def encourage(x):
     """
     Animo tras un intento sin exito (CP-02: calido, nunca de reproche). Anticipacion (se agacha un poco y el
     brazo baja), el puño sube por FUERA de la silueta de la cabeza, por encima del hombro, con un bombeo;
-    rebote alegre de rodillas, cabeceo afirmativo y la otra mano abierta y relajada. Nada cerca de la cara.
+    rebote alegre de rodillas, cabeceo afirmativo y la otra mano abierta y relajada. El puño pasa junto a la cabeza (CARA_TAPADA) pero no la tapa.
     Dura 0,9 s x tempo, como siempre: los controladores de nivel lo reproducen con PlayFor un tiempo fijo
     (EncourageSeconds = 0,9) y pasan a Idle; la anticipacion y el rebote son cortos para que el asentamiento
     (de 0,52 a 0,9) quepa entero y el clip acabe en la pose de reposo.
@@ -2110,7 +2151,7 @@ def hug(x):
         b = x.brazos[lado]
         hacia = (b.lado_sig, -0.4)
         cintura = fuera(x, lado, x.y_vientre, 0.2 * b.grosor)
-        tg = [(0, eje(x, lado, abierto, x.y_pecho - 10), hacia), (0.8, eje(x, lado, 0.8 * abierto, x.y_pecho - 4), hacia),
+        tg = [(0, eje(x, lado, abierto, x.y_pecho - 10), hacia), (0.8, eje(x, lado, 0.95 * abierto, x.y_pecho - 4), hacia),
               (1.2, cintura, hacia), (1.6, cintura, hacia), (2.0, eje(x, lado, abierto, x.y_pecho - 10), hacia)]
         manos(x, s, **{"izq" if lado == "Izq" else "der": tg})
     s.rot(C, 0, -2.5, 1, 2.5, 2, -2.5)
@@ -2498,7 +2539,7 @@ def autoprueba():
         malos += 0 if ok else 1
         print("%-34s %s" % ("prefab: " + nombre, "bien" if ok else "FALLA"))
     # INC-133 y la cara registrada: el solucionador sabe que el antebrazo va delante (solo el humero se tapa), que en Papa la cabeza tapa el
-    # humero, y no deja una mano sobre la cara
+    # humero, que no deja una mano sobre la cara salvo en CARA_TAPADA y que la visera llega a la frente o a la sien
     for nombre, ok in autoprueba_inc133():
         malos += 0 if ok else 1
         print("%-34s %s" % (nombre, "bien" if ok else "FALLA"))
@@ -2519,11 +2560,26 @@ def autoprueba_inc133():
     casos.append(("INC-133: la silueta de Papa incluye la cabeza", sp is not None and any(sp.dentro(papa.cx + dx, 500.0) for dx in range(-120, 121, 4))
                   and sp.dentro(*punto_barba)))
     casos.append(("INC-133: la del Nino es solo el torso", sn is not None and not sn.dentro(nino.cx, 300.0)))
-    # un brazo en alto que pegaria en la cara se desvia; el humero tras el torso no pasa del umbral
+    # un brazo en alto que pegaria en la cara se desvia en los gestos que no dejan tapar la cara; en los de CARA_TAPADA hace lo que se pide
     raw = bn._pide(130.0, 8.0, -1)
-    casos.append(("cara: el gesto crudo pega, la pose no", bn.pega_en_la_cara(*bn.repara(*raw)) and not bn.pega_en_la_cara(*bn.pose(130.0, 8.0, -1))))
-    p = junto_a_la_cabeza(nino, "Der", (nino.cara[2] + 20.0, nino.cara[1] + 10.0), (1.0, 0.0))
-    casos.append(("cara: junto_a_la_cabeza no cruza la cara", not bn.pega_en_la_cara(*bn.ik(p, (1.0, 0.0)))))
+    bn.permite_tapar_cara(False)
+    casos.append(("cara: el gesto crudo pega, la pose no (no tapa)", bn.pega_en_la_cara(*bn.repara(*raw)) and not bn.pega_en_la_cara(*bn.pose(130.0, 8.0, -1))))
+    bn.permite_tapar_cara(True)
+    casos.append(("cara: en CARA_TAPADA la pose no se desvia", bn.pose(130.0, 8.0, -1) == bn.repara(*raw)))
+    # la visera llega a la frente (Papa, que alcanza) y a la sien (el Nino, que no): la mano queda donde se pide o lo mas cerca que llegue
+    for pid_, x_ in (("papa", papa), ("nino", nino)):
+        b_ = x_.brazos["Izq"]
+        b_.permite_tapar_cara(True)
+        obj = cabeza_objetivo(x_, "Izq")
+        rs, rc = b_.ik(obj, (-1.0, -0.6))
+        _, m = b_.fk(rs, rc)
+        falta = math.hypot(m[0] - obj[0], m[1] - obj[1])
+        alcanza = math.hypot(obj[0] - b_.S[0], obj[1] - b_.S[1]) <= 0.97 * (b_.l1 + b_.l2) + 1.0
+        arriba = obj[1] < x_.cara[1]
+        casos.append(("cara: la visera de %s llega a %s" % (pid_, "la frente" if arriba else "la sien"),
+                      (falta < 6.0 if alcanza else (math.hypot(obj[0] - b_.S[0], obj[1] - b_.S[1]) > b_.l1 + b_.l2 - 1.0))
+                      and (arriba == (pid_ == "papa"))))
+        b_.permite_tapar_cara(False)
     # el reposo deja ver el humero como pide UMBRAL_OCULTO_REPOSO (sin eso el Idle se sale del umbral al balancearse)
     ok = all(b.visible(b.hombro_rot(nino.hang), b.codo_rot(nino.hang, nino.pliegue), UMBRAL_OCULTO_REPOSO) for b in nino.brazos.values())
     casos.append(("INC-133: el reposo cumple el umbral estricto", ok))

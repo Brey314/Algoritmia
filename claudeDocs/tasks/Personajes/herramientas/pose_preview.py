@@ -48,19 +48,21 @@
 # prefabs.aplicar_orden_tronco lo simula sobre un prefab anterior a «orden», con la lista de «orden_tronco».
 #
 # LA PRUEBA (cada clip, muestreado a 30 fps):
-#   (a) familia: el ANTEBRAZO (con la mano) conserva >= 85 % de sus pixeles opacos visibles y el HUMERO >= UMBRAL_HUMERO (40 %, ver abajo:
+#   (a) familia: el ANTEBRAZO (con la mano) conserva >= 85 % de sus pixeles opacos visibles y el HUMERO >= UMBRAL_HUMERO (30 %, ver abajo:
 #       el hombro sale por detras del torso por diseno y, en Papa, la barba y la melena van delante de los humeros). No cuenta lo que tapa
 #       el OTRO brazo (cruzar los antebrazos al chocar las manos no es perder el brazo). Algoritm: el brazo entero (humero + antebrazo)
 #       conserva >= 85 % (no tapado por capas dibujadas despues que no sean del propio brazo);
-#   (b) la cara conserva >= 90 % de su zona visible (ningun brazo la tapa). En la familia, la zona son los PIXELES PINTADOS de CaraBase, Ojos y
+#   (b) la cara conserva >= 90 % de su zona visible (ningun brazo la tapa; los gestos de EXCEPCIONES_CARA_TAPADA dejan menos, cada uno con su piso). En la familia, la zona son los PIXELES PINTADOS de CaraBase, Ojos y
 #       Boca en ese cuadro (la cara registrada de la entrega llena el ovalo: su caja toca el pelo y las orejas); solo cuenta lo que se dibuja
 #       DESPUES de la cara. En Algoritm, cuyos brazos van POR ENCIMA de la cara, el 99,5 % de la caja de ojos y boca ampliada un 30 %;
 #   (c) ningun codo ni ninguna rodilla se dobla al reves (hiperextension): la pantorrilla vuelve hacia
 #       dentro y el codo sobresale hacia fuera y abajo de la recta hombro-mano (nunca se mete hacia el
 #       cuerpo o la cara); tolerancia de 6 grados sobre lo que ya trae el dibujo;
 #   (d) el pie de apoyo no atraviesa el suelo mas de 2 px (Algoritm flota: no se mide).
-#   (e) ninguna mano (la punta y la muñeca) dentro de la caja de la cara, ampliada un 10 %, salvo en las
-#       excepciones explicitas de EXCEPCIONES_CARA (la visera de Observe; el rascado del Nino);
+#   (e) ninguna mano (la punta y la muñeca) dentro de la caja de la cara, ampliada un 10 %, salvo en los gestos de EXCEPCIONES_CARA_TAPADA;
+#   (i) nunca se tapan los DOS ojos a la vez: el ojo menos tapado queda a la vista al menos al (100 - UMBRAL_OJOS_TAPADOS) %; y en la visera de
+#       Observe (mano sobre la frente, por encima de los ojos) ninguno de los dos pasa de UMBRAL_OJOS_TAPADOS, salvo el Nino, cuyo brazo no llega
+#       a la frente (EXCEPCIONES_VISERA);
 #   (h) solo Strike: el punto de choque (el instante de minima distancia entre las manos) queda por encima de la cintura: de la
 #       cadera del JSON menos coreografia.MARGEN_CINTURA, y de la cadera del contexto si es mas alta (nunca en la entrepierna);
 #   (f) ningun hombro ni codo gira mas de VELOCIDAD_MAX (1300 grados por segundo): atrapa el salto de rama de la
@@ -96,9 +98,12 @@ UMBRAL_BRAZO = 0.85
 # del gesto: la mano) conserva >= 85 % como siempre; el humero puede quedar parcialmente tras el torso y, en Papa, tras la barba: el hombro sale
 # por detras de la esquina del torso POR DISENO (entre el 10 y el 30 % del humero en reposo) y un brazo en alto pasa tras la cabeza, que en Papa
 # se dibuja DELANTE de los humeros (su barba y su melena cubren los hombros: Observe y Celebrate dejan a la vista entre el 40 y el 50 %). El 85 % de
-# antes no se puede pedir; se pide que quede a la vista al menos el 40 %: lo que asoma por el costado y por debajo de la cabeza, mas el antebrazo
+# antes no se puede pedir; se pide que quede a la vista al menos el 30 %: lo que asoma por el costado y por debajo de la cabeza, mas el antebrazo
 # entero delante, se lee como un brazo que sale de detras del cuerpo. Mide el humero SOLO; el brazo entero ya no se pierde nunca.
-UMBRAL_HUMERO = 0.40
+# HOMBRO EN EL HOMBRO (06/10/2026, hombro.py): con el pivote en el borde del torso y los brazos relajados, cerca del cuerpo, el torso y la falda
+# tapan mas del humero que cuando giraba desde el centro del pecho (a 10 grados con la vertical queda a la vista entre el 30 y el 60 %
+# segun el personaje): el umbral bajo del 40 al 30 %. El solucionador (coreografia.UMBRAL_OCULTO) pide el 34 % y el reposo el 40 %.
+UMBRAL_HUMERO = 0.30
 UMBRAL_CARA = 0.90
 # Algoritm: sus brazos se dibujan POR ENCIMA de la cara (orden_tronco [Torso, Ojos, Boca, BrazoIzq, BrazoDer], Santiago 05/10/2026),
 # asi que lo que pase por ojos o boca los tapa de verdad. Para el la caja de ojos y boca se amplia un 30 % y no se admite casi
@@ -106,14 +111,33 @@ UMBRAL_CARA = 0.90
 UMBRAL_CARA_GUIA = 0.995
 AMPLIA_CARA_GUIA = 1.30
 TOLERANCIA_CODO = 6.0      # grados de hiperextension que se perdonan
+HOMBRO_CAPSULA = 1.1       # el pivote del hombro cae a menos de tantos radios del eje del humero (hombro.FRACCION_CAPSULA)
 TOLERANCIA_SUELO = 2.0     # px
 AMPLIA_CAJA_CARA = 1.10    # la caja de la cara (ojos y boca) se amplia un 10 % para la prueba de las manos
 
-# (e) Ninguna mano dentro de la caja de la cara, salvo en estos clips, con su motivo (una mano junto a la
-# cara se lee como frustracion, miedo o un golpe: CP-02). La clave es (personaje o «*», accion).
-EXCEPCIONES_CARA = {
-    ("*", "Observe"): "visera: la mano va a la sien para mirar a lo lejos",
-    ("nino", "Idle"): "se rasca el costado de la cabeza: con la cabeza mas ancha que el alcance del brazo, la mano solo llega al pelo junto a la oreja",
+# (b) y (e) Santiago, 06/10/2026: «acepto que cubra el rostro». Los gestos junto a la cabeza dejan que la mano y el antebrazo tapen parte de la
+# cara y llevan la mano de verdad a la sien o a la frente (antes el solucionador los desviaba a un lado de la cara, y con una cabeza ancha y brazos
+# cortos no llegaban). Solo ESTOS gestos: la lista es la misma que coreografia.CARA_TAPADA (main() lo comprueba) y, para cada uno, el piso de la
+# cara a la vista (% de lo pintado de CaraBase, Ojos y Boca) y su motivo. En ellos tampoco cuenta (e), la mano dentro de la caja de la cara. Todo
+# lo demas sigue exigiendo el 90 % y ninguna mano en la caja: una mano en la cara se leia como desesperacion (CP-02), y aqui solo se admite en
+# gestos de alegria, animo y vigilancia, con el brazo que sube por el costado y NUNCA tapando los dos ojos a la vez (i).
+# La clave es (personaje o «*», accion).
+EXCEPCIONES_CARA_TAPADA = {
+    ("*", "Observe"): (60.0, "visera: la mano va a la frente o a la sien para mirar a lo lejos"),
+    ("*", "Celebrate"): (80.0, "los brazos se abren en V a los lados de la cabeza: con una cabeza ancha el antebrazo pasa por delante de la mejilla"),
+    ("*", "Hammer"): (55.0, "el brazo del martillo sube junto a la cabeza y el antebrazo cruza el borde de la cara"),
+    ("*", "Encourage"): (80.0, "el puño del animo sube junto a la cabeza, por encima del hombro"),
+    ("*", "Carry"): (80.0, "las manos sostienen la carga a los lados de la cabeza"),
+    ("nino", "Idle"): (60.0, "se rasca el costado de la cabeza: la mano llega a la sien y la mano y el antebrazo cruzan el borde de la cara"),
+}
+# (i) el ojo MENOS tapado puede tener como mucho este % de su zona cubierta por un brazo: nunca se tapan los dos ojos a la vez (un ojo si, junto a
+# la cabeza: la mano en la sien o el antebrazo por la mejilla). La visera es el gesto de mirar a lo lejos con la mano sobre la FRENTE, por encima de los
+# ojos: ninguno de los dos puede quedar tapado por encima de este % (lo que baja la mano a la ceja es de brazos largos), salvo donde el brazo no llega a
+# la frente (EXCEPCIONES_VISERA).
+UMBRAL_OJOS_TAPADOS = 25.0
+VISERA = "Observe"
+EXCEPCIONES_VISERA = {
+    ("nino", "Observe"): "el brazo del Nino (225 px) no llega a la frente con una cabeza de 295 px de ancho: la mano queda en la sien, sobre el ojo de ese lado",
 }
 # (f) Ningun hombro ni codo gira mas de VELOCIDAD_MAX grados por segundo (medido cuadro a cuadro a 30 fps): una
 # rama de la cinematica inversa que cambia a mitad de un gesto da saltos de 150 grados en un cuadro.
@@ -355,6 +379,29 @@ class Personaje:
             pieza.putalpha(alfa)
         return Capa(n, (x0, y0, x1, y1), pieza, (1, 1, 1, 1), maqueta=True)
 
+    # ---- los dos ojos por separado (perezoso)
+    def ojos_mitades(self):
+        """
+        [Capa, Capa]: la capa «Ojos» partida en el ojo izquierdo y el derecho de la pantalla (cada mitad conserva el rect y el nodo de la capa entera,
+        asi se dibuja con la misma matriz). Se parte por la mitad de lo pintado (alfa > 127). [] si el personaje no tiene capa de ojos (Algoritm).
+        """
+        if getattr(self, "_ojos", None) is None:
+            self._ojos = []
+            base = next((c for c in self.capas if c.nodo.nombre == "Ojos"), None) if not self.guia else None
+            if base is not None:
+                alfa = base.imagen.getchannel("A")
+                caja = alfa.point(lambda v: 255 if v > 127 else 0).getbbox()
+                if caja is not None:
+                    mitad = (caja[0] + caja[2]) // 2
+                    w, h = alfa.size
+                    for x0, x1 in ((0, mitad), (mitad, w)):
+                        recorte = Image.new("L", (w, h), 0)
+                        ImageDraw.Draw(recorte).rectangle([x0, 0, x1 - 1, h - 1], fill=255)
+                        im = base.imagen.copy()
+                        im.putalpha(ImageChops.multiply(alfa, recorte))
+                        self._ojos.append(Capa(base.nodo, base.rect, im, base.color))
+        return self._ojos
+
     # ---- cierre convexo (perezoso) para el suelo
     def casco(self, capa):
         if capa.casco is None:
@@ -572,6 +619,8 @@ class Resultado:
         self.cara = (100.0, 0.0)
         self.codo = (0.0, 0.0, "")
         self.suelo = (-999.0, 0.0)
+        self.ojos = (0.0, 0.0)     # el mayor % del ojo MENOS tapado que cubre un brazo (los dos ojos a la vez), instante
+        self.ojo_peor = 0.0        # el mayor % de UN ojo cubierto por un brazo (informativo: un ojo tapado esta permitido en los gestos junto a la cabeza)
         self.mano = (0, 0.0, "")  # cuadros con una mano en la caja de la cara, primer instante, lado
         self.vel = (0.0, 0.0, "")  # la mayor velocidad angular de un hombro o un codo, instante, hueso
         self.torso = (0.0, 0.0)    # el mayor % de la caja de ojos y boca que tapa el torso (con la cabeza al fondo), instante
@@ -592,6 +641,8 @@ class Resultado:
             self.vel = (valor, t, extra)
         elif nombre == "torso" and valor > self.torso[0]:
             self.torso = (valor, t)
+        elif nombre == "ojos" and valor > self.ojos[0]:
+            self.ojos = (valor, t)
 
 
 def _mascara(im):
@@ -603,8 +654,17 @@ def _cuenta(m):
     return sum(h[1:])
 
 
+def _clave_cara(tabla, pid, accion):
+    """La clave de «tabla» (personaje o «*», accion) que cubre esa accion de ese personaje, o None."""
+    pid = pid.split("/")[0]
+    if (pid, accion) in tabla:
+        return (pid, accion)
+    return ("*", accion) if ("*", accion) in tabla else None
+
+
 def _excepcion_cara(pid, accion):
-    return (pid, accion) in EXCEPCIONES_CARA or ("*", accion) in EXCEPCIONES_CARA
+    """El gesto deja que la mano y el antebrazo tapen parte de la cara (EXCEPCIONES_CARA_TAPADA)."""
+    return _clave_cara(EXCEPCIONES_CARA_TAPADA, pid, accion) is not None
 
 
 def _dentro(p, poligono):
@@ -802,6 +862,16 @@ def prueba_clip(pj, clip, tiempos=None):
                 # DELANTE del torso (Santiago, 06/10/2026) y el torso no puede taparla
                 if lleva == HD and (T + "/Torso") in masc and indice[T + "/Torso"] > idx_cara:
                     res.mejor_peor("torso", 100.0 * _cuenta(ImageChops.multiply(z, masc[T + "/Torso"])) / area, t)
+        # (i) los dos ojos a la vez: cuanto cubre un brazo de cada ojo; cuenta el MENOS tapado (con uno a la vista no se tapan los dos)
+        mitades = pj.ojos_mitades() if not es_guia else []
+        if len(mitades) == 2:
+            cub = []
+            for cap in mitades:
+                m = _mascara(_capa_a_lienzo(cap, mundo, esc, (0, 0), tam))
+                area = _cuenta(m)
+                cub.append(100.0 * _cuenta(ImageChops.multiply(m, union_brazos)) / area if area else 0.0)
+            res.mejor_peor("ojos", min(cub), t)
+            res.ojo_peor = max(res.ojo_peor, max(cub))
         # (e) manos fuera de la caja de la cara (ampliada un 10 %), salvo las excepciones explicitas
         if zona and not _excepcion_cara(pj.pid, clip.accion):
             x0 = min(r[0] for r in zona); y0 = min(r[1] for r in zona)
@@ -851,20 +921,25 @@ def limite_cintura(pj):
 
 def fila(pid, clip, r):
     ok_b = r.brazo[0] >= (EXCEPCIONES_BRAZO.get(("*", clip.accion), (UMBRAL_BRAZO * 100,))[0]) and r.humero[0] >= UMBRAL_HUMERO * 100
-    ok_c = r.cara[0] >= (UMBRAL_CARA_GUIA if pid.startswith("algoritm") else UMBRAL_CARA) * 100
+    clave_tapa = _clave_cara(EXCEPCIONES_CARA_TAPADA, pid, clip.accion)
+    piso_cara = EXCEPCIONES_CARA_TAPADA[clave_tapa][0] if clave_tapa else (UMBRAL_CARA_GUIA if pid.startswith("algoritm") else UMBRAL_CARA) * 100
+    ok_c = r.cara[0] >= piso_cara
+    ok_o = r.ojos[0] <= UMBRAL_OJOS_TAPADOS
+    if clip.accion == VISERA and _clave_cara(EXCEPCIONES_VISERA, pid, clip.accion) is None:
+        ok_o = ok_o and r.ojo_peor <= UMBRAL_OJOS_TAPADOS
     ok_k = r.codo[0] <= 1e-9
     ok_s = r.suelo[0] <= TOLERANCIA_SUELO
     ok_m = r.mano[0] == 0
     ok_v = r.vel[0] <= VELOCIDAD_MAX or ("*", clip.accion) in EXCEPCIONES_VEL
     ok_t = r.torso[0] <= UMBRAL_TORSO
     ok_h = r.choque is None or r.choque[0] <= r.choque[3]
-    ok = ok_b and ok_c and ok_k and ok_s and ok_m and ok_v and ok_t and ok_h
+    ok = ok_b and ok_c and ok_k and ok_s and ok_m and ok_v and ok_t and ok_h and ok_o
     choque = "" if r.choque is None else " | choque y=%.0f @%.2fs (manos a %.0f px; limite y=%.0f) %s" % (
         r.choque[0], r.choque[1], r.choque[2], r.choque[3], "" if ok_h else "FALLA: bajo la cintura")
     mano = "libre" if ok_m else "%d cuadros @%.2fs %s" % (r.mano[0], r.mano[1], r.mano[2])
-    return ok, ("%-14s %-10s %-8s brazo %5.1f%% @%.2fs %-5s | humero %5.1f%% @%.2fs %-5s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s | giro max %4.0f deg/s %s | torso sobre la cara %4.1f%% %s%s" % (
+    return ok, ("%-14s %-10s %-8s brazo %5.1f%% @%.2fs %-5s | humero %5.1f%% @%.2fs %-5s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s | ojos tapados: los dos %4.1f%% (un ojo hasta %4.1f%%) %s | giro max %4.0f deg/s %s | torso sobre la cara %4.1f%% %s%s" % (
         pid, clip.accion, "ok" if ok else "FALLA", r.brazo[0], r.brazo[1], r.brazo[2], r.humero[0], r.humero[1], r.humero[2], r.cara[0], r.cara[1],
-        r.codo[0], r.codo[1], r.codo[2], r.suelo[0] if r.suelo[0] > -900 else 0.0, r.suelo[1], mano, r.vel[0], "" if ok_v else "FALLA", r.torso[0], "" if ok_t else "FALLA", choque))
+        r.codo[0], r.codo[1], r.codo[2], r.suelo[0] if r.suelo[0] > -900 else 0.0, r.suelo[1], mano, r.ojos[0], r.ojo_peor, "" if ok_o else "FALLA", r.vel[0], "" if ok_v else "FALLA", r.torso[0], "" if ok_t else "FALLA", choque))
 
 
 # --------------------------------------------------------------------------- hojas y GIF
@@ -959,7 +1034,8 @@ def mide(pj):
     """
     Que cada articulacion del rig caiga en el centro del extremo redondo de la pieza que gira (la rotula),
     medido sobre el alfa de los PNG. Un pivote en la esquina del rect hace que la pieza se despegue de la
-    vecina al girar. Solo para personajes con las dos piezas dibujadas (arte final). Sale con 1 si alguna
+    vecina al girar. El HOMBRO es la excepcion: su pivote no esta en el centro del extremo redondo sino en el borde del torso, dentro del brazo (ver
+    abajo, hombro.py). Solo para personajes con las dos piezas dibujadas (arte final). Sale con 1 si alguna
     queda a mas de 2 px (el pivote de la rodilla es el centro de la antepierna, que gira; el muslo, que no
     gira, queda a mas de 12: el arte entrega muslo y antepierna alineados solo a unos 10 px).
     """
@@ -991,11 +1067,26 @@ def mide(pj):
         if b is None or a is None:
             continue
         tol_c = max(2.0, holguras.get("Codo" + lado, 0.0) + 2.0)
-        for nombre, punto, cs, tol in (("Hombro" + lado, hombro, b, 2.0), ("Codo (humero) " + lado, codo, b, tol_c), ("Codo (antebrazo) " + lado, codo, a, tol_c)):
+        for nombre, punto, cs, tol in (("Codo (humero) " + lado, codo, b, tol_c), ("Codo (antebrazo) " + lado, codo, a, tol_c)):
             d, q = cerca(punto, cs)
             ok = d <= tol
             fallos += 0 if ok else 1
             print("%-22s (%5.1f, %5.1f) / (%5.1f, %5.1f) %8.1f %s" % (nombre, punto[0], punto[1], q[0], q[1], d, "ok" if ok else "FALLA"))
+        # HOMBRO EN EL HOMBRO (06/10/2026, hombro.py): el pivote del humero ya no es el centro de su extremo redondo (el centro del pecho) sino un
+        # punto del borde del torso. Ha de caer DENTRO del brazo que dibuja el arte: a no mas de HOMBRO_CAPSULA radios de su eje y del lado del
+        # extremo proximal (no mas alla de la mitad hacia el codo); lo demas (que no asome sobre el hombro ni deje hueco) lo mide hombro.py --verifica
+        p0, p1 = b[0], b[1]
+        if math.hypot(p0[0] - codo[0], p0[1] - codo[1]) < math.hypot(p1[0] - codo[0], p1[1] - codo[1]):
+            p0, p1 = p1, p0     # p0: el extremo proximal (el que queda lejos del codo)
+        ux, uy = p1[0] - p0[0], p1[1] - p0[1]
+        n = math.hypot(ux, uy)
+        ux, uy = ux / n, uy / n
+        rx, ry = hombro[0] - p0[0], hombro[1] - p0[1]
+        a_lo, a_ad = rx * ux + ry * uy, abs(rx * uy - ry * ux)
+        ok = a_ad <= HOMBRO_CAPSULA * b[2] + 0.5 and -0.3 * b[2] <= a_lo <= 0.5 * n
+        fallos += 0 if ok else 1
+        print("%-22s (%5.1f, %5.1f) a %4.1f px del centro del extremo redondo, %4.2f radios del eje %s" % (
+            "Hombro " + lado, hombro[0], hombro[1], math.hypot(rx, ry), a_ad / b[2], "ok" if ok else "FALLA (fuera de la capsula del humero)"))
     for lado in ("Izq", "Der"):
         m, a = centros((LL if lado == "Izq" else RL)), centros((LK if lado == "Izq" else RK) + "/Antepierna" + lado)
         rod = piv[LK if lado == "Izq" else RK]
@@ -1006,7 +1097,7 @@ def mide(pj):
             ok = d <= max(12.0, holguras.get("Rodilla" + lado, 0.0) + 2.0)
             fallos += 0 if ok else 1
             print("%-22s (%5.1f, %5.1f) / (%5.1f, %5.1f) %8.1f %s" % (nombre, rod[0], rod[1], q[0], q[1], d, "ok" if ok else "FALLA"))
-    print("las articulaciones caen en el centro de la rotula" if not fallos else "%d articulaciones mal colocadas" % fallos)
+    print("las articulaciones caen en el centro de la rotula (el hombro, dentro del brazo)" if not fallos else "%d articulaciones mal colocadas" % fallos)
     return 1 if fallos else 0
 
 
@@ -1025,8 +1116,8 @@ def autoprueba(rig):
     xn = K.leer_contexto("nino", rig)
     b = xn.brazos
     casos = []
-    # 1. brazos colgando pegados al cuerpo: van tras el torso y se esconden
-    casos.append(("brazos pegados, tras el torso", nino, {(LA, R): b["Izq"].hombro_rot(8), (RA, R): b["Der"].hombro_rot(8)}, "brazo"))
+    # 1. brazos colgando pegados al cuerpo (a plomo: con el hombro en el hombro, a 8 grados aun asoma el 33 % del humero): van tras el torso y se esconden
+    casos.append(("brazos pegados, tras el torso", nino, {(LA, R): b["Izq"].hombro_rot(-2), (RA, R): b["Der"].hombro_rot(-2)}, "brazo"))
     # 1b. la cabeza se hunde tras el torso: la boca queda tapada por el torso (la cabeza va al fondo)
     casos.append(("barbilla y boca tras el torso", nino, {(NK, K.POSY): -130.0}, "torso"))   # la cara registrada de la entrega llena el ovalo: hunde mas
     # 2. un brazo en alto por delante de la cara
@@ -1044,7 +1135,7 @@ def autoprueba(rig):
     casos.append(("maqueta de Mama: mano en la cara", mama, {(RA, R): rs, (RE, R): rc}, "mano"))
     casos.append(("maqueta de Mama: codo al reves", mama, {(LA, R): bm["Izq"].hombro_rot(170), (LE, R): 100.0}, "codo"))
     casos.append(("maqueta de Mama: brazos pegados", mama,
-                  {(LA, R): bm["Izq"].hombro_rot(8), (RA, R): bm["Der"].hombro_rot(8)}, "brazo"))
+                  {(LA, R): bm["Izq"].hombro_rot(-2), (RA, R): bm["Der"].hombro_rot(-2)}, "brazo"))
     # 4. el pie atraviesa el suelo
     casos.append(("pie bajo el suelo", nino, {(LL, K.POSY): -30.0, (RL, K.POSY): -30.0}, "suelo"))
     # 5. la rodilla se dobla hacia fuera
@@ -1178,6 +1269,34 @@ def autoprueba(rig):
         detecta = not ok
         print("%-40s %-9s %s" % (nombre, medida, "detectada" if detecta else "NO SE DETECTA"))
         malos += 0 if detecta else 1
+    # 5b. los gestos junto a la cabeza (Santiago, 06/10/2026: «acepto que cubra el rostro»): la mano en la sien no falla en un gesto de
+    # EXCEPCIONES_CARA_TAPADA y si en cualquier otro; y nunca se tapan los dos ojos a la vez, ni siquiera en un gesto que deja tapar la cara
+    def manos_a(objetivos):
+        vals_ = {}
+        for lado_, hom_, cod_ in (("Izq", LA, LE), ("Der", RA, RE)):
+            if lado_ in objetivos:
+                rs_, rc_ = b[lado_].ik(objetivos[lado_])
+                vals_[(hom_, R)], vals_[(cod_, R)] = rs_, rc_
+        return vals_
+
+    for lado_ in ("Izq", "Der"):
+        b[lado_].permite_tapar_cara(True)
+    cara_ = _clip_pose(manos_a({"Izq": (500, 390), "Der": (525, 390)}))
+    resultados = {}
+    for accion_ in ("Hammer", "Walk"):
+        cara_.accion = accion_
+        resultados[accion_] = fila("nino", cara_, prueba_clip(nino, cara_, tiempos=[0.0]))[0]
+    ok = resultados["Hammer"] and not resultados["Walk"]
+    malos += 0 if ok else 1
+    print("%-40s %-9s %s" % ("manos a la cara: Hammer lo deja, Walk no", "cara", "bien" if ok else "FALLA (la lista de excepciones no distingue los gestos)"))
+    ojos_ = _clip_pose(manos_a({"Izq": (470, 385), "Der": (555, 385)}))
+    ojos_.accion = "Hammer"
+    r = prueba_clip(nino, ojos_, tiempos=[0.0])
+    ok = not fila("nino", ojos_, r)[0] and r.ojos[0] > UMBRAL_OJOS_TAPADOS and r.cara[0] >= EXCEPCIONES_CARA_TAPADA[("*", "Hammer")][0]
+    malos += 0 if ok else 1
+    print("%-40s %-9s %s" % ("las dos manos sobre los dos ojos", "ojos", "detectada (%.0f %% del ojo menos tapado, con la cara al %.0f %%)" % (r.ojos[0], r.cara[0]) if ok else "NO SE DETECTA"))
+    for lado_ in ("Izq", "Der"):
+        b[lado_].permite_tapar_cara(False)
     # 6. un salto de rama: el codo da 150 grados en un cuadro (clip de dos claves con 1/30 s entre ellas)
     salto = Clip({"archivo": "x", "accion": "x", "duracion": 1.0, "bucle": True,
                   "curvas": [{"ruta": RE, "propiedad": K.ROT, "claves": [[0.0, 0.0], [1.0 / 30.0, 150.0], [1.0, 150.0]]}]})
@@ -1273,9 +1392,16 @@ def main(argv=None):
             if f.read() != K.serializa(K.construir(rig)[0]):
                 print("ERROR clips_personajes.json esta DESACTUALIZADO respecto a coreografia.py: corre coreografia.py")
                 return 1
-    print("excepciones de «mano en la caja de la cara»:")
-    for (p_, c_), motivo in EXCEPCIONES_CARA.items():
-        print("  %-8s %-8s %s" % (p_, c_, motivo))
+    if set(EXCEPCIONES_CARA_TAPADA) != set(K.CARA_TAPADA):
+        print("ERROR EXCEPCIONES_CARA_TAPADA (pose_preview) y CARA_TAPADA (coreografia) no tienen los mismos gestos: %s" % sorted(set(EXCEPCIONES_CARA_TAPADA) ^ set(K.CARA_TAPADA)))
+        return 1
+    print("excepciones de «cara >= 90 %» y «mano en la caja de la cara» (gestos que dejan tapar parte de la cara; piso de la cara a la vista):")
+    for (p_, c_), (minimo, motivo) in EXCEPCIONES_CARA_TAPADA.items():
+        print("  %-8s %-9s cara >= %3.0f %%: %s" % (p_, c_, minimo, motivo))
+    print("ojos: nunca los dos tapados a la vez (el menos tapado <= %.0f %%); la visera (%s) ademas con la mano sobre la frente (ningun ojo > %.0f %%), salvo:" % (
+        UMBRAL_OJOS_TAPADOS, VISERA, UMBRAL_OJOS_TAPADOS))
+    for (p_, c_), motivo in EXCEPCIONES_VISERA.items():
+        print("  %-8s %-9s %s" % (p_, c_, motivo))
     print("excepciones de «brazo visible >= 85 %%»:%s" % ("" if EXCEPCIONES_BRAZO else " ninguna"))
     for (p_, c_), (minimo, motivo) in EXCEPCIONES_BRAZO.items():
         print("  %-8s %-8s hasta %.0f %%: %s" % (p_, c_, minimo, motivo))
