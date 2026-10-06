@@ -10,7 +10,17 @@ namespace Game.Scaffolding
     /// <remarks>
     /// Todo campo puede quedar vacío: <see cref="CharacterFace"/> deja sin dibujar la capa a la que
     /// le falte el sprite, así que el arte provisional se sigue viendo entero y nunca aparece un
-    /// recuadro blanco. Por eso los métodos devuelven <c>null</c> en vez de caer a otro sprite.
+    /// recuadro blanco.
+    ///
+    /// **Una emoción sin su sprite cae a la neutra** (<see cref="Eyes(FacialEmotion)"/>,
+    /// <see cref="RestMouth"/>): el arte llega expresión a expresión, y con solo la neutra entregada
+    /// el personaje perdía la cara entera en las doce acciones que no son Neutral (decisión del
+    /// 06/10/2026). Mejor una cara serena donde el guion pedía alegría que un personaje sin cara; la
+    /// emoción solo cambia el dibujo, nunca lo que el estudiante entiende. Si tampoco hay neutra
+    /// los métodos devuelven <c>null</c> y la cara se apaga, como antes. Los cuadros del parpadeo y
+    /// de las bocas del habla NO caen aquí: devuelven <c>null</c> y <see cref="CharacterFace"/> vuelve
+    /// al reposo de la emoción, que ya es el respaldo correcto (un párpado a medias no se sustituye
+    /// por unos ojos de otro tipo).
     /// </remarks>
     [CreateAssetMenu(menuName = "Algoritmia/Cara de personaje", fileName = "Cara_")]
     public sealed class CharacterFaceSet : ScriptableObject
@@ -99,23 +109,26 @@ namespace Game.Scaffolding
         [field: Min(0.01f)]
         public float FlapSeconds { get; private set; } = 0.09f;
 
-        /// <summary>Los ojos de la emoción, o <c>null</c> si el set no los trae.</summary>
+        /// <summary>
+        /// Los ojos de la emoción; si el set no los trae, los de Neutral; si tampoco, <c>null</c>.
+        /// </summary>
         public Sprite Eyes(FacialEmotion emotion)
         {
             switch (emotion)
             {
-                case FacialEmotion.Happy: return EyesHappy;
-                case FacialEmotion.Surprised: return EyesSurprised;
-                case FacialEmotion.Worried: return EyesWorried;
-                case FacialEmotion.Focused: return EyesFocused;
-                case FacialEmotion.Sleeping: return EyesSleeping;
+                case FacialEmotion.Happy: return OrNeutral(EyesHappy, EyesNeutral);
+                case FacialEmotion.Surprised: return OrNeutral(EyesSurprised, EyesNeutral);
+                case FacialEmotion.Worried: return OrNeutral(EyesWorried, EyesNeutral);
+                case FacialEmotion.Focused: return OrNeutral(EyesFocused, EyesNeutral);
+                case FacialEmotion.Sleeping: return OrNeutral(EyesSleeping, EyesNeutral);
                 default: return EyesNeutral;
             }
         }
 
         /// <summary>
-        /// Los ojos durante el parpadeo, o <c>null</c> si el set no los trae. Abiertos son los de la
-        /// emoción (<see cref="Eyes"/>).
+        /// Los ojos durante el parpadeo, o <c>null</c> si el set no trae el cuadro (sin caer a otro
+        /// sprite: <see cref="CharacterFace"/> se queda con los de la emoción). Abiertos son los de la
+        /// emoción (<see cref="Eyes(FacialEmotion)"/>, con su respaldo a la neutra).
         /// </summary>
         public Sprite Eyes(BlinkPhase phase, FacialEmotion emotion)
         {
@@ -127,22 +140,26 @@ namespace Game.Scaffolding
             }
         }
 
-        /// <summary>La boca cuando no habla, según la emoción. Neutral y Sleeping llevan la cerrada.</summary>
+        /// <summary>
+        /// La boca cuando no habla, según la emoción. Neutral y Sleeping llevan la cerrada, y es también
+        /// la que usa una emoción a la que le falte la suya; si tampoco hay cerrada, <c>null</c>.
+        /// </summary>
         public Sprite RestMouth(FacialEmotion emotion)
         {
             switch (emotion)
             {
-                case FacialEmotion.Happy: return MouthHappy;
-                case FacialEmotion.Surprised: return MouthSurprised;
-                case FacialEmotion.Worried: return MouthWorried;
-                case FacialEmotion.Focused: return MouthFocused;
+                case FacialEmotion.Happy: return OrNeutral(MouthHappy, MouthClosed);
+                case FacialEmotion.Surprised: return OrNeutral(MouthSurprised, MouthClosed);
+                case FacialEmotion.Worried: return OrNeutral(MouthWorried, MouthClosed);
+                case FacialEmotion.Focused: return OrNeutral(MouthFocused, MouthClosed);
                 default: return MouthClosed;
             }
         }
 
         /// <summary>
         /// La boca en esa forma del habla. En <see cref="MouthShape.Rest"/>, la de reposo de la
-        /// emoción; las demás no dependen de ella.
+        /// emoción (<see cref="RestMouth"/>); las demás no dependen de ella y devuelven <c>null</c> si
+        /// el set no trae el cuadro.
         /// </summary>
         public Sprite Mouth(MouthShape shape, FacialEmotion emotion)
         {
@@ -154,6 +171,15 @@ namespace Game.Scaffolding
                 case MouthShape.Closed: return MouthClosed;
                 default: return RestMouth(emotion);
             }
+        }
+
+        /// <summary>
+        /// El sprite de la emoción si existe y, si no, el de la neutra. Comparación explícita con
+        /// <c>null</c>: «??» se salta la comprobación de objetos destruidos de Unity.
+        /// </summary>
+        private static Sprite OrNeutral(Sprite emotion, Sprite neutral)
+        {
+            return emotion != null ? emotion : neutral;
         }
     }
 }

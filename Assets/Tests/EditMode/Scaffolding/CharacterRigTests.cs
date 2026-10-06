@@ -41,10 +41,11 @@ namespace Game.Scaffolding.Tests
             Cuerpo + "/PiernaIzq/RodillaIzq/AntepiernaIzq", Cuerpo + "/PiernaDer/RodillaDer/AntepiernaDer",
         };
 
-        /// <summary>Cuello, cabeza y cara de la familia. Algoritm no tiene cuello: su cara va en el cuerpo.</summary>
+        /// <summary>Cuello, cabeza y cara de la familia (la cara es CaraBase, Ojos y Boca). Algoritm no tiene cuello: su cara va en el cuerpo.</summary>
         private static readonly string[] CabezaDeLaFamilia =
         {
-            Tronco + "/Cuello", Tronco + "/Cuello/Cabeza", Tronco + "/Cuello/Cabeza/Ojos", Tronco + "/Cuello/Cabeza/Boca",
+            Tronco + "/Cuello", Tronco + "/Cuello/Cabeza", Tronco + "/Cuello/Cabeza/CaraBase",
+            Tronco + "/Cuello/Cabeza/Ojos", Tronco + "/Cuello/Cabeza/Boca",
         };
 
         private static readonly string[] CuerpoDeAlgoritm =
@@ -499,7 +500,9 @@ namespace Game.Scaffolding.Tests
         /// <summary>
         /// Una Image sin sprite pinta un recuadro blanco: toda capa nueva que aún no tiene arte está
         /// apagada. Se enciende al asignarle el sprite (modo «sprites» del generador). Solo los nodos
-        /// nuevos; la sombra, la estela y las partes que ya tenían arte no entran.
+        /// nuevos; la sombra, la estela y las partes que ya tenían arte no entran. En la familia, la
+        /// capa nueva de la cara (CaraBase: nariz y rubor, bajo los ojos y la boca) entra con el mismo
+        /// criterio que Ojos y Boca: sin su sprite no se dibuja.
         /// </summary>
         [Test]
         public void CharacterRig_DA131_UnaCapaSinSpriteNoSeDibuja(
@@ -508,7 +511,9 @@ namespace Game.Scaffolding.Tests
             var rig = Rig(nombre);
             var nuevas = new List<string> { "AntebrazoIzq", "AntebrazoDer", "AntepiernaIzq", "AntepiernaDer", "Ojos", "Boca" };
             // Algoritm trae de cero brazos, piernas y torso; en la familia ya tenían su sprite.
-            nuevas.AddRange(Familia.Contains(nombre) ? new[] { "Cabeza" } : new[] { "BrazoIzq", "BrazoDer", "PiernaIzq", "PiernaDer", "Torso" });
+            nuevas.AddRange(Familia.Contains(nombre)
+                ? new[] { "Cabeza", "CaraBase" }
+                : new[] { "BrazoIzq", "BrazoDer", "PiernaIzq", "PiernaDer", "Torso" });
 
             var capas = rig.GetComponentsInChildren<Image>(true).Where(imagen => nuevas.Contains(imagen.name)).ToArray();
             Assert.That(capas.Select(imagen => imagen.name), Is.EquivalentTo(nuevas), $"{nombre}: cada capa nueva es una Image");
@@ -516,6 +521,37 @@ namespace Game.Scaffolding.Tests
             {
                 Assert.That(imagen.enabled, Is.False, $"{nombre}: {imagen.name} no tiene sprite y no se dibuja");
             }
+        }
+
+        /// <summary>
+        /// La cara de la familia lleva una capa estática, CaraBase (nariz y rubor, que ni parpadean ni
+        /// hablan), y va DETRÁS de Ojos y Boca: uGUI pinta los hijos de atrás adelante, así que es el
+        /// primer hijo de Cabeza. El generador la inserta donde la tabla la pone entre sus hermanos
+        /// (modo «nodos»); CharacterFace no la gobierna, solo las capas de ojos y boca.
+        /// </summary>
+        [Test]
+        public void CharacterRig_DA131_LaCaraBaseVaDetrasDeLosOjosYDeLaBoca(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var rig = Rig(nombre);
+            var cabeza = rig.transform.Find(Tronco + "/Cuello/Cabeza");
+            Assert.That(cabeza, Is.Not.Null, $"{nombre}: existe Cabeza");
+
+            var caraBase = cabeza.Find("CaraBase");
+            Assert.That(caraBase, Is.Not.Null, $"{nombre}: Cabeza tiene CaraBase");
+            Assert.That(caraBase.GetSiblingIndex(), Is.Zero, $"{nombre}: CaraBase es el primer hijo de Cabeza");
+            foreach (var capa in new[] { "Ojos", "Boca" })
+            {
+                var nodo = cabeza.Find(capa);
+                Assert.That(nodo, Is.Not.Null, $"{nombre}: Cabeza tiene {capa}");
+                Assert.That(nodo.GetSiblingIndex(), Is.GreaterThan(caraBase.GetSiblingIndex()), $"{nombre}: {capa} se dibuja sobre CaraBase");
+            }
+
+            var serializada = new SerializedObject(rig.GetComponent<CharacterFace>());
+            var imagen = caraBase.GetComponent<Image>();
+            Assert.That(imagen, Is.Not.Null, $"{nombre}: CaraBase es una Image");
+            Assert.That(serializada.FindProperty("eyes").objectReferenceValue, Is.Not.EqualTo(imagen), $"{nombre}: CaraBase no es la capa de ojos");
+            Assert.That(serializada.FindProperty("mouth").objectReferenceValue, Is.Not.EqualTo(imagen), $"{nombre}: CaraBase no es la capa de boca");
         }
 
         /// <summary>

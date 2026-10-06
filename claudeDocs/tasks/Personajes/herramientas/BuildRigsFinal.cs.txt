@@ -6,11 +6,18 @@
 // reconstruye: solo AÑADE nodos, reordena hermanos y reescribe curvas. Cuatro modos, más dos de apoyo:
 //   "nodos"   añade a los 7 prefabs (Papa, Mama, Nina, Nino, Algoritm_Fuego/Rueda/Gota) lo que la
 //             tabla rig_articulaciones.json pide y falta, y el componente CharacterFace. Idempotente:
-//             si un nodo existe no lo toca. Todo nodo nuevo lleva su Image apagada y sin sprite.
+//             si un nodo existe no lo toca ni lo mueve. Todo nodo nuevo lleva su Image apagada y sin
+//             sprite. Un nodo nuevo de tipo «imagen» entra EN LA POSICIÓN QUE LE DA LA TABLA entre sus
+//             hermanos: justo detrás del primero de los hermanos que la lista «nodos» pone DESPUÉS de él
+//             y que ya existe, o al final si no hay ninguno. Así CaraBase (nariz y rubor de la familia,
+//             estática) queda como PRIMER hijo de Cabeza, detrás de Ojos y Boca, siempre que la tabla
+//             la liste ANTES que ellos; el log dice detrás de qué quedó. Los nodos «articulacion» y
+//             «grupo» nacen al final, como siempre (el orden de Tronco lo fija «orden»).
 //   "sprites" para cuando llegue el arte final: asigna por nombre los PNG que existan, aplica rect y
-//             pivote de la tabla, enciende las Image, crea <prefijo>_cara.asset (CharacterFaceSet) y
-//             apaga la Image de Cuerpo en Algoritm cuando sus partes ya están. Lo que no existe se
-//             deja apagado y se anota en el log.
+//             pivote de la tabla, enciende las Image (las de partes, las de la cara y CaraBase por
+//             igual), crea o actualiza <carpeta>/Expresiones/<prefijo>_cara.asset (CharacterFaceSet)
+//             y apaga la Image de Cuerpo en Algoritm cuando sus partes ya están. Lo que no existe se
+//             deja apagado y se anota en el log: un nodo imagen sin PNG queda con la Image apagada.
 //   "orden"   coloca los hijos de Lienzo/Cuerpo/Tronco en el orden de dibujo que fija «orden_tronco»
 //             en la tabla: en la familia los brazos DETRÁS del torso y DELANTE de la cabeza (Cuello,
 //             BrazoIzq, BrazoDer, Torso) y en Algoritm las manos ENCIMA de la cara (Torso, Ojos, Boca,
@@ -37,7 +44,20 @@
 // curva constante en su reposo, o con writeDefaultValues cae a la pose en T: lo vigila
 // CharacterRig_DA131_CadaClipFijaTodasLasArticulaciones).
 //
+// CARPETAS DEL ARTE. Cada personaje (Assets/Game/Art/Characters/<Carpeta>/, con Carpeta = Boy, Girl,
+// Father, Mother o Algoritm) guarda su arte en subcarpetas: Frontal/ (las partes del cuerpo,
+// char_<x>_parte_*.png), Expresiones/ (ojos, bocas, char_<x>_cara_base.png y el set char_<x>_cara.asset)
+// y Perfil/ (vacía por ahora). Animations/, los retratos, char_mama_cenital.png y los
+// char_algoritm_*_reposo.png se quedan en la raíz. Lo que aún esté suelto en la raíz lo mueve
+// OrganizarArtePersonajes.cs.txt (conserva los GUID). Aquí:
+//   - FindSprite busca por nombre en toda la carpeta del personaje y, si hay dos PNG con el mismo
+//     nombre (uno olvidado en la raíz, otro en su subcarpeta), AVISA y usa el de la subcarpeta que le
+//     toca por su nombre (Frontal para las partes, Expresiones para ojos, bocas y cara base);
+//   - el _cara.asset se crea o se actualiza en Expresiones/, y si ya hay uno en la raíz se MUEVE con
+//     AssetDatabase.MoveAsset en vez de crear otro: el GUID es el que los prefabs ya referencian.
+//
 // CÓMO SE EJECUTA Y SE BORRA (lo hace la sesión local de Santiago, con el Editor abierto):
+//   0. Si el arte aún está suelto en la raíz de cada carpeta: correr antes OrganizarArtePersonajes.
 //   1. Copiar este archivo a Assets/Editor/ClaudeBuildRigsFinal.cs (la clase se llama
 //      ClaudeBuildRigsFinal; el Editor genera el .meta solo, nunca a mano) y esperar a que compile.
 //   2. Llamar por coplay execute_script:  ClaudeBuildRigsFinal.Execute("nodos")  y después
@@ -879,6 +899,8 @@ public static class ClaudeBuildRigsFinal
     private const string ClipsJson = "claudeDocs/tasks/Personajes/herramientas/clips_personajes.json";
     private const string Art = "Assets/Game/Art/Characters";
     private const string Prefabs = "Assets/Game/Prefabs/Characters";
+    private const string FrontFolder = "Frontal";
+    private const string ExpressionsFolder = "Expresiones";
     private const float U = 1024f;
     private const float Fps = 30f;
     private const float KeyTolerance = 1e-4f;
@@ -1098,7 +1120,7 @@ public static class ClaudeBuildRigsFinal
             var added = new List<string>();
             foreach (var n in c.nodos)
             {
-                EnsureNode(root.transform, n, added);
+                EnsureNode(root.transform, c, n, added);
             }
 
             var wired = EnsureFace(root, c, added);
@@ -1118,7 +1140,51 @@ public static class ClaudeBuildRigsFinal
         }
     }
 
-    private static void EnsureNode(Transform root, Nodo n, List<string> added)
+    /// <summary>
+    /// Los nombres de los hermanos de «n» que la tabla pone DESPUÉS de él: los nodos con el mismo
+    /// «padre» que van detrás de «n» en la lista «nodos». El orden de esa lista, entre hermanos, es el
+    /// orden de dibujo que pide la tabla (de atrás adelante).
+    /// </summary>
+    private static List<string> LaterSiblings(Personaje c, Nodo n)
+    {
+        var later = new List<string>();
+        var seen = false;
+        foreach (var other in c.nodos)
+        {
+            if (ReferenceEquals(other, n))
+            {
+                seen = true;
+            }
+            else if (seen && other.padre == n.padre)
+            {
+                later.Add(other.nombre);
+            }
+        }
+
+        return later;
+    }
+
+    /// <summary>
+    /// El lugar entre los hijos de su padre donde entra un nodo nuevo: el del primero, en orden de
+    /// dibujo, de los hermanos que la tabla pone DESPUÉS de él (así el nodo queda detrás de todos
+    /// ellos), o -1 si ninguno existe (se queda donde nació, al final). «children» incluye al propio
+    /// nodo, que nace último. Los hermanos que ya existían no se mueven: solo el nodo nuevo se
+    /// reubica. Función pura, sin Unity.
+    /// </summary>
+    private static int InsertIndex(IList<string> children, string name, IList<string> laterInTable)
+    {
+        for (var i = 0; i < children.Count; i++)
+        {
+            if (children[i] != name && laterInTable.Contains(children[i]))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private static void EnsureNode(Transform root, Personaje c, Nodo n, List<string> added)
     {
         var parent = root.Find(n.padre) as RectTransform;
         if (parent == null)
@@ -1130,8 +1196,17 @@ public static class ClaudeBuildRigsFinal
         var isNew = node == null;
         if (isNew)
         {
-            node = NewRect(n.nombre, parent); // se añade como último hijo: Cuello/Ojos/Boca quedan después de Torso
-            added.Add(n.nombre);
+            node = NewRect(n.nombre, parent); // nace como último hijo; las imágenes se reubican si la tabla las pone antes que un hermano
+            var at = n.tipo == "imagen" ? InsertIndex(ChildNames(parent), n.nombre, LaterSiblings(c, n)) : -1;
+            if (at >= 0)
+            {
+                node.SetSiblingIndex(at);
+                added.Add(n.nombre + " [detrás de " + parent.GetChild(at + 1).name + "]");
+            }
+            else
+            {
+                added.Add(n.nombre);
+            }
         }
 
         switch (n.tipo)
@@ -1229,8 +1304,48 @@ public static class ClaudeBuildRigsFinal
         new[] { "MouthFocused", "boca_concentracion" },
     };
 
-    /// <summary>El PNG por nombre: primero en la carpeta del personaje, luego en sus subcarpetas. Lo pasa a Sprite Single.</summary>
-    private static Sprite FindSprite(string carpeta, string nombre)
+    /// <summary>
+    /// La subcarpeta del personaje donde le toca vivir a un PNG por su nombre: las partes del cuerpo
+    /// (char_&lt;x&gt;_parte_*) en Frontal; los ojos, las bocas y la cara base (char_&lt;x&gt;_ojos_*,
+    /// _boca_*, _cara_base) en Expresiones. null = ninguna (retratos, cenital, reposos de Algoritm: se
+    /// quedan en la raíz). Es la misma regla de nombres que usa OrganizarArtePersonajes.
+    /// </summary>
+    private static string ExpectedSubfolder(string nombre)
+    {
+        if (nombre.Contains("_parte_")) return FrontFolder;
+        if (nombre.Contains("_ojos_") || nombre.Contains("_boca_") || nombre.Contains("_cara_base")) return ExpressionsFolder;
+        return null;
+    }
+
+    /// <summary>
+    /// De varios PNG con el mismo nombre —uno olvidado en la raíz y otro en su subcarpeta— elige el de
+    /// la subcarpeta que le toca por su nombre (ExpectedSubfolder), luego el de la raíz del personaje y
+    /// luego el primero por orden alfabético; con más de uno rellena «warning» diciendo cuál usa. Con uno
+    /// solo lo devuelve sin más y con ninguno devuelve null. Función pura, sin Unity.
+    /// </summary>
+    private static string PickTexture(string folder, string nombre, IList<string> candidates, out string warning)
+    {
+        warning = null;
+        if (candidates.Count == 0) return null;
+        if (candidates.Count == 1) return candidates[0];
+
+        var sub = ExpectedSubfolder(nombre);
+        var expected = sub == null ? null : folder + "/" + sub + "/";
+        var ordered = candidates
+            .OrderBy(candidate => expected != null && candidate.StartsWith(expected, StringComparison.Ordinal) ? 0
+                : Path.GetDirectoryName(candidate).Replace('\\', '/') == folder ? 1 : 2)
+            .ThenBy(candidate => candidate, StringComparer.Ordinal)
+            .ToList();
+        warning = "AVISO hay " + candidates.Count + " PNG llamados «" + nombre + "» (" + string.Join(", ", ordered.ToArray()) + "): se usa "
+            + ordered[0] + (expected == null ? "" : " (la subcarpeta que le toca es «" + sub + "»)") + "; el otro sobra";
+        return ordered[0];
+    }
+
+    /// <summary>
+    /// El PNG por nombre, en cualquier subcarpeta de la del personaje. Si hay dos con el mismo nombre
+    /// avisa en «log» y prefiere el de la subcarpeta que le toca (Frontal o Expresiones). Lo pasa a Sprite Single.
+    /// </summary>
+    private static Sprite FindSprite(string carpeta, string nombre, List<string> log)
     {
         if (string.IsNullOrEmpty(nombre))
         {
@@ -1238,19 +1353,27 @@ public static class ClaudeBuildRigsFinal
         }
 
         var folder = Art + "/" + carpeta;
-        var path = folder + "/" + nombre + ".png";
-        if (!File.Exists(path))
+        var candidates = new List<string>();
+        var inRoot = folder + "/" + nombre + ".png";
+        if (File.Exists(inRoot))
         {
-            path = null;
-            foreach (var guid in AssetDatabase.FindAssets(nombre + " t:Texture2D", new[] { folder }))
+            candidates.Add(inRoot);
+        }
+
+        foreach (var guid in AssetDatabase.FindAssets(nombre + " t:Texture2D", new[] { folder })) // recursivo: baja a Frontal/, Expresiones/…
+        {
+            var candidate = AssetDatabase.GUIDToAssetPath(guid);
+            if (Path.GetFileNameWithoutExtension(candidate) == nombre && !candidates.Contains(candidate))
             {
-                var candidate = AssetDatabase.GUIDToAssetPath(guid);
-                if (Path.GetFileNameWithoutExtension(candidate) == nombre)
-                {
-                    path = candidate;
-                    break;
-                }
+                candidates.Add(candidate);
             }
+        }
+
+        string warning;
+        var path = PickTexture(folder, nombre, candidates, out warning);
+        if (warning != null && !log.Contains(warning))
+        {
+            log.Add(warning); // FindSprite se llama más de una vez por nombre (nodo y set de cara): un solo aviso
         }
 
         if (path == null)
@@ -1287,7 +1410,7 @@ public static class ClaudeBuildRigsFinal
                 foreach (var part in c.partes)
                 {
                     var rt = root.transform.Find(part.ruta) as RectTransform;
-                    var sprite = FindSprite(c.carpeta, part.sprite);
+                    var sprite = FindSprite(c.carpeta, part.sprite, log);
                     if (rt == null || sprite == null)
                     {
                         missing.Add(part.sprite);
@@ -1331,12 +1454,12 @@ public static class ClaudeBuildRigsFinal
                 }
 
                 var image = target == null ? null : target.GetComponent<Image>();
-                var sprite = FindSprite(c.carpeta, n.sprite);
+                var sprite = FindSprite(c.carpeta, n.sprite, log);
                 if (image == null || sprite == null)
                 {
                     if (n.tipo == "articulacion" && target != null) PlacePoint(target, Pt(n.punto), n.rect);
-                    missing.Add(n.sprite);
-                    continue; // sin PNG: la Image queda apagada
+                    missing.Add(n.sprite ?? n.nombre);
+                    continue; // sin PNG: la Image queda apagada (la de un nodo nuevo nace apagada y aquí no se enciende)
                 }
 
                 PlacePoint(target, Pt(n.punto), n.rect);
@@ -1345,7 +1468,7 @@ public static class ClaudeBuildRigsFinal
                 done.Add(target.name);
             }
 
-            var faced = ApplyFaceSet(root, c, done);
+            var faced = ApplyFaceSet(root, c, done, log);
 
             // 3. Algoritm: con sus partes puestas, el sprite entero de Cuerpo sobra (se vería doble).
             if (c.guia && AllEnabled(root, new[] { T + "/Torso", T + "/BrazoIzq", T + "/BrazoDer", C + "/PiernaIzq", C + "/PiernaDer" }))
@@ -1387,13 +1510,92 @@ public static class ClaudeBuildRigsFinal
         return true;
     }
 
-    /// <summary>Crea o actualiza &lt;prefijo&gt;_cara.asset con los sprites de cara que existan y lo asigna a faceSet.</summary>
-    private static bool ApplyFaceSet(GameObject root, Personaje c, List<string> done)
+    /// <summary>Dónde vive el set de la cara de un personaje: en su subcarpeta Expresiones.</summary>
+    private static string FaceSetPath(Personaje c)
+    {
+        return Art + "/" + c.carpeta + "/" + ExpressionsFolder + "/" + c.prefijo + "_cara.asset";
+    }
+
+    /// <summary>Donde vivía antes de las subcarpetas: la raíz de la carpeta del personaje.</summary>
+    private static string OldFaceSetPath(Personaje c)
+    {
+        return Art + "/" + c.carpeta + "/" + c.prefijo + "_cara.asset";
+    }
+
+    /// <summary>
+    /// Crea la subcarpeta si falta. Se pregunta antes con IsValidFolder porque CreateFolder sobre una
+    /// carpeta que ya existe no es idempotente (puede crear «Nombre 1»). false si no quedó una carpeta válida.
+    /// </summary>
+    private static bool EnsureFolder(string parent, string name, List<string> log)
+    {
+        var path = parent + "/" + name;
+        if (AssetDatabase.IsValidFolder(path))
+        {
+            return true;
+        }
+
+        AssetDatabase.CreateFolder(parent, name);
+        if (!AssetDatabase.IsValidFolder(path))
+        {
+            log.Add("ERROR no se pudo crear la carpeta " + path);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// El set de la cara del personaje, en Expresiones/. Si ya está ahí, ese. Si no, y hay uno viejo en
+    /// la raíz, se MUEVE (AssetDatabase.MoveAsset conserva el GUID que los prefabs ya referencian) en
+    /// vez de crear otro; si el movimiento falla se sigue usando el viejo en su sitio. Solo si no hay
+    /// ninguno se crea. null si no se pudo ni crear la carpeta.
+    /// </summary>
+    private static CharacterFaceSet EnsureFaceSet(Personaje c, List<string> log)
+    {
+        var assetPath = FaceSetPath(c);
+        var oldPath = OldFaceSetPath(c);
+        var set = AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(assetPath);
+        if (set != null)
+        {
+            if (AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(oldPath) != null)
+            {
+                log.Add("AVISO " + c.prefijo + ": hay un _cara.asset en Expresiones y otro en la raíz (" + oldPath + "); se usa el de Expresiones y el de la raíz sobra");
+            }
+
+            return set;
+        }
+
+        if (!EnsureFolder(Art + "/" + c.carpeta, ExpressionsFolder, log))
+        {
+            return null;
+        }
+
+        var old = AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(oldPath);
+        if (old != null)
+        {
+            var error = AssetDatabase.MoveAsset(oldPath, assetPath);
+            if (string.IsNullOrEmpty(error))
+            {
+                log.Add(c.prefijo + ": " + oldPath + " movido a " + assetPath + " (mismo GUID)");
+                return AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(assetPath);
+            }
+
+            log.Add("AVISO " + c.prefijo + ": no se pudo mover " + oldPath + " a " + assetPath + " (" + error + "); se usa en su sitio");
+            return old;
+        }
+
+        set = ScriptableObject.CreateInstance<CharacterFaceSet>();
+        AssetDatabase.CreateAsset(set, assetPath);
+        return set;
+    }
+
+    /// <summary>Crea o actualiza &lt;carpeta&gt;/Expresiones/&lt;prefijo&gt;_cara.asset con los sprites de cara que existan y lo asigna a faceSet.</summary>
+    private static bool ApplyFaceSet(GameObject root, Personaje c, List<string> done, List<string> log)
     {
         var found = new Dictionary<string, Sprite>();
         foreach (var pair in FaceNames)
         {
-            var sprite = FindSprite(c.carpeta, c.prefijo + "_" + pair[1]);
+            var sprite = FindSprite(c.carpeta, c.prefijo + "_" + pair[1], log);
             if (sprite != null) found[pair[0]] = sprite;
         }
 
@@ -1402,12 +1604,10 @@ public static class ClaudeBuildRigsFinal
             return false;
         }
 
-        var assetPath = Art + "/" + c.carpeta + "/" + c.prefijo + "_cara.asset";
-        var set = AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(assetPath);
+        var set = EnsureFaceSet(c, log);
         if (set == null)
         {
-            set = ScriptableObject.CreateInstance<CharacterFaceSet>();
-            AssetDatabase.CreateAsset(set, assetPath);
+            return false;
         }
 
         var so = new SerializedObject(set);
@@ -1593,7 +1793,15 @@ public static class ClaudeBuildRigsFinal
         var face = root.GetComponent<CharacterFace>();
         log.Add(c.prefab + " [" + c.nodos.Length + " nodos, " + c.partes.Length + " partes en la tabla]: " + (missing.Count == 0 ? "nodos completos" : "FALTAN " + string.Join(", ", missing.ToArray()))
             + " | CharacterFace " + (face == null ? "no" : "sí") + " | segmentado " + (IsSegmented(root.transform) ? "sí" : "no")
-            + " | " + OrderState(root.transform, c));
+            + " | " + FaceSetState(c) + " | " + OrderState(root.transform, c));
+    }
+
+    /// <summary>Dónde está el set de la cara: en Expresiones, en la raíz (falta moverlo) o aún no existe.</summary>
+    private static string FaceSetState(Personaje c)
+    {
+        if (AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(FaceSetPath(c)) != null) return "_cara.asset en " + ExpressionsFolder;
+        if (AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(OldFaceSetPath(c)) != null) return "_cara.asset en la RAÍZ (falta moverlo: «sprites» o OrganizarArtePersonajes)";
+        return "sin _cara.asset";
     }
 
     /// <summary>El orden de dibujo actual de Tronco y si cumple lo que la tabla pide. No lanza: «estado» no escribe ni falla.</summary>

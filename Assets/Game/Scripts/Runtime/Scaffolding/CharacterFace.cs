@@ -11,10 +11,11 @@ namespace Game.Scaffolding
     /// (<see cref="MouthFlap"/>) y la tabla de sprites (<see cref="CharacterFaceSet"/>) son C# plano.
     /// </summary>
     /// <remarks>
-    /// **Sin set o sin el sprite pedido, la <c>Image</c> queda desactivada.** Una <c>Image</c> sin
-    /// sprite pinta un recuadro blanco, y hasta que llegue el arte final los personajes no tienen
-    /// cara: el componente tiene que ser invisible mientras no haya con qué dibujarla, y el arte
-    /// provisional se sigue viendo entero.
+    /// **Sin set, o sin el sprite pedido ni el de la neutra, la <c>Image</c> queda desactivada.** Una
+    /// <c>Image</c> sin sprite pinta un recuadro blanco, y hasta que llegue el arte final los
+    /// personajes no tienen cara: el componente tiene que ser invisible mientras no haya con qué
+    /// dibujarla, y el arte provisional se sigue viendo entero. Una emoción a la que le falta su
+    /// sprite no apaga la cara: <see cref="CharacterFaceSet"/> cae a la neutra (06/10/2026).
     ///
     /// Avanza con <see cref="Time.deltaTime"/>, que es escalado: la pausa (<c>timeScale = 0</c>,
     /// RF-07) congela el parpadeo y la boca igual que congela los clips.
