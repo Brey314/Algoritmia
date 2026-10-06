@@ -15,8 +15,9 @@
 > (4.1) y poblar emociones en los 18 `N*_*.asset`.
 >
 > **Actualización posterior del 05/10/2026 (INC-132).** En la familia los brazos se dibujan detrás del
-> torso y delante de la cabeza, y en Algoritm delante del cuerpo con la cara encima (modo `"orden"` de
-> `BuildRigsFinal.cs.txt`); la coreografía de
+> torso y delante de la cabeza, salvo al golpear (`Strike`, 06/10: `ArmLayering` los pasa delante del
+> torso y los devuelve al cambiar de acción), y en Algoritm delante del cuerpo con las manos sobre la
+> cara (modo `"orden"` de `BuildRigsFinal.cs.txt`); la coreografía de
 > Fase 3 se escribe ahora en `herramientas/coreografia.py` (→ `clips_personajes.json`) en vez de en
 > el C#, y `herramientas/preparar_arte_final.py` es la entrada del arte final. Detalle en
 > `Personajes-Resultados.md`, C.9. Este plan no se reescribe.

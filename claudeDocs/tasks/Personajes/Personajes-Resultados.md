@@ -705,7 +705,7 @@ EditMode de `Scaffolding`, PlayMode de las escenas con personajes, la suite comp
 provisional igual en reposo). Las cifras de esa corrida irán en este anexo cuando existan.
 
 
-### C.9 Brazos delante y entrada del arte final (INC-132, 05/10/2026)
+### C.9 Orden de dibujo de los brazos y entrada del arte final (INC-132, 05/10 y 06/10/2026)
 
 **El problema.** Santiago vio un Idle frontal pobre y brazos escondidos detrás de la cabeza o del
 cuerpo. La causa: bajo `Lienzo/Cuerpo/Tronco` los hijos iban `BrazoIzq`, `BrazoDer`, `Torso`,
@@ -714,13 +714,31 @@ cuerpo. La causa: bajo `Lienzo/Cuerpo/Tronco` los hijos iban `BrazoIzq`, `BrazoD
 **La decisión (INC-132), definitiva.** En la **familia**, los brazos se dibujan **detrás del torso y
 delante de la cabeza**: `orden_tronco` = `Cuello`, `BrazoIzq`, `BrazoDer`, `Torso`, con la cabeza al
 fondo. Con el arte provisional la cabeza está pintada dentro del torso, así que hoy los brazos quedan
-tras el torso y tras la cara hasta el arte final. **Algoritm** sigue con los brazos delante del cuerpo
-y la cara (`Ojos`, `Boca`) encima —su cara va sobre el cuerpo—; queda pendiente de que Santiago lo
-confirme. Sustituye para la familia la regla de INC-131 de dibujar el cuello sobre el torso. (Etapas
+tras el torso y tras la cara hasta el arte final. Sustituye para la familia la regla de INC-131 de dibujar el cuello sobre el torso. (Etapas
 intermedias del mismo día: delante en el Niño y Algoritm → delante en los siete, commit `5ce0797` →
 regla definitiva.)
 
-**Qué entró** (commits `8740a64`, `6f2b4cf`, `590866f`, `d817d95`, `5ce0797` y `0b76bbc`):
+**Ajustes del 06/10/2026 (decisiones de Santiago).**
+
+- **Strike con los brazos delante.** Mientras el personaje golpea las piedras, los brazos pasan
+  **delante del torso**; al cambiar de acción vuelven exactamente a su orden. Lo hace `ArmLayering`
+  (C# plano, `Game.Scaffolding`: reordena los hijos de `Tronco` por nombre y restaura el orden de
+  origen) desde `CharacterRig.Apply`, según el campo serializado `armsInFrontActions = { Strike }`; el
+  inicializador del campo vale para los prefabs que no lo serializan (los tres de Algoritm sí lo
+  serializan, con ese valor, al guardarse). El cambio de capa es seco al empezar la acción: no espera
+  el fundido de 0,18 s. Si falta un nodo, avisa y no mueve nada. En Algoritm no mueve nada, porque sus
+  brazos ya van delante del cuerpo.
+- **Algoritm: manos sobre la cara.** `orden_tronco` = `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`.
+  La coreografía y `pose_preview.py` impiden que una mano entre en la caja de ojos y boca (ampliada un
+  30 %, con al menos el 99,5 % libre).
+- **Coreografía de Strike.** Choque delante del pecho con brazo partido; con el brazo de una pieza del
+  arte provisional (Papá, Mamá y Niña hoy) el brazo se encoge hasta el 45 % durante el golpe para que
+  el choque quede en el vientre, nunca bajo la cintura (por encima de la cabeza tapaba la cara y a un
+  costado no había contacto). **Pendiente de que Santiago lo apruebe**; alternativa: golpear sin
+  juntar las manos hasta el arte final.
+
+**Qué entró** (commits `8740a64`, `6f2b4cf`, `590866f`, `d817d95`, `5ce0797`, `0b76bbc`, `117287c`,
+`a5a887b` y `8cdd4c5`):
 
 - Clave `orden_tronco` en `rig_articulaciones.json` y modo `"orden"` del generador (C.5), sin tocar
   fileIDs. Orden de modos: nodos → sprites → orden → clips (`"todo"`), más `"estado"`.
@@ -737,7 +755,7 @@ regla definitiva.)
   delante del pelo, sin tapar ojos ni boca; Algoritm, parpadeo de llama con brazos
   alternos. `Encourage`: puño fuera de la cabeza con rebote y cabeceo, 0,9 s × tempo (los
   controladores usan `EncourageSeconds` = 0,9 / 1,035), CP-02. `Blow` agachado con tres soplos;
-  `Hug` abre y se pliega a los costados; `Push` con los puños en las caderas; `Strike` por delante del pecho; `Observe` con visera desde la sien (el Niño, por
+  `Hug` abre y se pliega a los costados; `Push` con los puños en las caderas; `Strike` con el choque delante del pecho (arriba); `Observe` con visera desde la sien (el Niño, por
   sus brazos cortos y su cabeza grande, no llega a la frente).
 - **Geometría del Niño corregida:** hombro y codo en el centro del extremo redondo de cada cápsula
   (`BrazoIzq` pivote [466,560], `BrazoDer` [556,560], `CodoIzq` [366,609], `CodoDer` [667,605]),
@@ -749,9 +767,9 @@ regla definitiva.)
 |---|---|
 | `coreografia.py` | La coreografía y su salida, `clips_personajes.json` |
 | `coreografia_v0.py` | Solo regresión del port |
-| `pose_preview.py` | Renderiza el rig fuera de Unity a 30 fps y lo prueba: brazos ≥ 85 % visibles, cara ≥ 90 %, sin hiperextensión, pies ≤ 2 px bajo el suelo, manos fuera de la caja de la cara salvo excepciones explícitas, giro ≤ 1300 °/s salvo el martillazo, y el torso no tapa más del 5 % de ojos y boca (excepción explícita de `Strike`: el choque de las piedras pasa tras el torso menos de 0,1 s; pendiente de Santiago). Modos `--hoy` y `--maqueta`: 174/174 |
+| `pose_preview.py` | Renderiza el rig fuera de Unity a 30 fps y lo prueba: brazos ≥ 85 % visibles, cara ≥ 90 %, sin hiperextensión, pies ≤ 2 px bajo el suelo, manos fuera de la caja de la cara salvo excepciones explícitas, giro ≤ 1300 °/s salvo el martillazo, el torso no tapa más del 5 % de ojos y boca, ninguna mano entra en la cara de Algoritm y el choque de `Strike` queda sobre la cintura (comprobación h; `EXCEPCIONES_BRAZO` vacía). Lee `armsInFrontActions` de `CharacterRig.cs` y dibuja cada clip con su orden. Modos `--hoy` y `--maqueta`: 174/174 |
 | `maqueta.py` | Arte final simulado, cortando el provisional por las articulaciones |
-| `prefabs.py` | Simula lo que hará el modo `"sprites"`: quien ya tiene sus piezas se trata como segmentado |
+| `prefabs.py` | Simula lo que hará el modo `"sprites"` (quien ya tiene sus piezas se trata como segmentado) y el orden de dibujo, también el de `armsInFrontActions` |
 | `arte_final.json` | Medidas del arte final por personaje; `articulaciones.py` lo lee |
 | `preparar_arte_final.py` | Ver abajo |
 
@@ -767,8 +785,10 @@ informe y composite; (2) con `--aplicar`; (3) la sesión local copia `BuildRigsF
 prefab y `.anim`, y borra el andamiaje.
 
 **Pruebas nuevas:** `CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza` (los cuatro
-de la familia) y `CharacterRig_INC132_AlgoritmPintaLosBrazosDelanteDelCuerpoYLaCaraEncima` (las tres
-formas).
+de la familia) `CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara` (las tres formas, antes `…DelanteDelCuerpoYLaCaraEncima`)
+y, del 06/10, `CharacterRig_INC132_AlGolpearLosBrazosPasanDelanteDelTorso`,
+`…_AlTerminarElGolpeLosBrazosVuelvenDetrasDelTorso`, `…_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo`,
+`…_SoloElGolpePoneLosBrazosDelante` y `…_SiFaltaUnNodoElGolpeAvisaYNoMueveNada`.
 
 **Cambia una prueba existente:** `CharacterRig_DA131_LaFamiliaTieneCodosRodillasYCuello` deja de
 exigir el cuello sobre el torso (INC-132 sustituye esa regla de INC-131).
@@ -786,3 +806,11 @@ Niña 21, Niño 19); `Game.Scaffolding.Tests` 215/215 y suite completa en un sol
 omitida preexistente, 1 fallo: `RiverLevel_RNF05`, 2199 MB con el Editor abierto todo el día; recién
 abierto mide 1533 MB reservados y 1072 asignados, y `Game.Levels.River.PlayMode.Tests` pasa 57/57).
 `suite2.ps1` no pudo correr esta ronda: el segundo Editor murió dos veces por memoria al abrirse.
+**Ronda de `8cdd4c5` (Strike delante, manos de Algoritm sobre la cara):** la sesión local corrió `orden`
+y `clips`; cambiaron 3 prefabs de Algoritm (orden de `Tronco` y el campo serializado
+`armsInFrontActions`), 4 `.anim` de golpear y se generó el `.meta` de `ArmLayering.cs`; fileIDs,
+`m_Script`, `m_Controller` y `m_Sprite` intactos en los siete. `Game.Scaffolding.Tests` 234/234 y suite
+completa en un solo Editor (`tests-edit -` y `tests-play -`) 960/961 (1 omitida preexistente, 0
+fallos; `ForestScene_RF22` y `RiverLevel_RNF05` en verde). `suite2.ps1` murió dos veces por memoria al
+abrir el segundo Editor; `RiverLevel_RNF05` falla con un Editor abierto muchas horas (2199 MB) y pasa
+recién abierto (1533 MB), así que conviene reiniciar el Editor antes de la suite.
