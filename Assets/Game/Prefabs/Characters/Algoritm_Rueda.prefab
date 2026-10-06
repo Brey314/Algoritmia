@@ -292,10 +292,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6359854681088521728}
-  - {fileID: 6804764580610234397}
-  - {fileID: 972396415696486998}
   - {fileID: 3511312886146495272}
   - {fileID: 5563935268948091006}
+  - {fileID: 6804764580610234397}
+  - {fileID: 972396415696486998}
   m_Father: {fileID: 2630897778711202998}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -722,6 +722,7 @@ MonoBehaviour:
   <Portrait>k__BackingField: {fileID: 21300000, guid: cfad7fba25c01ed4690f5c0015c6bd4a, type: 3}
   animator: {fileID: 1645571143737635067}
   stage: {fileID: 6427298602617730210}
+  armsInFrontActions: 05000000
 --- !u!114 &3602831310198919196
 MonoBehaviour:
   m_ObjectHideFlags: 0
