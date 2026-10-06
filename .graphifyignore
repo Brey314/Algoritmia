@@ -13,3 +13,10 @@ Assets/Game/Art/**/*.png
 # transcripciones de efectos de sonido (fogata, piedras, salpicadura) que no
 # producen texto util. Que sonidos hay lo dice el nombre del archivo.
 Assets/Game/Audio/**
+
+# Evidencias crudas del carril OE4: 262 capturas del ejecutable (un subagente de
+# vision por PNG) y logs de Editor de hasta 5,7 MB. Son salida de pruebas, no
+# conocimiento: lo que dicen ya esta en los .md y .json de evidencias/, que se
+# quedan. Los PNG se nombran por caso (PF-RF10-03_lista.png) y el caso esta en casos.md.
+claudeDocs/tasks/OE4/evidencias/**/*.png
+claudeDocs/tasks/OE4/evidencias/**/*.txt

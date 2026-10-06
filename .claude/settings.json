@@ -12,5 +12,16 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(pwsh -NoProfile -File claudeDocs/tasks/OE4/herramientas/*)",
+      "Bash(cp claudeDocs/tasks/Personajes/herramientas/*)",
+      "Bash(mkdir -p Assets/Editor)",
+      "Bash(rm Assets/Editor/*)",
+      "Bash(shutdown /s /t 60)",
+      "mcp__coplay-mcp__*"
+    ]
   }
 }

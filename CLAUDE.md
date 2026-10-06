@@ -43,7 +43,7 @@ Además de los slices corre el **carril de arte y sonido** —toca `Assets/Game/
 25/09/2026)—, así que se pisa con los tres primeros slices. Lo que lleva hecho, archivo por archivo, está en
 `claudeDocs/tasks/Slice 3/Props-y-Sonidos-Resultados.md`; los personajes animados, que además tocan
 `Game.Scaffolding`, `Game.UI`, los tres niveles, las 18 narrativas y las cinco escenas jugables, en
-`claudeDocs/tasks/Personajes/Personajes-Resultados.md`; lo que sigue —personajes finales, perfiles, expresiones, habla— está planeado en `Plan-Personajes-Finales.md` (02/10/2026): su Fase 2–3 está hecha desde el 05/10/2026 (rig articulado, caras y clips; `Personajes-Resultados.md`, Anexo C) a falta del arte final y de la verificación en el Editor; los perfiles, el retrato animado y las emociones en las narrativas siguen sin ejecutar. Una regla suya que no caduca: los cuadros
+`claudeDocs/tasks/Personajes/Personajes-Resultados.md`; lo que sigue —personajes finales, perfiles, expresiones, habla— está planeado en `Plan-Personajes-Finales.md` (02/10/2026): su Fase 2–3 está hecha desde el 05/10/2026 (rig articulado, caras y clips; `Personajes-Resultados.md`, Anexo C) y del arte final solo ha entrado el del Niño frontal (`d127ec9`, 05/10/2026): faltan los otros seis prefabs y la verificación en el Editor; los perfiles, el retrato animado y las emociones en las narrativas siguen sin ejecutar. Una regla suya que no caduca: los cuadros
 de las animaciones del fuego y del humo conservan los nombres de entrega (`fuego_cenital_nivel_1_0000.png`, no
 el `prop_n1_…` de `Direccion_de_Arte.md`) y los referencia la curva del `.anim`: renombrarlos es
 trabajo del motor.
@@ -207,7 +207,11 @@ no las hace:
    explícitamente o el grafo se queda sin los documentos radicados — que es justo lo que le pasa a
    la foto vigente. (Las exclusiones sí sobreviven a un clon: `.graphifyignore` está **versionado**
    desde `2cbe287` y sus comentarios explican cada línea —`Packages/`, `Assets/Game/Art/**/*.png`,
-   `Assets/Game/Audio/**`—; leerlo antes de tocarlo, no reescribirlo de memoria.)
+   `Assets/Game/Audio/**` y, desde el 06/10/2026, los `*.png` y `*.txt` de
+   `claudeDocs/tasks/OE4/evidencias/` (262 capturas = 262 subagentes de visión, y logs de Editor de
+   hasta 5,7 MB; los `.md` y `.json` de esa carpeta sí entran)—; leerlo antes de tocarlo, no
+   reescribirlo de memoria. **Antes de lanzar subagentes en un `--update`, mirar cuántas imágenes y
+   documentos trae el recuento**: una carpeta de evidencias nueva se cuela entera.)
 2. El AST crea un **nodo-stub por archivo** para cada símbolo externo (`…_cs_button`,
    `…_cs_recttransform`): unos 500 nodos de `UnityEngine`/`System`/NUnit que inflan el grado de los
    controladores. Se podan con esta regla, que no necesita lista de tipos: un stub sin
@@ -446,7 +450,7 @@ antes de escribir la primera línea:
   personaje es un `NarrativeProp` con `Actor` y `Beats` —hereda casilla, orden de dibujo y la
   prueba del cuadro de diálogo— y `ActorTimeline` (C# plano) decide qué hace en cada línea. En las
   mecánicas, cada controlador llama `Play`/`PlayFor` en sus puntos de enganche; tras un fallo,
-  `Encourage` y nunca otra cosa (CP-02). **Desde el 05/10/2026 el rig tiene además codos, rodillas, cuello (no Algoritm), cabeza, ojos y boca como nodos y capas apagadas hasta el arte final (INC-131); `CharacterFace` gobierna expresión, parpadeo y habla, y para el arte nuevo se corre `preparar_arte_final.py` y luego los modos `sprites`, `orden` y `clips` de `BuildRigsFinal.cs.txt` (en ese orden); la coreografía vive en `coreografia.py` → `clips_personajes.json`.** **Reconstruir un prefab de personaje cambia sus fileID y
+  `Encourage` y nunca otra cosa (CP-02). **Desde el 05/10/2026 el rig tiene además codos, rodillas, cuello (no Algoritm), cabeza, ojos y boca como nodos y capas apagadas hasta el arte final (INC-131); `CharacterFace` gobierna expresión, parpadeo y habla, y para el arte nuevo se corre `preparar_arte_final.py` y luego los modos `sprites`, `orden` y `clips` de `BuildRigsFinal.cs.txt` (en ese orden); la coreografía vive en `coreografia.py` → `clips_personajes.json`; `ArmLayering` (INC-132, C# plano) pasa los brazos de la familia —que van detrás del torso— delante de él mientras golpean y los devuelve al orden con que nació `Tronco`: solo mueve `BrazoIzq`/`BrazoDer` por nombre, así que ningún fileID ni curva de clip cambia.** **Reconstruir un prefab de personaje cambia sus fileID y
   rompe las referencias** de las escenas y los 18 assets: para retocar animaciones se reescriben
   los clips (`claudeDocs/tasks/Personajes/`). `CharacterRig` se re-sincroniza en `OnEnable`/`Start` (`Play` + `Update(0)`) para que reactivar la jerarquía no deje un cuadro en pose en T: la primera acción se aplica seca y las siguientes con `CrossFade`.
 - **Interfaz inyectada donde hay un consumidor conocido; evento solo con varios oyentes.** No hay
