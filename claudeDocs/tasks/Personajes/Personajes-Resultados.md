@@ -557,17 +557,22 @@ la copia: el `.txt` es lo que queda versionado.
 |---|---|
 | `"nodos"` | Abre los siete prefabs con `LoadPrefabContents`, **añade** los nodos de la tabla que falten y el `CharacterFace`, y guarda con `SaveAsPrefabAsset`. Idempotente: si un nodo existe no lo toca, y nunca borra ni recrea uno. Todo nodo nuevo nace con la `Image` apagada y sin sprite |
 | `"sprites"` | Para cuando llegue el arte. Asigna por nombre los PNG que existan, aplica el rect y el pivote de la tabla (también a las partes que ya existían), enciende las `Image` y crea `<prefijo>_cara.asset` (un `CharacterFaceSet`) asignado al `CharacterFace`. En Algoritm apaga la `Image` de `Cuerpo` cuando torso, brazos y piernas ya están. Lo que no existe queda apagado y se anota en el log |
-| `"clips"` | Reescribe en sitio las curvas de los 84 `.anim` de la familia y los 9 de Algoritm (C.6). Se niega si faltan los nodos: exige haber corrido «nodos» |
-| `"todo"` · `"estado"` | «Nodos» y luego «clips» · solo informa (nodos completos, `CharacterFace` sí o no, segmentado sí o no), sin escribir |
+| `"orden"` | Desde INC-132 (C.9). Reordena con `SetSiblingIndex` los hijos de `Tronco` según `orden_tronco` de la tabla: familia con los brazos detrás del torso y delante de la cabeza; Algoritm con los brazos delante del cuerpo y la cara encima. No crea ni borra nodos: los fileID no cambian |
+| `"clips"` | Reescribe en sitio las curvas de los 84 `.anim` de la familia y los 9 de Algoritm (C.6), **aplicando `clips_personajes.json`** (C.9): el modo ya no contiene coreografía. Se niega si faltan los nodos: exige haber corrido «nodos» |
+| `"todo"` · `"estado"` | «Nodos», «sprites», «orden» y «clips», en ese orden · solo informa (nodos completos, `CharacterFace` sí o no, segmentado sí o no), sin escribir |
 
 **Orden mientras no hay arte:** `"nodos"` y después `"clips"`. **Orden cuando llegue el arte
 final:**
 
-1. Copiar los PNG a `Assets/Game/Art/Characters/<carpeta>/` con los nombres de C.4 (el motor los
-   importa; los existentes se sustituyen conservando nombre y `.meta`).
-2. Editar `rig_articulaciones.json` con el rect y el pivote de cada PNG (C.3).
-3. `"sprites"`.
-4. `"clips"` — **después** de «sprites», porque lee el prefab para saber si el personaje está
+1. Correr `python3 herramientas/preparar_arte_final.py <id> <carpeta>` (C.9): informe y composite; y,
+   tras revisarlos, con `--aplicar`, que escribe los PNG con los nombres de C.4, las medidas en
+   `arte_final.json` y `rig_articulaciones.json`, `clips_personajes.json` y las órdenes para la sesión
+   local. A mano (sin la herramienta): copiar los PNG a `Assets/Game/Art/Characters/<carpeta>/`
+   (el motor los importa; los existentes se sustituyen conservando nombre y `.meta`).
+2. Con la herramienta, `rig_articulaciones.json` ya lleva el rect y el pivote de cada PNG (C.3); a
+   mano se editan.
+3. `"sprites"` y después `"orden"` (C.9).
+4. `"clips"` — **después** de «sprites» y de «orden», porque lee el prefab para saber si el personaje está
    segmentado y la flexión de las rodillas depende de ello (C.6). También lee del propio prefab las
    longitudes y los pivotes, no de `rigdata.txt`.
 5. Pruebas y capturas (C.8); borrar el andamiaje.
@@ -584,7 +589,10 @@ no debe mostrar `.meta` de clips. No hay `.meta` escritos a mano: los genera el 
 ### C.6 Qué cambió en los clips
 
 Los 93 clips (21 por miembro de la familia, 9 de Algoritm) se reescriben **en sitio** con
-`ClearCurves` y curvas nuevas, conservando el GUID, el controlador y los eventos.
+`ClearCurves` y curvas nuevas, conservando el GUID, el controlador y los eventos. **Desde INC-132 las
+curvas ya no las calcula el C#:** las escribe `herramientas/coreografia.py` en `clips_personajes.json`
+(ASCII) y el modo `"clips"` solo las aplica; el port reproduce los 93 `.anim` previos con diferencia
+máxima de 0,00002 (C.9). Lo que sigue describe el contenido, no quién lo calcula.
 
 - **Una curva en cada hueso, contra la pose en T.** El hueco que cerró: los clips de Talk, Point o
   Encourage dejaban huesos sin curva y, con `writeDefaultValues`, un hueso sin curva vuelve al
@@ -695,3 +703,86 @@ las de `ActorTimeline`, las `NarrativeScene_RF05_*` y las `Personajes_DA133_*`.
 EditMode de `Scaffolding`, PlayMode de las escenas con personajes, la suite completa por
 `NORMA-PRUEBAS.md` y revisar las capturas de `Personajes_DA133_*` (sin pose en T y con el arte
 provisional igual en reposo). Las cifras de esa corrida irán en este anexo cuando existan.
+
+
+### C.9 Brazos delante y entrada del arte final (INC-132, 05/10/2026)
+
+**El problema.** Santiago vio un Idle frontal pobre y brazos escondidos detrás de la cabeza o del
+cuerpo. La causa: bajo `Lienzo/Cuerpo/Tronco` los hijos iban `BrazoIzq`, `BrazoDer`, `Torso`,
+`Cuello` (uGUI pinta de atrás adelante), y el hombro del Niño pivotaba en el centro del pecho.
+
+**La decisión (INC-132), definitiva.** En la **familia**, los brazos se dibujan **detrás del torso y
+delante de la cabeza**: `orden_tronco` = `Cuello`, `BrazoIzq`, `BrazoDer`, `Torso`, con la cabeza al
+fondo. Con el arte provisional la cabeza está pintada dentro del torso, así que hoy los brazos quedan
+tras el torso y tras la cara hasta el arte final. **Algoritm** sigue con los brazos delante del cuerpo
+y la cara (`Ojos`, `Boca`) encima —su cara va sobre el cuerpo—; queda pendiente de que Santiago lo
+confirme. Sustituye para la familia la regla de INC-131 de dibujar el cuello sobre el torso. (Etapas
+intermedias del mismo día: delante en el Niño y Algoritm → delante en los siete, commit `5ce0797` →
+regla definitiva.)
+
+**Qué entró** (commits `8740a64`, `6f2b4cf`, `590866f`, `d817d95`, `5ce0797` y `0b76bbc`):
+
+- Clave `orden_tronco` en `rig_articulaciones.json` y modo `"orden"` del generador (C.5), sin tocar
+  fileIDs. Orden de modos: nodos → sprites → orden → clips (`"todo"`), más `"estado"`.
+- **La coreografía pasa del C# a Python.** `coreografia.py` escribe `clips_personajes.json` y el modo
+  `"clips"` solo lo aplica; sigue sin crear clips ni tocar controladores, GUID ni eventos. Port
+  verificado contra los 93 `.anim` previos (`coreografia_v0.py`, solo regresión): diferencia máxima
+  0,00002.
+- **Coreografía escrita una vez, para el arte final**, como objetivos de mano: con brazo partido,
+  cinemática inversa de dos tramos; con brazo de una pieza, el hombro apunta la mano y el codo ya
+  lleva su curva. **Idle de 6,4 s × tempo** (dos respiraciones de 3,2 s, que conservan el ciclo de
+  `Direccion_de_Arte.md` §13.3) con gesto de carácter (la visibilidad de cada brazo se deriva de la geometría, con la silueta del torso, y el reposo se calcula por personaje): el Niño mira a los lados, rebota, brazos en
+  péndulo y se rasca junto a la oreja; la Niña balancea los brazos (las manos entrelazadas no se verían); Papá, brazos en jarra por fuera
+  del torso y pecho hinchado; Mamá, manos a la cintura por fuera del torso y mano a la oreja por
+  delante del pelo, sin tapar ojos ni boca; Algoritm, parpadeo de llama con brazos
+  alternos. `Encourage`: puño fuera de la cabeza con rebote y cabeceo, 0,9 s × tempo (los
+  controladores usan `EncourageSeconds` = 0,9 / 1,035), CP-02. `Blow` agachado con tres soplos;
+  `Hug` abre y se pliega a los costados; `Push` con los puños en las caderas; `Strike` por delante del pecho; `Observe` con visera desde la sien (el Niño, por
+  sus brazos cortos y su cabeza grande, no llega a la frente).
+- **Geometría del Niño corregida:** hombro y codo en el centro del extremo redondo de cada cápsula
+  (`BrazoIzq` pivote [466,560], `BrazoDer` [556,560], `CodoIzq` [366,609], `CodoDer` [667,605]),
+  rodillas [483,845] y [558,842], ojos [402,380,602,470], boca [447,468,557,512].
+
+**Herramientas nuevas** (`claudeDocs/tasks/Personajes/herramientas/`):
+
+| Archivo | Para qué |
+|---|---|
+| `coreografia.py` | La coreografía y su salida, `clips_personajes.json` |
+| `coreografia_v0.py` | Solo regresión del port |
+| `pose_preview.py` | Renderiza el rig fuera de Unity a 30 fps y lo prueba: brazos ≥ 85 % visibles, cara ≥ 90 %, sin hiperextensión, pies ≤ 2 px bajo el suelo, manos fuera de la caja de la cara salvo excepciones explícitas, giro ≤ 1300 °/s salvo el martillazo, y el torso no tapa más del 5 % de ojos y boca (excepción explícita de `Strike`: el choque de las piedras pasa tras el torso menos de 0,1 s; pendiente de Santiago). Modos `--hoy` y `--maqueta`: 174/174 |
+| `maqueta.py` | Arte final simulado, cortando el provisional por las articulaciones |
+| `prefabs.py` | Simula lo que hará el modo `"sprites"`: quien ya tiene sus piezas se trata como segmentado |
+| `arte_final.json` | Medidas del arte final por personaje; `articulaciones.py` lo lee |
+| `preparar_arte_final.py` | Ver abajo |
+
+**`preparar_arte_final.py <id> <carpeta> [--aplicar]`** reconoce las capas, limpia el alfa,
+normaliza a 870 unidades con el torso en x = 512, mide las articulaciones sobre el alfa y escribe PNG,
+tablas, clips y las órdenes para la sesión local; `--autoprueba` usa una entrega sintética del Niño
+(error ≤ 1 px). Su cabecera trae «COMO ENTREGAR EL ARTE FINAL».
+
+**Flujo cuando llegue el arte final de X:** (1) `python3 preparar_arte_final.py X <carpeta>`; revisar
+informe y composite; (2) con `--aplicar`; (3) la sesión local copia `BuildRigsFinal.cs.txt` a
+`Assets/Editor/ClaudeBuildRigsFinal.cs`, recompila, corre `estado`, `sprites`, `orden`, `clips` y
+`estado`, compara los prefabs objeto por objeto, corre las pruebas, hace commit de PNG, `.meta`,
+prefab y `.anim`, y borra el andamiaje.
+
+**Pruebas nuevas:** `CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza` (los cuatro
+de la familia) y `CharacterRig_INC132_AlgoritmPintaLosBrazosDelanteDelCuerpoYLaCaraEncima` (las tres
+formas).
+
+**Cambia una prueba existente:** `CharacterRig_DA131_LaFamiliaTieneCodosRodillasYCuello` deja de
+exigir el cuello sobre el torso (INC-132 sustituye esa regla de INC-131).
+
+**Verificado en el Editor.** `Game.Scaffolding.Tests` 215/215 tras `6f2b4cf` y otra vez 215/215 tras
+la ronda de `590866f` y `d817d95`. Suite completa tras `6f2b4cf`: 940/942 (1 omitida; 1 fallo ajeno en
+`ForestScene_RF22`: el ratón real del Editor hace rodar un tronco del bosque; pasa 3/3 aislada y 38/38
+en su grupo; queda como tarea aparte del carril del N2). Ronda de `5ce0797` (brazos delante en los
+siete, ya sustituida): `Game.Scaffolding.Tests` 215/215 y suite completa 941/942 (1 omitida
+preexistente, 0 fallos; `ForestScene_RF22` pasó); cambiaron 3 prefabs (solo el orden de `Tronco`) y 67
+`.anim` (Papá 21, Mamá 21, Niña 21, Niño 4), con fileIDs, `m_Script`, `m_Controller` y `m_Sprite`
+intactos en los siete. **Ronda de `0b76bbc` (regla definitiva):** la sesión local corrió `orden` y
+`clips` y subió en `117287c` 4 prefabs (solo el orden de `Tronco`) y 77 `.anim` (Papá 21, Mamá 16,
+Niña 21, Niño 19); `Game.Scaffolding.Tests` 215/215 y suite completa en un solo Editor 940/942 (1
+omitida preexistente, 1 fallo: `RiverLevel_RNF05`, 2199 MB con el Editor abierto todo el día; recién
+abierto mide 1533 MB reservados y 1072 asignados, y `Game.Levels.River.PlayMode.Tests` pasa 57/57).
+`suite2.ps1` no pudo correr esta ronda: el segundo Editor murió dos veces por memoria al abrirse.

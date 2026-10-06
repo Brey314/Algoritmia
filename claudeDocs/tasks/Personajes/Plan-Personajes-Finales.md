@@ -13,6 +13,13 @@
 > vigentes (§4.2 y §7, que sustituyen aquí a `Front/` y `frente_`; INC-131). Siguen **pendientes**
 > los perfiles (`CharacterOrientation`, Fase 4.4), el retrato animado del cuadro de diálogo
 > (4.1) y poblar emociones en los 18 `N*_*.asset`.
+>
+> **Actualización posterior del 05/10/2026 (INC-132).** En la familia los brazos se dibujan detrás del
+> torso y delante de la cabeza, y en Algoritm delante del cuerpo con la cara encima (modo `"orden"` de
+> `BuildRigsFinal.cs.txt`); la coreografía de
+> Fase 3 se escribe ahora en `herramientas/coreografia.py` (→ `clips_personajes.json`) en vez de en
+> el C#, y `herramientas/preparar_arte_final.py` es la entrada del arte final. Detalle en
+> `Personajes-Resultados.md`, C.9. Este plan no se reescribe.
 
 ---
 
@@ -250,6 +257,7 @@ Para sincronizar el habla con el diálogo sin requerir pistas de audio fonética
 
 ### Fase 3: Generación de Clips de Animación Completos
 *Hecha el 05/10/2026 en el generador (commit `a12dbb3`); los clips **aún no se han regenerado**: lo hace la sesión local en el Editor.*
+*Nota posterior (05/10/2026, INC-132): la coreografía pasó del C# a `coreografia.py` y el generador solo aplica `clips_personajes.json`; el Idle es de 6,4 s (dos respiraciones de 3,2 s). Ver `Personajes-Resultados.md`, C.9.*
 - [x] **3.1 Crear script editor `BuildRigsFinal.cs`:**
   - Basado en `BuildRigs.cs.txt`, pero con modo `"clips"` que reescribe únicamente las curvas sin cambiar los FileIDs de los prefabs.
   - **Difiere:** se versiona como `herramientas/BuildRigsFinal.cs.txt` (se copia al Editor para correrlo y se borra) y no tiene un modo sino cinco: `"nodos"` (añade los nodos y el `CharacterFace` a los 7 prefabs), `"sprites"` (asigna el arte final), `"clips"`, `"todo"` y `"estado"`. Lee la tabla `rig_articulaciones.json`, que se estima con `articulaciones.py`.

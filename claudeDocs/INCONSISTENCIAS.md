@@ -14,7 +14,7 @@ los dos tienen su conversión en `docs/md/`. Las citas por sección de este docu
 con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
 (control de cambios).
 
-**Verificación vigente: 05/10/2026, rev. 17.** La rev. 14 (29/09/2026) contrastó todos los
+**Verificación vigente: 05/10/2026, rev. 18.** La rev. 14 (29/09/2026) contrastó todos los
 documentos —los `.docx` de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago,
 **todos los hallazgos están cerrados**: ante un conflicto gana el juego y se edita el documento; lo
 que solo pide el documento se implementa en el juego; lo que solo tiene el juego se añade al
@@ -28,7 +28,9 @@ documento —las correcciones de los tres niveles, la prueba anticipada de la ba
 cuatro hallazgos de la dirección de arte y el peso del paquete de entrega (RNF-06). La rev. 17
 (05/10/2026) registra y cierra **INC-131**, una decisión de Santiago que levanta **INC-108** y la
 regla de Algoritm de una sola imagen **para el arte final**: caras con seis expresiones y rig con
-codos y rodillas. Siguen abiertos
+codos y rodillas. La rev. 18
+(05/10/2026) registra y cierra **INC-132**, otra decisión suya: en la familia los brazos se dibujan detrás del
+torso y delante de la cabeza; Algoritm, delante del cuerpo. Siguen abiertos
 solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
 **pendientes de Santiago** que el juego no zanja: tres del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
@@ -69,7 +71,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 
 ---
 
-## Resumen — estado a 05/10/2026 (rev. 17)
+## Resumen — estado a 05/10/2026 (rev. 18)
 
 | ID | Hallazgo | Documentos | Estado |
 |---|---|---|---|
@@ -185,6 +187,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-129 | El diálogo se lee en un cuadro con retrato, no en un globo con cola | Dirección de arte, Interfaces | **Cerrado** (01/10/2026) |
 | INC-130 | El paquete de entrega superaba los 500 MB por los cuadros del fuego y del humo del Nivel 1 | Dirección de arte, Inventario de arte, CLAUDE.md | **Cerrado** (01/10/2026) |
 | INC-131 | El arte final trae seis expresiones y extremidades en dos tramos; INC-108 fijaba una sola cara y Algoritm una sola imagen | Interfaces, Dirección de arte, Inventario de arte, Plan de personajes finales, CLAUDE.md, juego | **Cerrado** (05/10/2026) |
+| INC-132 | Los brazos se escondían detrás de la cabeza y del cuerpo; la jerarquía los pintaba antes | Plan de personajes finales, Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (05/10/2026) |
 
 ---
 
@@ -2530,6 +2533,47 @@ los siete prefabs sin reconstruirlos y reescribe los 93 clips. **Pruebas:** `Cha
 Editor: pendiente** (los prefabs y los clips aún no se han regenerado ni las pruebas se han
 corrido).
 
+### INC-132 · Orden de dibujo de los brazos: detrás del torso y delante de la cabeza — cerrado (05/10/2026)
+
+**El conflicto.** Santiago observó que el Idle frontal era pobre y que los brazos se escondían detrás
+de la cabeza o del cuerpo. La causa estaba en el prefab, no en los clips: bajo `Lienzo/Cuerpo/Tronco`
+los hijos iban `BrazoIzq`, `BrazoDer`, `Torso`, `Cuello` (uGUI pinta de atrás adelante), y el hombro
+del Niño pivotaba en el centro del pecho.
+
+**Decisión de Santiago (05/10/2026), definitiva.** En la **familia** (Papá, Mamá, Niña y Niño) los
+brazos se dibujan **detrás del torso y delante de la cabeza**: `orden_tronco` = `Cuello`, `BrazoIzq`,
+`BrazoDer`, `Torso`, con la cabeza al fondo. Con el arte provisional la cabeza está pintada dentro del
+torso, así que hoy los brazos quedan tras el torso y tras la cara hasta que llegue el arte final.
+**Algoritm** sigue con los brazos delante del cuerpo y la cara (ojos y boca) encima; su cara va sobre
+el cuerpo, y queda pendiente de que Santiago lo confirme. (Etapas intermedias del mismo día: brazos
+delante en el Niño y Algoritm → delante en los siete, commit `5ce0797` → regla definitiva.)
+
+**Regla.** Decisión de Santiago, como INC-115 a INC-117 e INC-131. **Sustituye** para la familia la
+regla de INC-131 de que el cuello se dibuja sobre el torso (`CharacterRig_DA131_…` ya no la exige). No
+contradice ningún `.docx` radicado ni cambia CP-02: `Encourage` sigue siendo un puño arriba, ahora
+fuera de la cabeza.
+
+**Corrección aplicada (05/10/2026).** Código y herramientas (commits `8740a64`, `6f2b4cf`, `590866f`,
+`d817d95`, `5ce0797` y `0b76bbc`, rama `feat/personajes-animados`): clave `orden_tronco` en
+`rig_articulaciones.json` y modo nuevo `"orden"` en `BuildRigsFinal.cs.txt` (`SetSiblingIndex`, sin
+tocar fileIDs); la coreografía pasa del C# a `coreografia.py`, que escribe `clips_personajes.json`, y
+el modo `"clips"` solo lo aplica. La coreografía deriva la visibilidad de la geometría (silueta del
+torso por brazo) y calcula el reposo por personaje; el Idle es de 6,4 s (dos respiraciones de 3,2 s,
+que conservan el ciclo de `Direccion_de_Arte.md` §13.3). Geometría del Niño corregida (hombros, codos,
+rodillas, ojos y boca). `pose_preview.py` (que mide también que el torso no tape más del 5 % de ojos y
+boca, con una excepción explícita en `Strike`, pendiente de Santiago), `maqueta.py` y
+`preparar_arte_final.py` verifican fuera de Unity y preparan la entrada del arte final. Documentos:
+`Personajes-Resultados.md` (C.5, C.6 y C.9), `Plan-Personajes-Finales.md` (§3.1 y Fase 3) y CLAUDE.md.
+**Pruebas:** `CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza` y
+`CharacterRig_INC132_AlgoritmPintaLosBrazosDelanteDelCuerpoYLaCaraEncima`.
+**En el Editor:** `Game.Scaffolding.Tests` 215/215 y suite completa 941/942 (1 omitida preexistente, 0
+fallos) en la ronda de `5ce0797`, que aún tenía los brazos delante en los siete. Suite completa de la
+ronda de `0b76bbc` (regla definitiva), con sus prefabs y `.anim` subidos en `117287c` (4 prefabs, 77
+`.anim`): `Game.Scaffolding.Tests` 215/215 y suite completa en un solo Editor 940/942 (1 omitida
+preexistente, 1 fallo: `RiverLevel_RNF05`, por la memoria de un Editor abierto todo el día, 2199 MB;
+con el Editor recién abierto mide 1533 MB reservados y 1072 asignados, y
+`Game.Levels.River.PlayMode.Tests` pasa 57/57).
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -2597,6 +2641,10 @@ carril de sonido, que lleva Santiago desde el acta D08.
 
 ## Historial de revisiones
 
+- **rev. 18 (05/10/2026)** — Decisión de Santiago sobre el orden de dibujo de los personajes. Se
+  registra y cierra **INC-132**: en la familia, los brazos detrás del torso y delante de la cabeza
+  (en Algoritm, delante del cuerpo y la cara encima), con la coreografía movida a `coreografia.py` y la entrada del arte final
+  en `preparar_arte_final.py`. No levanta ninguna regla anterior; mantiene CP-02.
 - **rev. 17 (05/10/2026)** — Decisión de Santiago sobre el arte final de los personajes. Se registra
   y cierra **INC-131**: cabeza separada, ojos y boca en capas propias, seis expresiones, y
   extremidades en dos tramos con codos y rodillas, también en Algoritm (sin cuello). Levanta
