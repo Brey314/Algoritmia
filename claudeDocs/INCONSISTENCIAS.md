@@ -30,7 +30,8 @@ cuatro hallazgos de la dirección de arte y el peso del paquete de entrega (RNF-
 regla de Algoritm de una sola imagen **para el arte final**: caras con seis expresiones y rig con
 codos y rodillas. La rev. 18
 (05/10/2026) registra y cierra **INC-132**, otra decisión suya: en la familia los brazos se dibujan detrás del
-torso y delante de la cabeza; Algoritm, delante del cuerpo. Siguen abiertos
+torso y delante de la cabeza (delante del torso al golpear); Algoritm, delante del cuerpo con las
+manos sobre la cara. Siguen abiertos
 solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
 **pendientes de Santiago** que el juego no zanja: tres del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
@@ -2544,35 +2545,57 @@ del Niño pivotaba en el centro del pecho.
 brazos se dibujan **detrás del torso y delante de la cabeza**: `orden_tronco` = `Cuello`, `BrazoIzq`,
 `BrazoDer`, `Torso`, con la cabeza al fondo. Con el arte provisional la cabeza está pintada dentro del
 torso, así que hoy los brazos quedan tras el torso y tras la cara hasta que llegue el arte final.
-**Algoritm** sigue con los brazos delante del cuerpo y la cara (ojos y boca) encima; su cara va sobre
-el cuerpo, y queda pendiente de que Santiago lo confirme. (Etapas intermedias del mismo día: brazos
-delante en el Niño y Algoritm → delante en los siete, commit `5ce0797` → regla definitiva.)
+(Etapas intermedias del mismo día: brazos delante en el Niño y Algoritm → delante en los siete,
+commit `5ce0797` → regla definitiva.)
+
+**Ajustes del 06/10/2026, también decisión de Santiago.**
+- **Strike.** Mientras el personaje golpea las piedras, los brazos pasan **delante del torso**, y al
+  cambiar de acción vuelven exactamente a su orden. Lo hace `ArmLayering` (C# plano,
+  `Game.Scaffolding`) desde `CharacterRig.Apply`, según el campo serializado
+  `armsInFrontActions = { Strike }` (el inicializador vale para los prefabs que no lo serializan); el
+  cambio de capa es seco al empezar la acción, sin esperar el fundido de 0,18 s.
+- **Algoritm.** `orden_tronco` = `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`: sus brazos van delante
+  del cuerpo y **las manos se pintan encima de la cara**. La coreografía y `pose_preview.py` impiden
+  que una mano entre en la caja de ojos y boca (ampliada un 30 %, con al menos el 99,5 % libre). En
+  Algoritm el golpe no mueve nada.
+- **Coreografía de Strike.** El choque va delante del pecho con brazo partido; con el brazo de una
+  pieza del arte provisional (Papá, Mamá y Niña hoy) el brazo se encoge hasta el 45 % durante el golpe
+  para que el choque quede en el vientre, nunca bajo la cintura (por encima de la cabeza tapaba la
+  cara y a un costado no había contacto). **Queda pendiente de que Santiago lo apruebe**; la
+  alternativa es golpear sin juntar las manos hasta el arte final.
 
 **Regla.** Decisión de Santiago, como INC-115 a INC-117 e INC-131. **Sustituye** para la familia la
 regla de INC-131 de que el cuello se dibuja sobre el torso (`CharacterRig_DA131_…` ya no la exige). No
 contradice ningún `.docx` radicado ni cambia CP-02: `Encourage` sigue siendo un puño arriba, ahora
 fuera de la cabeza.
 
-**Corrección aplicada (05/10/2026).** Código y herramientas (commits `8740a64`, `6f2b4cf`, `590866f`,
-`d817d95`, `5ce0797` y `0b76bbc`, rama `feat/personajes-animados`): clave `orden_tronco` en
+**Corrección aplicada (05/10 y 06/10/2026).** Código y herramientas (commits `8740a64`, `6f2b4cf`,
+`590866f`, `d817d95`, `5ce0797`, `0b76bbc`, `117287c`, `a5a887b` y `8cdd4c5`, rama `feat/personajes-animados`): clave `orden_tronco` en
 `rig_articulaciones.json` y modo nuevo `"orden"` en `BuildRigsFinal.cs.txt` (`SetSiblingIndex`, sin
 tocar fileIDs); la coreografía pasa del C# a `coreografia.py`, que escribe `clips_personajes.json`, y
 el modo `"clips"` solo lo aplica. La coreografía deriva la visibilidad de la geometría (silueta del
 torso por brazo) y calcula el reposo por personaje; el Idle es de 6,4 s (dos respiraciones de 3,2 s,
 que conservan el ciclo de `Direccion_de_Arte.md` §13.3). Geometría del Niño corregida (hombros, codos,
 rodillas, ojos y boca). `pose_preview.py` (que mide también que el torso no tape más del 5 % de ojos y
-boca, con una excepción explícita en `Strike`, pendiente de Santiago), `maqueta.py` y
+boca, que ninguna mano entre en la cara de Algoritm y que el choque de `Strike` quede sobre la cintura;
+sin excepciones, 174/174), `maqueta.py` y
 `preparar_arte_final.py` verifican fuera de Unity y preparan la entrada del arte final. Documentos:
 `Personajes-Resultados.md` (C.5, C.6 y C.9), `Plan-Personajes-Finales.md` (§3.1 y Fase 3) y CLAUDE.md.
-**Pruebas:** `CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza` y
-`CharacterRig_INC132_AlgoritmPintaLosBrazosDelanteDelCuerpoYLaCaraEncima`.
+**Pruebas:** `CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza`,
+`CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara`,
+`CharacterRig_INC132_AlGolpearLosBrazosPasanDelanteDelTorso`,
+`…_AlTerminarElGolpeLosBrazosVuelvenDetrasDelTorso`, `…_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo`,
+`…_SoloElGolpePoneLosBrazosDelante` y `…_SiFaltaUnNodoElGolpeAvisaYNoMueveNada`.
 **En el Editor:** `Game.Scaffolding.Tests` 215/215 y suite completa 941/942 (1 omitida preexistente, 0
 fallos) en la ronda de `5ce0797`, que aún tenía los brazos delante en los siete. Suite completa de la
 ronda de `0b76bbc` (regla definitiva), con sus prefabs y `.anim` subidos en `117287c` (4 prefabs, 77
 `.anim`): `Game.Scaffolding.Tests` 215/215 y suite completa en un solo Editor 940/942 (1 omitida
 preexistente, 1 fallo: `RiverLevel_RNF05`, por la memoria de un Editor abierto todo el día, 2199 MB;
 con el Editor recién abierto mide 1533 MB reservados y 1072 asignados, y
-`Game.Levels.River.PlayMode.Tests` pasa 57/57).
+`Game.Levels.River.PlayMode.Tests` pasa 57/57). Ronda de `8cdd4c5` (Strike con los brazos delante y las
+manos de Algoritm sobre la cara; 3 prefabs de Algoritm, 4 `.anim` de golpear y el `.meta` de
+`ArmLayering.cs`): `Game.Scaffolding.Tests` 234/234 y suite completa en un solo Editor 960/961 (1
+omitida preexistente, 0 fallos; `ForestScene_RF22` y `RiverLevel_RNF05` en verde).
 
 ## Residuos y puntos abiertos
 
@@ -2643,6 +2666,7 @@ carril de sonido, que lleva Santiago desde el acta D08.
 
 - **rev. 18 (05/10/2026)** — Decisión de Santiago sobre el orden de dibujo de los personajes. Se
   registra y cierra **INC-132**: en la familia, los brazos detrás del torso y delante de la cabeza
+  (delante del torso solo al golpear, 06/10)
   (en Algoritm, delante del cuerpo y la cara encima), con la coreografía movida a `coreografia.py` y la entrada del arte final
   en `preparar_arte_final.py`. No levanta ninguna regla anterior; mantiene CP-02.
 - **rev. 17 (05/10/2026)** — Decisión de Santiago sobre el arte final de los personajes. Se registra
