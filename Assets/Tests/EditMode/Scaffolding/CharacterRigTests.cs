@@ -259,10 +259,18 @@ namespace Game.Scaffolding.Tests
 
             var cuello = Orden(tronco, nombre, "Cuello");
             var torso = Orden(tronco, nombre, "Torso");
+            // Papa es la excepción (Santiago, 06/10/2026): su barba cae sobre el torso, así que cuello y cabeza van DELANTE de él.
+            if (nombre == "Papa")
+            {
+                Assert.That(cuello, Is.GreaterThan(torso), "Papa: la cabeza y la barba se dibujan delante del torso");
+            }
             foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
             {
                 var indice = Orden(tronco, nombre, brazo);
-                Assert.That(indice, Is.GreaterThan(cuello), $"{nombre}: {brazo} se dibuja después del cuello, o la cabeza lo tapa");
+                if (nombre != "Papa")
+                {
+                    Assert.That(indice, Is.GreaterThan(cuello), $"{nombre}: {brazo} se dibuja después del cuello, o la cabeza lo tapa");
+                }
                 Assert.That(indice, Is.LessThan(torso), $"{nombre}: {brazo} se dibuja antes del torso, para salir por detrás de él");
             }
         }

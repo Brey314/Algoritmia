@@ -410,6 +410,15 @@ def mide_cabeza(png, rect, tolerancia=26):
                     int(bb[0] + 0.60 * (bb[2] - bb[0])), int(bb[1] + 0.85 * (bb[3] - bb[1]))))
     bruto = zona.tobytes()   # RGBA a RGBA (getdata esta en desuso en Pillow nuevos y get_flattened_data no existe en los viejos)
     pixeles = [(bruto[i], bruto[i + 1], bruto[i + 2]) for i in range(0, len(bruto), 4) if bruto[i + 3] > 200]
+    # solo tonos de piel (durazno): con barba o pelo largo el centro-abajo de la cabeza es todo pelo (Papa y Mama, 06/10/2026);
+    # si ahi no hay piel se busca en toda la cabeza
+    def es_piel(c):
+        return c[0] >= 200 and 120 <= c[1] <= 225 and c[2] >= 90 and c[0] - c[2] >= 40
+    piel_zona = [c for c in pixeles if es_piel(c)]
+    if not piel_zona:
+        bruto = im.tobytes()
+        piel_zona = [c for c in ((bruto[i], bruto[i + 1], bruto[i + 2]) for i in range(0, len(bruto), 4) if bruto[i + 3] > 200) if es_piel(c)]
+    pixeles = piel_zona or pixeles
     cuenta = Counter((r // 8, g // 8, b // 8) for (r, g, b) in pixeles)
     if not cuenta:
         raise ValueError("no encuentro piel en el centro de la cabeza")

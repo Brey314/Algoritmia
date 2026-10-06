@@ -176,6 +176,7 @@ T = "Lienzo/Cuerpo/Tronco"
 C = "Lienzo/Cuerpo"
 
 ORDEN_TRONCO_FAMILIA = ["Cuello", "BrazoIzq", "BrazoDer", "Torso"]            # brazos tras el torso y delante de la cabeza: Papa, Mama, Nina y Nino
+ORDEN_TRONCO_PAPA = ["BrazoIzq", "BrazoDer", "Torso", "Cuello"]                   # Papa: la barba y la cara se dibujan DELANTE del torso (Santiago, 06/10/2026); los brazos siguen tras el torso
 ORDEN_TRONCO_GUIA = ["Torso", "Ojos", "Boca", "BrazoIzq", "BrazoDer"]            # Algoritm: las manos por ENCIMA de la cara (Santiago, 05/10/2026)
 
 # Arte final del Nino (05/10/2026), medido sobre el alfa de las piezas de Assets/Game/Art/Characters/Boy;
@@ -317,7 +318,7 @@ def personaje_familia(pid, prefab, carpeta):
         nodos, partes = ARTE_FINAL[pid]["nodos"], ARTE_FINAL[pid]["partes"]
     return {
         "id": pid, "prefab": prefab, "carpeta": carpeta, "prefijo": pref, "guia": False,
-        "orden_tronco": ORDEN_TRONCO_FAMILIA, "nodos": nodos, "partes": partes,
+        "orden_tronco": ORDEN_TRONCO_PAPA if pid == "papa" else ORDEN_TRONCO_FAMILIA, "nodos": nodos, "partes": partes,
     }
 
 
