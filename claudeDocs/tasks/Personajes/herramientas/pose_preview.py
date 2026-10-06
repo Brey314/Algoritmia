@@ -44,7 +44,8 @@
 # INC-133 (06/10/2026), la familia: el HUMERO va detras del torso y el ANTEBRAZO con la mano delante del torso, de la cara y de las piernas.
 # BuildRigsFinal «orden» lo hace pasando cada AntebrazoX de su codo a hijo de Tronco (con un ancla vacia bajo el codo que animan los clips);
 # aqui el antebrazo SIGUE bajo su codo en el arbol (la geometria es la misma: su mundo es el del ancla) y solo cambia el orden de dibujo:
-# prefabs.aplicar_orden_tronco marca «sigue» y Tronco guarda en «dibujo» la lista con el antebrazo donde diga «orden_tronco».
+# prefabs.leer_arbol lo hace al leer un prefab que ya tiene el ancla (marca «sigue» y Tronco guarda en «dibujo» el orden del prefab), y
+# prefabs.aplicar_orden_tronco lo simula sobre un prefab anterior a «orden», con la lista de «orden_tronco».
 #
 # LA PRUEBA (cada clip, muestreado a 30 fps):
 #   (a) familia: el ANTEBRAZO (con la mano) conserva >= 85 % de sus pixeles opacos visibles y el HUMERO >= UMBRAL_HUMERO (40 %, ver abajo:
@@ -1053,6 +1054,10 @@ def autoprueba(rig):
     for nombre, ok in P.autoprueba_contrato():
         malos += 0 if ok else 1
         print("%-40s %-9s %s" % ("contrato: " + nombre, "lectura", "bien" if ok else "FALLA"))
+    # la lectura del prefab con las dos jerarquias del antebrazo (INC-133): el antebrazo bajo su codo, «sigue» y el orden de dibujo de Tronco
+    for nombre, ok in P.autoprueba_arbol():
+        malos += 0 if ok else 1
+        print("%-40s %-9s %s" % ("prefab: " + nombre, "lectura", "bien" if ok else "FALLA"))
     # el orden de dibujo por accion: en Strike los brazos de la familia pasan tras el torso al frente; Algoritm no cambia
     for pid_, esperado in (("papa", True), ("nino", True), ("algoritm_fuego", False)):  # esperado: antes iban detras del torso
         pj_ = nino if pid_ == "nino" else Personaje(pid_, rig)

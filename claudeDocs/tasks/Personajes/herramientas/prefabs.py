@@ -10,6 +10,16 @@
 #     tamano, sin Canvas),
 #   - la Image de cada nodo (encendida o no, sprite o no, preservar aspecto, color).
 # Coordenadas del lienzo: 1024, origen ARRIBA a la izquierda, y hacia ABAJO, como cut.py y el JSON.
+#
+# DOS FORMAS DE ANTEBRAZO EN EL PREFAB (INC-133, 06/10/2026), y el arbol que sale de leer_arbol es el mismo:
+#   - ANTERIOR (hasta 433603f~1, y Algoritm, que no lista antebrazos): Tronco/BrazoX/CodoX/AntebrazoX; sin ancla.
+#   - ACTUAL (la familia tras BuildRigsFinal «orden»): AntebrazoX es el ULTIMO hijo de Tronco (se dibuja delante del torso, de la cara y de las
+#     piernas) y bajo cada codo queda un nodo vacio AnclaAntebrazoX con la pose que el antebrazo tenia bajo el codo, que es la que animan los
+#     clips; LimbFollower (motor) copia la pose del ancla al antebrazo en cada cuadro, asi que el antebrazo SIGUE donde estaba y solo cambia el
+#     orden de dibujo.
+# Para la geometria y la cinematica (matrices, hombro, codo, mano) leer_arbol deja el antebrazo BAJO SU CODO, en el sitio del ancla (la ruta es
+# siempre Tronco/BrazoX/CodoX/AntebrazoX, con su Image, sprite y rect), lo marca «sigue» y guarda en Tronco.dibujo el orden de dibujo del
+# prefab, con el antebrazo donde esta en Tronco. Sobre el arbol anterior la misma simulacion la hace aplicar_orden_tronco.
 
 import json
 import os
@@ -106,7 +116,8 @@ class Nodo:
         self.alfa = None      # CanvasGroup.m_Alpha si lo tiene
         # INC-133: un antebrazo que «orden_tronco» saca de su codo se DIBUJA como hijo de Tronco pero sigue a su ancla bajo el codo,
         # asi que su pose de mundo no cambia: aqui se conserva en el arbol, bajo el codo, para toda la geometria (matrices, manos), y
-        # solo cambia el orden de dibujo. «sigue» lo marca; «dibujo» (solo en Tronco) es la lista de hijos en orden de dibujo, con ellos.
+        # solo cambia el orden de dibujo. «sigue» lo marca (leer_arbol, si el prefab ya tiene el ancla, o aplicar_orden_tronco); «dibujo»
+        # (solo en Tronco) es la lista de hijos en orden de dibujo, con ellos.
         self.sigue = False
         self.dibujo = None
 
@@ -116,9 +127,12 @@ class Nodo:
         return bool(self.activo and i and i["encendida"] and i["guid"])
 
 
-def leer_arbol(prefab):
-    """Devuelve {ruta: Nodo} (la ruta no incluye el nombre de la raiz) con 'hijos' en orden de dibujo."""
-    ruta = os.path.join(PREFABS, prefab + ".prefab")
+def leer_arbol(prefab, carpeta=None):
+    """
+    Devuelve {ruta: Nodo} (la ruta no incluye el nombre de la raiz) con 'hijos' en orden de dibujo. «carpeta»: donde esta el .prefab
+    (por defecto Assets/Game/Prefabs/Characters; la autoprueba lee ahi unos prefabs sinteticos).
+    """
+    ruta = os.path.join(carpeta or PREFABS, prefab + ".prefab")
     geom = _art.leer_prefab(ruta)
 
     docs = {}
@@ -201,7 +215,61 @@ def leer_arbol(prefab):
         return n
 
     visita(raiz, "", True)
+    _antebrazos_a_su_codo(nodos)
     return nodos
+
+
+def _antebrazos_a_su_codo(nodos):
+    """
+    El prefab con la jerarquia de INC-133 (AntebrazoX al final de Tronco y AnclaAntebrazoX bajo el codo) pasa al arbol de simulacion: el
+    antebrazo vuelve a su codo, en el sitio del ancla (la pose que el ancla tiene y el antebrazo copia en el motor) y con su propio tamano,
+    conserva su Image y se marca «sigue»; el ancla desaparece del arbol y Tronco.dibujo guarda el orden de dibujo del prefab, con los
+    antebrazos donde estan en Tronco (al final). Tronco.hijos queda sin ellos, como en el arbol anterior tras aplicar_orden_tronco.
+    Un lado sin ancla (Algoritm, o un prefab anterior a INC-133) no se toca.
+    """
+    tronco = nodos.get(T)
+    if tronco is None:
+        return
+    dibujo = list(tronco.hijos)
+    movidos = []
+    for lado, ruta_codo in (("Izq", LE), ("Der", RE)):
+        codo = nodos.get(ruta_codo)
+        ancla = nodos.get(ruta_codo + "/AnclaAntebrazo" + lado)
+        ante = nodos.get(T + "/Antebrazo" + lado)
+        if codo is None or ancla is None or ante is None:
+            continue
+        ruta = ruta_codo + "/Antebrazo" + lado
+        _quita_del_arbol(nodos, ancla)
+        _quita_del_arbol(nodos, ante)
+        ante.padre = codo
+        if ante.rect is not None and ancla.pivote is not None:
+            # LimbFollower copia la POSICION del ancla (donde esta su pivote) y el antebrazo conserva su tamano y su pivote: el rect
+            # propio, con el pivote donde lo pone el ancla. En el prefab guardado los dos rects coinciden y no cambia nada.
+            dx, dy = ancla.pivote[0] - ante.pivote[0], ancla.pivote[1] - ante.pivote[1]
+            ante.rect = (ante.rect[0] + dx, ante.rect[1] + dy, ante.rect[2] + dx, ante.rect[3] + dy)
+            ante.pivote = ancla.pivote
+        ante.sigue = True
+        codo.hijos = [ante if h is ancla else h for h in codo.hijos]
+        _pon_en_el_arbol(nodos, ante, ruta)
+        movidos.append(ante)
+    if movidos:
+        tronco.hijos = [h for h in tronco.hijos if h not in movidos]
+        tronco.dibujo = dibujo
+
+
+def _quita_del_arbol(nodos, n):
+    """Borra el nodo y todo lo que cuelga de el del diccionario {ruta: Nodo} (no toca los hijos de nadie)."""
+    nodos.pop(n.ruta, None)
+    for h in n.hijos:
+        _quita_del_arbol(nodos, h)
+
+
+def _pon_en_el_arbol(nodos, n, ruta):
+    """Registra el nodo (y lo que cuelga de el) bajo esa ruta, con la ruta puesta en cada uno."""
+    n.ruta = ruta
+    nodos[ruta] = n
+    for h in n.hijos:
+        _pon_en_el_arbol(nodos, h, ruta + "/" + h.nombre)
 
 
 # {nombre de sprite: ruta de un PNG}: lo que una herramienta quiere VER antes de escribirlo en el repo (el composite de
@@ -296,7 +364,8 @@ def arbol_vigente(pid, rig=None):
     """
     El arbol del prefab del personaje tal como quedara tras «sprites» (simula_sprites) y «orden» (aplicar_orden_tronco: el orden de
     dibujo de Tronco con los antebrazos delante, INC-133). Algoritm no pasa por «sprites»: su arte es un solo sprite. Es el que usan
-    coreografia.py (leer_contexto: lo que tapa a cada brazo depende del orden), pose_preview.py y maqueta.py.
+    coreografia.py (leer_contexto: lo que tapa a cada brazo depende del orden), pose_preview.py y maqueta.py. Da el mismo arbol con un prefab
+    que ya paso por «orden» (leer_arbol lo lee con el antebrazo bajo su codo y «sigue») que con uno anterior (aplicar_orden_tronco lo simula).
     """
     rig = rig or cargar_rig()
     arbol = leer_arbol(PERSONAJES[pid][0])
@@ -329,9 +398,13 @@ def aplicar_orden_tronco(arbol, orden):
     bajo el codo un ancla vacia que animan los clips; CharacterRig copia su pose al antebrazo en cada cuadro, asi que el antebrazo
     sigue donde estaba y SOLO cambia el orden de dibujo. Aqui eso es: el nodo se queda bajo el codo (la geometria no cambia),
     se marca «sigue» y Tronco guarda en «dibujo» la lista de hijos en orden de dibujo, con el antebrazo donde diga la lista.
+    Sobre un prefab que YA lo paso (leer_arbol los deja «sigue») sirve igual para probar otro orden de dibujo; un antebrazo que sigue a
+    su ancla y la lista no nombra queda al final, donde esta en el prefab (nunca se pierde: «recorre» de pose_preview no lo dibuja bajo el codo).
     """
     tronco = arbol[T]
     por_nombre = {h.nombre: h for h in tronco.hijos}
+    sin_nombrar = [a for a in (arbol.get(LE + "/AntebrazoIzq"), arbol.get(RE + "/AntebrazoDer"))
+                   if a is not None and a.sigue and a.nombre not in orden]
     seguidores = {}
     faltan = []
     for n in orden:
@@ -347,7 +420,7 @@ def aplicar_orden_tronco(arbol, orden):
     for n in seguidores.values():
         n.sigue = True
     resto = [h for h in tronco.hijos if h.nombre not in orden]
-    tronco.dibujo = [por_nombre[n] if n in por_nombre else seguidores[n] for n in orden] + resto
+    tronco.dibujo = [por_nombre[n] if n in por_nombre else seguidores[n] for n in orden] + resto + sin_nombrar
     # los hijos que no cambian de padre conservan ese orden tambien en «hijos» (el que usan las matrices: no depende del orden)
     tronco.hijos = [por_nombre[n] for n in orden if n in por_nombre] + resto
 
@@ -422,6 +495,129 @@ def autoprueba_contrato():
         real = None
     if real is not None and "armsInFrontActions" in real:
         casos.append(("CharacterRig.cs trae la lista y se lee", lee_acciones_delante(real) is not None))
+    return casos
+
+
+def _yaml_sintetico(raiz):
+    """
+    El YAML minimo de un prefab (GameObject, RectTransform e Image: lo unico que leen leer_arbol y articulaciones.leer_prefab) de un arbol
+    de dicts {n, pos, size, estira, guid, hijos}. Solo para autoprueba_arbol: nada de esto se escribe en el repo.
+    """
+    cuenta = [100]
+
+    def numera(d):
+        d["go"], d["rt"], d["im"] = cuenta[0] + 1, cuenta[0] + 2, cuenta[0] + 3
+        cuenta[0] += 3
+        for h in d["hijos"]:
+            numera(h)
+
+    docs = []
+
+    def emite(d, padre):
+        amin, amax = ((0, 0), (1, 1)) if d["estira"] else ((0.5, 0.5), (0.5, 0.5))
+        hijos = "".join("  - {fileID: %d}\n" % h["rt"] for h in d["hijos"])
+        docs.append("--- !u!1 &%d\nGameObject:\n  m_Name: %s\n  m_IsActive: 1\n" % (d["go"], d["n"]))
+        docs.append("--- !u!224 &%d\nRectTransform:\n  m_GameObject: {fileID: %d}\n  m_Children:\n%s  m_Father: {fileID: %d}\n"
+                    "  m_AnchorMin: {x: %s, y: %s}\n  m_AnchorMax: {x: %s, y: %s}\n  m_AnchoredPosition: {x: %s, y: %s}\n"
+                    "  m_SizeDelta: {x: %s, y: %s}\n  m_Pivot: {x: 0.5, y: 0.5}\n"
+                    % (d["rt"], d["go"], hijos, padre, amin[0], amin[1], amax[0], amax[1], d["pos"][0], d["pos"][1], d["size"][0], d["size"][1]))
+        if d["guid"]:
+            docs.append("--- !u!114 &%d\nMonoBehaviour:\n  m_GameObject: {fileID: %d}\n  m_Enabled: 1\n"
+                        "  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image\n"
+                        "  m_Sprite: {fileID: 21300000, guid: %s, type: 3}\n  m_Color: {r: 1, g: 1, b: 1, a: 1}\n  m_PreserveAspect: 0\n"
+                        % (d["im"], d["go"], d["guid"]))
+        for h in d["hijos"]:
+            emite(h, d["rt"])
+
+    numera(raiz)
+    emite(raiz, 0)
+    return "".join(docs)
+
+
+def _prefab_sintetico(nuevo, segmentado=True):
+    """
+    Un personaje de la familia en miniatura (Lienzo > Cuerpo > Tronco con dos brazos, torso y una pierna), con la jerarquia ANTERIOR a
+    INC-133 (nuevo=False: AntebrazoX bajo su codo) o la ACTUAL (nuevo=True: AnclaAntebrazoX bajo el codo y AntebrazoX al final de Tronco,
+    con una pose que NO es la del ancla a proposito: en el prefab guardado coinciden, pero quien manda es el ancla, que es la que animan los
+    clips y la que el motor copia). Devuelve el YAML.
+    """
+    def d(n, pos=(0, 0), size=(0, 0), estira=False, guid=None, hijos=()):
+        return {"n": n, "pos": pos, "size": size, "estira": estira, "guid": guid, "hijos": list(hijos)}
+
+    g = ["%032x" % (i + 1) for i in range(7)]
+    codo_i = d("CodoIzq", (-30, 0), hijos=[d("AnclaAntebrazoIzq", (-40, 0), (80, 30)) if nuevo else d("AntebrazoIzq", (-40, 0), (80, 30), guid=g[1])])
+    codo_d = d("CodoDer", (30, 0), hijos=[d("AnclaAntebrazoDer", (40, 0), (80, 30)) if nuevo else d("AntebrazoDer", (40, 0), (80, 30), guid=g[3])])
+    tronco = [d("BrazoIzq", (-100, 0), (100, 40), guid=g[0], hijos=[codo_i]), d("BrazoDer", (100, 0), (100, 40), guid=g[2], hijos=[codo_d]),
+              d("Torso", (0, 0), (80, 200), guid=g[4])]
+    if nuevo:
+        tronco += [d("AntebrazoIzq", (0, 0), (80, 30), guid=g[1]), d("AntebrazoDer", (0, 0), (80, 30), guid=g[3])]
+    pierna = d("PiernaIzq", (-20, -200), (40, 100), guid=g[5], hijos=[
+        d("RodillaIzq", (0, -40), hijos=[d("AntepiernaIzq", (0, -30), (40, 60), guid=g[6] if segmentado else None)])])
+    cuerpo = d("Cuerpo", estira=True, hijos=[d("Tronco", estira=True, hijos=tronco), pierna])
+    return _yaml_sintetico(d("Sintetico", estira=True, hijos=[d("Lienzo", estira=True, hijos=[cuerpo])]))
+
+
+def autoprueba_arbol():
+    """
+    [(nombre, ok)]: leer_arbol con las DOS jerarquias del antebrazo (INC-133), sobre prefabs sinteticos y sobre los reales. Las dos tienen que
+    dar el MISMO arbol de simulacion: el antebrazo bajo su codo, «sigue» y el orden de dibujo del prefab en Tronco.dibujo; sobre la anterior
+    lo da aplicar_orden_tronco. Para pose_preview.py y coreografia.py, que no pueden dar por bueno un arbol que lee mal el prefab.
+    """
+    import tempfile
+    casos = []
+    orden = ["BrazoIzq", "BrazoDer", "Torso", "AntebrazoIzq", "AntebrazoDer"]
+    ante_i, ante_d = LE + "/AntebrazoIzq", RE + "/AntebrazoDer"
+
+    def firma(arbol):
+        f = {}
+        for r, n in arbol.items():
+            f[r] = (n.padre.ruta if n.padre else None, n.sigue, tuple(round(v, 3) for v in n.rect) if n.rect else None,
+                    tuple(round(v, 3) for v in n.pivote) if n.pivote else None, (n.imagen or {}).get("guid"),
+                    tuple(h.ruta for h in n.hijos), tuple(h.ruta for h in n.dibujo) if n.dibujo is not None else None)
+        return f
+
+    with tempfile.TemporaryDirectory() as carpeta:
+        arboles = {}
+        for nombre, hay_ancla, seg in (("Viejo", False, True), ("ViejoSinSegmentar", False, False),
+                                       ("Nuevo", True, True), ("NuevoSinSegmentar", True, False)):
+            with open(os.path.join(carpeta, nombre + ".prefab"), "w", encoding="utf-8", newline="\n") as f:
+                f.write(_prefab_sintetico(hay_ancla, seg))
+            arboles[nombre] = leer_arbol(nombre, carpeta)
+    viejo, nuevo = arboles["Viejo"], arboles["Nuevo"]
+    ok_viejo = not viejo[ante_i].sigue and not viejo[ante_d].sigue and viejo[T].dibujo is None
+    casos.append(("arbol anterior: el antebrazo sigue bajo su codo, sin marcar", ok_viejo and viejo[ante_i].padre is viejo[LE]))
+    casos.append(("arbol nuevo: el antebrazo vuelve a su codo y sigue al ancla",
+                  all(n in nuevo and nuevo[n].sigue and nuevo[n].padre is nuevo[c] and nuevo[n].dibuja()
+                      for n, c in ((ante_i, LE), (ante_d, RE)))))
+    casos.append(("arbol nuevo: sin ancla ni antebrazo bajo Tronco",
+                  not any(r in nuevo for r in (LE + "/AnclaAntebrazoIzq", RE + "/AnclaAntebrazoDer", T + "/AntebrazoIzq", T + "/AntebrazoDer"))
+                  and [h.nombre for h in nuevo[T].hijos] == orden[:3]))
+    casos.append(("arbol nuevo: Tronco.dibujo es el orden del prefab", [h.nombre for h in hijos_de_dibujo(nuevo[T])] == orden))
+    # la pose: la del ancla, no la que el antebrazo trae bajo Tronco (que el motor sobrescribe); el tamano, el del antebrazo
+    casos.append(("arbol nuevo: la pose es la del ancla",
+                  all(nuevo[n].pivote == viejo[n].pivote and nuevo[n].rect == viejo[n].rect for n in (ante_i, ante_d))))
+    # «segmentado» son las piernas: no depende de la jerarquia del brazo
+    casos.append(("segmentado se deduce igual con las dos jerarquias",
+                  all(esta_segmentado(arboles[n]) == seg for n, seg in (("Viejo", True), ("ViejoSinSegmentar", False),
+                                                                        ("Nuevo", True), ("NuevoSinSegmentar", False)))))
+    aplicar_orden_tronco(viejo, orden)
+    casos.append(("arbol anterior + orden_tronco = arbol nuevo", firma(viejo) == firma(nuevo)))
+    aplicar_orden_tronco(nuevo, orden)
+    casos.append(("orden_tronco sobre el arbol nuevo no cambia nada", firma(viejo) == firma(nuevo)))
+    aplicar_orden_tronco(nuevo, ["Torso", "BrazoIzq", "BrazoDer"])
+    casos.append(("otro orden sin antebrazos: quedan al final, no se pierden",
+                  [h.nombre for h in hijos_de_dibujo(nuevo[T])] == ["Torso", "BrazoIzq", "BrazoDer", "AntebrazoIzq", "AntebrazoDer"]
+                  and nuevo[ante_i].sigue and nuevo[ante_d].sigue))
+    # los prefabs del disco, tengan la jerarquia que tengan (la familia de HEAD, la actual; Algoritm, la anterior): ningun ancla suelta ni
+    # antebrazo colgando de Tronco, y «sigue» solo donde hay ancla
+    ok = True
+    for pid in PERSONAJES:
+        with open(os.path.join(PREFABS, PERSONAJES[pid][0] + ".prefab"), encoding="utf-8") as f:
+            hay_ancla = "AnclaAntebrazoIzq" in f.read()
+        a = leer_arbol(PERSONAJES[pid][0])
+        ok = ok and ante_i in a and ante_d in a and a[ante_i].sigue == hay_ancla and a[ante_d].sigue == hay_ancla \
+            and not any(n.nombre.startswith("Ancla") for n in a.values()) and not any(r.startswith(T + "/Antebrazo") for r in a)
+    casos.append(("prefabs del disco: antebrazo bajo su codo, sin anclas sueltas", ok))
     return casos
 
 

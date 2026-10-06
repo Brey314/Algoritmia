@@ -2493,6 +2493,10 @@ def autoprueba():
     for nombre, ok in P.autoprueba_contrato():
         malos += 0 if ok else 1
         print("%-34s %s" % ("contrato: " + nombre, "bien" if ok else "FALLA"))
+    # la lectura del prefab con las dos jerarquias del antebrazo (INC-133): sin ella el solucionador mediria un brazo que no existe
+    for nombre, ok in P.autoprueba_arbol():
+        malos += 0 if ok else 1
+        print("%-34s %s" % ("prefab: " + nombre, "bien" if ok else "FALLA"))
     # INC-133 y la cara registrada: el solucionador sabe que el antebrazo va delante (solo el humero se tapa), que en Papa la cabeza tapa el
     # humero, y no deja una mano sobre la cara
     for nombre, ok in autoprueba_inc133():
