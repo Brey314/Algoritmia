@@ -227,55 +227,6 @@ def arbol_maqueta(pid, rig, orden=True):
         enciende(P.HD, Pieza(rect, _mitad(im, rect, (cuello[0], cuello[1] + SOLAPE_CABEZA), u, -1,
                                           suma=ImageChops.lighter(alas, franja))))
     return arbol, piezas  # Algoritm tiene su propia maqueta (pose_preview._capa_guia)
-    nodos = {n["nombre"]: n for n in p["nodos"]}
-    partes = {q["nombre"]: q for q in p["partes"]}
-
-    def enciende(ruta, pieza):
-        n = arbol[ruta]
-        n.activo = True
-        n.imagen = {"encendida": True, "guid": "maqueta:" + ruta, "aspecto": False, "color": (1.0, 1.0, 1.0, 1.0)}
-        piezas[ruta] = pieza
-
-    # --- brazos
-    for lado, brazo_r, codo_r in (("Izq", P.LA, P.LE), ("Der", P.RA, P.RE)):
-        ante = codo_r + "/Antebrazo" + lado
-        if arbol[ante].dibuja():
-            continue
-        parte = partes["Brazo" + lado]
-        hombro, codo = tuple(parte["pivote"]), tuple(nodos["Codo" + lado]["punto"])
-        im, rect = _png(arbol, brazo_r), tuple(parte["rect"])
-        u = _unit(hombro, codo)
-        r = _radio(im, rect, codo, u)
-        enciende(brazo_r, Pieza(rect, _mitad(im, rect, codo, u, -1, r)))
-        enciende(ante, Pieza(rect, _mitad(im, rect, codo, u, +1)))
-    # --- piernas
-    for lado, pierna_r, rod_r in (("Izq", P.LL, P.LK), ("Der", P.RL, P.RK)):
-        ante = rod_r + "/Antepierna" + lado
-        if arbol[ante].dibuja():
-            continue
-        parte = partes["Pierna" + lado]
-        cadera, rodilla = tuple(parte["pivote"]), tuple(nodos["Rodilla" + lado]["punto"])
-        im, rect = _png(arbol, pierna_r), tuple(parte["rect"])
-        u = _unit(cadera, rodilla)
-        r = _radio(im, rect, rodilla, u)
-        enciende(pierna_r, Pieza(rect, _mitad(im, rect, rodilla, u, -1, r)))
-        enciende(ante, Pieza(rect, _mitad(im, rect, rodilla, u, +1)))
-    # --- cabeza
-    if not arbol[P.HD].dibuja():
-        torso_r = P.T + "/Torso"
-        parte = partes["Torso"]
-        cuello = tuple(nodos["Cuello"]["punto"])
-        im, rect = _png(arbol, torso_r), tuple(parte["rect"])
-        u = (0.0, 1.0)
-        # el pelo que cuelga por los lados del cuello (por debajo del punto del cuello, fuera de los hombros) es de
-        # la cabeza: si fuera del torso, al inclinarse la cabeza se abriria un hueco entre los dos
-        cab = nodos["Cuello"]["rect"]
-        semi = abs(partes["BrazoIzq"]["pivote"][0] - partes["BrazoDer"]["pivote"][0]) / 2.0
-        cx = (partes["BrazoIzq"]["pivote"][0] + partes["BrazoDer"]["pivote"][0]) / 2.0
-        alas = [(rect[0], cuello[1], cx - 0.9 * semi, cab[3]), (cx + 0.9 * semi, cuello[1], rect[2], cab[3])]
-        enciende(torso_r, Pieza(rect, _mitad(im, rect, cuello, u, +1, resta=alas)))
-        enciende(P.HD, Pieza(rect, _mitad(im, rect, (cuello[0], cuello[1] + SOLAPE_CABEZA), u, -1, suma=alas)))
-    return arbol, piezas
 
 
 def pieza_o_png(arbol, piezas, ruta):

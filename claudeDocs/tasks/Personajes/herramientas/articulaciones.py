@@ -295,6 +295,16 @@ def personaje_familia(pid, prefab, carpeta):
         "rect": caja_de(cabeza),
     })
     padre_cara = T + "/Cuello/Cabeza"
+    # La cara va en TRES capas dentro de Cabeza, de atras adelante: CaraBase (nariz y rubor, que no cambian), Ojos (con cejas) y Boca.
+    # CaraBase es el PRIMER hijo de Cabeza. Estimacion provisional (sin sprite: la Image queda apagada): la caja que cubre ojos y
+    # boca; con la cara real las tres capas comparten un solo rect (preparar_expresion.py), el del lienzo de la cara entera.
+    ex, ey, ew, eh = CARA[pid]["ojos"]
+    bx, by, bw, bh = CARA[pid]["boca"]
+    union = (min(ex - ew / 2, bx - bw / 2), min(ey - eh / 2, by - bh / 2), max(ex + ew / 2, bx + bw / 2), max(ey + eh / 2, by + bh / 2))
+    base = {"nombre": "CaraBase", "tipo": "imagen", "padre": padre_cara,
+            "punto": punto((union[0] + union[2]) / 2, (union[1] + union[3]) / 2), "imagen": "CaraBase",
+            "sprite": pref + "_cara_base", "rect": caja_de(union)}
+    nodos.append(base)
     for nombre, clave, sprite in (("Ojos", "ojos", pref + "_ojos_neutra"), ("Boca", "boca", pref + "_boca_0")):
         ox, oy, ow, oh = CARA[pid][clave]
         nodos.append({

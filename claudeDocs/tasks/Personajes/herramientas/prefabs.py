@@ -199,13 +199,41 @@ def leer_arbol(prefab):
     return nodos
 
 
+# {nombre de sprite: ruta de un PNG}: lo que una herramienta quiere VER antes de escribirlo en el repo (el composite de
+# preparar_expresion.py, sin --aplicar). Manda sobre lo que haya en disco.
+PNG_EXTRA = {}
+
+
 def _png_de(carpeta, nombre):
-    """Ruta del PNG «nombre» en la carpeta de arte del personaje o en sus subcarpetas, o None."""
+    """
+    Ruta del PNG «nombre» en la carpeta de arte del personaje o en sus subcarpetas (Frontal/, Expresiones/, Perfil/: el arte
+    se guarda por subcarpetas, y os.walk las recorre todas), o None. Si el PNG esta en PNG_EXTRA, el de ahi.
+    """
+    if nombre in PNG_EXTRA:
+        return PNG_EXTRA[nombre]
     base = os.path.join(PERSONAJES_ARTE, carpeta)
-    for dentro, _, archivos in os.walk(base):
+    for dentro, _, archivos in sorted(os.walk(base)):
         if nombre + ".png" in archivos:
             return os.path.join(dentro, nombre + ".png")
     return None
+
+
+def caja_contenido(png, rect):
+    """
+    El rect (x0, y0, x1, y1) del lienzo que ocupan los pixeles OPACOS del PNG cuando se estira a «rect». Ojos y boca comparten
+    un rect del tamano de toda la cara (todas las expresiones tienen el mismo lienzo para que no se deformen al cambiar), asi
+    que «la caja de la cara» de las pruebas es la de lo que se pinta, no la del rect entero. Sin PNG, el rect.
+    """
+    if png is None:
+        return tuple(rect)
+    from PIL import Image
+    a = Image.open(png).convert("RGBA").getchannel("A").point(lambda v: 255 if v > 16 else 0)
+    b = a.getbbox()
+    if b is None:
+        return tuple(rect)
+    w, h = a.size
+    rw, rh = rect[2] - rect[0], rect[3] - rect[1]
+    return (rect[0] + b[0] / w * rw, rect[1] + b[1] / h * rh, rect[0] + b[2] / w * rw, rect[1] + b[3] / h * rh)
 
 
 def simula_sprites(arbol, rig_pj):
@@ -226,10 +254,31 @@ def simula_sprites(arbol, rig_pj):
             continue
         base = nodo["padre"] + "/" + nodo["nombre"]
         candidatos.append((base + "/" + nodo["imagen"] if nodo["tipo"] == "articulacion" else base, nodo["sprite"]))
+    nuevos = {}
+    for nodo in rig_pj["nodos"]:
+        if nodo["tipo"] == "imagen":
+            nuevos[nodo["padre"] + "/" + nodo["nombre"]] = nodo
     for ruta, sprite in candidatos:
         n = arbol.get(ruta)
         png = _png_de(carpeta, sprite)
-        if n is None or png is None:
+        if png is None:
+            continue
+        if n is None and ruta in nuevos and arbol.get(nuevos[ruta]["padre"]) is not None:
+            # un nodo de imagen que el JSON nombra y el prefab del disco aun no tiene (CaraBase llega con «nodos»): se simula, para
+            # poder ver la cara antes de correr el generador. Va en el sitio que dice el JSON: CaraBase, el primero de Cabeza.
+            nd = nuevos[ruta]
+            padre = arbol[nd["padre"]]
+            n = Nodo(ruta, nd["nombre"])
+            n.padre = padre
+            n.rect = tuple(float(v) for v in nd["rect"])
+            n.pivote = tuple(float(v) for v in nd["punto"])
+            n.hijos = []
+            if nd["nombre"] == "CaraBase":
+                padre.hijos.insert(0, n)
+            else:
+                padre.hijos.append(n)
+            arbol[ruta] = n
+        if n is None:
             continue
         previa = n.imagen or {}
         n.activo = True

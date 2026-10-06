@@ -910,7 +910,13 @@ def leer_contexto(pid, rig=None, arbol=None, piezas=None):
     x.y_cadera = x.y_vientre + 0.10 * alto
     cadera_json = next((q["pivote"][1] for q in p["partes"] if q["nombre"] == "PiernaIzq"), x.y_cadera + MARGEN_CINTURA)
     x.y_cintura = min(x.y_cadera, cadera_json - MARGEN_CINTURA)
-    zona = [nodos[n]["rect"] for n in ("Ojos", "Boca") if n in nodos and nodos[n].get("rect")]
+    # la caja de la cara: Ojos y Boca (no CaraBase). Con los sprites de la cara puestos, el rect de cada capa es el del lienzo de
+    # la cara entera: la caja es la de lo que se pinta (pixeles opacos), no la del margen transparente
+    zona = []
+    for n in ("Ojos", "Boca"):
+        if n in nodos and nodos[n].get("rect"):
+            png = P._png_de(p["carpeta"], nodos[n]["sprite"]) if nodos[n].get("sprite") else None
+            zona.append(list(P.caja_contenido(png, nodos[n]["rect"])))
     if zona:
         x.cara = (min(r[0] for r in zona), min(r[1] for r in zona), max(r[2] for r in zona), max(r[3] for r in zona))
     rects = _rects_json(p)

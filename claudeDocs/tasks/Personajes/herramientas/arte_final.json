@@ -50,22 +50,31 @@
           "rect": [224, 77, 759, 533]
         },
         {
+          "nombre": "CaraBase",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [504, 451],
+          "imagen": "CaraBase",
+          "sprite": "char_nino_cara_base",
+          "rect": [373, 320, 636, 582]
+        },
+        {
           "nombre": "Ojos",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [502, 425],
+          "punto": [504, 451],
           "imagen": "Ojos",
           "sprite": "char_nino_ojos_neutra",
-          "rect": [402, 380, 602, 470]
+          "rect": [373, 320, 636, 582]
         },
         {
           "nombre": "Boca",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [502, 490],
+          "punto": [504, 451],
           "imagen": "Boca",
           "sprite": "char_nino_boca_0",
-          "rect": [447, 468, 557, 512]
+          "rect": [373, 320, 636, 582]
         }
       ],
       "partes": [

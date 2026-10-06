@@ -20,8 +20,9 @@
 #   3. MIDE sobre el alfa, como pose_preview.py --mide (MEDIDAS, abajo), y arma nodos y partes como los del Nino.
 #   4. Sin --aplicar: solo informe y un composite PNG (la figura en reposo con sus articulaciones y tres poses
 #      de prueba) y la lista de lo que escribiria. Con --aplicar: escribe los PNG con los nombres de
-#      Personajes-Resultados.md C.4 en Assets/Game/Art/Characters/<Carpeta>/ (los que ya existian se
-#      sustituyen: mismo .meta, mismo GUID), guarda la entrada del personaje en arte_final.json, regenera
+#      Personajes-Resultados.md C.4 en Assets/Game/Art/Characters/<Carpeta>/Frontal/ (las partes de frente; los que ya
+#      existian se sustituyen DONDE ESTAN, sea Frontal/ o la raiz de la carpeta antes de que el Editor las mueva: mismo
+#      .meta, mismo GUID), guarda la entrada del personaje en arte_final.json, regenera
 #      rig_articulaciones.json (articulaciones.py) y clips_personajes.json (coreografia.py), corre pose_preview.py
 #      y imprime el bloque de ordenes para la sesion local.
 #   Por que coreografia.py y pose_preview.py ya tratan al personaje como segmentado ANTES de que el Editor
@@ -35,8 +36,8 @@
 #   el punto de contacto mas cercano); rodilla, igual con muslo y antepierna; cadera = centro del borde de
 #   arriba del muslo (--cadera capsula: el centro del extremo redondo, unos 30 px mas abajo: el torso lo tapa y
 #   moverla cambiaria los clips del Nino ya revisados); cuello = centro de la base del bbox de la cabeza;
-#   pivote del torso = centro de la base de su bbox. Ojos y boca: se colocan en la misma fraccion de la cabeza
-#   que tenian en rig_articulaciones.json (llegan despues, en capas propias: C.7).
+#   pivote del torso = centro de la base de su bbox. CaraBase, Ojos y boca: se colocan en la misma fraccion de la cabeza
+#   que tenian en rig_articulaciones.json (llegan despues, en capas propias: C.7, con preparar_expresion.py).
 #
 # ============================================================================================
 # COMO ENTREGAR EL ARTE FINAL (para Santiago)
@@ -442,7 +443,7 @@ def mide(piezas, pid, cadera="borde"):
                   "imagen": "Cabeza", "sprite": pref + "_parte_cabeza", "rect": list(cab.rect)})
     # ojos y boca: la misma fraccion de la cabeza que tenian en la tabla actual
     cab_antes = next((n for n in actual["nodos"] if n["nombre"] == "Cuello"), None)
-    for nombre in ("Ojos", "Boca"):
+    for nombre in ("CaraBase", "Ojos", "Boca"):  # CaraBase, el primer hijo de Cabeza, antes que Ojos y Boca
         previo = next((n for n in actual["nodos"] if n["nombre"] == nombre), None)
         if previo is None or cab_antes is None:
             continue
@@ -589,13 +590,22 @@ def informe(res):
         print("AVISO", a)
 
 
+SUBCARPETA_PARTES = "Frontal"  # las partes de frente de cada personaje: Assets/Game/Art/Characters/<Carpeta>/Frontal/
+
+
 def lista_escritura(res):
-    """[(ruta absoluta, existia)] de los PNG que --aplicar escribiria."""
-    carpeta = os.path.join(P.PERSONAJES_ARTE, P.PERSONAJES[res.pid][1])
+    """
+    [(ruta absoluta, existia)] de los PNG que --aplicar escribiria: en <Carpeta>/Frontal/. Una parte que YA esta en algun sitio de
+    la carpeta del personaje (en Frontal/, o en la raiz mientras el Editor no ha movido las partes) se sustituye ahi mismo, para
+    conservar su .meta y su GUID; las nuevas nacen en Frontal/.
+    """
+    carpeta = P.PERSONAJES[res.pid][1]
     out = []
     for clave in res.piezas:
-        ruta = os.path.join(carpeta, "char_%s_%s.png" % (res.pid, NOMBRE_C4[clave]))
-        out.append((ruta, os.path.isfile(ruta)))
+        nombre = "char_%s_%s" % (res.pid, NOMBRE_C4[clave])
+        previa = P._png_de(carpeta, nombre)
+        ruta = previa or os.path.join(P.PERSONAJES_ARTE, carpeta, SUBCARPETA_PARTES, nombre + ".png")
+        out.append((ruta, previa is not None))
     return sorted(out)
 
 
@@ -648,6 +658,7 @@ def aplica(res, args):
     print("\n== Aplicando al repo ==")
     for ruta, existia in lista_escritura(res):
         clave = next(k for k in res.piezas if os.path.basename(ruta) == "char_%s_%s.png" % (pid, NOMBRE_C4[k]))
+        os.makedirs(os.path.dirname(ruta), exist_ok=True)  # Frontal/ (Unity crea el .meta de la carpeta y de los PNG al importarlos)
         res.piezas[clave].norm.save(ruta)
         print("  %s %s" % ("sustituye" if existia else "nuevo    ", os.path.relpath(ruta, P.RAIZ)))
     personajes = A.cargar_arte_final()
@@ -676,7 +687,6 @@ def entrega_sintetica(destino, a=1.3, centro=(600, 150), lienzo=(1300, 1500)):
     """
     rig = P.cargar_rig()
     nino = P.personaje_rig(rig, "nino")
-    carpeta = os.path.join(P.PERSONAJES_ARTE, "Boy")
     piezas = {}
     for p in nino["partes"]:
         piezas[p["nombre"]] = (p["sprite"], p["rect"])
@@ -691,7 +701,7 @@ def entrega_sintetica(destino, a=1.3, centro=(600, 150), lienzo=(1300, 1500)):
     azar = random.Random(11)
     os.makedirs(destino, exist_ok=True)
     for clave, (sprite, rect) in piezas.items():
-        im = Image.open(os.path.join(carpeta, sprite + ".png")).convert("RGBA")
+        im = Image.open(P._png_de("Boy", sprite)).convert("RGBA")  # Frontal/ o la raiz de la carpeta: _png_de las recorre todas
         w, h = im.size
         im = im.resize((int(round(w * a)), int(round(h * a))), Image.LANCZOS)
         x = int(round(a * (rect[0] - 512.0) + centro[0]))

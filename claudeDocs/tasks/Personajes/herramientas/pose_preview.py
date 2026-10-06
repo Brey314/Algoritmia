@@ -395,14 +395,31 @@ class Personaje:
                 self._manos[lado] = (nodo, pts)
         return self._manos
 
+    @staticmethod
+    def _caja_pintada(capa):
+        """El rect (lienzo) de los pixeles opacos de una capa."""
+        a = capa.imagen.getchannel("A").point(lambda v: 255 if v > 16 else 0)
+        b = a.getbbox()
+        if b is None:
+            return capa.rect
+        w, h = a.size
+        rw, rh = capa.rect[2] - capa.rect[0], capa.rect[3] - capa.rect[1]
+        return (capa.rect[0] + b[0] / w * rw, capa.rect[1] + b[1] / h * rh, capa.rect[0] + b[2] / w * rw, capa.rect[1] + b[3] / h * rh)
+
     # ---- zona de la cara y puntos de articulacion
     def zona_cara(self):
-        """Rects (lienzo, reposo) de ojos y boca y el nodo que los lleva (la cabeza si se dibuja, si no el torso)."""
+        """
+        Rects (lienzo, reposo) de ojos y boca y el nodo que los lleva (la cabeza si se dibuja, si no el torso). Con la cara
+        dibujada, el rect es el de lo que se PINTA (los pixeles opacos del sprite): Ojos, Boca y CaraBase comparten un rect del
+        tamano del lienzo de la cara entera, y el margen transparente no es cara. CaraBase (nariz y rubor) no cuenta: la caja
+        de la cara sigue siendo la de Ojos y Boca.
+        """
         rects = []
         for nombre in ("Ojos", "Boca"):
             for ruta, n in self.arbol.items():
                 if n.nombre == nombre and self.rect.get(ruta):
-                    rects.append(self.rect[ruta])
+                    capa = next((c for c in self.capas if c.nodo.ruta == ruta), None)
+                    rects.append(self._caja_pintada(capa) if capa is not None else self.rect[ruta])
         cabeza = self.arbol.get(HD)
         lleva = HD if cabeza is not None and (cabeza.dibuja()) else T + "/Torso"
         return rects, lleva
@@ -1005,6 +1022,31 @@ def autoprueba(rig):
     ok = r.choque is not None and r.choque[0] <= r.choque[3]
     malos += 0 if ok else 1
     print("%-40s %-9s %s" % ("el Strike vigente de Papa (hoy)", "choque", "bien (y=%.0f, limite %.0f)" % (r.choque[0], r.choque[3]) if ok else "FALLA (falso positivo)"))
+    # la cara en tres capas: CaraBase (nariz y rubor), Ojos y Boca se dibujan sobre la cabeza y en ese orden, y la caja de la cara es
+    # la de Ojos y Boca (lo que se pinta de ellos, sin el margen transparente del lienzo comun), no la de CaraBase
+    import preparar_expresion as PE
+    with tempfile.TemporaryDirectory() as tmp:
+        sep = PE.separa(PE.cara_sintetica(1)[0])
+        extra = {}
+        for clave, nombre in (("ojos", "char_nino_ojos_neutra"), ("boca", "char_nino_boca_0"), ("base", "char_nino_cara_base")):
+            extra[nombre] = os.path.join(tmp, nombre + ".png")
+            sep.capas[clave].save(extra[nombre])
+        P.PNG_EXTRA.update(extra)
+        try:
+            cara = Personaje("nino", rig)
+            rutas = [c.nodo.ruta for c in cara.capas]
+            cab_r = T + "/Cuello/Cabeza"
+            orden_ok = all(r in rutas for r in (cab_r, cab_r + "/CaraBase", cab_r + "/Ojos", cab_r + "/Boca")) and \
+                rutas.index(cab_r) < rutas.index(cab_r + "/CaraBase") < rutas.index(cab_r + "/Ojos") < rutas.index(cab_r + "/Boca")
+            zona, _ = cara.zona_cara()
+            nodos = {n["nombre"]: n for n in P.personaje_rig(rig, "nino")["nodos"]}
+            area = lambda r: (r[2] - r[0]) * (r[3] - r[1])
+            ok = orden_ok and len(zona) == 2 and all(area(z) < 0.8 * area(nodos[n]["rect"]) for z, n in zip(zona, ("Ojos", "Boca")))
+        finally:
+            for k in extra:
+                P.PNG_EXTRA.pop(k, None)
+    malos += 0 if ok else 1
+    print("%-40s %-9s %s" % ("CaraBase, Ojos y Boca sobre la cabeza", "cara", "bien (caja de la cara = lo pintado de Ojos y Boca)" if ok else "FALLA"))
     # Algoritm: sus manos van por encima de la cara y no deben ni rozarla (99,5 % de la caja ampliada)
     alg = Personaje("algoritm_fuego", rig)
     for ruta, ang, nombre in ((LA, 150.0, "un brazo sube a la cara"), (RA, 150.0, "un brazo apenas roza la cara")):
