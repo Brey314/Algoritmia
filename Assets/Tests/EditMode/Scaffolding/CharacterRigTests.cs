@@ -34,12 +34,26 @@ namespace Game.Scaffolding.Tests
         private const string Cuerpo = "Lienzo/Cuerpo";
         private const string Tronco = Cuerpo + "/Tronco";
 
-        /// <summary>Lo que cuelga de brazos y piernas en la familia y en Algoritm: codo, antebrazo, rodilla y antepierna.</summary>
-        private static readonly string[] Extremidades =
+        /// <summary>Lo que cuelga de las piernas en la familia y en Algoritm: rodilla y antepierna.</summary>
+        private static readonly string[] Piernas =
         {
-            Tronco + "/BrazoIzq/CodoIzq/AntebrazoIzq", Tronco + "/BrazoDer/CodoDer/AntebrazoDer",
             Cuerpo + "/PiernaIzq/RodillaIzq/AntepiernaIzq", Cuerpo + "/PiernaDer/RodillaDer/AntepiernaDer",
         };
+
+        /// <summary>
+        /// Los codos de la familia. Su antebrazo ya no cuelga de ellos (INC-133: está en Tronco, con un ancla
+        /// bajo el codo), así que el antebrazo se busca con <see cref="Antebrazo"/>, que lo encuentra en
+        /// cualquiera de los dos sitios.
+        /// </summary>
+        private static readonly string[] CodosDeLaFamilia = { Tronco + "/BrazoIzq/CodoIzq", Tronco + "/BrazoDer/CodoDer" };
+
+        /// <summary>Codo y antebrazo de Algoritm, que queda como estaba: el antebrazo cuelga del codo (INC-133 no lo toca).</summary>
+        private static readonly string[] BrazosCompletosDeAlgoritm =
+        {
+            Tronco + "/BrazoIzq/CodoIzq/AntebrazoIzq", Tronco + "/BrazoDer/CodoDer/AntebrazoDer",
+        };
+
+        private static readonly string[] Lados = { "Izq", "Der" };
 
         /// <summary>Cuello, cabeza y cara de la familia (la cara es CaraBase, Ojos y Boca). Algoritm no tiene cuello: su cara va en el cuerpo.</summary>
         private static readonly string[] CabezaDeLaFamilia =
@@ -211,9 +225,14 @@ namespace Game.Scaffolding.Tests
         {
             var rig = Rig(nombre);
 
-            foreach (var ruta in Extremidades.Concat(CabezaDeLaFamilia))
+            foreach (var ruta in Piernas.Concat(CodosDeLaFamilia).Concat(CabezaDeLaFamilia))
             {
                 Assert.That(rig.transform.Find(ruta), Is.Not.Null, $"{nombre}: existe {ruta}");
+            }
+
+            foreach (var lado in Lados)
+            {
+                Assert.That(Antebrazo(rig, lado), Is.Not.Null, $"{nombre}: existe el antebrazo {lado.ToLowerInvariant()} (suelto en Tronco o colgado del codo)");
             }
         }
 
@@ -227,7 +246,7 @@ namespace Game.Scaffolding.Tests
         {
             var rig = Rig(nombre);
 
-            foreach (var ruta in Extremidades.Concat(CuerpoDeAlgoritm))
+            foreach (var ruta in Piernas.Concat(BrazosCompletosDeAlgoritm).Concat(CuerpoDeAlgoritm))
             {
                 Assert.That(rig.transform.Find(ruta), Is.Not.Null, $"{nombre}: existe {ruta}");
             }
@@ -242,13 +261,14 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// En la familia los brazos se dibujan DETRÁS del torso y DELANTE de la cabeza (Santiago,
-        /// 05/10/2026): los hombros salen por detrás del torso y los brazos que suben pasan por delante de
-        /// la cara. uGUI pinta los hijos de atrás adelante, así que el orden bajo Tronco es Cuello (con la
-        /// cabeza dentro), BrazoIzq, BrazoDer y, al final, Torso. Con el arte provisional de una pieza la
-        /// cabeza está pintada dentro del torso, y la regla solo se nota cuando llega el arte final; vale ya
-        /// para los cuatro para que todo quede listo. Lo fija el modo «orden» del generador con
-        /// SetSiblingIndex, que reordena y no cambia ningún fileID.
+        /// En la familia los brazos —el húmero— se dibujan DETRÁS del torso y DELANTE de la cabeza (Santiago,
+        /// 05/10/2026): los hombros salen por detrás del torso. uGUI pinta los hijos de atrás adelante. Lo de
+        /// «delante de la cabeza» rige donde el cuello va detrás del torso (Mamá, Niña, Niño: Cuello, BrazoIzq,
+        /// BrazoDer, Torso); en Papá el cuello va DELANTE del torso (06/10/2026, INC-133: su cara delante del
+        /// torso) y esa segunda condición ya no rige —el brazo que sube por delante de la cara lo hace ahora el
+        /// antebrazo, que va al final de Tronco—. El nombre de la prueba se conserva por las citas que tiene en
+        /// la documentación. Lo fija el modo «orden» del generador con SetSiblingIndex, que reordena y no
+        /// cambia ningún fileID.
         /// </summary>
         [Test]
         public void CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza(
@@ -267,11 +287,11 @@ namespace Game.Scaffolding.Tests
             foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
             {
                 var indice = Orden(tronco, nombre, brazo);
-                if (nombre != "Papa")
+                Assert.That(indice, Is.LessThan(torso), $"{nombre}: {brazo} se dibuja antes del torso, para salir por detrás de él");
+                if (cuello < torso)
                 {
                     Assert.That(indice, Is.GreaterThan(cuello), $"{nombre}: {brazo} se dibuja después del cuello, o la cabeza lo tapa");
                 }
-                Assert.That(indice, Is.LessThan(torso), $"{nombre}: {brazo} se dibuja antes del torso, para salir por detrás de él");
             }
         }
 
@@ -303,8 +323,8 @@ namespace Game.Scaffolding.Tests
         /// <summary>
         /// Al golpear las piedras las manos chocan delante del pecho, y con los brazos detrás del torso el
         /// choque no se vería (Santiago, 05/10/2026, INC-132): mientras golpea, los brazos pasan delante del
-        /// torso, conservando el orden entre ellos, y el cuello —con la cabeza dentro— sigue detrás de ellos.
-        /// Se prueba sobre una copia del prefab, nunca sobre el asset.
+        /// torso, conservando el orden entre ellos, y el cuello —con la cabeza dentro— conserva su sitio
+        /// respecto del torso. Se prueba sobre una copia del prefab, nunca sobre el asset.
         /// </summary>
         [Test]
         public void CharacterRig_INC132_AlGolpearLosBrazosPasanDelanteDelTorso(
@@ -316,6 +336,8 @@ namespace Game.Scaffolding.Tests
                 var tronco = copia.transform.Find(Tronco);
                 Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
 
+                var cuelloDetrasDelTorso = Orden(tronco, nombre, "Cuello") < Orden(tronco, nombre, "Torso");
+
                 new ArmLayering(tronco).Apply(true);
 
                 var cuello = Orden(tronco, nombre, "Cuello");
@@ -324,9 +346,12 @@ namespace Game.Scaffolding.Tests
                 var derecho = Orden(tronco, nombre, "BrazoDer");
                 Assert.That(izquierdo, Is.GreaterThan(torso), $"{nombre}: BrazoIzq se dibuja después del torso, para que se vea el choque");
                 Assert.That(derecho, Is.GreaterThan(izquierdo), $"{nombre}: entre los brazos se conserva el orden");
-                Assert.That(cuello, Is.LessThan(izquierdo), $"{nombre}: el cuello sigue detrás de los brazos");
-                Assert.That(cuello, Is.LessThan(derecho));
-                Assert.That(cuello, Is.LessThan(torso));
+                Assert.That(cuello < torso, Is.EqualTo(cuelloDetrasDelTorso), $"{nombre}: golpear no cambia dónde está el cuello respecto del torso");
+                if (cuelloDetrasDelTorso)
+                {
+                    Assert.That(cuello, Is.LessThan(izquierdo), $"{nombre}: el cuello detrás del torso sigue detrás de los brazos");
+                    Assert.That(cuello, Is.LessThan(derecho));
+                }
             }
             finally
             {
@@ -364,6 +389,202 @@ namespace Game.Scaffolding.Tests
             {
                 UnityEngine.Object.DestroyImmediate(copia);
             }
+        }
+
+        // ---- INC-133: el antebrazo delante del torso aunque el húmero vaya detrás ----
+        //
+        // Estas pruebas leen los prefabs reales: FALLAN mientras no se haya corrido el modo «orden» del
+        // generador (BuildRigsFinal.cs.txt) sobre ellos, y deben pasar justo después. Las de Algoritm
+        // (que queda como está) pasan antes y después. Las que construyen la jerarquía en código están en
+        // CharacterRigLimbTests y no dependen de los prefabs.
+
+        /// <summary>
+        /// La familia lleva el antebrazo (con su Image) como hijo directo de Tronco y, bajo cada codo, el
+        /// ancla vacía que anima el Animator. CharacterRig descubre los pares por nombre: esto comprueba que
+        /// lo que escribe el generador y lo que busca el código en ejecución es lo mismo.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC133_LosPrefabsDeLaFamiliaTienenSusAntebrazosYAnclasDescubribles(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var tronco = Rig(nombre).transform.Find(Tronco);
+            Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
+
+            foreach (var lado in Lados)
+            {
+                var antebrazo = tronco.Find("Antebrazo" + lado);
+                Assert.That(antebrazo, Is.Not.Null, $"{nombre}: Antebrazo{lado} es hijo directo de Tronco");
+                Assert.That(antebrazo.GetComponent<Image>(), Is.Not.Null, $"{nombre}: Antebrazo{lado} sigue siendo el nodo con la Image");
+
+                var codo = tronco.Find($"Brazo{lado}/Codo{lado}");
+                Assert.That(codo, Is.Not.Null, $"{nombre}: existe el codo {lado}");
+                Assert.That(codo.Find("Antebrazo" + lado), Is.Null, $"{nombre}: el antebrazo {lado} ya no cuelga del codo");
+                var ancla = codo.Find(LimbFollower.AnchorPrefix + "Antebrazo" + lado);
+                Assert.That(ancla, Is.Not.Null, $"{nombre}: el codo {lado} lleva el ancla del antebrazo");
+                Assert.That(ancla.GetComponent<Graphic>(), Is.Null, $"{nombre}: el ancla no se dibuja");
+            }
+
+            Assert.That(LimbFollower.Discover(tronco).Length, Is.EqualTo(2), $"{nombre}: CharacterRig encuentra los dos pares");
+        }
+
+        /// <summary>
+        /// El antebrazo va delante del torso, de la cara (el cuello con la cabeza dentro), del húmero y de las
+        /// piernas; el húmero, detrás del torso (Santiago, 06/10/2026, INC-133). Delante de las piernas porque
+        /// Tronco se dibuja después de ellas, bajo Cuerpo.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC133_ElAntebrazoSeDibujaDelanteDelTorsoDeLaCaraYDeLasPiernas(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var rig = Rig(nombre);
+            var tronco = rig.transform.Find(Tronco);
+            Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
+            var torso = Orden(tronco, nombre, "Torso");
+            var cuello = Orden(tronco, nombre, "Cuello");
+
+            foreach (var lado in Lados)
+            {
+                var antebrazo = Orden(tronco, nombre, "Antebrazo" + lado);
+                var humero = Orden(tronco, nombre, "Brazo" + lado);
+                Assert.That(antebrazo, Is.GreaterThan(torso), $"{nombre}: Antebrazo{lado} se dibuja después del torso");
+                Assert.That(antebrazo, Is.GreaterThan(cuello), $"{nombre}: Antebrazo{lado} se dibuja después de la cara, que no lo tapa");
+                Assert.That(antebrazo, Is.GreaterThan(humero), $"{nombre}: Antebrazo{lado} se dibuja después de su húmero");
+                Assert.That(humero, Is.LessThan(torso), $"{nombre}: Brazo{lado} (el húmero) se dibuja antes del torso");
+            }
+
+            var cuerpo = rig.transform.Find(Cuerpo);
+            foreach (var pierna in new[] { "PiernaIzq", "PiernaDer" })
+            {
+                Assert.That(tronco.GetSiblingIndex(), Is.GreaterThan(Orden(cuerpo, nombre, pierna)), $"{nombre}: Tronco, con los antebrazos dentro, se dibuja después de {pierna}");
+            }
+        }
+
+        /// <summary>En Papá la cara va delante del torso (Santiago, 06/10/2026, INC-133): su cuello, con la cabeza dentro, va después del torso.</summary>
+        [Test]
+        public void CharacterRig_INC133_EnPapaLaCaraSeDibujaDelanteDelTorso()
+        {
+            var tronco = Rig("Papa").transform.Find(Tronco);
+            Assert.That(tronco, Is.Not.Null, $"Papa: existe {Tronco}");
+
+            Assert.That(Orden(tronco, "Papa", "Cuello"), Is.GreaterThan(Orden(tronco, "Papa", "Torso")), "Papa: el cuello, con la cabeza dentro, se dibuja después del torso");
+        }
+
+        /// <summary>
+        /// Al golpear, el húmero pasa delante del torso pero sigue detrás del antebrazo, que es lo que se ve
+        /// chocar. Sobre una copia de cada prefab, nunca sobre el asset.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC133_AlGolparElHumeroSigueDetrasDelAntebrazoEnLosPrefabs(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var copia = UnityEngine.Object.Instantiate(Rig(nombre).gameObject);
+            try
+            {
+                var tronco = copia.transform.Find(Tronco);
+                Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
+                var capas = new ArmLayering(tronco);
+
+                capas.Apply(true);
+
+                var torso = Orden(tronco, nombre, "Torso");
+                foreach (var lado in Lados)
+                {
+                    Assert.That(Orden(tronco, nombre, "Brazo" + lado), Is.GreaterThan(torso), $"{nombre}: Brazo{lado} delante del torso al golpear");
+                    Assert.That(Orden(tronco, nombre, "Brazo" + lado), Is.LessThan(Orden(tronco, nombre, "Antebrazo" + lado)), $"{nombre}: Brazo{lado} sigue detrás del antebrazo");
+                    Assert.That(Orden(tronco, nombre, "Antebrazo" + lado), Is.GreaterThan(torso), $"{nombre}: el antebrazo {lado} sigue delante del torso");
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(copia);
+            }
+        }
+
+        /// <summary>
+        /// En el prefab, sin animar, el antebrazo suelto ocupa el mismo rect del lienzo que su ancla: es lo
+        /// que garantiza que moverlo de Tronco no lo descolocó (el generador lo mide y lo recoloca con la
+        /// geometría de la tabla). Con el rig ya sincronizado sigue igual: en reposo la copia no lo mueve.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC133_EnReposoElAntebrazoCoincideConSuAncla(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var copia = UnityEngine.Object.Instantiate(Rig(nombre).gameObject);
+            try
+            {
+                var rig = copia.GetComponent<CharacterRig>();
+                foreach (var lado in Lados)
+                {
+                    AssertMismoRect(Antebrazo(rig, lado), Ancla(rig, lado), $"{nombre}, {lado}, sin sincronizar");
+                }
+
+                rig.SyncLimbs();
+
+                foreach (var lado in Lados)
+                {
+                    AssertMismoRect(Antebrazo(rig, lado), Ancla(rig, lado), $"{nombre}, {lado}, sincronizado en reposo");
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(copia);
+            }
+        }
+
+        /// <summary>
+        /// Con cualquier clip del personaje en cualquier instante —los brazos giran, el húmero se escala a 0,45
+        /// al golpear, Tronco sube y respira— el antebrazo, tras la copia de pose, ocupa el mismo rect del
+        /// mundo que su ancla: sigue al codo aunque ya no cuelgue de él.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC133_ElAntebrazoSigueAlAnclaEnTodoClip(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var copia = UnityEngine.Object.Instantiate(Rig(nombre).gameObject);
+            try
+            {
+                var rig = copia.GetComponent<CharacterRig>();
+                var clips = Clips(rig).ToArray();
+                Assert.That(clips, Is.Not.Empty, $"{nombre} tiene clips");
+
+                foreach (var clip in clips)
+                {
+                    foreach (var fraccion in new[] { 0f, 0.37f, 0.5f, 1f })
+                    {
+                        clip.SampleAnimation(copia, clip.length * fraccion);
+                        rig.SyncLimbs();
+                        foreach (var lado in Lados)
+                        {
+                            AssertMismoRect(Antebrazo(rig, lado), Ancla(rig, lado), $"{nombre}, {clip.name} al {fraccion:P0}, {lado}");
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(copia);
+            }
+        }
+
+        /// <summary>
+        /// Algoritm queda como está (Santiago, 06/10/2026): sus brazos ya van delante del cuerpo, así que su
+        /// antebrazo sigue colgando del codo y no recibe ancla. Sin pares, CharacterRig no tiene nada que copiar.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC133_EnAlgoritmElAntebrazoSigueBajoElCodoYSinAncla(
+            [Values("Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
+        {
+            var tronco = Rig(nombre).transform.Find(Tronco);
+            Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
+
+            foreach (var lado in Lados)
+            {
+                Assert.That(tronco.Find($"Brazo{lado}/Codo{lado}/Antebrazo{lado}"), Is.Not.Null, $"{nombre}: el antebrazo {lado} cuelga del codo");
+                Assert.That(tronco.Find("Antebrazo" + lado), Is.Null, $"{nombre}: ningún antebrazo suelto en Tronco");
+                Assert.That(tronco.Find($"Brazo{lado}/Codo{lado}/{LimbFollower.AnchorPrefix}Antebrazo{lado}"), Is.Null, $"{nombre}: sin ancla");
+            }
+
+            Assert.That(LimbFollower.Discover(tronco), Is.Empty, $"{nombre}: ningún par antebrazo-ancla");
         }
 
         /// <summary>
@@ -620,11 +841,40 @@ namespace Game.Scaffolding.Tests
             return rig;
         }
 
+        /// <summary>El antebrazo del lado dado donde esté: suelto en Tronco (INC-133) o, mientras el generador no corra, colgado del codo.</summary>
+        private static Transform Antebrazo(CharacterRig rig, string lado)
+        {
+            var suelto = rig.transform.Find($"{Tronco}/Antebrazo{lado}");
+            return suelto != null ? suelto : rig.transform.Find($"{Tronco}/Brazo{lado}/Codo{lado}/Antebrazo{lado}");
+        }
+
+        /// <summary>El ancla del antebrazo (hija del codo). Falla con su nombre si no existe.</summary>
+        private static Transform Ancla(CharacterRig rig, string lado)
+        {
+            var ancla = rig.transform.Find($"{Tronco}/Brazo{lado}/Codo{lado}/{LimbFollower.AnchorPrefix}Antebrazo{lado}");
+            Assert.That(ancla, Is.Not.Null, $"{rig.name}: el codo {lado} lleva el ancla del antebrazo");
+            return ancla;
+        }
+
+        /// <summary>Los cuatro vértices del mundo de dos nodos coinciden: mismo tamaño, pivote, posición, giro y escala.</summary>
+        private static void AssertMismoRect(Transform a, Transform b, string mensaje)
+        {
+            Assert.That(a, Is.Not.Null, $"{mensaje}: existe el antebrazo");
+            var esquinasA = new Vector3[4];
+            var esquinasB = new Vector3[4];
+            ((RectTransform)a).GetWorldCorners(esquinasA);
+            ((RectTransform)b).GetWorldCorners(esquinasB);
+            for (var i = 0; i < 4; i++)
+            {
+                Assert.That(Vector3.Distance(esquinasA[i], esquinasB[i]), Is.LessThan(0.05f), $"{mensaje}: esquina {i}");
+            }
+        }
+
         /// <summary>El lugar de un hijo de Tronco en el orden de dibujo (0 = el más al fondo). Falla con su nombre si no existe.</summary>
         private static int Orden(Transform tronco, string personaje, string hijo)
         {
             var nodo = tronco.Find(hijo);
-            Assert.That(nodo, Is.Not.Null, $"{personaje}: {Tronco} tiene {hijo}");
+            Assert.That(nodo, Is.Not.Null, $"{personaje}: {tronco.name} tiene {hijo}");
             return nodo.GetSiblingIndex();
         }
 

@@ -6,8 +6,10 @@
 // reconstruye: solo AÑADE nodos, reordena hermanos y reescribe curvas. Cuatro modos, más dos de apoyo:
 //   "nodos"   añade a los 7 prefabs (Papa, Mama, Nina, Nino, Algoritm_Fuego/Rueda/Gota) lo que la
 //             tabla rig_articulaciones.json pide y falta, y el componente CharacterFace. Idempotente:
-//             si un nodo existe no lo toca ni lo mueve. Todo nodo nuevo lleva su Image apagada y sin
-//             sprite. Un nodo nuevo de tipo «imagen» entra EN LA POSICIÓN QUE LE DA LA TABLA entre sus
+//             si un nodo existe no lo toca ni lo mueve (un antebrazo que «orden» ya soltó del codo y
+//             pasó a Tronco cuenta como existente: no se vuelve a crear bajo el codo). Todo nodo nuevo
+//             lleva su Image apagada y sin sprite. Un nodo nuevo de tipo «imagen» entra EN LA POSICIÓN
+//             QUE LE DA LA TABLA entre sus
 //             hermanos: justo detrás del primero de los hermanos que la lista «nodos» pone DESPUÉS de él
 //             y que ya existe, o al final si no hay ninguno. Así CaraBase (nariz y rubor de la familia,
 //             estática) queda como PRIMER hijo de Cabeza, detrás de Ojos y Boca, siempre que la tabla
@@ -19,19 +21,40 @@
 //             y apaga la Image de Cuerpo en Algoritm cuando sus partes ya están. Lo que no existe se
 //             deja apagado y se anota en el log: un nodo imagen sin PNG queda con la Image apagada.
 //   "orden"   coloca los hijos de Lienzo/Cuerpo/Tronco en el orden de dibujo que fija «orden_tronco»
-//             en la tabla: en la familia los brazos DETRÁS del torso y DELANTE de la cabeza (Cuello,
-//             BrazoIzq, BrazoDer, Torso) y en Algoritm las manos ENCIMA de la cara (Torso, Ojos, Boca,
-//             BrazoIzq, BrazoDer). Es el orden de REPOSO: en tiempo de ejecución, mientras el personaje
+//             en la tabla: en la familia los húmeros (BrazoIzq, BrazoDer) DETRÁS del torso y los
+//             antebrazos DELANTE del torso, de la cara y de las piernas (p. ej. Cuello, BrazoIzq, BrazoDer,
+//             Torso, AntebrazoIzq, AntebrazoDer; en Papá el Cuello va después del Torso: la cara delante
+//             de él) y en Algoritm las manos ENCIMA de la cara (Torso, Ojos, Boca, BrazoIzq, BrazoDer).
+//             Es el orden de REPOSO: en tiempo de ejecución, mientras el personaje
 //             golpea (Strike), CharacterRig pasa los brazos de la familia delante del torso (ArmLayering)
 //             y al terminar los devuelve; este modo no sabe nada de eso.
-//             Idempotente: solo guarda un prefab si el orden cambia, y registra antes → después. Un
-//             personaje sin «orden_tronco» no se toca y se anota.
+//             TAMBIÉN SUELTA LOS ANTEBRAZOS DEL CODO (Santiago, 06/10/2026, INC-133: «el húmero detrás del
+//             torso y el antebrazo delante del torso, del rostro y de las piernas»). uGUI dibuja en orden
+//             de jerarquía y el antebrazo era hijo del codo, que es hijo del húmero: no podía quedar delante
+//             del torso con el húmero detrás. Si «orden_tronco» LISTA el segmento («imagen») de una
+//             articulación de Tronco —AntebrazoIzq, AntebrazoDer—, este modo, por cada uno:
+//               1. crea bajo el codo un nodo vacío «Ancla<segmento>» (AnclaAntebrazoIzq), sin Image, con
+//                  EXACTAMENTE la pose local que el segmento tiene hoy bajo el codo (anclas, pivote, tamaño,
+//                  posición, giro y escala): es el que animan los clips al mover codo y húmero;
+//               2. pasa el segmento —el objeto con la Image, que conserva su fileID— a hijo directo de
+//                  Tronco, con el mismo rect y el mismo pivote en el lienzo que tenía (BoxOf; sin transforms
+//                  del mundo, ver «POR QUÉ NO SE USAN TRANSFORMS DEL MUNDO»);
+//               3. lo deja donde diga «orden_tronco» (normalmente al final, después de Torso y Cuello).
+//             En ejecución CharacterRig copia en cada cuadro la pose del ancla al segmento (LimbFollower,
+//             en LateUpdate), así que el antebrazo sigue al codo aunque ya no cuelgue de él. Lo que ningún
+//             «orden_tronco» lista (Algoritm) conserva el antebrazo bajo el codo y no recibe ancla. Una
+//             ancla ya creada no se toca (se reconoce por su nombre); un segmento ya en Tronco no se
+//             vuelve a mover. CharacterRig descubre los pares por nombre, así que no hay referencias que
+//             cablear. Requiere que «nodos» haya corrido antes (si no hay codo ni segmento, lo dice).
+//             Idempotente: solo guarda un prefab si cambia el orden o se crea o se mueve algo, y registra
+//             antes → después. Un personaje sin «orden_tronco» no se toca y se anota.
 //   "clips"   reescribe EN SITIO las curvas de los .anim que ya existen con lo que diga
 //             clips_personajes.json: los 21 clips de cada miembro de la familia y los 9 de Algoritm.
 //             No crea ningún clip (si falta, lo anota) y no calcula nada: ver «DÓNDE VIVE LA
 //             COREOGRAFÍA». Avisa de rutas que el prefab no tiene y de claves fuera de la duración.
 //   "todo"    nodos → sprites → orden → clips.      "estado"  solo informa, no escribe nada
-//             (incluye el orden de dibujo actual de Tronco en cada prefab).
+//             (incluye el orden de dibujo actual de Tronco en cada prefab y, si la tabla suelta los
+//             antebrazos del codo, dónde está cada uno y si tiene ancla).
 //
 // DÓNDE VIVE LA COREOGRAFÍA. Ya NO está en este archivo: la escribe herramientas/coreografia.py y la
 // entrega como herramientas/clips_personajes.json, con las curvas ya calculadas de cada clip (ruta,
@@ -61,9 +84,13 @@
 //   1. Copiar este archivo a Assets/Editor/ClaudeBuildRigsFinal.cs (la clase se llama
 //      ClaudeBuildRigsFinal; el Editor genera el .meta solo, nunca a mano) y esperar a que compile.
 //   2. Llamar por coplay execute_script:  ClaudeBuildRigsFinal.Execute("nodos")  y después
-//      Execute("sprites"), Execute("orden") y Execute("clips") —o Execute("todo")—. Devuelve el log
-//      como texto. «clips» lee herramientas/clips_personajes.json: correr antes coreografia.py.
-//   3. Comprobar los fileID (abajo) y correr las pruebas CharacterRig_DA131_* / CharacterRig_DA73_*.
+//      Execute("sprites"), Execute("orden") y Execute("clips") —o Execute("todo")—, en ESE orden: «orden»
+//      es el que crea las anclas y suelta los antebrazos (INC-133) y necesita los codos de «nodos».
+//      «sprites» corre bien antes o después de «orden»: encuentra el antebrazo en el codo o en Tronco.
+//      Devuelve el log como texto. «clips» lee herramientas/clips_personajes.json: correr antes
+//      coreografia.py.
+//   3. Comprobar los fileID (abajo) y correr las pruebas CharacterRig_DA131_* / CharacterRig_DA73_* /
+//      CharacterRig_INC132_* / CharacterRig_INC133_* (las INC133 de la familia fallan hasta que corre «orden»).
 //   4. Borrar Assets/Editor/ClaudeBuildRigsFinal.cs (y su .meta): es andamiaje, no código del juego.
 //      Este .txt es la copia que queda versionada.
 //
@@ -71,12 +98,16 @@
 // fileID. Reconstruirlos (Root()/Finish() de BuildRigs) cambia todos y rompe esas referencias. Aquí:
 //   - los prefabs se abren con LoadPrefabContents, se añaden hijos y componentes y se guardan con
 //     SaveAsPrefabAsset sobre la misma ruta; los objetos que ya existían conservan su fileID;
-//   - no se destruye ni se recrea ningún objeto existente; «orden» solo llama a SetSiblingIndex, que
-//     reordena m_Children del padre y no cambia ni un fileID;
+//   - no se destruye ni se recrea ningún objeto existente; «orden» llama a SetSiblingIndex, que
+//     reordena m_Children del padre y no cambia ni un fileID, y a SetParent para pasar cada antebrazo
+//     de su codo a Tronco: cambia el padre del objeto, no su fileID, ni el de su Image. Lo único
+//     que «orden» CREA son las anclas AnclaAntebrazoIzq/Der (objetos nuevos, sin Image);
 //   - los clips se cargan con LoadAssetAtPath y se les cambian las curvas: no se crean ni se tocan
 //     los .controller, así que los GUID de los .anim y los estados siguen iguales.
 //   Verificación: `git diff -U0 Assets/Game/Prefabs/Characters` no debe QUITAR ninguna línea que
-//   empiece por «--- !u!» ni tocar m_Controller / m_Script / m_Sprite de lo existente.
+//   empiece por «--- !u!» ni tocar m_Controller / m_Script / m_Sprite de lo existente. Con «orden» sobre
+//   la familia SÍ cambian, y es lo esperado: el m_Father de cada AntebrazoX (ahora Tronco), el m_Children
+//   de cada CodoX y de Tronco, y entran por prefab dos GameObject y dos RectTransform nuevos (las anclas).
 //
 // POR QUÉ NO SE USAN TRANSFORMS DEL MUNDO. Un prefab abierto con LoadPrefabContents no tiene Canvas,
 // y RectTransform.TransformPoint / ForceUpdateCanvases dependen de él. La posición de cada nodo se
@@ -911,6 +942,14 @@ public static class ClaudeBuildRigsFinal
     private const string T = C + "/Tronco";
     private const string LK = C + "/PiernaIzq/RodillaIzq";
 
+    /// <summary>
+    /// Prefijo del ancla de un antebrazo (INC-133): «AnclaAntebrazoIzq». Tiene que ser el mismo que
+    /// LimbFollower.AnchorPrefix, que busca las anclas por nombre en tiempo de ejecución; no se referencia
+    /// desde aquí porque LimbFollower es internal de Game.Scaffolding y este script vive en Assembly-CSharp-Editor.
+    /// Lo vigila CharacterRig_INC133_LosPrefabsDeLaFamiliaTienenSusAntebrazosYAnclasDescubribles.
+    /// </summary>
+    private const string AnchorPrefix = "Ancla";
+
     // ---------------------------------------------------------------- punto de entrada
 
     public static string Execute(string mode)
@@ -1227,7 +1266,7 @@ public static class ClaudeBuildRigsFinal
 
             case "articulacion":
                 if (isNew) PlacePoint(node, Pt(n.punto), null); // pivote vacío en la articulación
-                var segment = node.Find(n.imagen) as RectTransform;
+                var segment = FindSegment(root, c, n, node); // bajo el codo, o ya suelto en Tronco (INC-133)
                 if (segment == null)
                 {
                     segment = NewRect(n.imagen, node);
@@ -1445,7 +1484,8 @@ public static class ClaudeBuildRigsFinal
                 if (n.tipo == "articulacion")
                 {
                     PlacePoint(node, Pt(n.punto), null);
-                    target = node.Find(n.imagen) as RectTransform;
+                    target = FindSegment(root.transform, c, n, node); // bajo el codo, o ya suelto en Tronco (INC-133)
+                    MirrorAnchor(c, n, node);
                 }
                 else if (n.tipo == "grupo")
                 {
@@ -1651,6 +1691,10 @@ public static class ClaudeBuildRigsFinal
     //   - Algoritm: Torso, Ojos, Boca, BrazoIzq, BrazoDer. Los brazos van DELANTE del cuerpo y las manos se
     //     pintan ENCIMA de la cara (decisión de Santiago, 05/10/2026, INC-132: la cara con la que el guía
     //     mira al niño queda detrás de la mano que se lleva a ella, no al revés).
+    //   - 06/10/2026, INC-133: lo anterior vale para el HÚMERO (BrazoIzq, BrazoDer); el ANTEBRAZO va delante
+    //     del torso, de la cara y de las piernas, y en Papá la cara va delante del torso (su Cuello, después
+    //     de Torso). Para que el antebrazo pueda ir delante con el húmero detrás sale del codo y cuelga de
+    //     Tronco (ver ANTEBRAZOS, abajo); su sitio lo fija la tabla como el de cualquier otro hijo de Tronco.
     //   - En Strike (golpear las piedras: las manos chocan delante del pecho) los brazos de la familia
     //     pasan DELANTE del torso mientras dura la acción, para que el choque se vea, y al terminar vuelven
     //     a este orden. Eso NO lo hace este modo ni se guarda en el prefab: lo hace CharacterRig en tiempo
@@ -1662,6 +1706,163 @@ public static class ClaudeBuildRigsFinal
     // CÓMO. SetSiblingIndex reordena m_Children del padre y no cambia ni un fileID: las referencias de
     // las escenas y de los 18 assets narrativos siguen en pie. Los hijos listados van al final de Tronco
     // en el orden dado; los que la tabla no lista conservan su orden relativo y quedan delante de ellos.
+
+    // ANTEBRAZOS (INC-133). Ver la cabecera del archivo: «orden» crea la ancla bajo el codo y pasa el
+    // antebrazo a Tronco cuando «orden_tronco» lo lista. Las funciones de abajo lo deciden (IsFollower,
+    // FindSegment, PendingFollowers) y lo hacen (CreateAnchor, MoveToTrunk, ReleaseFollowers, MirrorAnchor).
+
+    /// <summary>
+    /// ¿Se suelta este segmento de su articulación? Sí si es el «imagen» de una articulación que cuelga de
+    /// Tronco (un codo) y «orden_tronco» lo lista: esa lista solo puede nombrar hijos directos de Tronco,
+    /// así que nombrarlo es pedir que viva ahí. Función pura, sin Unity.
+    /// </summary>
+    private static bool IsFollower(Personaje c, Nodo n)
+    {
+        return n.tipo == "articulacion"
+            && c.ordenTronco != null
+            && Array.IndexOf(c.ordenTronco, n.imagen) >= 0
+            && n.padre.StartsWith(T + "/", StringComparison.Ordinal);
+    }
+
+    private static string AnchorName(Nodo n) { return AnchorPrefix + n.imagen; }
+
+    /// <summary>
+    /// Dónde está hoy el segmento de la articulación «joint»: bajo ella (como nació) o, si la tabla lo suelta,
+    /// ya en Tronco. null si no existe en ninguno de los dos sitios. Bajo la articulación manda: si «orden»
+    /// lo encuentra en los dos, es un estado raro y lo dice PendingFollowers.
+    /// </summary>
+    private static RectTransform FindSegment(Transform root, Personaje c, Nodo n, RectTransform joint)
+    {
+        var under = joint == null ? null : joint.Find(n.imagen) as RectTransform;
+        if (under != null)
+        {
+            return under;
+        }
+
+        return IsFollower(c, n) ? root.Find(T + "/" + n.imagen) as RectTransform : null;
+    }
+
+    /// <summary>
+    /// Los antebrazos que aún cuelgan del codo y que «orden_tronco» pide en Tronco, en el orden de «nodos».
+    /// SOLO LEE: sirve para validar todos los prefabs antes de escribir ninguno. Lanza InvalidOperationException
+    /// si falta el codo o el antebrazo (¿corrió «nodos»?) o si el antebrazo está a la vez bajo el codo y
+    /// en Tronco (no se sabe cuál conservar).
+    /// </summary>
+    private static List<Nodo> PendingFollowers(Transform root, Personaje c)
+    {
+        var pending = new List<Nodo>();
+        foreach (var n in c.nodos)
+        {
+            if (!IsFollower(c, n)) continue;
+
+            var joint = root.Find(n.padre + "/" + n.nombre);
+            if (joint == null)
+            {
+                throw new InvalidOperationException(c.prefab + ": no existe «" + n.padre + "/" + n.nombre + "», el codo de «" + n.imagen + "» (¿corrió «nodos»?)");
+            }
+
+            var under = joint.Find(n.imagen) != null;
+            var inTrunk = root.Find(T + "/" + n.imagen) != null;
+            if (under && inTrunk)
+            {
+                throw new InvalidOperationException(c.prefab + ": «" + n.imagen + "» está dos veces, bajo «" + n.nombre + "» y bajo Tronco; borre a mano el sobrante y vuelva a correr «orden»");
+            }
+
+            if (!under && !inTrunk)
+            {
+                throw new InvalidOperationException(c.prefab + ": «orden_tronco» lista «" + n.imagen + "» pero no existe ni bajo «" + n.nombre + "» ni bajo Tronco (¿corrió «nodos»?)");
+            }
+
+            if (under) pending.Add(n);
+        }
+
+        return pending;
+    }
+
+    /// <summary>
+    /// El ancla del antebrazo, hija del codo. Sin Image (no se dibuja ni recibe clics). Con «pose» (el segmento
+    /// tal como está hoy bajo el codo) la copia EXACTA: anclas, pivote, tamaño, posición, giro y escala. Sin él
+    /// (el segmento ya está en Tronco y el ancla faltaba) se coloca como lo haría la tabla, que en reposo es
+    /// la misma pose. El orden de asignación es el de PlacePoint: anclas, pivote, tamaño y, al final, la posición.
+    /// </summary>
+    private static RectTransform CreateAnchor(RectTransform joint, Nodo n, RectTransform pose)
+    {
+        var anchor = NewRect(AnchorName(n), joint);
+        if (pose == null)
+        {
+            PlacePoint(anchor, Pt(n.punto), n.rect);
+            return anchor;
+        }
+
+        anchor.anchorMin = pose.anchorMin;
+        anchor.anchorMax = pose.anchorMax;
+        anchor.pivot = pose.pivot;
+        anchor.sizeDelta = pose.sizeDelta;
+        anchor.anchoredPosition = pose.anchoredPosition;
+        anchor.localRotation = pose.localRotation;
+        anchor.localScale = pose.localScale;
+        return anchor;
+    }
+
+    /// <summary>
+    /// Pasa el segmento a hijo de Tronco con el mismo rect y el mismo pivote en el lienzo. Se mide con BoxOf
+    /// antes de mover y se recoloca con PlacePoint después: el resultado no depende de cómo trate SetParent la
+    /// posición de un RectTransform (worldPositionStays) y no hace falta un Canvas.
+    /// </summary>
+    private static void MoveToTrunk(RectTransform segment, RectTransform trunk)
+    {
+        var box = BoxOf(segment);
+        var pivot = PivotDown(segment);
+        segment.SetParent(trunk, false);
+        PlacePoint(segment, pivot, new[] { box.Min.x, U - (box.Min.y + box.Size.y), box.Min.x + box.Size.x, U - box.Min.y });
+    }
+
+    /// <summary>
+    /// Para cada antebrazo que la tabla suelta: crea su ancla si falta y lo pasa de hijo del codo a hijo de
+    /// Tronco si aún no lo es. Idempotente. Devuelve lo que hizo, para el log y para saber si hay que guardar.
+    /// Supone validado por PendingFollowers (que lanza si falta algo).
+    /// </summary>
+    private static List<string> ReleaseFollowers(GameObject root, Personaje c)
+    {
+        var done = new List<string>();
+        var trunk = (RectTransform)root.transform.Find(T);
+        foreach (var n in c.nodos)
+        {
+            if (!IsFollower(c, n)) continue;
+
+            var joint = (RectTransform)root.transform.Find(n.padre + "/" + n.nombre);
+            var under = joint.Find(n.imagen) as RectTransform;
+            if (joint.Find(AnchorName(n)) == null)
+            {
+                CreateAnchor(joint, n, under);
+                done.Add(AnchorName(n) + " creada bajo " + n.nombre);
+            }
+
+            if (under != null)
+            {
+                MoveToTrunk(under, trunk);
+                done.Add(n.imagen + " pasa de " + n.nombre + " a Tronco");
+            }
+        }
+
+        return done;
+    }
+
+    /// <summary>
+    /// Mantiene el ancla con el mismo rect y pivote que el segmento cuando «sprites» lo recoloca (puede llegar
+    /// arte con otro rect). No es necesario para que el antebrazo siga al codo —CharacterRig solo copia la pose
+    /// del ancla—, pero deja el ancla con la forma del segmento, que es lo que se ve al seleccionarla en el Editor.
+    /// </summary>
+    private static void MirrorAnchor(Personaje c, Nodo n, RectTransform joint)
+    {
+        if (!IsFollower(c, n)) return;
+
+        var anchor = joint.Find(AnchorName(n)) as RectTransform;
+        if (anchor != null)
+        {
+            PlacePoint(anchor, Pt(n.punto), n.rect);
+        }
+    }
 
     /// <summary>Los nombres de los hijos directos, en el orden en que se dibujan.</summary>
     private static List<string> ChildNames(Transform parent)
@@ -1676,10 +1877,12 @@ public static class ClaudeBuildRigsFinal
     }
 
     /// <summary>
-    /// El orden de Tronco que pide la tabla para este prefab, calculado sin tocar nada. Lanza
-    /// InvalidOperationException si no hay Tronco, si un nombre listado no es hijo directo (con los hijos
-    /// que sí hay) o si hay dos hijos con el mismo nombre entre los listados (SetSiblingIndex por nombre
-    /// sería ambiguo).
+    /// El orden de Tronco que pide la tabla para este prefab, calculado sin tocar nada. Cuenta como hijos
+    /// de Tronco los antebrazos que «orden» aún tiene que soltar del codo (PendingFollowers; se añaden al
+    /// final, que es donde nace un hijo movido): así la validación previa de todos los prefabs funciona
+    /// antes de mover nada. Lanza InvalidOperationException si no hay Tronco, si un nombre listado no es
+    /// hijo directo (con los hijos que sí hay) o si hay dos hijos con el mismo nombre entre los listados
+    /// (SetSiblingIndex por nombre sería ambiguo).
     /// </summary>
     private static List<string> TargetOrder(Transform root, Personaje c)
     {
@@ -1690,6 +1893,11 @@ public static class ClaudeBuildRigsFinal
         }
 
         var children = ChildNames(tronco);
+        foreach (var pending in PendingFollowers(root, c))
+        {
+            children.Add(pending.imagen);
+        }
+
         foreach (var name in c.ordenTronco)
         {
             var count = children.Count(child => child == name);
@@ -1743,10 +1951,12 @@ public static class ClaudeBuildRigsFinal
         var root = PrefabUtility.LoadPrefabContents(path);
         try
         {
+            TargetOrder(root.transform, c); // valida (y lanza si no hay Tronco o falta un nombre) antes de mover nada
             var tronco = root.transform.Find(T);
-            var target = TargetOrder(root.transform, c);
             var before = ChildNames(tronco);
-            if (before.SequenceEqual(target))
+            var released = ReleaseFollowers(root, c); // INC-133: ancla bajo el codo y antebrazo a Tronco
+            var target = TargetOrder(root.transform, c);
+            if (released.Count == 0 && before.SequenceEqual(target))
             {
                 log.Add(c.prefab + ": Tronco ya estaba en orden (" + string.Join(", ", before.ToArray()) + ")");
                 return;
@@ -1764,7 +1974,8 @@ public static class ClaudeBuildRigsFinal
             }
 
             PrefabUtility.SaveAsPrefabAsset(root, path);
-            log.Add(c.prefab + ": Tronco " + string.Join(", ", before.ToArray()) + "  →  " + string.Join(", ", after.ToArray()));
+            log.Add(c.prefab + ": Tronco " + string.Join(", ", before.ToArray()) + "  →  " + string.Join(", ", after.ToArray())
+                + (released.Count > 0 ? " | " + string.Join("; ", released.ToArray()) : ""));
         }
         finally
         {
@@ -1793,7 +2004,24 @@ public static class ClaudeBuildRigsFinal
         var face = root.GetComponent<CharacterFace>();
         log.Add(c.prefab + " [" + c.nodos.Length + " nodos, " + c.partes.Length + " partes en la tabla]: " + (missing.Count == 0 ? "nodos completos" : "FALTAN " + string.Join(", ", missing.ToArray()))
             + " | CharacterFace " + (face == null ? "no" : "sí") + " | segmentado " + (IsSegmented(root.transform) ? "sí" : "no")
-            + " | " + FaceSetState(c) + " | " + OrderState(root.transform, c));
+            + " | " + FaceSetState(c) + " | " + OrderState(root.transform, c) + " | " + LimbState(root.transform, c));
+    }
+
+    /// <summary>Los antebrazos que la tabla suelta del codo (INC-133): dónde está cada uno y si tiene ancla. No lanza.</summary>
+    private static string LimbState(Transform root, Personaje c)
+    {
+        var parts = new List<string>();
+        foreach (var n in c.nodos)
+        {
+            if (!IsFollower(c, n)) continue;
+
+            var inTrunk = root.Find(T + "/" + n.imagen) != null;
+            var anchor = root.Find(n.padre + "/" + n.nombre + "/" + AnchorName(n)) != null;
+            parts.Add(n.imagen + (inTrunk ? " en Tronco" : " bajo " + n.nombre + " (falta soltarlo: «orden»)")
+                + ", " + (anchor ? "con ancla" : "SIN ancla (falta «orden»)"));
+        }
+
+        return parts.Count == 0 ? "antebrazos: no se sueltan" : "antebrazos: " + string.Join("; ", parts.ToArray());
     }
 
     /// <summary>Dónde está el set de la cara: en Expresiones, en la raíz (falta moverlo) o aún no existe.</summary>

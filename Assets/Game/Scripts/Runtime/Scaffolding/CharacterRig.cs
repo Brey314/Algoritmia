@@ -68,6 +68,7 @@ namespace Game.Scaffolding
         private CancellationTokenSource _returning;
         private CharacterFace _face;
         private ArmLayering _armLayering;
+        private LimbFollower[] _limbs;
         private FacialEmotion? _emotionOverride;
         private bool _speaking;
 
@@ -134,6 +135,9 @@ namespace Game.Scaffolding
             {
                 Apply(Current, immediate: true);
             }
+
+            // Tras Play + Update(0): sin esto el primer cuadro enseñaría el antebrazo donde lo dejó el prefab.
+            SyncLimbs();
         }
 
         private void Start()
@@ -142,9 +146,40 @@ namespace Game.Scaffolding
             {
                 Apply(Current, immediate: true);
             }
+
+            SyncLimbs();
         }
 
-        private void LateUpdate() => Fit(false);
+        private void LateUpdate()
+        {
+            Fit(false);
+            SyncLimbs(); // el Animator ya movió brazos y codos: LateUpdate corre después de él
+        }
+
+        /// <summary>
+        /// Pone cada antebrazo en la pose de su ancla (<see cref="LimbFollower"/>). En la familia el
+        /// antebrazo cuelga de Tronco para dibujarse delante del torso aunque el húmero vaya detrás
+        /// (INC-133); el ancla, que sí cuelga del codo, es la que anima el Animator. Los pares se buscan
+        /// por nombre la primera vez: un personaje sin anclas (arte provisional, Algoritm) no tiene ninguno
+        /// y esto no hace nada. Sin lienzo no hay dónde buscar y se reintenta en el cuadro siguiente.
+        /// </summary>
+        internal void SyncLimbs()
+        {
+            if (_limbs == null)
+            {
+                if (stage == null)
+                {
+                    return;
+                }
+
+                _limbs = LimbFollower.Discover(stage.Find(TrunkPath));
+            }
+
+            foreach (var limb in _limbs)
+            {
+                limb.Sync();
+            }
+        }
 
         /// <summary>
         /// Pasa a la acción pedida con un fundido corto. Un rig sin ese estado hace

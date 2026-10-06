@@ -19,7 +19,16 @@ namespace Game.Scaffolding
     /// **Solo toca hermanos de Tronco, por nombre, y solo los brazos que están ANTES del torso.** En
     /// Algoritm los brazos ya se dibujan después del torso y no se tocan; la cara de Algoritm
     /// (Ojos, Boca) tampoco se mueve nunca. El resto de los hijos de Tronco —el cuello con la cabeza
-    /// dentro— conserva su sitio, así que la cabeza sigue detrás de los brazos que suben.
+    /// dentro, los antebrazos— conserva su sitio: el cuello sigue donde estaba respecto del torso (detrás
+    /// de él en Mamá, Niña y Niño; delante en Papá) y la cabeza, por tanto, sigue detrás de los brazos
+    /// que suben salvo en Papá.
+    ///
+    /// **«Delante» es justo después del torso, y por eso antes de los antebrazos (INC-133).** Desde el
+    /// 06/10/2026 el antebrazo de la familia es hijo de Tronco (lo mueve <see cref="LimbFollower"/>) y se
+    /// dibuja después del torso y del cuello. Los brazos entran en el hueco que el torso deja detrás de
+    /// sí, así que quedan antes que cualquier antebrazo: el húmero nunca tapa al antebrazo, que es lo que
+    /// se ve chocar. La clase no nombra los antebrazos: no los mueve, y lo vigila
+    /// <c>CharacterRig_INC133_AlGolparElHumeroPasaDelanteDelTorsoPeroSigueDetrasDelAntebrazo</c>.
     ///
     /// **Reordenar no cambia nada más:** las curvas de los clips direccionan los nodos por ruta de
     /// nombres, no por posición, y <c>SetSiblingIndex</c> no cambia ningún fileID del prefab.
@@ -104,7 +113,8 @@ namespace Game.Scaffolding
                 return; // ya están delante (Algoritm) o ya se movieron
             }
 
-            // «moving» sale en el orden en que estaban, así que entre ellos se conserva.
+            // «moving» sale en el orden en que estaban, así que entre ellos se conserva. Entran justo después del
+            // torso y, por tanto, ANTES de todo lo que ya se dibuja detrás de él: los antebrazos (INC-133).
             target.InsertRange(target.IndexOf(torso) + 1, moving);
             Reorder(target);
             _moved = true;
