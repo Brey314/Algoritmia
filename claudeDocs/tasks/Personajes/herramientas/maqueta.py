@@ -20,7 +20,9 @@
 # parte): sumadas dan el sprite original. Los rects del JSON de AntebrazoIzq/AntepiernaIzq (que describen
 # el arte final que llegara) siguen siendo los que usa coreografia.py para ubicar la mano y la punta del
 # pie: la maqueta solo cambia lo que se DIBUJA. El Nino ya tiene arte final: la maqueta le devuelve su
-# arbol tal cual.
+# arbol tal cual. INC-133 (06/10/2026): el «orden_tronco» que aplica (prefabs.arbol_vigente / aplicar_orden_tronco) lista los antebrazos de la
+# familia al final de Tronco: el antebrazo SIGUE bajo su codo en el arbol (las rutas y la geometria no cambian) y solo se dibuja delante del
+# torso y de la cara, como hace el motor con el ancla bajo el codo; las piezas de la maqueta no se enteran.
 
 import math
 import os

@@ -25,6 +25,12 @@
 #      .meta, mismo GUID), guarda la entrada del personaje en arte_final.json, regenera
 #      rig_articulaciones.json (articulaciones.py) y clips_personajes.json (coreografia.py), corre pose_preview.py
 #      y imprime el bloque de ordenes para la sesion local.
+#   REGISTRO (06/10/2026). Las capas de Santiago estan registradas entre si (lienzo comun) y la cara (expresiones/) llega en ese mismo lienzo:
+#   arte_final.json guarda por personaje la transformacion lienzo-de-entrega -> lienzo-del-rig («registro»: escala, tx, ty, la caja de la cabeza
+#   y, cuando llega la expresion neutra, «cara») para que preparar_expresion.py ponga la cara con ella y no a ojo. Y «holguras»: lo que el arte no
+#   encaja en codos y rodillas (distancia entre los centros de los dos extremos redondos), que pose_preview.py --mide admite como tolerancia.
+#   CUELLO (06/10/2026): con melena o barba (Papa, Mama, Nina: la pieza de la cabeza las incluye) el cuello no esta en la base de la pieza sino en
+#   el eje de la cara, a la altura de la barbilla o del borde de arriba del torso (cuello_de); con pelo corto (el Nino), en la base, como siempre.
 #   Por que coreografia.py y pose_preview.py ya tratan al personaje como segmentado ANTES de que el Editor
 #   corra «sprites»: prefabs.simula_sprites aplica al arbol del prefab lo que ese modo hara (enciende la Image
 #   de cada parte cuyo PNG existe en la carpeta de arte), asi que IsSegmented sale de «el PNG de la antepierna
@@ -98,9 +104,9 @@ REGION = (40, 30, 984, 990)
 ROLES = {
     "torso": {"torso", "tronco", "cuerpo", "pecho", "body", "chest"},
     "cabeza": {"cabeza", "head"},
-    "antebrazo": {"antebrazo", "mano", "forearm", "hand"},
+    "antebrazo": {"antebrazo", "mano", "manos", "forearm", "hand"},
     "brazo": {"brazo", "humero", "arm", "upperarm"},
-    "antepierna": {"antepierna", "pie", "foot", "shin", "canilla", "pantorrilla"},
+    "antepierna": {"antepierna", "pie", "pies", "foot", "feet", "shin", "canilla", "pantorrilla"},  # «pies_mama_izquierdo.png» (06/10/2026)
     "muslo": {"muslo", "pierna", "thigh", "leg"},
 }
 LADOS = {"Izq": {"izquierdo", "izquierda", "izq", "left", "l"}, "Der": {"derecho", "derecha", "der", "right", "r"}}
@@ -331,6 +337,23 @@ def normaliza_piezas(piezas):
     return s, tx, ty
 
 
+def registro_de(res):
+    """
+    La transformacion lienzo-de-entrega -> lienzo-del-rig de ESTA entrega: x' = escala * x + tx, y' = escala * y + ty. Es la que usaron
+    las partes; la cara (que llega en el mismo lienzo registrado) se coloca con la misma, no a ojo. Se guarda en arte_final.json
+    («registro»), con la caja de la cabeza en el lienzo de la entrega para poder comprobar que sigue siendo la de la tabla.
+    """
+    cab = res.piezas[("cabeza", None)]
+    return {"lienzo": [res.lienzo[0], res.lienzo[1]], "escala": round(res.escala, 6), "tx": round(res.tx, 3), "ty": round(res.ty, 3),
+            "cabeza": [int(v) for v in cab.bbox]}
+
+
+def caja_a_lienzo(registro, caja):
+    """Una caja (x0, y0, x1, y1) del lienzo de la entrega, como rect entero del lienzo de 1024: el mismo redondeo que normaliza_piezas."""
+    s, tx, ty = registro["escala"], registro["tx"], registro["ty"]
+    return [int(round(s * caja[0] + tx)), int(round(s * caja[1] + ty)), int(round(s * caja[2] + tx)), int(round(s * caja[3] + ty))]
+
+
 def a_lienzo(pz, p):
     """Un punto de pz.norm (pixeles de la imagen) al lienzo de 1024."""
     return (pz.rect[0] + p[0], pz.rect[1] + p[1])
@@ -402,6 +425,35 @@ def entero(v):
     return int(round(v))
 
 
+FRACCION_PELO_BAJO_CUELLO = 0.05   # si el pelo o la barba llegan mas abajo que esto (del alto de la cabeza), el cuello no esta en su base
+
+
+def cuello_de(cab, torso, avisos):
+    """
+    El punto donde gira la cabeza. Con el pelo o la barba CORTOS (el Nino) es el centro de la base de la cabeza, como siempre. Con pelo largo o barba
+    (Papa, Mama, Nina: la pieza de la cabeza incluye la melena o la barba, que cuelgan muy por debajo de la barbilla) la base esta a media
+    espalda: girar la cabeza alrededor de ella la hace oscilar de lado como un pendulo (Mama, 06/10/2026: 230 px del lienzo de 1024 bajo la
+    barbilla). El cuello esta donde la cabeza apoya en el cuerpo: sobre el EJE de la cara y a la altura de la barbilla, y nunca mas arriba que el
+    borde de arriba del torso (Papa: la barba cae sobre el pecho, y la barbilla queda sobre el torso). La barbilla es la base del ovalo de piel
+    que mide preparar_expresion.mide_cabeza (lo mide sobre el PNG ya normalizado); si no se puede medir, la base de la cabeza.
+    """
+    base = float(cab.rect[3])
+    centro = ((cab.rect[0] + cab.rect[2]) / 2.0, base)
+    try:
+        import preparar_expresion as PE
+        medida = PE.mide_cabeza(cab.norm, cab.rect)
+    except Exception as e:  # noqa: BLE001 (cualquier fallo de la medida: se vuelve a la regla de siempre)
+        avisos.append("no pude medir la barbilla de la cabeza (%s): el cuello queda en la base de la cabeza" % e)
+        return centro
+    alto = float(cab.rect[3] - cab.rect[1])
+    y = max(medida.barbilla, float(torso.rect[1]))
+    if base - y <= FRACCION_PELO_BAJO_CUELLO * alto:
+        return centro
+    avisos.append("el pelo o la barba llegan %.0f px por debajo del cuello: la cabeza gira en (%.0f, %.0f) (eje de la cara, a la altura de la barbilla o del borde "
+                  "de arriba del torso) y no en la base de la pieza (%.0f, %.0f)" % (base - y, medida.eje, y, centro[0], centro[1]))
+    return (medida.eje, min(y, base))
+
+
 def mide(piezas, pid, cadera="borde"):
     """
     Las medidas de la entrega ya normalizada. Devuelve (tabla {"nodos", "partes"}, joints {nombre: (x, y)}, avisos),
@@ -413,6 +465,7 @@ def mide(piezas, pid, cadera="borde"):
     pref = "char_" + pid
     nodos, partes = [], []
     joints = {}
+    holguras = {}
     # humero / antebrazo y muslo / antepierna
     medidas = {}
     for lado in ("Izq", "Der"):
@@ -426,6 +479,11 @@ def mide(piezas, pid, cadera="borde"):
         medidas[lado] = (hombro, codo, cad, rodilla)
         joints["Hombro" + lado], joints["Codo" + lado] = hombro, codo
         joints["Cadera" + lado], joints["Rodilla" + lado] = cad, rodilla
+        # lo que el arte no encaja: distancia entre los centros de los dos extremos redondos de la articulacion (la pieza que gira esta
+        # sobre el pivote; la otra queda a esta distancia). pose_preview.py --mide la admite como tolerancia de esa articulacion
+        for nombre, d in (("Codo" + lado, d_codo), ("Rodilla" + lado, d_rod)):
+            if d > 2.0:
+                holguras[nombre] = round(d, 1)
     for lado, suf in (("Izq", "izq"), ("Der", "der")):
         ab = piezas[("antebrazo", lado)]
         nodos.append({"nombre": "Codo" + lado, "tipo": "articulacion", "padre": T + "/Brazo" + lado,
@@ -437,7 +495,7 @@ def mide(piezas, pid, cadera="borde"):
                       "punto": [entero(v) for v in medidas[lado][3]], "imagen": "Antepierna" + lado,
                       "sprite": "%s_parte_antepierna_%s" % (pref, suf), "rect": list(an.rect)})
     cab = piezas[("cabeza", None)]
-    cuello = ((cab.rect[0] + cab.rect[2]) / 2.0, float(cab.rect[3]))
+    cuello = cuello_de(cab, piezas[("torso", None)], avisos)
     joints["Cuello"] = cuello
     nodos.append({"nombre": "Cuello", "tipo": "articulacion", "padre": T, "punto": [entero(v) for v in cuello],
                   "imagen": "Cabeza", "sprite": pref + "_parte_cabeza", "rect": list(cab.rect)})
@@ -467,7 +525,7 @@ def mide(piezas, pid, cadera="borde"):
     to = piezas[("torso", None)]
     partes.append({"nombre": "Torso", "ruta": T + "/Torso", "sprite": pref + "_parte_torso", "rect": list(to.rect),
                    "pivote": [entero((to.rect[0] + to.rect[2]) / 2.0), to.rect[3]]})
-    return {"nodos": nodos, "partes": partes}, joints, avisos
+    return {"nodos": nodos, "partes": partes, "holguras": holguras}, joints, avisos
 
 
 # ============================================================================ 3. el informe y el composite
@@ -481,8 +539,11 @@ POSES = [
 ]
 
 
-def renderiza(piezas, joints, giros, escala=0.5):
-    """La figura con los giros dados (grados, + antihorario) sobre un RGBA: lo mismo que haria el rig, con las piezas ya normalizadas."""
+def renderiza(piezas, joints, giros, escala=0.5, pid=None):
+    """
+    La figura con los giros dados (grados, + antihorario) sobre un RGBA: lo mismo que haria el rig, con las piezas ya normalizadas.
+    El orden de dibujo es el del rig (articulaciones.orden_tronco_de): las piernas al fondo y los hijos de Tronco en el orden de la tabla.
+    """
     ox, oy = REGION[0], REGION[1]
     tam = (int(round((REGION[2] - REGION[0]) * escala)), int(round((REGION[3] - REGION[1]) * escala)))
     lienzo = Image.new("RGBA", tam, (236, 232, 222, 255))
@@ -500,9 +561,14 @@ def renderiza(piezas, joints, giros, escala=0.5):
         m[("antebrazo", lado)] = M.mat_mul(m[("brazo", lado)], rot("codo_" + lado, joints["Codo" + lado]))
     m[("torso", None)] = ident
     m[("cabeza", None)] = rot("cuello", joints["Cuello"])
-    # el orden de dibujo del rig (orden_tronco de la familia): piernas, cabeza al fondo, brazos, y el torso DELANTE de los brazos
-    orden = [("muslo", "Izq"), ("antepierna", "Izq"), ("muslo", "Der"), ("antepierna", "Der"), ("cabeza", None),
-             ("brazo", "Izq"), ("antebrazo", "Izq"), ("brazo", "Der"), ("antebrazo", "Der"), ("torso", None)]
+    # el orden de dibujo del rig: las piernas al fondo y, despues, los hijos de Tronco como los ordena orden_tronco (INC-133: el
+    # humero tras el torso y el antebrazo delante de el, de la cara y de las piernas)
+    por_nombre = {"Cuello": ("cabeza", None), "Torso": ("torso", None)}
+    for lado in ("Izq", "Der"):
+        por_nombre["Brazo" + lado] = ("brazo", lado)
+        por_nombre["Antebrazo" + lado] = ("antebrazo", lado)
+    orden = [("muslo", "Izq"), ("antepierna", "Izq"), ("muslo", "Der"), ("antepierna", "Der")]
+    orden += [por_nombre[n] for n in A.orden_tronco_de(pid or "nino")]
     for clave in orden:
         pz = piezas[clave]
         capa = M.Capa(SimpleNamespace(ruta=str(clave)), tuple(pz.rect), pz.norm, (1, 1, 1, 1))
@@ -516,7 +582,7 @@ def composite(piezas, joints, ruta, pid):
     """Cuatro paneles: reposo con las articulaciones marcadas y tres poses de prueba."""
     paneles = []
     for i, (titulo, giros) in enumerate(POSES):
-        im = renderiza(piezas, joints, giros)
+        im = renderiza(piezas, joints, giros, pid=pid)
         d = ImageDraw.Draw(im)
         d.rectangle([0, 0, im.width, 14], fill=(255, 255, 255, 230))
         d.text((4, 2), "%s: %s" % (pid, titulo), fill=(30, 30, 30, 255))
@@ -548,6 +614,7 @@ def procesa(carpeta, pid, cadera="borde"):
     if res.errores:
         return res
     res.escala, res.tx, res.ty = normaliza_piezas(res.piezas)
+    res.registro = registro_de(res)
     res.tabla, res.joints, av = mide(res.piezas, pid, cadera)
     res.avisos += av
     for pz in res.piezas.values():
@@ -618,13 +685,13 @@ def bloque_local(pid):
  1. Copiar el generador (el Editor crea el .meta solo, nunca a mano):
       Copy-Item claudeDocs/tasks/Personajes/herramientas/BuildRigsFinal.cs.txt Assets/Editor/ClaudeBuildRigsFinal.cs
  2. Recompilar y esperar:   pwsh -NoProfile -File claudeDocs/tasks/OE4/herramientas/editor.ps1 recompile
- 3. Por coplay execute_script, EN ESTE ORDEN (cada una devuelve su log; «clips» se niega si faltan los nodos: ya estan
-    en los prefabs, y si no, Execute("nodos") primero):
+ 3. Por coplay execute_script, EN ESTE ORDEN (cada una devuelve su log; «clips» se niega si faltan los nodos):
       ClaudeBuildRigsFinal.Execute("estado")     // antes: el personaje aun sin segmentar
-      ClaudeBuildRigsFinal.Execute("sprites")    // asigna los PNG nuevos, rect y pivote de la tabla, enciende las Image
-      ClaudeBuildRigsFinal.Execute("orden")      // brazos delante (si el prefab aun no lo tiene)
+      ClaudeBuildRigsFinal.Execute("nodos")      // lo que la tabla pide y el prefab no tiene (codos, rodillas, cuello, CaraBase); idempotente
+      ClaudeBuildRigsFinal.Execute("sprites")    // asigna los PNG nuevos, rect y pivote de la tabla (tambien el cuello y los codos que cambiaron)
+      ClaudeBuildRigsFinal.Execute("orden")      // INC-133: orden de Tronco y antebrazos delante, con su ancla bajo el codo (idempotente)
       ClaudeBuildRigsFinal.Execute("clips")      // vuelca clips_personajes.json en los .anim
-      ClaudeBuildRigsFinal.Execute("estado")     // despues: segmentado = si, nodos completos
+      ClaudeBuildRigsFinal.Execute("estado")     // despues: segmentado = si, nodos completos, antebrazos en Tronco con ancla
  4. Comprobar los fileID:   git diff -U0 Assets/Game/Prefabs/Characters   (no debe QUITAR lineas «--- !u!» ni tocar
     m_Controller / m_Script de lo que ya existia; los .meta de clips no cambian)
  5. Pruebas:
@@ -652,6 +719,15 @@ def corre(args, etiqueta):
     return r.returncode
 
 
+def _mismos_pixeles(ruta, imagen):
+    """El PNG de disco decodifica a los mismos pixeles RGBA que «imagen»."""
+    try:
+        previa = Image.open(ruta).convert("RGBA")
+    except Exception:
+        return False
+    return previa.size == imagen.size and ImageChops.difference(previa, imagen.convert("RGBA")).getbbox() is None
+
+
 def aplica(res, args):
     pid = res.pid
     carpeta = os.path.join(P.PERSONAJES_ARTE, P.PERSONAJES[pid][1])
@@ -659,10 +735,18 @@ def aplica(res, args):
     for ruta, existia in lista_escritura(res):
         clave = next(k for k in res.piezas if os.path.basename(ruta) == "char_%s_%s.png" % (pid, NOMBRE_C4[k]))
         os.makedirs(os.path.dirname(ruta), exist_ok=True)  # Frontal/ (Unity crea el .meta de la carpeta y de los PNG al importarlos)
+        if existia and _mismos_pixeles(ruta, res.piezas[clave].norm):
+            # los mismos pixeles: no se reescribe (Pillow no devuelve los mismos bytes y el diff de git se llenaria de PNG iguales)
+            print("  igual     %s" % os.path.relpath(ruta, P.RAIZ))
+            continue
         res.piezas[clave].norm.save(ruta)
         print("  %s %s" % ("sustituye" if existia else "nuevo    ", os.path.relpath(ruta, P.RAIZ)))
     personajes = A.cargar_arte_final()
-    personajes[pid] = res.tabla
+    registro = dict(res.registro)
+    previo = personajes.get(pid, {}).get("registro", {})
+    if "cara" in previo and previo.get("escala") == registro["escala"] and previo.get("tx") == registro["tx"]:
+        registro["cara"] = previo["cara"]   # la caja de la cara que fijo la expresion neutra sigue valiendo si el registro es el mismo
+    personajes[pid] = dict(res.tabla, registro=registro)   # «registro»: de donde sale el sitio de la cara (preparar_expresion.py)
     A.guardar_arte_final(personajes)
     print("  arte_final.json: entrada de %s" % pid)
     py = sys.executable
@@ -719,6 +803,30 @@ def entrega_sintetica(destino, a=1.3, centro=(600, 150), lienzo=(1300, 1500)):
     return nombres
 
 
+def autoprueba_cuello():
+    """cuello_de con una cabeza sintetica sin y con melena que cuelga mucho mas abajo de la barbilla. Devuelve los casos mal."""
+    import preparar_expresion as PE
+    cab_im, ovalo, eje, flequillo, barbilla = PE.cabeza_sintetica()   # 535x456, la barbilla en y = 448
+    malos = 0
+    avisos = []
+    torso = SimpleNamespace(rect=[250, 77 + 430, 760, 800])
+    corta = SimpleNamespace(norm=cab_im, rect=[224, 77, 224 + 535, 77 + 456])
+    x, y = cuello_de(corta, torso, avisos)
+    ok = abs(y - (77 + 456)) < 0.5 and abs(x - (224 + 535 / 2.0)) < 0.5
+    malos += 0 if ok else 1
+    print("  %-60s %s" % ("cabeza de pelo corto: el cuello en la base", "ok" if ok else "FALLA (%.1f, %.1f)" % (x, y)))
+    larga = Image.new("RGBA", (535, 456 + 220), (0, 0, 0, 0))
+    ImageDraw.Draw(larga).polygon([(40, 300), (495, 300), (470, 676), (70, 676)], fill=(30, 20, 15, 255))   # la melena cuelga 220 px bajo la barbilla
+    larga.alpha_composite(cab_im, (0, 0))                                                                      # y la cara va delante
+    pelo = SimpleNamespace(norm=larga, rect=[224, 77, 224 + 535, 77 + 676])
+    x, y = cuello_de(pelo, torso, avisos)
+    esperado_y = max(77 + barbilla, 77 + 430)   # la barbilla o el borde de arriba del torso, el que este mas abajo
+    ok = abs(y - esperado_y) <= 4.0 and abs(x - (224 + eje)) <= 6.0
+    malos += 0 if ok else 1
+    print("  %-60s %s" % ("cabeza de melena: el cuello en el eje, a la barbilla/torso", "ok (%.0f, %.0f)" % (x, y) if ok else "FALLA (%.1f, %.1f; esperaba y = %.0f)" % (x, y, esperado_y)))
+    return malos
+
+
 def autoprueba():
     """Que la herramienta recupere, de una entrega sintetica hecha con el arte del Nino, sus rects y pivotes (<= 2 px)."""
     esperado = A.cargar_arte_final()["nino"]
@@ -763,6 +871,17 @@ def autoprueba():
         ok = motas >= 10
         malos += 0 if ok else 1
         print("  %-60s %s" % ("las motas sueltas se quitan (%d)" % motas, "ok" if ok else "NO SE QUITAN"))
+        # el registro lienzo-de-entrega -> lienzo-del-rig: la cabeza de la entrega cae en el rect de la tabla (la cara se coloca con el)
+        cab_tabla = next(n for n in res.tabla["nodos"] if n["nombre"] == "Cuello")["rect"]
+        ok = caja_a_lienzo(res.registro, res.registro["cabeza"]) == cab_tabla and res.registro["lienzo"] == [1300, 1500]
+        malos += 0 if ok else 1
+        print("  %-60s %s" % ("el registro lleva la cabeza de la entrega a su rect", "ok" if ok else "NO COINCIDE"))
+        # los nombres con plural («pies_mama_izquierdo.png», 06/10/2026) y el lado por la posicion
+        ok = clasifica("pies_mama_izquierdo.png")[0] == "antepierna" and clasifica("muslo_papa_dercho.png")[0] == "muslo"
+        malos += 0 if ok else 1
+        print("  %-60s %s" % ("se reconocen «pies_...» y los nombres con errata", "ok" if ok else "NO SE RECONOCEN"))
+        # el cuello: con pelo corto (el Nino) la base de la cabeza; con melena o barba, la barbilla o el borde de arriba del torso
+        malos += autoprueba_cuello()
         print("\nAUTOPRUEBA: %s (error maximo %.1f px)" % ("pasa" if not malos else "FALLA en %d comprobaciones" % malos, peor))
         return 1 if malos else 0
 

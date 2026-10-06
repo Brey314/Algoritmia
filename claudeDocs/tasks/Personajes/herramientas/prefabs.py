@@ -104,6 +104,11 @@ class Nodo:
         self.activo = True
         self.imagen = None    # dict: encendida, guid, aspecto, color; o None si no tiene Image
         self.alfa = None      # CanvasGroup.m_Alpha si lo tiene
+        # INC-133: un antebrazo que «orden_tronco» saca de su codo se DIBUJA como hijo de Tronco pero sigue a su ancla bajo el codo,
+        # asi que su pose de mundo no cambia: aqui se conserva en el arbol, bajo el codo, para toda la geometria (matrices, manos), y
+        # solo cambia el orden de dibujo. «sigue» lo marca; «dibujo» (solo en Tronco) es la lista de hijos en orden de dibujo, con ellos.
+        self.sigue = False
+        self.dibujo = None
 
     def dibuja(self):
         """Una Image encendida y con sprite es lo unico que uGUI dibuja."""
@@ -289,13 +294,17 @@ def simula_sprites(arbol, rig_pj):
 
 def arbol_vigente(pid, rig=None):
     """
-    El arbol del prefab del personaje tal como quedara tras «sprites» (simula_sprites). Algoritm no: su arte
-    es un solo sprite. Es el que usan coreografia.py (leer_contexto), pose_preview.py y maqueta.py.
+    El arbol del prefab del personaje tal como quedara tras «sprites» (simula_sprites) y «orden» (aplicar_orden_tronco: el orden de
+    dibujo de Tronco con los antebrazos delante, INC-133). Algoritm no pasa por «sprites»: su arte es un solo sprite. Es el que usan
+    coreografia.py (leer_contexto: lo que tapa a cada brazo depende del orden), pose_preview.py y maqueta.py.
     """
     rig = rig or cargar_rig()
     arbol = leer_arbol(PERSONAJES[pid][0])
+    pj = personaje_rig(rig, pid)
     if not PERSONAJES[pid][2]:
-        simula_sprites(arbol, personaje_rig(rig, pid))
+        simula_sprites(arbol, pj)
+    if pj.get("orden_tronco"):
+        aplicar_orden_tronco(arbol, pj["orden_tronco"])
     return arbol
 
 
@@ -305,15 +314,47 @@ def esta_segmentado(arbol):
     return bool(n is not None and n.dibuja())
 
 
+def _antebrazo_bajo_codo(arbol, nombre):
+    """El nodo AntebrazoIzq/AntebrazoDer que cuelga de su codo, o None (INC-133: «orden_tronco» puede listarlo para sacarlo de el)."""
+    for ruta in (LE + "/AntebrazoIzq", RE + "/AntebrazoDer"):
+        if ruta.endswith("/" + nombre) and ruta in arbol:
+            return arbol[ruta]
+    return None
+
+
 def aplicar_orden_tronco(arbol, orden):
-    """Simula lo que hace el C# con «orden_tronco»: reordena los hijos de Tronco (de atras adelante)."""
+    """
+    Simula lo que hace el C# con «orden_tronco» (BuildRigsFinal «orden»): el orden de dibujo de los hijos de Tronco (de atras
+    adelante). Desde INC-133 la lista puede nombrar AntebrazoIzq/AntebrazoDer: BuildRigsFinal los pasa de su codo a Tronco y deja
+    bajo el codo un ancla vacia que animan los clips; CharacterRig copia su pose al antebrazo en cada cuadro, asi que el antebrazo
+    sigue donde estaba y SOLO cambia el orden de dibujo. Aqui eso es: el nodo se queda bajo el codo (la geometria no cambia),
+    se marca «sigue» y Tronco guarda en «dibujo» la lista de hijos en orden de dibujo, con el antebrazo donde diga la lista.
+    """
     tronco = arbol[T]
     por_nombre = {h.nombre: h for h in tronco.hijos}
-    faltan = [n for n in orden if n not in por_nombre]
+    seguidores = {}
+    faltan = []
+    for n in orden:
+        if n in por_nombre:
+            continue
+        ante = _antebrazo_bajo_codo(arbol, n)
+        if ante is None:
+            faltan.append(n)
+        else:
+            seguidores[n] = ante
     if faltan:
         raise KeyError("orden_tronco nombra hijos que no existen: %s" % faltan)
+    for n in seguidores.values():
+        n.sigue = True
     resto = [h for h in tronco.hijos if h.nombre not in orden]
-    tronco.hijos = [por_nombre[n] for n in orden] + resto
+    tronco.dibujo = [por_nombre[n] if n in por_nombre else seguidores[n] for n in orden] + resto
+    # los hijos que no cambian de padre conservan ese orden tambien en «hijos» (el que usan las matrices: no depende del orden)
+    tronco.hijos = [por_nombre[n] for n in orden if n in por_nombre] + resto
+
+
+def hijos_de_dibujo(n):
+    """Los hijos de un nodo en orden de dibujo: Tronco con «orden_tronco» aplicado trae su lista (con los antebrazos), el resto sus hijos."""
+    return n.dibujo if n.dibujo is not None else n.hijos
 
 
 CHARACTER_RIG_CS = os.path.join(RAIZ, "Assets", "Game", "Scripts", "Runtime", "Scaffolding", "CharacterRig.cs")
@@ -349,7 +390,9 @@ def acciones_brazos_delante(ruta=CHARACTER_RIG_CS):
 def orden_con_brazos_delante(nombres):
     """
     El orden de los hijos de Tronco en las acciones de «brazos delante» (el contrato de CharacterRig): cada BrazoIzq/BrazoDer
-    que se dibuja antes de Torso pasa inmediatamente despues de Torso; el que ya esta despues (Algoritm) no cambia.
+    que se dibuja antes de Torso pasa inmediatamente despues de Torso; el que ya esta despues (Algoritm) no cambia. INC-133: los
+    antebrazos (AntebrazoIzq/Der, al final de la lista de la familia) no se mueven: el humero queda justo tras el torso y sigue
+    DETRAS de ellos.
     """
     if "Torso" not in nombres:
         return list(nombres)

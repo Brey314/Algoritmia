@@ -7,6 +7,11 @@
 #         <id> = nino (el que ya tiene cabeza propia: papa, mama y nina cuando entreguen su arte final)
 #         <emocion> = neutra | alegria | sorpresa | preocupacion | concentracion | sueno | parpadeo_medio | parpadeo_cerrado
 #                     (y las bocas de hablar: boca_a | boca_e | boca_u, que solo escriben la boca)
+#         --registrada [CARPETA_FRENTE]   (06/10/2026) la expresion llega en el MISMO lienzo que las partes (1300x1500, registradas entre si): su
+#                       sitio sale de la transformacion lienzo-de-entrega -> lienzo-del-rig que preparar_arte_final.py uso con las partes
+#                       (arte_final.json, «registro»), no de una heuristica. Se activa SOLA si el personaje tiene registro y la imagen mide lo
+#                       mismo; --sin-registro la apaga. Ver «MODO REGISTRADO» abajo. La heuristica (--escala...) queda de respaldo para entregas sueltas.
+#         --densidad D  (registrada) texeles por px del lienzo del rig; 1 por defecto = la densidad de las partes del cuerpo
 #         --escala F    la fraccion del ancho del ovalo de la cara que ocupa la cara (de extremo a extremo de ojos y cejas);
 #                       por defecto la mayor de 0.50 / 0.60 / 0.70 que cabe (cejas bajo el flequillo, boca sobre la barbilla)
 #         --asigna capa:x0,y0,x1,y1   corrige a mano: todo pixel de la imagen dentro de esa caja (px de LA IMAGEN) pasa a esa capa
@@ -44,7 +49,16 @@
 #      pose_preview e imprime las ordenes para la sesion local.
 #   e. --autoprueba: una cara y una cabeza sinteticas con piezas conocidas; comprueba que la separacion y la medida las recuperan.
 #
-# POR QUE no se recorta ni se cuenta con 256: la imagen puede llegar mas grande (un original); el tamano solo sale de --max-lado, y
+# MODO REGISTRADO (06/10/2026). Santiago exporta cada expresion en el lienzo de las partes, asi que la cara ya esta en su sitio: no se mide
+# nada en la cabeza ni se elige escala. Se recorta una CAJA COMUN de la cara (la de lo que pinta la neutra con MARGEN_CARA, recortada a la
+# cabeza; se guarda en arte_final.json, «registro.cara», y las demas expresiones la heredan: si una se sale, se rechaza en vez de desalinear),
+# se separa en ojos, boca y base como siempre, se reduce a DENSIDAD texeles por px del lienzo del rig (la de las partes: 1:1) con tope --max-lado
+# (512), y el rect comun de las tres capas es la caja mapeada con la MISMA transformacion que las partes (preparar_arte_final.caja_a_lienzo).
+# Por que recortar y no guardar el lienzo entero de 1300x1500: la cara ocupa el 25 % de la cabeza; el lienzo entero a 1:1 serian 1014x1170 texeles
+# casi vacios por capa y a 512 de lado la cara quedaria a 160 px. Con la caja la textura mide ~350x270 y no cambia de tamano entre emociones
+# (RNF-06: cada capa sin comprimir pesa 0,3-0,4 MB; ~13 capas por personaje).
+#
+# POR QUE (modo heuristica) no se recorta ni se cuenta con 256: la imagen puede llegar mas grande (un original); el tamano solo sale de --max-lado, y
 # todo lo que se mide (areas, cajas, umbrales) es relativo a la caja de lo que hay en la imagen.
 
 import argparse
@@ -67,6 +81,7 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
 import articulaciones as A  # noqa: E402
 import prefabs as P  # noqa: E402
+import preparar_arte_final as F  # noqa: E402
 from preparar_arte_final import mayor_componente  # noqa: E402
 
 FONDO = (236, 232, 222, 255)
@@ -98,6 +113,12 @@ ALFA_BORDE = 235
 SAT_ROSA = 0.28
 VAL_ROSA = 0.68
 ESCALAS = (0.50, 0.60, 0.70)   # fraccion del ancho del ovalo que ocupa la cara, las tres candidatas del composite
+# Modo REGISTRADO (06/10/2026): la expresion llega en el mismo lienzo que las partes. Lo que se guarda como «la cara» es una caja de ese lienzo
+# —la de lo que pinta la neutra, con estos margenes por si otra expresion sube las cejas o abre la boca (fraccion del ancho y del alto del
+# contenido: izquierda, arriba, derecha, abajo), recortada a la cabeza— y es COMUN a todas las expresiones del personaje (se guarda en
+# arte_final.json, «registro.cara»).
+MARGEN_CARA = (0.08, 0.25, 0.08, 0.35)
+DENSIDAD = 1.0   # texeles de la textura por pixel del lienzo del rig: la misma densidad que las partes del cuerpo (que se guardan a escala 1:1)
 
 
 # ============================================================================ 1. componentes conexas
@@ -657,6 +678,93 @@ def composites(pid, emocion, res, cab, cols, recomendada, rig, salida):
     return rutas
 
 
+# ============================================================================ 4b. colocar la cara por REGISTRO
+
+
+def registro_de(pid, carpeta_frente=None):
+    """
+    El registro lienzo-de-entrega -> lienzo-del-rig de un personaje. Con «carpeta_frente» se calcula como lo hizo preparar_arte_final.py con las
+    partes (F.procesa) y se comprueba contra la tabla; sin ella sale de arte_final.json («registro»). Devuelve (registro o None, texto de donde
+    salio, lista de errores).
+    """
+    entrada = A.cargar_arte_final().get(pid)
+    if carpeta_frente:
+        res = F.procesa(carpeta_frente, pid)
+        if res.errores:
+            return None, carpeta_frente, ["las partes de %s no se procesan: %s" % (carpeta_frente, "; ".join(res.errores))]
+        registro = dict(res.registro)
+        origen = "calculado de las partes de %s" % carpeta_frente
+    elif entrada is not None and entrada.get("registro"):
+        registro = dict(entrada["registro"])
+        origen = "arte_final.json (registro)"
+    else:
+        return None, "", []
+    errores = []
+    if entrada is None:
+        errores.append("%s no tiene entrada en arte_final.json: primero preparar_arte_final.py %s <carpeta> --aplicar" % (pid, pid))
+        return registro, origen, errores
+    cuello = next((n for n in entrada["nodos"] if n["nombre"] == "Cuello"), None)
+    esperado = F.caja_a_lienzo(registro, registro["cabeza"])
+    if cuello is None or max(abs(a - b) for a, b in zip(esperado, cuello["rect"])) > 1:
+        errores.append("la cabeza de la entrega cae en %s con este registro y arte_final.json dice %s: las partes aplicadas no son las de esta "
+                       "entrega (corre preparar_arte_final.py %s <carpeta> --aplicar)" % (esperado, cuello["rect"] if cuello else None, pid))
+    if "cara" in entrada.get("registro", {}):
+        registro["cara"] = list(entrada["registro"]["cara"])
+    return registro, origen, errores
+
+
+def caja_de_cara(entrada, registro, reubica=False):
+    """
+    La caja del lienzo de la entrega que se guarda como cara, y de donde salio. Si el registro ya trae «cara» (la fijo la neutra) esa; si no,
+    la de lo que pinta ESTA imagen con MARGEN_CARA, recortada a la cabeza. Devuelve (caja entera, origen).
+    """
+    contenido = entrada.getchannel("A").point(lambda v: 255 if v >= UMBRAL_ALFA else 0).getbbox()
+    if contenido is None:
+        raise ValueError("la imagen esta vacia (todo transparente)")
+    if registro.get("cara") and not reubica:
+        return list(registro["cara"]), "la del registro (la fijo la neutra)", contenido
+    w, h = contenido[2] - contenido[0], contenido[3] - contenido[1]
+    ml, mt, mr, mb = MARGEN_CARA
+    cab = registro["cabeza"]
+    caja = [max(cab[0], int(math.floor(contenido[0] - ml * w))), max(cab[1], int(math.floor(contenido[1] - mt * h))),
+            min(cab[2], int(math.ceil(contenido[2] + mr * w))), min(cab[3], int(math.ceil(contenido[3] + mb * h)))]
+    return caja, "el contenido de esta imagen con margenes %s, recortado a la cabeza" % (MARGEN_CARA,), contenido
+
+
+def reduce_a(im, k):
+    """La imagen a k veces su tamano (LANCZOS); igual si k >= 1."""
+    if k >= 1.0:
+        return im
+    return im.resize((max(1, int(round(im.width * k))), max(1, int(round(im.height * k)))), Image.LANCZOS)
+
+
+def prepara_registrada(entrada, registro, args):
+    """
+    La expresion por REGISTRO: recorta la caja comun de la cara, separa ojos, boca y base y los reduce a la densidad de las partes. Devuelve
+    (Separacion con capas_salida, Colocacion, caja de la cara, avisos). El rect de las tres capas es la caja mapeada con la MISMA
+    transformacion que las partes: no hay heuristica de escala ni de sitio.
+    """
+    if list(entrada.size) != list(registro["lienzo"]):
+        raise ValueError("la expresion mide %dx%d y las partes %dx%d: no estan en el mismo lienzo (sin registro, usa el modo por heuristica)"
+                         % (entrada.width, entrada.height, registro["lienzo"][0], registro["lienzo"][1]))
+    caja, origen, contenido = caja_de_cara(entrada, registro, args.reubica)
+    avisos = []
+    if not (caja[0] <= contenido[0] and caja[1] <= contenido[1] and caja[2] >= contenido[2] and caja[3] >= contenido[3]):
+        raise ValueError("lo que pinta esta expresion %s se sale de la caja de la cara %s (%s): con otra caja la neutra y las que ya estan "
+                         "puestas se desalinean; --reubica en la NEUTRA recalcula la caja (y hay que volver a exportar las demas)" % (contenido, caja, origen))
+    recorte = entrada.crop(tuple(caja))
+    res = separa(recorte, parsea_asigna(args.asigna))
+    s = registro["escala"]
+    k = min(1.0, args.densidad * s, float(args.max_lado) / max(recorte.size))
+    res.capas_salida = {c: reduce_a(v, k) for c, v in res.capas.items()}
+    col = Colocacion()
+    col.rect = F.caja_a_lienzo(registro, caja)
+    col.s, col.fraccion = (col.rect[2] - col.rect[0]) / float(recorte.width), 0.0
+    res.registro_info = {"caja": caja, "origen": origen, "contenido": contenido, "k": k, "salida": res.capas_salida["ojos"].size, "entrada": recorte.size}
+    # cuanto cabe, para el informe: los extremos de ojos y cejas, la boca y el rubor dentro del ovalo de la cara y la franja de la barbilla
+    return res, col, caja, avisos
+
+
 # ============================================================================ 5. aplicar
 
 
@@ -675,6 +783,8 @@ def bloque_local(pid):
  3. Por coplay execute_script, EN ESTE ORDEN (cada una devuelve su log):
       ClaudeBuildRigsFinal.Execute("nodos")      // anade CaraBase (primer hijo de Cabeza) si el prefab aun no lo tiene
       ClaudeBuildRigsFinal.Execute("sprites")    // asigna los PNG de Expresiones/, rect comun, y crea o actualiza char_%(pid)s_cara.asset
+      ClaudeBuildRigsFinal.Execute("orden")      // INC-133: antebrazos delante (idempotente: no hace nada si ya estan)
+      ClaudeBuildRigsFinal.Execute("clips")      // la caja de la cara cambio y con ella los gestos junto a la cabeza
       ClaudeBuildRigsFinal.Execute("estado")
  4. Comprobar el set de cara: Assets/Game/Art/Characters/%(carpeta)s/Expresiones/char_%(pid)s_cara.asset (Neutral = ojos_neutra y boca_0) y
     que la Image de CaraBase, Ojos y Boca de %(prefab)s.prefab tenga sprite y el mismo rect.
@@ -702,8 +812,11 @@ def corre(args, etiqueta):
     return r.returncode
 
 
-def actualiza_tabla(pid, rect, con_base=True):
-    """Pone el rect comun en CaraBase, Ojos y Boca de la entrada de arte_final.json (CaraBase se crea si falta, antes de Ojos)."""
+def actualiza_tabla(pid, rect, con_base=True, cara=None):
+    """
+    Pone el rect comun en CaraBase, Ojos y Boca de la entrada de arte_final.json (CaraBase se crea si falta, antes de Ojos). Con «cara» (modo
+    registrado) guarda tambien la caja del lienzo de la entrega que es la cara (registro.cara): comun a todas las expresiones.
+    """
     personajes = A.cargar_arte_final()
     if pid not in personajes:
         raise KeyError("%s no tiene entrada en arte_final.json: primero preparar_arte_final.py %s <carpeta>" % (pid, pid))
@@ -717,6 +830,8 @@ def actualiza_tabla(pid, rect, con_base=True):
     for n in nodos:
         if n["nombre"] in ("CaraBase", "Ojos", "Boca"):
             n["rect"], n["punto"] = list(rect), centro
+    if cara is not None:
+        personajes[pid].setdefault("registro", {})["cara"] = [int(v) for v in cara]
     A.guardar_arte_final(personajes)
 
 
@@ -745,8 +860,9 @@ def aplica(pid, emocion, res, col, args, hay_base):
         existia = os.path.isfile(ruta)
         res.capas_salida[clave].save(ruta)
         print("  %s %s" % ("sustituye" if existia else "nuevo    ", os.path.relpath(ruta, P.RAIZ)))
-    actualiza_tabla(pid, col.rect)
-    print("  arte_final.json: rect %s en CaraBase, Ojos y Boca de %s" % (col.rect, pid))
+    actualiza_tabla(pid, col.rect, cara=getattr(res, "registro_info", {}).get("caja"))
+    print("  arte_final.json: rect %s en CaraBase, Ojos y Boca de %s%s" % (col.rect, pid, "; registro.cara %s" % getattr(res, "registro_info")["caja"]
+                                                                          if hasattr(res, "registro_info") else ""))
     py = sys.executable
     fallos = 0
     fallos += 1 if corre([py, os.path.join(AQUI, "articulaciones.py")], "articulaciones") else 0
@@ -885,8 +1001,77 @@ def autoprueba():
     ok = all(abs(a - b) <= 3 for a, b in zip(c.rect, c3.rect))
     malos += 0 if ok else 1
     print("%-46s %s" % ("el rect no depende del tamano de la imagen", "bien %s / %s" % (c.rect, c3.rect) if ok else "FALLA %s / %s" % (c.rect, c3.rect)))
+    malos += autoprueba_registrada()
     print("la herramienta recupera lo conocido" if not malos else "%d casos mal" % malos)
     return 1 if malos else 0
+
+
+def autoprueba_registrada():
+    """
+    El modo REGISTRADO con una entrega sintetica: las partes del Nino en un lienzo de 1300x1500 (preparar_arte_final.entrega_sintetica) y una
+    cara sintetica puesta en ese MISMO lienzo en un sitio conocido. La cara tiene que caer, en el lienzo de 1024, donde la transformacion de
+    las partes manda (<= 2 px), y una segunda expresion tiene que heredar la caja de la primera.
+    """
+    from types import SimpleNamespace
+    malos = 0
+    with tempfile.TemporaryDirectory() as tmp:
+        F.entrega_sintetica(tmp)
+        res_f = F.procesa(tmp, "nino")
+        if res_f.errores:
+            print("%-46s %s" % ("registro: la entrega sintetica no se procesa", "FALLA"))
+            return 1
+        reg = dict(res_f.registro)
+        cab = reg["cabeza"]
+        cara, _ = cara_sintetica(3)                              # 768x768, con cejas, ojos, nariz, boca y rubor
+        k = 0.5
+        cara = cara.resize((int(cara.width * k), int(cara.height * k)), Image.LANCZOS)
+        pos = ((cab[0] + cab[2]) // 2 - cara.width // 2, cab[1] + int(0.62 * (cab[3] - cab[1])) - cara.height // 2)
+        lienzo = Image.new("RGBA", tuple(reg["lienzo"]), (0, 0, 0, 0))
+        lienzo.alpha_composite(cara, pos)
+        args = SimpleNamespace(reubica=False, asigna=None, densidad=DENSIDAD, max_lado=512)
+        res, col, caja, _ = prepara_registrada(lienzo, reg, args)
+        # donde debe caer lo pintado de ojos y cejas: su caja en el recorte, al lienzo de la entrega, al del rig
+        ojos = res.resumen["ojos"]["caja"]
+        s_, tx, ty = reg["escala"], reg["tx"], reg["ty"]
+        esperado = (s_ * (caja[0] + ojos[0]) + tx, s_ * (caja[1] + ojos[1]) + ty, s_ * (caja[0] + ojos[2]) + tx, s_ * (caja[1] + ojos[3]) + ty)
+        im = res.capas_salida["ojos"]
+        bb = im.getchannel("A").point(lambda v: 255 if v >= UMBRAL_ALFA else 0).getbbox()
+        kx, ky = (col.rect[2] - col.rect[0]) / float(im.width), (col.rect[3] - col.rect[1]) / float(im.height)
+        medido = (col.rect[0] + bb[0] * kx, col.rect[1] + bb[1] * ky, col.rect[0] + bb[2] * kx, col.rect[1] + bb[3] * ky)
+        error = max(abs(a - b) for a, b in zip(esperado, medido))
+        ok = error <= 2.5
+        malos += 0 if ok else 1
+        print("%-46s %s" % ("registro: ojos y cejas caen donde mandan las partes", "bien (error %.1f px)" % error if ok else "FALLA (error %.1f px: %s contra %s)" % (error, medido, esperado)))
+        # la textura tiene la densidad de las partes (1 texel por px del lienzo del rig) y la caja cabe en la cabeza
+        dens = im.width / float(col.rect[2] - col.rect[0])
+        ok = abs(dens - DENSIDAD) < 0.03 and caja[0] >= cab[0] and caja[1] >= cab[1] and caja[2] <= cab[2] and caja[3] <= cab[3]
+        malos += 0 if ok else 1
+        print("%-46s %s" % ("registro: densidad de las partes y caja dentro de la cabeza", "bien (%.2f texeles/px)" % dens if ok else "FALLA"))
+        # una segunda expresion hereda la caja (registro.cara) y su rect sale igual
+        reg2 = dict(reg, cara=list(caja))
+        res2, col2, caja2, _ = prepara_registrada(lienzo, reg2, args)
+        ok = caja2 == caja and col2.rect == col.rect
+        malos += 0 if ok else 1
+        print("%-46s %s" % ("registro: la segunda expresion hereda la caja", "bien" if ok else "FALLA"))
+        # y una cara que se sale de la caja guardada se rechaza en vez de desalinear la neutra
+        movida = Image.new("RGBA", tuple(reg["lienzo"]), (0, 0, 0, 0))
+        movida.alpha_composite(cara, (pos[0] + 150, pos[1]))
+        try:
+            prepara_registrada(movida, reg2, args)
+            rechazada = False
+        except ValueError:
+            rechazada = True
+        malos += 0 if rechazada else 1
+        print("%-46s %s" % ("registro: lo que se sale de la caja se rechaza", "bien" if rechazada else "FALLA"))
+        # una imagen de otro tamano no es una expresion registrada
+        try:
+            prepara_registrada(Image.new("RGBA", (512, 512), (0, 0, 0, 0)), reg, args)
+            rechazada = False
+        except ValueError:
+            rechazada = True
+        malos += 0 if rechazada else 1
+        print("%-46s %s" % ("registro: otro tamano de lienzo se rechaza", "bien" if rechazada else "FALLA"))
+    return malos
 
 
 # ============================================================================ 7. principal
@@ -904,13 +1089,20 @@ def parsea_asigna(textos):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="De una imagen de cara completa a las capas CaraBase, Ojos y Boca del rig")
-    ap.add_argument("id", nargs="?", help="personaje: nino (papa, mama o nina cuando tengan cabeza propia)")
+    ap.add_argument("id", nargs="?", help="personaje: nino, papa, mama o nina")
     ap.add_argument("emocion", nargs="?", help="|".join(EMOCIONES))
     ap.add_argument("imagen", nargs="?", help="PNG de la cara completa, fondo transparente")
+    ap.add_argument("--registrada", nargs="?", const=True, default=False, metavar="CARPETA_FRENTE",
+                    help="la expresion esta en el MISMO lienzo que las partes (registrada): su sitio sale de la transformacion que uso preparar_arte_final.py "
+                         "con las partes, no de una heuristica. Con la carpeta Frente de la entrega la calcula; sin ella usa el registro de arte_final.json. "
+                         "Se activa sola si arte_final.json trae el registro del personaje y la imagen mide lo mismo que sus partes (--sin-registro la apaga)")
+    ap.add_argument("--sin-registro", action="store_true", help="usa la heuristica de escala y sitio aunque la imagen este registrada")
+    ap.add_argument("--densidad", type=float, default=DENSIDAD,
+                    help="(modo registrado) texeles de la textura por pixel del lienzo del rig: por defecto 1, la de las partes del cuerpo; 0 = sin reducir por densidad")
     ap.add_argument("--escala", type=float, help="fraccion del ancho del ovalo que ocupa la cara (0.4 a 0.8); por defecto la mayor de 0.50/0.60/0.70 que cabe")
     ap.add_argument("--aplicar", action="store_true")
     ap.add_argument("--base", action="store_true", help="reescribe tambien char_<x>_cara_base")
-    ap.add_argument("--reubica", action="store_true", help="recalcula el rect comun aunque la cara ya este puesta")
+    ap.add_argument("--reubica", action="store_true", help="recalcula el rect comun (heuristica) o la caja comun de la cara (registrada) aunque ya este puesta")
     ap.add_argument("--asigna", action="append", metavar="CAPA:X0,Y0,X1,Y1", help="corrige a mano: lo que cae en esa caja (px de la imagen) pasa a esa capa")
     ap.add_argument("--max-lado", type=int, default=512)
     ap.add_argument("--salida", default=os.path.join(tempfile.gettempdir(), "algoritmia_expresion"))
@@ -933,41 +1125,85 @@ def main(argv=None):
     carpeta = P.PERSONAJES[a.id][1]
     entrada = Image.open(a.imagen).convert("RGBA")
     print("== %s / %s: %s (%dx%d)" % (a.id, emocion, a.imagen, entrada.width, entrada.height))
-    res = separa(entrada, parsea_asigna(a.asigna))
-    informe_separacion(res)
-    # lo que se escribe: el lienzo entero (reducido a --max-lado), igual para las tres capas
-    res.capas_salida = {k: reduce(v, a.max_lado) for k, v in res.capas.items()}
-    k = res.capas_salida["ojos"].width / float(entrada.width)
-    print("  lienzo de salida: %dx%d%s" % (res.capas_salida["ojos"].width, res.capas_salida["ojos"].height,
-                                          "" if k >= 1.0 else " (reducido x%.3f: --max-lado %d)" % (k, a.max_lado)))
 
     png_cab = P._png_de(carpeta, "char_%s_parte_cabeza" % a.id)
     cuello = next((n for n in pj_rig["nodos"] if n["nombre"] == "Cuello"), None)
     if png_cab is None or cuello is None:
         print("\nNo hay char_%s_parte_cabeza.png (la cabeza propia llega con el arte final: preparar_arte_final.py %s <carpeta>): no puedo colocar la cara." % (a.id, a.id))
         return 2
-    cab = mide_cabeza(png_cab, cuello["rect"])
-    print("\n== La cabeza (%s)" % os.path.relpath(png_cab, P.RAIZ))
-    print("  piel RGB %s | ovalo x %.0f..%.0f, y %.0f..%.0f (ancho %.0f) | eje x %.1f | flequillo hasta y %.0f | barbilla y %.0f" % (
-        cab.piel, cab.ovalo[0], cab.ovalo[2], cab.ovalo[1], cab.ovalo[3], cab.ovalo[2] - cab.ovalo[0], cab.eje, cab.flequillo, cab.barbilla))
 
-    heredado = None if a.reubica else rect_vigente(a.id)
-    cols, rec = elige(cab, res, a.escala)
-    if heredado is not None and not a.reubica:
-        print("\nLa cara neutra ya esta puesta: esta emocion hereda su rect %s (--reubica lo recalcula)." % heredado)
-        w, h = res.tamano
-        asp_p, asp_h = (heredado[2] - heredado[0]) / float(heredado[3] - heredado[1]), w / float(h)
-        if abs(asp_p / asp_h - 1.0) > 0.02:
-            print("AVISO la imagen no tiene la proporcion del lienzo de la neutra (%.3f contra %.3f): saldria deformada" % (asp_h, asp_p))
-        col = Colocacion()
-        col.rect, col.s, col.fraccion = heredado, (heredado[2] - heredado[0]) / float(w), 0.0
+    # --- el modo: registrada (mismo lienzo que las partes) o por heuristica
+    registro, origen_reg, errores_reg = (None, "", [])
+    if not a.sin_registro:
+        registro, origen_reg, errores_reg = registro_de(a.id, a.registrada if isinstance(a.registrada, str) else None)
+    usa_registro = registro is not None and (bool(a.registrada) or list(entrada.size) == list(registro["lienzo"]))
+    if a.registrada and registro is None:
+        print("\nERROR --registrada: %s no tiene registro (ni carpeta Frente, ni «registro» en arte_final.json): preparar_arte_final.py %s <carpeta> --aplicar lo escribe" % (a.id, a.id))
+        return 2
+    if usa_registro and errores_reg:
+        for e in errores_reg:
+            print("ERROR", e)
+        return 2
+    if usa_registro:
+        print("modo REGISTRADO: la expresion comparte lienzo (%dx%d) con las partes; registro %s: x' = %.6f x + %.3f, y' = %.6f y + %.3f" % (
+            registro["lienzo"][0], registro["lienzo"][1], origen_reg, registro["escala"], registro["tx"], registro["escala"], registro["ty"]))
+        try:
+            res, col, caja, _ = prepara_registrada(entrada, registro, a)
+        except ValueError as e:
+            print("ERROR", e)
+            return 2
+        informe_separacion(res)
+        info = res.registro_info
+        print("  caja de la cara en el lienzo de la entrega: %s (%s); contenido de esta imagen %s" % (caja, info["origen"], info["contenido"]))
+        print("  recorte %dx%d -> textura %dx%d (x %.3f: %.2f texeles por px del lienzo del rig%s, tope --max-lado %d)" % (
+            info["entrada"][0], info["entrada"][1], info["salida"][0], info["salida"][1], info["k"], info["k"] / registro["escala"],
+            "" if a.densidad else " (sin reducir por densidad)", a.max_lado))
+        print("  rect comun de CaraBase, Ojos y Boca (lienzo de 1024): %s, la caja mapeada con la transformacion de las partes" % col.rect)
+        cab = mide_cabeza(png_cab, cuello["rect"])
+        print("\n== La cabeza (%s)" % os.path.relpath(png_cab, P.RAIZ))
+        print("  piel RGB %s | ovalo x %.0f..%.0f, y %.0f..%.0f | eje x %.1f | flequillo hasta y %.0f | barbilla y %.0f" % (
+            cab.piel, cab.ovalo[0], cab.ovalo[2], cab.ovalo[1], cab.ovalo[3], cab.eje, cab.flequillo, cab.barbilla))
         cols, rec = [col], 0
-    print("\n== Escalas candidatas (la cara = el ancho de ojos y cejas; el rect es el del lienzo de la imagen, en el de 1024)")
-    for i, c in enumerate(cols):
-        marcas = ", ".join("%s %+.0f px" % (n, v) for n, v in c.margenes.items())
-        print("  %s cara = %s del ovalo | S %.3f | rect %s | %s%s" % (">>" if i == rec else "  ", "%3.0f %%" % (100 * c.fraccion) if c.fraccion else "(la de la neutra)",
-                                                                  c.s, c.rect, marcas, "" if c.cabe else "   (NO CABE)"))
-    print("  recomendada: %s" % ("%d %%" % round(100 * cols[rec].fraccion) if cols[rec].fraccion else "la heredada"))
+        # informacion (no decide nada): donde cae la cara respecto del ovalo de piel
+        ojos = res.resumen["ojos"]["caja"]
+        if ojos is not None:
+            x0 = col.rect[0] + ojos[0] * col.s
+            x1 = col.rect[0] + ojos[2] * col.s
+            print("  ojos y cejas: x %.0f..%.0f (centro %.0f; eje de la cabeza %.0f), ancho %.0f = %.0f %% del ancho del ovalo" % (
+                x0, x1, (x0 + x1) / 2.0, cab.eje, x1 - x0, 100.0 * (x1 - x0) / (cab.ovalo[2] - cab.ovalo[0])))
+    else:
+        if a.registrada is False and registro is not None and list(entrada.size) != list(registro["lienzo"]):
+            print("AVISO la imagen mide %dx%d y las partes %dx%d: no estan registradas, uso la heuristica de escala y sitio" % (
+                entrada.width, entrada.height, registro["lienzo"][0], registro["lienzo"][1]))
+        res = separa(entrada, parsea_asigna(a.asigna))
+        informe_separacion(res)
+        # lo que se escribe: el lienzo entero (reducido a --max-lado), igual para las tres capas
+        res.capas_salida = {k: reduce(v, a.max_lado) for k, v in res.capas.items()}
+        k = res.capas_salida["ojos"].width / float(entrada.width)
+        print("  lienzo de salida: %dx%d%s" % (res.capas_salida["ojos"].width, res.capas_salida["ojos"].height,
+                                              "" if k >= 1.0 else " (reducido x%.3f: --max-lado %d)" % (k, a.max_lado)))
+        cab = mide_cabeza(png_cab, cuello["rect"])
+        print("\n== La cabeza (%s)" % os.path.relpath(png_cab, P.RAIZ))
+        print("  piel RGB %s | ovalo x %.0f..%.0f, y %.0f..%.0f (ancho %.0f) | eje x %.1f | flequillo hasta y %.0f | barbilla y %.0f" % (
+            cab.piel, cab.ovalo[0], cab.ovalo[2], cab.ovalo[1], cab.ovalo[3], cab.ovalo[2] - cab.ovalo[0], cab.eje, cab.flequillo, cab.barbilla))
+
+        heredado = None if a.reubica else rect_vigente(a.id)
+        cols, rec = elige(cab, res, a.escala)
+        if heredado is not None and not a.reubica:
+            print("\nLa cara neutra ya esta puesta: esta emocion hereda su rect %s (--reubica lo recalcula)." % heredado)
+            w, h = res.tamano
+            asp_p, asp_h = (heredado[2] - heredado[0]) / float(heredado[3] - heredado[1]), w / float(h)
+            if abs(asp_p / asp_h - 1.0) > 0.02:
+                print("AVISO la imagen no tiene la proporcion del lienzo de la neutra (%.3f contra %.3f): saldria deformada" % (asp_h, asp_p))
+            col = Colocacion()
+            col.rect, col.s, col.fraccion = heredado, (heredado[2] - heredado[0]) / float(w), 0.0
+            cols, rec = [col], 0
+        print("\n== Escalas candidatas (la cara = el ancho de ojos y cejas; el rect es el del lienzo de la imagen, en el de 1024)")
+        for i, c in enumerate(cols):
+            marcas = ", ".join("%s %+.0f px" % (n, v) for n, v in c.margenes.items())
+            print("  %s cara = %s del ovalo | S %.3f | rect %s | %s%s" % (">>" if i == rec else "  ", "%3.0f %%" % (100 * c.fraccion) if c.fraccion else "(la de la neutra)",
+                                                                      c.s, c.rect, marcas, "" if c.cabe else "   (NO CABE)"))
+        print("  recomendada: %s" % ("%d %%" % round(100 * cols[rec].fraccion) if cols[rec].fraccion else "la heredada"))
 
     rutas = composites(a.id, emocion, res, cab, cols, rec, rig, a.salida)
     print("\ncomposites:")
@@ -975,11 +1211,14 @@ def main(argv=None):
         print("  " + r)
     ojos_n, boca_n = EMOCIONES[emocion]
     hay_base = P._png_de(carpeta, "char_%s_cara_base" % a.id) is not None
+    if usa_registro and emocion == "neutra":
+        hay_base = False   # la neutra fija la caja de la cara: la base (nariz y rubor) se escribe con ella
     print("\nescribiria (con --aplicar), en Assets/Game/Art/Characters/%s/Expresiones/:" % carpeta)
     for n in (ojos_n, boca_n, "cara_base" if (a.base or not hay_base) else None):
         if n:
             print("  char_%s_%s.png" % (a.id, n))
-    print("  arte_final.json: rect %s en CaraBase, Ojos y Boca; y regenera rig_articulaciones.json y clips_personajes.json" % cols[rec].rect)
+    print("  arte_final.json: rect %s en CaraBase, Ojos y Boca%s; y regenera rig_articulaciones.json y clips_personajes.json" % (
+        cols[rec].rect, " y registro.cara %s" % res.registro_info["caja"] if usa_registro else ""))
     if not a.aplicar:
         return 0
     return 1 if aplica(a.id, emocion, res, cols[rec], a, hay_base) else 0

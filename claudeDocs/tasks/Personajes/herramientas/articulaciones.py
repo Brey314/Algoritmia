@@ -22,9 +22,10 @@
 #
 # «orden_tronco»: el orden de dibujo (de atras adelante) de los hijos directos de Cuerpo/Tronco; lo
 # aplica BuildRigsFinal.cs.txt. En los prefabs los brazos van PRIMERO (BrazoIzq, BrazoDer, Torso,
-# Cuello), o sea detras del torso y de la cabeza. DECISION de Santiago (05/10/2026, la definitiva): en la
+# Cuello), o sea detras del torso y de la cabeza. DECISION de Santiago (05/10/2026): en la
 # FAMILIA los brazos van DETRAS DEL TORSO y DELANTE DE LA CABEZA (la cara): [Cuello, BrazoIzq, BrazoDer,
-# Torso] —la cabeza al fondo, los brazos, el torso delante—. Con el arte final los hombros salen por
+# Torso] —la cabeza al fondo, los brazos, el torso delante—; y, desde INC-133 (06/10/2026), el ANTEBRAZO
+# con la mano pasa DELANTE del torso, de la cara y de las piernas: se anade al final (AntebrazoIzq, AntebrazoDer). Con el arte final los hombros salen por
 # detras de las esquinas del torso y el cuello queda bajo la barbilla sin costura. Con el arte provisional
 # de Papa, Mama y Nina la cabeza esta pintada DENTRO del torso: sus brazos quedan detras del torso y de la
 # cara (hasta que llegue su arte final, que cumple la regla). En Strike (CharacterRig.armsInFrontActions) el
@@ -175,8 +176,13 @@ FAMILIA = [
 T = "Lienzo/Cuerpo/Tronco"
 C = "Lienzo/Cuerpo"
 
-ORDEN_TRONCO_FAMILIA = ["Cuello", "BrazoIzq", "BrazoDer", "Torso"]            # brazos tras el torso y delante de la cabeza: Papa, Mama, Nina y Nino
-ORDEN_TRONCO_PAPA = ["BrazoIzq", "BrazoDer", "Torso", "Cuello"]                   # Papa: la barba y la cara se dibujan DELANTE del torso (Santiago, 06/10/2026); los brazos siguen tras el torso
+# INC-133 (Santiago, 06/10/2026), para la FAMILIA: el HUMERO (BrazoIzq, BrazoDer) va DETRAS del torso y el ANTEBRAZO (con la mano) DELANTE del torso,
+# de la cara y de las piernas. uGUI dibuja en orden de jerarquia, y el antebrazo cuelga del codo, que cuelga del humero: para dibujarlo
+# delante, BuildRigsFinal «orden» lo pasa a hijo de Tronco (lo hace cuando «orden_tronco» lo LISTA) y deja bajo el codo un ancla vacia
+# (AnclaAntebrazoIzq/Der) que es la que animan los clips; CharacterRig copia su pose al antebrazo en cada cuadro. Por eso los clips no
+# animan nunca AntebrazoX ni AnclaAntebrazoX: solo BrazoX y BrazoX/CodoX. Algoritm NO lista antebrazos (sigue bajo el codo y sin ancla).
+ORDEN_TRONCO_FAMILIA = ["Cuello", "BrazoIzq", "BrazoDer", "Torso", "AntebrazoIzq", "AntebrazoDer"]   # Mama, Nina y Nino: cara al fondo, humeros, torso, antebrazos
+ORDEN_TRONCO_PAPA = ["BrazoIzq", "BrazoDer", "Torso", "Cuello", "AntebrazoIzq", "AntebrazoDer"]      # Papa: la barba y la cara DELANTE del torso (Santiago, 06/10/2026); los antebrazos delante de todo
 ORDEN_TRONCO_GUIA = ["Torso", "Ojos", "Boca", "BrazoIzq", "BrazoDer"]            # Algoritm: las manos por ENCIMA de la cara (Santiago, 05/10/2026)
 
 # Arte final del Nino (05/10/2026), medido sobre el alfa de las piezas de Assets/Game/Art/Characters/Boy;
@@ -223,6 +229,11 @@ def guardar_arte_final(personajes, ruta=ARTE_FINAL_JSON):
 
 
 ARTE_FINAL = cargar_arte_final()  # los numeros del Nino (arriba) viven en arte_final.json
+
+
+def orden_tronco_de(pid):
+    """El orden de dibujo (de atras adelante) de los hijos de Tronco de un personaje de la familia: el contrato de INC-133."""
+    return list(ORDEN_TRONCO_PAPA if pid == "papa" else ORDEN_TRONCO_FAMILIA)
 
 
 def caja_de(rect):
@@ -318,7 +329,7 @@ def personaje_familia(pid, prefab, carpeta):
         nodos, partes = ARTE_FINAL[pid]["nodos"], ARTE_FINAL[pid]["partes"]
     return {
         "id": pid, "prefab": prefab, "carpeta": carpeta, "prefijo": pref, "guia": False,
-        "orden_tronco": ORDEN_TRONCO_PAPA if pid == "papa" else ORDEN_TRONCO_FAMILIA, "nodos": nodos, "partes": partes,
+        "orden_tronco": orden_tronco_de(pid), "nodos": nodos, "partes": partes,
     }
 
 
@@ -468,8 +479,10 @@ def main():
                 "nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento "
                 "'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. "
                 "El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo "
-                "(de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: en la familia los brazos van DETRAS DEL TORSO y "
-                "DELANTE DE LA CABEZA (decision de Santiago, 05/10/2026: Cuello, BrazoIzq, BrazoDer, Torso); en Algoritm, Torso, "
+                "(de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: en la familia los humeros van DETRAS DEL TORSO y "
+                "DELANTE DE LA CABEZA (decision de Santiago, 05/10/2026: Cuello, BrazoIzq, BrazoDer, Torso; en Papa la cara va despues del torso) y, "
+                "desde INC-133 (06/10/2026), los antebrazos (con la mano) DELANTE del torso, de la cara y de las piernas: AntebrazoIzq y AntebrazoDer "
+                "al final de la lista (BuildRigsFinal 'orden' los pasa de su codo a Tronco y deja un ancla vacia bajo el codo, que es la que animan los clips); en Algoritm, Torso, "
                 "la cara (Ojos, Boca) y, encima de todo, los brazos (decision de Santiago, 05/10/2026: sus manos van por encima de la cara y no la tapan en ningun clip). "
                 "En las acciones de CharacterRig.armsInFrontActions (Strike) los brazos de la familia pasan delante del torso. Con el arte provisional de Papa, Mama y Nina la cabeza esta pintada "
                 "dentro del torso: sus brazos quedan tras torso y cara hasta que llegue su arte final.",

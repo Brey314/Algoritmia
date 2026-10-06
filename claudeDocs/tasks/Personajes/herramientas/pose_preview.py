@@ -41,11 +41,19 @@
 # define el JSON (torso, brazo, antebrazo, pierna, antepierna). Sumadas dan el sprite original. Es solo
 # de vista previa: el prefab no se toca.
 #
+# INC-133 (06/10/2026), la familia: el HUMERO va detras del torso y el ANTEBRAZO con la mano delante del torso, de la cara y de las piernas.
+# BuildRigsFinal «orden» lo hace pasando cada AntebrazoX de su codo a hijo de Tronco (con un ancla vacia bajo el codo que animan los clips);
+# aqui el antebrazo SIGUE bajo su codo en el arbol (la geometria es la misma: su mundo es el del ancla) y solo cambia el orden de dibujo:
+# prefabs.aplicar_orden_tronco marca «sigue» y Tronco guarda en «dibujo» la lista con el antebrazo donde diga «orden_tronco».
+#
 # LA PRUEBA (cada clip, muestreado a 30 fps):
-#   (a) cada brazo —humero + antebrazo, o el brazo entero si no esta partido— conserva >= 85 % de sus
-#       pixeles opacos visibles (no tapados por capas dibujadas despues que no sean del propio brazo);
-#   (b) la cara conserva >= 90 % de su zona visible (ningun brazo la tapa); en Algoritm, cuyos brazos van POR ENCIMA de la
-#       cara, el 99,5 % de la caja de ojos y boca ampliada un 30 %;
+#   (a) familia: el ANTEBRAZO (con la mano) conserva >= 85 % de sus pixeles opacos visibles y el HUMERO >= UMBRAL_HUMERO (40 %, ver abajo:
+#       el hombro sale por detras del torso por diseno y, en Papa, la barba y la melena van delante de los humeros). No cuenta lo que tapa
+#       el OTRO brazo (cruzar los antebrazos al chocar las manos no es perder el brazo). Algoritm: el brazo entero (humero + antebrazo)
+#       conserva >= 85 % (no tapado por capas dibujadas despues que no sean del propio brazo);
+#   (b) la cara conserva >= 90 % de su zona visible (ningun brazo la tapa). En la familia, la zona son los PIXELES PINTADOS de CaraBase, Ojos y
+#       Boca en ese cuadro (la cara registrada de la entrega llena el ovalo: su caja toca el pelo y las orejas); solo cuenta lo que se dibuja
+#       DESPUES de la cara. En Algoritm, cuyos brazos van POR ENCIMA de la cara, el 99,5 % de la caja de ojos y boca ampliada un 30 %;
 #   (c) ningun codo ni ninguna rodilla se dobla al reves (hiperextension): la pantorrilla vuelve hacia
 #       dentro y el codo sobresale hacia fuera y abajo de la recta hombro-mano (nunca se mete hacia el
 #       cuerpo o la cara); tolerancia de 6 grados sobre lo que ya trae el dibujo;
@@ -72,6 +80,7 @@ except ImportError:  # pragma: no cover
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
+import articulaciones as A_final  # noqa: E402
 import coreografia as K  # noqa: E402
 import maqueta as M  # noqa: E402
 import prefabs as P  # noqa: E402
@@ -82,6 +91,13 @@ CLIPS_JSON = os.path.join(AQUI, "clips_personajes.json")
 SUELO = P.SUELO
 
 UMBRAL_BRAZO = 0.85
+# INC-133 (06/10/2026): en la familia el HUMERO va detras del torso y el ANTEBRAZO con la mano delante de todo. El antebrazo (lo que se ve
+# del gesto: la mano) conserva >= 85 % como siempre; el humero puede quedar parcialmente tras el torso y, en Papa, tras la barba: el hombro sale
+# por detras de la esquina del torso POR DISENO (entre el 10 y el 30 % del humero en reposo) y un brazo en alto pasa tras la cabeza, que en Papa
+# se dibuja DELANTE de los humeros (su barba y su melena cubren los hombros: Observe y Celebrate dejan a la vista entre el 40 y el 50 %). El 85 % de
+# antes no se puede pedir; se pide que quede a la vista al menos el 40 %: lo que asoma por el costado y por debajo de la cabeza, mas el antebrazo
+# entero delante, se lee como un brazo que sale de detras del cuerpo. Mide el humero SOLO; el brazo entero ya no se pierde nunca.
+UMBRAL_HUMERO = 0.40
 UMBRAL_CARA = 0.90
 # Algoritm: sus brazos se dibujan POR ENCIMA de la cara (orden_tronco [Torso, Ojos, Boca, BrazoIzq, BrazoDer], Santiago 05/10/2026),
 # asi que lo que pase por ojos o boca los tapa de verdad. Para el la caja de ojos y boca se amplia un 30 % y no se admite casi
@@ -254,7 +270,9 @@ class Personaje:
                         hechas[ruta] = self._capa(n, base)
                     if hechas[ruta] is not None:
                         capas.append(hechas[ruta])
-                for h in n.hijos:
+                for h in P.hijos_de_dibujo(n):
+                    if h.sigue and h.padre is n:
+                        continue  # INC-133: un antebrazo que sigue a su ancla se dibuja en la lista de Tronco, no bajo su codo
                     visita(h)
 
             visita(self.arbol[""])
@@ -263,16 +281,17 @@ class Personaje:
         self.capas = recorre()
         self.indice = {c.nodo.ruta: i for i, c in enumerate(self.capas)}
         tronco = self.arbol[T]
-        orig = tronco.hijos
+        orig = P.hijos_de_dibujo(tronco)
         nombres = [h.nombre for h in orig]
         nuevo = P.orden_con_brazos_delante(nombres)
         if nuevo == nombres:
             self.capas_delante, self.indice_delante = self.capas, self.indice
         else:
             por = {h.nombre: h for h in orig}
-            tronco.hijos = [por[n] for n in nuevo]
+            previo = tronco.dibujo
+            tronco.dibujo = [por[n] for n in nuevo]
             self.capas_delante = recorre()
-            tronco.hijos = orig
+            tronco.dibujo = previo
             self.indice_delante = {c.nodo.ruta: i for i, c in enumerate(self.capas_delante)}
 
     def orden_de(self, accion):
@@ -547,7 +566,8 @@ class Resultado:
     """El peor valor de cada medida en un clip, con el instante en que ocurre."""
 
     def __init__(self):
-        self.brazo = (100.0, 0.0, "")
+        self.brazo = (100.0, 0.0, "")   # el antebrazo (con la mano) de la familia; en Algoritm, el brazo entero
+        self.humero = (100.0, 0.0, "")  # solo la familia (INC-133): el humero, que va detras del torso
         self.cara = (100.0, 0.0)
         self.codo = (0.0, 0.0, "")
         self.suelo = (-999.0, 0.0)
@@ -559,6 +579,8 @@ class Resultado:
     def mejor_peor(self, nombre, valor, t, extra=""):
         if nombre == "brazo" and valor < self.brazo[0]:
             self.brazo = (valor, t, extra)
+        elif nombre == "humero" and valor < self.humero[0]:
+            self.humero = (valor, t, extra)
         elif nombre == "cara" and valor < self.cara[0]:
             self.cara = (valor, t)
         elif nombre == "codo" and valor > self.codo[0]:
@@ -665,10 +687,18 @@ def prueba_clip(pj, clip, tiempos=None):
     zona, lleva = pj.zona_cara()
     capas, indice = pj.orden_de(clip.accion)  # el orden de dibujo de ESTA accion (brazos delante o detras del torso)
     brazos = {}
+    partidos = {}  # INC-133: lado -> (humero, antebrazo) si el antebrazo sale de su codo y se dibuja delante (la familia); Algoritm no
     for lado, (b, a) in {"Izq": (LA, LE + "/AntebrazoIzq"), "Der": (RA, RE + "/AntebrazoDer")}.items():
         grupo = [r for r in (b, a) if r in indice]
         if grupo:
             brazos[lado] = grupo
+        if b in indice and a in indice and pj.arbol[a].sigue:
+            partidos[lado] = (b, a)
+    piezas_brazo = {r for par in partidos.values() for r in par}
+    # lo que se dibuja DESPUES de la cara (Ojos y Boca): solo eso puede taparla (la cabeza y su cara van al fondo en Mama, Nina y Nino; en
+    # Papa la cabeza va tras el torso y los humeros). Sin capas de cara (arte provisional), la cabeza o el torso.
+    caras = [indice[c.nodo.ruta] for c in capas if c.nodo.nombre in ("Ojos", "Boca")]
+    idx_cara = max(caras) if caras else (indice[HD] if HD in indice else indice.get(T + "/Torso", -1))
     n = int(round(clip.duracion * FPS))
     tiempos = tiempos if tiempos is not None else [min(i / FPS, clip.duracion) for i in range(n + 1)]
     es_guia = pj.guia
@@ -695,25 +725,63 @@ def prueba_clip(pj, clip, tiempos=None):
             im = _capa_a_lienzo(capa, mundo, esc, (0, 0), tam)
             if im is not None:
                 masc[ruta] = _mascara(im)
-        # (a) brazos visibles
-        union_brazos = Image.new("L", tam, 0)
+        # (a) brazos visibles. Familia (INC-133): el ANTEBRAZO (con la mano) por su lado, >= 85 %, y el HUMERO por el suyo, >= UMBRAL_HUMERO,
+        # porque el humero va tras el torso. Algoritm: el brazo entero, como siempre.
+        union_brazos = Image.new("L", tam, 0)   # lo que de los brazos esta DELANTE de la cara: lo unico que puede taparla
+
+        def visible_de(ruta, excluye):
+            """
+            (total, oculto) de una pieza: no cuenta lo que tapan las piezas de «excluye» (las del propio brazo) ni, en la familia, las del OTRO
+            brazo (INC-133: cruzar los antebrazos al chocar las manos no es perder el brazo; lo que se pierde es lo que tapa el cuerpo).
+            """
+            m = masc[ruta]
+            oc = Image.new("L", tam, 0)
+            for r2, m2 in masc.items():
+                if indice[r2] > indice[ruta] and r2 not in excluye and not (partidos and r2 in piezas_brazo):
+                    oc = ImageChops.lighter(oc, m2)
+            total = _cuenta(m)
+            oculto = _cuenta(ImageChops.multiply(m, oc.point(lambda v: 255 if v else 0)))
+            return total, oculto
+
         for lado, grupo in brazos.items():
+            for ruta in grupo:
+                if ruta in masc and indice[ruta] > idx_cara:
+                    union_brazos = ImageChops.lighter(union_brazos, masc[ruta])
+            if lado in partidos:
+                hum, ante = partidos[lado]
+                if ante in masc:
+                    total, oculto = visible_de(ante, (ante,))
+                    if total:
+                        res.mejor_peor("brazo", 100.0 * (total - oculto) / total, t, lado)
+                if hum in masc:
+                    total, oculto = visible_de(hum, grupo)
+                    if total:
+                        res.mejor_peor("humero", 100.0 * (total - oculto) / total, t, lado)
+                continue
             total = oculto = 0
             for ruta in grupo:
                 if ruta not in masc:
                     continue
-                m = masc[ruta]
-                union_brazos = ImageChops.lighter(union_brazos, m)
-                total += _cuenta(m)
-                oc = Image.new("L", tam, 0)
-                for r2, m2 in masc.items():
-                    if indice[r2] > indice[ruta] and r2 not in grupo:
-                        oc = ImageChops.lighter(oc, m2)
-                oculto += _cuenta(ImageChops.multiply(m, oc.point(lambda v: 255 if v else 0)))
+                tt, oo = visible_de(ruta, grupo)
+                total, oculto = total + tt, oculto + oo
             if total:
                 res.mejor_peor("brazo", 100.0 * (total - oculto) / total, t, lado)
-        # (b) cara: ningun brazo la tapa (Algoritm: la caja entera de ojos y boca, ampliada, y casi nada de brazo encima)
-        if zona:
+        # (b) cara: ningun brazo la tapa (Algoritm: la caja entera de ojos y boca, ampliada, y casi nada de brazo encima). En la familia con la
+        # cara en capas (CaraBase, Ojos y Boca) lo que cuenta es lo PINTADO de esas capas, tal como se dibuja en ese cuadro (con la cabeza
+        # inclinada incluida): la cara registrada de la entrega llena el ovalo (ojos y cejas de lado a lado, 06/10/2026) y su CAJA toca el
+        # pelo y las orejas; tapar piel sin rasgos al lado de la oreja no es tapar la cara.
+        rutas_cara = [r for r in masc if pj.arbol[r].nombre in ("Ojos", "Boca", "CaraBase")] if not es_guia else []
+        if rutas_cara:
+            z = Image.new("L", tam, 0)
+            for r_ in rutas_cara:
+                z = ImageChops.lighter(z, masc[r_])
+            area = _cuenta(z)
+            if area:
+                tapado = _cuenta(ImageChops.multiply(z, union_brazos))
+                res.mejor_peor("cara", 100.0 * (area - tapado) / area, t)
+                if lleva == HD and (T + "/Torso") in masc and indice[T + "/Torso"] > idx_cara:
+                    res.mejor_peor("torso", 100.0 * _cuenta(ImageChops.multiply(z, masc[T + "/Torso"])) / area, t)
+        elif zona:
             z = Image.new("L", tam, 0)
             dz = ImageDraw.Draw(z)
             if es_guia:
@@ -729,8 +797,9 @@ def prueba_clip(pj, clip, tiempos=None):
             if area:
                 tapado = _cuenta(ImageChops.multiply(z, union_brazos))
                 res.mejor_peor("cara", 100.0 * (area - tapado) / area, t)
-                # (g) con la cabeza al fondo el torso (dibujado despues) puede tapar la barbilla y la boca al inclinarse
-                if lleva == HD and (T + "/Torso") in masc:
+                # (g) con la cabeza al fondo el torso (dibujado despues) puede tapar la barbilla y la boca al inclinarse; en Papa la cabeza va
+                # DELANTE del torso (Santiago, 06/10/2026) y el torso no puede taparla
+                if lleva == HD and (T + "/Torso") in masc and indice[T + "/Torso"] > idx_cara:
                     res.mejor_peor("torso", 100.0 * _cuenta(ImageChops.multiply(z, masc[T + "/Torso"])) / area, t)
         # (e) manos fuera de la caja de la cara (ampliada un 10 %), salvo las excepciones explicitas
         if zona and not _excepcion_cara(pj.pid, clip.accion):
@@ -780,7 +849,7 @@ def limite_cintura(pj):
 
 
 def fila(pid, clip, r):
-    ok_b = r.brazo[0] >= (EXCEPCIONES_BRAZO.get(("*", clip.accion), (UMBRAL_BRAZO * 100,))[0])
+    ok_b = r.brazo[0] >= (EXCEPCIONES_BRAZO.get(("*", clip.accion), (UMBRAL_BRAZO * 100,))[0]) and r.humero[0] >= UMBRAL_HUMERO * 100
     ok_c = r.cara[0] >= (UMBRAL_CARA_GUIA if pid.startswith("algoritm") else UMBRAL_CARA) * 100
     ok_k = r.codo[0] <= 1e-9
     ok_s = r.suelo[0] <= TOLERANCIA_SUELO
@@ -792,8 +861,8 @@ def fila(pid, clip, r):
     choque = "" if r.choque is None else " | choque y=%.0f @%.2fs (manos a %.0f px; limite y=%.0f) %s" % (
         r.choque[0], r.choque[1], r.choque[2], r.choque[3], "" if ok_h else "FALLA: bajo la cintura")
     mano = "libre" if ok_m else "%d cuadros @%.2fs %s" % (r.mano[0], r.mano[1], r.mano[2])
-    return ok, ("%-14s %-10s %-8s brazo %5.1f%% @%.2fs %-5s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s | giro max %4.0f deg/s %s | torso sobre la cara %4.1f%% %s%s" % (
-        pid, clip.accion, "ok" if ok else "FALLA", r.brazo[0], r.brazo[1], r.brazo[2], r.cara[0], r.cara[1],
+    return ok, ("%-14s %-10s %-8s brazo %5.1f%% @%.2fs %-5s | humero %5.1f%% @%.2fs %-5s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s | giro max %4.0f deg/s %s | torso sobre la cara %4.1f%% %s%s" % (
+        pid, clip.accion, "ok" if ok else "FALLA", r.brazo[0], r.brazo[1], r.brazo[2], r.humero[0], r.humero[1], r.humero[2], r.cara[0], r.cara[1],
         r.codo[0], r.codo[1], r.codo[2], r.suelo[0] if r.suelo[0] > -900 else 0.0, r.suelo[1], mano, r.vel[0], "" if ok_v else "FALLA", r.torso[0], "" if ok_t else "FALLA", choque))
 
 
@@ -896,6 +965,10 @@ def mide(pj):
     piv = pj.pivote
     capas = {c.nodo.ruta: c for c in pj.capas}
     fallos = 0
+    # lo que el arte no encaja (preparar_arte_final.py lo mide y lo guarda en arte_final.json, «holguras»): distancia entre los centros de los
+    # dos extremos redondos de una articulacion; es la tolerancia de esa articulacion (mas 2 px), para que --mide siga vigilando lo que
+    # CAMBIE sin protestar siempre por un arte que no es concentrico (Papa: el antebrazo se solapa 40 y 21 px con el humero)
+    holguras = A_final.cargar_arte_final().get(pj.pid, {}).get("holguras", {})
 
     def centros(ruta):
         c = capas.get(ruta)
@@ -916,7 +989,8 @@ def mide(pj):
         hombro, codo = piv[LA if lado == "Izq" else RA], piv[LE if lado == "Izq" else RE]
         if b is None or a is None:
             continue
-        for nombre, punto, cs, tol in (("Hombro" + lado, hombro, b, 2.0), ("Codo (humero) " + lado, codo, b, 2.0), ("Codo (antebrazo) " + lado, codo, a, 2.0)):
+        tol_c = max(2.0, holguras.get("Codo" + lado, 0.0) + 2.0)
+        for nombre, punto, cs, tol in (("Hombro" + lado, hombro, b, 2.0), ("Codo (humero) " + lado, codo, b, tol_c), ("Codo (antebrazo) " + lado, codo, a, tol_c)):
             d, q = cerca(punto, cs)
             ok = d <= tol
             fallos += 0 if ok else 1
@@ -928,7 +1002,7 @@ def mide(pj):
             continue
         for nombre, cs in (("Rodilla (muslo) " + lado, m), ("Rodilla (antepierna) " + lado, a)):
             d, q = cerca(rod, cs)
-            ok = d <= 12.0
+            ok = d <= max(12.0, holguras.get("Rodilla" + lado, 0.0) + 2.0)
             fallos += 0 if ok else 1
             print("%-22s (%5.1f, %5.1f) / (%5.1f, %5.1f) %8.1f %s" % (nombre, rod[0], rod[1], q[0], q[1], d, "ok" if ok else "FALLA"))
     print("las articulaciones caen en el centro de la rotula" if not fallos else "%d articulaciones mal colocadas" % fallos)
@@ -953,7 +1027,7 @@ def autoprueba(rig):
     # 1. brazos colgando pegados al cuerpo: van tras el torso y se esconden
     casos.append(("brazos pegados, tras el torso", nino, {(LA, R): b["Izq"].hombro_rot(8), (RA, R): b["Der"].hombro_rot(8)}, "brazo"))
     # 1b. la cabeza se hunde tras el torso: la boca queda tapada por el torso (la cabeza va al fondo)
-    casos.append(("barbilla y boca tras el torso", nino, {(NK, K.POSY): -70.0}, "torso"))
+    casos.append(("barbilla y boca tras el torso", nino, {(NK, K.POSY): -130.0}, "torso"))   # la cara registrada de la entrega llena el ovalo: hunde mas
     # 2. un brazo en alto por delante de la cara
     casos.append(("brazo en alto delante de la cara", nino, {(RA, R): b["Der"].hombro_rot(165), (RE, R): 0.0}, "cara"))
     # 3. un codo al reves: brazo en alto y el antebrazo se dobla hacia fuera y abajo, no hacia la cabeza
@@ -996,10 +1070,35 @@ def autoprueba(rig):
     como_idle.accion = "Idle"
     r1 = prueba_clip(nino, strike_nino, tiempos=[0.30])
     r2 = prueba_clip(nino, como_idle, tiempos=[0.30])
-    ok = r1.brazo[0] >= UMBRAL_BRAZO * 100 and r2.brazo[0] < UMBRAL_BRAZO * 100 and "Strike" in nino.delante
+    # INC-133: el antebrazo va delante de todo y se ve siempre; lo que cambia el orden por accion es el HUMERO
+    ok = r1.humero[0] >= UMBRAL_HUMERO * 100 and r2.humero[0] < r1.humero[0] - 15.0 and r1.brazo[0] >= UMBRAL_BRAZO * 100 \
+        and r2.brazo[0] >= UMBRAL_BRAZO * 100 and "Strike" in nino.delante
     malos += 0 if ok else 1
-    print("%-40s %-9s %s" % ("Strike al choque: delante se ve (%.0f %%), detras no (%.0f %%)" % (r1.brazo[0], r2.brazo[0]), "brazo",
-                             "bien" if ok else "FALLA (el orden por accion no cambia lo que se ve)"))
+    print("%-40s %-9s %s" % ("Strike al choque: humero delante %.0f %%, detras %.0f %%; antebrazo %.0f %% y %.0f %%" % (
+        r1.humero[0], r2.humero[0], r1.brazo[0], r2.brazo[0]), "humero", "bien" if ok else "FALLA (el orden por accion no cambia lo que se ve)"))
+    # INC-133: el orden de dibujo del arbol de cada personaje con arte final: humeros tras el torso, antebrazos delante de todo y, en Papa,
+    # la cara (Cuello) delante del torso; Algoritm no suelta sus antebrazos del codo
+    for pid_ in ("papa", "mama", "nina", "nino"):
+        pj_ = Personaje(pid_, rig)
+        ind = pj_.indice
+        torso, cab = T + "/Torso", HD
+        hum_i, hum_d = ind[LA], ind[RA]
+        ante_i, ante_d = ind[LE + "/AntebrazoIzq"], ind[RE + "/AntebrazoDer"]
+        ok = (hum_i < ind[torso] and hum_d < ind[torso] and ante_i > ind[torso] and ante_d > ind[torso] and ante_i > ind[cab] and ante_d > ind[cab]
+              and ante_i > ind[LK + "/AntepiernaIzq"] and ante_d > ind[RK + "/AntepiernaDer"]
+              and ((ind[cab] > ind[torso]) if pid_ == "papa" else (ind[cab] < ind[torso] and ind[cab] < hum_i)))
+        ok = ok and pj_.arbol[LE + "/AntebrazoIzq"].sigue and pj_.arbol[RE + "/AntebrazoDer"].sigue
+        malos += 0 if ok else 1
+        print("%-40s %-9s %s" % ("INC-133, orden de dibujo: " + pid_, "orden", "bien" if ok else "FALLA (humero tras el torso, antebrazo delante de todo, cara %s)" % ("tras el torso en Papa" if pid_ == "papa" else "al fondo")))
+    alg_ = Personaje("algoritm_fuego", rig)
+    ok = not alg_.arbol[LE + "/AntebrazoIzq"].sigue and not alg_.arbol[RE + "/AntebrazoDer"].sigue
+    malos += 0 if ok else 1
+    print("%-40s %-9s %s" % ("INC-133, Algoritm no suelta antebrazos", "orden", "bien" if ok else "FALLA"))
+    # y los clips no animan nunca el antebrazo ni su ancla (solo BrazoX y BrazoX/CodoX: el ancla es la que sigue al codo en el motor)
+    prohibidas = [c_ for cl in cargar_clips().values() for clip_ in cl for (ruta_, _) in clip_.curvas for c_ in [ruta_]
+                  if ruta_.rsplit("/", 1)[-1].startswith(("Antebrazo", "AnclaAntebrazo"))]
+    malos += 0 if not prohibidas else 1
+    print("%-40s %-9s %s" % ("INC-133, ningun clip anima AntebrazoX ni su ancla", "clips", "bien" if not prohibidas else "FALLA: %s" % sorted(set(prohibidas))[:3]))
     # Strike con las manos juntas a la altura de la ingle (lo que dan dos brazos rigidos iguales, que solo se encuentran en el eje a un
     # largo de brazo debajo del hombro): el choque bajo la cintura se detecta; y el Strike vigente del mismo personaje, no
     papa = Personaje("papa", rig)
