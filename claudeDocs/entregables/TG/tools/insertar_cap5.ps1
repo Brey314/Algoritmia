@@ -162,6 +162,13 @@ function Normalize-Text([string]$Text) {
   ($t -replace '\s+', ' ').Trim()
 }
 
+# Igualdad de textos sin distinguir mayúsculas. Los títulos del documento usan estilos con «todo
+# mayúsculas» y Word, por COM, devuelve Range.Text ya en mayúsculas («5.1 INSTRUMENTOS O ...») aunque el
+# XML guarde «5.1 Instrumentos o ...»; comparar con -ceq no encontraba el ancla (06/10/2026).
+function Test-SameText([string]$A, [string]$B) {
+  [string]::Equals($A, $B, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
 # Una pasada por los párrafos del documento: posición, texto y nivel de esquema. Las posiciones
 # solo valen hasta la siguiente edición; después se vuelve a pedir la foto.
 function Get-Snapshot($Doc) {
@@ -236,7 +243,7 @@ function Find-Targets($Doc, $Plan) {
 
   # Ancla: el título de nivel 2 que el .md dice («5.1 Instrumentos o herramientas utilizadas»).
   # Se exige nivel de esquema 2 para no confundirlo con su línea de la tabla de contenido.
-  $anchors = @($snap | Where-Object { $_.Outline -eq 2 -and $_.Text -ceq (Normalize-Text $Plan.Anchor) })
+  $anchors = @($snap | Where-Object { $_.Outline -eq 2 -and (Test-SameText $_.Text (Normalize-Text $Plan.Anchor)) })
 
   $ctx = [ordered]@{
     Snapshot = $snap; AlreadyThere = $already; RefExists = $refExists; Anchors = $anchors
@@ -271,7 +278,7 @@ function Find-Targets($Doc, $Plan) {
   # Renumeraciones: cada una debe dar exactamente un título de nivel 2.
   $ren = @()
   foreach ($r in $Plan.Renumber) {
-    $m = @($snap | Where-Object { $_.Index -ge $a.Index -and $_.Outline -eq 2 -and $_.Text.StartsWith($r.OldPrefix, [System.StringComparison]::Ordinal) })
+    $m = @($snap | Where-Object { $_.Index -ge $a.Index -and $_.Outline -eq 2 -and $_.Text.StartsWith($r.OldPrefix, [System.StringComparison]::OrdinalIgnoreCase) })
     if ($m.Count -ne 1) { $ctx.Problems += "La renumeración [$($r.OldPrefix)] halló $($m.Count) títulos de nivel 2."; continue }
     $ren += [pscustomobject]@{ Target = $m[0]; OldPrefix = $r.OldPrefix; NewNumber = $r.NewNumber }
   }
@@ -337,13 +344,13 @@ function Add-Cap5Block($Doc, $Plan, $Ctx) {
   for ($k = 0; $k -lt $items.Count; $k++) {
     $cur = $cur.Next(1)
     $got = ([string]$cur.Range.Text).TrimEnd([char]13)
-    if ($got -cne $items[$k].Text) { throw ("Párrafo insertado inesperado en la posición {0}: [{1}]" -f ($k + 1), $got.Substring(0, [Math]::Min(60, $got.Length))) }
+    if (-not (Test-SameText $got $items[$k].Text)) { throw ("Párrafo insertado inesperado en la posición {0}: [{1}]" -f ($k + 1), $got.Substring(0, [Math]::Min(60, $got.Length))) }
     $created.Add([pscustomobject]@{ Para = $cur; Kind = $items[$k].Kind })
   }
   $tail = $cur.Next(1)
   if ((Normalize-Text $tail.Range.Text) -ne '') { throw "Tras el bloque no quedó el separador vacío." }
   $after = $tail.Next(1)
-  if ((Normalize-Text $after.Range.Text) -cne (Normalize-Text $Plan.Anchor) -or [int]$after.OutlineLevel -ne 2) { throw "Tras el separador no está el ancla." }
+  if (-not (Test-SameText (Normalize-Text $after.Range.Text) (Normalize-Text $Plan.Anchor)) -or [int]$after.OutlineLevel -ne 2) { throw "Tras el separador no está el ancla." }
 
   # Formato: estilo integrado, se quita lo manual que arrastró el párrafo vacío y se copian del
   # modelo las propiedades de párrafo (sangrías y espaciado, lo que el modelo lleva directo).
@@ -374,7 +381,7 @@ function Update-Numbers($Doc, $Plan, $Ctx) {
   $snap = Get-Snapshot $Doc
   $edits = @()
   foreach ($r in $Plan.Renumber) {
-    $m = @($snap | Where-Object { $_.Outline -eq 2 -and $_.Text.StartsWith($r.OldPrefix, [System.StringComparison]::Ordinal) })
+    $m = @($snap | Where-Object { $_.Outline -eq 2 -and $_.Text.StartsWith($r.OldPrefix, [System.StringComparison]::OrdinalIgnoreCase) })
     if ($m.Count -ne 1) { throw "La renumeración [$($r.OldPrefix)] halló $($m.Count) títulos tras insertar." }
     $oldNum = ($r.OldPrefix -split ' ')[0]
     $newNum = $r.NewNumber
