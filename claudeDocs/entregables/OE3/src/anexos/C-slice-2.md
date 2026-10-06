@@ -21,7 +21,7 @@ El trabajo se hizo en la rama `feat/Slice-2`, abierta desde el cierre de la Fase
 | D09 | 24/09/2026 | Los troncos del Nivel 2 se animan en el motor (D09-1); fogata en el cierre del nivel (D09-4) |
 | D10 | 30/09/2026 | D09-1 finalizada; la 2.2 abre con la caja del bosque y la carretilla del taller pasa al dibujo amarrado (D10-2); el texto del nivel va siempre sobre marco (D10-5); PG-05 queda a cargo de Santiago Benavides Rey |
 
-La tarjeta que abrió el trabajo fue D04-4, «Iniciar desarrollo del Slice 2 en paralelo de la finalización del primer Slice», a cargo de Santiago Benavides Rey, que el acta D05 registra con fecha límite del 20 de septiembre. D06-3, «Fusionar la rama del segundo slice conforme a lo aprobado hoy», a cargo de los dos estudiantes, se dio por finalizada en el acta D07. D09-1, «Realizar la propuesta de los troncos del nivel dos para animarlos en Unity», se cumplió por un camino distinto del propuesto y el acta D10 la dio por finalizada. Las correcciones de cierre son de las tarjetas D10-2 y D10-5.
+La tarjeta que abrió el trabajo fue D05-1, «Iniciar desarrollo del Slice 2 en paralelo de la finalización del primer Slice», a cargo de Santiago Benavides Rey, que el acta D05 registra con fecha límite del 20 de septiembre. D06-3, «Fusionar la rama del segundo slice conforme a lo aprobado hoy», a cargo de los dos estudiantes, se dio por finalizada en el acta D07. D09-1, «Realizar la propuesta de los troncos del nivel dos para animarlos en Unity», se cumplió por un camino distinto del propuesto y el acta D10 la dio por finalizada. Las correcciones de cierre son de las tarjetas D10-2 y D10-5.
 
 **Tabla C.2.** Fases del slice, tareas y puntos de control.
 
