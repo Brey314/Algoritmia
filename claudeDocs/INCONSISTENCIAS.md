@@ -2627,8 +2627,11 @@ visibilidad del húmero (40 %) y del antebrazo (85 %).
 **Pruebas:** `CharacterRigLimbTests` (jerarquía armada en código; pasan al escribirse) y
 `CharacterRig_INC133_*` sobre los prefabs reales; `CharacterRig_DA131_*` y `CharacterRig_INC132_*` se
 ajustaron para aceptar la jerarquía nueva. Las de prefabs fallan hasta correr el modo `"orden"` en el
-Editor. **Verificación en el Editor: pendiente** (nodos, orden, clips, pruebas `INC133` y capturas aún
-no se han corrido). Fuera del Editor: `pose_preview.py` 21/21 por miembro de la familia y 9/9 por
+Editor. **Verificación en el Editor** (`433603f`, 06/10/2026): el generador creó las anclas y soltó los
+antebrazos en los cuatro prefabs de la familia (cuatro objetos nuevos por prefab, ninguno perdido) y
+reescribió 93 clips; las pruebas del antebrazo y del ancla pasan 14 de 14, EditMode 627 pasan con 1
+omitida y PlayMode 376 de 377 (falla `RiverLevel_RNF05` por la memoria del Editor, 2 161 MB); capturas en
+`claudeDocs/tasks/Personajes/capturas/2026-10-06/`. Fuera del Editor: `pose_preview.py` 21/21 por miembro de la familia y 9/9 por
 Algoritm (`233f2e5`).
 
 ## Residuos y puntos abiertos

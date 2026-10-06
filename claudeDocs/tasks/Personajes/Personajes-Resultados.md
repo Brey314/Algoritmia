@@ -817,7 +817,7 @@ recién abierto (1533 MB), así que conviene reiniciar el Editor antes de la sui
 
 ### C.10 Subcarpetas, caras por registro y antebrazo delante (INC-133, 06/10/2026)
 
-Rama `feat/personajes-animados`, de `63ed2fc` a `233f2e5`. Lo que sigue se verificó contra `git log` y `git show` de cada commit; lo que no se ha corrido en el Editor se marca como pendiente.
+Rama `feat/personajes-animados`, de `63ed2fc` a `433603f`. Lo que sigue se verificó contra `git log` y `git show` de cada commit.
 
 **Por commit**
 
@@ -838,6 +838,13 @@ Rama `feat/personajes-animados`, de `63ed2fc` a `233f2e5`. Lo que sigue se verif
 | `64e4b37`, Editor local | PlayMode | 376/377; falla `RiverLevel_RNF05` con 2084 MB, en un Editor de larga duración |
 | `233f2e5`, fuera del Editor | `--autoprueba` (cuatro), `coreografia.py --valida`, `pose_preview.py` | 21/21 por miembro de la familia y 9/9 por Algoritm; sin curvas sobre `AntebrazoX` ni su ancla |
 | `ef37dd9`, `CharacterRigLimbTests` | EditMode, jerarquía armada en código | pasan al escribirse (según el mensaje del commit) |
-| `ef37dd9`, `CharacterRig_INC133_*` | EditMode, prefabs reales | fallan hasta correr `orden`; pendiente |
+| `ef37dd9`, `CharacterRig_INC133_*` | EditMode, prefabs reales | fallaban hasta correr `orden`; pasan tras la ronda de `433603f` (14/14 con las del antebrazo y el ancla) |
+| `433603f`, Editor local | `Game.Scaffolding.Tests` | 278/278 |
+| `433603f`, Editor local | antebrazo y ancla | 14/14 |
+| `433603f`, Editor local | EditMode | 627 pasan, 1 omitida, 0 fallos |
+| `433603f`, Editor local | PlayMode | 376/377; falla `RiverLevel_RNF05` con 2161 MB, en un Editor de larga duración |
+| `433603f`, Editor local | `CharacterCapture` | 5/5 |
 
-**Pendiente en el Editor** (ronda en curso): `nodos`, `sprites`, `orden` y `clips` para la familia (con las anclas de INC-133), las pruebas `INC133` sobre los prefabs, y las capturas. Falta el arte final de Algoritm. Hasta que esa ronda termine, no hay cifra de pruebas posterior a `64e4b37` que citar para estos cambios.
+**Ronda del Editor de `433603f` (06/10/2026).** El generador (`sprites`, `orden` y `clips`) se corrió sobre los cuatro prefabs de la familia: 14 sprites en Papá, Mamá y la Niña y 11 en el Niño; los juegos de cara `char_papa_cara`, `char_mama_cara` y `char_nina_cara` (neutra = `ojos_neutra` + `boca_0`); `AnclaAntebrazoIzq` y `AnclaAntebrazoDer` bajo cada codo, con los antebrazos al final de `Tronco`; Papá con `Cuello` tras `Torso`; 93 clips reescritos. Comparados objeto por objeto contra `HEAD`, cada prefab de la familia tiene 4 objetos nuevos (las dos anclas), ninguno perdido, y `m_Script` y `m_Controller` iguales; Algoritm no cambió; una segunda orden `orden` no guarda nada. 24 `.meta` de PNG pasan a `Single` (`spriteMode` 2 a 1) con los GUID iguales. Capturas en `claudeDocs/tasks/Personajes/capturas/2026-10-06/`: `01` y `01b` (familia en reposo en la escena 2.2), `02`, `02b` y `02c` (Papá en el Nivel 1), `03` (Mamá hablando), `04` (la Niña hablando) y `05` (Papá en reposo en el Nivel 1). No hay cuadro del choque de Papá.
+
+**Puntos abiertos.** Falta el arte final de Algoritm. Dos decisiones de coreografía esperan a Santiago: los gestos junto a la cabeza, que se abren a los lados, y el reposo en A de los brazos (40 a 72°). `RiverLevel_RNF05` falla en el Editor de larga duración (2161 MB aquí, 2199 MB el 05/10) y pasa recién abierto: es un hecho conocido de la sesión del Editor, no del ejecutable. Peso y memoria del arte nuevo no se han medido en un ejecutable.
