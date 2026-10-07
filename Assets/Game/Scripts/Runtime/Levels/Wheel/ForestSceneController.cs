@@ -256,6 +256,11 @@ namespace Game.Levels.Wheel
             BuildInventory();
             Despejar();
 
+            if (cargo != null && cargo.GetComponent<Image>() is { } cargoImage)
+            {
+                PropShadow.Attach(cargo.gameObject, cargoImage.sprite);
+            }
+
             // Pedir ayuda no es un intento: repite la instrucción vigente y no toca ningún
             // contador, así que usarla no acerca la pista ni la convierte en la respuesta
             // (RF-13, CP-06). La regla vive en HintPolicy; aquí solo se pulsa.
@@ -302,6 +307,8 @@ namespace Game.Levels.Wheel
             {
                 RollingLog.Attach(image, config.LogLook);
             }
+
+            PropShadow.Attach(button.gameObject, forestObject.Art);
 
             button.gameObject.SetActive(true);
             button.onClick.AddListener(() => Choose(forestObject, button));
@@ -646,11 +653,24 @@ namespace Game.Levels.Wheel
                     leavesMoving |= forestObject.Category == ForestObjectCategory.Plant && nudge.IsMoving;
                 }
 
-                Place((RectTransform)button.transform, position, forestObject.Mirrored, cursor);
+                var buttonRect = (RectTransform)button.transform;
+                Place(buttonRect, position, forestObject.Mirrored, cursor);
+
                 if (forestObject.Category == ForestObjectCategory.RoundLog &&
                     button.GetComponentInChildren<RollingLog>() is { } log)
                 {
-                    Roll((RectTransform)button.transform, log, forestObject, position);
+                    Roll(buttonRect, log, forestObject, position);
+                }
+
+                if (button.GetComponent<PropShadow>() is { } shadow)
+                {
+                    var lift = 0f;
+                    if (forestObject.Category == ForestObjectCategory.Plant && nudge != null)
+                    {
+                        lift = Mathf.Max(0f, nudge.Offset.y * floorArea.rect.height);
+                    }
+
+                    shadow.UpdateMotion(lift, 80f);
                 }
             }
 
@@ -882,6 +902,13 @@ namespace Game.Levels.Wheel
                     button.gameObject.SetActive(false);
                 }
 
+                // La caja se colocará sobre los troncos alineados: pierde su sombra de gota (el
+                // componente se lleva la sombra al destruirse).
+                if (cargo != null && cargo.GetComponent<PropShadow>() is { } cargoShadow)
+                {
+                    Destroy(cargoShadow);
+                }
+
                 // Los troncos salen de sus casillas: las casillas quedan vacías y la fila nace
                 // con ellos, que es de donde vuelan.
                 var origins = new List<Vector2>();
@@ -911,6 +938,11 @@ namespace Game.Levels.Wheel
 
                 // La rejilla decide dónde acaba cada tronco; luego se apaga para poder moverlos.
                 Canvas.ForceUpdateCanvases();
+                for (var i = 0; i < _row.Count && i < _collected.Count; i++)
+                {
+                    PropShadow.Attach(_row[i].gameObject, _collected[i].Art);
+                }
+
                 var destinations = _row.Select(log => log.rectTransform.anchoredPosition).ToArray();
                 var grid = logRow.GetComponent<LayoutGroup>();
                 if (grid != null)

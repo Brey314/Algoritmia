@@ -26,22 +26,46 @@ namespace Game.Scaffolding
         public static ActorCue Cue(NarrativeProp prop, int line, bool speaking)
         {
             var from = PositionBefore(prop, line);
+            var emotion = EmotionAt(prop, line);
             var beat = BeatAt(prop, line);
             if (beat == null)
             {
                 var held = HeldBefore(prop, line);
-                return new ActorCue(from, from, false, 0f, Talking(held, speaking), Talking(held, speaking));
+                return new ActorCue(from, from, false, 0f, Talking(held, speaking), Talking(held, speaking), emotion);
             }
 
             if (!beat.Moves)
             {
                 // Un paso Idle es «de pie, sin hacer nada más»: si la línea es suya, la dice.
                 var action = Talking(beat.Action, speaking);
-                return new ActorCue(from, from, false, 0f, action, action);
+                return new ActorCue(from, from, false, 0f, action, action, emotion);
             }
 
             return new ActorCue(from, beat.Destination, true, Mathf.Max(beat.Seconds, 0f), beat.Action,
-                Talking(beat.Arrival, speaking));
+                Talking(beat.Arrival, speaking), emotion);
+        }
+
+        /// <summary>
+        /// La expresión que el guion fija para la línea: la del último paso que la fija en esa línea
+        /// o antes (si hay dos en la misma, el último de la lista, como <see cref="BeatAt"/>). Se
+        /// mantiene hasta que otro paso la cambia, igual que la acción. <c>null</c> si ninguno la
+        /// fija: entonces manda la de la acción (<see cref="ActionEmotion"/>), y los assets que no
+        /// declaran emociones no cambian.
+        /// </summary>
+        public static FacialEmotion? EmotionAt(NarrativeProp prop, int line)
+        {
+            FacialEmotion? emotion = null;
+            var latest = -1;
+            foreach (var beat in prop.Beats)
+            {
+                if (beat != null && beat.SetsEmotion && beat.Line <= line && beat.Line >= latest)
+                {
+                    emotion = beat.Emotion;
+                    latest = beat.Line;
+                }
+            }
+
+            return emotion;
         }
 
         /// <summary>Dónde está el personaje al empezar la línea: el destino del último paso con movimiento anterior a ella.</summary>

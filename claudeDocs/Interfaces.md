@@ -245,7 +245,8 @@ muñeca. Pies grandes y redondeados, descalzos, con los dedos apenas insinuados.
 **ROSTRO.** Ojos grandes y redondos con mucha esclerótica blanca, pupila circular negra y un
 brillo puntual blanco; párpado superior en curva alta y abierta, nunca caído ni rasgado. Cejas
 gruesas, cortas y curvas, siempre separadas. Nariz pequeña de botón. Boca en sonrisa
-cerrada y suave, sin dientes a la vista: es la cara `neutra`, la única del juego (§4.2).
+cerrada y suave, sin dientes a la vista: es la cara `neutra`, la única del arte actual (§4.2; el
+arte final trae seis, INC-131).
 
 **POSE.** A-pose de producción (§7.5): brazos extendidos hacia los lados y hacia abajo formando
 unos 45° con el torso, **completamente separados del cuerpo**, con fondo visible entre cada
@@ -278,15 +279,19 @@ que tienen paletas muy distintas.
 
 ### 4.2 Expresiones
 
-Una sola cara por personaje, la `neutra`: la del torso del rig y la del retrato del cuadro de
-diálogo (`char_<x>_retrato_neutra.png`). No se generan variantes faciales. La emoción la lleva
-el cuerpo, con un clip del rig por acción (`ActorAction`, §7.3): `Encourage` (ánimo, puño
+**Arte actual.** Una sola cara por personaje, la `neutra`: la del torso del rig y la del retrato
+del cuadro de diálogo (`char_<x>_retrato_neutra.png`). La emoción la lleva el cuerpo, con un clip del rig por acción (`ActorAction`, §7.3): `Encourage` (ánimo, puño
 arriba), `Celebrate`, `Surprise`, `Observe`, `Point`, `Talk`…
 
 **No existen la tristeza ni el enfado**, ni un gesto de derrota. Tras un intento sin éxito el
 personaje hace `Encourage` y nunca otra cosa. La decisión no es estética — sostiene el ensayo y
 error en entorno seguro que fundamenta el enfoque de Aprendizaje Basado en Juegos del proyecto
 (§7.3, CP-02).
+
+**Arte final (decisión de Santiago, 05/10/2026, INC-131).** Los personajes finales traen seis
+expresiones —neutra, alegría, sorpresa, preocupación, concentración y sueño—, parpadeo y cuatro
+bocas del habla, como capas de ojos y boca sobre la cabeza. La lista, el límite (ninguna de
+tristeza, enfado ni derrota) y los nombres de archivo están en `Direccion_de_Arte.md` §7.3 y §13.1.
 
 ### 4.3 Algoritm no sigue esta especificación
 

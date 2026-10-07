@@ -39,6 +39,14 @@ namespace Game.Scaffolding
         [field: Tooltip("Qué hace al llegar, hasta el paso siguiente. Solo cuenta si se mueve.")]
         public ActorAction Arrival { get; private set; } = ActorAction.Idle;
 
+        [field: SerializeField]
+        [field: Tooltip("Si este paso fija la expresión de la cara. Sin marcar, el personaje lleva la que corresponde a su acción (Celebrate alegre, Strike concentrado…) y el paso no la toca.")]
+        public bool SetsEmotion { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("La expresión que pone desde esta línea hasta que otro paso la cambie. Solo cuenta si «Sets Emotion» está marcado. No hay expresión de derrota ni de tristeza (CP-02).")]
+        public FacialEmotion Emotion { get; private set; } = FacialEmotion.Neutral;
+
         /// <summary>Requerido por la serialización de Unity.</summary>
         private ActorBeat()
         {
@@ -56,6 +64,14 @@ namespace Game.Scaffolding
             Destination = destination;
             Seconds = seconds;
             Arrival = arrival;
+            return this;
+        }
+
+        /// <summary>Fija la expresión de la cara desde esta línea (<see cref="SetsEmotion"/>).</summary>
+        public ActorBeat WithEmotion(FacialEmotion emotion)
+        {
+            SetsEmotion = true;
+            Emotion = emotion;
             return this;
         }
     }

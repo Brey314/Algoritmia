@@ -1,0 +1,48 @@
+{
+  "mode": "playmode",
+  "filter": "Game.Audio.PlayMode.Tests",
+  "filterType": "assembly",
+  "startedUtc": "2026-10-02T05:51:01.0183806Z",
+  "finishedUtc": "2026-10-02T05:51:08.1765004Z",
+  "elapsedSec": 7.2,
+  "status": "completed",
+  "error": "",
+  "summary": {
+    "Total": 4,
+    "Passed": 4,
+    "Failed": 0,
+    "Skipped": 0,
+    "Inconclusive": 0
+  },
+  "xml": "C:\\Users\\benab\\AppData\\Local\\Temp\\Algoritmia-suite\\validacion2-2026-10-02\\B\\2026-10-02_005101_playmode.xml",
+  "results": [
+    {
+      "FullName": "Game.Audio.Tests.AudioManagerTests.AudioManager_RF05_ElCorteDeMusicaConservaElAmbiente",
+      "Status": "Passed",
+      "Duration": 0.0113137,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Audio.Tests.AudioManagerTests.AudioManager_RF05_ElCorteSecoCallaElAmbienteAlInstante",
+      "Status": "Passed",
+      "Duration": 0.0007683,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Audio.Tests.AudioManagerTests.AudioManager_RF05_PedirElAmbienteQueYaSuenaNoLoReinicia",
+      "Status": "Passed",
+      "Duration": 0.0118779,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Audio.Tests.AudioManagerTests.AudioManager_RF11_UnEfectoSeReproduceConVolumenAudible",
+      "Status": "Passed",
+      "Duration": 0.0058566,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}

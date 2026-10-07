@@ -9,7 +9,9 @@ namespace Game.Core.Tests
     [Category("Integration")]
     public class SceneLoaderTests
     {
-        private const int FrameBudget = 600;
+        // Tope en tiempo y no en frames: a cientos de frames por segundo, 600 no alcanzaban para el fundido
+        // (0,8 s) más la carga cuando otro Editor corre pruebas a la vez (suite2.ps1). Es el tope de RNF-04.
+        private const float TimeBudgetSeconds = 10f;
 
         [TearDown]
         public void DestruirElCargador()
@@ -131,7 +133,8 @@ namespace Game.Core.Tests
         /// </summary>
         private static async Task WaitUntil(System.Func<bool> condition)
         {
-            for (var frame = 0; frame < FrameBudget; frame++)
+            var deadline = Time.realtimeSinceStartup + TimeBudgetSeconds;
+            while (Time.realtimeSinceStartup < deadline)
             {
                 if (condition())
                 {
@@ -141,7 +144,7 @@ namespace Game.Core.Tests
                 await Awaitable.NextFrameAsync();
             }
 
-            Assert.Fail($"La condición no se cumplió en {FrameBudget} frames.");
+            Assert.Fail($"La condición no se cumplió en {TimeBudgetSeconds} s.");
         }
     }
 }

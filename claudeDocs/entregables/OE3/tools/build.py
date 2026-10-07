@@ -6,12 +6,15 @@ Uso (desde cualquier carpeta del repositorio):
     python claudeDocs/entregables/OE3/tools/build.py [--no-word] [--publish]
 
   (sin opciones)  arma los 8 .docx en claudeDocs/entregables/OE3/build/ (con el Markdown intermedio y
-                  un PDF de revisión por documento) y corre las guardas. No toca docs/OE3.
+                  un PDF de revisión por documento) y corre las guardas. No toca docs/.
   --no-word       salta tools/word_finalize.ps1: los .docx quedan sin cuadrícula en las tablas, sin
                   número de página, con la tabla de contenido vacía y sin PDF. Es para probar el
                   generador mientras otro proceso usa Word; no se combina con --publish.
-  --publish       si las guardas pasan, copia los 8 .docx a docs/OE3/, donde están versionados junto
-                  a fig/. Es lo único que escribe allí: un armado sin --publish no copia ni borra nada.
+  --publish       si las guardas pasan, copia el documento principal a docs/ y los siete anexos a
+                  «docs/anexos oe3/» (con espacio en el nombre; se crea si falta), que es donde están
+                  versionados los Word publicados. Es lo único que escribe allí: un armado sin
+                  --publish no copia ni borra nada. Las figuras no se publican: viven en docs/OE3/fig/
+                  (LFS) y son una entrada del armado, no una salida.
 
 Fuentes (todas en Markdown de pandoc, el mismo de los capítulos):
   src/01-... a 12-*.md   los capítulos del documento principal, en el orden de CHAPTERS.
@@ -24,15 +27,20 @@ Fuentes (todas en Markdown de pandoc, el mismo de los capítulos):
                          avisa y no genera ese anexo; el resto se arma igual.
 Plantilla de estilos: la del OE2 tal como está en el commit 127fbc4, que se extrae con git a
 build/ref_oe2_127fbc4.docx (la del árbol cambió el 29-30/09/2026 y el entregable no debe cambiar de
-aspecto). Las figuras (fig/) se buscan en OE3/ y en docs/OE3/ (--resource-path).
+aspecto). Las figuras (fig/) se buscan en OE3/ y en docs/OE3/ (--resource-path): docs/OE3/fig/ guarda
+los 16 .jpg de las capturas del prototipo, más las figuras del Anexo F, versionados con Git LFS; un
+clon con `git lfs` apagado los trae como punteros de ~130 bytes y la guarda de figuras lo avisa.
 
 Guardas, sobre el Markdown intermedio de build/ (se corren en cada armado; con --publish, si alguna
 falla no se abre Word ni se copia nada):
   - se armaron los 8 documentos;
   - ningún «§» (las remisiones del entregable son «apartado 9.1»), ningún «Anexo H» / «ANEXO H» ni
-    rango de anexos que llegue a la H: no hay Anexo H, las actas están en el SharePoint;
-  - el principal trae las Tablas 2.2, 4.12, 8.1, 8.2 y 9.3, que cita el trabajo de grado;
-  - cada figura fig/... existe y está descargada de LFS.
+    rango de anexos que llegue a la H: no hay Anexo H. Las actas de seguimiento no se anexan: están en
+    Word en el SharePoint de Santiago y, desde el commit 31483e6, también versionadas en docs/actas/;
+  - ningún marcador «{{...}}» sin rellenar ni comentario de trabajo «<!--»;
+  - el principal trae las Tablas 1.2, 2.2, 4.12, 8.1, 8.2, 8.3, 9.3 y 9.5 y las Figuras 4.2, 4.7 y 4.8,
+    que cita el trabajo de grado (CITED_TABLES, CITED_FIGURES);
+  - cada figura fig/... existe y está descargada de LFS (pesa más de 1 KB).
 Si falta la fuente de un anexo, el armado lo avisa y sigue con los demás; la guarda de los 8 documentos
 falla, así que no se publica un conjunto incompleto. Las líneas que citan las guardas son las del
 Markdown de build/, no las de src/: se ubican por el extracto.
@@ -57,8 +65,11 @@ OE3 = pathlib.Path(__file__).resolve().parents[1]
 ROOT = OE3.parents[2]
 SRC = OE3 / "src"
 BUILD = OE3 / "build"
-PUBLISHED = ROOT / "docs" / "OE3"  # destino de --publish; allí está también fig/
-RESOURCE_PATH = [OE3, PUBLISHED]
+# Destinos de --publish: el principal va a docs/ y los anexos, uno por .docx, a docs/anexos oe3/.
+PUBLISHED_MAIN = ROOT / "docs"
+PUBLISHED_ANNEXES = ROOT / "docs" / "anexos oe3"
+FIGURES_HOME = ROOT / "docs" / "OE3"  # allí está fig/ (LFS): entrada del armado, no destino
+RESOURCE_PATH = [OE3, FIGURES_HOME]
 MAIN = "Solucion_OE3_Prototipo_funcional"
 # docs/Solucion_OE2_Diseno_final.docx es un radicado que se edita (cambió el 29-30/09/2026): la
 # plantilla de estilos se toma de como estaba al armarse el entregable, no del árbol.
@@ -277,11 +288,18 @@ def finalize(documents: list[tuple[pathlib.Path, pathlib.Path]]) -> None:
                     str(OE3 / "tools" / "word_finalize.ps1"), "-List", str(listing)], check=True)
 
 
+def destination(docx: pathlib.Path) -> pathlib.Path:
+    """Dónde se publica un .docx: el principal en docs/, cada anexo en docs/anexos oe3/."""
+    return PUBLISHED_MAIN / docx.name if docx.stem == MAIN else PUBLISHED_ANNEXES / docx.name
+
+
 def publish(documents: list[tuple[pathlib.Path, pathlib.Path]]) -> None:
-    """Copia los .docx a docs/OE3. Antes de copiar nada se comprueba que ninguno esté abierto en Word,
-    para no dejar el conjunto a medias."""
+    """Copia el principal a docs/ y los anexos a docs/anexos oe3/ (que se crea si falta). Antes de copiar
+    nada se comprueba que ninguno esté abierto en Word, para no dejar el conjunto a medias."""
+    PUBLISHED_MAIN.mkdir(parents=True, exist_ok=True)
+    PUBLISHED_ANNEXES.mkdir(parents=True, exist_ok=True)
     for docx, _ in documents:
-        target = PUBLISHED / docx.name
+        target = destination(docx)
         if target.exists():
             try:
                 with open(target, "r+b"):
@@ -290,15 +308,15 @@ def publish(documents: list[tuple[pathlib.Path, pathlib.Path]]) -> None:
                 raise SystemExit(f"{target.name} está abierto en otro programa (¿Word?): "
                                  "ciérrelo y repita --publish")
     for docx, _ in documents:
-        shutil.copyfile(docx, PUBLISHED / docx.name)
-        print(f"publicado: {PUBLISHED / docx.name}")
+        shutil.copyfile(docx, destination(docx))
+        print(f"publicado: {destination(docx)}")
 
 
 def main(argv: list[str] | None = None) -> int:
     sys.stdout.reconfigure(encoding="utf-8")  # canalizada, Windows la deja en cp1252: acentos rotos
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--no-word", action="store_true", help="salta word_finalize.ps1 (solo para probar el generador)")
-    parser.add_argument("--publish", action="store_true", help="si las guardas pasan, copia los 8 .docx a docs/OE3")
+    parser.add_argument("--publish", action="store_true", help="si las guardas pasan, copia el principal a docs/ y los anexos a «docs/anexos oe3/»")
     args = parser.parse_args(argv)
     if args.publish and args.no_word:
         parser.error("--publish exige el paso de Word: un .docx sin terminar no se publica")
@@ -307,7 +325,7 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit(f"faltan capítulos: {missing}")
     BUILD.mkdir(exist_ok=True)
     # Lo de un armado anterior —anexos con otra letra o nombre— no puede quedar junto a lo nuevo. Solo
-    # build/: docs/OE3 tiene los anexos versionados y únicamente --publish lo toca.
+    # build/: docs/ y docs/anexos oe3/ tienen los Word versionados y únicamente --publish los toca.
     for stale in (*BUILD.glob("Solucion_OE3_*"), *BUILD.glob("documentos.txt")):
         stale.unlink()
     extract_reference()
@@ -322,7 +340,7 @@ def main(argv: list[str] | None = None) -> int:
     for problem in problems:
         print(f"GUARDA: {problem}")
     if args.publish and problems:
-        print(f"No se publica: {len(problems)} guardas fallan. No se abrió Word ni se tocó docs/OE3.")
+        print(f"No se publica: {len(problems)} guardas fallan. No se abrió Word ni se tocó docs/.")
         return 1
     if not args.no_word:
         finalize(documents)

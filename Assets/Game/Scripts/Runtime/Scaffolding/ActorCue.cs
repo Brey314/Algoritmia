@@ -8,7 +8,8 @@ namespace Game.Scaffolding
     /// </summary>
     public readonly struct ActorCue
     {
-        public ActorCue(Vector2 from, Vector2 to, bool moves, float seconds, ActorAction during, ActorAction after)
+        public ActorCue(Vector2 from, Vector2 to, bool moves, float seconds, ActorAction during, ActorAction after,
+            FacialEmotion? emotion = null)
         {
             From = from;
             To = to;
@@ -16,6 +17,7 @@ namespace Game.Scaffolding
             Seconds = seconds;
             During = during;
             After = after;
+            Emotion = emotion;
         }
 
         /// <summary>Dónde está al empezar la línea, en fracciones de la ilustración.</summary>
@@ -34,5 +36,8 @@ namespace Game.Scaffolding
 
         /// <summary>Lo que hace al llegar.</summary>
         public ActorAction After { get; }
+
+        /// <summary>La expresión que el guion fija en esta línea; <c>null</c> = la de la acción (<see cref="ActionEmotion"/>).</summary>
+        public FacialEmotion? Emotion { get; }
     }
 }

@@ -1,0 +1,335 @@
+// Organizador efímero (NO es código del juego): reparte el arte de cada personaje en subcarpetas
+// SIN cambiar ningún GUID, para que prefabs, clips, sets de cara y escenas sigan apuntando a lo mismo.
+//
+// POR QUÉ. Hasta ahora todo el arte de un personaje vivía suelto en Assets/Game/Art/Characters/<Carpeta>/:
+// las partes del cuerpo, los ojos, las bocas y los retratos juntos. Con las seis expresiones y las
+// partes finales de cada uno son decenas de PNG por carpeta, y el generador del arte final
+// (BuildRigsFinal.cs.txt, preparar_arte_final.py) ya espera esta disposición:
+//
+//   Assets/Game/Art/Characters/<Carpeta>/        Carpeta = Boy, Girl, Father, Mother o Algoritm
+//       Frontal/       las partes del cuerpo      char_<x>_parte_*.png
+//       Expresiones/   ojos, bocas, cara base     char_<x>_ojos_*.png, char_<x>_boca_*.png,
+//                      y el set de la cara        char_<x>_cara_base.png, char_<x>_cara.asset
+//       Perfil/        vacía por ahora (lleva un .gitkeep para que git la conserve)
+//       Animations/, los retratos (char_*_retrato_*), char_mama_cenital.png y los
+//       char_algoritm_*_reposo.png NO se tocan: se quedan en la raíz.
+//
+// POR QUÉ SOLO AssetDatabase. Mover un archivo por el Explorador o con git sin su .meta le cambia el
+// GUID y deja sin sprite a todo lo que lo referenciaba (prefabs, .anim, el set de cara). Este script
+// solo usa AssetDatabase.CreateFolder y AssetDatabase.MoveAsset, que mueven el archivo CON su .meta y
+// crean los .meta de las carpetas nuevas. Lo único que escribe por System.IO es el .gitkeep de Perfil/
+// (Unity ignora los archivos ocultos: no genera .meta para él).
+//
+// QUÉ MUEVE. Solo los archivos que están DIRECTAMENTE en la raíz de cada <Carpeta> (no entra en
+// Animations/ ni en ninguna subcarpeta), por patrón de nombre:
+//   *_parte_*                                          →  Frontal/
+//   *_ojos_*   *_boca_*   *_cara_base*   *_cara.asset  →  Expresiones/
+// Todo lo demás se queda donde está y el log lo lista.
+//
+// IDEMPOTENTE. Correrlo otra vez no hace nada: ya no queda nada suelto que case con un patrón. Si el
+// destino de un archivo ya existe (un PNG con el mismo nombre ya está en la subcarpeta) o MoveAsset
+// devuelve un error, lo REGISTRA y sigue con el siguiente: no sobrescribe ni borra nada, y el archivo
+// de la raíz queda para que una persona decida cuál sobra (FindSprite de BuildRigsFinal avisa de los
+// duplicados y prefiere el de la subcarpeta).
+//
+// CÓMO SE EJECUTA Y SE BORRA (lo hace la sesión local de Santiago, con el Editor abierto, ANTES de
+// correr ClaudeBuildRigsFinal):
+//   1. Copiar este archivo a Assets/Editor/ClaudeOrganizarArte.cs (la clase se llama
+//      ClaudeOrganizarArte; el Editor genera el .meta solo, nunca a mano) y esperar a que compile.
+//   2. Llamar por coplay execute_script:  ClaudeOrganizarArte.Execute("estado")  —solo informa qué
+//      movería y qué carpetas crearía, no escribe nada— y, si el plan es el esperado,
+//      ClaudeOrganizarArte.Execute("mover"). Devuelve el log como texto.
+//   3. Comprobar en git que cada movimiento aparece como renombrado (R) con su .meta y que ningún
+//      .meta cambió de GUID: `git diff --stat -M Assets/Game/Art/Characters` y, por precaución,
+//      `git diff -M -U0 -- '*.meta'` no debe mostrar ningún cambio de «guid:».
+//   4. Borrar Assets/Editor/ClaudeOrganizarArte.cs (y su .meta): es andamiaje, no código del juego.
+//      Este .txt es la copia que queda versionada.
+using System;
+using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
+using UnityEngine;
+
+public static class ClaudeOrganizarArte
+{
+    private const string Art = "Assets/Game/Art/Characters";
+    private const string Frontal = "Frontal";
+    private const string Expresiones = "Expresiones";
+    private const string Perfil = "Perfil";
+
+    /// <summary>Las carpetas de personaje de Assets/Game/Art/Characters. Algoritm cubre sus tres formas (fuego, rueda, gota).</summary>
+    private static readonly string[] Carpetas = { "Boy", "Girl", "Father", "Mother", "Algoritm" };
+
+    /// <summary>Lo que se crea en cada carpeta aunque no haya nada que mover: el generador del arte final escribe ahí.</summary>
+    private static readonly string[] Subcarpetas = { Frontal, Expresiones, Perfil };
+
+    // ---------------------------------------------------------------- la regla de nombres (pura, sin Unity)
+
+    /// <summary>Un movimiento planeado: de la raíz de la carpeta del personaje a una de sus subcarpetas.</summary>
+    private sealed class Move
+    {
+        public string From;
+        public string To;
+        public string Subfolder;
+    }
+
+    /// <summary>
+    /// La subcarpeta que le toca a un archivo por su nombre (con extensión), o null si se queda en la
+    /// raíz. Las partes del cuerpo van a Frontal; los ojos, las bocas, la cara base y el set de la cara
+    /// (_cara.asset) a Expresiones. Los retratos, la cenital de Mamá y los reposos de Algoritm no casan
+    /// con ningún patrón. Es la misma regla de nombres de ExpectedSubfolder en BuildRigsFinal.
+    /// </summary>
+    private static string SubfolderFor(string fileName)
+    {
+        if (fileName.Contains("_parte_")) return Frontal;
+        if (fileName.Contains("_ojos_") || fileName.Contains("_boca_") || fileName.Contains("_cara_base")
+            || fileName.EndsWith("_cara.asset", StringComparison.Ordinal))
+        {
+            return Expresiones;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Los movimientos de una carpeta de personaje a partir de los nombres de los archivos que están en
+    /// su raíz. No mira el disco ni el AssetDatabase: «folder» es la ruta del proyecto (Assets/…) y
+    /// «fileNames» solo los nombres, sin los .meta. El orden de salida es el alfabético de los nombres.
+    /// </summary>
+    private static List<Move> PlanMoves(string folder, IEnumerable<string> fileNames)
+    {
+        var names = new List<string>(fileNames);
+        names.Sort(StringComparer.Ordinal);
+
+        var moves = new List<Move>();
+        foreach (var name in names)
+        {
+            var sub = SubfolderFor(name);
+            if (sub != null)
+            {
+                moves.Add(new Move { From = folder + "/" + name, To = folder + "/" + sub + "/" + name, Subfolder = sub });
+            }
+        }
+
+        return moves;
+    }
+
+    // ---------------------------------------------------------------- punto de entrada
+
+    public static string Execute(string mode)
+    {
+        var log = new List<string>();
+        try
+        {
+            switch (mode)
+            {
+                case "estado":
+                    AssetDatabase.Refresh();
+                    Run(false, log);
+                    break;
+                case "mover":
+                    AssetDatabase.Refresh();
+                    Run(true, log);
+                    AssetDatabase.SaveAssets();
+                    AssetDatabase.Refresh();
+                    break;
+                default:
+                    log.Add("modo desconocido «" + mode + "»: estado | mover");
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            log.Add("ERROR: " + e);
+        }
+
+        return string.Join("\n", log.ToArray());
+    }
+
+    private static void Run(bool write, List<string> log)
+    {
+        var moved = 0;
+        var problems = 0;
+        var planned = 0;
+        foreach (var carpeta in Carpetas)
+        {
+            Organize(carpeta, write, log, ref planned, ref moved, ref problems);
+        }
+
+        if (write)
+        {
+            log.Add("TOTAL: " + moved + " de " + planned + " archivos movidos" + (problems > 0 ? ", " + problems + " con problema (ver arriba)" : ""));
+        }
+        else
+        {
+            log.Add("TOTAL: " + planned + " archivos por mover (nada escrito: es el modo «estado»)");
+        }
+    }
+
+    private static void Organize(string carpeta, bool write, List<string> log, ref int planned, ref int moved, ref int problems)
+    {
+        var folder = Art + "/" + carpeta;
+        if (!AssetDatabase.IsValidFolder(folder))
+        {
+            log.Add(carpeta + ": FALTA la carpeta " + folder);
+            problems++;
+            return;
+        }
+
+        var inRoot = RootFiles(folder);
+        var moves = PlanMoves(folder, inRoot);
+        planned += moves.Count;
+
+        var staying = new List<string>();
+        foreach (var name in inRoot)
+        {
+            if (SubfolderFor(name) == null) staying.Add(name);
+        }
+
+        log.Add(carpeta + ": " + moves.Count + " por mover; sin tocar en la raíz: " + staying.Count
+            + (staying.Count > 0 ? " (" + string.Join(", ", staying.ToArray()) + ")" : ""));
+
+        // Las subcarpetas primero, aunque no haya nada que mover: el generador del arte final escribe en ellas.
+        foreach (var sub in Subcarpetas)
+        {
+            var path = folder + "/" + sub;
+            if (AssetDatabase.IsValidFolder(path))
+            {
+                continue;
+            }
+
+            if (!write)
+            {
+                log.Add("  crearía " + path);
+            }
+            else if (!EnsureFolder(folder, sub, log))
+            {
+                problems++;
+            }
+        }
+
+        foreach (var move in moves)
+        {
+            if (!write)
+            {
+                var clash = Exists(move.To) ? "  ¡EL DESTINO YA EXISTE: no se movería!" : "";
+                log.Add("  " + Path.GetFileName(move.From) + "  →  " + move.Subfolder + "/" + clash);
+                if (clash.Length > 0) problems++;
+                continue;
+            }
+
+            if (Exists(move.To))
+            {
+                log.Add("  OMITIDO " + move.From + ": el destino " + move.To + " ya existe (se deja en la raíz; decidir a mano cuál sobra)");
+                problems++;
+                continue;
+            }
+
+            if (!AssetDatabase.IsValidFolder(folder + "/" + move.Subfolder))
+            {
+                log.Add("  OMITIDO " + move.From + ": no existe la carpeta " + folder + "/" + move.Subfolder);
+                problems++;
+                continue;
+            }
+
+            var error = AssetDatabase.MoveAsset(move.From, move.To);
+            if (!string.IsNullOrEmpty(error))
+            {
+                log.Add("  ERROR al mover " + move.From + ": " + error);
+                problems++;
+                continue;
+            }
+
+            moved++;
+            log.Add("  movido " + Path.GetFileName(move.From) + "  →  " + move.Subfolder + "/");
+        }
+
+        KeepFile(folder + "/" + Perfil, write, log);
+    }
+
+    // ---------------------------------------------------------------- apoyo con disco y AssetDatabase
+
+    /// <summary>Los nombres de los archivos que están directamente en la raíz de la carpeta (sin .meta, ocultos ni carpetas).</summary>
+    private static List<string> RootFiles(string folder)
+    {
+        var names = new List<string>();
+        var full = Path.GetFullPath(Path.Combine(Application.dataPath, "..", folder));
+        if (!Directory.Exists(full))
+        {
+            return names;
+        }
+
+        foreach (var file in Directory.GetFiles(full))
+        {
+            var name = Path.GetFileName(file);
+            if (name.EndsWith(".meta", StringComparison.Ordinal) || name.StartsWith(".", StringComparison.Ordinal)
+                || name.EndsWith("~", StringComparison.Ordinal))
+            {
+                continue; // Unity no importa .meta, ocultos ni «~»
+            }
+
+            names.Add(name);
+        }
+
+        names.Sort(StringComparer.Ordinal);
+        return names;
+    }
+
+    /// <summary>Si ya hay algo en esa ruta del proyecto, en disco o en el AssetDatabase.</summary>
+    private static bool Exists(string assetPath)
+    {
+        var full = Path.GetFullPath(Path.Combine(Application.dataPath, "..", assetPath));
+        return File.Exists(full) || !string.IsNullOrEmpty(AssetDatabase.AssetPathToGUID(assetPath));
+    }
+
+    /// <summary>
+    /// Crea la subcarpeta si falta. Se pregunta antes con IsValidFolder porque CreateFolder sobre una
+    /// carpeta que ya existe no es idempotente (puede crear «Nombre 1»). false si no quedó una carpeta válida.
+    /// </summary>
+    private static bool EnsureFolder(string parent, string name, List<string> log)
+    {
+        var path = parent + "/" + name;
+        if (AssetDatabase.IsValidFolder(path))
+        {
+            return true;
+        }
+
+        AssetDatabase.CreateFolder(parent, name);
+        if (!AssetDatabase.IsValidFolder(path))
+        {
+            log.Add("  ERROR no se pudo crear la carpeta " + path);
+            return false;
+        }
+
+        log.Add("  creada " + path);
+        return true;
+    }
+
+    /// <summary>
+    /// El .gitkeep de la carpeta vacía de perfiles. Lo escribe System.IO (Unity ignora los archivos
+    /// ocultos y no le genera .meta); si la carpeta ya existe y ya lo tiene, no hace nada.
+    /// </summary>
+    private static void KeepFile(string folder, bool write, List<string> log)
+    {
+        var full = Path.GetFullPath(Path.Combine(Application.dataPath, "..", folder, ".gitkeep"));
+        if (File.Exists(full))
+        {
+            return;
+        }
+
+        if (!write)
+        {
+            log.Add("  escribiría " + folder + "/.gitkeep");
+            return;
+        }
+
+        if (!AssetDatabase.IsValidFolder(folder))
+        {
+            log.Add("  AVISO no hay carpeta " + folder + ": no se escribe su .gitkeep");
+            return;
+        }
+
+        File.WriteAllText(full, "");
+        log.Add("  escrito " + folder + "/.gitkeep");
+    }
+}

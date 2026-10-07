@@ -130,6 +130,37 @@ namespace Game.UI.Tests
             Assert.That(controller.SpeakerLabel.text, Is.EqualTo(esperada.Speaker));
         }
 
+        /// <summary>
+        /// La boca de quien dice la línea se mueve mientras está en pantalla y se detiene al avanzar
+        /// (plan de personajes finales §5.3). Se comprueba el estado del rig y no los sprites: hasta
+        /// que llegue el arte de cara, <c>CharacterFace</c> no dibuja nada.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF05_QuienHablaHablaYCallaAlAvanzar()
+        {
+            var (controller, _) = await OpenNarrative("N1_Hallazgo");
+            var lineas = SequenceNamed(controller, "N1_Hallazgo").Lines;
+            var alguienHablo = false;
+
+            for (var i = 0; i < lineas.Length; i++)
+            {
+                foreach (var actor in controller.Actors)
+                {
+                    Assert.That(actor.Rig.Speaking, Is.EqualTo(actor.Rig.Speaks(lineas[i].Speaker)),
+                        $"línea {i}: habla «{lineas[i].Speaker}» y solo ese personaje mueve la boca");
+                    alguienHablo |= actor.Rig.Speaking;
+                }
+
+                if (i < lineas.Length - 1)
+                {
+                    Click(controller.AdvanceButton); // la última sale de la escena
+                }
+            }
+
+            Assert.That(alguienHablo, Is.True, "al menos un personaje de la escena dice una línea");
+        }
+
         [Test]
         [Timeout(60000)]
         public async Task NarrativeScene_RF10_LaAperturaEncadenaLasTresEscenasDelNivel1YEntraAJugar()
@@ -497,8 +528,11 @@ namespace Game.UI.Tests
             Assert.That(secuencia.Props.Length, Is.GreaterThanOrEqualTo(15),
                 "la escena declara los catorce objetos del bosque y la caja");
 
+            // La capa de sombras de gota también cuelga de la ilustración, pero no es un objeto.
             var pintados = Enumerable.Range(0, controller.IllustrationRect.childCount)
-                .Select(i => controller.IllustrationRect.GetChild(i).GetComponent<Image>())
+                .Select(i => controller.IllustrationRect.GetChild(i))
+                .Where(hijo => !PropShadow.IsLayer(hijo))
+                .Select(hijo => hijo.GetComponent<Image>())
                 .ToArray();
             Assert.That(pintados.Select(p => p.sprite), Is.EqualTo(secuencia.Props.Select(p => p.Art)),
                 "cada objeto declarado se pinta con su ilustración, en orden");

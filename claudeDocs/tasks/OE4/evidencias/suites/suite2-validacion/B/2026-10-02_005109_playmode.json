@@ -1,0 +1,104 @@
+{
+  "mode": "playmode",
+  "filter": "Game.Core.PlayMode.Tests",
+  "filterType": "assembly",
+  "startedUtc": "2026-10-02T05:51:09.0057511Z",
+  "finishedUtc": "2026-10-02T05:51:26.2907731Z",
+  "elapsedSec": 17.3,
+  "status": "completed",
+  "error": "",
+  "summary": {
+    "Total": 12,
+    "Passed": 12,
+    "Failed": 0,
+    "Skipped": 0,
+    "Inconclusive": 0
+  },
+  "xml": "C:\\Users\\benab\\AppData\\Local\\Temp\\Algoritmia-suite\\validacion2-2026-10-02\\B\\2026-10-02_005109_playmode.xml",
+  "results": [
+    {
+      "FullName": "Game.Core.Tests.BootFlowTests.BootFlow_RF01_ArrancaEnBootYLlegaSoloAMainMenu",
+      "Status": "Passed",
+      "Duration": 0.9189716,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Core.Tests.BootFlowTests.GameFlowRunner_RNF16_NoDecideTransicionesLasDelegaEnGameFlow",
+      "Status": "Passed",
+      "Duration": 0.8056558,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Core.Tests.BootFlowTests.GameFlowRunner_RNF16_NoSeDuplicaAlRecargarEscena",
+      "Status": "Passed",
+      "Duration": 1.2250936,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Core.Tests.ControlSchemeTests.Controls_RNF02_LasCincoEscenasJugablesSoloAceptanClicYClicSostenido",
+      "Status": "Passed",
+      "Duration": 2.394794,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowRunnerTests.GameFlowRunner_RF02_SelectProfileFijaElPerfilYEntraALevelSelect",
+      "Status": "Passed",
+      "Duration": 0.7976967,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowRunnerTests.GameFlowRunner_RF22_JugarLaFase1DelNivel2CargaLaEscenaDelBosque",
+      "Status": "Passed",
+      "Duration": 2.079919,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowRunnerTests.GameFlowRunner_RNF14_ConLasDosPrimerasFasesConfirmadasEntrarAlNivel2RetomaEnElLaberinto",
+      "Status": "Passed",
+      "Duration": 1.720424,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowRunnerTests.GameFlowRunner_RNF16_VolverAlMenuDesdeElPanelDePerfilNoRecargaLaEscena",
+      "Status": "Passed",
+      "Duration": 0.8220416,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Core.Tests.SceneLoaderTests.SceneLoader_RF05_ConFundidoCargaEnNegroYVuelveALaImagen",
+      "Status": "Passed",
+      "Duration": 0.6292921,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Core.Tests.SceneLoaderTests.SceneLoader_RF05_SinFundidoNoOscureceNada",
+      "Status": "Passed",
+      "Duration": 0.4009064,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Core.Tests.SceneLoaderTests.SceneLoader_RNF04_CadaCargaDejaSuTiempoEnElRegistro",
+      "Status": "Passed",
+      "Duration": 0.8292155,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Core.Tests.SceneLoaderTests.SceneLoader_RNF04_LastLoadSecondsMideElTiempoRealDeCargaDeLaEscena",
+      "Status": "Passed",
+      "Duration": 0.4552253,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}

@@ -29,6 +29,9 @@ namespace Game.Scaffolding
         /// <summary>Segundos del fundido entre dos acciones: sin saltos de pose (RNF-21).</summary>
         private const float BlendSeconds = 0.18f;
 
+        /// <summary>Dónde está Tronco, el padre de torso y brazos, contando desde el lienzo (<see cref="Stage"/>).</summary>
+        private const string TrunkPath = "Cuerpo/Tronco";
+
         private static readonly int IdleState = Animator.StringToHash(nameof(ActorAction.Idle));
 
         [field: SerializeField]
@@ -47,13 +50,63 @@ namespace Game.Scaffolding
         [Tooltip("El lienzo de 1024 × 1024 que contiene las partes. Se escala para llenar la casilla del personaje.")]
         private RectTransform stage;
 
+        // Decisión de Santiago (05/10/2026, INC-132): en la familia los brazos se dibujan detrás del torso, y
+        // al golpear las piedras las manos chocan delante del pecho: con los brazos detrás el choque no se
+        // ve. Mientras dure una de estas acciones los brazos pasan delante del torso (ArmLayering); al pasar
+        // a otra acción vuelven a su sitio. El valor por defecto vale para los siete prefabs sin editarlos:
+        // si el campo no está serializado en el prefab, Unity conserva el del inicializador. Ojo: en cuanto
+        // un prefab se vuelve a guardar desde el Editor (Inspector, el generador) el campo queda escrito con
+        // el valor de ese momento, y un cambio posterior del inicializador ya no lo alcanza. Algoritm no se
+        // ve afectado: sus brazos ya van delante del cuerpo.
+        [SerializeField]
+        [Tooltip("Acciones durante las que los brazos se dibujan DELANTE del torso, para que se vea el choque de las manos delante del pecho. Al terminarlas vuelven a su sitio. Vacío = nunca. En Algoritm no cambia nada: sus brazos ya van delante del cuerpo.")]
+        private ActorAction[] armsInFrontActions = { ActorAction.Strike };
+
         private Vector2 _fittedSize = new Vector2(-1f, -1f);
         private bool _mirrored;
         private bool _started;
         private CancellationTokenSource _returning;
+        private CharacterFace _face;
+        private ArmLayering _armLayering;
+        private LimbFollower[] _limbs;
+        private FacialEmotion? _emotionOverride;
+        private bool _speaking;
 
         /// <summary>La última acción pedida.</summary>
         public ActorAction Current { get; private set; } = ActorAction.Idle;
+
+        /// <summary>
+        /// La emoción que el guion fija para este personaje (<see cref="ActorBeat.SetsEmotion"/>);
+        /// <c>null</c> = la que le corresponde a su acción (<see cref="ActionEmotion"/>). Asignarla
+        /// refresca la cara al instante.
+        /// </summary>
+        public FacialEmotion? EmotionOverride
+        {
+            get => _emotionOverride;
+            set
+            {
+                _emotionOverride = value;
+                PushToFace();
+            }
+        }
+
+        /// <summary>La emoción vigente: la que fija el guion o, si no, la de la acción en curso.</summary>
+        public FacialEmotion Emotion => EmotionOverride ?? ActionEmotion.For(Current);
+
+        /// <summary>
+        /// Si el personaje está diciendo su línea: la boca aletea hasta que se apaga. La pone quien
+        /// conduce la escena (<c>NarrativeSceneController</c>), no el rig, que no sabe qué línea se lee.
+        /// Sin <see cref="CharacterFace"/> —o sin sprites de cara— no se ve nada, pero el valor se guarda.
+        /// </summary>
+        public bool Speaking
+        {
+            get => _speaking;
+            set
+            {
+                _speaking = value;
+                PushToFace();
+            }
+        }
 
         /// <summary>El lienzo que contiene las partes.</summary>
         public RectTransform Stage => stage;
@@ -74,7 +127,59 @@ namespace Game.Scaffolding
 
         private void Awake() => Fit(true);
 
-        private void LateUpdate() => Fit(false);
+        private void OnEnable()
+        {
+            Fit(true);
+            PushToFace();
+            if (animator != null && animator.runtimeAnimatorController != null && animator.isActiveAndEnabled)
+            {
+                Apply(Current, immediate: true);
+            }
+
+            // Tras Play + Update(0): sin esto el primer cuadro enseñaría el antebrazo donde lo dejó el prefab.
+            SyncLimbs();
+        }
+
+        private void Start()
+        {
+            if (!_started && animator != null && animator.runtimeAnimatorController != null && animator.isActiveAndEnabled)
+            {
+                Apply(Current, immediate: true);
+            }
+
+            SyncLimbs();
+        }
+
+        private void LateUpdate()
+        {
+            Fit(false);
+            SyncLimbs(); // el Animator ya movió brazos y codos: LateUpdate corre después de él
+        }
+
+        /// <summary>
+        /// Pone cada antebrazo en la pose de su ancla (<see cref="LimbFollower"/>). En la familia el
+        /// antebrazo cuelga de Tronco para dibujarse delante del torso aunque el húmero vaya detrás
+        /// (INC-133); el ancla, que sí cuelga del codo, es la que anima el Animator. Los pares se buscan
+        /// por nombre la primera vez: un personaje sin anclas (arte provisional, Algoritm) no tiene ninguno
+        /// y esto no hace nada. Sin lienzo no hay dónde buscar y se reintenta en el cuadro siguiente.
+        /// </summary>
+        internal void SyncLimbs()
+        {
+            if (_limbs == null)
+            {
+                if (stage == null)
+                {
+                    return;
+                }
+
+                _limbs = LimbFollower.Discover(stage.Find(TrunkPath));
+            }
+
+            foreach (var limb in _limbs)
+            {
+                limb.Sync();
+            }
+        }
 
         /// <summary>
         /// Pasa a la acción pedida con un fundido corto. Un rig sin ese estado hace
@@ -115,17 +220,24 @@ namespace Game.Scaffolding
             Apply(then);
         }
 
-        private void Apply(ActorAction action)
+        private void Apply(ActorAction action, bool immediate = false)
         {
             // Pedir lo que ya hace no lo reinicia: una acción que se mantiene entre líneas —se
             // apagó, sigue arrodillado— no vuelve a empezar cada vez que avanza el texto.
-            if (action == Current && _started)
+            if (action == Current && _started && !immediate)
             {
                 return;
             }
 
-            _started = true;
             Current = action;
+            // Las capas de los brazos y la cara siguen a la acción aunque no haya Animator que la ejecute.
+            // El cambio de capa es seco, al empezar la acción, y no espera al fundido de BlendSeconds: al
+            // entrar en Strike los brazos ya van delante mientras suben al pecho (cruzan delante del torso
+            // de todos modos), y al salir de él vuelven detrás al empezar la acción siguiente, así que en
+            // esos 0,18 s las manos pueden asomar un instante por detrás del torso camino del reposo. Se
+            // acepta a cambio de no llevar un temporizador que cancelar con cada Play/PlayFor.
+            LayerArms(action);
+            PushToFace();
             if (animator == null || animator.runtimeAnimatorController == null || !animator.isActiveAndEnabled)
             {
                 return;
@@ -137,7 +249,56 @@ namespace Game.Scaffolding
                 state = IdleState;
             }
 
-            animator.CrossFadeInFixedTime(state, BlendSeconds, 0);
+            if (!_started || immediate)
+            {
+                _started = true;
+                animator.Play(state, 0, 0f);
+                animator.Update(0f);
+            }
+            else
+            {
+                animator.CrossFadeInFixedTime(state, BlendSeconds, 0);
+            }
+        }
+
+        /// <summary>
+        /// Pone los brazos delante del torso si <paramref name="action"/> está en
+        /// <c>armsInFrontActions</c> y los devuelve a su sitio si no. Sin lienzo no hay cuerpo que
+        /// ordenar; y mientras ninguna acción pida los brazos delante no hay nada que restaurar, así que
+        /// el <see cref="ArmLayering"/> ni se crea.
+        /// </summary>
+        private void LayerArms(ActorAction action)
+        {
+            var inFront = armsInFrontActions != null && Array.IndexOf(armsInFrontActions, action) >= 0;
+            if (_armLayering == null)
+            {
+                if (!inFront || stage == null)
+                {
+                    return;
+                }
+
+                // El orden «de origen» que recuerda es el de este momento: nadie ha tocado Tronco antes.
+                _armLayering = new ArmLayering(stage.Find(TrunkPath));
+            }
+
+            _armLayering.Apply(inFront);
+        }
+
+        /// <summary>Le empuja a la cara opcional la emoción vigente y si habla.</summary>
+        private void PushToFace()
+        {
+            if (_face == null)
+            {
+                _face = GetComponent<CharacterFace>();
+            }
+
+            if (_face == null)
+            {
+                return; // sin cara (arte provisional): nada que refrescar
+            }
+
+            _face.Emotion = Emotion;
+            _face.Speaking = _speaking;
         }
 
         /// <summary>Si la línea la dice este personaje. Sin distinguir mayúsculas: el guion las escribe en versales.</summary>

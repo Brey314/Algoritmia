@@ -1,0 +1,2377 @@
+{
+  "mode": "editmode",
+  "filter": "",
+  "filterType": "testName",
+  "startedUtc": "2026-10-02T05:51:00.6784375Z",
+  "finishedUtc": "2026-10-02T05:51:16.9934414Z",
+  "elapsedSec": 16.3,
+  "status": "completed",
+  "error": null,
+  "summary": {
+    "Total": 471,
+    "Passed": 470,
+    "Failed": 0,
+    "Skipped": 1,
+    "Inconclusive": 0
+  },
+  "xml": "C:\\Users\\benab\\AppData\\Local\\Temp\\Algoritmia-suite\\validacion2-2026-10-02\\A\\2026-10-02_005100_editmode.xml",
+  "results": [
+    {
+      "FullName": "Game.Architecture.Tests.ArtImportTest.ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir",
+      "Status": "Passed",
+      "Duration": 0.046469
+    },
+    {
+      "FullName": "Game.Architecture.Tests.ArtImportTest.ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir",
+      "Status": "Passed",
+      "Duration": 0.0425633
+    },
+    {
+      "FullName": "Game.Architecture.Tests.ArtImportTest.ArtImport_RNF23_LosNombresSiguenLaNomenclatura",
+      "Status": "Passed",
+      "Duration": 0.0044097
+    },
+    {
+      "FullName": "Game.Architecture.Tests.AssemblyDependencyTest.Architecture_RNF15_CadaModuloDeclaraSuAssemblyDeRuntimeYDePruebas",
+      "Status": "Passed",
+      "Duration": 0.0109173
+    },
+    {
+      "FullName": "Game.Architecture.Tests.AssemblyDependencyTest.Architecture_RNF15_ElNombreDelAssemblyCoincideConSuRutaBajoScripts",
+      "Status": "Passed",
+      "Duration": 0.0059257
+    },
+    {
+      "FullName": "Game.Architecture.Tests.AssemblyDependencyTest.Architecture_RNF16_CoreNoDependeDeUINiDeAudioNiDeNiveles",
+      "Status": "Passed",
+      "Duration": 0.0069081
+    },
+    {
+      "FullName": "Game.Architecture.Tests.AssemblyDependencyTest.Architecture_RNF16_NingunAssemblyDeNivelReferenciaAOtroNivel",
+      "Status": "Passed",
+      "Duration": 0.0084817
+    },
+    {
+      "FullName": "Game.Architecture.Tests.AssemblyDependencyTest.Architecture_RNF16_ReportingNoReferenciaANingunAssemblyDeNivel",
+      "Status": "Passed",
+      "Duration": 0.0078132
+    },
+    {
+      "FullName": "Game.Architecture.Tests.AssemblyDependencyTest.Architecture_RNF16_RetirarUnNivelNoAfectaALosOtrosDos",
+      "Status": "Passed",
+      "Duration": 0.1044221
+    },
+    {
+      "FullName": "Game.Architecture.Tests.AssemblyDependencyTest.Architecture_RNF16_RetirarUnNivelNoRompeElInformeDocente",
+      "Status": "Passed",
+      "Duration": 0.0069674
+    },
+    {
+      "FullName": "Game.Architecture.Tests.AudioImportTest.AudioAssets_CP02_NingunaPiezaSeLlamaDerrotaNiError",
+      "Status": "Passed",
+      "Duration": 0.0038854
+    },
+    {
+      "FullName": "Game.Architecture.Tests.AudioImportTest.AudioImport_RNF06_CadaFamiliaEntraConLosAjustesDeSuTabla",
+      "Status": "Passed",
+      "Duration": 0.0185338
+    },
+    {
+      "FullName": "Game.Architecture.Tests.AudioListenerTest.AudioListener_RNF13_ElUnicoOyenteVaEnBootYNingunaOtraEscenaTieneElSuyo",
+      "Status": "Passed",
+      "Duration": 0.0063277
+    },
+    {
+      "FullName": "Game.Architecture.Tests.InputSchemeTest.Architecture_INC01_ElMapaDeControlesNoTieneTecladoMandoNiRueda",
+      "Status": "Passed",
+      "Duration": 0.0020296
+    },
+    {
+      "FullName": "Game.Architecture.Tests.InputSchemeTest.Architecture_RNF02_LasEscenasYElProyectoUsanSoloElMapaDeControlesDelJuego",
+      "Status": "Passed",
+      "Duration": 0.0105096
+    },
+    {
+      "FullName": "Game.Architecture.Tests.InputSchemeTest.Architecture_RNF02_NingunAssemblyUsaLaClaseInputLegada",
+      "Status": "Passed",
+      "Duration": 0.0456767
+    },
+    {
+      "FullName": "Game.Architecture.Tests.PlayerSettingsTest.Architecture_RF01_ElEjecutableArrancaSinPantallaDePresentacionDeUnity",
+      "Status": "Passed",
+      "Duration": 0.0004774
+    },
+    {
+      "FullName": "Game.Architecture.Tests.PlayerSettingsTest.Architecture_RF01_ElEjecutableSeIdentificaComoAlgoritmia",
+      "Status": "Passed",
+      "Duration": 0.0004274
+    },
+    {
+      "FullName": "Game.Architecture.Tests.PlayerSettingsTest.Architecture_RNF02_ElEjecutableNoAlternaPantallaCompletaConAltIntro",
+      "Status": "Passed",
+      "Duration": 0.0002665
+    },
+    {
+      "FullName": "Game.Architecture.Tests.PlayerSettingsTest.Architecture_RNF10_ElEjecutableNoEnviaAnaliticaNiEstadisticasDeHardware",
+      "Status": "Passed",
+      "Duration": 0.000717
+    },
+    {
+      "FullName": "Game.Architecture.Tests.SceneTextTest.Scenes_CN04_NingunTextoUsaLaFuenteIntegradaDelMotor",
+      "Status": "Passed",
+      "Duration": 0.0039775
+    },
+    {
+      "FullName": "Game.Architecture.Tests.SceneTextTest.Scenes_RNF01_NingunTextoDeEscenaEsUnRotuloDeTrabajo",
+      "Status": "Passed",
+      "Duration": 0.1240664
+    },
+    {
+      "FullName": "Game.Architecture.Tests.TraceabilityTests.Traceability_CT10_TodoRFTieneAlMenosUnaPruebaQueLoNombra",
+      "Status": "Passed",
+      "Duration": 0.0215727
+    },
+    {
+      "FullName": "Game.Content.Tests.ContentInvariantTests.Content_CP03_NingunTextoVisibleAlEstudianteContieneCifrasDeDesempeno",
+      "Status": "Passed",
+      "Duration": 0.3228261
+    },
+    {
+      "FullName": "Game.Content.Tests.ContentInvariantTests.Content_DA76_NingunTextoVisibleDescribeAAlgoritmComoUnaEstrella",
+      "Status": "Passed",
+      "Duration": 0.2049561
+    },
+    {
+      "FullName": "Game.Content.Tests.ContentInvariantTests.Content_INC54_LaEscena23PintaTodasLasPiezasDelTaller",
+      "Status": "Passed",
+      "Duration": 0.0366002
+    },
+    {
+      "FullName": "Game.Core.Tests.DiskFileSystemTests.DiskFileSystem_RF02_ListaLosArchivosDeLaCarpetaConLaExtensionYRutaEnBarras",
+      "Status": "Passed",
+      "Duration": 0.0066561
+    },
+    {
+      "FullName": "Game.Core.Tests.DiskFileSystemTests.DiskFileSystem_RNF07_EscribeYReleeElContenidoEnLaRutaIndicada",
+      "Status": "Passed",
+      "Duration": 0.0021434
+    },
+    {
+      "FullName": "Game.Core.Tests.DiskFileSystemTests.DiskFileSystem_RNF11_BorrarUnPerfilBorraTambienUnTemporalHuerfano",
+      "Status": "Passed",
+      "Duration": 0.002236
+    },
+    {
+      "FullName": "Game.Core.Tests.DiskFileSystemTests.DiskFileSystem_RNF14_ConElPerfilAbiertoPorOtroProcesoElGuardadoNoFallaNiDejaTemporal",
+      "Status": "Passed",
+      "Duration": 0.0100289
+    },
+    {
+      "FullName": "Game.Core.Tests.DiskFileSystemTests.DiskFileSystem_RNF14_ConElTemporalRetenidoPorOtroProcesoElGuardadoNoFalla",
+      "Status": "Passed",
+      "Duration": 0.0038204
+    },
+    {
+      "FullName": "Game.Core.Tests.DiskFileSystemTests.DiskFileSystem_RNF14_ReemplazarUnPerfilNoDejaTemporalesNiMezclaContenido",
+      "Status": "Passed",
+      "Duration": 0.0032744
+    },
+    {
+      "FullName": "Game.Core.Tests.DiskFileSystemTests.DiskFileSystem_RNF14_SiLaEscrituraFallaElPerfilAnteriorQuedaIntacto",
+      "Status": "Passed",
+      "Duration": 0.0032062
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_CP02_NoExisteEstadoDeDerrota",
+      "Status": "Passed",
+      "Duration": 0.0006079
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_HU17_SetPlayingPhaseActualizaLaFaseActivaSinNavegar",
+      "Status": "Passed",
+      "Duration": 0.0021026
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_HU17_SetPlayingPhaseSeRechazaFueraDePlayingOEnOtroNivelOFaseInvalida",
+      "Status": "Passed",
+      "Duration": 0.0002629
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_INC39_TrasElResumenDelUltimoNivelLaEscenaFinalSaleALosCreditosYAlInicio",
+      "Status": "Passed",
+      "Duration": 0.0001548
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_RF03_NoPermiteEntrarANivelBloqueado",
+      "Status": "Passed",
+      "Duration": 0.0005486
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_RF05_DosEscenasNarrativasSeEncadenanSinPasarPorElMenu",
+      "Status": "Passed",
+      "Duration": 0.0001425
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_RF05_NarrativeSeParametrizaConLaSecuenciaYPlayingConNivelYFase",
+      "Status": "Passed",
+      "Duration": 0.0001865
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_RF07_ReiniciarElNivelVuelveAPlayingSinPasarPorNingunaDerrota",
+      "Status": "Passed",
+      "Duration": 0.000147
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_RF07_UnaTransicionIlegalNoCambiaDeEstadoYSeObserva",
+      "Status": "Passed",
+      "Duration": 0.0001222
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_RF08_LosCreditosSeAlcanzanDesdeElInicioYVuelvenAEl",
+      "Status": "Passed",
+      "Duration": 8.15E-05
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_RF46_TeacherReportSeAlcanzaDesdeElInicioYVuelveAEl",
+      "Status": "Passed",
+      "Duration": 9.61E-05
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_RNF13_RecorreElGoldenPathCompletoSinEstadoIrrecuperable",
+      "Status": "Passed",
+      "Duration": 0.0001775
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_RNF14_EntraAlNivelQueDesbloqueanLasFasesConfirmadasDelAnterior",
+      "Status": "Passed",
+      "Duration": 0.000379
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_RNF14_EntrarAUnaFaseYaConfirmadaRetomaEnLaPrimeraPendiente",
+      "Status": "Passed",
+      "Duration": 0.0003756
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.GameFlow_RNF14_SiLaFasePendienteNoEsJugableTodaviaSeJuegaLaPedida",
+      "Status": "Passed",
+      "Duration": 0.0002722
+    },
+    {
+      "FullName": "Game.Core.Tests.GameFlowTests.TeacherReport_CP03_NingunaRutaDelEstudianteAlcanzaLaPantallaDeCifras",
+      "Status": "Passed",
+      "Duration": 0.0009416
+    },
+    {
+      "FullName": "Game.Core.Tests.LevelUnlockPolicyTests.LevelUnlockPolicy_CP02_NuncaRebloqueaUnNivelYaDesbloqueado",
+      "Status": "Passed",
+      "Duration": 0.000244
+    },
+    {
+      "FullName": "Game.Core.Tests.LevelUnlockPolicyTests.LevelUnlockPolicy_RF03_CompletarElUltimoNivelNoHabilitaNingunoMas",
+      "Status": "Passed",
+      "Duration": 8.15E-05
+    },
+    {
+      "FullName": "Game.Core.Tests.LevelUnlockPolicyTests.LevelUnlockPolicy_RF03_CompletarUnNivelSoloHabilitaElSiguiente",
+      "Status": "Passed",
+      "Duration": 9.43E-05
+    },
+    {
+      "FullName": "Game.Core.Tests.LevelUnlockPolicyTests.LevelUnlockPolicy_RF03_UnPerfilNuevoSoloTieneElNivel1Desbloqueado",
+      "Status": "Passed",
+      "Duration": 0.0005545
+    },
+    {
+      "FullName": "Game.Core.Tests.LevelUnlockPolicyTests.LevelUnlockPolicy_RNF14_UnNivelConFasesPendientesNoDesbloqueaElSiguiente",
+      "Status": "Passed",
+      "Duration": 9.94E-05
+    },
+    {
+      "FullName": "Game.Core.Tests.LevelUnlockPolicyTests.LevelUnlockPolicy_RNF14_UnNivelConTodasSusFasesConfirmadasDesbloqueaElSiguiente",
+      "Status": "Passed",
+      "Duration": 0.0001617
+    },
+    {
+      "FullName": "Game.Core.Tests.PauseMenuPolicyTests.PauseMenuPolicy_RF07_ReiniciarNoRebloqueaNiBorraIndicadores",
+      "Status": "Passed",
+      "Duration": 0.003557
+    },
+    {
+      "FullName": "Game.Core.Tests.PhaseProgressTests.LevelUnlockPolicy_RF03_ElNivel3EsperaLasTresFasesDelNivel2",
+      "Status": "Passed",
+      "Duration": 0.0002017
+    },
+    {
+      "FullName": "Game.Core.Tests.PhaseProgressTests.LevelUnlockPolicy_RF03_Nivel2BloqueadoHastaCompletarNivel1",
+      "Status": "Passed",
+      "Duration": 0.0001104
+    },
+    {
+      "FullName": "Game.Core.Tests.PhaseProgressTests.PhaseId_RF04_CadaNivelDeclaraCuantasFasesTiene",
+      "Status": "Passed",
+      "Duration": 0.0001028
+    },
+    {
+      "FullName": "Game.Core.Tests.PhaseProgressTests.PhaseId_RNF09_RechazaUnaFaseQueElNivelNoTiene",
+      "Status": "Passed",
+      "Duration": 0.0010284
+    },
+    {
+      "FullName": "Game.Core.Tests.PhaseProgressTests.PlayerProfile_CP02_UnaFaseConfirmadaNoSePierdeNunca",
+      "Status": "Passed",
+      "Duration": 0.0004506
+    },
+    {
+      "FullName": "Game.Core.Tests.PhaseProgressTests.PlayerProfile_RF41_UnaFaseAprobadaNoSePierdeTrasUnaPruebaFallida",
+      "Status": "Passed",
+      "Duration": 0.0002357
+    },
+    {
+      "FullName": "Game.Core.Tests.PhaseProgressTests.PlayerProfile_RNF14_RetomaEnLaPrimeraFaseSinConfirmarDelNivel",
+      "Status": "Passed",
+      "Duration": 0.0003106
+    },
+    {
+      "FullName": "Game.Core.Tests.PhaseProgressTests.SaveStore_RF04_ConfirmarFase1DelNivel2SobreviveAlCierre",
+      "Status": "Passed",
+      "Duration": 0.000654
+    },
+    {
+      "FullName": "Game.Core.Tests.PhaseProgressTests.SaveStore_RF04_ConfirmarUnaFaseDelNivel3SobreviveAlCierre",
+      "Status": "Passed",
+      "Duration": 0.0002095
+    },
+    {
+      "FullName": "Game.Core.Tests.PlayerProfileTests.PlayerProfile_CP03_NoExponeNingunMiembroDePuntaje",
+      "Status": "Passed",
+      "Duration": 0.0013457
+    },
+    {
+      "FullName": "Game.Core.Tests.PlayerProfileTests.PlayerProfile_HU01_ElPerfilNuevoEmpiezaSinFasesYSoloAlcanzaElNivel1",
+      "Status": "Passed",
+      "Duration": 0.0002619
+    },
+    {
+      "FullName": "Game.Core.Tests.PlayerProfileTests.PlayerProfile_RF02_RechazaNombreVacioYDuplicado",
+      "Status": "Passed",
+      "Duration": 0.0003236
+    },
+    {
+      "FullName": "Game.Core.Tests.PlayerProfileTests.PlayerProfile_RF02_RechazaUnNombreQueNoSirveComoNombreDeArchivo",
+      "Status": "Passed",
+      "Duration": 0.0001008
+    },
+    {
+      "FullName": "Game.Core.Tests.PlayerProfileTests.PlayerProfile_RF03_AlcanzarUnNivelNuncaRetrocede",
+      "Status": "Passed",
+      "Duration": 0.000121
+    },
+    {
+      "FullName": "Game.Core.Tests.PlayerProfileTests.PlayerProfile_RF04_ConfirmarUnaFaseGuardaSusCuatroIndicadores",
+      "Status": "Passed",
+      "Duration": 0.0001812
+    },
+    {
+      "FullName": "Game.Core.Tests.PlayerProfileTests.PlayerProfile_RF41_UnaFaseConfirmadaNoSePierdeAlVolverAJugarla",
+      "Status": "Passed",
+      "Duration": 0.000172
+    },
+    {
+      "FullName": "Game.Core.Tests.ProfileSessionTests.ProfileSession_INC34_ExponeQueElGuardadoCayoALaRutaDeRespaldo",
+      "Status": "Passed",
+      "Duration": 0.0002352
+    },
+    {
+      "FullName": "Game.Core.Tests.ProfileSessionTests.ProfileSession_INC34_NoIndicaRespaldoConDatosEscribible",
+      "Status": "Passed",
+      "Duration": 9.91E-05
+    },
+    {
+      "FullName": "Game.Core.Tests.ProfileSessionTests.ProfileSession_RF02_CreateRechazaUnNombreYaGuardado",
+      "Status": "Passed",
+      "Duration": 0.0011796
+    },
+    {
+      "FullName": "Game.Core.Tests.ProfileSessionTests.ProfileSession_RF02_ListaLosNombresDeLosPerfilesGuardados",
+      "Status": "Passed",
+      "Duration": 0.0002081
+    },
+    {
+      "FullName": "Game.Core.Tests.ProfileSessionTests.ProfileSession_RF03_LoadDevuelveElPerfilConSuProgreso",
+      "Status": "Passed",
+      "Duration": 0.0001961
+    },
+    {
+      "FullName": "Game.Core.Tests.ProfileSessionTests.ProfileSession_RF09_ConPerfilActivoGuardaEsePerfil",
+      "Status": "Passed",
+      "Duration": 0.000806
+    },
+    {
+      "FullName": "Game.Core.Tests.ProfileSessionTests.ProfileSession_RF09_SinPerfilActivoNoEscribeNingunPerfil",
+      "Status": "Passed",
+      "Duration": 0.0001638
+    },
+    {
+      "FullName": "Game.Core.Tests.ProfileSessionTests.ProfileSession_RF47_BorraElPerfilYDejaDeListarlo",
+      "Status": "Passed",
+      "Duration": 0.0005109
+    },
+    {
+      "FullName": "Game.Core.Tests.ProfileSessionTests.ProfileSession_RNF11_BorrarElPerfilActivoImpideQueSalirLoVuelvaAEscribir",
+      "Status": "Passed",
+      "Duration": 0.0001243
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_INC34_BorraDesdeLaRutaDeRespaldoAunqueDatosNoSeaEscribible",
+      "Status": "Passed",
+      "Duration": 0.0004994
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_INC34_CaeALaRutaDeRespaldoSiDatosNoEsEscribible",
+      "Status": "Passed",
+      "Duration": 0.0004386
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_RF02_ListaLosPerfilesExistentesParaDetectarDuplicados",
+      "Status": "Passed",
+      "Duration": 0.000233
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_RF04_GuardaYRecuperaElPerfilCompleto",
+      "Status": "Passed",
+      "Duration": 0.0002334
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_RF47_BorraElPerfilDeLasDosRutas",
+      "Status": "Passed",
+      "Duration": 0.0004394
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_RF47_NoAfectaAOtrosPerfiles",
+      "Status": "Passed",
+      "Duration": 0.0002479
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_RNF07_EscribeDentroDeDatosJuntoAlEjecutableCuandoSePuede",
+      "Status": "Passed",
+      "Duration": 0.0001443
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_RNF09_ElJsonDeUnPerfilCompletoNoTieneCampoFueraDeLaListaCerrada",
+      "Status": "Passed",
+      "Duration": 0.0011542
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_RNF09_NoPersisteCampoAlgunoFueraDeLaListaCerrada",
+      "Status": "Passed",
+      "Duration": 0.0003377
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_RNF11_UnBorradoParcialNoSeReportaComoExito",
+      "Status": "Passed",
+      "Duration": 0.0001731
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_RNF14_UnJsonTruncadoNoLanzaYSeReportaComoIlegible",
+      "Status": "Passed",
+      "Duration": 0.0002033
+    },
+    {
+      "FullName": "Game.Core.Tests.SaveStoreTests.SaveStore_RNF14_UnPerfilSanoSeCargaPorTryLoad",
+      "Status": "Passed",
+      "Duration": 0.0001479
+    },
+    {
+      "FullName": "Game.Core.Tests.SceneFadeTests.GameFlowRunner_RF05_FundeDeLaNarrativaALaMecanica",
+      "Status": "Passed",
+      "Duration": 0.0008811
+    },
+    {
+      "FullName": "Game.Core.Tests.SceneFadeTests.GameFlowRunner_RF05_FundeDeLaMecanicaALaNarrativa",
+      "Status": "Passed",
+      "Duration": 5.52E-05
+    },
+    {
+      "FullName": "Game.Core.Tests.SceneFadeTests.GameFlowRunner_RF05_FundeEntreDosNarrativasEncadenadas",
+      "Status": "Passed",
+      "Duration": 2.42E-05
+    },
+    {
+      "FullName": "Game.Core.Tests.SceneFadeTests.GameFlowRunner_RF05_NoFundeEntreMenus",
+      "Status": "Passed",
+      "Duration": 2.48E-05
+    },
+    {
+      "FullName": "Game.Core.Tests.SceneFadeTests.GameFlowRunner_RF05_NoFundeDelMenuALaNarrativa",
+      "Status": "Passed",
+      "Duration": 2.12E-05
+    },
+    {
+      "FullName": "Game.Core.Tests.SceneFadeTests.GameFlowRunner_RF05_NoFundeDeLaNarrativaAlResumen",
+      "Status": "Passed",
+      "Duration": 2.31E-05
+    },
+    {
+      "FullName": "Game.Core.Tests.SceneFadeTests.GameFlowRunner_RF07_ReiniciarLaMecanicaNoFunde",
+      "Status": "Passed",
+      "Duration": 2.11E-05
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.CharacterProbeMotionTests.CharacterProbeMotion_DA131_AgachadaNuncaSaleVolteada",
+      "Status": "Passed",
+      "Duration": 0.0010926
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.CharacterProbeMotionTests.CharacterProbeMotion_DA131_CaminaHaciaElCursorYSeAgachaAlLlegar",
+      "Status": "Passed",
+      "Duration": 0.0012639
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.CharacterProbeMotionTests.CharacterProbeMotion_DA131_LosTresFotogramasSeAlternanEnCicloYNingunoSeSaleDeLaSecuencia",
+      "Status": "Passed",
+      "Duration": 0.004093
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.CharacterProbeMotionTests.CharacterProbeMotion_DA131_SoloSeVolteaCuandoCaminaHaciaLaIzquierda",
+      "Status": "Passed",
+      "Duration": 0.0001906
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.CharacterProbeMotionTests.CharacterProbeMotion_RNF03_NuncaSaleDeLaPantallaYSeDevuelveEnElBorde",
+      "Status": "Passed",
+      "Duration": 0.0026688
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.LicenseNoticesTests.LicenseNotices_RNF23_ElEjecutableLlevaLasLicenciasDeTerceros",
+      "Status": "Passed",
+      "Duration": 0.0140597
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.LicenseNoticesTests.LicenseNotices_RNF23_LosAvisosDelProyectoExistenDeVerdad",
+      "Status": "Passed",
+      "Duration": 0.0004421
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.LicenseNoticesTests.LicenseNotices_RNF23_SiFaltaUnAvisoElBuildFalla",
+      "Status": "Passed",
+      "Duration": 0.0054895
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.LicenseNoticesTests.LicenseNotices_RNF23_UnBuildRepetidoSobrescribeLosAvisos",
+      "Status": "Passed",
+      "Duration": 0.0065807
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.UnityServicesOffTests.UnityServicesOff_RNF10_ApagaLosServiciosQueEstabanEncendidos",
+      "Status": "Passed",
+      "Duration": 0.0023867
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.UnityServicesOffTests.UnityServicesOff_RNF10_ElBuildFallaConElNombreDelServicioQueNoSeApaga",
+      "Status": "Passed",
+      "Duration": 0.0006115
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.UnityServicesOffTests.UnityServicesOff_RNF10_ElBuildFallaSiUnInterruptorNoSePuedeLeer",
+      "Status": "Passed",
+      "Duration": 0.0008896
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.UnityServicesOffTests.UnityServicesOff_RNF10_ElBuildSigueSiTodoSeApaga",
+      "Status": "Passed",
+      "Duration": 0.000279
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.UnityServicesOffTests.UnityServicesOff_RNF10_ElInterruptorGeneralDeUnityConnectEstaEntreLosVigilados",
+      "Status": "Passed",
+      "Duration": 0.0028796
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.UnityServicesOffTests.UnityServicesOff_RNF10_ElJuegoCompiladoLimpioPasaLaVerificacion",
+      "Status": "Passed",
+      "Duration": 0.0026025
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.UnityServicesOffTests.UnityServicesOff_RNF10_ElJuegoCompiladoQueNombraUnServidorDeUnityFalla",
+      "Status": "Passed",
+      "Duration": 0.0072128
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.UnityServicesOffTests.UnityServicesOff_RNF10_LosInterruptoresRealesDeEstaVersionSeApaganTodos",
+      "Status": "Passed",
+      "Duration": 0.0033582
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.UnityServicesOffTests.UnityServicesOff_RNF10_NoEscribeEnLosQueYaEstabanApagados",
+      "Status": "Passed",
+      "Duration": 0.0002509
+    },
+    {
+      "FullName": "Game.EditorTools.Tests.UnityServicesOffTests.UnityServicesOff_RNF10_SiNoSePuedeVerificarElJuegoCompiladoElBuildFalla",
+      "Status": "Passed",
+      "Duration": 0.0008612
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireArrangementTests.FireArrangement_RF14_EstaTodoReunidoSoloSiCadaPiezaCaeDentroDelCirculo",
+      "Status": "Passed",
+      "Duration": 0.0011821
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireArrangementTests.FireArrangement_RF14_SinPiezasNoHayNadaReunido",
+      "Status": "Passed",
+      "Duration": 9.45E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_INC32_SoplarSeHabilitaAlAlcanzarElMinimo",
+      "Status": "Passed",
+      "Duration": 0.0010616
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RF15_CambiarLaFuerzaNoAlteraElEstado",
+      "Status": "Passed",
+      "Duration": 0.0003615
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RF16_GolpeEfectivoSumaYReiniciaLosFallos",
+      "Status": "Passed",
+      "Duration": 0.0002613
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RF16_GolpeNoEfectivoProduceConsecuenciaYNoSuma(2,TooSoft)",
+      "Status": "Passed",
+      "Duration": 0.0003237
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RF16_GolpeNoEfectivoProduceConsecuenciaYNoSuma(10,TooHard)",
+      "Status": "Passed",
+      "Duration": 6.17E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RF16_SiLasPiedrasNoChocanNoPrendeAunqueLaFuerzaSeaLaEfectiva(TooFar)",
+      "Status": "Passed",
+      "Duration": 0.0007093
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RF16_SiLasPiedrasNoChocanNoPrendeAunqueLaFuerzaSeaLaEfectiva(TooClose)",
+      "Status": "Passed",
+      "Duration": 0.0001113
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RF18_AceptaIntentosIlimitados",
+      "Status": "Passed",
+      "Duration": 0.0003702
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RF19_SoplarNoSeDeshabilitaTrasFalloPosterior",
+      "Status": "Passed",
+      "Duration": 0.0001478
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RNF18_ClasificaLaFuerzaSegunLaFranjaDeLaConfiguracion(0,TooSoft)",
+      "Status": "Passed",
+      "Duration": 0.0001675
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RNF18_ClasificaLaFuerzaSegunLaFranjaDeLaConfiguracion(6,TooSoft)",
+      "Status": "Passed",
+      "Duration": 6.84E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RNF18_ClasificaLaFuerzaSegunLaFranjaDeLaConfiguracion(7,Effective)",
+      "Status": "Passed",
+      "Duration": 5.33E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RNF18_ClasificaLaFuerzaSegunLaFranjaDeLaConfiguracion(8,Effective)",
+      "Status": "Passed",
+      "Duration": 5.14E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RNF18_ClasificaLaFuerzaSegunLaFranjaDeLaConfiguracion(9,TooHard)",
+      "Status": "Passed",
+      "Duration": 5.02E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RNF18_ClasificaLaFuerzaSegunLaFranjaDeLaConfiguracion(10,TooHard)",
+      "Status": "Passed",
+      "Duration": 5.26E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireAttemptTests.FireAttempt_RNF18_ElUmbralDePistaSaleDeLaConfiguracion",
+      "Status": "Passed",
+      "Duration": 0.000199
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_guion434_CadaFranjaDeFuerzaNoEfectivaDevuelveSuMensaje(TooSoft,\"suave-cualquiera\")",
+      "Status": "Passed",
+      "Duration": 0.001128
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_guion434_CadaFranjaDeFuerzaNoEfectivaDevuelveSuMensaje(TooHard,\"fuerte-cualquiera\")",
+      "Status": "Passed",
+      "Duration": 9.51E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_HU05_CadaGolpeEfectivoDevuelveElMensajeDeSuOrdinal(1,\"efectivo-primero\")",
+      "Status": "Passed",
+      "Duration": 0.000393
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_HU05_CadaGolpeEfectivoDevuelveElMensajeDeSuOrdinal(2,\"efectivo-segundo\")",
+      "Status": "Passed",
+      "Duration": 7.1E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_HU05_CadaGolpeEfectivoDevuelveElMensajeDeSuOrdinal(3,\"efectivo-final\")",
+      "Status": "Passed",
+      "Duration": 5E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_HU05_ElSoploExitosoRegistraSuMensaje",
+      "Status": "Passed",
+      "Duration": 0.0004187
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_HU06_AcumulaElHistorialEnOrden",
+      "Status": "Passed",
+      "Duration": 0.0003446
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_RF16_LaCercaniaMandaSobreLaFuerzaCuandoFallanLasDos",
+      "Status": "Passed",
+      "Duration": 0.0002168
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_RF16_SiLasPiedrasNoChocanDevuelveSuMensajeYEscalaTrasDosFallos(TooFar,\"piedras-lejos\",\"piedras-lejos-tras-dos\")",
+      "Status": "Passed",
+      "Duration": 0.0003167
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_RF16_SiLasPiedrasNoChocanDevuelveSuMensajeYEscalaTrasDosFallos(TooClose,\"piedras-encimadas\",\"piedras-encimadas-tras-dos\")",
+      "Status": "Passed",
+      "Duration": 8.3E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_RF18_NoRepiteElMismoMensajeDosVecesSeguidas",
+      "Status": "Passed",
+      "Duration": 0.0019387
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireFeedbackLogTests.FireFeedbackLog_RF18_TrasDosFallosSeguidosEnLaMismaFranjaEscalaElMensaje",
+      "Status": "Passed",
+      "Duration": 0.000183
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireIndicatorTests.FireIndicators_CP03_NingunIndicadorLlegaALaUIDelEstudiante",
+      "Status": "Passed",
+      "Duration": 0.0043352
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireIndicatorTests.FireIndicators_RF07_LaPausaNoSumaTiempoDeResolucion",
+      "Status": "Passed",
+      "Duration": 0.0010637
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireIndicatorTests.FireIndicators_RF45_ErrorCorregidoExigeCambioDeFuerzaSeguidoDeAcierto",
+      "Status": "Passed",
+      "Duration": 0.0003135
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireIndicatorTests.FireIndicators_RF45_IntentosCuentaSoloGolpesNoEfectivos",
+      "Status": "Passed",
+      "Duration": 0.0002149
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireIndicatorTests.FireIndicators_RF45_PasosUtilizadosSeCongelaAlCruzarElMinimo",
+      "Status": "Passed",
+      "Duration": 0.0001879
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireIndicatorTests.FireIndicators_RF45_PerformanceIndicatorsExponeExactamenteLosCuatroCampos",
+      "Status": "Passed",
+      "Duration": 0.0002405
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireLevelConfigTests.FireLevelConfig_CT05_ExponeLosDiezParametrosDelNivel",
+      "Status": "Passed",
+      "Duration": 0.0005304
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireMessagesTests.FireMessages_RF17_NingunMensajeDelAssetContieneCifras",
+      "Status": "Passed",
+      "Duration": 0.0187645
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FireMessagesTests.FireMessages_RNF18_LosDoceMensajesDelNivelEstanDefinidos",
+      "Status": "Passed",
+      "Duration": 0.0155931
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.FloorScatterTests.FloorScatter_RF14_NingunaPiezaPisaLaInterfazNiElCirculoNiSeEncimaConOtra",
+      "Status": "Passed",
+      "Duration": 0.0053778
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.StoneSpacingTests.StoneSpacing_RF15_LaMuescaCeroSeparaUnaHojaYLaMaximaEncimaLasPiedras",
+      "Status": "Passed",
+      "Duration": 0.0005444
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.StoneSpacingTests.StoneSpacing_RF15_UnaMuescaFueraDeRangoNoRompeNada",
+      "Status": "Passed",
+      "Duration": 0.000206
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.StoneSpacingTests.StoneSpacing_RF16_ElContactoEsCeroConHuecoYCreceHastaEncimarlasDelTodo",
+      "Status": "Passed",
+      "Duration": 0.0008499
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.StoneSpacingTests.StoneSpacing_RF16_ElGolpeCerteroEsSoloLaMuescaCinco(0,TooFar)",
+      "Status": "Passed",
+      "Duration": 0.0005283
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.StoneSpacingTests.StoneSpacing_RF16_ElGolpeCerteroEsSoloLaMuescaCinco(4,TooFar)",
+      "Status": "Passed",
+      "Duration": 0.000101
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.StoneSpacingTests.StoneSpacing_RF16_ElGolpeCerteroEsSoloLaMuescaCinco(5,Effective)",
+      "Status": "Passed",
+      "Duration": 6.41E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.StoneSpacingTests.StoneSpacing_RF16_ElGolpeCerteroEsSoloLaMuescaCinco(6,TooClose)",
+      "Status": "Passed",
+      "Duration": 6.07E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.StoneSpacingTests.StoneSpacing_RF16_ElGolpeCerteroEsSoloLaMuescaCinco(10,TooClose)",
+      "Status": "Passed",
+      "Duration": 5.64E-05
+    },
+    {
+      "FullName": "Game.Levels.Fire.Tests.StoneSpacingTests.StoneSpacing_RNF18_ElRoceEfectivoYSuMargenSalenDeLaConfiguracion",
+      "Status": "Passed",
+      "Duration": 0.0002242
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.DepthOrderTests.DepthOrder_DA83_ALaMismaAlturaConservaElOrdenQueTraia",
+      "Status": "Passed",
+      "Duration": 0.0039312
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.DepthOrderTests.DepthOrder_DA83_LoQueEstaMasAbajoSeDibujaDelante",
+      "Status": "Passed",
+      "Duration": 0.0001914
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.InventoryTests.BuildZone_CU09_NombraLoQueFaltaSinCifrasYDejaSalir",
+      "Status": "Passed",
+      "Duration": 0.0042242
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.InventoryTests.BuildZone_RF39_AbreSoloConLosCuatroMaterialesYSeQuedaAbierta",
+      "Status": "Passed",
+      "Duration": 0.0004528
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.InventoryTests.Collectible_RF37_ElBotonRecogerSoloApareceDentroDelRadioDeProximidad",
+      "Status": "Passed",
+      "Duration": 0.000286
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.InventoryTests.Inventory_CU09_ConElInventarioLlenoInformaQueYaTieneTodo",
+      "Status": "Passed",
+      "Duration": 0.0007893
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.InventoryTests.Inventory_RF37_UnMaterialNoSePuedeRecogerDosVeces",
+      "Status": "Passed",
+      "Duration": 0.0002174
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.InventoryTests.Inventory_RF38_CapacidadEsCuatroYNoHayObjetosSobrantes",
+      "Status": "Passed",
+      "Duration": 0.0007297
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.InventoryTests.Inventory_RF38_LosCincoTroncosLlenanUnaSolaCasillaYLaClaseSeCompletaConElUltimo",
+      "Status": "Passed",
+      "Duration": 0.0016
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.InventoryTests.RiverWalk_RF35_SeDesplazaEnDosDimensionesSinAtravesarLosLimites",
+      "Status": "Passed",
+      "Duration": 0.0008928
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.InventoryTests.RiverWalk_RNF14_MoveToColocaAMamaEnElModeloYRecortaALosLimites",
+      "Status": "Passed",
+      "Duration": 0.0002955
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_CP02_NoHayLimiteDeIntentosNiPantallaDeDerrota",
+      "Status": "Passed",
+      "Duration": 0.0085558
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_INC30_ConfirmarElAmarreMarcaLaTarea3YLaBaseNoMarcaNada",
+      "Status": "Passed",
+      "Duration": 0.0018481
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RF38_ElRolloDeSogaDaTantosAmarresComoDiceElAsset",
+      "Status": "Passed",
+      "Duration": 0.001469
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RF40_LasTresFasesSeHabilitanEnOrdenYNoAntes",
+      "Status": "Passed",
+      "Duration": 0.0003549
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RF40_LosEspaciosDeUnaFaseNoSonAccesiblesAntesDeHabilitarse",
+      "Status": "Passed",
+      "Duration": 0.0006498
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RF41_ProbarLaBalsaNoTocaLasFasesAprobadas",
+      "Status": "Passed",
+      "Duration": 0.0005303
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RF41_UnaFaseConfirmadaNoSePierdeEnIntentosPosteriores",
+      "Status": "Passed",
+      "Duration": 0.0002275
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RF42_EnLaUltimaFaseProbarConUnVacioSenalaElVacioConElMensajeDeLaPrueba",
+      "Status": "Passed",
+      "Duration": 0.0002935
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RF42_EnLaUltimaFaseProbarEsConfirmar",
+      "Status": "Passed",
+      "Duration": 0.0002759
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RF42_ProbarLaBalsaIncompletaNoConfirmaNiAvanzaDeFase(0)",
+      "Status": "Passed",
+      "Duration": 0.0011667
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RF42_ProbarLaBalsaIncompletaNoConfirmaNiAvanzaDeFase(1)",
+      "Status": "Passed",
+      "Duration": 0.0007632
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RF42_ProbarLaBalsaIncompletaNoConfirmaNiAvanzaDeFase(2)",
+      "Status": "Passed",
+      "Duration": 0.0003148
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RF43_ProbarAntesDeTiempoDevuelveSoloLoMalPuesto",
+      "Status": "Passed",
+      "Duration": 0.0003447
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftAssemblyTests.RaftAssembly_RNF14_RetomarEnUnaFaseConsolidaLasAnterioresConSusPiezas",
+      "Status": "Passed",
+      "Duration": 0.0012446
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftValidatorTests.RaftAssemblyContent_RF40_ElAssetTraeLaBalsaDeCincoTroncosDiezAmarresMastilYVela",
+      "Status": "Passed",
+      "Duration": 0.0211816
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftValidatorTests.RaftAssemblyContent_RF42_ElAssetTraeElMensajeDeLaBalsaSinTerminar",
+      "Status": "Passed",
+      "Duration": 0.0198675
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftValidatorTests.RaftAssemblyContent_RF44_LaBalsaDelEnsamblajeMideLoQueLaDelCruce",
+      "Status": "Passed",
+      "Duration": 0.0360629
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftValidatorTests.RaftValidator_CP06_ElMensajeDiceQueRevisarNoCualEsLaPiezaCorrecta",
+      "Status": "Passed",
+      "Duration": 0.0441425
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftValidatorTests.RaftValidator_RF17_NingunMensajeContieneDigitos",
+      "Status": "Passed",
+      "Duration": 0.0189753
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftValidatorTests.RaftValidator_RF42_IdentificaElEspacioIncorrectoNoElEnsamblajeCompleto",
+      "Status": "Passed",
+      "Duration": 0.0008015
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftValidatorTests.RaftValidator_RF43_LasFasesAprobadasSobrevivenAUnaPruebaFallida",
+      "Status": "Passed",
+      "Duration": 0.0005487
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RaftValidatorTests.RaftValidator_RF43_SoloLasPiezasMalUbicadasRegresanAlInventario",
+      "Status": "Passed",
+      "Duration": 0.0005165
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverIndicatorTests.RiverIndicators_CP03_NingunIndicadorLlegaALaUIDelEstudiante",
+      "Status": "Passed",
+      "Duration": 0.0042488
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverIndicatorTests.RiverIndicators_OE1361_ElTiempoDeResolucionEsDeCadaFase",
+      "Status": "Passed",
+      "Duration": 0.0007704
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverIndicatorTests.RiverIndicators_OE1361_ReiniciarElNivelNoBorraLosIndicadoresRegistrados",
+      "Status": "Passed",
+      "Duration": 0.0003466
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverIndicatorTests.RiverIndicators_RF07_LaPausaNoSumaTiempoDeResolucion",
+      "Status": "Passed",
+      "Duration": 0.0002414
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverIndicatorTests.RiverIndicators_RF45_ErrorCorregidoExigeRecolocacionCorrectaPosterior",
+      "Status": "Passed",
+      "Duration": 0.0010842
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverIndicatorTests.RiverIndicators_RF45_IntentosCuentaFasesRechazadasYPruebasFallidas",
+      "Status": "Passed",
+      "Duration": 0.0002465
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverIndicatorTests.RiverIndicators_RF45_PasosUtilizadosNoSuperaTres",
+      "Status": "Passed",
+      "Duration": 0.0002892
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverIndicatorTests.RiverIndicators_RF45_RetomarEnUnaFaseCuentaLasConfirmadasAntes",
+      "Status": "Passed",
+      "Duration": 0.0001555
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelConfigTests.RiverLevelConfig_DA83_LoQueEstaMasAbajoSeVeMasGrandeYLoDeArribaMasPequeno",
+      "Status": "Passed",
+      "Duration": 0.0223304
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelConfigTests.RiverLevelConfig_Guion82_ElPlanoDeRecoleccionEsLaOrillaConElRio",
+      "Status": "Passed",
+      "Duration": 0.0175694
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelConfigTests.RiverLevelConfig_INC118_LaEscena31PintaCadaMaterialConElArteDeLaOrilla",
+      "Status": "Passed",
+      "Duration": 0.0551364
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelConfigTests.RiverLevelConfig_RF36_ElAssetTraeLasCuatroTareasDelGuion",
+      "Status": "Passed",
+      "Duration": 0.0194414
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelConfigTests.RiverLevelConfig_RF37_ElRepartoObligaARecorrerLaOrillaYCabeEnElPlanoFijo",
+      "Status": "Passed",
+      "Duration": 0.0229122
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelConfigTests.RiverLevelConfig_RF38_ElAssetTraeCincoTroncosYUnoDeCadaOtraClase",
+      "Status": "Passed",
+      "Duration": 0.0207633
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelConfigTests.RiverScene_DA83_MamaSeAnclaPorLosPiesComoLaFamilia",
+      "Status": "Passed",
+      "Duration": 0.1211156
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelConfigTests.RiverScene_INC118_LosPersonajesDeLaMecanicaTienenLaEscalaDeLaNarrativa",
+      "Status": "Passed",
+      "Duration": 0.0297108
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsAssetTests.RiverSounds_RF05_LasEscenasDelRioSuenanComoLaOrilla",
+      "Status": "Passed",
+      "Duration": 0.0894163
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsAssetTests.RiverSounds_RF42_LaBalsaQueSeHundeSuenaASalpicadura",
+      "Status": "Passed",
+      "Duration": 0.0183465
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsAssetTests.RiverSounds_RF44_CadaMomentoDelNivelSuenaConSuPieza",
+      "Status": "Passed",
+      "Duration": 0.0324152
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsAssetTests.RiverSounds_RF44_LaEscenaFinalSuenaAlBosqueConLasFogatas",
+      "Status": "Passed",
+      "Duration": 0.0167247
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.TaskListTests.TaskList_CU09_RecogerLaTelaOElMastilNoMarcaTarea",
+      "Status": "Passed",
+      "Duration": 0.0004495
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.TaskListTests.TaskList_INC30_LaFaseDeBaseNoMarcaTareaPorSiSola",
+      "Status": "Passed",
+      "Duration": 0.0002041
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.TaskListTests.TaskList_INC30_LaTarea3SeMarcaAlConfirmarElAmarreNoLaBase",
+      "Status": "Passed",
+      "Duration": 0.0002679
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.TaskListTests.TaskList_RF36_Tareas1y2SeMarcanAlRecogerTroncosYSogas",
+      "Status": "Passed",
+      "Duration": 0.0007378
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.TaskListTests.TaskList_RF43_UnaTareaMarcadaNoSeDesmarcaTrasUnaPruebaFallida",
+      "Status": "Passed",
+      "Duration": 0.0008116
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.AssemblyContentTests.AssemblyContent_INC54_LaCarretillaAmarradaEsElDibujoConElQueAbreLaEscena24",
+      "Status": "Passed",
+      "Duration": 0.031321
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.AssemblySequenceTests.AssemblySequence_CP02_UnPasoFueraDeOrdenNoDeshaceLoYaHecho",
+      "Status": "Passed",
+      "Duration": 0.0021225
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.AssemblySequenceTests.AssemblySequence_CP06_ElMensajeDiceQueFaltaAntesNoCualEsElPasoCorrecto",
+      "Status": "Passed",
+      "Duration": 0.0003972
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.AssemblySequenceTests.AssemblySequence_INC54_LaCuerdaAmarraLaCajaYCompletaLaCarretilla",
+      "Status": "Passed",
+      "Duration": 0.0002879
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.AssemblySequenceTests.AssemblySequence_RF17_NingunMensajeContieneDigitos",
+      "Status": "Passed",
+      "Duration": 0.0005176
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.AssemblySequenceTests.AssemblySequence_RF28_ElMazoSobreElTroncoResaltadoMecanizaIgualQueElBoton",
+      "Status": "Passed",
+      "Duration": 0.0003128
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.AssemblySequenceTests.AssemblySequence_RF28_MecanizarExigeTroncoCortoSeleccionado",
+      "Status": "Passed",
+      "Duration": 0.0003783
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.AssemblySequenceTests.AssemblySequence_RF29_RechazaCadaPasoFueraDeSecuenciaConSuMensaje",
+      "Status": "Passed",
+      "Duration": 0.0004457
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.AssemblySequenceTests.AssemblySequence_RF29_SoltarLejosDelLugarDeArmadoNoEjecutaNada",
+      "Status": "Passed",
+      "Duration": 0.0001744
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.BlockSequenceTests.BlockSequence_CP02_NoHayLimiteDeBloquesNiDeEdiciones",
+      "Status": "Passed",
+      "Duration": 0.0008821
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.BlockSequenceTests.BlockSequence_CU08_UnaSecuenciaVaciaDevuelveResultadoTipadoNoExcepcion",
+      "Status": "Passed",
+      "Duration": 0.0021668
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.BlockSequenceTests.BlockSequence_RF31_SoloExistenTresTiposDeBloqueYCadaUnoLlevaSuParametro",
+      "Status": "Passed",
+      "Duration": 0.0007036
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.BlockSequenceTests.BlockSequence_RF34_RetirarReordenarYEditarPreservaElRestoDeLaSecuencia",
+      "Status": "Passed",
+      "Duration": 0.001025
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.CargoPlacementTests.CargoPlacement_CP02_ColocarLaCajaNoSeDeshaceAlVolverASoltarlaFuera",
+      "Status": "Passed",
+      "Duration": 0.0013121
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.CargoPlacementTests.CargoPlacement_CP02_IntentarMoverlaAntesDeTiempoNoPenalizaNiBloquea",
+      "Status": "Passed",
+      "Duration": 0.0002607
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.CargoPlacementTests.CargoPlacement_RF25_ConElAcopioCompletoLaCajaSeAgarraYSeSuelta",
+      "Status": "Passed",
+      "Duration": 0.0002965
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.CargoPlacementTests.CargoPlacement_RF25_LaCajaNoSeArrastraSinLosCincoTroncos",
+      "Status": "Passed",
+      "Duration": 0.0001931
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.CargoPlacementTests.CargoPlacement_RF25_SoltarSinHaberAgarradoNoColocaLaCaja",
+      "Status": "Passed",
+      "Duration": 0.0001491
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.CargoPlacementTests.CargoPlacement_RF26_ElRodadoSeDemuestraUnaSolaVez",
+      "Status": "Passed",
+      "Duration": 0.0001843
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.CargoPlacementTests.CargoPlacement_RF26_EmpujarSeHabilitaSoloConLaCajaColocada",
+      "Status": "Passed",
+      "Duration": 0.0002648
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.ForestObjectNudge_CP02_ElCursorLejosNoMueveNiEstorbaANadie",
+      "Status": "Passed",
+      "Duration": 0.0008423
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.ForestObjectNudge_RF22_AvisaQueEmpiezaAApartarseUnaSolaVezPorAcercamiento",
+      "Status": "Passed",
+      "Duration": 0.0003085
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.ForestObjectNudge_RF22_LaHerramientaApenasSeArrastra",
+      "Status": "Passed",
+      "Duration": 0.0002618
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.ForestObjectNudge_RF22_LaHojaDejaDeMoverseAlPosarse",
+      "Status": "Passed",
+      "Duration": 0.000207
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.ForestObjectNudge_RF22_LaHojaSeLevantaDelSueloYVuelveASuSitio",
+      "Status": "Passed",
+      "Duration": 0.0001938
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.ForestObjectNudge_RF23_LaPiedraSeDetieneTrasUnSoloVuelco",
+      "Status": "Passed",
+      "Duration": 0.0002556
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.ForestObjectNudge_RF23_LaPiedraVuelveAVolcarSiElCursorSeVaYRegresa",
+      "Status": "Passed",
+      "Duration": 0.000152
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.ForestObjectNudge_RF23_LoRedondoRuedaMasLejosQueLoAnguloso",
+      "Status": "Passed",
+      "Duration": 0.0001013
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.ForestObjectNudge_RNF03_AlTocarElBordeElMovimientoRebota",
+      "Status": "Passed",
+      "Duration": 0.0002907
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.ForestObjectNudge_RNF03_NingunObjetoSeSaleDelAreaJugable",
+      "Status": "Passed",
+      "Duration": 0.0012859
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.WheelLevelConfig_RF23_ElAssetDaAlTroncoMasEmpujeQueAlRestoDeCategorias",
+      "Status": "Passed",
+      "Duration": 0.0171271
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.ForestObjectNudgeTests.WheelLevelConfig_RNF21_ElMovimientoAmbientalEsPequenoEnTodasLasCategorias",
+      "Status": "Passed",
+      "Duration": 0.0180702
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.MazeGridTests.CartState_INC33_GirarRota90GradosACadaLadoSinDesplazar",
+      "Status": "Passed",
+      "Duration": 0.000943
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.MazeGridTests.CartState_RF31_AvanzarEsRelativoALaOrientacionNoAbsoluto",
+      "Status": "Passed",
+      "Duration": 0.0020612
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.MazeGridTests.CartState_RF31_RetrocederNoCambiaLaOrientacion",
+      "Status": "Passed",
+      "Duration": 0.0002442
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.MazeGridTests.MazeGrid_RF30_ElAnilloExteriorEsElSetoSalvoLaSalidaYElRefugio",
+      "Status": "Passed",
+      "Duration": 0.0016129
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.MazeGridTests.MazeGrid_RF33_UnMovimientoInvalidoDevuelveALaCasillaAnterior",
+      "Status": "Passed",
+      "Duration": 0.0005616
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.MazeGridTests.MazeGrid_RNF13_ConDemasiadosObstaculosSiembraMenosAntesQueDejarElRefugioInalcanzable",
+      "Status": "Passed",
+      "Duration": 0.0048215
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.MazeGridTests.MazeGrid_RNF13_ExisteUnaSecuenciaQueAlcanzaElRefugio",
+      "Status": "Passed",
+      "Duration": 0.0021805
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.MazeGridTests.MazeGrid_RNF18_LaMismaSemillaProduceElMismoTrazadoYSalidaYRefugioNoCambian",
+      "Status": "Passed",
+      "Duration": 0.0034554
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.MazeGridTests.MazeLayout_RNF13_LaSecuenciaDeCierreDeLaFase3ExisteEnElProyecto",
+      "Status": "Passed",
+      "Duration": 0.0321249
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.PatternSelection_CP02_UnRechazoNoPenalizaNiBloquea",
+      "Status": "Passed",
+      "Duration": 0.0004691
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.PatternSelection_RF23_AceptaTroncoRedondoYRechazaDistractor",
+      "Status": "Passed",
+      "Duration": 0.0002049
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.PatternSelection_RF23_CadaCategoriaDeDistractorDevuelveSuPropioMensaje",
+      "Status": "Passed",
+      "Duration": 0.0003852
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.PatternSelection_RF23_LaFaseTerminaAlCompletarElAcopioDelAsset",
+      "Status": "Passed",
+      "Duration": 0.000261
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.PatternSelection_RF24_ElContadorNoRetrocedeAnteUnRechazo",
+      "Status": "Passed",
+      "Duration": 0.0002498
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.PatternSelection_RF24_UnObjetoYaAcopiadoNoSeCuentaDosVeces",
+      "Status": "Passed",
+      "Duration": 0.0001878
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.WheelLevelConfig_CP03_NingunMensajeDeLaFase1TraeCifras",
+      "Status": "Passed",
+      "Duration": 0.0169917
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.WheelLevelConfig_RF11_ElAciertoDevuelveLaPreguntaQueAbreElPatron",
+      "Status": "Passed",
+      "Duration": 0.0167732
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.WheelLevelConfig_RF22_DosObjetosDelMismoSpriteNoAparecenEnLaMismaPostura",
+      "Status": "Passed",
+      "Duration": 0.0185345
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.WheelLevelConfig_RF23_LosTroncosRedondosSeDibujanConUnSoloSprite",
+      "Status": "Passed",
+      "Duration": 0.0170573
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.WheelLevelConfig_RF24_ElAssetPideCincoTroncosEntreAlMenosOchoDistractores",
+      "Status": "Passed",
+      "Duration": 0.0168198
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.WheelLevelConfig_RNF01_NingunMensajeDeLaFase1Supera20Palabras",
+      "Status": "Passed",
+      "Duration": 0.0188661
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.WheelLevelConfig_RNF18_NingunParametroDeLaFase1EstaEnElCodigo",
+      "Status": "Passed",
+      "Duration": 0.0153512
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.PatternSelectionTests.WheelLevelConfig_RNF23_CadaObjetoDelBosqueTraeSuIlustracion",
+      "Status": "Passed",
+      "Duration": 0.0146408
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceExecutorTests.SequenceExecutor_CP06_ElResultadoNoNombraElBloqueQueDebeCorregirse",
+      "Status": "Passed",
+      "Duration": 0.001125
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceExecutorTests.SequenceExecutor_RF31_RetrocederMueveHaciaAtrasSinCambiarLaOrientacion",
+      "Status": "Passed",
+      "Duration": 0.0005326
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceExecutorTests.SequenceExecutor_RF32_RecorreLaSecuenciaPasoAPasoResaltandoElBloqueEnCurso",
+      "Status": "Passed",
+      "Duration": 0.0017663
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceExecutorTests.SequenceExecutor_RF33_UnMovimientoInvalidoRetrocedeYLaEjecucionContinua",
+      "Status": "Passed",
+      "Duration": 0.0005389
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceExecutorTests.SequenceExecutor_RNF13_LaSecuenciaCorrectaAlcanzaElRefugio",
+      "Status": "Passed",
+      "Duration": 0.0002965
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceListRulesTests.SequenceListRules_RF32_RecorrerLaListaPasoAPasoNuncaDejaElBloqueEnCursoFueraDeLaVentana",
+      "Status": "Passed",
+      "Duration": 0.0002446
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceListRulesTests.SequenceListRules_RF32_UnBloqueDebajoDeLaVentanaLaBajaHastaDejarloALaVistaConSuMargen",
+      "Status": "Passed",
+      "Duration": 8.05E-05
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceListRulesTests.SequenceListRules_RF32_UnBloqueEncimaDeLaVentanaLaSubeHastaDejarloALaVistaConSuMargen",
+      "Status": "Passed",
+      "Duration": 6.41E-05
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceListRulesTests.SequenceListRules_RF32_UnBloqueMasAltoQueLaVentanaMuestraSuBordeSuperior",
+      "Status": "Passed",
+      "Duration": 6.85E-05
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceListRulesTests.SequenceListRules_RF32_UnBloqueYaVisibleNoMueveLaLista",
+      "Status": "Passed",
+      "Duration": 6.01E-05
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceListRulesTests.SequenceListRules_RF34_SinBloquesNoHayFilaSeleccionada",
+      "Status": "Passed",
+      "Duration": 0.0001092
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceListRulesTests.Primera de cuatro: queda la que ocupa su lugar",
+      "Status": "Passed",
+      "Duration": 0.0003755
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceListRulesTests.Del medio: queda la que ocupa su lugar",
+      "Status": "Passed",
+      "Duration": 3.03E-05
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceListRulesTests.Última: queda la nueva última",
+      "Status": "Passed",
+      "Duration": 1.95E-05
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.SequenceListRulesTests.Quedaba una sola: es esa",
+      "Status": "Passed",
+      "Duration": 1.76E-05
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.WheelIndicatorTests.WheelIndicators_CP03_NingunIndicadorLlegaALaUIDelEstudiante",
+      "Status": "Passed",
+      "Duration": 0.0026828
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.WheelIndicatorTests.WheelIndicators_OE1361_ReiniciarElNivelNoBorraLosIndicadoresRegistrados",
+      "Status": "Passed",
+      "Duration": 0.0004819
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.WheelIndicatorTests.WheelIndicators_RF07_LaPausaNoSumaTiempoDeResolucion",
+      "Status": "Passed",
+      "Duration": 0.0001645
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.WheelIndicatorTests.WheelIndicators_RF45_ErrorCorregidoEnFase3ExigeEdicionEntreDosEjecuciones",
+      "Status": "Passed",
+      "Duration": 0.0001834
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.WheelIndicatorTests.WheelIndicators_RF45_ErrorCorregidoEnFases1Y2EsUnRechazoSeguidoDeLaAccionCorrecta",
+      "Status": "Passed",
+      "Duration": 0.0001426
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.WheelIndicatorTests.WheelIndicators_RF45_IntentosSeCuentanSegunLaDefinicionDeCadaFase",
+      "Status": "Passed",
+      "Duration": 0.000154
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.WheelIndicatorTests.WheelIndicators_RF45_PasosUtilizadosSigueLaDefinicionDeCadaFase",
+      "Status": "Passed",
+      "Duration": 0.0001605
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.WheelLevelConfigTests.WheelLevelConfig_RF05_ElBosqueAbreConLaVistaConLaQueTerminaLaEscena21",
+      "Status": "Passed",
+      "Duration": 0.0339788
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.WheelLevelConfigTests.WheelLevelConfig_RF05_LaCajaColocadaEsLaQueLaEscena22DibujaAlAbrir",
+      "Status": "Passed",
+      "Duration": 0.0351179
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.WheelLevelConfigTests.WheelLevelConfig_RF05_LaEscenaDeCierreAbreConLaMismaVistaConLaQueTerminaElBosque",
+      "Status": "Passed",
+      "Duration": 0.0331195
+    },
+    {
+      "FullName": "Game.Levels.Wheel.Tests.WheelLevelConfigTests.WheelLevelConfig_RNF13_LaSecuenciaDeCierreDeLaFase1ExisteEnElProyecto",
+      "Status": "Passed",
+      "Duration": 0.025776
+    },
+    {
+      "FullName": "Game.Reporting.Tests.IndicatorReportTests.IndicatorReport_INC35_AgrupaPorNivelYPorFaseNoSoloPorNivel",
+      "Status": "Passed",
+      "Duration": 0.0042036
+    },
+    {
+      "FullName": "Game.Reporting.Tests.IndicatorReportTests.IndicatorReport_RF46_UnNivelNoJugadoSePresentaSinDatosNoConCeros",
+      "Status": "Passed",
+      "Duration": 0.0010029
+    },
+    {
+      "FullName": "Game.Reporting.Tests.IndicatorReportTests.IndicatorReport_RNF09_EmiteExactamenteLosCuatroIndicadoresYNingunAgregadoNuevo",
+      "Status": "Passed",
+      "Duration": 0.0001925
+    },
+    {
+      "FullName": "Game.Reporting.Tests.ProfileEraserDiskTests.ProfileEraser_INC34_SobreDiscoRealCubreLosDosEscenariosDeAlmacenamiento",
+      "Status": "Skipped",
+      "Duration": 0.0065612,
+      "Message": "Este equipo no hace cumplir el atributo de solo lectura sobre carpetas: el escenario de solo lectura de INC-34 no se puede simular aquí.",
+      "StackTrace": "at Game.Reporting.Tests.ProfileEraserDiskTests.ProfileEraser_INC34_SobreDiscoRealCubreLosDosEscenariosDeAlmacenamiento () [0x00031] in C:\\Dev\\Algoritmia\\Assets\\Tests\\EditMode\\Reporting\\ProfileEraserDiskTests.cs:86\r\n"
+    },
+    {
+      "FullName": "Game.Reporting.Tests.ProfileEraserDiskTests.ProfileEraser_RNF11_SobreDiscoRealNoQuedaNingunaEntradaDelPerfil",
+      "Status": "Passed",
+      "Duration": 0.0033629
+    },
+    {
+      "FullName": "Game.Reporting.Tests.ProfileRepositoryTests.ProfileRepository_CU11_SinPerfilesDevuelveListaVaciaYNoLanza",
+      "Status": "Passed",
+      "Duration": 0.0009348
+    },
+    {
+      "FullName": "Game.Reporting.Tests.ProfileRepositoryTests.ProfileRepository_RF46_EnumeraLosPerfilesDeLasDosRutasSinDuplicar",
+      "Status": "Passed",
+      "Duration": 0.0012439
+    },
+    {
+      "FullName": "Game.Reporting.Tests.ProfileRepositoryTests.ProfileRepository_RNF13_UnArchivoCorruptoNoTumbaLaEnumeracion",
+      "Status": "Passed",
+      "Duration": 0.0037369
+    },
+    {
+      "FullName": "Game.Reporting.Tests.ResolutionTimeFormatTests.TeacherReport_RF46_ElTiempoSeFormateaEnMinutosYSegundos(0.0f,\"0:00\")",
+      "Status": "Passed",
+      "Duration": 0.0004807
+    },
+    {
+      "FullName": "Game.Reporting.Tests.ResolutionTimeFormatTests.TeacherReport_RF46_ElTiempoSeFormateaEnMinutosYSegundos(5.0f,\"0:05\")",
+      "Status": "Passed",
+      "Duration": 3.07E-05
+    },
+    {
+      "FullName": "Game.Reporting.Tests.ResolutionTimeFormatTests.TeacherReport_RF46_ElTiempoSeFormateaEnMinutosYSegundos(59.0f,\"0:59\")",
+      "Status": "Passed",
+      "Duration": 1.61E-05
+    },
+    {
+      "FullName": "Game.Reporting.Tests.ResolutionTimeFormatTests.TeacherReport_RF46_ElTiempoSeFormateaEnMinutosYSegundos(60.0f,\"1:00\")",
+      "Status": "Passed",
+      "Duration": 1.36E-05
+    },
+    {
+      "FullName": "Game.Reporting.Tests.ResolutionTimeFormatTests.TeacherReport_RF46_ElTiempoSeFormateaEnMinutosYSegundos(91.5f,\"1:32\")",
+      "Status": "Passed",
+      "Duration": 1.11E-05
+    },
+    {
+      "FullName": "Game.Reporting.Tests.ResolutionTimeFormatTests.TeacherReport_RF46_ElTiempoSeFormateaEnMinutosYSegundos(3661.0f,\"61:01\")",
+      "Status": "Passed",
+      "Duration": 1.29E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_AlLlegarHablandoGesticulaSiLaLlegadaEsElReposo",
+      "Status": "Passed",
+      "Duration": 0.001186
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_ElCaminoEnCursoEsElUltimoPasoConMovimientoSinInterrumpir",
+      "Status": "Passed",
+      "Duration": 0.0004511
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_EntrePasosConservaElSitioYLaUltimaAccion",
+      "Status": "Passed",
+      "Duration": 0.0002923
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_LaPosicionTrasLaLineaIncluyeSuPropioMovimiento",
+      "Status": "Passed",
+      "Duration": 0.0001971
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_LoQueElGuionDiceQueHaceMandaSobreElGestoDeHablar",
+      "Status": "Passed",
+      "Duration": 0.0001483
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_QuienDiceLaLineaDePieYQuietoGesticula",
+      "Status": "Passed",
+      "Duration": 0.0001463
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_QuienNoTerminaSusPasosNoDejaNadaPendiente",
+      "Status": "Passed",
+      "Duration": 0.0004229
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_SinPasosSeQuedaDondeEstaHaciendoLoDeSalida",
+      "Status": "Passed",
+      "Duration": 0.0001739
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_UnaLineaSinPasoNoInterrumpeElCamino(True)",
+      "Status": "Passed",
+      "Duration": 0.0002271
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_UnaLineaSinPasoNoInterrumpeElCamino(False)",
+      "Status": "Passed",
+      "Duration": 2.32E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_UnPasoConDestinoAvanzaHaciendoSuAccionYAlLlegarHaceLaLlegada",
+      "Status": "Passed",
+      "Duration": 0.0002652
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_UnPasoDeReposoEnSuPropiaLineaLaDiceGesticulando",
+      "Status": "Passed",
+      "Duration": 0.0001538
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_UnPasoNuevoInterrumpeElCaminoDeQuienNoTerminaSusPasos(1)",
+      "Status": "Passed",
+      "Duration": 0.0003389
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_UnPasoNuevoInterrumpeElCaminoDeQuienNoTerminaSusPasos(2)",
+      "Status": "Passed",
+      "Duration": 6.59E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RF05_UnPasoNuevoInterrumpeElCaminoDeQuienNoTerminaSusPasos(3)",
+      "Status": "Passed",
+      "Duration": 4.24E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RNF21_ElPasoQueAcabaDeDarNoQuedaPendiente",
+      "Status": "Passed",
+      "Duration": 0.000187
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RNF21_NingunPasoInterrumpeAQuienTerminaSusPasos(1)",
+      "Status": "Passed",
+      "Duration": 0.0001151
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RNF21_NingunPasoInterrumpeAQuienTerminaSusPasos(2)",
+      "Status": "Passed",
+      "Duration": 2.01E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RNF21_NingunPasoInterrumpeAQuienTerminaSusPasos(3)",
+      "Status": "Passed",
+      "Duration": 1.34E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RNF21_QuedaPendienteElUltimoPasoQueLoMueve(3)",
+      "Status": "Passed",
+      "Duration": 0.000326
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RNF21_QuedaPendienteElUltimoPasoQueLoMueve(4)",
+      "Status": "Passed",
+      "Duration": 2.84E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RNF21_SiNoSeLeyoNingunPasoQueLoMuevaNoQuedaNadaPendiente(0)",
+      "Status": "Passed",
+      "Duration": 0.0001262
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RNF21_SiNoSeLeyoNingunPasoQueLoMuevaNoQuedaNadaPendiente(1)",
+      "Status": "Passed",
+      "Duration": 1.8E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ActorTimelineTests.ActorTimeline_RNF21_UnPasoEnElSitioLeidoMientrasCruzabaQuedaPendiente",
+      "Status": "Passed",
+      "Duration": 9.29E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_CP02_NingunClipEsDeDerrotaCaidaNiSalto",
+      "Status": "Passed",
+      "Duration": 0.0053585
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA133_CadaPersonajeTieneUnEstadoPorAccion(\"Papa\")",
+      "Status": "Passed",
+      "Duration": 0.011785
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA133_CadaPersonajeTieneUnEstadoPorAccion(\"Mama\")",
+      "Status": "Passed",
+      "Duration": 0.0083222
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA133_CadaPersonajeTieneUnEstadoPorAccion(\"Nina\")",
+      "Status": "Passed",
+      "Duration": 0.0084792
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA133_CadaPersonajeTieneUnEstadoPorAccion(\"Nino\")",
+      "Status": "Passed",
+      "Duration": 0.0073555
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA133_CadaPersonajeTieneUnEstadoPorAccion(\"Algoritm_Fuego\")",
+      "Status": "Passed",
+      "Duration": 0.0022494
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA133_CadaPersonajeTieneUnEstadoPorAccion(\"Algoritm_Rueda\")",
+      "Status": "Passed",
+      "Duration": 0.0006003
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA133_CadaPersonajeTieneUnEstadoPorAccion(\"Algoritm_Gota\")",
+      "Status": "Passed",
+      "Duration": 0.0005187
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA53_AlgoritmNoLlevaSombraDeContacto(\"Algoritm_Fuego\")",
+      "Status": "Passed",
+      "Duration": 0.0008753
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA53_AlgoritmNoLlevaSombraDeContacto(\"Algoritm_Rueda\")",
+      "Status": "Passed",
+      "Duration": 5.66E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA53_AlgoritmNoLlevaSombraDeContacto(\"Algoritm_Gota\")",
+      "Status": "Passed",
+      "Duration": 3.28E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA53_LaFamiliaLlevaSombraDeContactoBajoLosPies(\"Papa\")",
+      "Status": "Passed",
+      "Duration": 0.0006864
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA53_LaFamiliaLlevaSombraDeContactoBajoLosPies(\"Mama\")",
+      "Status": "Passed",
+      "Duration": 5.92E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA53_LaFamiliaLlevaSombraDeContactoBajoLosPies(\"Nina\")",
+      "Status": "Passed",
+      "Duration": 4.09E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA53_LaFamiliaLlevaSombraDeContactoBajoLosPies(\"Nino\")",
+      "Status": "Passed",
+      "Duration": 3.8E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA76_LasTresFormasDeAlgoritmLlevanEstelaSinRecibirClics(\"Algoritm_Fuego\")",
+      "Status": "Passed",
+      "Duration": 0.0063775
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA76_LasTresFormasDeAlgoritmLlevanEstelaSinRecibirClics(\"Algoritm_Rueda\")",
+      "Status": "Passed",
+      "Duration": 0.001222
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_DA76_LasTresFormasDeAlgoritmLlevanEstelaSinRecibirClics(\"Algoritm_Gota\")",
+      "Status": "Passed",
+      "Duration": 0.0011773
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RF05_CadaPersonajeTieneRetratoYNombresConQueHabla(\"Papa\")",
+      "Status": "Passed",
+      "Duration": 0.0002623
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RF05_CadaPersonajeTieneRetratoYNombresConQueHabla(\"Mama\")",
+      "Status": "Passed",
+      "Duration": 6.59E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RF05_CadaPersonajeTieneRetratoYNombresConQueHabla(\"Nina\")",
+      "Status": "Passed",
+      "Duration": 6.58E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RF05_CadaPersonajeTieneRetratoYNombresConQueHabla(\"Nino\")",
+      "Status": "Passed",
+      "Duration": 5.13E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RF05_CadaPersonajeTieneRetratoYNombresConQueHabla(\"Algoritm_Fuego\")",
+      "Status": "Passed",
+      "Duration": 4.69E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RF05_CadaPersonajeTieneRetratoYNombresConQueHabla(\"Algoritm_Rueda\")",
+      "Status": "Passed",
+      "Duration": 5.94E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RF05_CadaPersonajeTieneRetratoYNombresConQueHabla(\"Algoritm_Gota\")",
+      "Status": "Passed",
+      "Duration": 5.39E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RF05_LosDosNinosHablanComoNinos",
+      "Status": "Passed",
+      "Duration": 0.000417
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RNF02_NingunaParteDeUnPersonajeRecibeClics(\"Papa\")",
+      "Status": "Passed",
+      "Duration": 0.0012068
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RNF02_NingunaParteDeUnPersonajeRecibeClics(\"Mama\")",
+      "Status": "Passed",
+      "Duration": 7.53E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RNF02_NingunaParteDeUnPersonajeRecibeClics(\"Nina\")",
+      "Status": "Passed",
+      "Duration": 4.17E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RNF02_NingunaParteDeUnPersonajeRecibeClics(\"Nino\")",
+      "Status": "Passed",
+      "Duration": 3.88E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RNF02_NingunaParteDeUnPersonajeRecibeClics(\"Algoritm_Fuego\")",
+      "Status": "Passed",
+      "Duration": 3.62E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RNF02_NingunaParteDeUnPersonajeRecibeClics(\"Algoritm_Rueda\")",
+      "Status": "Passed",
+      "Duration": 3.37E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_RNF02_NingunaParteDeUnPersonajeRecibeClics(\"Algoritm_Gota\")",
+      "Status": "Passed",
+      "Duration": 3.33E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ConditionalNarrativeTriggerTests.NarrativeTrigger_Guion841_AcertarAlPrimerIntentoSaltaLaEscena32",
+      "Status": "Passed",
+      "Duration": 0.0001614
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.ConditionalNarrativeTriggerTests.NarrativeTrigger_Guion841_LaEscena32SoloSeDisparaTrasElPrimerFallo",
+      "Status": "Passed",
+      "Duration": 0.0001265
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.DialogueRunnerTests.DialogueRunner_INC28_OmitirLaPrimeraVezNoSaltaLaEscena",
+      "Status": "Passed",
+      "Duration": 0.0003987
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.DialogueRunnerTests.DialogueRunner_INC28_OmitirUnaEscenaYaVistaLlegaAlFinal",
+      "Status": "Passed",
+      "Duration": 0.0001194
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.DialogueRunnerTests.DialogueRunner_RF05_AvanzaUnaLineaPorClic",
+      "Status": "Passed",
+      "Duration": 0.0003228
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.DialogueRunnerTests.DialogueRunner_RF05_ElProgresoVaDeCeroAUnoAlRitmoDeLasLineas",
+      "Status": "Passed",
+      "Duration": 0.0002917
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.DialogueRunnerTests.DialogueRunner_RF05_TerminaDespuesDeLaUltimaLinea",
+      "Status": "Passed",
+      "Duration": 0.0001302
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.DialogueRunnerTests.DialogueRunner_RF05_UnaSecuenciaSinLineasNaceTerminada",
+      "Status": "Passed",
+      "Duration": 9.94E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.DialogueRunnerTests.DialogueRunner_RF06_NoOfreceOmitirLaPrimeraVez",
+      "Status": "Passed",
+      "Duration": 7.95E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.DialogueRunnerTests.DialogueRunner_RF06_OfreceOmitirSiLaEscenaYaFueVista",
+      "Status": "Passed",
+      "Duration": 7.26E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.GuideTrailTests.GuideTrail_DA76_DejaEntreCincoYSietePuntosDeTamanoDecreciente",
+      "Status": "Passed",
+      "Duration": 0.0003364
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.GuideTrailTests.GuideTrail_DA76_LaEstelaSigueALaCasillaQueCaminaYSeBorraAlDetenerse",
+      "Status": "Passed",
+      "Duration": 0.0017832
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.GuideTrailTests.GuideTrail_DA76_SinMovimientoNoDejaEstela",
+      "Status": "Passed",
+      "Duration": 0.00015
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.GuideTrailTests.TrailPath_DA76_OlvidaLaEstelaSiElCuerpoSeQuedaQuieto",
+      "Status": "Passed",
+      "Duration": 0.0001922
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_CP06_LaPistaNuncaNombraLaPosicionEfectiva",
+      "Status": "Passed",
+      "Duration": 0.0145719
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_CP06_NingunaPistaDelNivel2NombraLaRespuesta",
+      "Status": "Passed",
+      "Duration": 0.0275883
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_CP06_PistaDeEnsamblajeNoDiceQuePiezaVaEnQueEspacio",
+      "Status": "Passed",
+      "Duration": 0.027741
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_RF13_AyudaADemandaNoAlteraElEstado",
+      "Status": "Passed",
+      "Duration": 0.0002926
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_RF13_AyudaADemandaNoAlteraElEstadoEnLasTresFases",
+      "Status": "Passed",
+      "Duration": 0.0001621
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_RF13_AyudaADemandaNoAlteraElInventario",
+      "Status": "Passed",
+      "Duration": 0.012277
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_RF13_ContadorDeFallosEsPorFaseNoPorNivel",
+      "Status": "Passed",
+      "Duration": 0.0001848
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_RF13_PistaDeRecoleccionNoNombraLaUbicacionDelMaterial",
+      "Status": "Passed",
+      "Duration": 0.0121156
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_RF13_PistaSeOfreceAlTercerFalloConsecutivo",
+      "Status": "Passed",
+      "Duration": 0.0002716
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_RF13_UnAciertoReiniciaLosFallosConsecutivos",
+      "Status": "Passed",
+      "Duration": 0.0002359
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_RNF01_NingunaOracionDelGuiaSupera20Palabras",
+      "Status": "Passed",
+      "Duration": 0.0130847
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_RNF03_CambiarDeTareaReiniciaLosFallosYLaInstruccion",
+      "Status": "Passed",
+      "Duration": 0.000144
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.HintPolicy_RNF18_CadaTareaTieneInstruccionYPista",
+      "Status": "Passed",
+      "Duration": 0.011962
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.RiverLevel_RNF03_LaListaDeCuatroTareasNoImplicaCuatroTareasActivas",
+      "Status": "Passed",
+      "Duration": 0.0119248
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.HintPolicyTests.WheelGuide_RNF03_UnaSolaTareaActivaPorFase",
+      "Status": "Passed",
+      "Duration": 0.0121051
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RF05_AvisaDeLaLineaDeArbolesFueraYDelEjeDelEspejo",
+      "Status": "Passed",
+      "Duration": 0.0004947
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RF05_AvisaDelFocoQueSeRecortaEnSilencio",
+      "Status": "Passed",
+      "Duration": 0.000214
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RF05_ConUnSprite16a9ElAvisoUsaMediaPantallaEnX",
+      "Status": "Passed",
+      "Duration": 0.0002153
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RF05_ElAcercamientoNuncaDescubreBordes",
+      "Status": "Passed",
+      "Duration": 0.0002248
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RF05_ElFocoEnUnaEsquinaSeRecortaAlBorde",
+      "Status": "Passed",
+      "Duration": 0.0002956
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RF05_ElFocoQuedaEnElCentroCuandoHaySitio",
+      "Status": "Passed",
+      "Duration": 0.0001349
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RF05_ElZoomDeCierreDelBosqueDejaLaVistaConLaQueAbreLaEscena22",
+      "Status": "Passed",
+      "Duration": 0.0006021
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RF05_SinAcercamientoNoHayDesplazamientoPosible",
+      "Status": "Passed",
+      "Duration": 0.0001157
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RNF03_CubreUnaVentanaPanoramica",
+      "Status": "Passed",
+      "Duration": 0.000268
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RNF03_CubreUnaVentanaCuatroTres",
+      "Status": "Passed",
+      "Duration": 2.62E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RNF03_CubreUnaVentanaVertical",
+      "Status": "Passed",
+      "Duration": 1.54E-05
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.IllustrationFramingTests.IllustrationFraming_RNF23_SustituirElArteAOtraResolucionNoCambiaElEncuadre",
+      "Status": "Passed",
+      "Duration": 0.0001361
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_OBS13_NingunaLlamaDeLaEscenaFinalSaleDeTrasLaCabezaDeLaFamilia",
+      "Status": "Passed",
+      "Duration": 0.0393806
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RF05_CadaLlamaEchaHumoPorDetrasYPorEncima",
+      "Status": "Passed",
+      "Duration": 0.0178261
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RF05_ElNivel2TieneSusSieteSecuencias",
+      "Status": "Passed",
+      "Duration": 0.013463
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche",
+      "Status": "Passed",
+      "Duration": 0.0137445
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RF05_ElNivel3TieneSusSieteSecuencias",
+      "Status": "Passed",
+      "Duration": 0.0125191
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RF05_LosIdentificadoresNoSeRepiten",
+      "Status": "Passed",
+      "Duration": 0.0134032
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RF05_NingunEncuadreDelNivel3SeRecorta",
+      "Status": "Passed",
+      "Duration": 0.0167752
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RF44_LaBalsaDelCruceNavegaBajoLaEspumaDeLaCascada",
+      "Status": "Passed",
+      "Duration": 0.0170112
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RF44_LaFamiliaBajaConLaBalsaYViajaEnSuSitio",
+      "Status": "Passed",
+      "Duration": 0.0211539
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RF44_SoloLosViajerosDelCruceTerminanSusPasos",
+      "Status": "Passed",
+      "Duration": 0.0157172
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RNF01_NingunaOracionSupera20Palabras",
+      "Status": "Passed",
+      "Duration": 0.0182029
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo",
+      "Status": "Passed",
+      "Duration": 0.0192982
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RNF18_CadaSecuenciaTieneIdYLineas",
+      "Status": "Passed",
+      "Duration": 0.016895
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeSequence_RNF23_CadaObjetoPintadoTieneSuIlustracion",
+      "Status": "Passed",
+      "Duration": 0.0193223
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeSequenceTests.NarrativeVisitPolicy_CP07_ElCruceYLaEscenaFinalNoSeOmitenLaPrimeraVez",
+      "Status": "Passed",
+      "Duration": 0.0183791
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeVisitPolicyTests.NarrativeVisitPolicy_RF06_ElCierreDelNivel2NoEsOmitibleLaPrimeraVez",
+      "Status": "Passed",
+      "Duration": 0.054973
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeVisitPolicyTests.NarrativeVisitPolicy_RF06_SinPerfilActivoNuncaSeOfreceOmitir",
+      "Status": "Passed",
+      "Duration": 0.0124046
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.NarrativeVisitPolicyTests.NarrativeVisitPolicy_RF06_UnaEscenaIntermediaNoSeOmiteEnLaPrimeraVuelta",
+      "Status": "Passed",
+      "Duration": 0.0723791
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.RollingLogTests.RollingLog_RF26_DeFrenteSoloSeVeElCorteYDeCostadoSoloLaCorteza",
+      "Status": "Passed",
+      "Duration": 0.0007182
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.RollingLogTests.RollingLog_RF26_En34ElCorteSeAchataYElCostadoSeAlejaPorElEje",
+      "Status": "Passed",
+      "Duration": 0.0002097
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.RollingLogTests.RollingLog_RF26_EnEspejoLaTexturaGiraComoSeVeGirarElObjeto",
+      "Status": "Passed",
+      "Duration": 0.003443
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.RollMotionTests.RollMotion_RF26_LaCajaAvanzaSinRetrocederYLuegoCae",
+      "Status": "Passed",
+      "Duration": 0.0008121
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.RollMotionTests.RollMotion_RF26_SinTiempoDeCaidaLaCajaSoloRueda",
+      "Status": "Passed",
+      "Duration": 0.000134
+    },
+    {
+      "FullName": "Game.UI.Tests.ButtonPressFeedbackTests.ButtonPressFeedback_RF03_NoHundeUnBotonNoInteractivo",
+      "Status": "Passed",
+      "Duration": 0.0020921
+    },
+    {
+      "FullName": "Game.UI.Tests.ButtonPressFeedbackTests.ButtonPressFeedback_RNF02_DevuelveLaCaraASuSitioAlSoltar",
+      "Status": "Passed",
+      "Duration": 0.0003947
+    },
+    {
+      "FullName": "Game.UI.Tests.ButtonPressFeedbackTests.ButtonPressFeedback_RNF02_DevuelveLaCaraASuSitioSiElPunteroSaleSinSoltar",
+      "Status": "Passed",
+      "Duration": 0.0003457
+    },
+    {
+      "FullName": "Game.UI.Tests.ButtonPressFeedbackTests.ButtonPressFeedback_RNF02_HundeLaCaraMientrasElClicSeSostiene",
+      "Status": "Passed",
+      "Duration": 0.0004269
+    },
+    {
+      "FullName": "Game.UI.Tests.ButtonPressFeedbackTests.ButtonPressFeedback_RNF02_NoAcumulaElHundidoSiElClicSeSostiene",
+      "Status": "Passed",
+      "Duration": 0.0003596
+    },
+    {
+      "FullName": "Game.UI.Tests.ButtonPressFeedbackTests.ButtonPressFeedback_RNF02_TomaElPrimerHijoComoCaraSiNoSeSerializaNinguna",
+      "Status": "Passed",
+      "Duration": 0.00034
+    },
+    {
+      "FullName": "Game.UI.Tests.CreditsContentTests.CreditsContent_RNF01_NingunaOracionSupera20Palabras",
+      "Status": "Passed",
+      "Duration": 0.0021988
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummary_CP03_NoExisteClaseDePuntajeEnElProyecto",
+      "Status": "Passed",
+      "Duration": 0.0369537
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummary_RF12_NombraLaAbstraccionYElPensamientoAlgoritmico",
+      "Status": "Passed",
+      "Duration": 0.0286685
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummary_RF12_NombraLaDescomposicionYLaDepuracion",
+      "Status": "Passed",
+      "Duration": 0.025721
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummary_RF12_NombraLaHabilidadEjercitada",
+      "Status": "Passed",
+      "Duration": 0.0184199
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummary_RF17_NingunResumenEmiteJuicioDeValor",
+      "Status": "Passed",
+      "Duration": 0.0447879
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummary_RF45_ElResumenDelNivel2NoContieneNingunDigito",
+      "Status": "Passed",
+      "Duration": 0.0211691
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummary_RF45_ElResumenDelNivel3NoContieneNingunDigito",
+      "Status": "Passed",
+      "Duration": 0.0225044
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummary_RF45_NingunResumenDeLosTresNivelesContieneUnDigito",
+      "Status": "Passed",
+      "Duration": 0.0583518
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummary_RF45_NoContieneNingunDigito",
+      "Status": "Passed",
+      "Duration": 0.0016
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummaryComposer_RF45_ElResumenDeUnNivelDeVariasFasesSumaLasFases",
+      "Status": "Passed",
+      "Duration": 0.0003052
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummaryComposer_RF45_SinErroresCorregidosNoUsaLaVarianteDeCambioDeEstrategia",
+      "Status": "Passed",
+      "Duration": 0.0002406
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummaryComposer_RF45_SinIntentosFallidosNoUsaLaVarianteDeVariasPosiciones",
+      "Status": "Passed",
+      "Duration": 0.0002438
+    },
+    {
+      "FullName": "Game.UI.Tests.LevelSummaryComposerTests.LevelSummaryContent_RNF01_NingunaOracionSupera20Palabras",
+      "Status": "Passed",
+      "Duration": 0.0580039
+    },
+    {
+      "FullName": "Game.UI.Tests.ProfilePagingTests.ProfilePaging_RF02_ContarPaginasDeTresPerfiles(0,1)",
+      "Status": "Passed",
+      "Duration": 0.0004513
+    },
+    {
+      "FullName": "Game.UI.Tests.ProfilePagingTests.ProfilePaging_RF02_ContarPaginasDeTresPerfiles(1,1)",
+      "Status": "Passed",
+      "Duration": 4.52E-05
+    },
+    {
+      "FullName": "Game.UI.Tests.ProfilePagingTests.ProfilePaging_RF02_ContarPaginasDeTresPerfiles(3,1)",
+      "Status": "Passed",
+      "Duration": 3.14E-05
+    },
+    {
+      "FullName": "Game.UI.Tests.ProfilePagingTests.ProfilePaging_RF02_ContarPaginasDeTresPerfiles(4,2)",
+      "Status": "Passed",
+      "Duration": 2.52E-05
+    },
+    {
+      "FullName": "Game.UI.Tests.ProfilePagingTests.ProfilePaging_RF02_ContarPaginasDeTresPerfiles(6,2)",
+      "Status": "Passed",
+      "Duration": 3.12E-05
+    },
+    {
+      "FullName": "Game.UI.Tests.ProfilePagingTests.ProfilePaging_RF02_ContarPaginasDeTresPerfiles(7,3)",
+      "Status": "Passed",
+      "Duration": 3.25E-05
+    },
+    {
+      "FullName": "Game.UI.Tests.ProfilePagingTests.ProfilePaging_RF02_ContarPaginasDeTresPerfiles(8,3)",
+      "Status": "Passed",
+      "Duration": 3.19E-05
+    },
+    {
+      "FullName": "Game.UI.Tests.ProfilePagingTests.ProfilePaging_RF02_NuncaDevuelveUnaPaginaNegativaNiPosteriorALaUltima",
+      "Status": "Passed",
+      "Duration": 0.0002471
+    },
+    {
+      "FullName": "Game.UI.Tests.ProfilePagingTests.ProfilePaging_RF02_TrasBorrarLaUltimaFilaDeLaUltimaPaginaVuelveALaAnterior",
+      "Status": "Passed",
+      "Duration": 0.0001457
+    }
+  ]
+}

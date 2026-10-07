@@ -14,7 +14,7 @@ los dos tienen su conversión en `docs/md/`. Las citas por sección de este docu
 con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
 (control de cambios).
 
-**Verificación vigente: 01/10/2026, rev. 16.** La rev. 14 (29/09/2026) contrastó todos los
+**Verificación vigente: 06/10/2026, rev. 19.** La rev. 14 (29/09/2026) contrastó todos los
 documentos —los `.docx` de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago,
 **todos los hallazgos están cerrados**: ante un conflicto gana el juego y se edita el documento; lo
 que solo pide el documento se implementa en el juego; lo que solo tiene el juego se añade al
@@ -25,7 +25,15 @@ cierra **INC-115** a **INC-117**, tres puntos que la verificación final dejó a
 en los que él decidió corregir el juego. La rev. 16 (01/10/2026) registra y cierra con la misma regla
 **INC-118** a **INC-130**: los cambios de la sesión del 30/09/2026 (acta D10) que contradecían un
 documento —las correcciones de los tres niveles, la prueba anticipada de la balsa y su sonido—,
-cuatro hallazgos de la dirección de arte y el peso del paquete de entrega (RNF-06). Siguen abiertos
+cuatro hallazgos de la dirección de arte y el peso del paquete de entrega (RNF-06). La rev. 17
+(05/10/2026) registra y cierra **INC-131**, una decisión de Santiago que levanta **INC-108** y la
+regla de Algoritm de una sola imagen **para el arte final**: caras con seis expresiones y rig con
+codos y rodillas. La rev. 18
+(05/10/2026) registra y cierra **INC-132**, otra decisión suya: en la familia los brazos se dibujan detrás del
+torso y delante de la cabeza (delante del torso al golpear); Algoritm, delante del cuerpo con las
+manos sobre la cara. La rev. 19 (06/10/2026) registra y cierra **INC-133**, decisión de Santiago que
+acota INC-132 en la familia: el húmero queda detrás del torso y el antebrazo se dibuja delante del
+torso, de la cara y de las piernas. Siguen abiertos
 solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
 **pendientes de Santiago** que el juego no zanja: tres del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
@@ -66,7 +74,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 
 ---
 
-## Resumen — estado a 01/10/2026 (rev. 16)
+## Resumen — estado a 06/10/2026 (rev. 19)
 
 | ID | Hallazgo | Documentos | Estado |
 |---|---|---|---|
@@ -181,6 +189,9 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-128 | La dirección de arte fijaba otros ajustes de importación que los que aplica el proyecto | Dirección de arte, Inventario de arte | **Cerrado** (01/10/2026) |
 | INC-129 | El diálogo se lee en un cuadro con retrato, no en un globo con cola | Dirección de arte, Interfaces | **Cerrado** (01/10/2026) |
 | INC-130 | El paquete de entrega superaba los 500 MB por los cuadros del fuego y del humo del Nivel 1 | Dirección de arte, Inventario de arte, CLAUDE.md | **Cerrado** (01/10/2026) |
+| INC-131 | El arte final trae seis expresiones y extremidades en dos tramos; INC-108 fijaba una sola cara y Algoritm una sola imagen | Interfaces, Dirección de arte, Inventario de arte, Plan de personajes finales, CLAUDE.md, juego | **Cerrado** (05/10/2026) |
+| INC-132 | Los brazos se escondían detrás de la cabeza y del cuerpo; la jerarquía los pintaba antes | Plan de personajes finales, Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (05/10/2026) |
+| INC-133 | En la familia el antebrazo debe dibujarse delante del torso, de la cara y de las piernas, con el húmero detrás del torso | Plan de personajes finales, Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (06/10/2026) |
 
 ---
 
@@ -1792,6 +1803,9 @@ llevan las acciones del rig (`Celebrate`, `Surprise`, `Observe`, `Encourage`…)
 **Corrección aplicada (29/09/2026).** Documentos: Interfaces: §4.2; §4; §5 · Dirección de arte:
 §7.3; §12.3 fila «Secuencia incorrecta» · Inventario de arte: Personajes.
 
+*Nota (05/10/2026): esta decisión vale para el **arte actual**. Para el arte final la levanta
+INC-131: seis expresiones, parpadeo y habla.*
+
 ### INC-109 · Los personajes no tenían sombra de contacto — cerrado (29/09/2026)
 
 **El conflicto.** La dirección de arte e Interfaces fijan una elipse hija del personaje al 25 %, y
@@ -2468,6 +2482,158 @@ paquete a 478 979 915 bytes (479,0 MB; 456,8 MiB), con 21 MB de margen
 entre sin comprimir y solo a ella le admite otro tope. La memoria (RNF-05) se mide sobre el
 ejecutable.
 
+### INC-131 · El arte final trae seis expresiones y extremidades en dos tramos — cerrado (05/10/2026)
+
+**El conflicto.** Santiago decidió el 05/10/2026 que los personajes finales llegan en vista frontal
+con más capas, y esa decisión contradice dos reglas que los documentos fijaban para el arte actual:
+**INC-108** («una sola cara, la neutra; la emoción la lleva el cuerpo») y la de Algoritm de «una
+sola imagen por forma, sin recorte en partes» (`Direccion_de_Arte.md` §7.6 y §13.1, `Inventario.md`).
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §7.3 (una sola cara), §7.6 «Nomenclatura» (una
+sola imagen por forma) y §13.1 (cinco partes por miembro de la familia; Algoritm, una `Image`);
+`Interfaces.md` §4 (ROSTRO) y §4.2; `Inventario.md`, `Characters/` (retratos y Algoritm).
+
+**Qué hace el juego.** Hasta ahora, cinco partes por miembro de la familia con la cara dentro del
+torso, y una `Image` por forma de Algoritm. `Plan-Personajes-Finales.md` §5 ya pedía seis
+expresiones, que INC-108 había rechazado.
+
+**Decisión de Santiago (05/10/2026).**
+- Papá, Mamá, Niña y Niño: vista frontal; **cabeza separada del torso**, con **ojos y boca en capas
+  propias**; seis expresiones (Neutral, Happy, Surprised, Worried, Focused, Sleeping), parpadeo y
+  cuatro bocas del habla; **extremidades en dos sprites** —húmero y antebrazo, muslo y antepierna—,
+  con codos y rodillas además de hombros, cadera y cuello.
+- Algoritm, en sus tres formas: brazos, piernas, codos y rodillas en dos tramos, y ojos y boca
+  sobre el cuerpo, **sin cuello**.
+- Mientras no llegue el arte, codos, rodillas y cuello son pivotes vacíos y las capas nuevas van
+  apagadas: el arte provisional se ve igual.
+- Nombres: se conservan los actuales (`char_<x>_parte_brazo_*` = húmero, `pierna_*` = muslo, mismo
+  GUID) y se añaden `antebrazo_izq/der`, `antepierna_izq/der` y `cabeza`; la cara es
+  `char_<x>_ojos_{neutra,alegria,sorpresa,preocupacion,concentracion,sueno}`,
+  `_ojos_parpadeo_{medio,cerrado}`, `_boca_{0,a,e,u}` y `_boca_{alegria,sorpresa,preocupacion,concentracion}`;
+  Algoritm lleva el prefijo `char_algoritm_<fuego|rueda|gota>_`. Esto sustituye las carpetas
+  `Front/` y los nombres `frente_` de `Plan-Personajes-Finales.md` §4.2.
+- **No cambia la regla de fondo**: ninguna expresión es de tristeza, enfado o derrota (CP-02), y
+  `Worried` es duda, sin lágrimas ni mueca de llanto. Un intento sin éxito sigue produciendo el
+  ánimo, ahora con la cara alegre.
+
+**Regla.** Decisión de Santiago, como INC-115 a INC-117: levanta INC-108 y la regla de Algoritm
+**para el arte final**; para el arte actual, ambas siguen valiendo. No hay `.docx` radicado que lo
+diga, y ninguno se edita desde código.
+
+**Corrección aplicada (05/10/2026).** Documentos: Dirección de arte: §7.3 (las seis expresiones, el
+límite y la regla de no tristeza), §7.6 «Nomenclatura» (Algoritm deja de ser «sin recorte en partes»
+para el arte final) y su introducción, §13.1 (diez partes y una cara; nombres), §15.4 (ejemplos de
+nomenclatura) y la lista de §17 «Personajes» · Interfaces: §4 (ROSTRO) y §4.2 · Inventario de arte:
+`Characters/` (cómo se animan, retratos, Algoritm y la tabla de nombres nuevos) · Plan de personajes
+finales: estado, Fases 2 y 3, §3.1, §4.2, §5 y §7 · `Personajes-Resultados.md`: Anexo C · CLAUDE.md:
+la viñeta de personajes, el párrafo del carril de arte y esta fila. En el código (commit `a12dbb3`,
+rama `feat/personajes-animados`): `FacialEmotion`, `ActionEmotion`, `BlinkClock`, `MouthFlap`,
+`CharacterFaceSet` y `CharacterFace`; `CharacterRig`, `ActorBeat`, `ActorCue`, `ActorTimeline` y
+`NarrativeSceneController` ganan la emoción y el habla sin cambiar sus firmas; y el generador
+`BuildRigsFinal.cs.txt`, con `rig_articulaciones.json` y `articulaciones.py`, que añade los nodos a
+los siete prefabs sin reconstruirlos y reescribe los 93 clips. **Pruebas:** `CharacterRig_DA131_*`,
+`CharacterRig_DA73_*`, `FacialEmotion_*`, `BlinkClock_*`, `MouthFlap_*`, `CharacterFace_*`,
+`ActorTimeline_RF05_*` y `NarrativeScene_RF05_QuienHablaHablaYCallaAlAvanzar`. **Verificación en el
+Editor: pendiente** (los prefabs y los clips aún no se han regenerado ni las pruebas se han
+corrido).
+
+### INC-132 · Orden de dibujo de los brazos: detrás del torso y delante de la cabeza — cerrado (05/10/2026)
+
+**El conflicto.** Santiago observó que el Idle frontal era pobre y que los brazos se escondían detrás
+de la cabeza o del cuerpo. La causa estaba en el prefab, no en los clips: bajo `Lienzo/Cuerpo/Tronco`
+los hijos iban `BrazoIzq`, `BrazoDer`, `Torso`, `Cuello` (uGUI pinta de atrás adelante), y el hombro
+del Niño pivotaba en el centro del pecho.
+
+**Decisión de Santiago (05/10/2026), definitiva.** En la **familia** (Papá, Mamá, Niña y Niño) los
+brazos se dibujan **detrás del torso y delante de la cabeza**: `orden_tronco` = `Cuello`, `BrazoIzq`,
+`BrazoDer`, `Torso`, con la cabeza al fondo. Con el arte provisional la cabeza está pintada dentro del
+torso, así que hoy los brazos quedan tras el torso y tras la cara hasta que llegue el arte final.
+(Etapas intermedias del mismo día: brazos delante en el Niño y Algoritm → delante en los siete,
+commit `5ce0797` → regla definitiva.)
+
+**Ajustes del 06/10/2026, también decisión de Santiago.**
+- **Strike.** Mientras el personaje golpea las piedras, los brazos pasan **delante del torso**, y al
+  cambiar de acción vuelven exactamente a su orden. Lo hace `ArmLayering` (C# plano,
+  `Game.Scaffolding`) desde `CharacterRig.Apply`, según el campo serializado
+  `armsInFrontActions = { Strike }` (el inicializador vale para los prefabs que no lo serializan); el
+  cambio de capa es seco al empezar la acción, sin esperar el fundido de 0,18 s.
+- **Algoritm.** `orden_tronco` = `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`: sus brazos van delante
+  del cuerpo y **las manos se pintan encima de la cara**. La coreografía y `pose_preview.py` impiden
+  que una mano entre en la caja de ojos y boca (ampliada un 30 %, con al menos el 99,5 % libre). En
+  Algoritm el golpe no mueve nada.
+- **Coreografía de Strike.** El choque va delante del pecho con brazo partido; con el brazo de una
+  pieza del arte provisional (Papá, Mamá y Niña hoy) el brazo se encoge hasta el 45 % durante el golpe
+  para que el choque quede en el vientre, nunca bajo la cintura (por encima de la cabeza tapaba la
+  cara y a un costado no había contacto). **Queda pendiente de que Santiago lo apruebe**; la
+  alternativa es golpear sin juntar las manos hasta el arte final.
+
+**Regla.** Decisión de Santiago, como INC-115 a INC-117 e INC-131. **Sustituye** para la familia la
+regla de INC-131 de que el cuello se dibuja sobre el torso (`CharacterRig_DA131_…` ya no la exige). No
+contradice ningún `.docx` radicado ni cambia CP-02: `Encourage` sigue siendo un puño arriba, ahora
+fuera de la cabeza.
+
+**Corrección aplicada (05/10 y 06/10/2026).** Código y herramientas (commits `8740a64`, `6f2b4cf`,
+`590866f`, `d817d95`, `5ce0797`, `0b76bbc`, `117287c`, `a5a887b` y `8cdd4c5`, rama `feat/personajes-animados`): clave `orden_tronco` en
+`rig_articulaciones.json` y modo nuevo `"orden"` en `BuildRigsFinal.cs.txt` (`SetSiblingIndex`, sin
+tocar fileIDs); la coreografía pasa del C# a `coreografia.py`, que escribe `clips_personajes.json`, y
+el modo `"clips"` solo lo aplica. La coreografía deriva la visibilidad de la geometría (silueta del
+torso por brazo) y calcula el reposo por personaje; el Idle es de 6,4 s (dos respiraciones de 3,2 s,
+que conservan el ciclo de `Direccion_de_Arte.md` §13.3). Geometría del Niño corregida (hombros, codos,
+rodillas, ojos y boca). `pose_preview.py` (que mide también que el torso no tape más del 5 % de ojos y
+boca, que ninguna mano entre en la cara de Algoritm y que el choque de `Strike` quede sobre la cintura;
+sin excepciones, 174/174), `maqueta.py` y
+`preparar_arte_final.py` verifican fuera de Unity y preparan la entrada del arte final. Documentos:
+`Personajes-Resultados.md` (C.5, C.6 y C.9), `Plan-Personajes-Finales.md` (§3.1 y Fase 3) y CLAUDE.md.
+**Pruebas:** `CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza`,
+`CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara`,
+`CharacterRig_INC132_AlGolpearLosBrazosPasanDelanteDelTorso`,
+`…_AlTerminarElGolpeLosBrazosVuelvenDetrasDelTorso`, `…_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo`,
+`…_SoloElGolpePoneLosBrazosDelante` y `…_SiFaltaUnNodoElGolpeAvisaYNoMueveNada`.
+**En el Editor:** `Game.Scaffolding.Tests` 215/215 y suite completa 941/942 (1 omitida preexistente, 0
+fallos) en la ronda de `5ce0797`, que aún tenía los brazos delante en los siete. Suite completa de la
+ronda de `0b76bbc` (regla definitiva), con sus prefabs y `.anim` subidos en `117287c` (4 prefabs, 77
+`.anim`): `Game.Scaffolding.Tests` 215/215 y suite completa en un solo Editor 940/942 (1 omitida
+preexistente, 1 fallo: `RiverLevel_RNF05`, por la memoria de un Editor abierto todo el día, 2199 MB;
+con el Editor recién abierto mide 1533 MB reservados y 1072 asignados, y
+`Game.Levels.River.PlayMode.Tests` pasa 57/57). Ronda de `8cdd4c5` (Strike con los brazos delante y las
+manos de Algoritm sobre la cara; 3 prefabs de Algoritm, 4 `.anim` de golpear y el `.meta` de
+`ArmLayering.cs`): `Game.Scaffolding.Tests` 234/234 y suite completa en un solo Editor 960/961 (1
+omitida preexistente, 0 fallos; `ForestScene_RF22` y `RiverLevel_RNF05` en verde).
+
+### INC-133 · Antebrazo delante del torso, de la cara y de las piernas — cerrado (06/10/2026)
+
+**El conflicto.** Con el arte final de la familia, el brazo en dos tramos pedía dos órdenes de dibujo
+distintos, y uGUI pinta por orden de jerarquía: con INC-132 el brazo entero iba detrás del torso, y
+el antebrazo quedaba tapado por el cuerpo cuando debía verse (cara, torso y piernas por detrás de la
+mano).
+
+**Decisión de Santiago (06/10/2026).** En la familia (Papá, Mamá, Niña y Niño) el **húmero** se dibuja
+detrás del torso y el **antebrazo** delante del torso, de la cara y de las piernas. Papá, además, con
+la cabeza (`Cuello`) delante del torso. **Acota INC-132** en la familia, que sigue vigente para
+`Strike` (el húmero pasa delante del torso al golpear, siempre detrás de los antebrazos) y para
+Algoritm, donde no hay anclas ni cambio.
+
+**Corrección aplicada (commit `ef37dd9`, rama `feat/personajes-animados`).** `AntebrazoX` (mismo
+objeto y mismo fileID) pasa a ser hijo de `Tronco`, al final de su lista, y sigue a un nodo vacío,
+`AnclaAntebrazoX`, que queda bajo `CodoX` con la pose local anterior del antebrazo. `LimbFollower`
+(C# plano, `Game.Scaffolding`) compone `BrazoX`, `CodoX` y el ancla respecto de `Tronco` y escribe la
+pose local del antebrazo; `CharacterRig` descubre los pares por nombre y los sincroniza tras
+`Play` + `Update(0)` y en `LateUpdate`. No se añade ningún campo serializado y los clips no cambian
+(no animan el antebrazo). Los personajes sin anclas (arte provisional, Algoritm) no se tocan.
+`ArmLayering` no cambia de lógica. El modo `"orden"` de `BuildRigsFinal.cs.txt` crea las anclas y mueve
+los antebrazos cuando `orden_tronco` los lista, sin reconstruir nada. El commit `233f2e5` pone
+`AntebrazoIzq` y `AntebrazoDer` al final de `orden_tronco` de la familia y separa en `pose_preview.py` la
+visibilidad del húmero (40 %) y del antebrazo (85 %).
+**Pruebas:** `CharacterRigLimbTests` (jerarquía armada en código; pasan al escribirse) y
+`CharacterRig_INC133_*` sobre los prefabs reales; `CharacterRig_DA131_*` y `CharacterRig_INC132_*` se
+ajustaron para aceptar la jerarquía nueva. Las de prefabs fallan hasta correr el modo `"orden"` en el
+Editor. **Verificación en el Editor** (`433603f`, 06/10/2026): el generador creó las anclas y soltó los
+antebrazos en los cuatro prefabs de la familia (cuatro objetos nuevos por prefab, ninguno perdido) y
+reescribió 93 clips; las pruebas del antebrazo y del ancla pasan 14 de 14, EditMode 627 pasan con 1
+omitida y PlayMode 376 de 377 (falla `RiverLevel_RNF05` por la memoria del Editor, 2 161 MB); capturas en
+`claudeDocs/tasks/Personajes/capturas/2026-10-06/`. Fuera del Editor: `pose_preview.py` 21/21 por miembro de la familia y 9/9 por
+Algoritm (`233f2e5`).
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -2535,6 +2701,21 @@ carril de sonido, que lleva Santiago desde el acta D08.
 
 ## Historial de revisiones
 
+- **rev. 19 (06/10/2026)** — Decisión de Santiago sobre el antebrazo de la familia. Se registra y cierra
+  **INC-133**: el húmero detrás del torso y el antebrazo delante del torso, de la cara y de las piernas
+  (Papá con la cabeza delante del torso), con `AnclaAntebrazoX` y `LimbFollower`. Acota INC-132 en la
+  familia; no la levanta para `Strike` ni para Algoritm. Mantiene CP-02.
+- **rev. 18 (05/10/2026)** — Decisión de Santiago sobre el orden de dibujo de los personajes. Se
+  registra y cierra **INC-132**: en la familia, los brazos detrás del torso y delante de la cabeza
+  (delante del torso solo al golpear, 06/10)
+  (en Algoritm, delante del cuerpo y la cara encima), con la coreografía movida a `coreografia.py` y la entrada del arte final
+  en `preparar_arte_final.py`. No levanta ninguna regla anterior; mantiene CP-02.
+- **rev. 17 (05/10/2026)** — Decisión de Santiago sobre el arte final de los personajes. Se registra
+  y cierra **INC-131**: cabeza separada, ojos y boca en capas propias, seis expresiones, y
+  extremidades en dos tramos con codos y rodillas, también en Algoritm (sin cuello). Levanta
+  **INC-108** y la regla de Algoritm de una sola imagen para el arte final, no para el actual;
+  mantiene CP-02 (ninguna expresión de tristeza, enfado o derrota). Su código entró en el commit
+  `a12dbb3` y su verificación en el Editor queda pendiente.
 - **rev. 16 (01/10/2026)** — Cierre de la sesión del 30/09/2026 (acta D10). Con la regla del 29/09
   se registran y cierran **INC-118** a **INC-130**, los cambios de la sesión que contradecían un
   documento: el plano abierto del Nivel 3, con la escala de las narrativas (118); la chispa del

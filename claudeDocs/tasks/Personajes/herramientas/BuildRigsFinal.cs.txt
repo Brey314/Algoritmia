@@ -1,0 +1,2290 @@
+// Constructor efímero (NO es código del juego): deja listos los siete prefabs de personajes para el
+// arte final —codos, rodillas, cuello, cabeza, ojos y boca—, fija el orden de dibujo de sus partes y
+// vuelca en sus clips la coreografía que genera coreografia.py.
+//
+// QUÉ ES. Hijo de BuildRigs.cs.txt (que armó los prefabs de cinco partes), pero NUNCA los
+// reconstruye: solo AÑADE nodos, reordena hermanos y reescribe curvas. Cuatro modos, más dos de apoyo:
+//   "nodos"   añade a los 7 prefabs (Papa, Mama, Nina, Nino, Algoritm_Fuego/Rueda/Gota) lo que la
+//             tabla rig_articulaciones.json pide y falta, y el componente CharacterFace. Idempotente:
+//             si un nodo existe no lo toca ni lo mueve (un antebrazo que «orden» ya soltó del codo y
+//             pasó a Tronco cuenta como existente: no se vuelve a crear bajo el codo). Todo nodo nuevo
+//             lleva su Image apagada y sin sprite. Un nodo nuevo de tipo «imagen» entra EN LA POSICIÓN
+//             QUE LE DA LA TABLA entre sus
+//             hermanos: justo detrás del primero de los hermanos que la lista «nodos» pone DESPUÉS de él
+//             y que ya existe, o al final si no hay ninguno. Así CaraBase (nariz y rubor de la familia,
+//             estática) queda como PRIMER hijo de Cabeza, detrás de Ojos y Boca, siempre que la tabla
+//             la liste ANTES que ellos; el log dice detrás de qué quedó. Los nodos «articulacion» y
+//             «grupo» nacen al final, como siempre (el orden de Tronco lo fija «orden»).
+//   "sprites" para cuando llegue el arte final: asigna por nombre los PNG que existan, aplica rect y
+//             pivote de la tabla, enciende las Image (las de partes, las de la cara y CaraBase por
+//             igual), crea o actualiza <carpeta>/Expresiones/<prefijo>_cara.asset (CharacterFaceSet)
+//             y apaga la Image de Cuerpo en Algoritm cuando sus partes ya están. Lo que no existe se
+//             deja apagado y se anota en el log: un nodo imagen sin PNG queda con la Image apagada.
+//   "orden"   coloca los hijos de Lienzo/Cuerpo/Tronco en el orden de dibujo que fija «orden_tronco»
+//             en la tabla: en la familia los húmeros (BrazoIzq, BrazoDer) DETRÁS del torso y los
+//             antebrazos DELANTE del torso, de la cara y de las piernas (p. ej. Cuello, BrazoIzq, BrazoDer,
+//             Torso, AntebrazoIzq, AntebrazoDer; en Papá el Cuello va después del Torso: la cara delante
+//             de él) y en Algoritm las manos ENCIMA de la cara (Torso, Ojos, Boca, BrazoIzq, BrazoDer).
+//             Es el orden de REPOSO: en tiempo de ejecución, mientras el personaje
+//             golpea (Strike), CharacterRig pasa los brazos de la familia delante del torso (ArmLayering)
+//             y al terminar los devuelve; este modo no sabe nada de eso.
+//             TAMBIÉN SUELTA LOS ANTEBRAZOS DEL CODO (Santiago, 06/10/2026, INC-133: «el húmero detrás del
+//             torso y el antebrazo delante del torso, del rostro y de las piernas»). uGUI dibuja en orden
+//             de jerarquía y el antebrazo era hijo del codo, que es hijo del húmero: no podía quedar delante
+//             del torso con el húmero detrás. Si «orden_tronco» LISTA el segmento («imagen») de una
+//             articulación de Tronco —AntebrazoIzq, AntebrazoDer—, este modo, por cada uno:
+//               1. crea bajo el codo un nodo vacío «Ancla<segmento>» (AnclaAntebrazoIzq), sin Image, con
+//                  EXACTAMENTE la pose local que el segmento tiene hoy bajo el codo (anclas, pivote, tamaño,
+//                  posición, giro y escala): es el que animan los clips al mover codo y húmero;
+//               2. pasa el segmento —el objeto con la Image, que conserva su fileID— a hijo directo de
+//                  Tronco, con el mismo rect y el mismo pivote en el lienzo que tenía (BoxOf; sin transforms
+//                  del mundo, ver «POR QUÉ NO SE USAN TRANSFORMS DEL MUNDO»);
+//               3. lo deja donde diga «orden_tronco» (normalmente al final, después de Torso y Cuello).
+//             En ejecución CharacterRig copia en cada cuadro la pose del ancla al segmento (LimbFollower,
+//             en LateUpdate), así que el antebrazo sigue al codo aunque ya no cuelgue de él. Lo que ningún
+//             «orden_tronco» lista (Algoritm) conserva el antebrazo bajo el codo y no recibe ancla. Una
+//             ancla ya creada no se toca (se reconoce por su nombre); un segmento ya en Tronco no se
+//             vuelve a mover. CharacterRig descubre los pares por nombre, así que no hay referencias que
+//             cablear. Requiere que «nodos» haya corrido antes (si no hay codo ni segmento, lo dice).
+//             Idempotente: solo guarda un prefab si cambia el orden o se crea o se mueve algo, y registra
+//             antes → después. Un personaje sin «orden_tronco» no se toca y se anota.
+//   "clips"   reescribe EN SITIO las curvas de los .anim que ya existen con lo que diga
+//             clips_personajes.json: los 21 clips de cada miembro de la familia y los 9 de Algoritm.
+//             No crea ningún clip (si falta, lo anota) y no calcula nada: ver «DÓNDE VIVE LA
+//             COREOGRAFÍA». Avisa de rutas que el prefab no tiene y de claves fuera de la duración.
+//   "todo"    nodos → sprites → orden → clips.      "estado"  solo informa, no escribe nada
+//             (incluye el orden de dibujo actual de Tronco en cada prefab y, si la tabla suelta los
+//             antebrazos del codo, dónde está cada uno y si tiene ancla).
+//
+// DÓNDE VIVE LA COREOGRAFÍA. Ya NO está en este archivo: la escribe herramientas/coreografia.py y la
+// entrega como herramientas/clips_personajes.json, con las curvas ya calculadas de cada clip (ruta,
+// componente, propiedad y claves [tiempo, valor]). Se movió a Python para poder VERIFICARLA FUERA DE
+// UNITY: pose_preview.py dibuja la pose de cada clip desde ese mismo JSON, con el arte final y la tabla
+// de articulaciones, así que una pose rota se ve y se corrige antes de abrir el Editor y sin recompilar.
+// Aquí queda UNA sola fuente de verdad: este script no decide ni un grado, solo vuelca el JSON. Si un
+// movimiento no gusta, se edita coreografia.py y se vuelve a correr «clips»; los signos de los ejes, el
+// reposo de los codos y qué huesos lleva cada clip son asunto suyo (el que no se anima debe llevar una
+// curva constante en su reposo, o con writeDefaultValues cae a la pose en T: lo vigila
+// CharacterRig_DA131_CadaClipFijaTodasLasArticulaciones).
+//
+// CARPETAS DEL ARTE. Cada personaje (Assets/Game/Art/Characters/<Carpeta>/, con Carpeta = Boy, Girl,
+// Father, Mother o Algoritm) guarda su arte en subcarpetas: Frontal/ (las partes del cuerpo,
+// char_<x>_parte_*.png), Expresiones/ (ojos, bocas, char_<x>_cara_base.png y el set char_<x>_cara.asset)
+// y Perfil/ (vacía por ahora). Animations/, los retratos, char_mama_cenital.png y los
+// char_algoritm_*_reposo.png se quedan en la raíz. Lo que aún esté suelto en la raíz lo mueve
+// OrganizarArtePersonajes.cs.txt (conserva los GUID). Aquí:
+//   - FindSprite busca por nombre en toda la carpeta del personaje y, si hay dos PNG con el mismo
+//     nombre (uno olvidado en la raíz, otro en su subcarpeta), AVISA y usa el de la subcarpeta que le
+//     toca por su nombre (Frontal para las partes, Expresiones para ojos, bocas y cara base);
+//   - el _cara.asset se crea o se actualiza en Expresiones/, y si ya hay uno en la raíz se MUEVE con
+//     AssetDatabase.MoveAsset en vez de crear otro: el GUID es el que los prefabs ya referencian.
+//
+// CÓMO SE EJECUTA Y SE BORRA (lo hace la sesión local de Santiago, con el Editor abierto):
+//   0. Si el arte aún está suelto en la raíz de cada carpeta: correr antes OrganizarArtePersonajes.
+//   1. Copiar este archivo a Assets/Editor/ClaudeBuildRigsFinal.cs (la clase se llama
+//      ClaudeBuildRigsFinal; el Editor genera el .meta solo, nunca a mano) y esperar a que compile.
+//   2. Llamar por coplay execute_script:  ClaudeBuildRigsFinal.Execute("nodos")  y después
+//      Execute("sprites"), Execute("orden") y Execute("clips") —o Execute("todo")—, en ESE orden: «orden»
+//      es el que crea las anclas y suelta los antebrazos (INC-133) y necesita los codos de «nodos».
+//      «sprites» corre bien antes o después de «orden»: encuentra el antebrazo en el codo o en Tronco.
+//      Devuelve el log como texto. «clips» lee herramientas/clips_personajes.json: correr antes
+//      coreografia.py.
+//   3. Comprobar los fileID (abajo) y correr las pruebas CharacterRig_DA131_* / CharacterRig_DA73_* /
+//      CharacterRig_INC132_* / CharacterRig_INC133_* (las INC133 de la familia fallan hasta que corre «orden»).
+//   4. Borrar Assets/Editor/ClaudeBuildRigsFinal.cs (y su .meta): es andamiaje, no código del juego.
+//      Este .txt es la copia que queda versionada.
+//
+// REGLA DE LOS fileID. 18 assets narrativos y 5 escenas referencian componentes de estos prefabs por
+// fileID. Reconstruirlos (Root()/Finish() de BuildRigs) cambia todos y rompe esas referencias. Aquí:
+//   - los prefabs se abren con LoadPrefabContents, se añaden hijos y componentes y se guardan con
+//     SaveAsPrefabAsset sobre la misma ruta; los objetos que ya existían conservan su fileID;
+//   - no se destruye ni se recrea ningún objeto existente; «orden» llama a SetSiblingIndex, que
+//     reordena m_Children del padre y no cambia ni un fileID, y a SetParent para pasar cada antebrazo
+//     de su codo a Tronco: cambia el padre del objeto, no su fileID, ni el de su Image. Lo único
+//     que «orden» CREA son las anclas AnclaAntebrazoIzq/Der (objetos nuevos, sin Image);
+//   - los clips se cargan con LoadAssetAtPath y se les cambian las curvas: no se crean ni se tocan
+//     los .controller, así que los GUID de los .anim y los estados siguen iguales.
+//   Verificación: `git diff -U0 Assets/Game/Prefabs/Characters` no debe QUITAR ninguna línea que
+//   empiece por «--- !u!» ni tocar m_Controller / m_Script / m_Sprite de lo existente. Con «orden» sobre
+//   la familia SÍ cambian, y es lo esperado: el m_Father de cada AntebrazoX (ahora Tronco), el m_Children
+//   de cada CodoX y de Tronco, y entran por prefab dos GameObject y dos RectTransform nuevos (las anclas).
+//
+// POR QUÉ NO SE USAN TRANSFORMS DEL MUNDO. Un prefab abierto con LoadPrefabContents no tiene Canvas,
+// y RectTransform.TransformPoint / ForceUpdateCanvases dependen de él. La posición de cada nodo se
+// calcula a partir de lo que SÍ está serializado —anclas, pivote, sizeDelta y anchoredPosition de
+// cada ancestro, hasta Lienzo (1024 × 1024)— con la fórmula de Unity (BoxOf). Es la misma que usa
+// articulaciones.py, así que la tabla y el prefab hablan el mismo idioma. Vale con el rig en reposo
+// (escala 1, giro 0), que es como se abre un prefab.
+//
+// COORDENADAS. La tabla usa las de cut.py: lienzo de 1024, origen ARRIBA a la izquierda, y hacia
+// abajo, suelo en y = 947. Unity usa y hacia arriba; BoxOf trabaja en las de Unity y la conversión
+// vive en UpToDown / DownToUp.
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Game.Scaffolding;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
+
+public static class ClaudeBuildRigsFinal
+{
+    // ---------------------------------------------------------------- tabla (lector JSON propio)
+    //
+    // POR QUÉ NO JsonUtility. El 05/10/2026 JsonUtility.FromJson<Tabla> devolvió la tabla vacía en el
+    // Editor de Santiago (6000.5.10f1) con un JSON válido, sin excepción y sin causa a la vista. En vez de
+    // adivinar (tipos anidados en una clase estática, un carácter no ASCII…) la tabla se lee con un
+    // descenso recursivo que solo usa System.*: no depende del serializador de Unity y, si algo falla,
+    // dice en qué línea y columna o qué campo falta y en qué personaje y nodo.
+
+    // --- inicio del lector (solo System.*: se compila y se prueba fuera del Editor) ---
+
+    public sealed class Tabla { public Personaje[] personajes; }
+
+    public sealed class Personaje
+    {
+        public string id; public string prefab; public string carpeta; public string prefijo; public bool guia;
+        public Nodo[] nodos; public Parte[] partes;
+
+        /// <summary>
+        /// «orden_tronco» (opcional): nombres de hijos directos de Lienzo/Cuerpo/Tronco en orden de dibujo,
+        /// de atrás adelante. null = la tabla no lo fija y el modo «orden» no toca ese prefab.
+        /// </summary>
+        public string[] ordenTronco;
+    }
+
+    /// <summary>
+    /// Un nodo que se AÑADE. «tipo»: articulacion = pivote de tamaño 0 en «punto» con un segmento
+    /// «imagen» colgado de él (con «rect»); imagen = el propio nodo lleva la Image; grupo = nodo
+    /// estirado sin Image, con el pivote en «punto». «padre» es la ruta desde la raíz del prefab.
+    /// Según el tipo son obligatorios «punto» (todos), «imagen» (articulacion) y «rect» (grupo); lo que
+    /// el JSON omita o ponga en null queda en null, que es lo que el resto del script ya espera.
+    /// </summary>
+    public sealed class Nodo
+    {
+        public string nombre; public string tipo; public string padre; public string imagen; public string sprite;
+        public float[] punto; public float[] rect;
+    }
+
+    /// <summary>Una parte que YA existe: su ruta, su sprite y el rect y pivote con que se reajusta.</summary>
+    public sealed class Parte
+    {
+        public string nombre; public string ruta; public string sprite;
+        public float[] rect; public float[] pivote;
+    }
+
+    /// <summary>Lo que entrega coreografia.py: las curvas ya calculadas de cada clip de cada personaje.</summary>
+    public sealed class Coreografia
+    {
+        public string generadoPor; public PersonajeClips[] personajes;
+    }
+
+    /// <summary>
+    /// Los clips de un personaje. «id» es el de la tabla (papa, mama, nina, nino) o, para el guía, «algoritm»,
+    /// que cubre sus tres formas (algoritm_fuego, algoritm_rueda, algoritm_gota: comparten carpeta y clips).
+    /// «carpeta» es la de los .anim, una ruta del proyecto que empieza por Assets/.
+    /// </summary>
+    public sealed class PersonajeClips
+    {
+        public string id; public string carpeta; public ClipDef[] clips;
+    }
+
+    /// <summary>Un clip: «archivo» es el nombre del .anim sin carpeta ni extensión; «accion» es el ActorAction que anima.</summary>
+    public sealed class ClipDef
+    {
+        public string archivo; public string accion; public float duracion; public bool bucle; public CurvaDef[] curvas;
+    }
+
+    /// <summary>
+    /// Una curva. «tipo» es RectTransform o CanvasGroup; «claves» son parejas [tiempo, valor], con el tiempo
+    /// estrictamente creciente. «propiedad» es una de las seis de AnimatableProps.
+    /// </summary>
+    public sealed class CurvaDef
+    {
+        public string ruta; public string tipo; public string propiedad; public float[][] claves;
+    }
+
+    /// <summary>
+    /// Lee el texto de la tabla. Obligatorios: id, prefab, carpeta, prefijo y nodos por personaje; nombre,
+    /// tipo y padre por nodo; nombre, ruta, rect y pivote por parte. «partes» ausente = lista vacía.
+    /// «orden_tronco» es opcional: ausente = null (lista de textos sin repetir; vacía es un error).
+    /// Lanza InvalidOperationException con el motivo y el lugar exactos.
+    /// </summary>
+    public static Tabla ParseTable(string json)
+    {
+        var root = MiniJson.Parse(json) as Dictionary<string, object>;
+        if (root == null)
+        {
+            throw new InvalidOperationException("la raíz de la tabla debe ser un objeto JSON");
+        }
+
+        var items = Items(root, "personajes", "tabla", true);
+        if (items.Count == 0)
+        {
+            throw new InvalidOperationException("tabla: «personajes» está vacío");
+        }
+
+        var tabla = new Tabla { personajes = new Personaje[items.Count] };
+        for (var i = 0; i < items.Count; i++)
+        {
+            tabla.personajes[i] = ToPersonaje(items[i], i);
+        }
+
+        return tabla;
+    }
+
+    private static Personaje ToPersonaje(object raw, int index)
+    {
+        var ctx = "personajes[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var id = Str(d, "id", ctx, true);
+        ctx = "personaje «" + id + "»";
+
+        var p = new Personaje
+        {
+            id = id,
+            prefab = Str(d, "prefab", ctx, true),
+            carpeta = Str(d, "carpeta", ctx, true),
+            prefijo = Str(d, "prefijo", ctx, true),
+            guia = Flag(d, "guia", ctx, false),
+            ordenTronco = StringList(d, "orden_tronco", ctx),
+        };
+
+        var nodos = Items(d, "nodos", ctx, true);
+        p.nodos = new Nodo[nodos.Count];
+        for (var k = 0; k < nodos.Count; k++)
+        {
+            p.nodos[k] = ToNodo(nodos[k], ctx, k);
+        }
+
+        var partes = Items(d, "partes", ctx, false);
+        p.partes = new Parte[partes.Count];
+        for (var k = 0; k < partes.Count; k++)
+        {
+            p.partes[k] = ToParte(partes[k], ctx, k);
+        }
+
+        return p;
+    }
+
+    private static Nodo ToNodo(object raw, string owner, int index)
+    {
+        var ctx = owner + ", nodos[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var nombre = Str(d, "nombre", ctx, true);
+        ctx = owner + ", nodo «" + nombre + "»";
+
+        var tipo = Str(d, "tipo", ctx, true);
+        if (tipo != "articulacion" && tipo != "imagen" && tipo != "grupo")
+        {
+            throw new InvalidOperationException(ctx + ": tipo «" + tipo + "» desconocido (articulacion | imagen | grupo)");
+        }
+
+        return new Nodo
+        {
+            nombre = nombre,
+            tipo = tipo,
+            padre = Str(d, "padre", ctx, true),
+            imagen = Str(d, "imagen", ctx, tipo == "articulacion"),
+            sprite = Str(d, "sprite", ctx, false),
+            punto = Numbers(d, "punto", ctx, 2, true),
+            rect = Numbers(d, "rect", ctx, 4, tipo == "grupo"),
+        };
+    }
+
+    private static Parte ToParte(object raw, string owner, int index)
+    {
+        var ctx = owner + ", partes[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var nombre = Str(d, "nombre", ctx, true);
+        ctx = owner + ", parte «" + nombre + "»";
+
+        return new Parte
+        {
+            nombre = nombre,
+            ruta = Str(d, "ruta", ctx, true),
+            sprite = Str(d, "sprite", ctx, false),
+            rect = Numbers(d, "rect", ctx, 4, true),
+            pivote = Numbers(d, "pivote", ctx, 2, true),
+        };
+    }
+
+    /// <summary>Propiedad animable → componente al que pertenece: lo único que coreografia.py puede pedir.</summary>
+    private static readonly Dictionary<string, string> AnimatableProps = new Dictionary<string, string>
+    {
+        { "localEulerAnglesRaw.z", "RectTransform" },
+        { "m_AnchoredPosition.x", "RectTransform" }, { "m_AnchoredPosition.y", "RectTransform" },
+        { "m_LocalScale.x", "RectTransform" }, { "m_LocalScale.y", "RectTransform" },
+        { "m_Alpha", "CanvasGroup" },
+    };
+
+    /// <summary>
+    /// Lee clips_personajes.json (esquema en la versión 1). Obligatorios: «version» (= 1) y «personajes»;
+    /// por personaje id, carpeta y clips; por clip archivo, accion, duracion (&gt; 0), bucle y curvas (al
+    /// menos una); por curva ruta, tipo, propiedad y claves (al menos una, tiempo creciente). Un id de
+    /// personaje, un archivo de clip o una curva (ruta + propiedad) repetidos son un error: casi siempre
+    /// es una errata del generador, y la segunda curva pisaría a la primera sin avisar. Lo que el JSON
+    /// traiga de más («generado_por» se lee, lo demás se ignora) no estorba. Lanza InvalidOperationException
+    /// con el motivo y el lugar exactos (personaje, clip y curva).
+    /// </summary>
+    public static Coreografia ParseChoreography(string json)
+    {
+        var root = MiniJson.Parse(json) as Dictionary<string, object>;
+        if (root == null)
+        {
+            throw new InvalidOperationException("la raíz de la coreografía debe ser un objeto JSON");
+        }
+
+        const string top = "coreografía";
+        var version = Number(root, "version", top);
+        if (version != 1f)
+        {
+            throw new InvalidOperationException(top + ": «version» " + version + " no es la que lee este script (1)");
+        }
+
+        var items = Items(root, "personajes", top, true);
+        if (items.Count == 0)
+        {
+            throw new InvalidOperationException(top + ": «personajes» está vacío");
+        }
+
+        var result = new Coreografia { generadoPor = Str(root, "generado_por", top, false), personajes = new PersonajeClips[items.Count] };
+        var ids = new HashSet<string>();
+        for (var i = 0; i < items.Count; i++)
+        {
+            result.personajes[i] = ToPersonajeClips(items[i], i);
+            if (!ids.Add(result.personajes[i].id))
+            {
+                throw new InvalidOperationException(top + ": el personaje «" + result.personajes[i].id + "» está repetido");
+            }
+        }
+
+        return result;
+    }
+
+    private static PersonajeClips ToPersonajeClips(object raw, int index)
+    {
+        var ctx = "personajes[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var id = Str(d, "id", ctx, true);
+        ctx = "personaje «" + id + "»";
+
+        var carpeta = Str(d, "carpeta", ctx, true).TrimEnd('/');
+        if (!carpeta.StartsWith("Assets/", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(ctx + ": «carpeta» debe ser una ruta del proyecto que empiece por «Assets/», no «" + carpeta + "»");
+        }
+
+        var items = Items(d, "clips", ctx, true);
+        var result = new PersonajeClips { id = id, carpeta = carpeta, clips = new ClipDef[items.Count] };
+        var names = new HashSet<string>();
+        for (var k = 0; k < items.Count; k++)
+        {
+            result.clips[k] = ToClipDef(items[k], ctx, k);
+            if (!names.Add(result.clips[k].archivo))
+            {
+                throw new InvalidOperationException(ctx + ": el clip «" + result.clips[k].archivo + "» está repetido");
+            }
+        }
+
+        return result;
+    }
+
+    private static ClipDef ToClipDef(object raw, string owner, int index)
+    {
+        var ctx = owner + ", clips[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var archivo = Str(d, "archivo", ctx, true);
+        ctx = owner + ", clip «" + archivo + "»";
+        if (archivo.IndexOf('/') >= 0 || archivo.IndexOf('\\') >= 0 || archivo.EndsWith(".anim", StringComparison.Ordinal))
+        {
+            throw new InvalidOperationException(ctx + ": «archivo» es el nombre del .anim sin carpeta ni extensión");
+        }
+
+        var clip = new ClipDef
+        {
+            archivo = archivo,
+            accion = Str(d, "accion", ctx, true),
+            duracion = Number(d, "duracion", ctx),
+            bucle = Flag(d, "bucle", ctx, true),
+        };
+        if (clip.duracion <= 0f)
+        {
+            throw new InvalidOperationException(ctx + ": «duracion» debe ser mayor que cero, no " + clip.duracion);
+        }
+
+        var items = Items(d, "curvas", ctx, true);
+        if (items.Count == 0)
+        {
+            throw new InvalidOperationException(ctx + ": «curvas» está vacío (un clip sin curvas dejaría el rig en pose en T)");
+        }
+
+        clip.curvas = new CurvaDef[items.Count];
+        var seen = new HashSet<string>();
+        for (var k = 0; k < items.Count; k++)
+        {
+            clip.curvas[k] = ToCurvaDef(items[k], ctx, k);
+            if (!seen.Add(clip.curvas[k].ruta + "|" + clip.curvas[k].propiedad))
+            {
+                throw new InvalidOperationException(ctx + ": la curva «" + clip.curvas[k].ruta + "» " + clip.curvas[k].propiedad + " está repetida");
+            }
+        }
+
+        return clip;
+    }
+
+    private static CurvaDef ToCurvaDef(object raw, string owner, int index)
+    {
+        var ctx = owner + ", curvas[" + index + "]";
+        var d = AsObject(raw, ctx);
+        var ruta = Str(d, "ruta", ctx, true);
+        var propiedad = Str(d, "propiedad", ctx, true);
+        ctx = owner + ", curva «" + ruta + "» " + propiedad;
+
+        string owned;
+        if (!AnimatableProps.TryGetValue(propiedad, out owned))
+        {
+            throw new InvalidOperationException(ctx + ": propiedad desconocida (" + string.Join(" | ", AnimatableProps.Keys.ToArray()) + ")");
+        }
+
+        var tipo = Str(d, "tipo", ctx, true);
+        if (tipo != "RectTransform" && tipo != "CanvasGroup")
+        {
+            throw new InvalidOperationException(ctx + ": tipo «" + tipo + "» desconocido (RectTransform | CanvasGroup)");
+        }
+
+        if (tipo != owned)
+        {
+            throw new InvalidOperationException(ctx + ": la propiedad es de " + owned + " y la curva dice " + tipo);
+        }
+
+        return new CurvaDef { ruta = ruta, tipo = tipo, propiedad = propiedad, claves = Keys(d, "claves", ctx) };
+    }
+
+    /// <summary>Parejas [tiempo, valor] con el tiempo estrictamente creciente. Al menos una.</summary>
+    private static float[][] Keys(Dictionary<string, object> d, string key, string ctx)
+    {
+        var list = Items(d, key, ctx, true);
+        if (list.Count == 0)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» no tiene ninguna clave");
+        }
+
+        var result = new float[list.Count][];
+        for (var i = 0; i < list.Count; i++)
+        {
+            var pair = list[i] as List<object>;
+            if (pair == null || pair.Count != 2 || !(pair[0] is double) || !(pair[1] is double))
+            {
+                throw new InvalidOperationException(ctx + ": «" + key + "»[" + i + "] debe ser una pareja [tiempo, valor] de números");
+            }
+
+            var time = Finite((double)pair[0], ctx, key + "[" + i + "]");
+            var value = Finite((double)pair[1], ctx, key + "[" + i + "]");
+            if (i > 0 && time <= result[i - 1][0])
+            {
+                throw new InvalidOperationException(ctx + ": «" + key + "»[" + i + "] tiene el tiempo " + time + ", que no es mayor que el de la clave anterior (" + result[i - 1][0] + ")");
+            }
+
+            result[i] = new[] { time, value };
+        }
+
+        return result;
+    }
+
+    private static Dictionary<string, object> AsObject(object raw, string ctx)
+    {
+        var d = raw as Dictionary<string, object>;
+        if (d == null)
+        {
+            throw new InvalidOperationException(ctx + ": debe ser un objeto JSON");
+        }
+
+        return d;
+    }
+
+    private static InvalidOperationException Missing(string ctx, string key)
+    {
+        return new InvalidOperationException(ctx + ": falta el campo obligatorio «" + key + "»");
+    }
+
+    /// <summary>Un texto. Ausente o null: error si es obligatorio y null si no. Obligatorio y vacío también es error.</summary>
+    private static string Str(Dictionary<string, object> d, string key, string ctx, bool required)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null)
+        {
+            if (required) throw Missing(ctx, key);
+            return null;
+        }
+
+        var s = v as string;
+        if (s == null)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser texto");
+        }
+
+        if (required && s.Length == 0)
+        {
+            throw new InvalidOperationException(ctx + ": el campo obligatorio «" + key + "» está vacío");
+        }
+
+        return s;
+    }
+
+    /// <summary>true o false. Ausente o null: error si es obligatorio y false si no.</summary>
+    private static bool Flag(Dictionary<string, object> d, string key, string ctx, bool required)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null)
+        {
+            if (required) throw Missing(ctx, key);
+            return false;
+        }
+
+        if (!(v is bool))
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser true o false");
+        }
+
+        return (bool)v;
+    }
+
+    /// <summary>Un número obligatorio (como float: ausente, null o no numérico es un error).</summary>
+    private static float Number(Dictionary<string, object> d, string key, string ctx)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null) throw Missing(ctx, key);
+        if (!(v is double))
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser un número");
+        }
+
+        return Finite((double)v, ctx, key);
+    }
+
+    private static float Finite(double v, string ctx, string what)
+    {
+        var f = (float)v;
+        if (float.IsInfinity(f) || float.IsNaN(f))
+        {
+            throw new InvalidOperationException(ctx + ": «" + what + "» no cabe en un float");
+        }
+
+        return f;
+    }
+
+    /// <summary>
+    /// Una lista de textos no vacíos y sin repetir. Ausente o null: null (la clave es opcional). Una lista
+    /// vacía es un error: si no hay nada que ordenar, se omite la clave.
+    /// </summary>
+    private static string[] StringList(Dictionary<string, object> d, string key, string ctx)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null)
+        {
+            return null;
+        }
+
+        var list = v as List<object>;
+        if (list == null)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser una lista de textos");
+        }
+
+        if (list.Count == 0)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» está vacío (omita la clave si no hay nada que fijar)");
+        }
+
+        var result = new string[list.Count];
+        for (var i = 0; i < list.Count; i++)
+        {
+            var s = list[i] as string;
+            if (string.IsNullOrEmpty(s))
+            {
+                throw new InvalidOperationException(ctx + ": «" + key + "»[" + i + "] debe ser un texto no vacío");
+            }
+
+            if (Array.IndexOf(result, s) >= 0)
+            {
+                throw new InvalidOperationException(ctx + ": «" + key + "» repite «" + s + "»");
+            }
+
+            result[i] = s;
+        }
+
+        return result;
+    }
+
+    /// <summary>Una lista de objetos. Ausente o null: error si es obligatoria y lista vacía si no.</summary>
+    private static List<object> Items(Dictionary<string, object> d, string key, string ctx, bool required)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null)
+        {
+            if (required) throw Missing(ctx, key);
+            return new List<object>();
+        }
+
+        var list = v as List<object>;
+        if (list == null)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser una lista");
+        }
+
+        return list;
+    }
+
+    /// <summary>Una lista de exactamente «length» números. Ausente o null: error si es obligatoria y null si no.</summary>
+    private static float[] Numbers(Dictionary<string, object> d, string key, string ctx, int length, bool required)
+    {
+        object v;
+        if (!d.TryGetValue(key, out v) || v == null)
+        {
+            if (required) throw Missing(ctx, key);
+            return null;
+        }
+
+        var list = v as List<object>;
+        if (list == null || list.Count != length)
+        {
+            throw new InvalidOperationException(ctx + ": «" + key + "» debe ser una lista de " + length + " números");
+        }
+
+        var result = new float[length];
+        for (var i = 0; i < length; i++)
+        {
+            if (!(list[i] is double))
+            {
+                throw new InvalidOperationException(ctx + ": «" + key + "»[" + i + "] debe ser un número");
+            }
+
+            result[i] = (float)(double)list[i];
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Descenso recursivo sobre el texto. Objetos → Dictionary&lt;string, object&gt;, listas →
+    /// List&lt;object&gt;, números → double (cultura invariante), más string, bool y null. Estricto: sin
+    /// comas finales, sin comentarios, sin caracteres de control sueltos en las cadenas. Un campo repetido
+    /// en un objeto es un error (casi siempre es una errata). El BOM inicial se tolera.
+    /// </summary>
+    private sealed class MiniJson
+    {
+        private const int MaxDepth = 64;
+        private readonly string text;
+        private int pos;
+
+        private MiniJson(string text) { this.text = text; }
+
+        public static object Parse(string text)
+        {
+            if (text == null)
+            {
+                throw new InvalidOperationException("JSON ilegible: texto nulo");
+            }
+
+            var reader = new MiniJson(text);
+            reader.SkipWhite();
+            var value = reader.ReadValue(0);
+            reader.SkipWhite();
+            if (reader.pos < text.Length)
+            {
+                throw reader.Error("hay texto después del valor raíz");
+            }
+
+            return value;
+        }
+
+        /// <summary>Error con la línea y la columna (desde 1) de la posición actual.</summary>
+        private InvalidOperationException Error(string message)
+        {
+            var line = 1;
+            var lineStart = 0;
+            for (var k = 0; k < pos && k < text.Length; k++)
+            {
+                if (text[k] == '\n')
+                {
+                    line++;
+                    lineStart = k + 1;
+                }
+            }
+
+            return new InvalidOperationException(
+                "JSON ilegible en la línea " + line + ", columna " + (pos - lineStart + 1) + ": " + message);
+        }
+
+        private string Describe()
+        {
+            if (pos >= text.Length) return "el fin del texto";
+            var c = text[pos];
+            return c < ' ' ? "un carácter de control (U+" + ((int)c).ToString("X4") + ")" : "«" + c + "»";
+        }
+
+        private void SkipWhite()
+        {
+            while (pos < text.Length)
+            {
+                var c = text[pos];
+                if (c != ' ' && c != '\t' && c != '\n' && c != '\r' && c != '﻿') break;
+                pos++;
+            }
+        }
+
+        private bool At(char c) { return pos < text.Length && text[pos] == c; }
+
+        private void Expect(char c)
+        {
+            if (!At(c))
+            {
+                throw Error("se esperaba «" + c + "», no " + Describe());
+            }
+
+            pos++;
+        }
+
+        private object ReadValue(int depth)
+        {
+            if (depth > MaxDepth) throw Error("anidamiento excesivo");
+            if (pos >= text.Length) throw Error("el texto termina donde se esperaba un valor");
+
+            var c = text[pos];
+            switch (c)
+            {
+                case '{': return ReadObject(depth);
+                case '[': return ReadArray(depth);
+                case '"': return ReadString();
+                case 't': ReadLiteral("true"); return true;
+                case 'f': ReadLiteral("false"); return false;
+                case 'n': ReadLiteral("null"); return null;
+                default:
+                    if (c == '-' || (c >= '0' && c <= '9')) return ReadNumber();
+                    throw Error("carácter inesperado " + Describe());
+            }
+        }
+
+        private void ReadLiteral(string word)
+        {
+            if (string.CompareOrdinal(text, pos, word, 0, word.Length) != 0)
+            {
+                throw Error("se esperaba «" + word + "»");
+            }
+
+            pos += word.Length;
+        }
+
+        private Dictionary<string, object> ReadObject(int depth)
+        {
+            pos++; // «{»
+            var result = new Dictionary<string, object>(StringComparer.Ordinal);
+            SkipWhite();
+            if (At('}'))
+            {
+                pos++;
+                return result;
+            }
+
+            while (true)
+            {
+                SkipWhite();
+                if (!At('"')) throw Error("se esperaba el nombre de un campo entre comillas, no " + Describe());
+                var keyPos = pos;
+                var key = ReadString();
+                if (result.ContainsKey(key))
+                {
+                    pos = keyPos;
+                    throw Error("el campo «" + key + "» está repetido");
+                }
+
+                SkipWhite();
+                Expect(':');
+                SkipWhite();
+                result[key] = ReadValue(depth + 1);
+                SkipWhite();
+                if (At(',')) { pos++; continue; }
+                if (At('}')) { pos++; return result; }
+                throw Error("se esperaba «,» o «}», no " + Describe());
+            }
+        }
+
+        private List<object> ReadArray(int depth)
+        {
+            pos++; // «[»
+            var result = new List<object>();
+            SkipWhite();
+            if (At(']'))
+            {
+                pos++;
+                return result;
+            }
+
+            while (true)
+            {
+                SkipWhite();
+                result.Add(ReadValue(depth + 1));
+                SkipWhite();
+                if (At(',')) { pos++; continue; }
+                if (At(']')) { pos++; return result; }
+                throw Error("se esperaba «,» o «]», no " + Describe());
+            }
+        }
+
+        private string ReadString()
+        {
+            pos++; // comilla de apertura
+            var sb = new System.Text.StringBuilder();
+            while (true)
+            {
+                if (pos >= text.Length) throw Error("cadena sin cerrar");
+                var c = text[pos];
+                if (c == '"')
+                {
+                    pos++;
+                    return sb.ToString();
+                }
+
+                if (c < ' ') throw Error("carácter de control sin escapar dentro de una cadena");
+                if (c != '\\')
+                {
+                    sb.Append(c);
+                    pos++;
+                    continue;
+                }
+
+                pos++; // «\»
+                if (pos >= text.Length) throw Error("cadena sin cerrar");
+                switch (text[pos])
+                {
+                    case '"': sb.Append('"'); break;
+                    case '\\': sb.Append('\\'); break;
+                    case '/': sb.Append('/'); break;
+                    case 'b': sb.Append('\b'); break;
+                    case 'f': sb.Append('\f'); break;
+                    case 'n': sb.Append('\n'); break;
+                    case 'r': sb.Append('\r'); break;
+                    case 't': sb.Append('\t'); break;
+                    case 'u':
+                        int code;
+                        if (pos + 4 >= text.Length
+                            || !int.TryParse(text.Substring(pos + 1, 4), System.Globalization.NumberStyles.AllowHexSpecifier,
+                                System.Globalization.CultureInfo.InvariantCulture, out code))
+                        {
+                            throw Error("«\\u» debe llevar cuatro dígitos hexadecimales");
+                        }
+
+                        sb.Append((char)code); // un par sustituto llega como dos «\uXXXX» seguidos y se recompone solo
+                        pos += 4;
+                        break;
+                    default:
+                        throw Error("secuencia de escape inválida «\\" + text[pos] + "»");
+                }
+
+                pos++;
+            }
+        }
+
+        private bool AtDigit() { return pos < text.Length && text[pos] >= '0' && text[pos] <= '9'; }
+
+        private object ReadNumber()
+        {
+            var start = pos;
+            if (At('-')) pos++;
+            if (!AtDigit()) throw Error("número mal formado: falta un dígito");
+            if (At('0')) pos++;
+            else while (AtDigit()) pos++;
+
+            if (At('.'))
+            {
+                pos++;
+                if (!AtDigit()) throw Error("número mal formado: falta un dígito tras el punto decimal");
+                while (AtDigit()) pos++;
+            }
+
+            if (At('e') || At('E'))
+            {
+                pos++;
+                if (At('+') || At('-')) pos++;
+                if (!AtDigit()) throw Error("número mal formado: falta un dígito en el exponente");
+                while (AtDigit()) pos++;
+            }
+
+            double value;
+            if (!double.TryParse(text.Substring(start, pos - start), System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out value))
+            {
+                pos = start;
+                throw Error("número fuera de rango");
+            }
+
+            return value;
+        }
+    }
+
+    // --- fin del lector ---
+
+    private const string Json = "claudeDocs/tasks/Personajes/herramientas/rig_articulaciones.json";
+    private const string ClipsJson = "claudeDocs/tasks/Personajes/herramientas/clips_personajes.json";
+    private const string Art = "Assets/Game/Art/Characters";
+    private const string Prefabs = "Assets/Game/Prefabs/Characters";
+    private const string FrontFolder = "Frontal";
+    private const string ExpressionsFolder = "Expresiones";
+    private const float U = 1024f;
+    private const float Fps = 30f;
+    private const float KeyTolerance = 1e-4f;
+
+    // Rutas que usan los modos «sprites», «orden» y «estado» (iguales en la familia y en Algoritm). Las
+    // de los demás huesos viven en clips_personajes.json, que es quien las nombra.
+    private const string C = "Lienzo/Cuerpo";
+    private const string T = C + "/Tronco";
+    private const string LK = C + "/PiernaIzq/RodillaIzq";
+
+    /// <summary>
+    /// Prefijo del ancla de un antebrazo (INC-133): «AnclaAntebrazoIzq». Tiene que ser el mismo que
+    /// LimbFollower.AnchorPrefix, que busca las anclas por nombre en tiempo de ejecución; no se referencia
+    /// desde aquí porque LimbFollower es internal de Game.Scaffolding y este script vive en Assembly-CSharp-Editor.
+    /// Lo vigila CharacterRig_INC133_LosPrefabsDeLaFamiliaTienenSusAntebrazosYAnclasDescubribles.
+    /// </summary>
+    private const string AnchorPrefix = "Ancla";
+
+    // ---------------------------------------------------------------- punto de entrada
+
+    public static string Execute(string mode)
+    {
+        var log = new List<string>();
+        try
+        {
+            AssetDatabase.Refresh();
+            var tabla = LoadTable(log);
+            switch (mode)
+            {
+                case "nodos":
+                    foreach (var p in tabla.personajes) AddNodes(p, log);
+                    break;
+                case "sprites":
+                    foreach (var p in tabla.personajes) ApplySprites(p, log);
+                    break;
+                case "orden":
+                    ApplyOrderAll(tabla, log);
+                    break;
+                case "clips":
+                    WriteClips(tabla, log);
+                    break;
+                case "todo":
+                    foreach (var p in tabla.personajes) AddNodes(p, log);
+                    foreach (var p in tabla.personajes) ApplySprites(p, log);
+                    ApplyOrderAll(tabla, log);
+                    WriteClips(tabla, log);
+                    break;
+                case "estado":
+                    foreach (var p in tabla.personajes) Report(p, log);
+                    break;
+                default:
+                    log.Add("modo desconocido «" + mode + "»: nodos | sprites | orden | clips | todo | estado");
+                    break;
+            }
+
+            AssetDatabase.SaveAssets();
+        }
+        catch (Exception e)
+        {
+            log.Add("ERROR: " + e);
+        }
+
+        return string.Join("\n", log);
+    }
+
+    private static Tabla LoadTable(List<string> log)
+    {
+        var path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", Json));
+        Tabla tabla;
+        try
+        {
+            tabla = ParseTable(File.ReadAllText(path, System.Text.Encoding.UTF8));
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new InvalidOperationException("tabla ilegible (" + path + "): " + e.Message, e);
+        }
+
+        log.Add("tabla: " + tabla.personajes.Length + " personajes (" + path + ")");
+        return tabla;
+    }
+
+    private static string PrefabPath(Personaje p) { return Prefabs + "/" + p.prefab + ".prefab"; }
+
+    // ---------------------------------------------------------------- geometría sin Canvas
+
+    /// <summary>Rect de un nodo en el lienzo, con las coordenadas de Unity (origen abajo a la izquierda).</summary>
+    private struct Box
+    {
+        public Vector2 Min;
+        public Vector2 Size;
+    }
+
+    /// <summary>
+    /// El rect de un RectTransform dentro de Lienzo, calculado solo con lo serializado. La fórmula es
+    /// la de Unity: el punto de referencia de las anclas es anchorMin + pivot·(anchorMax − anchorMin),
+    /// el pivote cae en referencia + anchoredPosition y el tamaño es (anchorMax − anchorMin)·padre + sizeDelta.
+    /// </summary>
+    private static Box BoxOf(RectTransform rt)
+    {
+        if (rt.name == "Lienzo")
+        {
+            return new Box { Min = Vector2.zero, Size = new Vector2(U, U) };
+        }
+
+        var parent = rt.parent as RectTransform;
+        if (parent == null)
+        {
+            throw new InvalidOperationException(rt.name + " no cuelga de Lienzo");
+        }
+
+        var pb = BoxOf(parent);
+        var span = rt.anchorMax - rt.anchorMin;
+        var size = Vector2.Scale(span, pb.Size) + rt.sizeDelta;
+        var reference = rt.anchorMin + Vector2.Scale(rt.pivot, span);
+        var pivot = pb.Min + Vector2.Scale(reference, pb.Size) + rt.anchoredPosition;
+        return new Box { Min = pivot - Vector2.Scale(rt.pivot, size), Size = size };
+    }
+
+    private static Vector2 PivotUp(RectTransform rt)
+    {
+        var b = BoxOf(rt);
+        return b.Min + Vector2.Scale(rt.pivot, b.Size);
+    }
+
+    /// <summary>El pivote en coordenadas de la tabla (y hacia abajo).</summary>
+    private static Vector2 PivotDown(RectTransform rt)
+    {
+        var p = PivotUp(rt);
+        return new Vector2(p.x, U - p.y);
+    }
+
+    private static Vector2 DownToUp(Vector2 p) { return new Vector2(p.x, U - p.y); }
+
+    private static Vector2 Pt(float[] p) { return new Vector2(p[0], p[1]); }
+
+    private static bool Near(Vector2 a, Vector2 b) { return (a - b).sqrMagnitude < 0.0025f; }
+
+    private static float Snap(float v) { return Mathf.Abs(v) < 1e-3f ? 0f : v; }
+
+    /// <summary>
+    /// Coloca un nodo con anclas puntuales: su pivote cae en «punto» (tabla, y hacia abajo) y, si hay
+    /// «rect», el rect cuelga de ese pivote. Con un padre de tamaño 0 (un pivote de articulación) las
+    /// anclas quedan en el centro y el desplazamiento absorbe la diferencia. Se asigna anchoredPosition
+    /// al final porque los setters de pivot y sizeDelta la reajustan.
+    /// </summary>
+    private static void PlacePoint(RectTransform rt, Vector2 pointDown, float[] rect)
+    {
+        var pb = BoxOf((RectTransform)rt.parent);
+        var p = DownToUp(pointDown);
+        var anchor = new Vector2(
+            pb.Size.x > 0.01f ? (p.x - pb.Min.x) / pb.Size.x : 0.5f,
+            pb.Size.y > 0.01f ? (p.y - pb.Min.y) / pb.Size.y : 0.5f);
+        rt.anchorMin = anchor;
+        rt.anchorMax = anchor;
+        if (rect == null || rect.Length < 4)
+        {
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = Vector2.zero;
+        }
+        else
+        {
+            var w = rect[2] - rect[0];
+            var h = rect[3] - rect[1];
+            rt.pivot = new Vector2((pointDown.x - rect[0]) / w, (rect[3] - pointDown.y) / h);
+            rt.sizeDelta = new Vector2(w, h);
+        }
+
+        var reference = pb.Min + Vector2.Scale(anchor, pb.Size);
+        var offset = p - reference;
+        rt.anchoredPosition = new Vector2(Snap(offset.x), Snap(offset.y));
+    }
+
+    /// <summary>
+    /// Como Part() de BuildRigs: anclas = el rect en fracciones del padre, sizeDelta 0, pivote en su
+    /// articulación. Para las partes que ya existen y para el nodo «grupo» (estirado). No toca nada si
+    /// el nodo ya está donde dice la tabla (menos de 0,05 unidades), para no ensuciar el YAML.
+    /// </summary>
+    private static bool PlacePart(RectTransform rt, float[] rect, float[] pivotDown)
+    {
+        var w = rect[2] - rect[0];
+        var h = rect[3] - rect[1];
+        var minUp = new Vector2(rect[0], U - rect[3]);
+        var box = BoxOf(rt);
+        if (Near(box.Min, minUp) && Near(box.Size, new Vector2(w, h)) && Near(PivotDown(rt), Pt(pivotDown)))
+        {
+            return false;
+        }
+
+        var pb = BoxOf((RectTransform)rt.parent);
+        var maxUp = new Vector2(rect[2], U - rect[1]);
+        rt.anchorMin = new Vector2((minUp.x - pb.Min.x) / pb.Size.x, (minUp.y - pb.Min.y) / pb.Size.y);
+        rt.anchorMax = new Vector2((maxUp.x - pb.Min.x) / pb.Size.x, (maxUp.y - pb.Min.y) / pb.Size.y);
+        rt.pivot = new Vector2((pivotDown[0] - rect[0]) / w, (rect[3] - pivotDown[1]) / h);
+        rt.offsetMin = Vector2.zero;
+        rt.offsetMax = Vector2.zero;
+        return true;
+    }
+
+    // ---------------------------------------------------------------- modo «nodos»
+
+    private static RectTransform NewRect(string name, Transform parent)
+    {
+        var go = new GameObject(name, typeof(RectTransform));
+        var rect = (RectTransform)go.transform;
+        rect.SetParent(parent, false);
+        return rect;
+    }
+
+    /// <summary>La Image de un nodo nuevo: sin clics (RNF-02), apagada y sin sprite (no pinta un recuadro blanco).</summary>
+    private static Image AddOffImage(RectTransform rt)
+    {
+        var image = rt.gameObject.AddComponent<Image>();
+        image.raycastTarget = false;
+        image.enabled = false;
+        return image;
+    }
+
+    private static void AddNodes(Personaje c, List<string> log)
+    {
+        var path = PrefabPath(c);
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var added = new List<string>();
+            foreach (var n in c.nodos)
+            {
+                EnsureNode(root.transform, c, n, added);
+            }
+
+            var wired = EnsureFace(root, c, added);
+            if (added.Count > 0 || wired)
+            {
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+                log.Add(c.prefab + ": " + added.Count + " añadidos (" + string.Join(", ", added.ToArray()) + ")");
+            }
+            else
+            {
+                log.Add(c.prefab + ": ya estaba completo, sin cambios");
+            }
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+    }
+
+    /// <summary>
+    /// Los nombres de los hermanos de «n» que la tabla pone DESPUÉS de él: los nodos con el mismo
+    /// «padre» que van detrás de «n» en la lista «nodos». El orden de esa lista, entre hermanos, es el
+    /// orden de dibujo que pide la tabla (de atrás adelante).
+    /// </summary>
+    private static List<string> LaterSiblings(Personaje c, Nodo n)
+    {
+        var later = new List<string>();
+        var seen = false;
+        foreach (var other in c.nodos)
+        {
+            if (ReferenceEquals(other, n))
+            {
+                seen = true;
+            }
+            else if (seen && other.padre == n.padre)
+            {
+                later.Add(other.nombre);
+            }
+        }
+
+        return later;
+    }
+
+    /// <summary>
+    /// El lugar entre los hijos de su padre donde entra un nodo nuevo: el del primero, en orden de
+    /// dibujo, de los hermanos que la tabla pone DESPUÉS de él (así el nodo queda detrás de todos
+    /// ellos), o -1 si ninguno existe (se queda donde nació, al final). «children» incluye al propio
+    /// nodo, que nace último. Los hermanos que ya existían no se mueven: solo el nodo nuevo se
+    /// reubica. Función pura, sin Unity.
+    /// </summary>
+    private static int InsertIndex(IList<string> children, string name, IList<string> laterInTable)
+    {
+        for (var i = 0; i < children.Count; i++)
+        {
+            if (children[i] != name && laterInTable.Contains(children[i]))
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
+    private static void EnsureNode(Transform root, Personaje c, Nodo n, List<string> added)
+    {
+        var parent = root.Find(n.padre) as RectTransform;
+        if (parent == null)
+        {
+            throw new InvalidOperationException(root.name + ": no existe el padre «" + n.padre + "» de " + n.nombre);
+        }
+
+        var node = parent.Find(n.nombre) as RectTransform;
+        var isNew = node == null;
+        if (isNew)
+        {
+            node = NewRect(n.nombre, parent); // nace como último hijo; las imágenes se reubican si la tabla las pone antes que un hermano
+            var at = n.tipo == "imagen" ? InsertIndex(ChildNames(parent), n.nombre, LaterSiblings(c, n)) : -1;
+            if (at >= 0)
+            {
+                node.SetSiblingIndex(at);
+                added.Add(n.nombre + " [detrás de " + parent.GetChild(at + 1).name + "]");
+            }
+            else
+            {
+                added.Add(n.nombre);
+            }
+        }
+
+        switch (n.tipo)
+        {
+            case "grupo":
+                // Estirado como Cuerpo y Tronco de la familia; el pivote en «punto».
+                if (isNew) PlacePart(node, n.rect, n.punto);
+                break;
+
+            case "imagen":
+                if (isNew)
+                {
+                    AddOffImage(node);
+                    PlacePoint(node, Pt(n.punto), n.rect);
+                }
+
+                break;
+
+            case "articulacion":
+                if (isNew) PlacePoint(node, Pt(n.punto), null); // pivote vacío en la articulación
+                var segment = FindSegment(root, c, n, node); // bajo el codo, o ya suelto en Tronco (INC-133)
+                if (segment == null)
+                {
+                    segment = NewRect(n.imagen, node);
+                    AddOffImage(segment);
+                    PlacePoint(segment, Pt(n.punto), n.rect); // cuelga del pivote: girarlo gira el segmento
+                    added.Add(n.imagen);
+                }
+
+                break;
+
+            default:
+                throw new InvalidOperationException("tipo de nodo desconocido «" + n.tipo + "» en " + n.nombre);
+        }
+    }
+
+    /// <summary>CharacterFace en la raíz, con eyes/mouth apuntando a las Image de Ojos y Boca. Devuelve si cambió algo.</summary>
+    private static bool EnsureFace(GameObject root, Personaje c, List<string> added)
+    {
+        var changed = false;
+        var face = root.GetComponent<CharacterFace>();
+        if (face == null)
+        {
+            face = root.AddComponent<CharacterFace>();
+            added.Add("CharacterFace");
+            changed = true;
+        }
+
+        var so = new SerializedObject(face);
+        changed |= WireImage(so, "eyes", FindImage(root, c, "Ojos"));
+        changed |= WireImage(so, "mouth", FindImage(root, c, "Boca"));
+        so.ApplyModifiedPropertiesWithoutUndo();
+        return changed;
+    }
+
+    private static Image FindImage(GameObject root, Personaje c, string nombre)
+    {
+        foreach (var n in c.nodos)
+        {
+            if (n.nombre == nombre)
+            {
+                var t = root.transform.Find(n.padre + "/" + nombre);
+                return t == null ? null : t.GetComponent<Image>();
+            }
+        }
+
+        return null;
+    }
+
+    /// <summary>Solo rellena la propiedad si está vacía: no pisa un cableado manual.</summary>
+    private static bool WireImage(SerializedObject so, string property, Image image)
+    {
+        var prop = so.FindProperty(property);
+        if (prop == null || image == null || prop.objectReferenceValue != null)
+        {
+            return false;
+        }
+
+        prop.objectReferenceValue = image;
+        return true;
+    }
+
+    // ---------------------------------------------------------------- modo «sprites»
+
+    private static readonly string[][] FaceNames =
+    {
+        // propiedad del CharacterFaceSet, sufijo del PNG
+        new[] { "EyesNeutral", "ojos_neutra" }, new[] { "EyesHappy", "ojos_alegria" },
+        new[] { "EyesSurprised", "ojos_sorpresa" }, new[] { "EyesWorried", "ojos_preocupacion" },
+        new[] { "EyesFocused", "ojos_concentracion" }, new[] { "EyesSleeping", "ojos_sueno" },
+        new[] { "EyesBlinkHalf", "ojos_parpadeo_medio" }, new[] { "EyesBlinkClosed", "ojos_parpadeo_cerrado" },
+        new[] { "MouthClosed", "boca_0" }, new[] { "MouthA", "boca_a" }, new[] { "MouthE", "boca_e" },
+        new[] { "MouthU", "boca_u" }, new[] { "MouthHappy", "boca_alegria" },
+        new[] { "MouthSurprised", "boca_sorpresa" }, new[] { "MouthWorried", "boca_preocupacion" },
+        new[] { "MouthFocused", "boca_concentracion" },
+    };
+
+    /// <summary>
+    /// La subcarpeta del personaje donde le toca vivir a un PNG por su nombre: las partes del cuerpo
+    /// (char_&lt;x&gt;_parte_*) en Frontal; los ojos, las bocas y la cara base (char_&lt;x&gt;_ojos_*,
+    /// _boca_*, _cara_base) en Expresiones. null = ninguna (retratos, cenital, reposos de Algoritm: se
+    /// quedan en la raíz). Es la misma regla de nombres que usa OrganizarArtePersonajes.
+    /// </summary>
+    private static string ExpectedSubfolder(string nombre)
+    {
+        if (nombre.Contains("_parte_")) return FrontFolder;
+        if (nombre.Contains("_ojos_") || nombre.Contains("_boca_") || nombre.Contains("_cara_base")) return ExpressionsFolder;
+        return null;
+    }
+
+    /// <summary>
+    /// De varios PNG con el mismo nombre —uno olvidado en la raíz y otro en su subcarpeta— elige el de
+    /// la subcarpeta que le toca por su nombre (ExpectedSubfolder), luego el de la raíz del personaje y
+    /// luego el primero por orden alfabético; con más de uno rellena «warning» diciendo cuál usa. Con uno
+    /// solo lo devuelve sin más y con ninguno devuelve null. Función pura, sin Unity.
+    /// </summary>
+    private static string PickTexture(string folder, string nombre, IList<string> candidates, out string warning)
+    {
+        warning = null;
+        if (candidates.Count == 0) return null;
+        if (candidates.Count == 1) return candidates[0];
+
+        var sub = ExpectedSubfolder(nombre);
+        var expected = sub == null ? null : folder + "/" + sub + "/";
+        var ordered = candidates
+            .OrderBy(candidate => expected != null && candidate.StartsWith(expected, StringComparison.Ordinal) ? 0
+                : Path.GetDirectoryName(candidate).Replace('\\', '/') == folder ? 1 : 2)
+            .ThenBy(candidate => candidate, StringComparer.Ordinal)
+            .ToList();
+        warning = "AVISO hay " + candidates.Count + " PNG llamados «" + nombre + "» (" + string.Join(", ", ordered.ToArray()) + "): se usa "
+            + ordered[0] + (expected == null ? "" : " (la subcarpeta que le toca es «" + sub + "»)") + "; el otro sobra";
+        return ordered[0];
+    }
+
+    /// <summary>
+    /// El PNG por nombre, en cualquier subcarpeta de la del personaje. Si hay dos con el mismo nombre
+    /// avisa en «log» y prefiere el de la subcarpeta que le toca (Frontal o Expresiones). Lo pasa a Sprite Single.
+    /// </summary>
+    private static Sprite FindSprite(string carpeta, string nombre, List<string> log)
+    {
+        if (string.IsNullOrEmpty(nombre))
+        {
+            return null;
+        }
+
+        var folder = Art + "/" + carpeta;
+        var candidates = new List<string>();
+        var inRoot = folder + "/" + nombre + ".png";
+        if (File.Exists(inRoot))
+        {
+            candidates.Add(inRoot);
+        }
+
+        foreach (var guid in AssetDatabase.FindAssets(nombre + " t:Texture2D", new[] { folder })) // recursivo: baja a Frontal/, Expresiones/…
+        {
+            var candidate = AssetDatabase.GUIDToAssetPath(guid);
+            if (Path.GetFileNameWithoutExtension(candidate) == nombre && !candidates.Contains(candidate))
+            {
+                candidates.Add(candidate);
+            }
+        }
+
+        string warning;
+        var path = PickTexture(folder, nombre, candidates, out warning);
+        if (warning != null && !log.Contains(warning))
+        {
+            log.Add(warning); // FindSprite se llama más de una vez por nombre (nodo y set de cara): un solo aviso
+        }
+
+        if (path == null)
+        {
+            return null;
+        }
+
+        // Como ImportSprites de BuildRigs: con «Multiple» (el valor de fábrica) LoadAssetAtPath<Sprite> devuelve nulo.
+        var importer = (TextureImporter)AssetImporter.GetAtPath(path);
+        if (importer.textureType != TextureImporterType.Sprite || importer.spriteImportMode != SpriteImportMode.Single)
+        {
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.alphaIsTransparency = true;
+            importer.mipmapEnabled = false;
+            importer.SaveAndReimport();
+        }
+
+        return AssetDatabase.LoadAssetAtPath<Sprite>(path);
+    }
+
+    private static void ApplySprites(Personaje c, List<string> log)
+    {
+        var path = PrefabPath(c);
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var done = new List<string>();
+            var missing = new List<string>();
+
+            // 1. Las partes que ya existen: sprite, rect y pivote. Primero ellas, porque sus hijos se anclan a su rect.
+            if (c.partes != null)
+            {
+                foreach (var part in c.partes)
+                {
+                    var rt = root.transform.Find(part.ruta) as RectTransform;
+                    var sprite = FindSprite(c.carpeta, part.sprite, log);
+                    if (rt == null || sprite == null)
+                    {
+                        missing.Add(part.sprite);
+                        continue; // lo que ya se ve se queda como está
+                    }
+
+                    var image = rt.GetComponent<Image>();
+                    var changed = PlacePart(rt, part.rect, part.pivote);
+                    if (image.sprite != sprite || !image.enabled)
+                    {
+                        image.sprite = sprite;
+                        image.enabled = true;
+                        changed = true;
+                    }
+
+                    if (changed) done.Add(part.nombre);
+                }
+            }
+
+            // 2. Los nodos nuevos, padre antes que hijo. Un pivote se recoloca siempre (su padre pudo cambiar de rect).
+            foreach (var n in c.nodos)
+            {
+                var parent = root.transform.Find(n.padre) as RectTransform;
+                var node = parent == null ? null : parent.Find(n.nombre) as RectTransform;
+                if (node == null)
+                {
+                    missing.Add(n.nombre + " (¿corrió «nodos»?)");
+                    continue;
+                }
+
+                RectTransform target = node;
+                if (n.tipo == "articulacion")
+                {
+                    PlacePoint(node, Pt(n.punto), null);
+                    target = FindSegment(root.transform, c, n, node); // bajo el codo, o ya suelto en Tronco (INC-133)
+                    MirrorAnchor(c, n, node);
+                }
+                else if (n.tipo == "grupo")
+                {
+                    PlacePart(node, n.rect, n.punto);
+                    continue;
+                }
+
+                var image = target == null ? null : target.GetComponent<Image>();
+                var sprite = FindSprite(c.carpeta, n.sprite, log);
+                if (image == null || sprite == null)
+                {
+                    if (n.tipo == "articulacion" && target != null) PlacePoint(target, Pt(n.punto), n.rect);
+                    missing.Add(n.sprite ?? n.nombre);
+                    continue; // sin PNG: la Image queda apagada (la de un nodo nuevo nace apagada y aquí no se enciende)
+                }
+
+                PlacePoint(target, Pt(n.punto), n.rect);
+                image.sprite = sprite;
+                image.enabled = true;
+                done.Add(target.name);
+            }
+
+            var faced = ApplyFaceSet(root, c, done, log);
+
+            // 3. Algoritm: con sus partes puestas, el sprite entero de Cuerpo sobra (se vería doble).
+            if (c.guia && AllEnabled(root, new[] { T + "/Torso", T + "/BrazoIzq", T + "/BrazoDer", C + "/PiernaIzq", C + "/PiernaDer" }))
+            {
+                var body = root.transform.Find(C).GetComponent<Image>();
+                if (body != null && body.enabled)
+                {
+                    body.enabled = false;
+                    done.Add("Cuerpo apagado");
+                }
+            }
+
+            if (done.Count > 0 || faced)
+            {
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+            }
+
+            log.Add(c.prefab + ": " + done.Count + " aplicados" + (done.Count > 0 ? " (" + string.Join(", ", done.ToArray()) + ")" : "")
+                + (missing.Count > 0 ? " | SIN PNG: " + string.Join(", ", missing.ToArray()) : ""));
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+    }
+
+    private static bool AllEnabled(GameObject root, string[] paths)
+    {
+        foreach (var p in paths)
+        {
+            var t = root.transform.Find(p);
+            var image = t == null ? null : t.GetComponent<Image>();
+            if (image == null || !image.enabled || image.sprite == null)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <summary>Dónde vive el set de la cara de un personaje: en su subcarpeta Expresiones.</summary>
+    private static string FaceSetPath(Personaje c)
+    {
+        return Art + "/" + c.carpeta + "/" + ExpressionsFolder + "/" + c.prefijo + "_cara.asset";
+    }
+
+    /// <summary>Donde vivía antes de las subcarpetas: la raíz de la carpeta del personaje.</summary>
+    private static string OldFaceSetPath(Personaje c)
+    {
+        return Art + "/" + c.carpeta + "/" + c.prefijo + "_cara.asset";
+    }
+
+    /// <summary>
+    /// Crea la subcarpeta si falta. Se pregunta antes con IsValidFolder porque CreateFolder sobre una
+    /// carpeta que ya existe no es idempotente (puede crear «Nombre 1»). false si no quedó una carpeta válida.
+    /// </summary>
+    private static bool EnsureFolder(string parent, string name, List<string> log)
+    {
+        var path = parent + "/" + name;
+        if (AssetDatabase.IsValidFolder(path))
+        {
+            return true;
+        }
+
+        AssetDatabase.CreateFolder(parent, name);
+        if (!AssetDatabase.IsValidFolder(path))
+        {
+            log.Add("ERROR no se pudo crear la carpeta " + path);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// El set de la cara del personaje, en Expresiones/. Si ya está ahí, ese. Si no, y hay uno viejo en
+    /// la raíz, se MUEVE (AssetDatabase.MoveAsset conserva el GUID que los prefabs ya referencian) en
+    /// vez de crear otro; si el movimiento falla se sigue usando el viejo en su sitio. Solo si no hay
+    /// ninguno se crea. null si no se pudo ni crear la carpeta.
+    /// </summary>
+    private static CharacterFaceSet EnsureFaceSet(Personaje c, List<string> log)
+    {
+        var assetPath = FaceSetPath(c);
+        var oldPath = OldFaceSetPath(c);
+        var set = AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(assetPath);
+        if (set != null)
+        {
+            if (AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(oldPath) != null)
+            {
+                log.Add("AVISO " + c.prefijo + ": hay un _cara.asset en Expresiones y otro en la raíz (" + oldPath + "); se usa el de Expresiones y el de la raíz sobra");
+            }
+
+            return set;
+        }
+
+        if (!EnsureFolder(Art + "/" + c.carpeta, ExpressionsFolder, log))
+        {
+            return null;
+        }
+
+        var old = AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(oldPath);
+        if (old != null)
+        {
+            var error = AssetDatabase.MoveAsset(oldPath, assetPath);
+            if (string.IsNullOrEmpty(error))
+            {
+                log.Add(c.prefijo + ": " + oldPath + " movido a " + assetPath + " (mismo GUID)");
+                return AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(assetPath);
+            }
+
+            log.Add("AVISO " + c.prefijo + ": no se pudo mover " + oldPath + " a " + assetPath + " (" + error + "); se usa en su sitio");
+            return old;
+        }
+
+        set = ScriptableObject.CreateInstance<CharacterFaceSet>();
+        AssetDatabase.CreateAsset(set, assetPath);
+        return set;
+    }
+
+    /// <summary>Crea o actualiza &lt;carpeta&gt;/Expresiones/&lt;prefijo&gt;_cara.asset con los sprites de cara que existan y lo asigna a faceSet.</summary>
+    private static bool ApplyFaceSet(GameObject root, Personaje c, List<string> done, List<string> log)
+    {
+        var found = new Dictionary<string, Sprite>();
+        foreach (var pair in FaceNames)
+        {
+            var sprite = FindSprite(c.carpeta, c.prefijo + "_" + pair[1], log);
+            if (sprite != null) found[pair[0]] = sprite;
+        }
+
+        if (found.Count == 0)
+        {
+            return false;
+        }
+
+        var set = EnsureFaceSet(c, log);
+        if (set == null)
+        {
+            return false;
+        }
+
+        var so = new SerializedObject(set);
+        foreach (var pair in found)
+        {
+            var prop = so.FindProperty("<" + pair.Key + ">k__BackingField");
+            if (prop != null) prop.objectReferenceValue = pair.Value; // solo lo que existe: no vacía lo ya asignado
+        }
+
+        so.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(set);
+
+        var changed = false;
+        var face = root.GetComponent<CharacterFace>();
+        if (face != null)
+        {
+            var faceSo = new SerializedObject(face);
+            var prop = faceSo.FindProperty("faceSet");
+            if (prop != null && prop.objectReferenceValue != set)
+            {
+                prop.objectReferenceValue = set;
+                faceSo.ApplyModifiedPropertiesWithoutUndo();
+                changed = true;
+            }
+        }
+
+        done.Add(c.prefijo + "_cara.asset (" + found.Count + " sprites)");
+        return changed;
+    }
+
+    // ---------------------------------------------------------------- modo «orden»
+    //
+    // POR QUÉ. Bajo Lienzo/Cuerpo/Tronco los hijos nacieron como BrazoIzq, BrazoDer, Torso y Cuello
+    // (familia) o Ojos y Boca (Algoritm), y uGUI dibuja de atrás adelante: los brazos quedaban DETRÁS del
+    // torso y de la cabeza y se escondían. Santiago no lo aceptó y fijó el orden definitivo (05/10/2026):
+    //   - Familia: Cuello (con la cabeza dentro), BrazoIzq, BrazoDer, Torso. Los brazos van DETRÁS del
+    //     torso —los hombros salen por detrás de él— y DELANTE de la cabeza —un brazo que sube pasa por
+    //     delante de la cara—. Con el arte provisional de una pieza la cabeza está pintada dentro del torso,
+    //     así que la regla solo se nota con el arte final; se aplica ya a Papá, Mamá, Niña y Niño para que
+    //     todo quede listo cuando llegue.
+    //   - Algoritm: Torso, Ojos, Boca, BrazoIzq, BrazoDer. Los brazos van DELANTE del cuerpo y las manos se
+    //     pintan ENCIMA de la cara (decisión de Santiago, 05/10/2026, INC-132: la cara con la que el guía
+    //     mira al niño queda detrás de la mano que se lleva a ella, no al revés).
+    //   - 06/10/2026, INC-133: lo anterior vale para el HÚMERO (BrazoIzq, BrazoDer); el ANTEBRAZO va delante
+    //     del torso, de la cara y de las piernas, y en Papá la cara va delante del torso (su Cuello, después
+    //     de Torso). Para que el antebrazo pueda ir delante con el húmero detrás sale del codo y cuelga de
+    //     Tronco (ver ANTEBRAZOS, abajo); su sitio lo fija la tabla como el de cualquier otro hijo de Tronco.
+    //   - En Strike (golpear las piedras: las manos chocan delante del pecho) los brazos de la familia
+    //     pasan DELANTE del torso mientras dura la acción, para que el choque se vea, y al terminar vuelven
+    //     a este orden. Eso NO lo hace este modo ni se guarda en el prefab: lo hace CharacterRig en tiempo
+    //     de ejecución (ArmLayering, campo armsInFrontActions). Este orden es el de reposo y es el que
+    //     recuerda ArmLayering al nacer el personaje.
+    // El orden concreto vive en la tabla («orden_tronco»), no aquí; este modo no decide nada por su cuenta,
+    // y las pruebas CharacterRig_INC132_* vigilan que los prefabs lo cumplan.
+    //
+    // CÓMO. SetSiblingIndex reordena m_Children del padre y no cambia ni un fileID: las referencias de
+    // las escenas y de los 18 assets narrativos siguen en pie. Los hijos listados van al final de Tronco
+    // en el orden dado; los que la tabla no lista conservan su orden relativo y quedan delante de ellos.
+
+    // ANTEBRAZOS (INC-133). Ver la cabecera del archivo: «orden» crea la ancla bajo el codo y pasa el
+    // antebrazo a Tronco cuando «orden_tronco» lo lista. Las funciones de abajo lo deciden (IsFollower,
+    // FindSegment, PendingFollowers) y lo hacen (CreateAnchor, MoveToTrunk, ReleaseFollowers, MirrorAnchor).
+
+    /// <summary>
+    /// ¿Se suelta este segmento de su articulación? Sí si es el «imagen» de una articulación que cuelga de
+    /// Tronco (un codo) y «orden_tronco» lo lista: esa lista solo puede nombrar hijos directos de Tronco,
+    /// así que nombrarlo es pedir que viva ahí. Función pura, sin Unity.
+    /// </summary>
+    private static bool IsFollower(Personaje c, Nodo n)
+    {
+        return n.tipo == "articulacion"
+            && c.ordenTronco != null
+            && Array.IndexOf(c.ordenTronco, n.imagen) >= 0
+            && n.padre.StartsWith(T + "/", StringComparison.Ordinal);
+    }
+
+    private static string AnchorName(Nodo n) { return AnchorPrefix + n.imagen; }
+
+    /// <summary>
+    /// Dónde está hoy el segmento de la articulación «joint»: bajo ella (como nació) o, si la tabla lo suelta,
+    /// ya en Tronco. null si no existe en ninguno de los dos sitios. Bajo la articulación manda: si «orden»
+    /// lo encuentra en los dos, es un estado raro y lo dice PendingFollowers.
+    /// </summary>
+    private static RectTransform FindSegment(Transform root, Personaje c, Nodo n, RectTransform joint)
+    {
+        var under = joint == null ? null : joint.Find(n.imagen) as RectTransform;
+        if (under != null)
+        {
+            return under;
+        }
+
+        return IsFollower(c, n) ? root.Find(T + "/" + n.imagen) as RectTransform : null;
+    }
+
+    /// <summary>
+    /// Los antebrazos que aún cuelgan del codo y que «orden_tronco» pide en Tronco, en el orden de «nodos».
+    /// SOLO LEE: sirve para validar todos los prefabs antes de escribir ninguno. Lanza InvalidOperationException
+    /// si falta el codo o el antebrazo (¿corrió «nodos»?) o si el antebrazo está a la vez bajo el codo y
+    /// en Tronco (no se sabe cuál conservar).
+    /// </summary>
+    private static List<Nodo> PendingFollowers(Transform root, Personaje c)
+    {
+        var pending = new List<Nodo>();
+        foreach (var n in c.nodos)
+        {
+            if (!IsFollower(c, n)) continue;
+
+            var joint = root.Find(n.padre + "/" + n.nombre);
+            if (joint == null)
+            {
+                throw new InvalidOperationException(c.prefab + ": no existe «" + n.padre + "/" + n.nombre + "», el codo de «" + n.imagen + "» (¿corrió «nodos»?)");
+            }
+
+            var under = joint.Find(n.imagen) != null;
+            var inTrunk = root.Find(T + "/" + n.imagen) != null;
+            if (under && inTrunk)
+            {
+                throw new InvalidOperationException(c.prefab + ": «" + n.imagen + "» está dos veces, bajo «" + n.nombre + "» y bajo Tronco; borre a mano el sobrante y vuelva a correr «orden»");
+            }
+
+            if (!under && !inTrunk)
+            {
+                throw new InvalidOperationException(c.prefab + ": «orden_tronco» lista «" + n.imagen + "» pero no existe ni bajo «" + n.nombre + "» ni bajo Tronco (¿corrió «nodos»?)");
+            }
+
+            if (under) pending.Add(n);
+        }
+
+        return pending;
+    }
+
+    /// <summary>
+    /// El ancla del antebrazo, hija del codo. Sin Image (no se dibuja ni recibe clics). Con «pose» (el segmento
+    /// tal como está hoy bajo el codo) la copia EXACTA: anclas, pivote, tamaño, posición, giro y escala. Sin él
+    /// (el segmento ya está en Tronco y el ancla faltaba) se coloca como lo haría la tabla, que en reposo es
+    /// la misma pose. El orden de asignación es el de PlacePoint: anclas, pivote, tamaño y, al final, la posición.
+    /// </summary>
+    private static RectTransform CreateAnchor(RectTransform joint, Nodo n, RectTransform pose)
+    {
+        var anchor = NewRect(AnchorName(n), joint);
+        if (pose == null)
+        {
+            PlacePoint(anchor, Pt(n.punto), n.rect);
+            return anchor;
+        }
+
+        anchor.anchorMin = pose.anchorMin;
+        anchor.anchorMax = pose.anchorMax;
+        anchor.pivot = pose.pivot;
+        anchor.sizeDelta = pose.sizeDelta;
+        anchor.anchoredPosition = pose.anchoredPosition;
+        anchor.localRotation = pose.localRotation;
+        anchor.localScale = pose.localScale;
+        return anchor;
+    }
+
+    /// <summary>
+    /// Pasa el segmento a hijo de Tronco con el mismo rect y el mismo pivote en el lienzo. Se mide con BoxOf
+    /// antes de mover y se recoloca con PlacePoint después: el resultado no depende de cómo trate SetParent la
+    /// posición de un RectTransform (worldPositionStays) y no hace falta un Canvas.
+    /// </summary>
+    private static void MoveToTrunk(RectTransform segment, RectTransform trunk)
+    {
+        var box = BoxOf(segment);
+        var pivot = PivotDown(segment);
+        segment.SetParent(trunk, false);
+        PlacePoint(segment, pivot, new[] { box.Min.x, U - (box.Min.y + box.Size.y), box.Min.x + box.Size.x, U - box.Min.y });
+    }
+
+    /// <summary>
+    /// Para cada antebrazo que la tabla suelta: crea su ancla si falta y lo pasa de hijo del codo a hijo de
+    /// Tronco si aún no lo es. Idempotente. Devuelve lo que hizo, para el log y para saber si hay que guardar.
+    /// Supone validado por PendingFollowers (que lanza si falta algo).
+    /// </summary>
+    private static List<string> ReleaseFollowers(GameObject root, Personaje c)
+    {
+        var done = new List<string>();
+        var trunk = (RectTransform)root.transform.Find(T);
+        foreach (var n in c.nodos)
+        {
+            if (!IsFollower(c, n)) continue;
+
+            var joint = (RectTransform)root.transform.Find(n.padre + "/" + n.nombre);
+            var under = joint.Find(n.imagen) as RectTransform;
+            if (joint.Find(AnchorName(n)) == null)
+            {
+                CreateAnchor(joint, n, under);
+                done.Add(AnchorName(n) + " creada bajo " + n.nombre);
+            }
+
+            if (under != null)
+            {
+                MoveToTrunk(under, trunk);
+                done.Add(n.imagen + " pasa de " + n.nombre + " a Tronco");
+            }
+        }
+
+        return done;
+    }
+
+    /// <summary>
+    /// Mantiene el ancla con el mismo rect y pivote que el segmento cuando «sprites» lo recoloca (puede llegar
+    /// arte con otro rect). No es necesario para que el antebrazo siga al codo —CharacterRig solo copia la pose
+    /// del ancla—, pero deja el ancla con la forma del segmento, que es lo que se ve al seleccionarla en el Editor.
+    /// </summary>
+    private static void MirrorAnchor(Personaje c, Nodo n, RectTransform joint)
+    {
+        if (!IsFollower(c, n)) return;
+
+        var anchor = joint.Find(AnchorName(n)) as RectTransform;
+        if (anchor != null)
+        {
+            PlacePoint(anchor, Pt(n.punto), n.rect);
+        }
+    }
+
+    /// <summary>Los nombres de los hijos directos, en el orden en que se dibujan.</summary>
+    private static List<string> ChildNames(Transform parent)
+    {
+        var names = new List<string>();
+        for (var i = 0; i < parent.childCount; i++)
+        {
+            names.Add(parent.GetChild(i).name);
+        }
+
+        return names;
+    }
+
+    /// <summary>
+    /// El orden de Tronco que pide la tabla para este prefab, calculado sin tocar nada. Cuenta como hijos
+    /// de Tronco los antebrazos que «orden» aún tiene que soltar del codo (PendingFollowers; se añaden al
+    /// final, que es donde nace un hijo movido): así la validación previa de todos los prefabs funciona
+    /// antes de mover nada. Lanza InvalidOperationException si no hay Tronco, si un nombre listado no es
+    /// hijo directo (con los hijos que sí hay) o si hay dos hijos con el mismo nombre entre los listados
+    /// (SetSiblingIndex por nombre sería ambiguo).
+    /// </summary>
+    private static List<string> TargetOrder(Transform root, Personaje c)
+    {
+        var tronco = root.Find(T);
+        if (tronco == null)
+        {
+            throw new InvalidOperationException(c.prefab + ": no existe «" + T + "» (¿corrió «nodos»?)");
+        }
+
+        var children = ChildNames(tronco);
+        foreach (var pending in PendingFollowers(root, c))
+        {
+            children.Add(pending.imagen);
+        }
+
+        foreach (var name in c.ordenTronco)
+        {
+            var count = children.Count(child => child == name);
+            if (count == 0)
+            {
+                throw new InvalidOperationException(c.prefab + ": «orden_tronco» nombra «" + name + "», que no es hijo directo de " + T
+                    + " (hijos: " + string.Join(", ", children.ToArray()) + ")");
+            }
+
+            if (count > 1)
+            {
+                throw new InvalidOperationException(c.prefab + ": hay " + count + " hijos de " + T + " llamados «" + name + "»");
+            }
+        }
+
+        var target = children.Where(child => Array.IndexOf(c.ordenTronco, child) < 0).ToList(); // sin listar: delante, en su orden
+        target.AddRange(c.ordenTronco);
+        return target;
+    }
+
+    /// <summary>
+    /// Primero se comprueba la tabla contra TODOS los prefabs y solo después se escribe: un nombre mal
+    /// escrito en el cuarto personaje no debe dejar a los tres primeros reordenados y al resto sin tocar.
+    /// </summary>
+    private static void ApplyOrderAll(Tabla tabla, List<string> log)
+    {
+        foreach (var p in tabla.personajes)
+        {
+            if (p.ordenTronco == null) continue;
+            var asset = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath(p));
+            if (asset == null)
+            {
+                throw new InvalidOperationException(p.prefab + ": no existe el prefab " + PrefabPath(p));
+            }
+
+            TargetOrder(asset.transform, p);
+        }
+
+        foreach (var p in tabla.personajes) ApplyOrder(p, log);
+    }
+
+    private static void ApplyOrder(Personaje c, List<string> log)
+    {
+        if (c.ordenTronco == null)
+        {
+            log.Add(c.prefab + ": la tabla no fija «orden_tronco»; no se toca");
+            return;
+        }
+
+        var path = PrefabPath(c);
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            TargetOrder(root.transform, c); // valida (y lanza si no hay Tronco o falta un nombre) antes de mover nada
+            var tronco = root.transform.Find(T);
+            var before = ChildNames(tronco);
+            var released = ReleaseFollowers(root, c); // INC-133: ancla bajo el codo y antebrazo a Tronco
+            var target = TargetOrder(root.transform, c);
+            if (released.Count == 0 && before.SequenceEqual(target))
+            {
+                log.Add(c.prefab + ": Tronco ya estaba en orden (" + string.Join(", ", before.ToArray()) + ")");
+                return;
+            }
+
+            for (var i = 0; i < target.Count; i++)
+            {
+                tronco.Find(target[i]).SetSiblingIndex(i); // los nombres son únicos: TargetOrder lo comprobó
+            }
+
+            var after = ChildNames(tronco);
+            if (!after.SequenceEqual(target))
+            {
+                throw new InvalidOperationException(c.prefab + ": el orden quedó en " + string.Join(", ", after.ToArray()) + " y no en " + string.Join(", ", target.ToArray()));
+            }
+
+            PrefabUtility.SaveAsPrefabAsset(root, path);
+            log.Add(c.prefab + ": Tronco " + string.Join(", ", before.ToArray()) + "  →  " + string.Join(", ", after.ToArray())
+                + (released.Count > 0 ? " | " + string.Join("; ", released.ToArray()) : ""));
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+    }
+
+    // ---------------------------------------------------------------- modo «estado»
+
+    private static void Report(Personaje c, List<string> log)
+    {
+        var root = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath(c));
+        if (root == null)
+        {
+            log.Add(c.prefab + " [" + c.nodos.Length + " nodos, " + c.partes.Length + " partes en la tabla]: FALTA el prefab");
+            return;
+        }
+
+        var missing = new List<string>();
+        foreach (var n in c.nodos)
+        {
+            var t = root.transform.Find(n.padre + "/" + n.nombre);
+            if (t == null) missing.Add(n.nombre);
+        }
+
+        var face = root.GetComponent<CharacterFace>();
+        log.Add(c.prefab + " [" + c.nodos.Length + " nodos, " + c.partes.Length + " partes en la tabla]: " + (missing.Count == 0 ? "nodos completos" : "FALTAN " + string.Join(", ", missing.ToArray()))
+            + " | CharacterFace " + (face == null ? "no" : "sí") + " | segmentado " + (IsSegmented(root.transform) ? "sí" : "no")
+            + " | " + FaceSetState(c) + " | " + OrderState(root.transform, c) + " | " + LimbState(root.transform, c));
+    }
+
+    /// <summary>Los antebrazos que la tabla suelta del codo (INC-133): dónde está cada uno y si tiene ancla. No lanza.</summary>
+    private static string LimbState(Transform root, Personaje c)
+    {
+        var parts = new List<string>();
+        foreach (var n in c.nodos)
+        {
+            if (!IsFollower(c, n)) continue;
+
+            var inTrunk = root.Find(T + "/" + n.imagen) != null;
+            var anchor = root.Find(n.padre + "/" + n.nombre + "/" + AnchorName(n)) != null;
+            parts.Add(n.imagen + (inTrunk ? " en Tronco" : " bajo " + n.nombre + " (falta soltarlo: «orden»)")
+                + ", " + (anchor ? "con ancla" : "SIN ancla (falta «orden»)"));
+        }
+
+        return parts.Count == 0 ? "antebrazos: no se sueltan" : "antebrazos: " + string.Join("; ", parts.ToArray());
+    }
+
+    /// <summary>Dónde está el set de la cara: en Expresiones, en la raíz (falta moverlo) o aún no existe.</summary>
+    private static string FaceSetState(Personaje c)
+    {
+        if (AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(FaceSetPath(c)) != null) return "_cara.asset en " + ExpressionsFolder;
+        if (AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(OldFaceSetPath(c)) != null) return "_cara.asset en la RAÍZ (falta moverlo: «sprites» o OrganizarArtePersonajes)";
+        return "sin _cara.asset";
+    }
+
+    /// <summary>El orden de dibujo actual de Tronco y si cumple lo que la tabla pide. No lanza: «estado» no escribe ni falla.</summary>
+    private static string OrderState(Transform root, Personaje c)
+    {
+        var tronco = root.Find(T);
+        if (tronco == null)
+        {
+            return "sin " + T;
+        }
+
+        var now = ChildNames(tronco);
+        var text = "Tronco [" + string.Join(", ", now.ToArray()) + "]";
+        if (c.ordenTronco == null)
+        {
+            return text + " (la tabla no fija orden)";
+        }
+
+        try
+        {
+            return text + (now.SequenceEqual(TargetOrder(root, c)) ? " (cumple la tabla)" : " (NO cumple la tabla: correr «orden»)");
+        }
+        catch (InvalidOperationException e)
+        {
+            return text + " (la tabla no se puede aplicar: " + e.Message + ")";
+        }
+    }
+
+    /// <summary>Segmentado = la antepierna ya se dibuja (Image con sprite y encendida).</summary>
+    private static bool IsSegmented(Transform root)
+    {
+        var shin = root.Find(LK + "/AntepiernaIzq");
+        var image = shin == null ? null : shin.GetComponent<Image>();
+        return image != null && image.sprite != null && image.enabled;
+    }
+
+    // ================================================================ modo «clips»
+    //
+    // Vuelca en los .anim existentes las curvas de clips_personajes.json (ClearCurves + SetEditorCurve
+    // sobre el asset cargado: GUID, controlador y eventos intactos). El script no calcula movimiento: la
+    // coreografía —y con ella los signos de los ejes, el reposo de cada hueso y qué huesos lleva cada
+    // clip— se decide en coreografia.py y se verifica con pose_preview.py (ver la cabecera). Aquí solo se
+    // comprueba que lo recibido encaja con los prefabs y se escribe.
+    //
+    // Por cada clip hace lo mismo que hacía WriteClip cuando la coreografía vivía aquí: carga el .anim de
+    // «carpeta/archivo.anim» (si falta lo anota como FALTA y NO lo crea), conserva los fotogramas por
+    // segundo, los eventos y los AnimationClipSettings —salvo stopTime, que pasa a ser la duración—, borra
+    // las curvas y pone las nuevas con tangentes ClampedAuto. Si loopTime del asset difiere de «bucle»
+    // avisa y conserva el del asset.
+    //
+    // Avisos (no frenan la escritura): una ruta que el prefab no tiene o un componente que ese nodo no
+    // tiene (el Animator ignora la curva y la parte se queda en pose en T: lo vigila CharacterRig_DA131_
+    // TodaCurvaApuntaAUnaParteQueExiste), una clave fuera de [0, duración], un bucle cuyo último valor no
+    // vuelve al primero y una acción que no es un ActorAction. Las rutas se comprueban en cada prefab del
+    // personaje: el guía («algoritm») en Algoritm_Fuego, Algoritm_Rueda y Algoritm_Gota.
+
+    /// <summary>Los personajes de la tabla que usa uno de la coreografía: el del mismo id y, para el guía, sus tres formas (algoritm_fuego, _rueda, _gota).</summary>
+    private static List<Personaje> TablePersonajes(Tabla tabla, string id)
+    {
+        var result = new List<Personaje>();
+        foreach (var p in tabla.personajes)
+        {
+            if (p.id == id || (p.guia && p.id.StartsWith(id + "_", StringComparison.Ordinal)))
+            {
+                result.Add(p);
+            }
+        }
+
+        return result;
+    }
+
+    private static Coreografia LoadChoreography(List<string> log)
+    {
+        var path = Path.GetFullPath(Path.Combine(Application.dataPath, "..", ClipsJson));
+        if (!File.Exists(path))
+        {
+            throw new InvalidOperationException("no existe " + path + ": lo genera herramientas/coreografia.py");
+        }
+
+        Coreografia coreo;
+        try
+        {
+            coreo = ParseChoreography(File.ReadAllText(path, System.Text.Encoding.UTF8));
+        }
+        catch (InvalidOperationException e)
+        {
+            throw new InvalidOperationException("coreografía ilegible (" + path + "): " + e.Message, e);
+        }
+
+        var clips = 0;
+        foreach (var p in coreo.personajes) clips += p.clips.Length;
+        log.Add("coreografía: " + coreo.personajes.Length + " personajes, " + clips + " clips"
+            + (coreo.generadoPor == null ? "" : ", generada por " + coreo.generadoPor) + " (" + path + ")");
+        return coreo;
+    }
+
+    private static void WriteClips(Tabla tabla, List<string> log)
+    {
+        var coreo = LoadChoreography(log);
+        foreach (var p in coreo.personajes)
+        {
+            var roots = new List<KeyValuePair<string, Transform>>(); // nombre del prefab → raíz
+            var forms = TablePersonajes(tabla, p.id);
+            if (forms.Count == 0)
+            {
+                log.Add("AVISO " + p.id + ": la tabla no tiene ningún personaje con ese id; no se comprueban las rutas de sus curvas");
+            }
+
+            foreach (var form in forms)
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath(form));
+                if (prefab == null)
+                {
+                    log.Add("AVISO " + p.id + ": no existe el prefab " + PrefabPath(form) + "; no se comprueban sus rutas");
+                    continue;
+                }
+
+                roots.Add(new KeyValuePair<string, Transform>(form.prefab, prefab.transform));
+            }
+
+            CheckRoutes(p, roots, log);
+
+            var written = 0;
+            foreach (var clip in p.clips)
+            {
+                WarnClip(p, clip, log);
+                if (WriteClip(p.carpeta, clip, log)) written++;
+            }
+
+            log.Add(p.id + ": " + written + "/" + p.clips.Length + " clips reescritos en " + p.carpeta);
+        }
+    }
+
+    private static Type BindingType(CurvaDef curve)
+    {
+        return curve.tipo == "CanvasGroup" ? typeof(CanvasGroup) : typeof(RectTransform);
+    }
+
+    /// <summary>Un aviso por ruta y prefab (no por clip), con los clips que la usan.</summary>
+    private static void CheckRoutes(PersonajeClips p, List<KeyValuePair<string, Transform>> roots, List<string> log)
+    {
+        foreach (var root in roots)
+        {
+            var problems = new List<string>();
+            var users = new Dictionary<string, List<string>>();
+            foreach (var clip in p.clips)
+            {
+                foreach (var curve in clip.curvas)
+                {
+                    var node = root.Value.Find(curve.ruta);
+                    var problem = node == null
+                        ? "no existe la ruta «" + curve.ruta + "»"
+                        : node.GetComponent(BindingType(curve)) == null ? "«" + curve.ruta + "» no tiene " + curve.tipo : null;
+                    if (problem == null) continue;
+
+                    List<string> list;
+                    if (!users.TryGetValue(problem, out list))
+                    {
+                        list = new List<string>();
+                        users[problem] = list;
+                        problems.Add(problem);
+                    }
+
+                    if (!list.Contains(clip.archivo)) list.Add(clip.archivo);
+                }
+            }
+
+            foreach (var problem in problems)
+            {
+                log.Add("AVISO " + p.id + " en " + root.Key + ": " + problem + " (clips: " + string.Join(", ", users[problem].ToArray()) + ")");
+            }
+        }
+    }
+
+    /// <summary>Lo que se puede comprobar del clip sin tocar el asset: la acción, las claves y el cierre del bucle.</summary>
+    private static void WarnClip(PersonajeClips p, ClipDef clip, List<string> log)
+    {
+        if (!Enum.IsDefined(typeof(ActorAction), clip.accion))
+        {
+            log.Add("AVISO " + p.id + " " + clip.archivo + ": «" + clip.accion + "» no es un ActorAction (el controlador no tiene ese estado)");
+        }
+
+        foreach (var curve in clip.curvas)
+        {
+            var outside = new List<string>();
+            foreach (var key in curve.claves)
+            {
+                if (key[0] < -KeyTolerance || key[0] > clip.duracion + KeyTolerance) outside.Add(key[0].ToString(System.Globalization.CultureInfo.InvariantCulture));
+            }
+
+            if (outside.Count > 0)
+            {
+                log.Add("AVISO " + p.id + " " + clip.archivo + " " + curve.ruta + " " + curve.propiedad
+                    + ": clave fuera de [0, " + clip.duracion + "] en t=" + string.Join(", ", outside.ToArray()));
+            }
+
+            if (clip.bucle)
+            {
+                var first = curve.claves[0][1];
+                var last = curve.claves[curve.claves.Length - 1][1];
+                var gap = last - first;
+                if (curve.propiedad == "localEulerAnglesRaw.z") gap = Mathf.Repeat(gap + 180f, 360f) - 180f; // una vuelta entera (Spin) sí cierra
+                if (Mathf.Abs(gap) > 1e-3f)
+                {
+                    log.Add("AVISO " + p.id + " " + clip.archivo + " " + curve.ruta + " " + curve.propiedad + ": el bucle no cierra (" + first + " → " + last + ")");
+                }
+            }
+        }
+    }
+
+    /// <summary>AnimationCurve con tangentes ClampedAuto, como en BuildRigs.</summary>
+    private static AnimationCurve Build(float[][] keys)
+    {
+        var frames = new Keyframe[keys.Length];
+        for (var i = 0; i < keys.Length; i++) frames[i] = new Keyframe(keys[i][0], keys[i][1]);
+        var curve = new AnimationCurve(frames);
+        for (var i = 0; i < curve.length; i++)
+        {
+            AnimationUtility.SetKeyLeftTangentMode(curve, i, AnimationUtility.TangentMode.ClampedAuto);
+            AnimationUtility.SetKeyRightTangentMode(curve, i, AnimationUtility.TangentMode.ClampedAuto);
+        }
+
+        return curve;
+    }
+
+    private static bool WriteClip(string folder, ClipDef def, List<string> log)
+    {
+        var path = folder + "/" + def.archivo + ".anim";
+        var clip = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
+        if (clip == null)
+        {
+            log.Add("FALTA el clip " + path + ": no se crea (no se tocan ni controladores ni GUID)");
+            return false;
+        }
+
+        var frameRate = clip.frameRate;
+        var events = AnimationUtility.GetAnimationEvents(clip);
+        var settings = AnimationUtility.GetAnimationClipSettings(clip);
+        clip.ClearCurves();
+        clip.frameRate = frameRate > 0f ? frameRate : Fps;
+        foreach (var c in def.curvas)
+        {
+            var binding = EditorCurveBinding.FloatCurve(c.ruta, BindingType(c), c.propiedad);
+            AnimationUtility.SetEditorCurve(clip, binding, Build(c.claves));
+        }
+
+        if (settings.loopTime != def.bucle)
+        {
+            log.Add("AVISO " + def.archivo + ": loopTime del asset (" + settings.loopTime + ") difiere del diseñado (" + def.bucle + "); se conserva el del asset");
+        }
+
+        settings.stopTime = def.duracion; // loopTime, eventos y fotogramas por segundo se conservan
+        AnimationUtility.SetAnimationClipSettings(clip, settings);
+        AnimationUtility.SetAnimationEvents(clip, events);
+        EditorUtility.SetDirty(clip);
+        return true;
+    }
+}

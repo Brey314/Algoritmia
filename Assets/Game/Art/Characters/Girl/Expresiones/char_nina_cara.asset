@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7e51bcb39a70d34aa8488d375e1a925, type: 3}
+  m_Name: char_nina_cara
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.CharacterFaceSet
+  <EyesNeutral>k__BackingField: {fileID: 21300000, guid: 0c63491e67a50734f963ac81f059fcf5, type: 3}
+  <EyesHappy>k__BackingField: {fileID: 0}
+  <EyesSurprised>k__BackingField: {fileID: 0}
+  <EyesWorried>k__BackingField: {fileID: 0}
+  <EyesFocused>k__BackingField: {fileID: 0}
+  <EyesSleeping>k__BackingField: {fileID: 0}
+  <EyesBlinkHalf>k__BackingField: {fileID: 0}
+  <EyesBlinkClosed>k__BackingField: {fileID: 0}
+  <MouthClosed>k__BackingField: {fileID: 21300000, guid: 2a6e48fb05cd44348b452908801813b4, type: 3}
+  <MouthA>k__BackingField: {fileID: 0}
+  <MouthE>k__BackingField: {fileID: 0}
+  <MouthU>k__BackingField: {fileID: 0}
+  <MouthHappy>k__BackingField: {fileID: 0}
+  <MouthSurprised>k__BackingField: {fileID: 0}
+  <MouthWorried>k__BackingField: {fileID: 0}
+  <MouthFocused>k__BackingField: {fileID: 0}
+  <BlinkInterval>k__BackingField: 3.5
+  <BlinkJitter>k__BackingField: 1.2
+  <BlinkSeconds>k__BackingField: 0.12
+  <FlapSeconds>k__BackingField: 0.09

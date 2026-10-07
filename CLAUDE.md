@@ -43,7 +43,7 @@ Además de los slices corre el **carril de arte y sonido** —toca `Assets/Game/
 25/09/2026)—, así que se pisa con los tres primeros slices. Lo que lleva hecho, archivo por archivo, está en
 `claudeDocs/tasks/Slice 3/Props-y-Sonidos-Resultados.md`; los personajes animados, que además tocan
 `Game.Scaffolding`, `Game.UI`, los tres niveles, las 18 narrativas y las cinco escenas jugables, en
-`claudeDocs/tasks/Personajes/Personajes-Resultados.md`. Una regla suya que no caduca: los cuadros
+`claudeDocs/tasks/Personajes/Personajes-Resultados.md`; lo que sigue —personajes finales, perfiles, expresiones, habla— está planeado en `Plan-Personajes-Finales.md` (02/10/2026): su Fase 2–3 está hecha desde el 05/10/2026 (rig articulado, caras y clips; `Personajes-Resultados.md`, Anexo C) y del arte final ha entrado el frontal del Niño (`d127ec9`, 05/10/2026) y el de Papá, Mamá y Niña (entrega del 06/10/2026, `Personajes-Resultados.md`, C.10): falta Algoritm; los perfiles, el retrato animado y las emociones en las narrativas siguen sin ejecutar. Una regla suya que no caduca: los cuadros
 de las animaciones del fuego y del humo conservan los nombres de entrega (`fuego_cenital_nivel_1_0000.png`, no
 el `prop_n1_…` de `Direccion_de_Arte.md`) y los referencia la curva del `.anim`: renombrarlos es
 trabajo del motor.
@@ -102,6 +102,8 @@ una sola textura (`prop_n2_tronco_textura`) y lee el giro que ya le dan `RollMot
 La vista vive en `N2_TroncoRodante.asset` y se engancha con `NarrativeProp.Rolling` en las
 narrativas y `WheelLevelConfig.LogLook` en el bosque — sin cámara ni modelo 3D.
 
+**Los props proyectan su sombra con `PropShadow`** (`Game.Scaffolding`, 02/10/2026): una elipse negra al 25 % anclada al suelo que se encoge y se aclara cuando el objeto se alza (`LiftAndRoll`/`LiftAndStay`) y no gira con él. Excluye por nombre las siluetas (`*silueta*`) y la balsa (`*balsa*`); la enganchan `NarrativeSceneController` y los controladores del bosque, el taller y el río.
+
 **Cuántas fases tiene cada nivel** lo fija `PhaseId.PhasesPerLevel = { 1, 3, 3 }` — el Nivel 3 son
 tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **Al consumir
 `PlayerProfile`:** `ConfirmPhase(LevelId, int, …)` no existe; se pasa un `PhaseId` (`Game.Core`).
@@ -111,7 +113,7 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | Archivo | Qué contiene |
 |---|---|
 | `claudeDocs/SPEC.md` | **El contrato.** Mapa de módulos, arquitectura, estructura de carpetas, estilo, estrategia de pruebas, límites (Siempre / Preguntar primero / Nunca), supuestos y preguntas abiertas. |
-| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` —y entre ellos y el juego— con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. **`INC-01`..`INC-130` están cerrados** (rev. 16, 01/10/2026): ante un conflicto ganó el juego y se editó el documento, lo que solo pedía el documento se implementó y lo que solo tenía el juego se añadió al documento; `INC-115`..`INC-117` son la excepción, decisiones de Santiago de corregir el juego. `INC-118`..`INC-130` recogen la sesión del 30/09 (acta D10) y el peso del paquete (RNF-06). **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`): una llama con extremidades, recoloreada en madera y agua (`INC-52`)— rigen para todo texto y asset nuevo. Solo siguen abiertos `PG-05` y `PG-06` del guion, que exigen observar a estudiantes jugando, tres **pendientes de Santiago** del trabajo de grado (Anexo G con la autorización de la Familia Anonaky, herramientas de ilustración, colaboración en el arte) que no se redactan sin su dato y uno del carril de sonido (el silencio S3 de la escena final): están en «Residuos y puntos abiertos». |
+| `claudeDocs/INCONSISTENCIAS.md` | Los conflictos entre los `.docx` —y entre ellos y el juego— con la corrección aplicada a cada uno. Documento hermano de `SPEC.md`. **`INC-01`..`INC-133` están cerrados** (rev. 19, 06/10/2026): ante un conflicto ganó el juego y se editó el documento, lo que solo pedía el documento se implementó y lo que solo tenía el juego se añadió al documento; `INC-115`..`INC-117` son la excepción, decisiones de Santiago de corregir el juego, e `INC-131` (05/10/2026) también: levanta `INC-108` para el arte final (seis expresiones, rig con codos y rodillas); `INC-132` (05/10/2026), igual, fija el orden de dibujo de los brazos: en la familia, detrás del torso y delante de la cabeza, salvo al golpear (`Strike`), cuando pasan delante del torso (`ArmLayering`); en Algoritm, delante del cuerpo y con las manos encima de la cara; `INC-133` (06/10/2026) la acota en la familia: el húmero queda detrás del torso y el antebrazo se dibuja delante del torso, de la cara y de las piernas. `INC-118`..`INC-130` recogen la sesión del 30/09 (acta D10) y el peso del paquete (RNF-06). **Algoritm** (el guía, `INC-44`) y sus tres formas por nivel —fuego, rueda, gota (`INC-45`): una llama con extremidades, recoloreada en madera y agua (`INC-52`)— rigen para todo texto y asset nuevo. Solo siguen abiertos `PG-05` y `PG-06` del guion, que exigen observar a estudiantes jugando, tres **pendientes de Santiago** del trabajo de grado (Anexo G con la autorización de la Familia Anonaky, herramientas de ilustración, colaboración en el arte) que no se redactan sin su dato y uno del carril de sonido (el silencio S3 de la escena final): están en «Residuos y puntos abiertos». |
 | `claudeDocs/Direccion_de_Arte.md` | **La ley visual.** Paleta, grosor de línea, sombreado, personajes, entornos por nivel, UI, tipografía, VFX, nomenclatura de archivos (`char_`, `prop_`, `env_`, `ui_`) y checklist de aceptación (§17). Obligatorio antes de crear o generar cualquier asset visual; subordinado a `SPEC.md`, no introduce mecánicas. |
 | `claudeDocs/Direccion_de_Musica_y_Sonido.md` | **La ley del audio.** Hermano de la dirección de arte: cinco pilares (ningún sonido de fallo, §2.1, es CP-02 en el oído), cuatro buses bajo `AudioManager`, nomenclatura `mus_`/`amb_`/`sfx_`, los tres silencios del guion como piezas con disparador (§5) y el inventario de 104 piezas por nivel. **Qué piezas están cableadas lo dice su §19**, no este archivo: estar en `Assets/Game/Audio/` no es estar aplicado —una pieza suena solo si la referencia un asset (`N1_Sonidos`, `N2_Sonidos`, los `N*_*.asset`)—, y los puntos `PS-*` abiertos están en el mismo documento. |
 | `claudeDocs/Interfaces.md` | **Las pantallas.** Inventario de las superficies de interfaz con su escena, el RF que traza y su estado en código, más el estilo de personaje que se le pasa al generador de imágenes. Subordinado a `Direccion_de_Arte.md`; no introduce mecánicas ni requisitos. |
@@ -121,7 +123,7 @@ tres (base · amarre · mástil y vela) y su recolección **no se persiste**. **
 | `claudeDocs/Mockups de interfaz Algoritmia.html` | **Los mockups de pantalla**, numerados desde el 2 (no hay mockup 1). Los `todo.md` y los documentos de cámara los citan por número («mockup 7 · Nivel 1 · encendido»); es la referencia de disposición de una escena antes de tocar el `.unity`. |
 | `claudeDocs/tasks/Slice N/plan.md` + `todo.md` | **El trabajo en curso.** `plan.md` es el plan técnico del slice (alcance, grafo de dependencias, tareas); `todo.md` es el tablero con casillas y checkpoints. **Los `plan.md` no se reescriben**, así que sus avisos de precondición («los Slices 1 y 2 no están hechos», «`Assets/` sigue sin código») están vencidos; lo que sigue valiendo de ellos es qué pieza previa generaliza cada tarea. Ninguno rediscute `SPEC.md`. |
 | `docs/*.docx` + `docs/md/*.md` | Fuentes del trabajo de grado: requerimientos, guion, casos de uso, historias y arquitectura. El `.docx` es el original radicado; el `.md` del mismo nombre en `docs/md/` es su conversión con markitdown. **Nunca editar ninguno de los dos desde código** sin la autorización expresa de Santiago para ese cambio; con ella se editaron los radicados del 29/09 al 01/10/2026, cada uno con su fila fechada en el control de cambios, y el trabajo de grado se redacta por Word COM (PowerShell + `Word.Application`). |
-| `docs/actas/OE3/Acta_D*_*.md` | **Las actas de seguimiento, rehechas** (`D01` 02/09 … `D10` 30/09/2026): qué se decidió, cuándo y por qué, y **el tablero Kanban vive en su §6**, no en un archivo aparte. Siguen en `.gitignore` —existen en este equipo y no en un clon—, así que se perdieron una vez y pueden volver a perderse; su versión en Word vive en el SharePoint de Santiago, y por eso el entregable del OE3 ya no las anexa. La serie `OE2/` (`O01..O03`) **no** se rehizo: al leer hacia atrás **las tarjetas se renumeran con la serie del acta que las abrió** —`O03-1` aparece como `D01-1` después—, así que una tarjeta se rastrea por su texto y no por su id, y el *porqué* de lo decidido antes del 02/09 se busca en los `.docx` y en `INCONSISTENCIAS.md`. En las actas hay **dos Santiagos**: «Santiago» a secas en este archivo es Santiago Benavides Rey; Santiago Valdiri García es el otro estudiante (Slice 4, entorno del N3, fogata del cierre del N2). |
+| `docs/actas/OE3/Acta_D*_*.md` | **Las actas de seguimiento, rehechas** (`D01` 02/09 … `D10` 30/09/2026): qué se decidió, cuándo y por qué, y **el tablero Kanban vive en su §6**, no en un archivo aparte. Están versionadas desde `31483e6` (antes estuvieron en `.gitignore` y se perdieron una vez); su versión en Word vive en el SharePoint de Santiago, y por eso el entregable del OE3 ya no las anexa. La serie `OE2/` (`O01..O05`; la O04 y la O05 estuvieron en `OE1/` con nombre de R) **no** se rehizo: al leer hacia atrás **las tarjetas se renumeran con la serie del acta que las abrió** —las de la O03 siguen siendo `O03-n` y las de la D01 son `D01-n`—, así que una tarjeta se rastrea por su texto y no por su id, y el *porqué* de lo decidido antes del 02/09 se busca en los `.docx` y en `INCONSISTENCIAS.md`. En las actas hay **dos Santiagos**: «Santiago» a secas en este archivo es Santiago Benavides Rey; Santiago Valdiri García es el otro estudiante (Slice 4, entorno del N3, fogata del cierre del N2). |
 | `docs/OE3/` + `claudeDocs/entregables/OE3/` | **El entregable del OE3 y su generador.** `docs/OE3/` guarda lo publicado: `Solucion_OE3_Prototipo_funcional.docx`, capturas en `fig/` (LFS) y **un `.docx` por anexo** —A matriz RF → pruebas (CT-10), B las cinco fases del Slice 1, C Slice 2, D Slice 3, E arte y sonido, F personajes, G Slice 4—. **No hay Anexo H**: las actas están en Word en el SharePoint de Santiago. **El entregable se reescribe al estado vigente del prototipo** (acta D10), lo que deja sin efecto la decisión D1 del 29/09 de darle solo una nota fechada. El generador se recuperó y está versionado en `claudeDocs/entregables/OE3/`: los capítulos en `src/`, los anexos B–G en `src/anexos/` y `tools/` con `build.py` (pandoc más `word_finalize.ps1` por Word COM, con la plantilla de estilos del OE2 extraída de `127fbc4` para que el aspecto no cambie) y `rf_matrix.py`, que escribe el Anexo A desde los nombres de las pruebas (`--worktree` cuenta las del árbol de trabajo). `python claudeDocs/entregables/OE3/tools/build.py` arma los ocho `.docx` en `build/` (ignorado) y corre las guardas —sin «§», sin Anexo H, las tablas que cita el trabajo de grado, figuras descargadas de LFS—; **solo `--publish`**, si pasan, los copia a `docs/OE3/`. Se edita `src/` y se publica: los `.docx` de `docs/OE3/` no se tocan a mano. |
 
 `SPEC.md` es la fuente de verdad para cualquier duda de alcance o diseño; este archivo no la
@@ -205,7 +207,11 @@ no las hace:
    explícitamente o el grafo se queda sin los documentos radicados — que es justo lo que le pasa a
    la foto vigente. (Las exclusiones sí sobreviven a un clon: `.graphifyignore` está **versionado**
    desde `2cbe287` y sus comentarios explican cada línea —`Packages/`, `Assets/Game/Art/**/*.png`,
-   `Assets/Game/Audio/**`—; leerlo antes de tocarlo, no reescribirlo de memoria.)
+   `Assets/Game/Audio/**` y, desde el 06/10/2026, los `*.png` y `*.txt` de
+   `claudeDocs/tasks/OE4/evidencias/` (262 capturas = 262 subagentes de visión, y logs de Editor de
+   hasta 5,7 MB; los `.md` y `.json` de esa carpeta sí entran)—; leerlo antes de tocarlo, no
+   reescribirlo de memoria. **Antes de lanzar subagentes en un `--update`, mirar cuántas imágenes y
+   documentos trae el recuento**: una carpeta de evidencias nueva se cuela entera.)
 2. El AST crea un **nodo-stub por archivo** para cada símbolo externo (`…_cs_button`,
    `…_cs_recttransform`): unos 500 nodos de `UnityEngine`/`System`/NUnit que inflan el grado de los
    controladores. Se podan con esta regla, que no necesita lista de tipos: un stub sin
@@ -286,13 +292,17 @@ Todo pasa por el Editor de Unity: sus MCP (`mcp__coplay-mcp__*` para escenas y a
   `Temp/claude-active` antes de cada llamada (`ClaudeSceneAutosave`); se niega a correr pruebas con
   escenas sucias —nunca pulsa el diálogo— o con errores de compilación vigentes, porque Unity
   conservaría los assemblies viejos y saldría un verde falso (tras editar código, `recompile`); y un
-  mutex rechaza una segunda invocación que modifique el Editor. `tests-play` fija la Game View a
+  mutex por proyecto rechaza una segunda invocación que modifique el mismo Editor. `tests-play` fija la Game View a
   1920×1080 —sin ella fallan las pruebas de disposición— y abre `Boot` antes; PlayMode se sondea por
   `Temp/pipeline_test_status.json`, porque durante la recarga de dominio el HTTP no responde. Salidas:
   0 bien, 1 fallos, 2 infraestructura, 3 guarda (no tocó nada); resultados en
   `%TEMP%\Algoritmia-editor-runs` o `-Out`. Si una corrida se interrumpe, `exec cancel_tests`, y
   `exec editor_stop` si quedó en Play. `exec build` compila el ejecutable sin cerrar el Editor, pero
   ignora `output_path` y deja la salida en `Builds/StandaloneWindows64/`: se mueve a `Build/Algoritmia/`.
+- **Cómo y cuándo correr las pruebas lo fija `claudeDocs/tasks/OE4/NORMA-PRUEBAS.md`**, con los comandos
+  listos para lanzar. La suite completa es un comando en segundo plano, `herramientas/suite2.ps1`, que
+  la reparte entre el Editor del proyecto y el de una copia desechable (`C:\Dev\Algoritmia-B`, que se
+  sincroniza sola) y la cruza con `list_tests`: 21 min frente a ~30 en un solo Editor.
 - **Si la API del pipeline no responde**, queda un camino más que tampoco obliga a cerrar
   el Editor: un script `[InitializeOnLoad]` efímero **dentro del proyecto** que re-registra
   `TestRunnerApi.RegisterCallbacks` tras cada recarga de dominio y escribe el resultado a un
@@ -350,12 +360,12 @@ clave del registro del reproductor viven en `…\LocalLow\Universidad Catolica d
 y `HKCU\Software\Universidad Catolica de Colombia\Algoritmia`. Los `.docx` traen espacios y paréntesis en el
 nombre: sin comillas, cualquier comando de shell falla o toca el archivo equivocado.
 
-`docs/md/`, `graphify-out/`, `docs/actas/` y `claudeDocs/tasks/Sprites/` están en `.gitignore`:
-existen en este equipo pero no en un clon limpio. Los dos primeros se rehacen solos —las
-conversiones con markitdown, el grafo con `/graphify`—; los otros dos están **escritos a mano y ya
-se perdieron una vez** (20/09/2026). Las actas se rehicieron; los inventarios de cámara no. Por eso
-cualquier documento nuevo que no salga de un `.docx` ni de un generador va a `claudeDocs/`, que sí
-se versiona. Sacar las actas del `.gitignore` es **decisión pendiente de Santiago**.
+`docs/md/`, `graphify-out/` y `claudeDocs/tasks/Sprites/` están en `.gitignore`: existen en este
+equipo pero no en un clon limpio. Los dos primeros se rehacen solos —las conversiones con markitdown,
+el grafo con `/graphify`—; el tercero está **escrito a mano y ya se perdió una vez** (20/09/2026),
+como las actas, que se rehicieron y desde `31483e6` están versionadas en `docs/actas/`; los
+inventarios de cámara no se rehicieron. Por eso cualquier documento nuevo que no salga de un `.docx`
+ni de un generador va a `claudeDocs/`, que sí se versiona.
 
 ## Workflow: plugin unity-coding-skills
 
@@ -440,9 +450,9 @@ antes de escribir la primera línea:
   personaje es un `NarrativeProp` con `Actor` y `Beats` —hereda casilla, orden de dibujo y la
   prueba del cuadro de diálogo— y `ActorTimeline` (C# plano) decide qué hace en cada línea. En las
   mecánicas, cada controlador llama `Play`/`PlayFor` en sus puntos de enganche; tras un fallo,
-  `Encourage` y nunca otra cosa (CP-02). **Reconstruir un prefab de personaje cambia sus fileID y
+  `Encourage` y nunca otra cosa (CP-02). **Desde el 05/10/2026 el rig tiene además codos, rodillas, cuello (no Algoritm), cabeza, ojos y boca como nodos y capas apagadas hasta el arte final (INC-131); `CharacterFace` gobierna expresión, parpadeo y habla, y para el arte nuevo se corre `preparar_arte_final.py` y luego los modos `sprites`, `orden` y `clips` de `BuildRigsFinal.cs.txt` (en ese orden); la coreografía vive en `coreografia.py` → `clips_personajes.json`; `ArmLayering` (INC-132, C# plano) pasa los brazos de la familia —que van detrás del torso— delante de él mientras golpean y los devuelve al orden con que nació `Tronco`: solo mueve `BrazoIzq`/`BrazoDer` por nombre, así que ningún fileID ni curva de clip cambia. Desde INC-133 (06/10/2026) el antebrazo de la familia es hijo de `Tronco`, al final, y sigue a `AnclaAntebrazoX` (bajo `CodoX`) mediante `LimbFollower`, y Papá lleva `Cuello` tras `Torso`. Las caras de la familia se colocan por registro (`preparar_expresion.py --registrada`) y el arte de cada personaje se reparte en `Frontal/`, `Expresiones/` y `Perfil/`.** **Reconstruir un prefab de personaje cambia sus fileID y
   rompe las referencias** de las escenas y los 18 assets: para retocar animaciones se reescriben
-  los clips (`claudeDocs/tasks/Personajes/`).
+  los clips (`claudeDocs/tasks/Personajes/`). `CharacterRig` se re-sincroniza en `OnEnable`/`Start` (`Play` + `Update(0)`) para que reactivar la jerarquía no deje un cuadro en pose en T: la primera acción se aplica seca y las siguientes con `CrossFade`.
 - **Interfaz inyectada donde hay un consumidor conocido; evento solo con varios oyentes.** No hay
   `EventBus` global.
 - **Solo tres singletons con `DontDestroyOnLoad`**: `GameFlowRunner`, `SceneLoader`, `AudioManager`

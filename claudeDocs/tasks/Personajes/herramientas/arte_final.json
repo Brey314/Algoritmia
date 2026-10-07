@@ -1,0 +1,513 @@
+{
+  "version": 1,
+  "nota": "Medidas del arte final de cada personaje de la familia (lienzo de 1024, origen arriba a la izquierda, y hacia abajo). Las escribe preparar_arte_final.py --aplicar a partir de las piezas entregadas (o se editan a mano) y las lee articulaciones.py: quien tiene entrada aqui NO sale de las formulas del arte provisional. 'nodos' y 'partes' tienen la forma de rig_articulaciones.json.",
+  "personajes": {
+    "nino": {
+      "nodos": [
+        {
+          "nombre": "CodoIzq",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco/BrazoIzq",
+          "punto": [386, 620],
+          "imagen": "AntebrazoIzq",
+          "sprite": "char_nino_parte_antebrazo_izq",
+          "rect": [215, 595, 410, 708]
+        },
+        {
+          "nombre": "CodoDer",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco/BrazoDer",
+          "punto": [642, 612],
+          "imagen": "AntebrazoDer",
+          "sprite": "char_nino_parte_antebrazo_der",
+          "rect": [617, 587, 814, 687]
+        },
+        {
+          "nombre": "RodillaIzq",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/PiernaIzq",
+          "punto": [483, 845],
+          "imagen": "AntepiernaIzq",
+          "sprite": "char_nino_parte_antepierna_izq",
+          "rect": [407, 813, 505, 947]
+        },
+        {
+          "nombre": "RodillaDer",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/PiernaDer",
+          "punto": [558, 842],
+          "imagen": "AntepiernaDer",
+          "sprite": "char_nino_parte_antepierna_der",
+          "rect": [535, 810, 640, 944]
+        },
+        {
+          "nombre": "Cuello",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco",
+          "punto": [492, 533],
+          "imagen": "Cabeza",
+          "sprite": "char_nino_parte_cabeza",
+          "rect": [224, 77, 759, 533]
+        },
+        {
+          "nombre": "CaraBase",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [506, 398],
+          "imagen": "CaraBase",
+          "sprite": "char_nino_cara_base",
+          "rect": [331, 263, 681, 533]
+        },
+        {
+          "nombre": "Ojos",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [506, 398],
+          "imagen": "Ojos",
+          "sprite": "char_nino_ojos_neutra",
+          "rect": [331, 263, 681, 533]
+        },
+        {
+          "nombre": "Boca",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [506, 398],
+          "imagen": "Boca",
+          "sprite": "char_nino_boca_0",
+          "rect": [331, 263, 681, 533]
+        }
+      ],
+      "partes": [
+        {
+          "nombre": "BrazoIzq",
+          "ruta": "Lienzo/Cuerpo/Tronco/BrazoIzq",
+          "sprite": "char_nino_parte_brazo_izq",
+          "rect": [362, 539, 518, 644],
+          "pivote": [463, 561]
+        },
+        {
+          "nombre": "BrazoDer",
+          "ruta": "Lienzo/Cuerpo/Tronco/BrazoDer",
+          "sprite": "char_nino_parte_brazo_der",
+          "rect": [507, 536, 674, 635],
+          "pivote": [559, 558]
+        },
+        {
+          "nombre": "PiernaIzq",
+          "ruta": "Lienzo/Cuerpo/PiernaIzq",
+          "sprite": "char_nino_parte_pierna_izq",
+          "rect": [438, 723, 511, 876],
+          "pivote": [474, 723]
+        },
+        {
+          "nombre": "PiernaDer",
+          "ruta": "Lienzo/Cuerpo/PiernaDer",
+          "sprite": "char_nino_parte_pierna_der",
+          "rect": [522, 725, 596, 869],
+          "pivote": [559, 725]
+        },
+        {
+          "nombre": "Torso",
+          "ruta": "Lienzo/Cuerpo/Tronco/Torso",
+          "sprite": "char_nino_parte_torso",
+          "rect": [367, 527, 657, 799],
+          "pivote": [512, 799]
+        }
+      ],
+      "holguras": {
+        "CodoIzq": 5.3,
+        "RodillaIzq": 8.6,
+        "CodoDer": 4.9,
+        "RodillaDer": 10.8
+      },
+      "registro": {
+        "lienzo": [1300, 1500],
+        "escala": 0.780269,
+        "tx": 7.166,
+        "ty": -127.43,
+        "cabeza": [278, 262, 964, 847],
+        "cara": [415, 501, 864, 847]
+      }
+    },
+    "papa": {
+      "nodos": [
+        {
+          "nombre": "CodoIzq",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco/BrazoIzq",
+          "punto": [326, 588],
+          "imagen": "AntebrazoIzq",
+          "sprite": "char_papa_parte_antebrazo_izq",
+          "rect": [178, 543, 376, 718]
+        },
+        {
+          "nombre": "CodoDer",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco/BrazoDer",
+          "punto": [672, 574],
+          "imagen": "AntebrazoDer",
+          "sprite": "char_papa_parte_antebrazo_der",
+          "rect": [637, 542, 835, 717]
+        },
+        {
+          "nombre": "RodillaIzq",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/PiernaIzq",
+          "punto": [499, 802],
+          "imagen": "AntepiernaIzq",
+          "sprite": "char_papa_parte_antepierna_izq",
+          "rect": [375, 765, 514, 947]
+        },
+        {
+          "nombre": "RodillaDer",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/PiernaDer",
+          "punto": [545, 799],
+          "imagen": "AntepiernaDer",
+          "sprite": "char_papa_parte_antepierna_der",
+          "rect": [532, 762, 671, 944]
+        },
+        {
+          "nombre": "Cuello",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco",
+          "punto": [513, 415],
+          "imagen": "Cabeza",
+          "sprite": "char_papa_parte_cabeza",
+          "rect": [322, 77, 700, 530]
+        },
+        {
+          "nombre": "CaraBase",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [515, 351],
+          "imagen": "CaraBase",
+          "sprite": "char_papa_cara_base",
+          "rect": [393, 241, 638, 461]
+        },
+        {
+          "nombre": "Ojos",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [515, 351],
+          "imagen": "Ojos",
+          "sprite": "char_papa_ojos_neutra",
+          "rect": [393, 241, 638, 461]
+        },
+        {
+          "nombre": "Boca",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [515, 351],
+          "imagen": "Boca",
+          "sprite": "char_papa_boca_0",
+          "rect": [393, 241, 638, 461]
+        }
+      ],
+      "partes": [
+        {
+          "nombre": "BrazoIzq",
+          "ruta": "Lienzo/Cuerpo/Tronco/BrazoIzq",
+          "sprite": "char_papa_parte_brazo_izq",
+          "rect": [296, 457, 478, 612],
+          "pivote": [406, 477]
+        },
+        {
+          "nombre": "BrazoDer",
+          "ruta": "Lienzo/Cuerpo/Tronco/BrazoDer",
+          "sprite": "char_papa_parte_brazo_der",
+          "rect": [537, 457, 700, 601],
+          "pivote": [611, 477]
+        },
+        {
+          "nombre": "PiernaIzq",
+          "ruta": "Lienzo/Cuerpo/PiernaIzq",
+          "sprite": "char_papa_parte_pierna_izq",
+          "rect": [455, 661, 518, 838],
+          "pivote": [486, 661]
+        },
+        {
+          "nombre": "PiernaDer",
+          "ruta": "Lienzo/Cuerpo/PiernaDer",
+          "sprite": "char_papa_parte_pierna_der",
+          "rect": [526, 662, 589, 839],
+          "pivote": [558, 662]
+        },
+        {
+          "nombre": "Torso",
+          "ruta": "Lienzo/Cuerpo/Tronco/Torso",
+          "sprite": "char_papa_parte_torso",
+          "rect": [414, 415, 611, 780],
+          "pivote": [512, 780]
+        }
+      ],
+      "holguras": {
+        "CodoIzq": 42.0,
+        "RodillaIzq": 13.6,
+        "CodoDer": 20.9,
+        "RodillaDer": 13.3
+      },
+      "registro": {
+        "lienzo": [1300, 1500],
+        "escala": 0.597938,
+        "tx": 136.794,
+        "ty": 60.258,
+        "cabeza": [309, 28, 941, 786],
+        "cara": [429, 302, 838, 670]
+      }
+    },
+    "nina": {
+      "nodos": [
+        {
+          "nombre": "CodoIzq",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco/BrazoIzq",
+          "punto": [384, 596],
+          "imagen": "AntebrazoIzq",
+          "sprite": "char_nina_parte_antebrazo_izq",
+          "rect": [206, 579, 408, 701]
+        },
+        {
+          "nombre": "CodoDer",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco/BrazoDer",
+          "punto": [649, 602],
+          "imagen": "AntebrazoDer",
+          "sprite": "char_nina_parte_antebrazo_der",
+          "rect": [626, 585, 828, 707]
+        },
+        {
+          "nombre": "RodillaIzq",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/PiernaIzq",
+          "punto": [477, 833],
+          "imagen": "AntepiernaIzq",
+          "sprite": "char_nina_parte_antepierna_izq",
+          "rect": [377, 796, 497, 942]
+        },
+        {
+          "nombre": "RodillaDer",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/PiernaDer",
+          "punto": [537, 836],
+          "imagen": "AntepiernaDer",
+          "sprite": "char_nina_parte_antepierna_der",
+          "rect": [518, 799, 638, 947]
+        },
+        {
+          "nombre": "Cuello",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco",
+          "punto": [509, 483],
+          "imagen": "Cabeza",
+          "sprite": "char_nina_parte_cabeza",
+          "rect": [242, 77, 762, 558]
+        },
+        {
+          "nombre": "CaraBase",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [505, 405],
+          "imagen": "CaraBase",
+          "sprite": "char_nina_cara_base",
+          "rect": [341, 295, 670, 515]
+        },
+        {
+          "nombre": "Ojos",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [505, 405],
+          "imagen": "Ojos",
+          "sprite": "char_nina_ojos_neutra",
+          "rect": [341, 295, 670, 515]
+        },
+        {
+          "nombre": "Boca",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [505, 405],
+          "imagen": "Boca",
+          "sprite": "char_nina_boca_0",
+          "rect": [341, 295, 670, 515]
+        }
+      ],
+      "partes": [
+        {
+          "nombre": "BrazoIzq",
+          "ruta": "Lienzo/Cuerpo/Tronco/BrazoIzq",
+          "sprite": "char_nina_parte_brazo_izq",
+          "rect": [362, 515, 510, 615],
+          "pivote": [451, 531]
+        },
+        {
+          "nombre": "BrazoDer",
+          "ruta": "Lienzo/Cuerpo/Tronco/BrazoDer",
+          "sprite": "char_nina_parte_brazo_der",
+          "rect": [521, 518, 669, 618],
+          "pivote": [577, 534]
+        },
+        {
+          "nombre": "PiernaIzq",
+          "ruta": "Lienzo/Cuerpo/PiernaIzq",
+          "sprite": "char_nina_parte_pierna_izq",
+          "rect": [436, 674, 502, 858],
+          "pivote": [469, 674]
+        },
+        {
+          "nombre": "PiernaDer",
+          "ruta": "Lienzo/Cuerpo/PiernaDer",
+          "sprite": "char_nina_parte_pierna_der",
+          "rect": [516, 675, 582, 858],
+          "pivote": [549, 675]
+        },
+        {
+          "nombre": "Torso",
+          "ruta": "Lienzo/Cuerpo/Tronco/Torso",
+          "sprite": "char_nina_parte_torso",
+          "rect": [387, 483, 636, 785],
+          "pivote": [512, 785]
+        }
+      ],
+      "holguras": {
+        "RodillaIzq": 12.1,
+        "CodoDer": 3.6,
+        "RodillaDer": 15.8
+      },
+      "registro": {
+        "lienzo": [1300, 1500],
+        "escala": 0.6201,
+        "tx": 99.634,
+        "ty": 68.319,
+        "cabeza": [229, 14, 1067, 790],
+        "cara": [389, 365, 920, 720]
+      }
+    },
+    "mama": {
+      "nodos": [
+        {
+          "nombre": "CodoIzq",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco/BrazoIzq",
+          "punto": [389, 606],
+          "imagen": "AntebrazoIzq",
+          "sprite": "char_mama_parte_antebrazo_izq",
+          "rect": [228, 590, 412, 706]
+        },
+        {
+          "nombre": "CodoDer",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco/BrazoDer",
+          "punto": [636, 615],
+          "imagen": "AntebrazoDer",
+          "sprite": "char_mama_parte_antebrazo_der",
+          "rect": [614, 599, 798, 715]
+        },
+        {
+          "nombre": "RodillaIzq",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/PiernaIzq",
+          "punto": [483, 839],
+          "imagen": "AntepiernaIzq",
+          "sprite": "char_mama_parte_antepierna_izq",
+          "rect": [395, 807, 505, 947]
+        },
+        {
+          "nombre": "RodillaDer",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/PiernaDer",
+          "punto": [545, 838],
+          "imagen": "AntepiernaDer",
+          "sprite": "char_mama_parte_antepierna_der",
+          "rect": [526, 805, 637, 943]
+        },
+        {
+          "nombre": "Cuello",
+          "tipo": "articulacion",
+          "padre": "Lienzo/Cuerpo/Tronco",
+          "punto": [509, 501],
+          "imagen": "Cabeza",
+          "sprite": "char_mama_parte_cabeza",
+          "rect": [307, 77, 714, 709]
+        },
+        {
+          "nombre": "CaraBase",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [508, 426],
+          "imagen": "CaraBase",
+          "sprite": "char_mama_cara_base",
+          "rect": [335, 313, 681, 540]
+        },
+        {
+          "nombre": "Ojos",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [508, 426],
+          "imagen": "Ojos",
+          "sprite": "char_mama_ojos_neutra",
+          "rect": [335, 313, 681, 540]
+        },
+        {
+          "nombre": "Boca",
+          "tipo": "imagen",
+          "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
+          "punto": [508, 426],
+          "imagen": "Boca",
+          "sprite": "char_mama_boca_0",
+          "rect": [335, 313, 681, 540]
+        }
+      ],
+      "partes": [
+        {
+          "nombre": "BrazoIzq",
+          "ruta": "Lienzo/Cuerpo/Tronco/BrazoIzq",
+          "sprite": "char_mama_parte_brazo_izq",
+          "rect": [376, 522, 518, 622],
+          "pivote": [463, 537]
+        },
+        {
+          "nombre": "BrazoDer",
+          "ruta": "Lienzo/Cuerpo/Tronco/BrazoDer",
+          "sprite": "char_mama_parte_brazo_der",
+          "rect": [511, 529, 653, 629],
+          "pivote": [563, 544]
+        },
+        {
+          "nombre": "PiernaIzq",
+          "ruta": "Lienzo/Cuerpo/PiernaIzq",
+          "sprite": "char_mama_parte_pierna_izq",
+          "rect": [442, 704, 504, 861],
+          "pivote": [473, 704]
+        },
+        {
+          "nombre": "PiernaDer",
+          "ruta": "Lienzo/Cuerpo/PiernaDer",
+          "sprite": "char_mama_parte_pierna_der",
+          "rect": [526, 707, 588, 864],
+          "pivote": [557, 707]
+        },
+        {
+          "nombre": "Torso",
+          "ruta": "Lienzo/Cuerpo/Tronco/Torso",
+          "sprite": "char_mama_parte_torso",
+          "rect": [410, 501, 615, 792],
+          "pivote": [512, 792]
+        }
+      ],
+      "holguras": {
+        "CodoIzq": 7.9,
+        "RodillaIzq": 13.0,
+        "CodoDer": 6.1,
+        "RodillaDer": 11.2
+      },
+      "registro": {
+        "lienzo": [1300, 1500],
+        "escala": 0.602493,
+        "tx": 130.019,
+        "ty": 69.168,
+        "cabeza": [294, 13, 970, 1062],
+        "cara": [340, 404, 914, 782]
+      }
+    }
+  }
+}
