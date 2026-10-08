@@ -145,6 +145,10 @@ namespace Game.Levels.Wheel
         [SerializeField] private Color softCharcoalColor = new Color(0.42f, 0.32f, 0.28f);
 
         [SerializeField]
+        [Tooltip("Contorno alrededor del entorno, como el marco del panel de diálogo (Dirección de arte §10.2): #C4A882.")]
+        private Color environmentBorderColor = new Color(0.769f, 0.659f, 0.510f);
+
+        [SerializeField]
         [Tooltip("Alto de un bloque desplegado (mockup: 112) y comprimido.")]
         private float expandedHeight = 112f;
 
@@ -407,7 +411,7 @@ namespace Game.Levels.Wheel
         {
             environment.enabled = environment.sprite != null;
             environment.preserveAspect = false;
-            environment.color = layout.LightTint;
+            environment.color = Color.white; // tal cual viene el arte, sin tinte de luz
             if (layout.EnvironmentMaterial != null)
             {
                 // Una copia por escena: tocar el contraste del asset compartido lo dejaría cambiado
@@ -419,15 +423,24 @@ namespace Game.Levels.Wheel
             }
 
             // Lo que la ilustración no llena —arriba y abajo, porque cabe entera sin recortar— se
-            // pinta del color de su borde y con la misma luz: el panel parece la continuación del
-            // entorno y no un marco de otro color.
+            // pinta del color de interfaz del asset (mismo marfil que los paneles, RF-30).
             var backdrop = environment.rectTransform.parent.GetComponent<Image>();
             if (backdrop != null)
             {
-                var color = layout.BackdropColor * layout.LightTint;
-                color.a = 1f;
-                backdrop.color = color;
+                backdrop.color = layout.BackdropColor;
             }
+
+            // El entorno lleva el mismo marco que el panel de diálogo (Dirección de arte §10.2).
+            var outline = environment.GetComponent<Outline>();
+            if (outline == null)
+            {
+                outline = environment.gameObject.AddComponent<Outline>();
+            }
+
+            outline.effectColor = environmentBorderColor;
+            outline.effectDistance = new Vector2(4f, -4f);
+            outline.enabled = true;
+
             var image = environment.sprite != null ? environment.sprite.rect.size : new Vector2(16f, 9f);
             var viewport = ((RectTransform)environment.rectTransform.parent).rect.size;
             var scale = Mathf.Min(viewport.x / image.x, viewport.y / image.y);
@@ -535,7 +548,7 @@ namespace Game.Levels.Wheel
             var image = Instantiate(cellTemplate, environment.rectTransform);
             image.name = name;
             image.sprite = art;
-            image.color = art != null ? layout.LightTint : fallback; // la misma luz que el entorno
+            image.color = art != null ? Color.white : fallback; // tal cual viene el arte, sin tinte
             image.preserveAspect = true;
             image.raycastTarget = false;
             Hang(image.rectTransform, cell);
@@ -550,7 +563,7 @@ namespace Game.Levels.Wheel
             if (image != null && layout.CartArt != null)
             {
                 image.sprite = layout.CartArt;
-                image.color = layout.LightTint;
+                image.color = Color.white;
             }
 
             cart.localRotation = Rotation(state.Facing);

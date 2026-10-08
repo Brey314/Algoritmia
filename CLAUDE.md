@@ -86,13 +86,16 @@ del Nivel 3 viven en **siete** `N3_*.asset` (el puente II pasa de la cueva al ho
 aparece tras el primer fallo— lo decide `ConditionalNarrativeTrigger` (C# plano,
 `Game.Scaffolding`), tampoco un `if` en el controlador.
 
-**El Nivel 2 dura un día y lo cuenta la luz, no el arte.** En las narrativas lo hace
-`NarrativeLight` (tinte y fondo del shader `fx_oscuridad`, que multiplica la ilustración):
-amanecer azulado en `N2_PuenteI`, tarde sin tinte en la recolección y el armado, atardecer en la
-2.4, y noche junto al fuego en la 2.5 y en el arranque de `N3_PuenteII`. En el laberinto, que no
-tiene esa capa, lo hace `MazeLayout.LightTint`, que tiñe el entorno y todo lo que cuelga de él.
-Lo vigilan `NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche` y
-`MazeScene_RF30_ElLaberintoEsAlAtardecer`. Las ilustraciones de 3840 de ancho (`env_n1_apertura`,
+**El Nivel 2 dura un día y lo cuenta la luz, no el arte** — salvo en el laberinto. En las
+narrativas lo hace `NarrativeLight` (tinte y fondo del shader `fx_oscuridad`, que multiplica la
+ilustración): amanecer azulado en `N2_PuenteI`, tarde sin tinte en la recolección y el armado,
+atardecer en la 2.4, y noche junto al fuego en la 2.5 y en el arranque de `N3_PuenteII`. Lo vigila
+`NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche`. **El laberinto (fase 3) no tiene
+esa capa y no se tiñe**: el entorno, la carretilla, el refugio y los obstáculos quedan tal cual
+viene el arte —decisión de Santiago, 07/10/2026, que rompe la continuidad de luz con la narrativa
+2.4 a cambio de un entorno fiel al dibujo—, y `MazeLayout.BackdropColor` pinta el panel que lo
+rodea con el marfil de interfaz (`#F7EFE2`), con un contorno `#C4A882` (`environmentBorderColor`
+en `MazeSceneController`) como el marco del panel de diálogo. Las ilustraciones de 3840 de ancho (`env_n1_apertura`,
 el bosque del N2) tienen una costura en x = 0,5 que ningún encuadre debe cruzar: lo avisa
 `IllustrationFraming.Warnings` en el `OnValidate` de la secuencia.
 

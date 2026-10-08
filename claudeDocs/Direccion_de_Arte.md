@@ -599,11 +599,11 @@ planos `#2E4258` con un reflejo de línea recta `#4A6B8C`.
 **Descubrimiento:** la rueda
 **Momento del día:** el día entero, del amanecer a la noche. Las ilustraciones se pintan con
 luz de día despejado y sin tinte, que es la de la tarde (recolección y construcción); el
-amanecer (puente I), el atardecer (escena 2.4 y laberinto) y la noche junto al fuego (escena
-2.5 y arranque del puente II) los pone el motor encima —`NarrativeLight` en las narrativas,
-`MazeLayout.LightTint` en el laberinto—, no el dibujo. Lo vigilan
-`NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche` y
-`MazeScene_RF30_ElLaberintoEsAlAtardecer`.
+amanecer (puente I), el atardecer (escena 2.4) y la noche junto al fuego (escena 2.5 y arranque
+del puente II) los pone el motor encima —`NarrativeLight`—, no el dibujo. Lo vigila
+`NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche`. El laberinto (fase 3) queda fuera
+de ese reloj: no se tiñe, y su entorno se ve tal cual el arte, con panel marfil `#F7EFE2` y
+contorno `#C4A882` (decisión de Santiago, 07/10/2026).
 **Sensación buscada:** claridad y espacio para observar, comparar y construir. Es el
 nivel más luminoso de los tres.
 

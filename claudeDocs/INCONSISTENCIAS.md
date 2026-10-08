@@ -1105,12 +1105,15 @@ SPEC dice que la capa de luz es solo del N1.
 `Direccion_de_Arte.md` §8 y §8.2; SPEC §Estados.
 
 **Qué hace el juego.** `NarrativeLight` tiñe de amanecer `N2_PuenteI`, deja sin tinte la tarde, pone
-atardecer en la 2.4 y noche junto al fuego en la 2.5 y el arranque de `N3_PuenteII`; en el laberinto
-lo hace `MazeLayout.LightTint`. Lo vigilan
-`NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche` y
-`MazeScene_RF30_ElLaberintoEsAlAtardecer`.
+atardecer en la 2.4 y noche junto al fuego en la 2.5 y el arranque de `N3_PuenteII`. Lo vigila
+`NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche`.
 
 **Regla (a).** Conflicto: gana el juego y se corrige el documento.
+
+**Nota (07/10/2026).** Decisión de Santiago: el laberinto (fase 3) sale de este reloj de luz.
+`MazeLayout.LightTint` se eliminó y `MazeScene_RF30_ElLaberintoEsAlAtardecer` se retiró; el
+entorno del laberinto queda tal cual el arte, sin tinte, con panel marfil `#F7EFE2` y contorno
+`#C4A882`. El resto de la narrativa del Nivel 2 sigue como se describe arriba.
 
 **Corrección aplicada (29/09/2026).** Documentos: OE2: §1.6; §1.6.1.1; §1.6.3.1; §1.6.3.2; §1.6.4;
 §1.7 · Dirección de arte: §8; §8.2 · SPEC: §Arquitectura › Estados.

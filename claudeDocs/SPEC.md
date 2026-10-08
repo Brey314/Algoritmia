@@ -255,8 +255,10 @@ con `CameraKey.HardCut`, `FlashSeconds` y `LightStart` en los `N*_*.asset`, sobr
 `Algoritm/Oscuridad`. En el Nivel 1 es la oscuridad de la cueva, y su progresión en la mecánica
 es `RF-21`, de prioridad Baja y acotado al nivel del fuego. En el Nivel 2 solo tiñe: el día pasa
 del amanecer a la noche (`N2_PuenteI` → `N2_Escena25_Cierre` y el arranque de `N3_PuenteII`,
-prueba `NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche`); en el laberinto, que no
-tiene esa capa, lo hace `MazeLayout.LightTint`. El diseño de los encuadres del N1 vive en
+prueba `NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche`); el laberinto, que no tiene
+esa capa, tampoco se tiñe (decisión de Santiago, 07/10/2026): el entorno queda tal cual el arte, y
+`MazeLayout.BackdropColor` pinta su panel con el marfil de interfaz y un contorno `#C4A882`. El
+diseño de los encuadres del N1 vive en
 `docs/Camara_Narrativa_N1.md` (versionado); su inventario, `docs/md/Camara_Narrativa_N1.md`, se
 perdió el 20/09/2026 y lo aplicado solo queda en los `N1_*.asset`.
 

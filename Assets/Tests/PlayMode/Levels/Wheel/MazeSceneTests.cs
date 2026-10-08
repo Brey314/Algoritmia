@@ -271,24 +271,30 @@ namespace Game.Levels.Wheel.Tests
         }
 
         /// <summary>
-        /// El Nivel 2 dura un día y el laberinto es al atardecer: la luz del asset tiñe el entorno
-        /// y todo lo que cuelga de él —la carretilla, el refugio, los obstáculos—, para que nada
-        /// quede pintado a mediodía sobre un fondo de tarde.
+        /// El laberinto no lleva tinte de luz: el entorno, la carretilla, el refugio y los
+        /// obstáculos quedan tal cual viene el arte, y el entorno lleva el contorno del panel
+        /// de diálogo (Dirección de arte §10.2).
         /// </summary>
         [Test]
         [Timeout(30000)]
-        public async Task MazeScene_RF30_ElLaberintoEsAlAtardecer()
+        public async Task MazeScene_RF30_ElEntornoQuedaSinTinteYConSuContorno()
         {
             var maze = await OpenMaze();
-            var luz = maze.Layout.LightTint;
 
-            Assert.That(luz.r, Is.GreaterThan(luz.b), "N2_MazeLayout trae luz de atardecer, cálida");
-            Assert.That(maze.Environment.color, Is.EqualTo(luz), "el entorno se tiñe");
-            Assert.That(maze.Cart.GetComponent<Image>().color, Is.EqualTo(luz), "y la carretilla con él");
+            Assert.That(maze.Environment.color, Is.EqualTo(Color.white), "el entorno sin tinte");
+            Assert.That(maze.Cart.GetComponent<Image>().color, Is.EqualTo(Color.white), "y la carretilla tampoco");
             Assert.That(maze.Pieces.Select(pieza => pieza.GetComponent<Image>())
                     .Where(imagen => imagen != null && imagen.sprite != null)
                     .Select(imagen => imagen.color),
-                Has.All.EqualTo(luz), "y el refugio y los obstáculos dibujados");
+                Has.All.EqualTo(Color.white), "y el refugio y los obstáculos dibujados");
+
+            var outline = maze.Environment.GetComponent<Outline>();
+            Assert.That(outline, Is.Not.Null, "el entorno lleva su contorno");
+            Assert.That(outline.enabled, Is.True);
+            var esperado = new Color(0.769f, 0.659f, 0.510f);
+            Assert.That(outline.effectColor.r, Is.EqualTo(esperado.r).Within(0.002f), "contorno #C4A882");
+            Assert.That(outline.effectColor.g, Is.EqualTo(esperado.g).Within(0.002f));
+            Assert.That(outline.effectColor.b, Is.EqualTo(esperado.b).Within(0.002f));
         }
 
         /// <summary>
@@ -328,12 +334,12 @@ namespace Game.Levels.Wheel.Tests
 
         /// <summary>
         /// La salida no se marca con un cuadro de color —se lee en el entorno, en el hueco del
-        /// seto—; el panel que rodea al entorno continúa su borde con la misma luz; y el entorno
-        /// lleva su contraste y saturación en una copia del material, no en el asset compartido.
+        /// seto—; el panel que rodea al entorno es el marfil de interfaz; y el entorno lleva su
+        /// contraste y saturación en una copia del material, no en el asset compartido.
         /// </summary>
         [Test]
         [Timeout(30000)]
-        public async Task MazeScene_RF30_LaSalidaSeLeeEnElEntornoYElPanelLoContinua()
+        public async Task MazeScene_RF30_LaSalidaSeLeeEnElEntornoYElPanelEsMarfil()
         {
             var maze = await OpenMaze();
             var layout = maze.Layout;
@@ -343,17 +349,16 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(refugio.enabled, Is.False, "sin ilustración, la casilla de llegada no se pinta de color");
 
             var panel = maze.Environment.rectTransform.parent.GetComponent<Image>();
-            var esperado = layout.BackdropColor * layout.LightTint;
-            Assert.That(panel.color.r, Is.EqualTo(esperado.r).Within(0.002f), "el panel continúa el borde del entorno");
-            Assert.That(panel.color.g, Is.EqualTo(esperado.g).Within(0.002f));
-            Assert.That(panel.color.b, Is.EqualTo(esperado.b).Within(0.002f));
-            Assert.That(panel.color.b, Is.LessThan(panel.color.r), "y ya no es azul");
+            Assert.That(panel.color.r, Is.EqualTo(layout.BackdropColor.r).Within(0.002f), "el panel es el color de interfaz del asset");
+            Assert.That(panel.color.g, Is.EqualTo(layout.BackdropColor.g).Within(0.002f));
+            Assert.That(panel.color.b, Is.EqualTo(layout.BackdropColor.b).Within(0.002f));
+            Assert.That(panel.color.r, Is.EqualTo(0.969f).Within(0.01f), "marfil #F7EFE2");
 
             Assert.That(maze.Environment.material, Is.Not.SameAs(layout.EnvironmentMaterial), "una copia por escena");
             Assert.That(maze.Environment.material.GetFloat("_Contrast"), Is.EqualTo(layout.Contrast), "con el contraste del asset");
             Assert.That(maze.Environment.material.GetFloat("_Saturation"), Is.EqualTo(layout.Saturation), "y su saturación");
-            Assert.That(layout.Contrast, Is.GreaterThan(1f), "que sube el contraste");
-            Assert.That(layout.Saturation, Is.LessThan(1f), "y le quita naranja al suelo");
+            Assert.That(layout.Contrast, Is.EqualTo(1f), "sin contraste añadido: el entorno queda plano");
+            Assert.That(layout.Saturation, Is.EqualTo(1f), "y sin tocar el color del arte");
         }
 
         /// <summary>
