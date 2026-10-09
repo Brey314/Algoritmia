@@ -41,7 +41,9 @@
 //             y apaga la Image de Cuerpo en Algoritm cuando sus partes ya están. Lo que no existe se
 //             deja apagado y se anota en el log: un nodo imagen sin PNG queda con la Image apagada Y SIN
 //             SPRITE (INC-136: la AntepiernaX de Algoritm, cuyo PNG se borró con la pierna entera, no puede
-//             conservar una referencia rota; el modo la vacía y la apaga). En Algoritm la cara provisional
+//             conservar una referencia rota; el modo la vacía y la apaga: Image.sprite da por nula una referencia a un
+//             PNG borrado y su setter no la limpia, así que se detecta y se vacía por la propiedad serializada m_Sprite
+//             y cuenta como cambio, aunque la Image ya estuviera apagada). En Algoritm la cara provisional
 //             (char_algoritm_<forma>_ojos_neutra y _boca_0, en Expresiones/) enciende Ojos y Boca y crea o
 //             actualiza Expresiones/char_algoritm_<forma>_cara.asset, que cablea en CharacterFace.faceSet
 //             (EyesNeutral y MouthClosed; sin cuadro de ojos cerrados no parpadea). Con el prefab
@@ -87,7 +89,8 @@
 //             (incluye el orden de dibujo actual de Tronco en cada prefab y, si la tabla suelta los
 //             antebrazos del codo, dónde está cada uno y si tiene ancla; y, por personaje, el estado del cuerpo de perfil:
 //             si Lienzo/Perfil existe y su activación, los nodos que están, las Image con sprite y encendidas, el cableado
-//             de CharacterFace.profileEyes/profileMouth/profileFaceSet, el _cara.asset de perfil y el orden de Perfil/Tronco).
+//             de CharacterFace.profileEyes/profileMouth/profileFaceSet, el _cara.asset de perfil y el orden de Perfil/Tronco;
+//             y las Image que guardan la referencia a un sprite borrado: «REFERENCIA A SPRITE BORRADO en …», que «sprites» vacía).
 //
 // DÓNDE VIVE LA COREOGRAFÍA. Ya NO está en este archivo: la escribe herramientas/coreografia.py y la
 // entrega como herramientas/clips_personajes.json, con las curvas ya calculadas de cada clip (ruta,
@@ -1820,11 +1823,24 @@ public static class ClaudeBuildRigsFinal
                 // Sin PNG: la Image queda apagada Y SIN SPRITE. La de un nodo nuevo ya nace así y aquí no cambia nada; la que tenía un sprite (la AntepiernaX de
                 // Algoritm: su pierna es entera desde INC-136 y el PNG de la antepierna se borró) no puede quedarse con una referencia rota —un sprite que Unity ya no
                 // encuentra deja la Image encendida y pinta un recuadro blanco—, así que se vacía y se apaga. Cuenta como cambio: sin él no se guardaría el prefab.
-                if (image != null && (image.sprite != null || image.enabled))
+                // La referencia rota se pregunta y se vacía por la propiedad serializada (HasMissingSprite, ClearSprite): Image.sprite ya la da por nula y su setter no la limpia.
+                if (image != null)
                 {
-                    image.sprite = null;
-                    image.enabled = false;
-                    done.Add(image.name + " (sin sprite)");
+                    var broken = HasMissingSprite(image);
+                    if (broken || image.sprite != null || image.enabled)
+                    {
+                        if (broken)
+                        {
+                            ClearSprite(image);
+                        }
+                        else
+                        {
+                            image.sprite = null;
+                        }
+
+                        image.enabled = false;
+                        done.Add(image.name + (broken ? " (referencia a sprite borrado)" : " (sin sprite)"));
+                    }
                 }
 
                 continue;
@@ -1865,6 +1881,31 @@ public static class ClaudeBuildRigsFinal
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// La Image guarda la referencia a un sprite que ya no existe (se borró el PNG con su .meta): m_Sprite conserva el GUID y el fileID, pero Unity no encuentra
+    /// el asset. Image.sprite NO la delata ni la limpia: devuelve un «nulo falso» (un objeto que == da por nulo pero que no es null) y su setter compara ese nulo
+    /// falso con el null que recibe, ve «nulo = nulo» y no escribe nada, así que el prefab se guardaría con la referencia rota. Solo la propiedad serializada la
+    /// distingue de una vacía: sin objeto (objectReferenceValue nulo) pero con un id de instancia distinto de 0. El nulo falso de Image.sprite es el segundo aviso.
+    /// </summary>
+    private static bool HasMissingSprite(Image image)
+    {
+        var prop = new SerializedObject(image).FindProperty("m_Sprite");
+        if (prop != null && prop.objectReferenceValue == null && prop.objectReferenceInstanceIDValue != 0)
+        {
+            return true;
+        }
+
+        return !ReferenceEquals(image.sprite, null) && image.sprite == null;
+    }
+
+    /// <summary>Vacía m_Sprite por la propiedad serializada, que sí escribe la referencia rota (ver HasMissingSprite). Sin Undo: el prefab viene de LoadPrefabContents.</summary>
+    private static void ClearSprite(Image image)
+    {
+        var so = new SerializedObject(image);
+        so.FindProperty("m_Sprite").objectReferenceValue = null;
+        so.ApplyModifiedPropertiesWithoutUndo();
     }
 
     /// <summary>Dónde vive el set de la cara de un personaje: en su subcarpeta Expresiones; el de la cara de perfil (INC-134), en Perfil/ y con el prefijo de perfil (char_&lt;x&gt;_perfil_cara.asset).</summary>
@@ -2321,8 +2362,25 @@ public static class ClaudeBuildRigsFinal
         var face = root.GetComponent<CharacterFace>();
         log.Add(c.prefab + " [" + c.nodos.Length + " nodos, " + c.partes.Length + " partes en la tabla]: " + (missing.Count == 0 ? "nodos completos" : "FALTAN " + string.Join(", ", missing.ToArray()))
             + " | CharacterFace " + (face == null ? "no" : "sí") + " | segmentado " + (IsSegmented(root.transform) ? "sí" : "no")
-            + " | " + FaceSetState(c) + " | " + OrderState(root.transform, c) + " | " + LimbState(root.transform, c));
+            + " | " + FaceSetState(c) + " | " + OrderState(root.transform, c) + " | " + LimbState(root.transform, c) + " | " + BrokenSpriteState(root));
         log.Add(c.prefab + " (perfil) " + ProfileState(root, c));
+    }
+
+    /// <summary>Las Image del prefab que guardan la referencia a un sprite que ya no existe (un PNG borrado): «sprites» las vacía. Solo lee. No lanza.</summary>
+    private static string BrokenSpriteState(GameObject root)
+    {
+        var broken = new List<string>();
+        foreach (var image in root.GetComponentsInChildren<Image>(true))
+        {
+            if (HasMissingSprite(image))
+            {
+                broken.Add(image.name);
+            }
+        }
+
+        return broken.Count == 0
+            ? "sin referencias a sprites borrados"
+            : "REFERENCIA A SPRITE BORRADO en " + string.Join(", ", broken.ToArray()) + " (correr «sprites»)";
     }
 
     /// <summary>
