@@ -20,9 +20,13 @@
 //   "perfil"  (INC-134) añade a Papa, Mama, Nina y Nino el CUERPO DE PERFIL: Lienzo/Perfil, hermano de Cuerpo y justo detrás
 //             de él (INACTIVO: el motor enciende uno u otro cuerpo según la acción, ActionView), con todo colgando
 //             de Perfil/Tronco, un nodo con el pivote en la cadera, en este orden de dibujo (de atrás adelante):
-//               BrazoLejano/CodoLejano/AntebrazoLejano · PiernaLejana/RodillaLejana/AntepiernaLejana · Torso ·
-//               PiernaCercana/RodillaCercana/AntepiernaCercana · Cuello/Cabeza/{CaraBase, Ojos, Boca} ·
+//               BrazoLejano/CodoLejano/AntebrazoLejano · PiernaLejana/RodillaLejana/AntepiernaLejana ·
+//               PiernaCercana/RodillaCercana/AntepiernaCercana · Torso · Cuello/Cabeza/{CaraBase, Ojos, Boca} ·
 //               BrazoCercano/CodoCercano/AntebrazoCercano
+//             LAS PIERNAS, SIEMPRE DETRÁS DEL TORSO (Santiago, 09/10/2026): la primera versión de este orden dibujaba la pierna cercana
+//             DELANTE del torso. Sobre un prefab que ya pasó por «perfil» con el orden anterior, volver a correr este modo lo corrige
+//             sin crear nada: OrderProfileTrunk compara los hijos de Perfil/Tronco con «orden_tronco» del perfil y, si difieren, los
+//             reordena con SetSiblingIndex (no cambia ningún fileID: solo m_Children de Tronco).
 //             Lo lee de la clave «perfil» de cada personaje en rig_articulaciones.json (nodos, partes y orden_tronco, con el
 //             mismo esquema que los de frente; medidas PROVISIONALES hasta que llegue el arte de perfil) y lo trata con el mismo
 //             código que a los nodos de frente. Idempotente (un nodo que existe no se toca), solo AÑADE, y cada Image nace
@@ -35,7 +39,12 @@
 //             pivote de la tabla, enciende las Image (las de partes, las de la cara y CaraBase por
 //             igual), crea o actualiza <carpeta>/Expresiones/<prefijo>_cara.asset (CharacterFaceSet)
 //             y apaga la Image de Cuerpo en Algoritm cuando sus partes ya están. Lo que no existe se
-//             deja apagado y se anota en el log: un nodo imagen sin PNG queda con la Image apagada. Con el prefab
+//             deja apagado y se anota en el log: un nodo imagen sin PNG queda con la Image apagada Y SIN
+//             SPRITE (INC-136: la AntepiernaX de Algoritm, cuyo PNG se borró con la pierna entera, no puede
+//             conservar una referencia rota; el modo la vacía y la apaga). En Algoritm la cara provisional
+//             (char_algoritm_<forma>_ojos_neutra y _boca_0, en Expresiones/) enciende Ojos y Boca y crea o
+//             actualiza Expresiones/char_algoritm_<forma>_cara.asset, que cablea en CharacterFace.faceSet
+//             (EyesNeutral y MouthClosed; sin cuadro de ojos cerrados no parpadea). Con el prefab
 //             en «perfil», hace lo mismo con el cuerpo de perfil: asigna char_<x>_perfil_* por nombre exacto,
 //             recoloca cada nodo con su rect y su punto y rellena Perfil/char_<x>_perfil_cara.asset con los cuadros de cara que existan.
 //   "orden"   coloca los hijos de Lienzo/Cuerpo/Tronco en el orden de dibujo que fija «orden_tronco»
@@ -1430,9 +1439,11 @@ public static class ClaudeBuildRigsFinal
     //
     // El cuerpo de PERFIL de la familia: Lienzo/Perfil, hermano de Cuerpo y justo detrás de él, con todo colgando de un Tronco con el pivote
     // en la cadera, en este orden de dibujo (de atrás adelante; lo fija «orden_tronco» de «perfil» en la tabla):
-    //   Perfil/Tronco/ BrazoLejano/CodoLejano/AntebrazoLejano · PiernaLejana/RodillaLejana/AntepiernaLejana · Torso ·
-    //                  PiernaCercana/RodillaCercana/AntepiernaCercana · Cuello/Cabeza/{CaraBase, Ojos, Boca} ·
+    //   Perfil/Tronco/ BrazoLejano/CodoLejano/AntebrazoLejano · PiernaLejana/RodillaLejana/AntepiernaLejana ·
+    //                  PiernaCercana/RodillaCercana/AntepiernaCercana · Torso · Cuello/Cabeza/{CaraBase, Ojos, Boca} ·
     //                  BrazoCercano/CodoCercano/AntebrazoCercano
+    // Las dos piernas van detrás del torso (Santiago, 09/10/2026); solo el brazo cercano y la cabeza quedan delante de él. De frente ya era
+    // así: las piernas son hijas de Cuerpo y se dibujan antes que Tronco.
     // Solo AÑADE: ningún objeto existente se toca ni se mueve (los fileID de los 18 assets y las 5 escenas siguen en pie); lo único que cambia
     // de un prefab es que le salen hijos nuevos y los tres campos de perfil de CharacterFace. Idempotente: un nodo que existe no se toca. Todo
     // nodo nuevo nace con la Image apagada y sin sprite, sin raycastTarget, y Perfil nace INACTIVO (el motor enciende uno u otro cuerpo según la
@@ -1804,8 +1815,19 @@ public static class ClaudeBuildRigsFinal
             if (image == null || sprite == null)
             {
                 if (n.tipo == "articulacion" && target != null) PlacePoint(target, Pt(n.punto), n.rect);
-                missing.Add(n.sprite ?? n.nombre);
-                continue; // sin PNG: la Image queda apagada (la de un nodo nuevo nace apagada y aquí no se enciende)
+                missing.Add(string.IsNullOrEmpty(n.sprite) ? n.nombre : n.sprite);
+
+                // Sin PNG: la Image queda apagada Y SIN SPRITE. La de un nodo nuevo ya nace así y aquí no cambia nada; la que tenía un sprite (la AntepiernaX de
+                // Algoritm: su pierna es entera desde INC-136 y el PNG de la antepierna se borró) no puede quedarse con una referencia rota —un sprite que Unity ya no
+                // encuentra deja la Image encendida y pinta un recuadro blanco—, así que se vacía y se apaga. Cuenta como cambio: sin él no se guardaría el prefab.
+                if (image != null && (image.sprite != null || image.enabled))
+                {
+                    image.sprite = null;
+                    image.enabled = false;
+                    done.Add(image.name + " (sin sprite)");
+                }
+
+                continue;
             }
 
             PlacePoint(target, Pt(n.punto), n.rect);
@@ -2441,7 +2463,7 @@ public static class ClaudeBuildRigsFinal
         }
     }
 
-    /// <summary>Segmentado = la antepierna ya se dibuja (Image con sprite y encendida).</summary>
+    /// <summary>Segmentado = la antepierna ya se dibuja (Image con sprite y encendida). Algoritm da «no» a propósito desde INC-136: su pierna es entera y la AntepiernaX no lleva sprite.</summary>
     private static bool IsSegmented(Transform root)
     {
         var shin = root.Find(LK + "/AntepiernaIzq");

@@ -41,9 +41,12 @@
 # PERFIL (INC-134, 09/10/2026). La familia gana un SEGUNDO cuerpo, dibujado de perfil y mirando a la DERECHA (el motor voltea el Lienzo para la
 # izquierda): Lienzo/Perfil, hermano de Cuerpo y justo detras de el, apagado hasta que la accion lo pide (ActionView: Walk, Run, Carry, Push,
 # PickUp, Kneel, Blow). Todo cuelga de UN Tronco con el pivote en la cadera, y sus hijos van en este orden de dibujo (de atras adelante):
-#   Perfil/Tronco/{BrazoLejano/CodoLejano/AntebrazoLejano, PiernaLejana/RodillaLejana/AntepiernaLejana, Torso,
-#                  PiernaCercana/RodillaCercana/AntepiernaCercana, Cuello/Cabeza/{CaraBase, Ojos, Boca},
+#   Perfil/Tronco/{BrazoLejano/CodoLejano/AntebrazoLejano, PiernaLejana/RodillaLejana/AntepiernaLejana,
+#                  PiernaCercana/RodillaCercana/AntepiernaCercana, Torso, Cuello/Cabeza/{CaraBase, Ojos, Boca},
 #                  BrazoCercano/CodoCercano/AntebrazoCercano}
+# LAS PIERNAS, SIEMPRE DETRAS DEL TORSO (Santiago, 09/10/2026): la primera version dibujaba la pierna CERCANA delante del torso y esta mal: de frente
+# las piernas ya son hijas de Cuerpo (van antes que Tronco) y de perfil tambien van las dos al fondo, tras el torso; solo el brazo cercano y la cara
+# quedan delante de el. ordena_hijos() lleva cualquier tabla «perfil» (la provisional y la de arte_final.json) a este orden.
 # Cada personaje de la familia lleva en el JSON una clave «perfil»: {provisional, prefijo, nodos, partes, orden_tronco}, con el esquema de «nodos»
 # y «partes» de arriba (todo nodo de perfil es NUEVO: «partes» queda vacio hasta que haya algo que reajustar). Sus medidas son PROVISIONALES: salen
 # de la figura de frente (870 px de alto, torso en x = 512, coronilla en y = 77) —cadera, hombro, rodilla y cuello a la misma altura que de frente; el
@@ -254,8 +257,9 @@ def orden_tronco_de(pid):
     return list(ORDEN_TRONCO_PAPA if pid == "papa" else ORDEN_TRONCO_FAMILIA)
 
 
-# INC-134: el orden de dibujo de los hijos de Perfil/Tronco, de atras adelante (el contrato con el motor y con BuildRigsFinal «perfil»).
-ORDEN_TRONCO_PERFIL = ["BrazoLejano", "PiernaLejana", "Torso", "PiernaCercana", "Cuello", "BrazoCercano"]
+# INC-134: el orden de dibujo de los hijos de Perfil/Tronco, de atras adelante (el contrato con el motor y con BuildRigsFinal «perfil»). Las dos
+# piernas van detras del torso (Santiago, 09/10/2026): lo lejano y las piernas al fondo, luego el torso, la cabeza y el brazo cercano delante.
+ORDEN_TRONCO_PERFIL = ["BrazoLejano", "PiernaLejana", "PiernaCercana", "Torso", "Cuello", "BrazoCercano"]
 PF = "Lienzo/Perfil"
 PT = PF + "/Tronco"
 
@@ -275,6 +279,32 @@ PERFIL_PIE = 0.90
 
 def _por_nombre(lista):
     return {x["nombre"]: x for x in lista}
+
+
+def ordena_hijos(nodos, padre, orden):
+    """
+    La lista «nodos» de una tabla con los hijos directos de «padre» en el orden de dibujo «orden» (de atras adelante), cada uno seguido de lo que cuelga de
+    el (el segmento de una articulacion y la cara de la cabeza). Lo que no es hijo de «padre» ni descendiente de uno de ellos (Perfil, Tronco) conserva su
+    sitio al principio; un hijo que «orden» no nombra queda delante de los nombrados, en su orden relativo (como ProfileTargetOrder del generador). No
+    cambia ningun nodo: solo la posicion en la lista, que es el orden en que BuildRigsFinal los crea y en que dibuja la hoja de verificacion.
+    """
+    hijos = [n for n in nodos if n["padre"] == padre]
+    nombres = [n["nombre"] for n in hijos]
+    for nombre in orden:
+        if nombres.count(nombre) != 1:
+            raise KeyError("«orden» nombra «%s» y %d hijos de %s tienen ese nombre" % (nombre, nombres.count(nombre), padre))
+    objetivo = [n for n in nombres if n not in orden] + list(orden)
+
+    def cuelga_de(n, nombre):
+        ruta = padre + "/" + nombre
+        return n["padre"] == ruta or n["padre"].startswith(ruta + "/")
+
+    cabeza = [n for n in nodos if n["padre"] != padre and not any(cuelga_de(n, h) for h in nombres)]
+    por_hijo = {h: [n for n in nodos if n["padre"] == padre and n["nombre"] == h or cuelga_de(n, h)] for h in nombres}
+    salida = list(cabeza)
+    for h in objetivo:
+        salida += por_hijo[h]
+    return salida
 
 
 def perfil_provisional(pid, nodos, partes):
@@ -339,11 +369,10 @@ def perfil_provisional(pid, nodos, partes):
                  sprite="%s_antepierna_%s" % (pref, lado.lower()), rect=canilla),
         ]
 
-    # de atras adelante: brazo lejano, pierna lejana, torso, pierna cercana, cabeza, brazo cercano
-    lista += brazo("Lejano") + pierna("Lejana")
+    # de atras adelante: brazo lejano, pierna lejana, pierna cercana, torso, cabeza, brazo cercano (las piernas, siempre detras del torso)
+    lista += brazo("Lejano") + pierna("Lejana") + pierna("Cercana")
     lista.append(nodo("Torso", "imagen", PT, punto(cx, cadera_y), sprite=pref + "_torso",
                       rect=[entero(cx - mitad), entero(ty0), entero(cx + mitad), entero(ty1)]))
-    lista += pierna("Cercana")
     cuello = (cabeza_cx - 0.02 * ancho_cabeza, cuello_y)
     padre_cabeza = PT + "/Cuello/Cabeza"
     lista.append(nodo("Cuello", "articulacion", PT, punto(*cuello), imagen="Cabeza", sprite=pref + "_cabeza",
@@ -362,8 +391,8 @@ def perfil_familia(pid, nodos, partes):
     """
     entrada = ARTE_FINAL.get(pid, {}).get("perfil")
     if entrada:
-        lista, fijas, provisional = entrada["nodos"], entrada.get("partes", []), False
         orden = entrada.get("orden_tronco") or list(ORDEN_TRONCO_PERFIL)
+        lista, fijas, provisional = ordena_hijos(entrada["nodos"], PT, orden), entrada.get("partes", []), False   # el orden del contrato, aunque arte_final.json guarde otro
     else:
         lista, fijas = perfil_provisional(pid, nodos, partes)
         orden, provisional = list(ORDEN_TRONCO_PERFIL), True
@@ -670,13 +699,64 @@ def autoprueba():
     # con una entrada «perfil» en arte_final.json sale de ahi, tal cual
     antes = dict(ARTE_FINAL)
     try:
-        ARTE_FINAL["nino"] = dict(ARTE_FINAL.get("nino", {}), perfil={"nodos": [{"nombre": "X"}], "partes": [], "orden_tronco": ["X"]})
+        ARTE_FINAL["nino"] = dict(ARTE_FINAL.get("nino", {}), perfil={"nodos": [{"nombre": "X", "padre": PT}], "partes": [], "orden_tronco": ["X"]})
         pf = perfil_familia("nino", [], [])
         caso("arte_final.json con «perfil»: se vuelca tal cual y deja de ser provisional",
-             pf["nodos"] == [{"nombre": "X"}] and pf["orden_tronco"] == ["X"] and pf["provisional"] is False and pf["prefijo"] == "char_nino_perfil")
+             pf["nodos"] == [{"nombre": "X", "padre": PT}] and pf["orden_tronco"] == ["X"] and pf["provisional"] is False and pf["prefijo"] == "char_nino_perfil")
     finally:
         ARTE_FINAL.clear()
         ARTE_FINAL.update(antes)
+    # LAS PIERNAS, SIEMPRE DETRAS DEL TORSO (Santiago, 09/10/2026): el contrato pone las dos piernas antes que el torso y ordena_hijos lleva a el cualquier
+    # tabla (la de arte_final.json guardada con el orden anterior, la pierna cercana delante del torso) sin perder lo que cuelga de cada hijo
+    contrato = ["BrazoLejano", "PiernaLejana", "PiernaCercana", "Torso", "Cuello", "BrazoCercano"]
+    caso("ORDEN_TRONCO_PERFIL: las dos piernas detras del torso, el brazo cercano delante", ORDEN_TRONCO_PERFIL == contrato)
+    viejo = ["BrazoLejano", "PiernaLejana", "Torso", "PiernaCercana", "Cuello", "BrazoCercano"]
+
+    def tabla_con_orden(orden):
+        colgantes = {"BrazoLejano": [("CodoLejano", PT + "/BrazoLejano")], "BrazoCercano": [("CodoCercano", PT + "/BrazoCercano")],
+                     "PiernaLejana": [("RodillaLejana", PT + "/PiernaLejana")], "PiernaCercana": [("RodillaCercana", PT + "/PiernaCercana")],
+                     "Cuello": [("CaraBase", PT + "/Cuello/Cabeza"), ("Ojos", PT + "/Cuello/Cabeza")]}
+        out = [{"nombre": "Perfil", "padre": "Lienzo"}, {"nombre": "Tronco", "padre": PF}]
+        for h in orden:
+            out.append({"nombre": h, "padre": PT})
+            out += [{"nombre": c, "padre": p} for c, p in colgantes.get(h, [])]
+        return out
+
+    ordenada = ordena_hijos(tabla_con_orden(viejo), PT, contrato)
+    esperada = tabla_con_orden(contrato)
+    caso("ordena_hijos lleva la tabla vieja al contrato, cada hijo con lo suyo", ordenada == esperada,
+         str([n["nombre"] for n in ordenada if n["padre"] == PT]))
+    caso("ordena_hijos: con el contrato ya puesto no cambia nada", ordena_hijos(esperada, PT, contrato) == esperada)
+    try:
+        ordena_hijos(esperada, PT, contrato + ["Inexistente"])
+        caso("ordena_hijos: un nombre que no es hijo se rechaza", False)
+    except KeyError:
+        caso("ordena_hijos: un nombre que no es hijo se rechaza", True)
+    # con arte guardado en el orden anterior, perfil_familia lo entrega en el del contrato
+    antes = dict(ARTE_FINAL)
+    try:
+        ARTE_FINAL["nino"] = dict(ARTE_FINAL.get("nino", {}), perfil={"nodos": tabla_con_orden(viejo), "partes": []})
+        pf = perfil_familia("nino", [], [])
+        caso("perfil_familia lleva el arte guardado con el orden viejo al del contrato",
+             [n["nombre"] for n in pf["nodos"] if n["padre"] == PT] == contrato and pf["orden_tronco"] == contrato)
+    finally:
+        ARTE_FINAL.clear()
+        ARTE_FINAL.update(antes)
+    # INC-136: Algoritm con arte final (las entradas «algoritm_<forma>» de arte_final.json que escribe preparar_algoritm.py): la PIERNA ENTERA (PiernaX con su sprite; RodillaX en el palo y
+    # sin sprite, o sea AntepiernaX sin PNG), sin sprites de antepierna en ningun nodo, los doce nodos de siempre y el orden de dibujo de Algoritm sin tocar
+    for forma, prefab in FORMAS:
+        if "algoritm_" + forma not in ARTE_FINAL:
+            continue
+        g = personaje_guia(forma, prefab)
+        n = _por_nombre(g["nodos"])
+        pref = "char_algoritm_" + forma
+        caso("algoritm_%s: 12 nodos, la pierna entera (RodillaX sin sprite), cara provisional en Ojos y Boca" % forma,
+             len(g["nodos"]) == 12 and n["PiernaIzq"]["sprite"] == pref + "_parte_pierna_izq" and n["PiernaDer"]["sprite"] == pref + "_parte_pierna_der"
+             and n["RodillaIzq"]["sprite"] == "" and n["RodillaDer"]["sprite"] == "" and not any("antepierna" in x["sprite"] for x in g["nodos"])
+             and n["Ojos"]["sprite"] == pref + "_ojos_neutra" and n["Boca"]["sprite"] == pref + "_boca_0")
+        caso("algoritm_%s: orden_tronco de siempre (Torso, Ojos, Boca, BrazoIzq, BrazoDer), cada punto dentro de su rect" % forma,
+             g["orden_tronco"] == ORDEN_TRONCO_GUIA and all(n[k]["rect"][0] <= n[k]["punto"][0] <= n[k]["rect"][2] and n[k]["rect"][1] <= n[k]["punto"][1] <= n[k]["rect"][3]
+                                                            for k in ("PiernaIzq", "PiernaDer", "BrazoIzq", "BrazoDer", "CodoIzq", "CodoDer", "Torso")))
     caso("el JSON de salida es ASCII", all(ord(c) < 128 for c in compacto({"perfil": [personaje_familia(*f)["perfil"] for f in FAMILIA]})))
     print("autoprueba de articulaciones.py:", "pasa" if not malos else "FALLA en %d casos" % malos)
     return 1 if malos else 0
@@ -690,7 +770,7 @@ def main(argv=None):
     # La nota va sin tildes ni eñes (y el volcado fuerza ASCII): el JSON debe ser ASCII puro.
     tabla = {
         "version": 1,
-        "nota": "Valores PROVISIONALES salvo los de quien tiene entrada en arte_final.json (hoy el Nino). "
+        "nota": "Valores PROVISIONALES salvo los de quien tiene entrada en arte_final.json (hoy la familia y las tres formas de Algoritm, INC-136). "
                 "Lienzo de 1024, origen arriba a la izquierda, "
                 "y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los "
                 "nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento "
@@ -706,7 +786,10 @@ def main(argv=None):
                 "PERFIL (INC-134): cada personaje de la familia lleva una clave 'perfil' {provisional, prefijo, nodos, partes, orden_tronco} con el cuerpo de perfil "
                 "(Lienzo/Perfil/Tronco, pivote en la cadera, mirando a la DERECHA); 'nodos' es TODO nuevo (padre antes que hijo, en el orden de dibujo) y 'orden_tronco' "
                 "el de los hijos de Perfil/Tronco. 'provisional': true = las medidas salen de la figura de frente (no hay arte de perfil todavia); "
-                "con una entrada 'perfil' en arte_final.json (preparar_perfil.py) salen de ahi. Algoritm no tiene perfil.",
+                "con una entrada 'perfil' en arte_final.json (preparar_perfil.py) salen de ahi. Las piernas de perfil van SIEMPRE detras del torso (BrazoLejano, PiernaLejana, "
+                "PiernaCercana, Torso, Cuello, BrazoCercano; Santiago, 09/10/2026). Algoritm no tiene perfil. ALGORITM (INC-136): sus tres entradas salen de arte_final.json "
+                "(preparar_algoritm.py): siete piezas por forma con la PIERNA ENTERA (PiernaX con su sprite; RodillaX en el punto medio del palo, con AntepiernaX sin sprite) y la "
+                "cara provisional (Ojos y Boca) sacada del sprite de hoy.",
         "personajes": personajes,
     }
     with open(SALIDA, "w", encoding="utf-8", newline="\n") as f:

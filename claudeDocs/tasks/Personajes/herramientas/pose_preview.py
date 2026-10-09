@@ -9,13 +9,13 @@
 #     python3 .../pose_preview.py --salida /ruta/de/trabajo                            # donde dejar los PNG/GIF
 #     python3 .../pose_preview.py --orden Torso,Cuello,BrazoIzq,BrazoDer              # otro orden de dibujo de Tronco (el del JSON es el vigente)
 #     python3 .../pose_preview.py --autoprueba                                         # la prueba SI detecta poses malas a proposito
-#     python3 .../pose_preview.py --exporta-maqueta [CARPETA]                          # escribe las piezas de Algoritm (char_algoritm_<forma>_parte_*.png) en Assets/Game/Art/Characters/Algoritm/Frontal
+#     python3 .../pose_preview.py --exporta-maqueta [CARPETA]                          # RETIRADO (INC-136): Algoritm ya tiene arte final; ver preparar_algoritm.py
 #     python3 .../pose_preview.py --mide nino                                          # las articulaciones del rig caen en la rotula
 #
 # Necesita Pillow (pip install pillow). Sale con codigo 1 si algun clip falla la prueba.
 #
 # DOS MODOS (Papa, Mama y Nina mientras tengan arte provisional; quien ya tiene arte final —el Nino, y los otros
-# tras preparar_arte_final.py --aplicar— se prueba una vez, y Algoritm es siempre maqueta):
+# tras preparar_arte_final.py --aplicar, y Algoritm tras preparar_algoritm.py --aplicar— se prueba una vez):
 #   --hoy      el arte REAL de los prefabs (brazos y piernas de una pieza, la cabeza dentro del torso) con
 #              clips_personajes.json, que es lo que se vuelca al motor; comprueba antes que el JSON sea el que
 #              coreografia.py calcularia ahora. Hojas: <id>_hoy_idle_8.png, <id>_hoy_todos.png, <id>_hoy_idle.gif.
@@ -36,12 +36,10 @@
 # motor (prefabs.orden_con_brazos_delante: el brazo que va antes del torso pasa justo despues de el; el que ya va despues,
 # como los de Algoritm, no cambia). La lista se lee del .cs; si no esta, {Strike} con un aviso.
 #
-# ALGORITM. Sus tres formas tienen un solo sprite (cuerpo, brazos y piernas juntos). Desde el 08/10/2026 (D13) la maqueta de su
-# sprite entero es tambien el arte provisional del juego: maqueta.piezas_guia lo recorta en las nueve piezas que define el JSON (torso, brazo,
-# antebrazo, pierna, antepierna, a cada lado), sin repetir pixeles (sumadas dan el sprite original) y con una rotula en cada articulacion; esta
-# vista previa las dibuja y las prueba, y «--exporta-maqueta» las escribe como char_algoritm_<forma>_parte_*.png para que el modo «sprites» de
-# BuildRigsFinal las asigne a los prefabs. Cuando llegue el arte final de Algoritm se sustituyen esos PNG por los suyos y se vuelve a correr
-# «sprites». Hasta que la vista previa lea tambien esos PNG, Algoritm se sigue dibujando con la maqueta, no con el arte entregado.
+# ALGORITM (INC-136, 09/10/2026). Su arte final son SIETE piezas por forma (torso, brazo, antebrazo con la mano y pierna ENTERA, a cada lado) que escribe
+# preparar_algoritm.py en Frontal/ mas la cara provisional (ojos_neutra y boca_0) en Expresiones/: esta vista previa las dibuja como al resto, por el estado
+# que dejara el modo «sprites» de BuildRigsFinal (prefabs.simula_sprites con apaga_faltantes: la AntepiernaX, sin sprite, queda apagada). Hasta el
+# 08/10/2026 (D13) se dibujaba con una maqueta que recortaba su sprite entero en nueve piezas (maqueta.piezas_guia): ya no se usa y --exporta-maqueta se retiro.
 #
 # INC-133 (06/10/2026), la familia: el HUMERO va detras del torso y el ANTEBRAZO con la mano delante del torso, de la cara y de las piernas.
 # BuildRigsFinal «orden» lo hace pasando cada AntebrazoX de su codo a hijo de Tronco (con un ancla vacia bajo el codo que animan los clips);
@@ -115,6 +113,9 @@ UMBRAL_CARA = 0.90
 # nada de brazo encima (99,5 %): el gesto no debe ni rozar la cara.
 UMBRAL_CARA_GUIA = 0.995
 AMPLIA_CARA_GUIA = 1.30
+# Algoritm con menos de esta opacidad (el alfa de Lienzo en Appear, Vanish y Hidden) no se mide en (b): la cara casi no se ve, y Appear arranca con el cuerpo a 0,3 de escala, donde
+# un pixel de la mascara de la prueba (256 px el lienzo) son ~5 px del rig y el redondeo de unos hombros que ya rozan la caja ampliada da falsos positivos (INC-136)
+ALFA_MIN_CARA_GUIA = 0.5
 TOLERANCIA_CODO = 6.0      # grados de hiperextension que se perdonan
 HOMBRO_CAPSULA = 1.1       # el pivote del hombro cae a menos de tantos radios del eje del humero (hombro.FRACCION_CAPSULA)
 TOLERANCIA_SUELO = 2.0     # px
@@ -230,13 +231,13 @@ class Personaje:
         """
         «maqueta»: el arte final SIMULADO (maqueta.py): brazos, piernas y cabeza recortados del arte
         provisional por las articulaciones del rig, para probar la coreografia contra su geometria. Sin ella
-        («hoy»), el arte real del prefab. Algoritm siempre es maqueta (su sprite es uno solo).
+        («hoy»), el arte real del prefab. Algoritm nunca es maqueta: tiene arte final (INC-136).
         """
         self.pid = pid
         self.rig_todo = rig
         self.prefab, self.carpeta, self.guia = P.PERSONAJES[pid]
         self.rig = P.personaje_rig(rig, pid)
-        self.maqueta = maqueta or self.guia
+        self.maqueta = maqueta and not self.guia
         # las acciones en que el motor pasa los brazos DELANTE del torso (CharacterRig.armsInFrontActions): en ellas se
         # dibuja con otro orden (orden_de)
         self.delante, self.delante_hallada = P.acciones_brazos_delante()
@@ -289,7 +290,6 @@ class Personaje:
         comparten las mismas Capa (y su cache de sprites reducidos).
         """
         self._cache = {}
-        base = self._piezas_guia() if self.guia else None
         hechas = {}
 
         def recorre():
@@ -301,7 +301,7 @@ class Personaje:
                 ruta = n.ruta
                 if ruta:
                     if ruta not in hechas:
-                        hechas[ruta] = self._capa(n, base)
+                        hechas[ruta] = self._capa(n)
                     if hechas[ruta] is not None:
                         capas.append(hechas[ruta])
                 for h in P.hijos_de_dibujo(n):
@@ -328,21 +328,22 @@ class Personaje:
             tronco.dibujo = previo
             self.indice_delante = {c.nodo.ruta: i for i, c in enumerate(self.capas_delante)}
 
+    def cara_reposo(self):
+        """Algoritm: el % de la caja de ojos y boca (ampliada) que queda a la vista en reposo, con los brazos que ya la rozan (prueba_clip la descuenta de (b))."""
+        if getattr(self, "_cara0", None) is None:
+            vacio = Clip({"archivo": "", "accion": "", "duracion": 1.0, "bucle": True, "curvas": []})
+            self._cara0 = prueba_clip(self, vacio, tiempos=[0.0], _sin_base=True).cara[0]
+        return self._cara0
+
     def orden_de(self, accion):
         """(capas, indice) en el orden de dibujo de esa accion: con los brazos delante del torso si CharacterRig la lista."""
         if accion in self.delante:
             return self.capas_delante, self.indice_delante
         return self.capas, self.indice
 
-    def _piezas_guia(self):
-        """Algoritm: sus nueve piezas, cortadas del sprite entero de su forma (el de la Image de Cuerpo) con maqueta.piezas_guia."""
-        return M.piezas_guia(P.sprite_por_guid(self.arbol[C].imagen["guid"]), self.rig)
-
-    def _capa(self, n, piezas_guia):
+    def _capa(self, n):
         ruta = n.ruta
         rect = self.rect[ruta]
-        if self.guia:
-            return self._capa_guia(n, rect, piezas_guia)
         if not n.dibuja() or rect is None:
             return None
         if n.imagen["guid"].startswith("maqueta:"):
@@ -352,14 +353,6 @@ class Personaje:
         if arch is None:
             return None
         return Capa(n, rect, _abre(arch), n.imagen["color"])
-
-    # ---- maqueta de Algoritm
-    def _capa_guia(self, n, rect, piezas):
-        """La capa de una de las nueve piezas de Algoritm (maqueta.piezas_guia); Cuerpo y lo que no es pieza (Tronco, Ojos, Boca, los pivotes) no se dibujan."""
-        if n.nombre == "Cuerpo" or n.nombre not in M.NOMBRES_GUIA:
-            return None  # la Image de Cuerpo se apaga cuando llegan las partes (las piezas la sustituyen)
-        pieza = piezas[n.nombre]
-        return Capa(n, pieza.rect, pieza.imagen, (1, 1, 1, 1), maqueta=True)
 
     # ---- los dos ojos por separado (perezoso)
     def ojos_mitades(self):
@@ -723,7 +716,12 @@ def bisagras(pj, mundo, clip=None, t=0.0):
     return out
 
 
-def prueba_clip(pj, clip, tiempos=None):
+def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
+    """
+    Lo que la prueba mide de un clip (ver la cabecera). «_sin_base» es solo de Personaje.cara_reposo: Algoritm descuenta de (b) lo que sus brazos tapan de la caja de la cara
+    EN REPOSO (INC-136: con el diseno nuevo los hombros caen junto a la cara y rozan la caja ampliada un 30 %, a ~1 %, sin ningun gesto), y para medirlo se corre esta misma
+    prueba sobre un clip vacio sin descontar nada.
+    """
     res = Resultado()
     esc = ESCALA_PRUEBA
     tam = (int(1024 * esc), int(1024 * esc))
@@ -759,7 +757,7 @@ def prueba_clip(pj, clip, tiempos=None):
                 v = abs(vals[r] - previo[1][r]) / (t - previo[0])
                 res.mejor_peor("vel", v, t, r.split("/")[-1])
         previo = (t, vals)
-        mundo, _ = matrices(pj, clip, t)
+        mundo, alfa_t = matrices(pj, clip, t)
         masc = {}
         for capa in capas:
             ruta = capa.nodo.ruta
@@ -824,7 +822,7 @@ def prueba_clip(pj, clip, tiempos=None):
                 res.mejor_peor("cara", 100.0 * (area - tapado) / area, t)
                 if lleva == HD and (T + "/Torso") in masc and indice[T + "/Torso"] > idx_cara:
                     res.mejor_peor("torso", 100.0 * _cuenta(ImageChops.multiply(z, masc[T + "/Torso"])) / area, t)
-        elif zona:
+        elif zona and not (es_guia and alfa_t < ALFA_MIN_CARA_GUIA):
             z = Image.new("L", tam, 0)
             dz = ImageDraw.Draw(z)
             if es_guia:
@@ -890,6 +888,9 @@ def prueba_clip(pj, clip, tiempos=None):
             res.mejor_peor("suelo", bajo - SUELO, t)
     if es_strike:
         res.choque = (choque[2], choque[1], choque[0], limite_cintura(pj))
+    if es_guia and not _sin_base:
+        # (b) de Algoritm mide cuanto TAPA EL GESTO de la caja de la cara, no lo que ya tapan en reposo los hombros que caen junto a ella
+        res.cara = (min(100.0, res.cara[0] + (100.0 - pj.cara_reposo())), res.cara[1])
     return res
 
 
@@ -1293,9 +1294,9 @@ def autoprueba(rig):
         ok = frac < 0.6
         malos += 0 if ok else 1
         print("%-40s %.3f %%  %s" % (pid, frac, "bien" if ok else "LA MAQUETA NO SUMA EL SPRITE"))
-    # Algoritm: sus nueve piezas (maqueta.piezas_guia), sumadas en reposo, son el sprite entero: el corte reparte los pixeles y las rotulas son copias que
-    # caen debajo de lo que ya esta. Si el vientre quedara mordido en un hombro o una cadera, o una pieza se desplazara, la diferencia subiria.
-    print("%-40s %s" % ("las piezas de Algoritm suman el sprite", "diferencia de pixeles en reposo (tope 0,6 %)"))
+    # Algoritm (INC-136): sus siete piezas y la cara provisional, ensambladas en reposo, son su _reposo (el retrato del guia y el Art de las narrativas): preparar_algoritm.py
+    # --reposo lo reescribe desde las mismas piezas. Si alguien cambia las piezas o la tabla y no vuelve a correrlo, el retrato ensenaria otro dibujo y la diferencia subiria.
+    print("%-40s %s" % ("las piezas de Algoritm suman su _reposo", "diferencia de pixeles en reposo (tope 0,6 %)"))
     for pid in ("algoritm_fuego", "algoritm_rueda", "algoritm_gota"):
         pj_ = Personaje(pid, rig)
         sprite = Image.open(P.sprite_por_guid(pj_.arbol[C].imagen["guid"])).convert("RGBA").resize((512, 512), Image.LANCZOS)
@@ -1305,7 +1306,7 @@ def autoprueba(rig):
         frac = 100.0 * _cuenta(dif) / (dif.width * dif.height)
         ok = frac < 0.6
         malos += 0 if ok else 1
-        print("%-40s %.3f %%  %s" % (pid, frac, "bien" if ok else "LAS PIEZAS NO SUMAN EL SPRITE"))
+        print("%-40s %.3f %%  %s" % (pid, frac, "bien" if ok else "LAS PIEZAS NO SUMAN EL _REPOSO: corre preparar_algoritm.py --reposo"))
     # (j) el humero que asoma del codo: el del Nino (termina en un extremo redondo con contorno que cabe en el casquete) no, y el mismo Nino con el
     # antebrazo subido 40 px a lo largo del brazo (el humero se pasa del casquete, como el de Papa antes de codo.py) si
     tabla = copy.deepcopy(P.personaje_rig(rig, "nino"))
@@ -1373,7 +1374,7 @@ def autoprueba(rig):
     return 1 if malos else 0
 
 
-# --------------------------------------------------------------------------- exportar la maqueta de Algoritm
+# --------------------------------------------------------------------------- exportar la maqueta de Algoritm (retirado)
 
 
 CARPETA_PARTES_GUIA = os.path.join(P.PERSONAJES_ARTE, "Algoritm", "Frontal")
@@ -1381,30 +1382,13 @@ CARPETA_PARTES_GUIA = os.path.join(P.PERSONAJES_ARTE, "Algoritm", "Frontal")
 
 def exporta_maqueta(rig, carpeta, ids):
     """
-    --exporta-maqueta: escribe las nueve piezas de cada forma de Algoritm (maqueta.piezas_guia, las mismas que dibuja y prueba esta vista previa) como
-    char_algoritm_<forma>_parte_*.png, con los nombres que fija rig_articulaciones.json, en «carpeta» (por defecto Assets/Game/Art/Characters/Algoritm/Frontal,
-    donde BuildRigsFinal las busca). Cada PNG mide el rect de su pieza a la resolucion del sprite (el lienzo de 1024 a 768 px: rect x 0,75). Despues, en el
-    Editor: «sprites», «orden» y «clips» de BuildRigsFinal, por ese orden. Devuelve cuantos PNG escribio.
+    --exporta-maqueta, RETIRADO (INC-136, 09/10/2026). Escribia las nueve piezas del corte provisional de Algoritm (maqueta.piezas_guia, recortadas de su sprite entero) como
+    char_algoritm_<forma>_parte_*.png. Desde que la entrega del arte final (siete piezas, pierna entera) la sustituyo, las piezas salen de preparar_algoritm.py --aplicar,
+    y volver a correr aquello habria vuelto a escribir un corte que ya no es el del rig (con antepiernas que el generador ya no asigna). Devuelve 0 piezas y dice por que.
     """
-    os.makedirs(carpeta, exist_ok=True)
-    escritos = 0
-    for pid in ids:
-        pj = Personaje(pid, rig)
-        sprites = {}
-        for nd in pj.rig["nodos"]:
-            if nd.get("sprite") and nd["tipo"] in ("imagen", "articulacion"):
-                sprites[nd["imagen"] if nd["tipo"] == "articulacion" else nd["nombre"]] = nd["sprite"]
-        for capa in pj.capas:
-            nombre = capa.nodo.nombre
-            if nombre not in M.NOMBRES_GUIA:
-                continue
-            ruta = os.path.join(carpeta, sprites[nombre] + ".png")
-            capa.imagen.save(ruta, optimize=True)
-            opacos = sum(capa.imagen.getchannel("A").histogram()[1:])
-            print("%-44s %4d x %-4d px  rect %-22s %6d px opacos  %6.1f KB" % (
-                os.path.basename(ruta), capa.imagen.size[0], capa.imagen.size[1], list(capa.rect), opacos, os.path.getsize(ruta) / 1024.0))
-            escritos += 1
-    return escritos
+    print("ERROR --exporta-maqueta esta RETIRADO: Algoritm tiene arte final desde INC-136 (siete piezas por forma y pierna entera). Las piezas de Frontal/ salen de "
+          "preparar_algoritm.py <carpeta_de_la_entrega> --aplicar; maqueta.piezas_guia queda solo como historia del corte provisional del 08/10/2026 (D13).")
+    return 0
 
 
 # --------------------------------------------------------------------------- principal
@@ -1463,8 +1447,7 @@ def main(argv=None):
     ap.add_argument("--mide", metavar="PERSONAJE", help="comprueba las articulaciones del rig contra el alfa de las piezas")
     ap.add_argument("--autoprueba", action="store_true", help="comprueba que la prueba SI falla con poses malas a proposito")
     ap.add_argument("--exporta-maqueta", nargs="?", const=CARPETA_PARTES_GUIA, metavar="CARPETA",
-                    help="escribe las nueve piezas de cada forma de Algoritm (char_algoritm_<forma>_parte_*.png) en CARPETA (por defecto Assets/Game/Art/Characters/Algoritm/Frontal); "
-                         "con --solo, solo esas formas")
+                    help="RETIRADO (INC-136): Algoritm ya no se corta de su sprite entero; sus piezas salen de preparar_algoritm.py")
     a = ap.parse_args(argv)
     a.orden = a.orden.split(",") if a.orden else None
     modos = [m for m, on in (("hoy", a.hoy), ("maqueta", a.maqueta)) if on] or ["hoy", "maqueta"]
@@ -1475,9 +1458,8 @@ def main(argv=None):
 
     if a.exporta_maqueta:
         formas = a.solo or [pid for pid in P.PERSONAJES if P.PERSONAJES[pid][2]]
-        n = exporta_maqueta(rig, a.exporta_maqueta, formas)
-        print("%d PNG escritos en %s" % (n, a.exporta_maqueta))
-        return 0
+        exporta_maqueta(rig, a.exporta_maqueta, formas)
+        return 2
     if a.mide:
         return mide(Personaje(a.mide, rig))
     if a.autoprueba:
@@ -1523,8 +1505,8 @@ def main(argv=None):
     clips_maqueta = None
     for pid in ids:
         if P.PERSONAJES[pid][2]:
-            # Algoritm: su sprite es uno solo, asi que SIEMPRE es maqueta (pose_preview._capa_guia)
-            print("--- %s: maqueta del sprite entero" % pid)
+            # Algoritm (INC-136): siete piezas de Frontal/ y la cara provisional de Expresiones/, tal como las dejara «sprites» (prefabs.simula_sprites)
+            print("--- %s: arte final de siete piezas y cara provisional (un solo arte: hoy = final)" % pid)
             fallos += corrida(pid, "guia", rig, clips, a)
         elif es_final(pid, rig):
             # ya tiene arte final (el Nino; Papa, Mama o Nina tras preparar_arte_final.py --aplicar): lo que hay es lo que habra

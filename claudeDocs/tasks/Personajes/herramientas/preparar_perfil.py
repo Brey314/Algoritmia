@@ -63,7 +63,10 @@
 # COMO ENTREGAR EL ARTE DE PERFIL (para Santiago): un PNG RGBA por pieza, todos del mismo tamano (el lienzo entero con solo su pieza opaca), con la
 #   figura de perfil en reposo (brazos caidos y piernas rectas); las diez piezas —torso con cuello, cabeza con la cara vacia, humero y antebrazo con
 #   la mano, muslo y pierna con el pie, cercanos y lejanos— en Perfil/, y en Expresiones/ la cara con los ojos abiertos y con los ojos cerrados (en
-#   el mismo lienzo). Los extremos redondos se solapan en codos y rodillas. Cabeza delante del torso; el orden de dibujo lo fija el rig.
+#   el mismo lienzo). Los extremos redondos se solapan en codos y rodillas. Cabeza delante del torso; el orden de dibujo lo fija el rig:
+#   LAS PIERNAS, SIEMPRE DETRAS DEL TORSO (Santiago, 09/10/2026). De atras adelante, los hijos de Perfil/Tronco: BrazoLejano, PiernaLejana, PiernaCercana, Torso,
+#   Cuello (con la cabeza y la cara) y BrazoCercano (articulaciones.ORDEN_TRONCO_PERFIL). mide() entrega los nodos en ese orden y la hoja de verificacion (--hoja)
+#   y el composite lo aplican aunque arte_final.json guarde los nodos en otro (capas_de_nodos, articulaciones.ordena_hijos).
 
 import argparse
 import hashlib
@@ -668,9 +671,9 @@ def mide(lec, pid, cadera="borde", previo=None):
 
     nodos = [nodo("Perfil", "grupo", "Lienzo", A.punto(EJE_X, A.SUELO), rect=[0, 0, 1024, 1024]),
              nodo("Tronco", "grupo", A.PF, A.punto(*cadera_tronco), rect=[0, 0, 1024, 1024])]
-    nodos += brazo(LEJOS) + pierna(LEJOS)
+    # de atras adelante (A.ORDEN_TRONCO_PERFIL): brazo lejano, las DOS piernas, torso, cabeza, brazo cercano. Las piernas siempre detras del torso (Santiago, 09/10/2026)
+    nodos += brazo(LEJOS) + pierna(LEJOS) + pierna(CERCA)
     nodos.append(nodo("Torso", "imagen", A.PT, A.punto(*cadera_tronco), sprite=pref + "_torso", rect=r(torso)))
-    nodos += pierna(CERCA)
     nodos.append(nodo("Cuello", "articulacion", A.PT, A.punto(*cuello), imagen="Cabeza", sprite=pref + "_cabeza", rect=r(cab)))
     for nombre, capa in NODOS_CARA:
         nodos.append(nodo(nombre, "imagen", A.PT + "/Cuello/Cabeza", centro_cara, imagen=nombre, sprite="%s_%s" % (pref, capa), rect=list(rect_cara)))
@@ -734,14 +737,16 @@ class PoseFija:
         return self.giros.get(ruta, defecto) if prop == V.K.ROT else defecto
 
 
-def capas_de_nodos(nodos, imagen_de):
+def capas_de_nodos(nodos, imagen_de, orden_tronco=None):
     """
     ([(ruta del que se mueve, rect, imagen)] en orden de dibujo, {ruta: pivote}) de los nodos de una tabla «perfil». Un nodo «imagen» se dibuja el mismo; uno
     «articulacion» dibuja su segmento (la ruta del segmento es la de la articulacion mas «/imagen»); un «grupo» no dibuja y solo da su pivote.
-    imagen_de(sprite) devuelve la imagen o None (un sprite que no esta no se dibuja).
+    imagen_de(sprite) devuelve la imagen o None (un sprite que no esta no se dibuja). Los hijos de Perfil/Tronco se dibujan en el orden de «orden_tronco»
+    (por defecto el del contrato, A.ORDEN_TRONCO_PERFIL: las dos piernas detras del torso), vengan como vengan en la lista: la hoja de verificacion dibuja lo
+    mismo que el motor aunque arte_final.json guarde los nodos en otro orden.
     """
     capas, pivotes = [], {}
-    for n in nodos:
+    for n in A.ordena_hijos(nodos, A.PT, orden_tronco or A.ORDEN_TRONCO_PERFIL):
         ruta = n["padre"] + "/" + n["nombre"]
         pivotes[ruta] = tuple(n["punto"])
         if n["tipo"] == "articulacion":
@@ -757,9 +762,9 @@ def capas_de_nodos(nodos, imagen_de):
     return capas, pivotes
 
 
-def renderiza_nodos(nodos, imagen_de, clip, t=0.0, escala=0.5, region=(40, 30, 984, 990), fondo=(236, 232, 222, 255)):
+def renderiza_nodos(nodos, imagen_de, clip, t=0.0, escala=0.5, region=(40, 30, 984, 990), fondo=(236, 232, 222, 255), orden_tronco=None):
     """El cuerpo de perfil de la tabla «nodos» en el instante t de «clip» (un clip de pose_preview o PoseFija): lo mismo que haria el rig, sin el motor."""
-    capas, pivotes = capas_de_nodos(nodos, imagen_de)
+    capas, pivotes = capas_de_nodos(nodos, imagen_de, orden_tronco)
     mundo = {"": V.mat_id(), "Lienzo": V.mat_id()}
 
     def de(ruta):
@@ -1019,6 +1024,7 @@ def hoja(ruta, ids=None):
             continue
         imagen_de = sprite_del_repo(pid)
         nodos = perfil["nodos"]
+        orden = perfil.get("orden_tronco") or A.ORDEN_TRONCO_PERFIL   # el del contrato: las piernas detras del torso
         por_accion = {c.accion: c for c in V.clips_de(clips, pid)}
         celdas = [("reposo", PoseFija({}), 0.0)]
         for accion, f in (("Walk", 0.25), ("Kneel", 0.65), ("PickUp", 0.5)):
@@ -1026,7 +1032,7 @@ def hoja(ruta, ids=None):
             celdas.append((accion, c, f * c.duracion))
         paneles = []
         for titulo, clip, t in celdas:
-            im = renderiza_nodos(nodos, imagen_de, clip, t, escala=0.42, region=(60, 40, 964, 990))
+            im = renderiza_nodos(nodos, imagen_de, clip, t, escala=0.42, region=(60, 40, 964, 990), orden_tronco=orden)
             d = ImageDraw.Draw(im)
             d.rectangle([0, 0, im.width, 13], fill=(255, 255, 255, 230))
             d.text((4, 1), "%s: %s" % (pid, titulo), fill=(30, 30, 30, 255))
@@ -1039,7 +1045,7 @@ def hoja(ruta, ids=None):
         for titulo, sprite in (("ojos abiertos", ojos), ("ojos cerrados", cerrados)):
             def lookup(s, sprite=sprite, ojos=ojos):
                 return imagen_de(sprite if s == ojos else s)
-            im = renderiza_nodos(nodos, lookup, PoseFija({}), escala=k, region=region)
+            im = renderiza_nodos(nodos, lookup, PoseFija({}), escala=k, region=region, orden_tronco=orden)
             d = ImageDraw.Draw(im)
             d.rectangle([0, 0, im.width, 13], fill=(255, 255, 255, 230))
             d.text((4, 1), "%s: %s" % (pid, titulo), fill=(30, 30, 30, 255))
@@ -1227,6 +1233,18 @@ def autoprueba():
         caso("15 nodos con los mismos nombres, padres y orden que la tabla provisional",
              [(n["nombre"], n["padre"], n["tipo"], n["imagen"], n["sprite"]) for n in res.nodos] == [(n["nombre"], n["padre"], n["tipo"], n["imagen"], n["sprite"]) for n in prov_nodos])
         caso("el orden de los hijos de Tronco es el del contrato", [n["nombre"] for n in res.nodos if n["padre"] == A.PT] == A.ORDEN_TRONCO_PERFIL)
+        # LAS PIERNAS, SIEMPRE DETRAS DEL TORSO (Santiago, 09/10/2026): la hoja de verificacion dibuja en el orden del contrato aunque la lista de nodos traiga el
+        # anterior (la pierna cercana delante del torso); y el torso se dibuja despues de las dos piernas y antes de la cabeza y del brazo cercano
+        viejo = A.ordena_hijos(res.nodos, A.PT, ["BrazoLejano", "PiernaLejana", "Torso", "PiernaCercana", "Cuello", "BrazoCercano"])
+        punto_ = Image.new("RGBA", (2, 2), (0, 0, 0, 255))
+        for etiqueta, lista in (("en el orden del contrato", res.nodos), ("con la lista en el orden anterior", viejo)):
+            capas, _ = capas_de_nodos(lista, lambda s: punto_)
+            hijos = []
+            for ruta_capa, _r, _i in capas:
+                h = ruta_capa.split("/")[3]
+                if h not in hijos:
+                    hijos.append(h)
+            caso("la hoja dibuja las piernas detras del torso " + etiqueta, hijos == A.ORDEN_TRONCO_PERFIL, str(hijos))
         por = {n["nombre"]: n for n in res.nodos}
         caso("Tronco y Torso giran en la cadera cercana", por["Tronco"]["punto"] == por["Torso"]["punto"] == A.punto(*j["CaderaCercana"]))
         caso("el rect del antebrazo termina en la punta de la mano y el de la antepierna en la suela (y = 947)",

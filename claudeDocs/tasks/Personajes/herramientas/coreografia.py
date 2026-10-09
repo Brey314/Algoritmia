@@ -862,8 +862,8 @@ def _brazos_de(rig, pid, arbol, piezas=None):
         e = codo["punto"]
         ruta_ante = (LE if lado == "Izq" else RE) + "/Antebrazo" + lado
         nodo_ante = arbol.get(ruta_ante)
-        # Algoritm siempre se trata como brazo partido (humero y antebrazo): desde el 08/10/2026 su maqueta (maqueta.piezas_guia) y su arte provisional ya
-        # traen el antebrazo suelto, y la mano que prueba pose_preview.py (manos_modelo) tiene que seguir al codo.
+        # Algoritm siempre se trata como brazo partido (humero y antebrazo): desde el 08/10/2026 su arte (primero el corte provisional, desde INC-136 las siete
+        # piezas finales) trae el antebrazo suelto, y la mano que prueba pose_preview.py (manos_modelo) tiene que seguir al codo.
         partido = bool(guia or (nodo_ante is not None and nodo_ante.dibuja()))
         r = codo["rect"]  # el antebrazo del arte final: la mano esta al 80 % de su largo desde el codo
         c = ((r[0] + r[2]) / 2.0, (r[1] + r[3]) / 2.0)
@@ -2813,7 +2813,10 @@ def _clips_familia(x):
 # y los nombres de siempre. Sus brazos son palitos que salen de los costados del vientre y sus MANOS van por ENCIMA de
 # la cara (decision de Santiago, 05/10/2026: «orden_tronco» = Torso, Ojos, Boca, BrazoIzq, BrazoDer): lo que cruce los ojos o
 # la boca los tapa de verdad, asi que ningun gesto pasa por ellos —pose_preview.py exige el 99,5 % de la caja de ojos y boca,
-# ampliada un 30 %, sin brazo encima—. Con el sprite entero actual lo visible no cambia; la prueba usa una maqueta recortada.
+# ampliada un 30 %, sin brazo encima (descontado lo que los hombros ya rozan en reposo)—. INC-136 (09/10/2026): Algoritm tiene arte final de siete piezas
+# (preparar_algoritm.py) y la PIERNA ENTERA: la RodillaX ya no tiene antepierna colgada, asi que las curvas de rodilla de estos clips (cuelga_piernas, Spin,
+# Celebrate, Encourage) giran un nodo VACIO y lo que se ve es la pierna oscilando entera desde la cadera. Los clips no cambian (no leen la geometria del
+# guia: todo son grados); la prueba de pose_preview.py los dibuja con las piezas de Frontal/.
 
 
 def guia_idle(x):

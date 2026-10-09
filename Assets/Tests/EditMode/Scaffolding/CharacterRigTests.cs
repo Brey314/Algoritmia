@@ -98,16 +98,19 @@ namespace Game.Scaffolding.Tests
             Perfil, TroncoDePerfil,
             TroncoDePerfil + "/BrazoLejano", TroncoDePerfil + "/BrazoLejano/CodoLejano", TroncoDePerfil + "/BrazoLejano/CodoLejano/AntebrazoLejano",
             TroncoDePerfil + "/PiernaLejana", TroncoDePerfil + "/PiernaLejana/RodillaLejana", TroncoDePerfil + "/PiernaLejana/RodillaLejana/AntepiernaLejana",
-            TroncoDePerfil + "/Torso",
             TroncoDePerfil + "/PiernaCercana", TroncoDePerfil + "/PiernaCercana/RodillaCercana", TroncoDePerfil + "/PiernaCercana/RodillaCercana/AntepiernaCercana",
+            TroncoDePerfil + "/Torso",
             TroncoDePerfil + "/Cuello", TroncoDePerfil + "/Cuello/Cabeza", TroncoDePerfil + "/Cuello/Cabeza/CaraBase",
             TroncoDePerfil + "/Cuello/Cabeza/Ojos", TroncoDePerfil + "/Cuello/Cabeza/Boca",
             TroncoDePerfil + "/BrazoCercano", TroncoDePerfil + "/BrazoCercano/CodoCercano", TroncoDePerfil + "/BrazoCercano/CodoCercano/AntebrazoCercano",
         };
 
-        /// <summary>El orden en que se dibujan los hijos de Tronco del perfil, de atrás adelante: lo lejano, el torso, lo cercano.</summary>
+        /// <summary>
+        /// El orden en que se dibujan los hijos de Tronco del perfil, de atrás adelante: el brazo lejano y las dos piernas al
+        /// fondo (las piernas, siempre detrás del torso: Santiago, 09/10/2026), luego el torso, la cabeza y el brazo cercano delante.
+        /// </summary>
         private static readonly string[] OrdenDeDibujoDelPerfil =
-            { "BrazoLejano", "PiernaLejana", "Torso", "PiernaCercana", "Cuello", "BrazoCercano" };
+            { "BrazoLejano", "PiernaLejana", "PiernaCercana", "Torso", "Cuello", "BrazoCercano" };
 
         /// <summary>
         /// Los huesos del perfil que cada clip tiene que girar, como <c>HuesosDeLaFamilia</c> con el frente: el
@@ -302,11 +305,13 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// Algoritm se dibuja por partes desde el 08/10/2026 (D13): el torso, los dos brazos con su antebrazo y las dos
-        /// piernas con su antepierna llevan el sprite de SU forma (cada una va recoloreada, INC-52) y están encendidos, y la
-        /// Image de Cuerpo —el sprite entero— se apaga: si siguiera encendida se vería doble, y el brazo que se mueve dejaría
-        /// su copia quieta detrás. Los ojos y la boca siguen apagados: la cara va pintada en el torso, y una capa de cara sin
-        /// su sprite pintaría un recuadro blanco. Con el arte final se sustituyen los PNG con el mismo nombre.
+        /// Algoritm se dibuja por partes (INC-136, 09/10/2026: el arte final de la entrega del 09/10, que sustituye al corte provisional de nueve piezas del
+        /// 08/10): SIETE piezas por forma —el torso, los dos brazos con su antebrazo y las dos piernas ENTERAS— llevan el sprite de SU forma (cada una va
+        /// recoloreada, INC-52) y están encendidas; la Image de Cuerpo —el sprite entero— se apaga: si siguiera encendida se vería doble, y el brazo que se mueve
+        /// dejaría su copia quieta detrás. La pierna no está partida: la AntepiernaX (bajo la RodillaX, que sigue existiendo para los clips) no lleva sprite y está
+        /// apagada —sin referencia rota a un PNG borrado, que pintaría un recuadro blanco—. La entrega no trae cara: Ojos y Boca llevan la cara PROVISIONAL sacada
+        /// del sprite de hoy (char_algoritm_&lt;forma&gt;_ojos_neutra y _boca_0, en Expresiones/). Con el arte del artista se sustituyen los PNG con el mismo nombre.
+        /// FALLA mientras no se haya corrido el modo «sprites» del generador (BuildRigsFinal.cs.txt) sobre los prefabs de Algoritm, y debe pasar justo después.
         /// </summary>
         [Test]
         public void CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga(
@@ -319,8 +324,7 @@ namespace Game.Scaffolding.Tests
                 Tronco + "/Torso",
                 Tronco + "/BrazoIzq", Tronco + "/BrazoIzq/CodoIzq/AntebrazoIzq",
                 Tronco + "/BrazoDer", Tronco + "/BrazoDer/CodoDer/AntebrazoDer",
-                Cuerpo + "/PiernaIzq", Cuerpo + "/PiernaIzq/RodillaIzq/AntepiernaIzq",
-                Cuerpo + "/PiernaDer", Cuerpo + "/PiernaDer/RodillaDer/AntepiernaDer",
+                Cuerpo + "/PiernaIzq", Cuerpo + "/PiernaDer",
             };
 
             foreach (var ruta in partes)
@@ -330,10 +334,20 @@ namespace Game.Scaffolding.Tests
                 Assert.That(imagen.sprite.name, Does.StartWith($"char_algoritm_{forma}_parte_"), $"{nombre}: {ruta} lleva su pieza de la forma {forma}");
             }
 
-            Assert.That(rig.transform.Find(Cuerpo).GetComponent<Image>().enabled, Is.False, $"{nombre}: el sprite entero de Cuerpo se apaga");
-            foreach (var cara in new[] { "Ojos", "Boca" })
+            foreach (var ruta in new[] { Cuerpo + "/PiernaIzq/RodillaIzq/AntepiernaIzq", Cuerpo + "/PiernaDer/RodillaDer/AntepiernaDer" })
             {
-                Assert.That(rig.transform.Find($"{Tronco}/{cara}").GetComponent<Image>().enabled, Is.False, $"{nombre}: {cara} sigue apagado, la cara va en el torso");
+                var imagen = rig.transform.Find(ruta).GetComponent<Image>();
+                Assert.That(imagen.enabled, Is.False, $"{nombre}: {ruta} no se dibuja, la pierna es entera");
+                Assert.That(imagen.sprite, Is.Null, $"{nombre}: {ruta} no guarda la referencia a un sprite que ya no existe");
+            }
+
+            Assert.That(rig.transform.Find(Cuerpo).GetComponent<Image>().enabled, Is.False, $"{nombre}: el sprite entero de Cuerpo se apaga");
+            var caras = new[] { ("Ojos", "ojos_neutra"), ("Boca", "boca_0") };
+            foreach (var (cara, sprite) in caras)
+            {
+                var imagen = rig.transform.Find($"{Tronco}/{cara}").GetComponent<Image>();
+                Assert.That(imagen.enabled && imagen.sprite != null, Is.True, $"{nombre}: {cara} se dibuja con la cara provisional");
+                Assert.That(imagen.sprite.name, Is.EqualTo($"char_algoritm_{forma}_{sprite}"), $"{nombre}: {cara} lleva la cara de la forma {forma}");
             }
         }
 
@@ -945,7 +959,7 @@ namespace Game.Scaffolding.Tests
 
             var tronco = rig.transform.Find(TroncoDePerfil);
             var indices = OrdenDeDibujoDelPerfil.Select(hijo => Orden(tronco, nombre, hijo)).ToArray();
-            Assert.That(indices, Is.Ordered.Ascending, $"{nombre}: lo lejano al fondo, luego el torso, lo cercano delante ({string.Join(", ", OrdenDeDibujoDelPerfil)})");
+            Assert.That(indices, Is.Ordered.Ascending, $"{nombre}: lo lejano y las piernas al fondo, luego el torso, la cabeza y el brazo cercano delante ({string.Join(", ", OrdenDeDibujoDelPerfil)})");
 
             var torso = rig.transform.Find(TroncoDePerfil + "/Torso").GetComponent<Image>();
             Assert.That(torso, Is.Not.Null, $"{nombre}: el torso de perfil es una Image");

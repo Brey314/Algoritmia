@@ -24,8 +24,9 @@
 # familia al final de Tronco: el antebrazo SIGUE bajo su codo en el arbol (las rutas y la geometria no cambian) y solo se dibuja delante del
 # torso y de la cara, como hace el motor con el ancla bajo el codo; las piezas de la maqueta no se enteran.
 #
-# ALGORITM (08/10/2026, D13): al final de este archivo, piezas_guia parte el sprite entero de cada forma en las nueve piezas del JSON. Ya no es solo una
-# vista previa: pose_preview.py --exporta-maqueta las escribe como char_algoritm_<forma>_parte_*.png y son el arte provisional de los prefabs.
+# ALGORITM (08/10/2026, D13): al final de este archivo, piezas_guia parte el sprite entero de cada forma en las nueve piezas del JSON. Fue el arte
+# provisional de los prefabs (pose_preview.py --exporta-maqueta las escribia como char_algoritm_<forma>_parte_*.png). RETIRADO el 09/10/2026 (INC-136): el arte
+# final de Algoritm son siete piezas con la pierna entera (preparar_algoritm.py) y pose_preview.py ya no corta nada; piezas_guia queda como historia del corte.
 
 import math
 import os
@@ -252,9 +253,8 @@ def pieza_o_png(arbol, piezas, ruta):
 # El sprite de Algoritm (char_algoritm_n1_fuego_reposo.png y sus dos recoloreados, 768 px) es UNO solo: la llama, el vientre de colores, los
 # palos de los brazos y las piernas, las manos y los pies. piezas_guia lo parte en las NUEVE piezas que pide rig_articulaciones.json (el
 # torso y, a cada lado, brazo = humero, antebrazo, pierna = muslo y antepierna) para que los brazos y las piernas se muevan por separado.
-# pose_preview.py las dibuja y las prueba (Personaje._capa_guia) y su --exporta-maqueta las escribe como char_algoritm_<forma>_parte_*.png,
-# que es lo que el modo «sprites» de BuildRigsFinal asigna al prefab. Cuando llegue el arte final de Algoritm se sustituyen esos PNG por los
-# nuevos con el mismo nombre y se vuelve a correr «sprites» (con las medidas del arte nuevo en el JSON, como en la familia).
+# pose_preview.py las dibujaba y las probaba y su --exporta-maqueta las escribia como char_algoritm_<forma>_parte_*.png (RETIRADO, INC-136: el arte final de
+# Algoritm lo sustituyo con siete piezas de pierna entera; ver preparar_algoritm.py). Esta funcion ya no la llama nadie.
 #
 # COMO SE CORTA. Cortar por rects no sirve: los brazos van en diagonal y salen del borde curvo del vientre, y un rect se llevaba un trozo del
 # contorno del vientre en cada hombro y cada cadera (al girar la extremidad el trozo se iba con ella y el vientre quedaba mordido). Aqui:

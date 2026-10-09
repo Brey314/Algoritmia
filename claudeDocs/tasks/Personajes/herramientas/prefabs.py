@@ -58,7 +58,8 @@ HD = NK + "/Cabeza"
 
 # INC-134 (09/10/2026): el cuerpo de PERFIL de la familia, un segundo cuerpo junto a Lienzo/Cuerpo que se enciende en las acciones de
 # ActionView (Walk, Run, Carry, Push, PickUp, Kneel, Blow). Todo cuelga de UN Tronco con el pivote en la cadera, y los hijos de Tronco van en
-# este orden de dibujo (de atras adelante): BrazoLejano, PiernaLejana, Torso, PiernaCercana, Cuello, BrazoCercano. «Cercano» es el lado que
+# este orden de dibujo (de atras adelante): BrazoLejano, PiernaLejana, PiernaCercana, Torso, Cuello, BrazoCercano (las piernas, SIEMPRE detras del torso:
+# Santiago, 09/10/2026). «Cercano» es el lado que
 # mira al espectador; el arte canonico mira a la DERECHA (el motor voltea el Lienzo para mirar a la izquierda). Papa, Mama, Nina y Nino; Algoritm no tiene.
 PF = "Lienzo/Perfil"
 PT = PF + "/Tronco"
@@ -365,7 +366,7 @@ def caja_contenido(png, rect):
     return (rect[0] + b[0] / w * rw, rect[1] + b[1] / h * rh, rect[0] + b[2] / w * rw, rect[1] + b[3] / h * rh)
 
 
-def simula_sprites(arbol, rig_pj):
+def simula_sprites(arbol, rig_pj, apaga_faltantes=False):
     """
     El estado del prefab DESPUES de correr «sprites» en el Editor (BuildRigsFinal.cs.txt): cada parte y cada
     nodo de imagen que el rig_articulaciones.json nombra y cuyo PNG existe en Assets/Game/Art/Characters/<carpeta>
@@ -373,6 +374,10 @@ def simula_sprites(arbol, rig_pj):
     (el prefab del disco aun es el provisional), coreografia.py y pose_preview.py ya tratan al personaje como
     lo que sera: brazos y piernas partidos, cabeza propia. Es idempotente: sobre un prefab que ya paso por
     «sprites» no cambia nada. Lo que no tiene PNG se deja como esta (apagado).
+
+    «apaga_faltantes» (Algoritm, INC-136, 09/10/2026): «sprites» tambien APAGA y VACIA la Image de un nodo de la tabla cuyo PNG no existe o cuya tabla no le da
+    sprite (la AntepiernaX de Algoritm: la pierna es entera y el PNG de la antepierna se borro; sin esto el prefab del disco, que aun la lleva encendida, la daria
+    por «segmentada»). Solo para los guias: en la familia un nodo sin PNG nace apagado y no se toca.
     """
     carpeta = rig_pj["carpeta"]
     candidatos = []
@@ -413,21 +418,31 @@ def simula_sprites(arbol, rig_pj):
         n.activo = True
         n.imagen = {"encendida": True, "guid": "ruta:" + png, "aspecto": previa.get("aspecto", False),
                     "color": previa.get("color", (1.0, 1.0, 1.0, 1.0))}
+    if apaga_faltantes:
+        con_png = {ruta for ruta, sprite in candidatos if _png_de(carpeta, sprite) is not None}
+        for nodo in rig_pj["nodos"]:
+            if nodo["tipo"] not in ("imagen", "articulacion"):
+                continue
+            base = nodo["padre"] + "/" + nodo["nombre"]
+            ruta = base + "/" + nodo["imagen"] if nodo["tipo"] == "articulacion" else base
+            n = arbol.get(ruta)
+            if n is not None and n.imagen is not None and ruta not in con_png:
+                n.imagen = dict(n.imagen, encendida=False, guid=None)
     return arbol
 
 
 def arbol_vigente(pid, rig=None):
     """
     El arbol del prefab del personaje tal como quedara tras «sprites» (simula_sprites) y «orden» (aplicar_orden_tronco: el orden de
-    dibujo de Tronco con los antebrazos delante, INC-133). Algoritm no pasa por «sprites»: su arte es un solo sprite. Es el que usan
+    dibujo de Tronco con los antebrazos delante, INC-133). Algoritm pasa por «sprites» desde INC-136 (siete piezas de Frontal/ y la cara de Expresiones/; la
+    AntepiernaX, sin PNG, queda apagada). Es el que usan
     coreografia.py (leer_contexto: lo que tapa a cada brazo depende del orden), pose_preview.py y maqueta.py. Da el mismo arbol con un prefab
     que ya paso por «orden» (leer_arbol lo lee con el antebrazo bajo su codo y «sigue») que con uno anterior (aplicar_orden_tronco lo simula).
     """
     rig = rig or cargar_rig()
     arbol = leer_arbol(PERSONAJES[pid][0])
     pj = personaje_rig(rig, pid)
-    if not PERSONAJES[pid][2]:
-        simula_sprites(arbol, pj)
+    simula_sprites(arbol, pj, apaga_faltantes=PERSONAJES[pid][2])   # Algoritm tambien (INC-136): sus siete piezas y la cara provisional salen de Frontal/ y Expresiones/
     if pj.get("orden_tronco"):
         aplicar_orden_tronco(arbol, pj["orden_tronco"])
     return arbol
