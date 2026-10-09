@@ -1002,7 +1002,7 @@ final de Algoritm, en siete piezas por forma (C.13, INC-136).*
 
 Rama `feat/personajes-animados`, de `ce89320` (el merge de `main`) a `64f3dd1`. Lo que sigue se verificó contra `git show` de cada commit y contra los archivos del árbol, salvo lo marcado como no verificado. El runtime y las herramientas se escribieron en la nube, sin Unity; la ronda 1 del Editor la corrió la sesión local de Santiago. Es el registro de lo hecho; el estado vigente está en `Direccion_de_Arte.md` §7.3, §7.6 y §13.4 y en CLAUDE.md.
 
-> **Verificación en el Editor: ronda 1 hecha, ronda 2 pendiente.** Con la ronda 1 (`9966bcb`) los cuatro prefabs de la familia tienen `Lienzo/Perfil`, y `Game.Scaffolding.Tests` pasa 351/351 y `NarrativeScene_` 107/107 en PlayMode. `2cd8a75` cambió después el orden de dibujo del perfil y metió el arte final de Algoritm, y **eso aún no se ha corrido en el Editor**: ver «Ronda 2 del Editor».
+> **Verificación en el Editor: rondas 1 y 2 hechas.** Con la ronda 1 (`9966bcb`) los cuatro prefabs de la familia tienen `Lienzo/Perfil`, y `Game.Scaffolding.Tests` pasa 351/351 y `NarrativeScene_` 107/107 en PlayMode. `2cd8a75` cambió después el orden de dibujo del perfil y metió el arte final de Algoritm; la ronda 2 (09/10/2026, `f20b271`) lo aplicó a los prefabs y corrió la suite completa: EditMode 710 de 711 (1 omitida), PlayMode 417/417. Falta, de lo verificable, el build con la medida de RNF-06: ver «Ronda 2 del Editor».
 
 **Decisiones de Santiago Benavides Rey (09/10/2026).** Las tres abren INC propio.
 
@@ -1113,20 +1113,31 @@ Las piezas se solapan en los extremos redondos; la holgura entre los centros, en
 | `eb9be13`, Editor, antes de generar los prefabs | suite integrada, 1128 corridas | EditMode 706/711 (los 4 rojos esperados, `CharacterRig_INC134_LaFamiliaTieneCuerpoDePerfilConArte`, y 1 omitida por entorno); PlayMode 416/417 (1 inconclusa, `RiverScene_INC134_…`, por el `Assume`) |
 | `9966bcb`, Editor | `Game.Scaffolding.Tests` | 351/351 |
 | `9966bcb`, Editor | `tests-play NarrativeScene_` | 107/107 |
-| `2cd8a75`, Editor | modos `perfil`, `sprites` y `clips` con el orden nuevo y Algoritm | **pendiente** (ronda 2) |
-| Resto de grupos de PlayMode y `suite2.ps1` | `RiverScene_`, `Fire`, `Forest`, `Credits`, `MainMenu`; la suite completa | **pendiente** (ronda 2) |
+| `64f3dd1`, Editor (ronda 2) | modos `estado → perfil → sprites → clips → estado`; comparación de los prefabs objeto por objeto | ningún fileID perdido ni cambiado |
+| Árbol de la ronda 2, Editor | `Game.Scaffolding.Tests` | 348/351: las 3 rojas, `CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga`, una por forma (ver «Ronda 2 del Editor») |
+| Árbol de la ronda 2, Editor | `tests-play`: `NarrativeScene_` 107/107, `RiverScene_` 23/23, `Fire` 76/76, `Forest` 40/40, `Credits` 6/6, `MainMenu` 19/19 y `Personajes_DA133_CapturaCadaMecanicaConSusPersonajes` 5/5 | pasan |
+| `b4aed0e`, Editor | `estado` sin referencias a sprites borrados en los siete prefabs; `sprites` idempotente; `Game.Scaffolding.Tests` | siete prefabs byte a byte iguales al repetir; 351/351 |
+| `b4aed0e`, Editor | `suite2.ps1`, 23,9 min | EditMode 711 (710 pasan, 0 fallan, 1 omitida); PlayMode 417/417; cobertura 1128/1128 |
 
-**Ronda 2 del Editor (pendiente).** Para la sesión local, en este orden. Marcar al hacerlo.
+**Ronda 2 del Editor (hecha, 09/10/2026).** Sesión local en el equipo de Santiago, sobre `64f3dd1`. Quedó como sigue; lo que falta va marcado.
 
-- [ ] `git pull` de la rama; `editor.ps1 recompile`. Si hay errores de compilación, copiar el texto exacto y no arreglarlos sin avisar.
-- [ ] Copiar el `BuildRigsFinal.cs.txt` nuevo a `Assets/Editor/ClaudeBuildRigsFinal.cs`, recompilar y correr con `execute_script` los modos `estado → perfil → sprites → clips → estado`. No hacen falta `nodos` ni `orden`: el de frente no cambió.
-- [ ] Comparar los prefabs objeto por objeto contra `HEAD` (fileID, tipo, `m_Script`, `m_Controller`, `m_Sprite`): en la familia solo puede cambiar el orden de hermanos de `Perfil/Tronco`; en Algoritm, los sprites de las siete piezas, la `Antepierna` sin sprite y apagada, la cara provisional y el `CharacterFaceSet` cableado.
-- [ ] `tests-edit Game.Scaffolding.Tests` (incluye `CharacterRig_INC134_LaFamiliaTieneCuerpoDePerfilConArte` y `CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga`, que deben pasar justo después de `perfil` y `sprites`); `tests-play` de `NarrativeScene_`, `RiverScene_`, `Fire`, `Forest`, `Credits` y `MainMenu`.
-- [ ] La suite completa con `suite2.ps1`, una sola vez (≈ 21 min); reiniciar antes el Editor para que `RiverLevel_RNF05` no falle por la memoria acumulada.
-- [ ] Capturas en `claudeDocs/tasks/Personajes/capturas/2026-10-09/` con `NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes` y `Personajes_DA133_CapturaCadaMecanicaConSusPersonajes`, y las de los créditos y el menú.
-- [ ] Revisión de las capturas: en las 18 narrativas, quien camina va de perfil hacia donde se mueve y en reposo de frente; Mamá, en el río, mira a la izquierda con ← y ↑ y a la derecha con → y ↓; Papá, de perfil al recoger, soplar y arrodillarse y de frente al golpear; el parpadeo es visible de los dos lados del perfil; ninguna pose en T; las piernas detrás del torso; la asimetría de peinados y prendas al mirar a la izquierda; Algoritm en sus tres formas (el disco del Nivel 2 con su cara, y los dos defectos de D20, que se esperan resueltos sin la rodilla).
-- [ ] Compilar el ejecutable y medir con `oe4.ps1` (`Tamano`, RNF-04, RNF-05). Si RNF-06 se pasa, **preguntar** antes de aplicar el tope de 1024 px a `Characters/**`.
-- [ ] Con el visto bueno de Santiago, commit de lo generado (prefabs, clips, `.meta`, sets de cara) con el mensaje que se dé, y borrar el andamiaje (`Assets/Editor/…`).
+- [x] `git pull` de la rama y `editor.ps1 recompile`.
+- [x] Modos `estado → perfil → sprites → clips → estado` de `BuildRigsFinal` (sin `nodos` ni `orden`). `perfil` reordenó `Perfil/Tronco` en Papá, Mamá, Niña y Niño: las dos piernas quedan detrás del torso y solo cambia el orden de hermanos. `sprites` aplicó el arte final de Algoritm en los tres prefabs, con siete piezas por forma y la cara provisional (`Ojos`, `Boca` y `char_algoritm_<forma>_cara.asset` en `CharacterFace.faceSet`).
+- [x] Comparación objeto por objeto contra `HEAD`: ningún fileID perdido ni cambiado.
+- [x] Pruebas. `Game.Scaffolding.Tests` dio primero 348/351 (ver abajo); tras la corrección, 351/351. PlayMode: `NarrativeScene_` 107/107, `RiverScene_` 23/23, `Fire` 76/76, `Forest` 40/40, `Credits` 6/6 y `MainMenu` 19/19.
+- [x] Suite completa con `suite2.ps1` (23,9 min), sobre `b4aed0e`: EditMode 711 (710 pasan, 0 fallan, 1 omitida), PlayMode 417/417, cobertura 1128/1128.
+- [x] Capturas en `claudeDocs/tasks/Personajes/capturas/2026-10-09/` (`0212469`): 144, de ellas 139 líneas narrativas de `NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes` y las 5 mecánicas de `Personajes_DA133_CapturaCadaMecanicaConSusPersonajes` (5/5). Van en JPEG de calidad 90 a resolución completa (26,7 MB); los PNG originales, 183 MB, quedaron fuera del repositorio para no inflar el LFS. No hay capturas de los créditos ni del menú: sus grupos de PlayMode pasan.
+- [x] Revisión de una muestra de las capturas (orquestador). De perfil al recoger y al arrodillarse, mirando hacia su lado y con las piernas detrás del torso (`Personajes_N1_Hallazgo_L16`, Papá arrodillado; `Personajes_N2_PuenteI_Bosque_L01`, Mamá, Niña y Niño recogiendo). De frente en reposo en las cinco mecánicas. Algoritm con el diseño final y la cara provisional en sus tres formas (`Personajes_N1_AparicionGuia_L07`, llama; `Personajes_N2_Escena21_Bosque_L01`, disco; `Personajes_N3_Escena31_Llegada_L02`, gota), sin los anillos de las rótulas de D20 porque la pierna es entera. **Límites:** la prueba captura cada línea cuando su movimiento ya terminó, así que no hay captura de una caminata a mitad de paso (el perfil al caminar lo cubre `NarrativeScene_INC134_QuienSeDesplazaVaDePerfilHaciaDondeCamina`); el talón claro del hombro girado (D20) no se ve en reposo y **sigue sin comprobarse**; una captura fija no muestra el parpadeo.
+- [ ] Compilar el ejecutable y medir con `oe4.ps1` (`Tamano`, RNF-04, RNF-05). **Pendiente.** Si RNF-06 se pasa, **preguntar** antes de aplicar el tope de 1024 px a `Characters/**`.
+- [x] Commit de lo generado: `f20b271`, con los siete prefabs y `Algoritm/Expresiones/` (los `.meta` de las seis caras y los tres `_cara.asset`). El andamiaje de `Assets/Editor/` se borró.
+
+**Las tres correcciones del generador.** Las 3 pruebas rojas de `Game.Scaffolding.Tests` eran `CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga` (una por forma): la `AntepiernaX` conservaba la referencia al PNG borrado de la antepierna.
+
+1. `ad4fd58`: limpiar la referencia por la propiedad serializada. No compiló en Unity 6.5, porque `SerializedProperty.objectReferenceInstanceIDValue` es obsoleto con error en favor de `EntityId`.
+2. `24ce278`: detectarla por el «nulo falso» de `Image.sprite`. Dio falsos positivos: en el Editor, todo campo `UnityEngine.Object` serializado y sin asignar es también un nulo falso, así que marcó las antepiernas ya limpias y el `CaraBase` de perfil de Papá, vacío a propósito porque no lleva rubor.
+3. `b4aed0e`: la referencia rota se busca en el YAML del prefab, como un GUID de `m_Sprite` que `AssetDatabase.GUIDToAssetPath` no resuelve; la prueba DA131 usa el `==` de Unity y comprueba el archivo.
+
+*Lección (09/10/2026).* En Unity 6.5, `== null` y `Image.sprite` devuelven el «nulo falso» tanto para una referencia rota como para un campo serializado sin asignar, y `objectReferenceInstanceIDValue` ya no compila: para saber si un prefab apunta a un sprite borrado se lee el archivo, no el objeto en memoria.
 
 **Puntos abiertos.**
 
@@ -1134,7 +1145,7 @@ Las piezas se solapan en los extremos redondos; la holgura entre los centros, en
 - **La cara de Algoritm** (`ojos_neutra`, `ojos_parpadeo_cerrado` y `boca_0` como mínimo, sobre el lienzo de 1300 × 1500): hasta entonces, la del sprite anterior, marcada `cara_provisional` y sin parpadeo ni habla. Pedida al artista.
 - **El riesgo del Nivel 2:** el disco de madera se parece a la sección de un tronco y está cerca del acento `#C79A5E`; sin cara se lee como un prop. Hay que verlo en la captura del bosque.
 - **Los tonos de piel y el contorno negro** del arte final no son los de `Direccion_de_Arte.md` §4.1; decisión de Santiago.
-- **Los radicados** que describen el diseño anterior de Algoritm (guion §1.1.1, las notas de las dos escenas puente, el trabajo de grado) esperan su autorización; `Interfaces.md` §4.3 y la dirección de sonido §6.1 también lo describen y están por revisar.
-- **Peso y memoria** del arte de perfil y de Algoritm: sin medir en un ejecutable.
-- **Las fuentes del OE3** (`claudeDocs/entregables/OE3/src/`, Anexo F §2.12 y tablas) y la republicación en Word no nombran todavía INC-134 a INC-136.
+- **Los radicados** que describen el diseño anterior de Algoritm (guion §1.1.1, las notas de las dos escenas puente, el trabajo de grado) esperan su autorización; `Interfaces.md` §4.3 y la dirección de sonido §6.1, que también lo describían, se revisaron en `1e2fb6a`.
+- **Peso y memoria** del arte de perfil y de Algoritm: sin medir en un ejecutable (el build y `oe4.ps1 Tamano` siguen pendientes tras la ronda 2).
+- **La republicación en Word del OE3**: sus fuentes (`claudeDocs/entregables/OE3/src/`, Anexo F apartado 2.13 y tablas) ya nombran INC-134 a INC-136 desde `1e2fb6a`, pero los `.docx` publicados todavía no.
 - Siguen sin ejecutarse el retrato animado del cuadro de diálogo y las emociones de las 18 narrativas.

@@ -530,8 +530,9 @@ se corre el modo `sprites`. La regla de no tristeza, enfado ni derrota de §7.3 
 
 **Los dos defectos del 08/10/2026** (decisión D20 del brief de esa ronda) eran de las rótulas de las
 piezas provisionales: los anillos oscuros en los fundidos (`Appear`, `Vanish`, `Hidden`) y el talón
-claro de unos 12 px en el hombro girado. Con la rodilla fuera se espera que se hayan ido, pero
-**no se ha comprobado**: se verifican en las capturas de la ronda 2 del Editor.
+claro de unos 12 px en el hombro girado. Con la rodilla fuera, los anillos
+ya no se ven en las capturas de la ronda 2 del Editor (09/10/2026, `claudeDocs/tasks/Personajes/capturas/2026-10-09/`):
+la pierna es entera. El talón claro del hombro girado no se ve en reposo y **sigue sin comprobarse**.
 
 Sustituyen a `char_chispa_*`. La palabra `chispa` queda libre para lo que siempre fue en
 este juego: el rayo del golpe del Nivel 1 (§12.2), que dibuja el motor, no tiene archivo y no

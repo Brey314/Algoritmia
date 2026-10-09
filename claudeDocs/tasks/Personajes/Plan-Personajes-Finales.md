@@ -54,7 +54,7 @@
 > **Actualización del 09/10/2026 (INC-134 a INC-136).** Este plan no se reescribe; esta nota fija lo que
 > cambió. Detalle en `Personajes-Resultados.md`, C.13.
 >
-> **Perfil (§4, Fase 4.4 y casilla 2.4): ejecutado; ronda 1 del Editor hecha, ronda 2 pendiente.** Llegó el
+> **Perfil (§4, Fase 4.4 y casilla 2.4): ejecutado; rondas 1 y 2 del Editor hechas.** Llegó el
 > arte de perfil de Papá, Mamá, la Niña y el Niño y Santiago decidió que el personaje se ve de perfil
 > siempre que recorre o trabaja el entorno (INC-134). Difiere del plan así: (1) **no existe
 > `CharacterOrientation`** (`Front`, `ProfileLeft`, `ProfileRight`) ni un `Facing` del rig: la vista la decide
@@ -89,9 +89,15 @@
 > no se cumplen para él. Escala que conserva la altura de hoy (`preparar_algoritm.py`), cara provisional del
 > sprite anterior hasta que llegue la del artista, y los tres `_reposo` rehechos en su sitio.
 >
-> **Siguen pendientes:** la ronda 2 del Editor (el orden nuevo de las piernas, los sprites y la cara de
-> Algoritm, pruebas, `suite2`, capturas y medición de RNF-06); los ojos cerrados de frente; la cara de
-> Algoritm; el retrato animado del cuadro de diálogo (4.1) y poblar emociones en los 18 `N*_*.asset`.
+> **Ronda 2 del Editor (09/10/2026, `f20b271`): hecha.** `perfil` dejó las piernas detrás del torso en los
+> cuatro prefabs de la familia y `sprites` aplicó el arte final de Algoritm en sus tres formas, sin perder ni
+> cambiar ningún fileID. `suite2.ps1`: EditMode 710 de 711 (1 omitida), PlayMode 417/417. Las capturas (144,
+> en JPEG) están en `claudeDocs/tasks/Personajes/capturas/2026-10-09/` (`0212469`). Detalle, las tres
+> correcciones del generador y los límites de la revisión en `Personajes-Resultados.md`, C.13.
+>
+> **Siguen pendientes:** el build y la medida de RNF-06 con `oe4.ps1 Tamano`; los ojos cerrados de frente;
+> la cara de Algoritm; el retrato animado del cuadro de diálogo (4.1) y poblar emociones en los 18
+> `N*_*.asset`.
 
 ---
 
