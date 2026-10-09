@@ -309,8 +309,10 @@ namespace Game.Scaffolding.Tests
         /// 08/10): SIETE piezas por forma —el torso, los dos brazos con su antebrazo y las dos piernas ENTERAS— llevan el sprite de SU forma (cada una va
         /// recoloreada, INC-52) y están encendidas; la Image de Cuerpo —el sprite entero— se apaga: si siguiera encendida se vería doble, y el brazo que se mueve
         /// dejaría su copia quieta detrás. La pierna no está partida: la AntepiernaX (bajo la RodillaX, que sigue existiendo para los clips) no lleva sprite y está
-        /// apagada —sin referencia rota a un PNG borrado, que pintaría un recuadro blanco—. La entrega no trae cara: Ojos y Boca llevan la cara PROVISIONAL sacada
-        /// del sprite de hoy (char_algoritm_&lt;forma&gt;_ojos_neutra y _boca_0, en Expresiones/). Con el arte del artista se sustituyen los PNG con el mismo nombre.
+        /// apagada —sin referencia rota a un PNG borrado, que pintaría un recuadro blanco—. En el Editor un sprite sin asignar es también un nulo falso, igual que la
+        /// referencia rota, así que ésta se comprueba en el archivo del prefab (ningún GUID de m_Sprite sin asset) y no con Is.Null. La entrega no trae cara: Ojos y
+        /// Boca llevan la cara PROVISIONAL sacada del sprite de hoy (char_algoritm_&lt;forma&gt;_ojos_neutra y _boca_0, en Expresiones/). Con el arte del artista se
+        /// sustituyen los PNG con el mismo nombre.
         /// FALLA mientras no se haya corrido el modo «sprites» del generador (BuildRigsFinal.cs.txt) sobre los prefabs de Algoritm, y debe pasar justo después.
         /// </summary>
         [Test]
@@ -338,8 +340,21 @@ namespace Game.Scaffolding.Tests
             {
                 var imagen = rig.transform.Find(ruta).GetComponent<Image>();
                 Assert.That(imagen.enabled, Is.False, $"{nombre}: {ruta} no se dibuja, la pierna es entera");
-                Assert.That(imagen.sprite, Is.Null, $"{nombre}: {ruta} no guarda la referencia a un sprite que ya no existe");
+                Assert.That(imagen.sprite == null, Is.True, $"{nombre}: {ruta} no lleva sprite"); // el == de Unity: el nulo falso del Editor también cuenta como vacío
             }
+
+            // La referencia rota se mira en el archivo del prefab: en el Editor Image.sprite da el mismo nulo falso para un PNG borrado que para un sprite vacío.
+            var rotas = new List<string>();
+            foreach (Match referencia in Regex.Matches(System.IO.File.ReadAllText($"{Carpeta}{nombre}.prefab"), @"m_Sprite: \{fileID: -?\d+, guid: ([0-9a-fA-F]{32})"))
+            {
+                var guid = referencia.Groups[1].Value;
+                if (!guid.StartsWith("0000000000000000", StringComparison.Ordinal) && string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(guid)) && !rotas.Contains(guid))
+                {
+                    rotas.Add(guid);
+                }
+            }
+
+            Assert.That(rotas, Is.Empty, $"{nombre}: ninguna Image guarda la referencia a un sprite que ya no existe (un PNG borrado)");
 
             Assert.That(rig.transform.Find(Cuerpo).GetComponent<Image>().enabled, Is.False, $"{nombre}: el sprite entero de Cuerpo se apaga");
             var caras = new[] { ("Ojos", "ojos_neutra"), ("Boca", "boca_0") };

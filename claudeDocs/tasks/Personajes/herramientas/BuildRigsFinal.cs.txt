@@ -41,9 +41,10 @@
 //             y apaga la Image de Cuerpo en Algoritm cuando sus partes ya están. Lo que no existe se
 //             deja apagado y se anota en el log: un nodo imagen sin PNG queda con la Image apagada Y SIN
 //             SPRITE (INC-136: la AntepiernaX de Algoritm, cuyo PNG se borró con la pierna entera, no puede
-//             conservar una referencia rota; el modo la vacía y la apaga: Image.sprite da por nula una referencia a un
-//             PNG borrado y su setter no la limpia, así que se detecta y se vacía por la propiedad serializada m_Sprite
-//             y cuenta como cambio, aunque la Image ya estuviera apagada). En Algoritm la cara provisional
+//             conservar una referencia rota; el modo la vacía y la apaga: en el Editor Image.sprite da un nulo falso
+//             tanto para una referencia a un PNG borrado como para un sprite vacío, y su setter no limpia la rota, así que
+//             se detecta en el archivo del prefab (BrokenSpriteGuids: un GUID de m_Sprite sin asset) y se vacía por la
+//             propiedad serializada m_Sprite; cuenta como cambio, aunque la Image ya estuviera apagada). En Algoritm la cara provisional
 //             (char_algoritm_<forma>_ojos_neutra y _boca_0, en Expresiones/) enciende Ojos y Boca y crea o
 //             actualiza Expresiones/char_algoritm_<forma>_cara.asset, que cablea en CharacterFace.faceSet
 //             (EyesNeutral y MouthClosed; sin cuadro de ojos cerrados no parpadea). Con el prefab
@@ -90,7 +91,7 @@
 //             antebrazos del codo, dónde está cada uno y si tiene ancla; y, por personaje, el estado del cuerpo de perfil:
 //             si Lienzo/Perfil existe y su activación, los nodos que están, las Image con sprite y encendidas, el cableado
 //             de CharacterFace.profileEyes/profileMouth/profileFaceSet, el _cara.asset de perfil y el orden de Perfil/Tronco;
-//             y las Image que guardan la referencia a un sprite borrado: «REFERENCIA A SPRITE BORRADO en …», que «sprites» vacía).
+//             y las referencias a sprites borrados que guarda el archivo del prefab: «REFERENCIA A SPRITE BORRADO: n (guid …)», que «sprites» vacía).
 //
 // DÓNDE VIVE LA COREOGRAFÍA. Ya NO está en este archivo: la escribe herramientas/coreografia.py y la
 // entrega como herramientas/clips_personajes.json, con las curvas ya calculadas de cada clip (ruta,
@@ -168,6 +169,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Game.Scaffolding;
 using UnityEditor;
 using UnityEngine;
@@ -1716,12 +1718,13 @@ public static class ClaudeBuildRigsFinal
     private static void ApplySprites(Personaje c, List<string> log)
     {
         var path = PrefabPath(c);
+        var clearBroken = BrokenSpriteGuids(path).Count > 0; // se mira en el archivo, antes de abrirlo: ya abierto, la referencia rota y la vacía son el mismo nulo falso
         var root = PrefabUtility.LoadPrefabContents(path);
         try
         {
             var done = new List<string>();
             var missing = new List<string>();
-            var faced = ApplySpritesOf(root, c, done, missing, log);
+            var faced = ApplySpritesOf(root, c, done, missing, log, clearBroken);
 
             var profileDone = new List<string>();
             var profileMissing = new List<string>();
@@ -1733,7 +1736,7 @@ public static class ClaudeBuildRigsFinal
                 }
                 else
                 {
-                    faced |= ApplySpritesOf(root, c.perfil, profileDone, profileMissing, log);
+                    faced |= ApplySpritesOf(root, c.perfil, profileDone, profileMissing, log, clearBroken);
                 }
             }
 
@@ -1759,9 +1762,11 @@ public static class ClaudeBuildRigsFinal
     /// <summary>
     /// Lo que hace «sprites» con UN cuerpo del prefab (el de frente, o el de perfil si «c» es c.perfil): asigna por nombre los PNG que existan a las partes y
     /// a los nodos de la tabla, aplica rect y pivote, enciende las Image, y crea o actualiza el juego de cara. Rellena «done» y «missing» y devuelve si el
-    /// cableado de la cara cambió. No guarda: lo hace quien llama.
+    /// cableado de la cara cambió. No guarda: lo hace quien llama. «clearBroken» dice que el archivo del prefab guarda al menos una referencia a un sprite
+    /// borrado (BrokenSpriteGuids): Image.sprite no distingue esa referencia de un sprite vacío, así que, si es true, toda Image sin PNG se vacía y se apaga
+    /// aunque no se sepa cuál era la rota.
     /// </summary>
-    private static bool ApplySpritesOf(GameObject root, Personaje c, List<string> done, List<string> missing, List<string> log)
+    private static bool ApplySpritesOf(GameObject root, Personaje c, List<string> done, List<string> missing, List<string> log, bool clearBroken)
     {
         // 1. Las partes que ya existen: sprite, rect y pivote. Primero ellas, porque sus hijos se anclan a su rect.
         if (c.partes != null)
@@ -1823,24 +1828,14 @@ public static class ClaudeBuildRigsFinal
                 // Sin PNG: la Image queda apagada Y SIN SPRITE. La de un nodo nuevo ya nace así y aquí no cambia nada; la que tenía un sprite (la AntepiernaX de
                 // Algoritm: su pierna es entera desde INC-136 y el PNG de la antepierna se borró) no puede quedarse con una referencia rota —un sprite que Unity ya no
                 // encuentra deja la Image encendida y pinta un recuadro blanco—, así que se vacía y se apaga. Cuenta como cambio: sin él no se guardaría el prefab.
-                // La referencia rota se reconoce por el nulo falso de Image.sprite y se vacía por la propiedad serializada (HasMissingSprite, ClearSprite): el setter no la limpia.
-                if (image != null)
+                // La referencia rota se detecta en el archivo del prefab (BrokenSpriteGuids, «clearBroken»), no en la Image: en el Editor Image.sprite da el mismo nulo falso
+                // para una referencia rota que para un sprite vacío, y su setter no limpia ninguno de los dos. Se vacía por la propiedad serializada (ClearSprite). Con un
+                // sprite real y cargable (image.sprite != null, el == de Unity) o con la Image encendida también se vacía y se apaga.
+                if (image != null && (clearBroken || image.sprite != null || image.enabled))
                 {
-                    var broken = HasMissingSprite(image);
-                    if (broken || image.sprite != null || image.enabled)
-                    {
-                        if (broken)
-                        {
-                            ClearSprite(image);
-                        }
-                        else
-                        {
-                            image.sprite = null;
-                        }
-
-                        image.enabled = false;
-                        done.Add(image.name + (broken ? " (referencia a sprite borrado)" : " (sin sprite)"));
-                    }
+                    ClearSprite(image);
+                    image.enabled = false;
+                    done.Add(image.name + " (sin sprite)");
                 }
 
                 continue;
@@ -1884,38 +1879,56 @@ public static class ClaudeBuildRigsFinal
     }
 
     /// <summary>
-    /// La Image guarda la referencia a un sprite que ya no existe (se borró el PNG con su .meta): m_Sprite conserva el GUID y el fileID, pero Unity no encuentra
-    /// el asset. Image.sprite NO la limpia: devuelve un «nulo falso» (un objeto que el == de Unity da por nulo pero que no es null) y su setter compara ese nulo
-    /// falso con el null que recibe, ve «nulo = nulo» y no escribe nada, así que el prefab se guardaría con la referencia rota. Ese nulo falso es justo lo que la
-    /// delata, y es lo mismo que mira CharacterRig_DA131 (Is.Null compara referencias). No se usa el id de instancia de la propiedad serializada:
-    /// objectReferenceInstanceIDValue es un error de compilación en Unity 6.5 (obsoleto en favor de EntityId).
+    /// Los GUID que el prefab guarda en algún m_Sprite y que ya no apuntan a ningún asset (se borró el PNG con su .meta; m_Sprite conserva el GUID y el fileID).
+    /// Se leen del ARCHIVO del prefab y no de la Image: en el Editor todo campo UnityEngine.Object serializado y sin asignar se rellena con un «nulo falso»
+    /// (para que Unity pueda lanzar UnassignedReferenceException), de modo que Image.sprite devuelve ese mismo objeto —no es null, pero su == da true— tanto para
+    /// una referencia rota como para un sprite simplemente vacío, y no hay forma de distinguirlos desde ahí. Tampoco sirve el id de instancia de la propiedad
+    /// serializada (objectReferenceInstanceIDValue): es un error de compilación en Unity 6.5 (obsoleto en favor de EntityId). Se saltan los GUID incorporados de
+    /// Unity (0000000000000000…), que nunca tienen ruta. Devuelve los GUID distintos, o una lista vacía si el archivo no existe.
     /// </summary>
-    private static bool HasMissingSprite(Image image)
+    private static List<string> BrokenSpriteGuids(string prefabPath)
     {
-        var sprite = image.sprite;
-        return !ReferenceEquals(sprite, null) && sprite == null;
+        var broken = new List<string>();
+        if (!File.Exists(prefabPath))
+        {
+            return broken;
+        }
+
+        foreach (var match in Regex.Matches(File.ReadAllText(prefabPath, System.Text.Encoding.UTF8), @"m_Sprite: \{fileID: -?\d+, guid: ([0-9a-fA-F]{32})").Cast<Match>())
+        {
+            var guid = match.Groups[1].Value;
+            if (guid.StartsWith("0000000000000000", StringComparison.Ordinal) || broken.Contains(guid))
+            {
+                continue;
+            }
+
+            if (string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(guid)))
+            {
+                broken.Add(guid);
+            }
+        }
+
+        return broken;
     }
 
     /// <summary>
-    /// Vacía m_Sprite por la propiedad serializada, que sí escribe la referencia rota (ver HasMissingSprite); si aun así queda el nulo falso, escribe null en el
-    /// campo privado m_Sprite de la Image, que se serializa como {fileID: 0} al guardar el prefab. Sin Undo: el prefab viene de LoadPrefabContents.
+    /// Vacía m_Sprite por la propiedad serializada, que sí escribe la referencia rota, y después, siempre, escribe null en el campo privado m_Sprite de la Image
+    /// (se serializa como {fileID: 0} al guardar el prefab): el setter Image.sprite no sirve, porque compara el nulo falso con el null que recibe y no escribe nada.
+    /// Sin Undo: el prefab viene de LoadPrefabContents.
     /// </summary>
     private static void ClearSprite(Image image)
     {
         var so = new SerializedObject(image);
         so.FindProperty("m_Sprite").objectReferenceValue = null;
         so.ApplyModifiedPropertiesWithoutUndo();
-        if (!HasMissingSprite(image))
-        {
-            return;
-        }
 
         var field = typeof(Image).GetField("m_Sprite", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         if (field != null)
         {
             field.SetValue(image, null);
-            EditorUtility.SetDirty(image);
         }
+
+        EditorUtility.SetDirty(image);
     }
 
     /// <summary>Dónde vive el set de la cara de un personaje: en su subcarpeta Expresiones; el de la cara de perfil (INC-134), en Perfil/ y con el prefijo de perfil (char_&lt;x&gt;_perfil_cara.asset).</summary>
@@ -2372,25 +2385,20 @@ public static class ClaudeBuildRigsFinal
         var face = root.GetComponent<CharacterFace>();
         log.Add(c.prefab + " [" + c.nodos.Length + " nodos, " + c.partes.Length + " partes en la tabla]: " + (missing.Count == 0 ? "nodos completos" : "FALTAN " + string.Join(", ", missing.ToArray()))
             + " | CharacterFace " + (face == null ? "no" : "sí") + " | segmentado " + (IsSegmented(root.transform) ? "sí" : "no")
-            + " | " + FaceSetState(c) + " | " + OrderState(root.transform, c) + " | " + LimbState(root.transform, c) + " | " + BrokenSpriteState(root));
+            + " | " + FaceSetState(c) + " | " + OrderState(root.transform, c) + " | " + LimbState(root.transform, c) + " | " + BrokenSpriteState(PrefabPath(c)));
         log.Add(c.prefab + " (perfil) " + ProfileState(root, c));
     }
 
-    /// <summary>Las Image del prefab que guardan la referencia a un sprite que ya no existe (un PNG borrado): «sprites» las vacía. Solo lee. No lanza.</summary>
-    private static string BrokenSpriteState(GameObject root)
+    /// <summary>
+    /// Las referencias a sprites que ya no existen (un PNG borrado) que guarda el archivo del prefab, por su GUID (BrokenSpriteGuids): «sprites» las vacía. Se lee
+    /// el archivo y no la Image porque en el Editor Image.sprite da el mismo nulo falso para una referencia rota que para un sprite vacío. Solo lee.
+    /// </summary>
+    private static string BrokenSpriteState(string prefabPath)
     {
-        var broken = new List<string>();
-        foreach (var image in root.GetComponentsInChildren<Image>(true))
-        {
-            if (HasMissingSprite(image))
-            {
-                broken.Add(image.name);
-            }
-        }
-
-        return broken.Count == 0
+        var guids = BrokenSpriteGuids(prefabPath);
+        return guids.Count == 0
             ? "sin referencias a sprites borrados"
-            : "REFERENCIA A SPRITE BORRADO en " + string.Join(", ", broken.ToArray()) + " (correr «sprites»)";
+            : "REFERENCIA A SPRITE BORRADO: " + guids.Count + " (guid " + string.Join(", ", guids.ToArray()) + ") (correr «sprites»)";
     }
 
     /// <summary>
