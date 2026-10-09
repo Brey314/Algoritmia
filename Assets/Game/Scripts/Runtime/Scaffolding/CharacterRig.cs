@@ -62,6 +62,14 @@ namespace Game.Scaffolding
         [Tooltip("Acciones durante las que los brazos se dibujan DELANTE del torso, para que se vea el choque de las manos delante del pecho. Al terminarlas vuelven a su sitio. Vacío = nunca. En Algoritm no cambia nada: sus brazos ya van delante del cuerpo.")]
         private ActorAction[] armsInFrontActions = { ActorAction.Strike };
 
+        // Decisión de Santiago (08/10/2026, D9): la portada del menú pone a los cinco personajes en Idle, y con
+        // el mismo arranque respirarían al unísono. La fase solo vale para Idle: cualquier otra acción es un
+        // gesto que empieza en su primer cuadro.
+        [SerializeField]
+        [Range(0f, 1f)]
+        [Tooltip("Dónde del ciclo arranca el reposo (Idle), en fracción de su duración: 0 = en su primer cuadro. Personajes que se ven juntos en reposo —la portada del menú— llevan fases distintas para no respirar al unísono. Solo afecta al Idle; el gesto de cualquier otra acción empieza siempre en su primer cuadro.")]
+        private float idlePhase;
+
         private Vector2 _fittedSize = new Vector2(-1f, -1f);
         private bool _mirrored;
         private bool _started;
@@ -74,6 +82,9 @@ namespace Game.Scaffolding
 
         /// <summary>La última acción pedida.</summary>
         public ActorAction Current { get; private set; } = ActorAction.Idle;
+
+        /// <summary>Dónde del ciclo arranca el reposo, de 0 a 1 (ver el campo <c>idlePhase</c>).</summary>
+        public float IdlePhase => idlePhase;
 
         /// <summary>
         /// La emoción que el guion fija para este personaje (<see cref="ActorBeat.SetsEmotion"/>);
@@ -252,7 +263,7 @@ namespace Game.Scaffolding
             if (!_started || immediate)
             {
                 _started = true;
-                animator.Play(state, 0, 0f);
+                animator.Play(state, 0, state == IdleState ? idlePhase : 0f);
                 animator.Update(0f);
             }
             else

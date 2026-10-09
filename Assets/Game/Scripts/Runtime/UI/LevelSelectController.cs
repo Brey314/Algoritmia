@@ -42,6 +42,8 @@ namespace Game.UI
         internal Button ButtonFor(LevelId level) => Find(level).button;
         internal bool LockBadgeShownFor(LevelId level) => Find(level).lockedBadge.activeSelf;
         internal bool CompletedBadgeShownFor(LevelId level) => Find(level).completedBadge.activeSelf;
+        internal GameObject LockedBadgeFor(LevelId level) => Find(level).lockedBadge;
+        internal GameObject CompletedBadgeFor(LevelId level) => Find(level).completedBadge;
 #endif
 
         private LevelEntry Find(LevelId level) => Array.Find(entries, entry => entry.level == level);
