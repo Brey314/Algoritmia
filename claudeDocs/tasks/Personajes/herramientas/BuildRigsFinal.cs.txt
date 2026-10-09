@@ -1823,7 +1823,7 @@ public static class ClaudeBuildRigsFinal
                 // Sin PNG: la Image queda apagada Y SIN SPRITE. La de un nodo nuevo ya nace así y aquí no cambia nada; la que tenía un sprite (la AntepiernaX de
                 // Algoritm: su pierna es entera desde INC-136 y el PNG de la antepierna se borró) no puede quedarse con una referencia rota —un sprite que Unity ya no
                 // encuentra deja la Image encendida y pinta un recuadro blanco—, así que se vacía y se apaga. Cuenta como cambio: sin él no se guardaría el prefab.
-                // La referencia rota se pregunta y se vacía por la propiedad serializada (HasMissingSprite, ClearSprite): Image.sprite ya la da por nula y su setter no la limpia.
+                // La referencia rota se reconoce por el nulo falso de Image.sprite y se vacía por la propiedad serializada (HasMissingSprite, ClearSprite): el setter no la limpia.
                 if (image != null)
                 {
                     var broken = HasMissingSprite(image);
@@ -1885,27 +1885,37 @@ public static class ClaudeBuildRigsFinal
 
     /// <summary>
     /// La Image guarda la referencia a un sprite que ya no existe (se borró el PNG con su .meta): m_Sprite conserva el GUID y el fileID, pero Unity no encuentra
-    /// el asset. Image.sprite NO la delata ni la limpia: devuelve un «nulo falso» (un objeto que == da por nulo pero que no es null) y su setter compara ese nulo
-    /// falso con el null que recibe, ve «nulo = nulo» y no escribe nada, así que el prefab se guardaría con la referencia rota. Solo la propiedad serializada la
-    /// distingue de una vacía: sin objeto (objectReferenceValue nulo) pero con un id de instancia distinto de 0. El nulo falso de Image.sprite es el segundo aviso.
+    /// el asset. Image.sprite NO la limpia: devuelve un «nulo falso» (un objeto que el == de Unity da por nulo pero que no es null) y su setter compara ese nulo
+    /// falso con el null que recibe, ve «nulo = nulo» y no escribe nada, así que el prefab se guardaría con la referencia rota. Ese nulo falso es justo lo que la
+    /// delata, y es lo mismo que mira CharacterRig_DA131 (Is.Null compara referencias). No se usa el id de instancia de la propiedad serializada:
+    /// objectReferenceInstanceIDValue es un error de compilación en Unity 6.5 (obsoleto en favor de EntityId).
     /// </summary>
     private static bool HasMissingSprite(Image image)
     {
-        var prop = new SerializedObject(image).FindProperty("m_Sprite");
-        if (prop != null && prop.objectReferenceValue == null && prop.objectReferenceInstanceIDValue != 0)
-        {
-            return true;
-        }
-
-        return !ReferenceEquals(image.sprite, null) && image.sprite == null;
+        var sprite = image.sprite;
+        return !ReferenceEquals(sprite, null) && sprite == null;
     }
 
-    /// <summary>Vacía m_Sprite por la propiedad serializada, que sí escribe la referencia rota (ver HasMissingSprite). Sin Undo: el prefab viene de LoadPrefabContents.</summary>
+    /// <summary>
+    /// Vacía m_Sprite por la propiedad serializada, que sí escribe la referencia rota (ver HasMissingSprite); si aun así queda el nulo falso, escribe null en el
+    /// campo privado m_Sprite de la Image, que se serializa como {fileID: 0} al guardar el prefab. Sin Undo: el prefab viene de LoadPrefabContents.
+    /// </summary>
     private static void ClearSprite(Image image)
     {
         var so = new SerializedObject(image);
         so.FindProperty("m_Sprite").objectReferenceValue = null;
         so.ApplyModifiedPropertiesWithoutUndo();
+        if (!HasMissingSprite(image))
+        {
+            return;
+        }
+
+        var field = typeof(Image).GetField("m_Sprite", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        if (field != null)
+        {
+            field.SetValue(image, null);
+            EditorUtility.SetDirty(image);
+        }
     }
 
     /// <summary>Dónde vive el set de la cara de un personaje: en su subcarpeta Expresiones; el de la cara de perfil (INC-134), en Perfil/ y con el prefijo de perfil (char_&lt;x&gt;_perfil_cara.asset).</summary>
