@@ -504,9 +504,20 @@ namespace Game.UI
             rigRect.anchorMin = Vector2.zero;
             rigRect.anchorMax = Vector2.one;
             rigRect.offsetMin = rigRect.offsetMax = Vector2.zero;
+            rig.Mirrored = MirroredInSlot(prop, ActorTimeline.FacesLeftAt(prop, 0));
             rig.Play(prop.ActorStart);
             _actors.Add(new Actor(prop, rect, rig));
         }
+
+        /// <summary>
+        /// El valor de <c>CharacterRig.Mirrored</c> con el que el personaje queda mirando a
+        /// <paramref name="facesLeft"/> en la pantalla (INC-134). La casilla (<c>Prop_i</c>) ya va volteada
+        /// si el objeto se declaró <see cref="NarrativeProp.Mirrored"/>, y el rig cuelga de ella: sin
+        /// compensar, el perfil se espejaría dos veces y miraría al lado contrario. Se combinan con un O
+        /// exclusivo —voltear dos veces es no voltear—, y como el O exclusivo es su propia inversa, la misma
+        /// función convierte también un <c>Mirrored</c> del rig en el lado que se ve en pantalla.
+        /// </summary>
+        private static bool MirroredInSlot(NarrativeProp prop, bool facesLeft) => facesLeft ^ prop.Mirrored;
 
         /// <summary>
         /// Lo que cada personaje hace en la línea que acaba de aparecer, según sus pasos: lo que
@@ -536,6 +547,8 @@ namespace Game.UI
                 StopWalking(actor);
                 var cue = ActorTimeline.Cue(actor.Prop, line, actor.Rig.Speaks(speaker));
                 SetAnchor(actor.Rect, cue.From);
+                // INC-134: el lado se fija antes de la acción, así el cuadro en que cambia a perfil ya mira bien.
+                actor.Rig.Mirrored = MirroredInSlot(actor.Prop, ActorTimeline.FacesLeftAt(actor.Prop, line));
                 actor.Rig.Play(cue.During);
                 actor.Rig.EmotionOverride = cue.Emotion; // null = la de la acción
                 if (cue.Moves)
@@ -584,7 +597,10 @@ namespace Game.UI
             var pending = ActorTimeline.PendingStep(actor.Prop, step, Dialogue.Index);
             if (pending != null)
             {
-                // Sale de donde llegó y no de donde el paso decía empezar: así no salta (RNF-21).
+                // Sale de donde llegó y no de donde el paso decía empezar: así no salta (RNF-21). Y mira hacia
+                // donde va este paso, no hacia donde iba el anterior (INC-134); si no decide nada, conserva el lado.
+                var facesLeft = ActorTimeline.FacesLeftOfStep(pending, cue.To, MirroredInSlot(actor.Prop, actor.Rig.Mirrored));
+                actor.Rig.Mirrored = MirroredInSlot(actor.Prop, facesLeft);
                 actor.Rig.Play(pending.Action);
                 actor.Rig.EmotionOverride = ActorTimeline.EmotionAt(actor.Prop, Dialogue.Index);
                 actor.Moving = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
@@ -594,6 +610,8 @@ namespace Game.UI
             }
 
             var now = ActorTimeline.Cue(actor.Prop, Dialogue.Index, actor.Rig.Speaks(Dialogue.Current?.Speaker));
+            // INC-134: al llegar mira donde le toca en la línea que se lee; con el camino recién hecho es el mismo lado.
+            actor.Rig.Mirrored = MirroredInSlot(actor.Prop, ActorTimeline.FacesLeftAt(actor.Prop, Dialogue.Index));
             actor.Rig.Play(now.Moves ? now.After : now.During);
             actor.Rig.EmotionOverride = now.Emotion;
         }

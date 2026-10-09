@@ -19,6 +19,13 @@ namespace Game.Scaffolding
     public static class ActorTimeline
     {
         /// <summary>
+        /// Lo mínimo que tiene que medir un desplazamiento, en fracciones de la ilustración, para que
+        /// diga hacia dónde mira el personaje (INC-134): un paso de una centésima no se ve y el rumbo que
+        /// saliera de él sería ruido.
+        /// </summary>
+        private const float MinimumDisplacement = 0.01f;
+
+        /// <summary>
         /// La indicación para la línea <paramref name="line"/>: dónde está al empezarla, si se
         /// mueve y a dónde, y qué hace durante y después.
         /// </summary>
@@ -158,6 +165,154 @@ namespace Game.Scaffolding
             }
 
             return pending;
+        }
+
+        /// <summary>
+        /// Si el personaje mira a la izquierda (<c>true</c>) o a la derecha (<c>false</c>) cuando su
+        /// acción se ve de perfil en la línea <paramref name="line"/> (INC-134). No dice si va de perfil
+        /// —eso lo decide la acción, <see cref="ActionView"/>—, solo el lado. Se resuelve en este orden:
+        /// <list type="number">
+        /// <item>el <see cref="ActorBeat.Facing"/> explícito del paso que rige en la línea
+        /// (<see cref="ExplicitFacingAt"/>);</item>
+        /// <item>hacia donde se desplaza el paso con movimiento de esa misma línea
+        /// (<see cref="Heading.FacesLeft"/>), si el desplazamiento mide al menos una centésima;</item>
+        /// <item>hacia donde se desplazó la última vez antes de la línea: quien se arrodilla o empuja
+        /// después de caminar sigue mirando hacia donde iba;</item>
+        /// <item>hacia donde se desplazará la primera vez después: quien espera antes de partir ya
+        /// mira hacia allá;</item>
+        /// <item>hacia el centro de la ilustración, si nunca se mueve: un personaje a la izquierda mira
+        /// a la derecha y al revés, como quien mira la escena.</item>
+        /// </list>
+        /// </summary>
+        public static bool FacesLeftAt(NarrativeProp prop, int line)
+        {
+            var explicitFacing = ExplicitFacingAt(prop, line);
+            if (explicitFacing.HasValue)
+            {
+                return explicitFacing.Value;
+            }
+
+            var beat = BeatAt(prop, line);
+            if (beat != null && beat.Moves)
+            {
+                var own = HeadingOfDisplacement(PositionBefore(prop, line), beat.Destination);
+                if (own.HasValue)
+                {
+                    return own.Value;
+                }
+            }
+
+            // El último desplazamiento anterior que se vea (o con rumbo fijado a mano). Con dos en la misma línea
+            // manda el último de la lista, como BeatAt; uno que no se ve (menos de una centésima) y no fija el
+            // rumbo no cuenta y deja valer el previo.
+            bool? previous = null;
+            var latest = -1;
+            foreach (var step in prop.Beats)
+            {
+                if (step != null && step.Moves && step.Line < line && step.Line >= latest)
+                {
+                    // El rumbo fijado a mano de ese paso pesa más que su desplazamiento (INC-134).
+                    var heading = FacesLeftOf(step.Facing) ?? HeadingOfDisplacement(PositionBefore(prop, step.Line), step.Destination);
+                    if (heading.HasValue)
+                    {
+                        previous = heading;
+                        latest = step.Line;
+                    }
+                }
+            }
+
+            if (previous.HasValue)
+            {
+                return previous.Value;
+            }
+
+            // El primer desplazamiento posterior que se vea.
+            bool? next = null;
+            var earliest = int.MaxValue;
+            foreach (var step in prop.Beats)
+            {
+                if (step != null && step.Moves && step.Line > line && step.Line <= earliest)
+                {
+                    var heading = FacesLeftOf(step.Facing) ?? HeadingOfDisplacement(PositionBefore(prop, step.Line), step.Destination);
+                    if (heading.HasValue)
+                    {
+                        next = heading;
+                        earliest = step.Line;
+                    }
+                }
+            }
+
+            if (next.HasValue)
+            {
+                return next.Value;
+            }
+
+            return prop.Position.x >= 0.5f;
+        }
+
+        /// <summary>
+        /// El rumbo que el guion fija a mano para la línea: el <see cref="ActorBeat.Facing"/> del paso que
+        /// rige en ella —el último que empieza en la línea o antes, y si hay dos en la misma, el último de
+        /// la lista, como <see cref="EmotionAt"/>—. <c>true</c> = izquierda, <c>false</c> = derecha, <c>null</c>
+        /// = Auto, o ningún paso todavía. **Rige un solo paso:** uno posterior que no lo declara lo devuelve
+        /// a Auto, así que un rumbo fijado no sobrevive, sin quererlo, a un paso que camina hacia el otro lado.
+        /// </summary>
+        internal static bool? ExplicitFacingAt(NarrativeProp prop, int line)
+        {
+            ActorBeat inForce = null;
+            foreach (var beat in prop.Beats)
+            {
+                if (beat != null && beat.Line <= line && (inForce == null || beat.Line >= inForce.Line))
+                {
+                    inForce = beat;
+                }
+            }
+
+            return inForce == null ? null : FacesLeftOf(inForce.Facing);
+        }
+
+        /// <summary>
+        /// El rumbo de un paso que arranca en <paramref name="from"/>: el suyo explícito, o hacia donde se
+        /// desplaza, o <paramref name="fallback"/> si no decide nada. Es la regla del paso encadenado de quien
+        /// termina sus pasos (<see cref="PendingStep"/>), que sale de donde llegó y no de donde el paso decía
+        /// empezar.
+        /// </summary>
+        public static bool FacesLeftOfStep(ActorBeat step, Vector2 from, bool fallback)
+        {
+            if (step == null)
+            {
+                return fallback;
+            }
+
+            var explicitFacing = FacesLeftOf(step.Facing);
+            if (explicitFacing.HasValue)
+            {
+                return explicitFacing.Value;
+            }
+
+            return (step.Moves ? HeadingOfDisplacement(from, step.Destination) : null) ?? fallback;
+        }
+
+        /// <summary>Hacia dónde mira un desplazamiento de <paramref name="from"/> a <paramref name="to"/>; <c>null</c> si mide menos de <see cref="MinimumDisplacement"/>.</summary>
+        private static bool? HeadingOfDisplacement(Vector2 from, Vector2 to)
+        {
+            var delta = to - from;
+            if (delta.sqrMagnitude < MinimumDisplacement * MinimumDisplacement)
+            {
+                return null;
+            }
+
+            return Heading.FacesLeft(delta);
+        }
+
+        private static bool? FacesLeftOf(ActorFacing facing)
+        {
+            switch (facing)
+            {
+                case ActorFacing.Left: return true;
+                case ActorFacing.Right: return false;
+                default: return null;
+            }
         }
 
         /// <summary>Lo que el personaje mantiene al llegar a la línea: lo que dejó el último paso anterior, o su salida.</summary>

@@ -1361,6 +1361,98 @@ namespace Game.Levels.Fire.Tests
             Assert.That(arrodillado, Is.True, "y se queda arrodillado mientras nace el fuego (guion §1.4.4)");
         }
 
+        // --- INC-134: Papá de perfil mirando al montón; de frente al golpear -------------------
+
+        /// <summary>
+        /// Al recoger, Papá mira hacia el montón (Santiago, 09/10/2026, INC-134): el lado se recalcula en cada
+        /// gesto, así que si Papá estuviera al otro lado del fuego miraría hacia el otro. Con arte de perfil
+        /// la vista es la de la acción y el lienzo se voltea solo si el montón queda a su izquierda; sin él
+        /// (los prefabs de antes de la ronda del Editor) Papá recoge de frente y lo único que se comprueba
+        /// es el lado que recuerda.
+        /// </summary>
+        [Test]
+        [Timeout(20000)]
+        public async Task FireLevel_INC134_PapaMiraAlMontonAlRecoger()
+        {
+            var controller = await LoadPanel();
+            var papa = Papa(controller);
+            var hojas = controller.Pieces.Where(piece => piece.Kind == PieceKind.Leaf).Take(2).ToArray();
+            Assume.That(hojas, Has.Length.EqualTo(2), "hay dos hojas que recoger");
+
+            // Primero donde está Papá en la escena, y después al otro lado del fuego (reflejado sobre él).
+            for (var vuelta = 0; vuelta < 2; vuelta++)
+            {
+                if (vuelta == 1)
+                {
+                    var casilla = (RectTransform)papa.transform;
+                    var posicion = casilla.position;
+                    posicion.x = 2f * CentroX(controller.FireSpot) - posicion.x;
+                    casilla.position = posicion;
+                }
+
+                var origen = RectTransformUtility.WorldToScreenPoint(null, hojas[vuelta].transform.position);
+                ExecuteEvents.Execute(hojas[vuelta].gameObject, Pointer(origen, origen), ExecuteEvents.beginDragHandler);
+
+                Assert.That(papa.Current, Is.EqualTo(ActorAction.PickUp), $"vuelta {vuelta}: Papá recoge");
+                var montonALaIzquierda = CentroX(controller.FireSpot) < CentroX((RectTransform)papa.transform);
+                Assert.That(papa.Mirrored, Is.EqualTo(montonALaIzquierda), $"vuelta {vuelta}: mira hacia el montón");
+                AssertVistaDeLaAccion(papa, ActorAction.PickUp, montonALaIzquierda);
+
+                ExecuteEvents.Execute(hojas[vuelta].gameObject, Pointer(origen, origen), ExecuteEvents.endDragHandler);
+            }
+        }
+
+        /// <summary>Al soplar y al quedarse arrodillado, Papá mira hacia el montón, de perfil si tiene arte de perfil.</summary>
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_INC134_PapaMiraAlMontonAlSoplarYAlArrodillarse()
+        {
+            var controller = await LoadPanel();
+            var papa = Papa(controller);
+
+            await ConvergeAndBlow(controller);
+            var montonALaIzquierda = CentroX(controller.FireSpot) < CentroX((RectTransform)papa.transform);
+            Assert.That(papa.Current, Is.EqualTo(ActorAction.Blow), "Papá sopla sobre el montón");
+            Assert.That(papa.Mirrored, Is.EqualTo(montonALaIzquierda), "y mira hacia él");
+            AssertVistaDeLaAccion(papa, ActorAction.Blow, montonALaIzquierda);
+
+            var arrodillado = await WaitUntilAsync(() => papa.Current == ActorAction.Kneel, 3f);
+            Assert.That(arrodillado, Is.True, "y se queda arrodillado");
+            Assert.That(papa.Mirrored, Is.EqualTo(montonALaIzquierda), "mirando hacia el mismo lado");
+            AssertVistaDeLaAccion(papa, ActorAction.Kneel, montonALaIzquierda);
+        }
+
+        /// <summary>
+        /// Golpear las piedras es de frente (las manos chocan delante del pecho) y el frente nunca se espeja por
+        /// el rumbo: aunque Papá esté a la derecha del fuego, y por tanto «mire a la izquierda», su lienzo no se
+        /// voltea.
+        /// </summary>
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_INC134_PapaGolpeaDeFrenteSinEspejo()
+        {
+            var controller = await LoadPanel();
+            var papa = Papa(controller);
+            await Reunir(controller);
+            controller.ForceSlider.value = EffectiveForce;
+            controller.SpacingSlider.value = EffectiveSpacing;
+
+            // Papá al otro lado del fuego, para que el lado que recuerda sea el contrario al de la escena.
+            var casilla = (RectTransform)papa.transform;
+            var posicion = casilla.position;
+            posicion.x = CentroX(controller.FireSpot) + Mathf.Abs(posicion.x - CentroX(controller.FireSpot));
+            casilla.position = posicion;
+
+            Click(controller.StrikeButton);
+
+            Assert.That(papa.Current, Is.EqualTo(ActorAction.Strike), "Papá golpea");
+            Assert.That(papa.Mirrored, Is.True, "a la derecha del fuego, el lado que recuerda es el izquierdo");
+            Assert.That(papa.View, Is.EqualTo(CharacterView.Front), "pero golpea de frente");
+            Assert.That(papa.Stage.localScale.x, Is.GreaterThan(0f), "y el frente no se espeja por el rumbo");
+        }
+
         [Test]
         [Timeout(20000)]
         public async Task FirePanel_DA76_LaPistaMuestraAAlgoritmConSuFormaDeFuego()
@@ -1380,6 +1472,27 @@ namespace Game.Levels.Fire.Tests
         }
 
         // --- helpers -----------------------------------------------------------------------
+
+        /// <summary>La x del centro de un rect en el mundo, como la compara el controlador.</summary>
+        private static float CentroX(RectTransform rect) => rect.TransformPoint(rect.rect.center).x;
+
+        /// <summary>
+        /// Con arte de perfil, la acción se ve de perfil y el lienzo se voltea solo si mira a la izquierda; sin
+        /// él, de frente y sin voltear (INC-134: el frente no se espeja por el rumbo).
+        /// </summary>
+        private static void AssertVistaDeLaAccion(CharacterRig rig, ActorAction accion, bool miraALaIzquierda)
+        {
+            if (rig.HasProfile)
+            {
+                Assert.That(rig.View, Is.EqualTo(CharacterView.Profile), $"{accion} se ve de perfil");
+                Assert.That(rig.Stage.localScale.x < 0f, Is.EqualTo(miraALaIzquierda), $"{accion}: el lienzo se voltea solo si mira a la izquierda");
+            }
+            else
+            {
+                Assert.That(rig.View, Is.EqualTo(CharacterView.Front), $"{accion}: sin arte de perfil, de frente");
+                Assert.That(rig.Stage.localScale.x, Is.GreaterThan(0f), $"{accion}: y sin voltear");
+            }
+        }
 
         private static CharacterRig Papa(FirePanelController controller)
         {

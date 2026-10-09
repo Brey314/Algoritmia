@@ -22,6 +22,15 @@ namespace Game.Scaffolding
     ///
     /// Quien manda aquí es <see cref="CharacterRig"/>: le empuja la emoción de la acción o la que
     /// fija el guion, y si el personaje está diciendo su línea.
+    ///
+    /// **Dos caras, un solo reloj (INC-134).** El personaje de perfil tiene su propia cara —las capas
+    /// <c>profileEyes</c> y <c>profileMouth</c>, con su <c>profileFaceSet</c>—, opcional como todo lo de
+    /// perfil. Un único <see cref="BlinkClock"/> y un único <see cref="MouthFlap"/> las gobiernan a las
+    /// dos, y las dos se actualizan en cada cuadro aunque solo se vea una (<see cref="CharacterRig"/>
+    /// enciende un cuerpo u otro): así el parpadeo y la boca no saltan ni se reinician al cambiar de
+    /// vista, que es lo que pasaría si cada cara llevara el suyo. Los tiempos salen del set de frente
+    /// y, si ese falta, del de perfil. Cada cara cae a «sin dibujar» por su cuenta: la de perfil sin set o
+    /// sin sprite se apaga igual que la de frente, y no afecta a la otra.
     /// </remarks>
     public sealed class CharacterFace : MonoBehaviour
     {
@@ -36,6 +45,19 @@ namespace Game.Scaffolding
         [SerializeField]
         [Tooltip("Los sprites de la cara y los tiempos del parpadeo y del habla. Vacío = el personaje no tiene cara todavía y las dos capas no se dibujan.")]
         private CharacterFaceSet faceSet;
+
+        // INC-134: la cara del cuerpo de perfil (Lienzo/Perfil). Opcional: sin ella, o sin set, no se dibuja.
+        [SerializeField]
+        [Tooltip("La capa de los ojos del cuerpo de perfil. Sin sprite se queda desactivada. Opcional: un personaje sin perfil la deja vacía.")]
+        private Image profileEyes;
+
+        [SerializeField]
+        [Tooltip("La capa de la boca del cuerpo de perfil. Sin sprite se queda desactivada. Opcional.")]
+        private Image profileMouth;
+
+        [SerializeField]
+        [Tooltip("Los sprites de la cara de perfil. Sus tiempos no se usan: el parpadeo y el habla siguen el reloj de la cara de frente, para no saltar al cambiar de vista. Vacío = la cara de perfil no se dibuja.")]
+        private CharacterFaceSet profileFaceSet;
 
         private Func<float> _random;
         private CharacterFaceSet _clocksFor;
@@ -86,62 +108,89 @@ namespace Game.Scaffolding
         /// </summary>
         internal void Step(float deltaSeconds)
         {
-            if (faceSet == null)
+            // Los tiempos del parpadeo y del habla salen del set de frente; si ese falta, del de perfil.
+            // (Comparaciones explícitas con null: «??» se salta la comprobación de objetos destruidos.)
+            var clockSet = faceSet != null ? faceSet : profileFaceSet;
+            if (clockSet == null)
             {
                 Hide(eyes);
                 Hide(mouth);
+                Hide(profileEyes);
+                Hide(profileMouth);
                 return;
             }
 
-            EnsureClocks();
+            EnsureClocks(clockSet);
             // Dormido, los ojos ya son los cerrados: un parpadeo encima los abriría un instante.
             _blink.Enabled = _emotion != FacialEmotion.Sleeping;
             var phase = _blink.Tick(deltaSeconds);
             var shape = _flap.Tick(deltaSeconds, _speaking);
 
+            // Los relojes avanzan UNA vez por cuadro y las dos caras leen el mismo resultado.
+            Dress(faceSet, eyes, mouth, phase, shape);
+            Dress(profileFaceSet, profileEyes, profileMouth, phase, shape);
+        }
+
+        /// <summary>Pone en una cara —la de frente o la de perfil— los sprites que le tocan a este instante.</summary>
+        private void Dress(CharacterFaceSet set, Image eyesImage, Image mouthImage, BlinkPhase phase, MouthShape shape)
+        {
+            if (set == null)
+            {
+                Hide(eyesImage);
+                Hide(mouthImage);
+                return;
+            }
+
             // Si el set no trae los párpados o una boca del habla, se queda lo de la emoción: faltar
             // un cuadro del parpadeo no debe hacer desaparecer los ojos a cada rato.
-            // (Comparaciones explícitas con null: «??» se salta la comprobación de objetos destruidos.)
-            var eyesSprite = faceSet.Eyes(phase, _emotion);
+            var eyesSprite = set.Eyes(phase, _emotion);
             if (eyesSprite == null)
             {
-                eyesSprite = faceSet.Eyes(_emotion);
+                eyesSprite = set.Eyes(_emotion);
             }
 
-            var mouthSprite = faceSet.Mouth(shape, _emotion);
+            var mouthSprite = set.Mouth(shape, _emotion);
             if (mouthSprite == null)
             {
-                mouthSprite = faceSet.RestMouth(_emotion);
+                mouthSprite = set.RestMouth(_emotion);
             }
 
-            Show(eyes, eyesSprite);
-            Show(mouth, mouthSprite);
+            Show(eyesImage, eyesSprite);
+            Show(mouthImage, mouthSprite);
         }
 
 #if UNITY_INCLUDE_TESTS
         /// <summary>Arma la cara sin prefab, para las pruebas. <paramref name="random"/> vacío usa el azar de Unity.</summary>
-        internal void Configure(Image eyesImage, Image mouthImage, CharacterFaceSet set, Func<float> random = null)
+        internal void Configure(Image eyesImage, Image mouthImage, CharacterFaceSet set, Func<float> random = null) =>
+            Configure(eyesImage, mouthImage, set, null, null, null, random);
+
+        /// <summary>Arma la cara con la de perfil también (INC-134), sin prefab, para las pruebas.</summary>
+        internal void Configure(Image eyesImage, Image mouthImage, CharacterFaceSet set,
+            Image profileEyesImage, Image profileMouthImage, CharacterFaceSet profileSet, Func<float> random = null)
         {
             eyes = eyesImage;
             mouth = mouthImage;
             faceSet = set;
+            profileEyes = profileEyesImage;
+            profileMouth = profileMouthImage;
+            profileFaceSet = profileSet;
             _random = random;
             _clocksFor = null;
             Step(0f);
         }
 #endif
 
-        private void EnsureClocks()
+        private void EnsureClocks(CharacterFaceSet clockSet)
         {
-            if (_clocksFor == faceSet && _blink != null)
+            if (_clocksFor == clockSet && _blink != null)
             {
                 return;
             }
 
-            _clocksFor = faceSet;
-            _blink = new BlinkClock(faceSet.BlinkInterval, faceSet.BlinkJitter, faceSet.BlinkSeconds,
+            _clocksFor = clockSet;
+            _blink = new BlinkClock(clockSet.BlinkInterval, clockSet.BlinkJitter, clockSet.BlinkSeconds,
                 _random ?? (() => UnityEngine.Random.value));
-            _flap = new MouthFlap(faceSet.FlapSeconds);
+            _flap = new MouthFlap(clockSet.FlapSeconds);
         }
 
         private static void Show(Image image, Sprite sprite)

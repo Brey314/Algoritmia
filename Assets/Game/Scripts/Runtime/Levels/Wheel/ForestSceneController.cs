@@ -497,6 +497,7 @@ namespace Game.Levels.Wheel
 
             // Mientras se sostiene, la caja pasa por encima de todo lo demás.
             cargo.SetAsLastSibling();
+            FaceCargo();
             Act(ActorAction.Push); // hasta soltar el clic
         }
 
@@ -509,7 +510,33 @@ namespace Game.Levels.Wheel
             }
 
             cargo.anchoredPosition = ToAnchored(cargo, screenPoint);
+            FaceCargo(); // la caja puede cruzar al otro lado de la Niña durante el arrastre
         }
+
+        /// <summary>
+        /// La Niña mira hacia la caja mientras la empuja (INC-134): empujar es una acción de perfil
+        /// (<see cref="ActionView"/>) y de perfil el personaje tiene un lado, el de lo que empuja. Se
+        /// recalcula en cada movimiento de la caja, no solo al tomarla: si el estudiante la arrastra al
+        /// otro lado de ella, la Niña se da vuelta con ella. Con la caja en su misma vertical conserva el
+        /// lado que tenía. Sin Niña en la escena no hace nada: el gesto es adorno.
+        /// </summary>
+        private void FaceCargo()
+        {
+            if (player == null || cargo == null)
+            {
+                return;
+            }
+
+            var facesLeft = Heading.FacesLeftToward(
+                WorldCenterX((RectTransform)player.transform), WorldCenterX(cargo), player.Mirrored);
+            if (player.Mirrored != facesLeft)
+            {
+                player.Mirrored = facesLeft;
+            }
+        }
+
+        /// <summary>La x del centro de un rect en el mundo: se compara entre elementos de distintos padres y con cámara.</summary>
+        private static float WorldCenterX(RectTransform rect) => rect.TransformPoint(rect.rect.center).x;
 
         /// <summary>
         /// Soltar el clic. Si la caja quedó sobre la fila de troncos se asienta en su arranque y

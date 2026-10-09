@@ -20,7 +20,10 @@ namespace Game.Scaffolding
     /// los métodos devuelven <c>null</c> y la cara se apaga, como antes. Los cuadros del parpadeo y
     /// de las bocas del habla NO caen aquí: devuelven <c>null</c> y <see cref="CharacterFace"/> vuelve
     /// al reposo de la emoción, que ya es el respaldo correcto (un párpado a medias no se sustituye
-    /// por unos ojos de otro tipo).
+    /// por unos ojos de otro tipo). **Una sola excepción (INC-135, 09/10/2026):** el arte final trae
+    /// dos cuadros del parpadeo, ojos abiertos y ojos cerrados, sin párpado a medias; sin
+    /// <see cref="EyesBlinkHalf"/> el cuadro medio es el cerrado, y el parpadeo enseña los ojos
+    /// cerrados sus 0,12 s completos y no los 0,04 s del tercio central.
     /// </remarks>
     [CreateAssetMenu(menuName = "Algoritmia/Cara de personaje", fileName = "Cara_")]
     public sealed class CharacterFaceSet : ScriptableObject
@@ -50,7 +53,7 @@ namespace Game.Scaffolding
         public Sprite EyesSleeping { get; private set; }
 
         [field: SerializeField]
-        [field: Tooltip("Ojos a medio cerrar: el primer y el último tercio del parpadeo.")]
+        [field: Tooltip("Ojos a medio cerrar: el primer y el último tercio del parpadeo. Opcional: si se deja vacío (el arte final trae solo abiertos y cerrados), esos dos tercios usan los ojos cerrados.")]
         public Sprite EyesBlinkHalf { get; private set; }
 
         [field: SerializeField]
@@ -128,13 +131,16 @@ namespace Game.Scaffolding
         /// <summary>
         /// Los ojos durante el parpadeo, o <c>null</c> si el set no trae el cuadro (sin caer a otro
         /// sprite: <see cref="CharacterFace"/> se queda con los de la emoción). Abiertos son los de la
-        /// emoción (<see cref="Eyes(FacialEmotion)"/>, con su respaldo a la neutra).
+        /// emoción (<see cref="Eyes(FacialEmotion)"/>, con su respaldo a la neutra). Sin cuadro medio
+        /// (<see cref="EyesBlinkHalf"/>) el parpadeo de dos cuadros usa el cerrado también en los
+        /// tercios de bajada y de subida (INC-135).
         /// </summary>
         public Sprite Eyes(BlinkPhase phase, FacialEmotion emotion)
         {
             switch (phase)
             {
-                case BlinkPhase.Half: return EyesBlinkHalf;
+                // Comparación explícita con null: «??» se salta la comprobación de objetos destruidos.
+                case BlinkPhase.Half: return EyesBlinkHalf != null ? EyesBlinkHalf : EyesBlinkClosed;
                 case BlinkPhase.Closed: return EyesBlinkClosed;
                 default: return Eyes(emotion);
             }

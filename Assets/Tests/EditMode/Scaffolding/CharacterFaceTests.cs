@@ -245,6 +245,153 @@ namespace Game.Scaffolding.Tests
             }
         }
 
+        // ---- INC-134: la cara del cuerpo de perfil; INC-135: parpadeo de dos cuadros ----
+
+        private CharacterFace CaraConPerfil(Image ojos, Image boca, CharacterFaceSet set,
+            Image ojosDePerfil, Image bocaDePerfil, CharacterFaceSet setDePerfil)
+        {
+            var cara = Nuevo("Cara", typeof(RectTransform)).AddComponent<CharacterFace>();
+            cara.Configure(ojos, boca, set, ojosDePerfil, bocaDePerfil, setDePerfil, () => 0.5f);
+            return cara;
+        }
+
+        /// <summary>
+        /// Un solo BlinkClock y un solo MouthFlap mueven las dos caras (INC-134): el parpadeo y la boca no
+        /// saltan al cambiar de vista. Las dos se actualizan en cada cuadro aunque solo se vea una, y cada
+        /// una con los sprites de su propio set.
+        /// </summary>
+        [Test]
+        public void CharacterFace_INC134_ElPerfilParpadeaAlCompasDelFrente()
+        {
+            var setDeFrente = SetCompleto();
+            var delFrente = new Dictionary<string, Sprite>(_sprites);
+            var setDePerfil = SetCompleto(); // SetCon reemplaza la entrada de cada campo que repite
+            var delPerfil = new Dictionary<string, Sprite>(_sprites);
+            Assert.That(delPerfil["EyesNeutral"], Is.Not.SameAs(delFrente["EyesNeutral"]), "cada set lleva sus propios sprites (si no, la prueba no distingue las caras)");
+            var ojos = Capa("Ojos");
+            var boca = Capa("Boca");
+            var ojosDePerfil = Capa("OjosDePerfil");
+            var bocaDePerfil = Capa("BocaDePerfil");
+            var cara = CaraConPerfil(ojos, boca, setDeFrente, ojosDePerfil, bocaDePerfil, setDePerfil);
+
+            Assert.That(ojos.sprite, Is.SameAs(delFrente["EyesNeutral"]), "el frente abre con sus ojos");
+            Assert.That(ojosDePerfil.sprite, Is.SameAs(delPerfil["EyesNeutral"]), "el perfil, con los suyos");
+            Assert.That(ojosDePerfil.enabled && bocaDePerfil.enabled, Is.True, "y sus capas están encendidas");
+
+            cara.Step(3.49f);
+            Assert.That(ojosDePerfil.sprite, Is.SameAs(delPerfil["EyesNeutral"]), "todavía no toca");
+
+            cara.Step(0.02f);
+            Assert.That(ojos.sprite, Is.SameAs(delFrente["EyesBlinkHalf"]), "a los 3,5 s el frente parpadea");
+            Assert.That(ojosDePerfil.sprite, Is.SameAs(delPerfil["EyesBlinkHalf"]), "y el perfil parpadea en el mismo cuadro");
+
+            cara.Step(0.04f);
+            Assert.That(ojos.sprite, Is.SameAs(delFrente["EyesBlinkClosed"]));
+            Assert.That(ojosDePerfil.sprite, Is.SameAs(delPerfil["EyesBlinkClosed"]), "cerrados a la vez");
+
+            cara.Step(0.1f);
+            Assert.That(ojos.sprite, Is.SameAs(delFrente["EyesNeutral"]));
+            Assert.That(ojosDePerfil.sprite, Is.SameAs(delPerfil["EyesNeutral"]), "y abren a la vez");
+
+            // La boca: un solo aleteo para las dos.
+            cara.Speaking = true;
+            Assert.That(boca.sprite, Is.SameAs(delFrente["MouthA"]));
+            Assert.That(bocaDePerfil.sprite, Is.SameAs(delPerfil["MouthA"]), "las dos abren al empezar a hablar");
+            cara.Step(0.1f);
+            Assert.That(boca.sprite, Is.SameAs(delFrente["MouthE"]));
+            Assert.That(bocaDePerfil.sprite, Is.SameAs(delPerfil["MouthE"]), "y avanzan juntas");
+            cara.Speaking = false;
+            Assert.That(bocaDePerfil.sprite, Is.SameAs(delPerfil["MouthClosed"]), "al callar vuelven al reposo");
+
+            // La emoción también es de las dos.
+            cara.Emotion = FacialEmotion.Happy;
+            Assert.That(ojos.sprite, Is.SameAs(delFrente["EyesHappy"]));
+            Assert.That(ojosDePerfil.sprite, Is.SameAs(delPerfil["EyesHappy"]));
+        }
+
+        /// <summary>
+        /// La cara de perfil es opcional y cae a «sin dibujar» por su cuenta, con la misma regla de siempre
+        /// (una Image sin sprite pinta un recuadro blanco): sin set o sin capas, la de frente sigue.
+        /// </summary>
+        [Test]
+        public void CharacterFace_INC134_SinCaraDePerfilLaDeFrenteSigueYLaDePerfilNoSeDibuja()
+        {
+            var ojos = Capa("Ojos");
+            var boca = Capa("Boca");
+            var ojosDePerfil = Capa("OjosDePerfil");
+            var bocaDePerfil = Capa("BocaDePerfil");
+
+            var sinSetDePerfil = CaraConPerfil(ojos, boca, SetCompleto(), ojosDePerfil, bocaDePerfil, null);
+            sinSetDePerfil.Emotion = FacialEmotion.Happy;
+            sinSetDePerfil.Step(1f);
+
+            Assert.That(ojos.enabled && boca.enabled, Is.True, "la cara de frente no depende de la de perfil");
+            Assert.That(ojosDePerfil.enabled, Is.False, "perfil sin set: los ojos no se dibujan");
+            Assert.That(bocaDePerfil.enabled, Is.False, "perfil sin set: la boca no se dibuja");
+
+            // Y al revés: sin cara de frente, los tiempos salen del set de perfil y esa cara sí se dibuja.
+            var ojosB = Capa("OjosB");
+            var bocaB = Capa("BocaB");
+            var ojosDePerfilB = Capa("OjosDePerfilB");
+            var bocaDePerfilB = Capa("BocaDePerfilB");
+            var soloPerfil = CaraConPerfil(ojosB, bocaB, null, ojosDePerfilB, bocaDePerfilB, SetCompleto());
+            soloPerfil.Step(0f);
+            Assert.That(ojosB.enabled || bocaB.enabled, Is.False, "sin set de frente, las capas de frente no se dibujan");
+            Assert.That(ojosDePerfilB.enabled && bocaDePerfilB.enabled, Is.True, "y la de perfil sí");
+
+            // Una cara sin capas de perfil asignadas no falla (es lo que tiene el arte provisional y Algoritm).
+            var sinCapas = CaraConPerfil(Capa("OjosC"), Capa("BocaC"), SetCompleto(), null, null, SetCompleto());
+            Assert.DoesNotThrow(() =>
+            {
+                sinCapas.Emotion = FacialEmotion.Focused;
+                sinCapas.Speaking = true;
+                sinCapas.Step(1f);
+            });
+        }
+
+        /// <summary>
+        /// El arte final trae dos cuadros del parpadeo, abiertos y cerrados (INC-135, 09/10/2026). El reloj
+        /// pasa por «medio» en el primer y el último tercio, y sin cuadro medio ese tercio usa el cerrado:
+        /// el parpadeo muestra los ojos cerrados sus 0,12 s completos y no los 0,04 s del tercio central.
+        /// </summary>
+        [Test]
+        public void CharacterFaceSet_INC135_SinCuadroMedioElParpadeoUsaElCerrado()
+        {
+            var dosCuadros = SetCon("EyesNeutral", "EyesBlinkClosed");
+
+            Assert.That(dosCuadros.Eyes(BlinkPhase.Half, FacialEmotion.Neutral), Is.SameAs(_sprites["EyesBlinkClosed"]), "sin medio, el cerrado");
+            Assert.That(dosCuadros.Eyes(BlinkPhase.Closed, FacialEmotion.Neutral), Is.SameAs(_sprites["EyesBlinkClosed"]));
+            Assert.That(dosCuadros.Eyes(BlinkPhase.Open, FacialEmotion.Neutral), Is.SameAs(_sprites["EyesNeutral"]), "abiertos son los de la emoción");
+
+            var ojos = Capa("Ojos");
+            var cara = Cara(ojos, Capa("Boca"), dosCuadros);
+            cara.Step(3.49f);
+            Assert.That(ojos.sprite, Is.SameAs(_sprites["EyesNeutral"]), "todavía abiertos");
+            cara.Step(0.02f);
+            Assert.That(ojos.sprite, Is.SameAs(_sprites["EyesBlinkClosed"]), "primer tercio: ya cerrados, no a medias");
+            cara.Step(0.04f);
+            Assert.That(ojos.sprite, Is.SameAs(_sprites["EyesBlinkClosed"]), "tercio central");
+            cara.Step(0.04f);
+            Assert.That(ojos.sprite, Is.SameAs(_sprites["EyesBlinkClosed"]), "último tercio: siguen cerrados los 0,12 s completos");
+            cara.Step(0.04f);
+            Assert.That(ojos.sprite, Is.SameAs(_sprites["EyesNeutral"]), "y abren");
+        }
+
+        /// <summary>
+        /// Con el cuadro medio, sigue siendo el medio (no cambia el arte provisional ni los sets de tres
+        /// cuadros); y sin ninguno de los dos no se inventa nada: la cara conserva los ojos de la emoción.
+        /// </summary>
+        [Test]
+        public void CharacterFaceSet_INC135_ConCuadroMedioSigueSiendoElMedioYSinNingunoNoSeInventaNada()
+        {
+            var tresCuadros = SetCon("EyesNeutral", "EyesBlinkHalf", "EyesBlinkClosed");
+            Assert.That(tresCuadros.Eyes(BlinkPhase.Half, FacialEmotion.Neutral), Is.SameAs(_sprites["EyesBlinkHalf"]));
+
+            var sinParpadeo = SetCon("EyesNeutral");
+            Assert.That(sinParpadeo.Eyes(BlinkPhase.Half, FacialEmotion.Neutral), Is.Null, "sin párpados, el set no inventa un cuadro");
+            Assert.That(sinParpadeo.Eyes(BlinkPhase.Closed, FacialEmotion.Neutral), Is.Null);
+        }
+
         [Test]
         public void CharacterFace_RF05_HablandoLaBocaCambiaYAlCallarVuelveAlReposo()
         {

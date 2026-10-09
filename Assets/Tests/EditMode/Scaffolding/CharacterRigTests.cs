@@ -83,6 +83,47 @@ namespace Game.Scaffolding.Tests
             Cuerpo + "/PiernaIzq", Cuerpo + "/PiernaDer", Cuerpo + "/PiernaIzq/RodillaIzq", Cuerpo + "/PiernaDer/RodillaDer",
         };
 
+        // ---- Cuerpo de perfil (INC-134): rutas desde la raíz del prefab ----
+
+        private const string Perfil = "Lienzo/Perfil";
+        private const string TroncoDePerfil = Perfil + "/Tronco";
+
+        /// <summary>
+        /// Todos los nodos que el generador añade bajo Lienzo/Perfil, en el orden de dibujo del contrato: la
+        /// jerarquía cuelga entera de un Tronco con el pivote en la cadera. Las rutas son el contrato con
+        /// CharacterRig (busca Perfil/Tronco/Torso) y con el modo «perfil» del generador.
+        /// </summary>
+        private static readonly string[] NodosDePerfil =
+        {
+            Perfil, TroncoDePerfil,
+            TroncoDePerfil + "/BrazoLejano", TroncoDePerfil + "/BrazoLejano/CodoLejano", TroncoDePerfil + "/BrazoLejano/CodoLejano/AntebrazoLejano",
+            TroncoDePerfil + "/PiernaLejana", TroncoDePerfil + "/PiernaLejana/RodillaLejana", TroncoDePerfil + "/PiernaLejana/RodillaLejana/AntepiernaLejana",
+            TroncoDePerfil + "/Torso",
+            TroncoDePerfil + "/PiernaCercana", TroncoDePerfil + "/PiernaCercana/RodillaCercana", TroncoDePerfil + "/PiernaCercana/RodillaCercana/AntepiernaCercana",
+            TroncoDePerfil + "/Cuello", TroncoDePerfil + "/Cuello/Cabeza", TroncoDePerfil + "/Cuello/Cabeza/CaraBase",
+            TroncoDePerfil + "/Cuello/Cabeza/Ojos", TroncoDePerfil + "/Cuello/Cabeza/Boca",
+            TroncoDePerfil + "/BrazoCercano", TroncoDePerfil + "/BrazoCercano/CodoCercano", TroncoDePerfil + "/BrazoCercano/CodoCercano/AntebrazoCercano",
+        };
+
+        /// <summary>El orden en que se dibujan los hijos de Tronco del perfil, de atrás adelante: lo lejano, el torso, lo cercano.</summary>
+        private static readonly string[] OrdenDeDibujoDelPerfil =
+            { "BrazoLejano", "PiernaLejana", "Torso", "PiernaCercana", "Cuello", "BrazoCercano" };
+
+        /// <summary>
+        /// Los huesos del perfil que cada clip tiene que girar, como <c>HuesosDeLaFamilia</c> con el frente: el
+        /// que un clip no usa queda en su reposo y no en la pose en T. Sin la raíz Perfil (análoga a Cuerpo):
+        /// su inclinación es un adorno, no una articulación que pueda quedar en T.
+        /// </summary>
+        private static readonly string[] HuesosDePerfil =
+        {
+            TroncoDePerfil,
+            TroncoDePerfil + "/BrazoLejano", TroncoDePerfil + "/BrazoLejano/CodoLejano",
+            TroncoDePerfil + "/BrazoCercano", TroncoDePerfil + "/BrazoCercano/CodoCercano",
+            TroncoDePerfil + "/PiernaLejana", TroncoDePerfil + "/PiernaLejana/RodillaLejana",
+            TroncoDePerfil + "/PiernaCercana", TroncoDePerfil + "/PiernaCercana/RodillaCercana",
+            TroncoDePerfil + "/Cuello", TroncoDePerfil + "/Cuello/Cabeza",
+        };
+
         private const string GiroEnZ = "localEulerAnglesRaw.z";
 
         [Test]
@@ -746,6 +787,13 @@ namespace Game.Scaffolding.Tests
         {
             var rig = Rig(nombre);
             var huesos = Familia.Contains(nombre) ? HuesosDeLaFamilia : HuesosDeAlgoritm;
+            // INC-134: con cuerpo de perfil, cada clip también gira todos sus huesos. Mientras el prefab no
+            // lo tenga (Algoritm, o antes de la ronda del Editor) la lista es la de siempre.
+            if (rig.transform.Find(Perfil) != null)
+            {
+                huesos = huesos.Concat(HuesosDePerfil).ToArray();
+            }
+
             var sinCurva = new List<string>();
 
             var clips = Clips(rig).ToArray();
@@ -780,7 +828,8 @@ namespace Game.Scaffolding.Tests
                 ? new[] { "Cabeza", "CaraBase" }
                 : new[] { "BrazoIzq", "BrazoDer", "PiernaIzq", "PiernaDer", "Torso" });
 
-            var capas = rig.GetComponentsInChildren<Image>(true).Where(imagen => nuevas.Contains(imagen.name)).ToArray();
+            // Solo el cuerpo de frente: el de perfil (INC-134) repite los nombres Cabeza, CaraBase, Ojos y Boca.
+            var capas = rig.transform.Find(Cuerpo).GetComponentsInChildren<Image>(true).Where(imagen => nuevas.Contains(imagen.name)).ToArray();
             Assert.That(capas.Select(imagen => imagen.name), Is.EquivalentTo(nuevas), $"{nombre}: cada capa nueva es una Image");
             foreach (var imagen in capas.Where(imagen => imagen.sprite == null))
             {
@@ -863,11 +912,58 @@ namespace Game.Scaffolding.Tests
             Assert.That(cara, Is.Not.Null, $"{nombre} lleva CharacterFace en la raíz");
 
             var serializada = new SerializedObject(cara);
-            var ojos = rig.GetComponentsInChildren<Image>(true).Single(imagen => imagen.name == "Ojos");
-            var boca = rig.GetComponentsInChildren<Image>(true).Single(imagen => imagen.name == "Boca");
+            // Las del cuerpo de frente: el de perfil (INC-134) tiene las suyas, con los mismos nombres.
+            var frente = rig.transform.Find(Cuerpo);
+            var ojos = frente.GetComponentsInChildren<Image>(true).Single(imagen => imagen.name == "Ojos");
+            var boca = frente.GetComponentsInChildren<Image>(true).Single(imagen => imagen.name == "Boca");
 
             Assert.That(serializada.FindProperty("eyes").objectReferenceValue, Is.EqualTo(ojos), $"{nombre}: eyes es su capa de ojos");
             Assert.That(serializada.FindProperty("mouth").objectReferenceValue, Is.EqualTo(boca), $"{nombre}: mouth es su capa de boca");
+        }
+
+        /// <summary>
+        /// La familia lleva un segundo cuerpo, dibujado de perfil (Santiago, 09/10/2026, INC-134):
+        /// <c>Lienzo/Perfil</c>, hermano de <c>Cuerpo</c> y dibujado justo después, con todos los nodos del
+        /// contrato, el torso con su sprite (es lo que CharacterRig toma por «llegó el arte de perfil») y la cara
+        /// de perfil cableada en CharacterFace. FALLA mientras no se haya corrido el modo «perfil» del
+        /// generador (BuildRigsFinal.cs.txt) sobre los prefabs, y debe pasar justo después.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC134_LaFamiliaTieneCuerpoDePerfilConArte(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var rig = Rig(nombre);
+            foreach (var ruta in NodosDePerfil)
+            {
+                Assert.That(rig.transform.Find(ruta), Is.Not.Null, $"{nombre}: existe {ruta}");
+            }
+
+            var cuerpo = rig.transform.Find(Cuerpo);
+            var perfil = rig.transform.Find(Perfil);
+            Assert.That(perfil.parent, Is.SameAs(cuerpo.parent), $"{nombre}: Perfil y Cuerpo son hermanos, bajo el lienzo");
+            Assert.That(perfil.GetSiblingIndex(), Is.EqualTo(cuerpo.GetSiblingIndex() + 1), $"{nombre}: Perfil se dibuja justo después de Cuerpo");
+
+            var tronco = rig.transform.Find(TroncoDePerfil);
+            var indices = OrdenDeDibujoDelPerfil.Select(hijo => Orden(tronco, nombre, hijo)).ToArray();
+            Assert.That(indices, Is.Ordered.Ascending, $"{nombre}: lo lejano al fondo, luego el torso, lo cercano delante ({string.Join(", ", OrdenDeDibujoDelPerfil)})");
+
+            var torso = rig.transform.Find(TroncoDePerfil + "/Torso").GetComponent<Image>();
+            Assert.That(torso, Is.Not.Null, $"{nombre}: el torso de perfil es una Image");
+            Assert.That(torso.sprite, Is.Not.Null, $"{nombre}: el torso de perfil tiene su sprite: es lo que dice que el arte llegó");
+            Assert.That(rig.HasProfile, Is.True, $"{nombre}: CharacterRig reconoce el cuerpo de perfil");
+
+            // Como en el frente (DA131_UnaCapaSinSpriteNoSeDibuja): una Image sin sprite pinta un recuadro blanco.
+            foreach (var imagen in perfil.GetComponentsInChildren<Image>(true).Where(imagen => imagen.sprite == null))
+            {
+                Assert.That(imagen.enabled, Is.False, $"{nombre}: {imagen.name} del perfil no tiene sprite y no se dibuja");
+            }
+
+            var cara = new SerializedObject(rig.GetComponent<CharacterFace>());
+            var ojos = rig.transform.Find(TroncoDePerfil + "/Cuello/Cabeza/Ojos").GetComponent<Image>();
+            var boca = rig.transform.Find(TroncoDePerfil + "/Cuello/Cabeza/Boca").GetComponent<Image>();
+            Assert.That(cara.FindProperty("profileEyes").objectReferenceValue, Is.EqualTo(ojos), $"{nombre}: profileEyes es la capa de ojos del perfil");
+            Assert.That(cara.FindProperty("profileMouth").objectReferenceValue, Is.EqualTo(boca), $"{nombre}: profileMouth es la capa de boca del perfil");
+            Assert.That(cara.FindProperty("profileFaceSet").objectReferenceValue, Is.Not.Null, $"{nombre}: profileFaceSet es la cara de perfil");
         }
 
         private static CharacterRig Rig(string nombre)

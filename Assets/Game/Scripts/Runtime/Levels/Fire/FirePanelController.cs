@@ -798,6 +798,7 @@ namespace Game.Levels.Fire
                 return;
             }
 
+            FaceTheFire();
             _playerRest?.Cancel();
             _playerRest = null;
             player.PlayFor(action, seconds, then);
@@ -807,6 +808,31 @@ namespace Game.Levels.Fire
                 _ = RestAfterAsync(seconds + thenSeconds, _playerRest.Token);
             }
         }
+
+        /// <summary>
+        /// Papá mira hacia el punto del fuego, donde se amontona lo que recoge y donde sopla y se arrodilla
+        /// (INC-134). Esas tres acciones —recoger, soplar, arrodillarse— se ven de perfil (<see cref="ActionView"/>)
+        /// y de perfil el personaje tiene un lado: el del montón. Se fija antes de cada gesto y no solo en esos
+        /// tres: golpear y animar son de frente y el lado no se ve, pero el siguiente perfil ya sale bien
+        /// puesto. Si Papá está en la misma vertical que el montón conserva el lado que tenía.
+        /// </summary>
+        private void FaceTheFire()
+        {
+            if (fireSpot == null)
+            {
+                return;
+            }
+
+            var facesLeft = Heading.FacesLeftToward(
+                WorldCenterX((RectTransform)player.transform), WorldCenterX(fireSpot), player.Mirrored);
+            if (player.Mirrored != facesLeft)
+            {
+                player.Mirrored = facesLeft;
+            }
+        }
+
+        /// <summary>La x del centro de un rect en el mundo: se compara entre elementos de distintos padres y con cámara.</summary>
+        private static float WorldCenterX(RectTransform rect) => rect.TransformPoint(rect.rect.center).x;
 
         private async Awaitable RestAfterAsync(float seconds, CancellationToken token)
         {
