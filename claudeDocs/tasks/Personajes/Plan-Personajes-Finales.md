@@ -95,7 +95,11 @@
 > en JPEG) están en `claudeDocs/tasks/Personajes/capturas/2026-10-09/` (`0212469`). Detalle, las tres
 > correcciones del generador y los límites de la revisión en `Personajes-Resultados.md`, C.13.
 >
-> **Siguen pendientes:** el build y la medida de RNF-06 con `oe4.ps1 Tamano`; los ojos cerrados de frente;
+> **Peso medido (09/10/2026):** el build sobre `0212469` pesó 499,3 MB frente al tope de 500 MB (RNF-06); por decisión de
+> Santiago cinco props del N1 pasaron a 256 px (INC-146) y el paquete pesa 420,6 MB, con 79,4 MB de margen. Son
+> medidas, no un candidato del OE4 (`Personajes-Resultados.md`, C.13).
+>
+> **Siguen pendientes:** la medida de RNF-04 y RNF-05 en un ejecutable (próximo candidato del OE4); los ojos cerrados de frente;
 > la cara de Algoritm; el retrato animado del cuadro de diálogo (4.1) y poblar emociones en los 18
 > `N*_*.asset`.
 
@@ -369,6 +373,7 @@ Para sincronizar el habla con el diálogo sin requerir pistas de audio fonética
   - Carga de escena < 10 s.
   - Memoria RAM en ejecutable < 2 GB.
   - Tamaño del paquete portable < 500 MB (Sprite Atlases comprimidos en Crunch / DXT5 / ASTC).
+  - *Estado (09/10/2026):* **RNF-06 medido** con `oe4.ps1 Tamano`, 499,3 MB y, con INC-146, 420,6 MB; la casilla sigue abierta porque **RNF-04 y RNF-05 no se han medido** en un ejecutable. El arte entra sin comprimir (`ArtImportRules`), no con Crunch.
 - [ ] **5.3 Capturas de Verificación Visual:**
   - Ejecutar `Personajes_DA133_CapturaCadaMecanicaConSusPersonajes` y validar que ningún fotograma exhiba pose en T.
 

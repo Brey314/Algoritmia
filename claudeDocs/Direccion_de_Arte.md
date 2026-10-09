@@ -1226,7 +1226,7 @@ Son los ajustes que aplica el proyecto (INC-128):
 | Filter Mode | Bilinear |
 | Generate Mip Maps | Desactivado |
 | Compression | Sin comprimir (`ArtImportRules`) |
-| Max Size | 4096 (`ArtImportRules`): las panorámicas llegan a 3840 y no se reducen. Excepción: los cuadros de `Props/Fire/Animations/` entran a 1024 (INC-130) |
+| Max Size | 4096 (`ArtImportRules`): las panorámicas llegan a 3840 y no se reducen. Dos excepciones, por el peso del paquete (RNF-06): los cuadros de `Props/Fire/Animations/` entran a 1024 (INC-130) y cinco props del Nivel 1 (`prop_n1_pedernal`, `_silex`, `_hoja`, `_monton_hojas` y `_monton_hojas_cenital`) entran a 256 (INC-146) |
 | Read/Write | Desactivado, salvo en las ocho piezas y siluetas de la balsa del Nivel 3: el panel prueba su alfa al agarrar y al soltar |
 | Generate Physics Shape | El valor de fábrica, sin efecto: todo es uGUI y no hay colisionadores |
 
@@ -1246,7 +1246,20 @@ arreglo sin pérdida. En pantalla el fuego se ve a unos 650 px como mucho y el h
 el humo queda en 595 × 1024 y el fuego normal en 1024 × 1007, en memoria, sin pérdida visible; el fuego
 cenital (500 × 278) no cambia. El PPU se escala con la textura y el tamaño en el mundo no se mueve. Lo
 vigila `ArtImport_RNF06_LosCuadrosDelFuegoYElHumoSeImportanAMil24SinComprimir`; con la excepción el
-build pesa 479,0 MB.
+build pesa 479,0 MB (rc2).
+
+**Excepción: cinco props del Nivel 1 a 256 px (INC-146, RNF-06).** Con el arte frontal final, Algoritm y
+el perfil, el ejecutable del 09/10/2026 midió 499,3 MB frente al tope de 500 MB (RNF-06), con 0,7 MB de
+margen. Cinco props llegaron a 2000 × 2000 y, sin comprimir, pesan 15,3 MB cada uno en el build:
+`prop_n1_pedernal`, `prop_n1_silex`, `prop_n1_hoja`, `prop_n1_monton_hojas` y
+`prop_n1_monton_hojas_cenital`. En pantalla miden de 72 a 300 px (en la cueva, hojas de 84 px, piedras
+de 72 px y el montón cenital de 300 px; en las narrativas, piedras y hojas de unos 96 a 135 px y el
+montón de frente de unos 230 a 280 px con el zoom más cerrado). **Decisión de Santiago (09/10/2026):
+van a 256 × 256**, también sin comprimir, por la misma razón de la rejilla de 4×4. Los dos montones se
+amplían como mucho unas 1,2 veces con el zoom más cerrado y la revisión de las capturas no halló
+diferencia apreciable. La excepción es una lista explícita de cinco rutas (`ArtImportRules`,
+`SmallPropPaths`) y no la carpeta `Props/Fire/`; el resto de `Art/` sigue a 4096. Lo vigila
+`ArtImport_RNF06_LosCincoPropsDelN1SeImportanA256SinComprimir`, y con ella el build pesa 420,6 MB.
 
 **Halo de croma.** Los sprites que salen de un fondo verde puro se limpian de halo verde en el
 borde. El 01/10/2026 se limpiaron siete PNG —los tres `char_algoritm_n?_*_reposo` y los cuatro

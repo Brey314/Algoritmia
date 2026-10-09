@@ -14,7 +14,7 @@ los dos tienen su conversión en `docs/md/`. Las citas por sección de este docu
 con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
 (control de cambios).
 
-**Verificación vigente: 09/10/2026, rev. 21.** La rev. 14 (29/09/2026) contrastó todos los
+**Verificación vigente: 09/10/2026, rev. 22.** La rev. 14 (29/09/2026) contrastó todos los
 documentos —los `.docx` de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago,
 **todos los hallazgos están cerrados**: ante un conflicto gana el juego y se edita el documento; lo
 que solo pide el documento se implementa en el juego; lo que solo tiene el juego se añade al
@@ -45,7 +45,9 @@ nuevo Algoritm: la familia se ve de perfil al recorrer o trabajar el entorno (IN
 «ciclo único que se voltea» de la dirección de arte), el parpadeo es de dos cuadros, ojos abiertos y
 cerrados (INC-135, acota §7.3), y el diseño nuevo de Algoritm —llama, disco de madera y gota, con
 pantaloneta de cuadros— sustituye al núcleo de identidad de §7.6 (INC-136, levanta INC-52 y, para el
-guía, la regla de color plano). Siguen abiertos
+guía, la regla de color plano). La rev. 22 (09/10/2026) registra y cierra **INC-146**, una decisión de
+Santiago por el peso del paquete (RNF-06): el ejecutable con el arte final medía 499,3 MB y los cinco
+props pequeños del Nivel 1 entran a 256 px, con lo que el paquete baja a 420,6 MB. Siguen abiertos
 solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
 **pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
@@ -86,7 +88,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 
 ---
 
-## Resumen — estado a 09/10/2026 (rev. 21)
+## Resumen — estado a 09/10/2026 (rev. 22)
 
 | ID | Hallazgo | Documentos | Estado |
 |---|---|---|---|
@@ -216,6 +218,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-143 | El inicio y el menú de niveles cambian de composición: portada con los cinco personajes, título fuera de la tarjeta, icono de estado junto a la imagen | Interfaces, Dirección de arte, Inventario de arte, mockups 2 y 4, Anexo G del OE3, juego | **Cerrado** (09/10/2026) |
 | INC-144 | El húmero de Papá asomaba por el codo; se corrige la tabla de articulaciones y no el arte entregado | Personajes-Resultados, Plan de personajes finales, herramientas, juego | **Cerrado** (09/10/2026) |
 | INC-145 | La cámara de la 3.3 acompaña a la balsa; el encuadre fijo la dejaba salir del cuadro | Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
+| INC-146 | Los cinco props del N1 entran a 256 px: el paquete con el arte final medía 499,3 MB contra el tope de 500 MB de RNF-06 | Dirección de arte, Inventario de arte, CLAUDE.md | **Cerrado** (09/10/2026) |
 
 ---
 
@@ -2457,6 +2460,8 @@ pasarlos a `Single` antes de que una escena o un asset los use. Se completó ade
 cuadros del fuego y del humo de `Props/Fire/Animations/` entran a 1024 px como máximo, la única
 excepción al tope de 4096 (INC-130).
 
+**Nota (09/10/2026).** Desde INC-146 hay una segunda excepción: cinco props del Nivel 1 entran a 256 px.
+
 ### INC-129 · El diálogo se lee en un cuadro con retrato, no en un globo con cola — cerrado (01/10/2026)
 
 **El conflicto.** La dirección de arte e Interfaces describen el diálogo de las narrativas como un
@@ -2521,6 +2526,9 @@ paquete a 478 979 915 bytes (479,0 MB; 456,8 MiB), con 21 MB de margen
 `ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`, que sigue exigiendo que esa carpeta
 entre sin comprimir y solo a ella le admite otro tope. La memoria (RNF-05) se mide sobre el
 ejecutable.
+
+**Nota (09/10/2026).** Con el arte final el paquete llegó a 499,3 MB y se añadió una segunda excepción, la de
+los cinco props del Nivel 1 a 256 px (INC-146); hoy pesa 420,6 MB.
 
 ### INC-131 · El arte final trae seis expresiones y extremidades en dos tramos — cerrado (05/10/2026)
 
@@ -3136,6 +3144,60 @@ quedaba 204 px fuera del cuadro; ahora el margen mínimo es de 77 px.
 `NarrativeSequence_RF44_LaCamaraDelCruceAcompanaALaBalsa` y
 `NarrativeScene_RF44_LaCamaraSigueALaBalsaMientrasCruza`.
 
+### INC-146 · Los cinco props del N1 entran a 256 px por el peso del paquete (RNF-06) — cerrado (09/10/2026)
+
+**El conflicto.** RNF-06 limita el ejecutable y sus recursos a 500 MB. El primer ejecutable con el arte
+frontal final, Algoritm y el perfil de la familia, compilado el 09/10/2026 sobre `0212469`, pesó
+499 314 282 bytes (499,3 MB; 476,2 MiB): 0,7 MB de margen, y +20,3 MB sobre rc2 (479,0 MB, 01/10/2026).
+Con ese margen cualquier entrega de arte nueva —entre ellas los ojos cerrados de frente y la cara de
+Algoritm, que faltan— rompía el tope.
+
+**Qué decían los documentos.** OE1 §4.2 RNF-06 («El tamaño total del ejecutable y sus recursos no debe
+superar los 500 MB»), que no cambia; `Direccion_de_Arte.md` §15.2 (fila «Max Size» y párrafo «Sin
+comprimir y a 4096, por regla», con la única excepción de INC-130); `Inventario.md`, párrafo «Cómo
+entran», y `CLAUDE.md`, «Cómo entra una imagen» («Única excepción»); la prueba
+`ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`, que exigía el tope de 4096 a toda
+textura de `Art/` salvo la carpeta de los cuadros del fuego.
+
+**Qué hacía el juego.** El informe del build dio 342,5 MB de texturas (95,9 % del paquete); `Characters/`
+suma 35,8 MB (`Frontal/` 13,5 MB en 61 archivos, `Perfil/` 8,2 MB en 59, `Expresiones/` 3,7 MB en 25 y el
+resto 10,4 MB en 107). Lo más pesado eran cinco props del N1 entregados a 2000 × 2000, sin comprimir, a
+15,3 MB cada uno en el build: `prop_n1_pedernal`, `prop_n1_silex`, `prop_n1_hoja`, `prop_n1_monton_hojas` y
+`prop_n1_monton_hojas_cenital`. En pantalla miden de 72 a 300 px: en `Level1_Cave`, las hojas 84 px, las
+piedras 72 px y el montón cenital 300 px; en las narrativas, piedras y hojas unos 96 a 135 px y el montón
+de frente unos 230 a 280 px con el zoom más cerrado.
+
+**Decisión de Santiago (09/10/2026):** «Deja los props en 256x256». Los cinco se importan a **256 px de lado
+máximo** y siguen **sin comprimir**, por el mismo motivo de INC-130: comprimidos enseñarían la rejilla de
+bloques de 4×4. Las piedras y las hojas se ven reducidas aun así (256 px de textura para 135 px como
+mucho en pantalla); los dos montones se amplían como mucho unas 1,2 veces con el zoom más cerrado. La
+revisión comparó las capturas de la mecánica de la cueva, de `N1_NacimientoDelFuego` (L00 a L16) y de
+`N1_Hallazgo` (L15 y L16) con las de antes (`claudeDocs/tasks/Personajes/capturas/2026-10-09/`) y no
+halló diferencia apreciable, tampoco en los montones.
+
+**Regla.** Decisión de Santiago: corrige el juego; RNF-06 ya lo pedía y no cambia. La excepción es una
+lista explícita de cinco rutas y no la carpeta `Props/Fire/`, porque allí caben también las animaciones
+(que tienen su tope) y lo que llegue después, que debe entrar a 4096.
+
+**Corrección aplicada (09/10/2026).** Documentos: Dirección de arte: §15.2 (fila «Max Size» y la
+excepción) · Inventario de arte: «Cómo entran»; `Props/Fire/` · CLAUDE.md: «Cómo entra una imagen» y los
+apartados del peso del paquete · INC-128 e INC-130 (notas) · `Personajes-Resultados.md` (C.13) · Plan de
+personajes finales · Anexos E y F y capítulos 9, 10 y 12 del OE3. En el código (commit `83fd986`):
+`ArtImportRules` (`Game.EditorTools`) lleva `SmallPropPaths` con las cinco rutas a `maxTextureSize` 256
+(`SmallPropsMaxTextureSize`), sin comprimir, y el resto de `Art/` sigue a 4096; el reimport de los cinco
+desde el motor (commit `4062ae3`) solo cambia `maxTextureSize` de 4096 a 256 en cada `.meta`. Pruebas:
+`ArtImport_RNF06_LosCincoPropsDelN1SeImportanA256SinComprimir`, nueva, en `ArtImportTest`
+(`Game.Architecture.Tests`), y `ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`, que salta
+las cinco como a los cuadros del fuego. En el reimport, `ArtImport_` pasó 4 de 4 y PlayMode `Fire`, 76 de
+76.
+
+**Medida (09/10/2026, `editor.ps1 exec build` y `oe4.ps1 Tamano`, sin `Datos/`).** El build sobre `83fd986`
+más el reimport pesa **420 561 594 bytes = 420,6 MB (401,1 MiB)**, 78,7 MB menos que el de antes de
+la excepción (499,3 MB), con 79,4 MB de margen sobre los 500 MB de RNF-06. Los dos builds son medidas
+del peso y **no candidatos**: rc2 sigue siendo el candidato vigente del OE4. RNF-04 y RNF-05 no se
+midieron en ellos, porque el arnés exige el Editor cerrado y jugar el ejecutable; quedan para el
+próximo candidato del carril OE4.
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -3213,15 +3275,25 @@ provisional del sprite anterior y no parpadea (INC-136); (3) la **autorización 
 radicados** que describen el diseño anterior de Algoritm (guion §1.1.1, las notas de las dos escenas puente
 y la descripción del guía del trabajo de grado); (4) los tonos de piel y el contorno que trae el arte final
 (`#FFC69F`, `#DE9563` y trazo negro) no son los de `Direccion_de_Arte.md` §4.1 (`#F2D3BC`, `#D9AF95` y
-`#3A1E18`): hay que decidir si se corrige §4.1 o se pide otro tono; (5) la **medición de RNF-06** con un ejecutable nuevo: el margen de 21 MB
-es el de rc2 (01/10/2026), anterior al arte frontal final, y el perfil (unos 8,5 MB) y Algoritm (unos
-3,4 MB netos) lo consumen en más de la mitad, sin contar los ojos cerrados de frente que faltan; y (6) la
+`#3A1E18`): hay que decidir si se corrige §4.1 o se pide otro tono; (5) **RNF-04 y RNF-05 en un ejecutable nuevo**; la **medición de RNF-06** ya se hizo (09/10/2026, INC-146):
+el margen de 21 MB era el de rc2 (01/10/2026) y el arte frontal final, el perfil y Algoritm lo dejaron en
+0,7 MB (499,3 MB); con los cinco props del N1 a 256 px el paquete pesa 420,6 MB, con 79,4 MB de margen. Las
+medidas de carga y de memoria exigen el Editor cerrado y jugar el ejecutable, y quedan para el próximo
+candidato del carril OE4, junto con los ojos cerrados de frente que faltan; y (6) la
 republicación en Word del OE3: sus fuentes ya nombran INC-134 a INC-136 (Anexo F, apartado 2.13, `1e2fb6a`),
 pero los `.docx` publicados todavía no.
 
 ---
 
 ## Historial de revisiones
+
+- **rev. 22 (09/10/2026)** — Decisión de Santiago por el peso del paquete (RNF-06). Se registra y cierra
+  **INC-146**: el ejecutable con el arte frontal final, Algoritm y el perfil medía 499,3 MB (build sobre
+  `0212469`), y los cinco props pequeños del Nivel 1 (`prop_n1_pedernal`, `_silex`, `_hoja`,
+  `_monton_hojas` y `_monton_hojas_cenital`) entran a 256 px, sin comprimir, con lo que el paquete baja a
+  420,6 MB. El código entró en `83fd986` y el reimport en `4062ae3`. Ninguna regla anterior se levanta;
+  añade una segunda excepción al tope de 4096 de INC-128, junto a la de INC-130. RNF-04 y RNF-05 quedan
+  por medir en el próximo candidato del OE4. Mantiene CP-02.
 
 - **rev. 21 (09/10/2026)** — Decisiones de Santiago con la llegada del arte de perfil y del nuevo
   Algoritm. Se registran y cierran **INC-134** (la familia se ve de perfil al recorrer o trabajar el entorno,

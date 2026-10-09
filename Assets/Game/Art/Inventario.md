@@ -171,8 +171,9 @@ recomponen.
 `Assets/Game/Art/`: **sin comprimir** y `maxTextureSize` 4096. No es un gusto: comprimida, la
 ilustración plana enseña la rejilla de bloques de 4×4 —se ve en la pared de la cueva, y el Nivel 1
 la multiplica por la capa de oscuridad, que amplifica el error— y corre los colores.
-`ArtImport_RNF23_…` lo vigila, y la memoria se mide sobre el ejecutable (RNF-05). La única excepción son los cuadros de
-`Props/Fire/Animations/`, a 1024 px (INC-130, más abajo).
+`ArtImport_RNF23_…` lo vigila, y la memoria se mide sobre el ejecutable (RNF-05). Las excepciones son dos, las dos por el peso del paquete (RNF-06): los cuadros de
+`Props/Fire/Animations/`, a 1024 px (INC-130, más abajo), y los cinco props pequeños de `Props/Fire/`,
+a 256 px (INC-146, abajo).
 Un archivo nuevo entra ya bien: **sustituir la imagen basta**, la escala la calcula
 `IllustrationFraming` con el tamaño real del sprite.
 
@@ -248,6 +249,14 @@ el color de acento del nivel está prohibido en el decorado (§9.2, §4.2).
 
 ### `Props/Fire/`
 
+**Excepción de importación (INC-146, RNF-06).** Cinco props entran a **256 px de lado máximo**, también
+**sin comprimir**: `prop_n1_pedernal`, `prop_n1_silex`, `prop_n1_hoja`, `prop_n1_monton_hojas` y
+`prop_n1_monton_hojas_cenital`. Llegaron a 2000×2000 (15,3 MB cada uno en el build) y el ejecutable del
+09/10/2026 medía 499,3 MB frente al tope de 500 MB; en pantalla miden de 72 a 300 px. Decisión de Santiago
+(09/10/2026); el build baja a 420,6 MB. Es una lista explícita de rutas en `ArtImportRules`, no la carpeta,
+y la vigila `ArtImport_RNF06_…`. Los `.png` de la entrega no se reducen a mano: el tamaño de 2000×2000 que
+dicen las filas siguientes es el del archivo, no el de la textura en memoria.
+
 | Archivo | Origen |
 |---|---|
 | ✓ `prop_n1_monton_hojas_cenital.png` | `S07a` / `A7` — el montón de la cueva visto desde arriba (2000×2000, `Level1_Cave`). Un solo dibujo para los cuatro estados del tablero: el hilo de humo, el rayo de la chispa, la llama y el quemado desde el centro (`BurnReveal`) los pone el motor encima, así que `prop_n1_hojas_intacto`, `_chispas`, `_humeante` y `_encendido` no se generan |
@@ -264,7 +273,7 @@ comprimir eran 67 PNG referenciados (134 entradas en el informe del build) y 533
 arreglo sin pérdida. En pantalla el fuego se ve a unos 650 px como mucho y el humo a menos de 300, de modo
 que no se nota: el humo queda en 595 × 1024 y el fuego normal en 1024 × 1007, en memoria; el fuego
 cenital (500 × 278) no cambia. El PPU se escala con la textura, así que el tamaño en el mundo es el mismo.
-Con la excepción el build pesa 479,0 MB (rc2, `evidencias/build-rc2.md`). Una entrega nueva de cuadros entra sola
+Con la excepción el build pesaba 479,0 MB (rc2, `evidencias/build-rc2.md`); con el arte final y la de INC-146, 420,6 MB. Una entrega nueva de cuadros entra sola
 a 1024; los `.png` de la entrega no se reducen a mano.
 
 | Archivo | Nota |
