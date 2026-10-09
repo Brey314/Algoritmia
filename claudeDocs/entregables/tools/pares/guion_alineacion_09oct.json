@@ -1,0 +1,27 @@
+[
+  {
+    "antes": "Pequeña figura luminosa con forma de llama, con cara, brazos y piernas de palo, manos y una franja de colores en la base, del tamaño de una palma. Conserva el mismo cuerpo en los tres niveles y cambia de material: de fuego en el Nivel 1, de madera en el 2 y de agua en el 3. Gira en el aire dejando una estela de puntos de luz. No resuelve: pregunta, descompone el objetivo y nombra al final la habilidad practicada.",
+    "despues": "Pequeña figura con cara, brazos y piernas gruesos del color de su material, manos abiertas, pies ovalados y una pantaloneta de cuadros en la cintura, del tamaño de una palma. Es el mismo personaje en los tres niveles y su cuerpo es el material del descubrimiento: una llama de fuego en el Nivel 1, un disco de madera en el 2 y una gota de agua en el 3. Gira en el aire dejando una estela de puntos de luz. No resuelve: pregunta, descompone el objetivo y nombra al final la habilidad practicada.",
+    "nota": "INC-136: el diseño final de Algoritm (llama, disco de madera y gota, con pantaloneta de cuadros) sustituye a la llama con franja de colores recoloreada de INC-52"
+  },
+  {
+    "antes": "Nota: esta escena abre el Nivel 2. Se reproduce al elegir ese nivel en el menú de niveles, antes de la escena 2.1, y no a continuación del cierre del Nivel 1. El guía (Algoritm) cruza la escena con el material del nivel que termina (fuego) y, cuando la familia llega al bosque, aparece con el del que empieza (madera). Su forma de llama no cambia.",
+    "despues": "Nota: esta escena abre el Nivel 2. Se reproduce al elegir ese nivel en el menú de niveles, antes de la escena 2.1, y no a continuación del cierre del Nivel 1. El guía (Algoritm) cruza la escena con el material del nivel que termina (fuego) y, cuando la familia llega al bosque, aparece con el del que empieza (madera). El cambio de llama a disco de madera ocurre en el fundido a negro que precede a la llegada al bosque, nunca a la vista.",
+    "nota": "INC-136: el guía deja de ser siempre una llama; muta entre los dos tramos encadenados de la escena puente I (N2_PuenteI con Algoritm_Fuego, N2_PuenteI_Bosque con Algoritm_Rueda)"
+  },
+  {
+    "antes": "Nota: esta escena abre el Nivel 3. Se reproduce al elegir ese nivel en el menú de niveles, antes de la escena 3.1, y no a continuación del cierre del Nivel 2. El guía (Algoritm) cruza la escena con el material del nivel que termina (madera) y, cuando la familia llega al río, aparece con el del que empieza (agua). Su forma de llama no cambia.",
+    "despues": "Nota: esta escena abre el Nivel 3. Se reproduce al elegir ese nivel en el menú de niveles, antes de la escena 3.1, y no a continuación del cierre del Nivel 2. El guía (Algoritm) cruza la escena con el material del nivel que termina (madera) y, cuando la familia llega al río, aparece con el del que empieza (agua). El cambio de disco de madera a gota ocurre en el fundido a negro que precede a la llegada al río, nunca a la vista.",
+    "nota": "INC-136: el guía deja de ser siempre una llama; muta entre N3_PuenteII_Horizonte (Algoritm_Rueda) y N3_PuenteII_Rio (Algoritm_Gota)"
+  },
+  {
+    "antes": "El nivel dura un día: amanece al salir de la cueva (escena puente I), la recolección y la construcción son de tarde, el regreso al refugio es al atardecer y el cierre es de noche, junto al fuego. Lo cuenta la luz de cada escena, no un rótulo.",
+    "despues": "El nivel dura un día: amanece al salir de la cueva (escena puente I), la recolección y la construcción son de tarde, el regreso al refugio empieza al atardecer (escena 2.4) y el cierre es de noche, junto al fuego. Lo cuenta la luz de las escenas narrativas, no un rótulo; el laberinto queda fuera de ese reloj y no se tiñe.",
+    "nota": "INC-71 (nota del 07/10/2026) e INC-137: el laberinto sale del reloj de luz del Nivel 2 y no se tiñe; el atardecer es el de la escena 2.4"
+  },
+  {
+    "antes": "El laberinto se juega al atardecer, con la luz cálida de la escena 2.4.",
+    "despues": "El laberinto se juega sin el tinte de atardecer de la escena 2.4: su entorno se ve tal como lo dibuja la ilustración, sobre un único fondo ámbar que cubre toda la pantalla.",
+    "nota": "INC-71 (nota del 07/10/2026) e INC-137: el laberinto no se tiñe y todo lo que lo rodea es un solo ámbar (#E8A33D); MazeLayout.LightTint se eliminó y MazeScene_RF30_ElLaberintoEsAlAtardecer se retiró"
+  }
+]
