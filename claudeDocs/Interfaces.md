@@ -214,7 +214,9 @@ Especificación que se pega en el generador. Los bloques marcados **(crítico)**
 rompe con más frecuencia y los que hay que verificar pieza a pieza.
 
 **ESTILO.** Ilustración vectorial 2D, animación cartoon clásica americana de los años 40–50
-(*golden age* / *rubber hose*). Personaje de cuerpo completo, vista frontal, centrado.
+(*golden age* / *rubber hose*). Personaje de cuerpo completo, vista frontal, centrado. (Desde INC-134 la familia tiene además un
+cuerpo de perfil para cuando se mueve, que el artista dibuja aparte; este prompt describe la vista
+frontal, la de reposo. Reglas del perfil: `Direccion_de_Arte.md` §13.4.)
 
 **LÍNEA.** Contorno limpio de grosor variable en marrón muy oscuro `#3A1E18`, más grueso en la
 silueta exterior y más fino en los detalles internos. Sin líneas de arrugas, sin líneas de
@@ -305,17 +307,29 @@ error en entorno seguro que fundamenta el enfoque de Aprendizaje Basado en Juego
 expresiones —neutra, alegría, sorpresa, preocupación, concentración y sueño—, parpadeo y cuatro
 bocas del habla, como capas de ojos y boca sobre la cabeza. La lista, el límite (ninguna de
 tristeza, enfado ni derrota) y los nombres de archivo están en `Direccion_de_Arte.md` §7.3 y §13.1.
+El parpadeo es de **dos cuadros**, ojos abiertos y ojos cerrados (INC-135); hoy solo parpadea el
+perfil, porque los ojos cerrados de frente están pedidos al artista.
 
 ### 4.3 Algoritm no sigue esta especificación
 
-El guía tiene su propio contrato (§7.6) y **no es un humano estilizado**: es una llama con cara,
-brazos y piernas de palo, manos abiertas color piel y una franja de cinco colores en la base;
-sin nariz ni cejas, con dos ojos redondos grandes y contorno café oscuro. Conserva el mismo
-cuerpo en los tres niveles y cambia de material —fuego, madera y agua, en los prefabs
-`Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota`—; madera y agua son la llama recoloreada,
-provisionales hasta que el arte definitivo sustituya el archivo. Desde el 08/10/2026 se dibuja por
-partes (nueve piezas recortadas de su `_reposo`, INC-140) y tiene el saludo `Wave` (INC-141). Cambia solo entre dos
-secuencias encadenadas de los puentes, nunca a la vista dentro de una escena jugable.
+El guía tiene su propio contrato (§7.6) y **no es un humano estilizado**. Desde el 09/10/2026
+(INC-136) su diseño oficial es el que entregó el artista: un solo personaje con **tres siluetas**
+—una llama de tres lenguas con el núcleo amarillo en degradado (fuego), un disco de madera con
+anillos y una gota con brillos—, con brazos y piernas gruesos del color del material (la misma
+silueta en las tres formas), manos y pies ovalados del mismo color —ya no color piel—, contorno
+negro `#000000` y una **pantaloneta de cuadros** (verde, naranja y granate según la forma) que
+sustituye a la franja de cinco colores. Lleva sin nariz ni cejas dos ojos redondos y una sonrisa
+cerrada, pero **esa cara es provisional**: el artista aún no entrega la del diseño nuevo, y hasta
+entonces son los ojos y la boca del sprite anterior, sin parpadeo ni habla. Es el mismo personaje en
+los tres niveles y cambia de material y de silueta —en los prefabs `Algoritm_Fuego`,
+`Algoritm_Rueda` y `Algoritm_Gota`—. Se dibuja por partes: siete piezas por forma, con la pierna
+entera y sin rodilla (INC-136, que sustituye al corte provisional de nueve piezas de INC-140), y
+tiene el saludo `Wave` (INC-141). Cambia solo entre dos secuencias encadenadas de los puentes,
+nunca a la vista dentro de una escena jugable.
+
+Por eso los bloques **COLOR**, **SOMBRAS** y **MANOS** del prompt de §4 **no se le pasan al
+generador para Algoritm**: su cuerpo lleva degradados y brillos, su contorno es negro y sus manos
+son del color del material. El prompt describe a la familia.
 
 ---
 

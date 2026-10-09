@@ -259,6 +259,13 @@ invariable** y **tres formas**. Aquí: un núcleo sonoro invariable y tres timbr
 Si uno de estos cambia, deja de leerse como el mismo personaje. Es la misma regla que el
 arte aplica a los ojos, a las extremidades y a la franja.
 
+> **Nota (09/10/2026, INC-136).** El diseño nuevo de Algoritm sustituye la franja de cinco bandas por
+> una pantaloneta de cuadros (`Direccion_de_Arte.md` §7.6), así que la «cuenta de cinco» ya no tiene
+> en el arte el eco visual que esta tabla le da. La firma sonora **no cambia**: el registro, las
+> cinco notas, la pentatónica y la cola siguen como están, y ninguna pieza se toca. Lo que queda sin
+> justificar es el *porqué* de «cinco», y es decisión del carril de sonido: `PS-06`. Las «formas» de
+> §6.2 siguen siendo las tres de siempre (fuego, madera, agua), ahora llama, disco de madera y gota.
+
 ### 6.2 Los tres timbres
 
 | Nivel | Forma (arte) | Timbre | Material |
@@ -584,6 +591,7 @@ Igual que §18 del arte: se dejan escritas, no se toman por cuenta propia.
 | `PS-03` | Las duraciones de bucle de §7 (45–60 s) son propuestas, no valores medidos. Un bucle de 90 s pesa el triple que uno de 30 s | Ajustar tras la primera medición del paquete de `unity build`, siguiendo el orden de recorte de §15 | Abierto |
 | `PS-04` | La fuente de producción no está elegida. Generación propia satisface CT-09/RNF-23 como asset propio; una biblioteca externa exige autorización escrita y línea en créditos | Elegir y dejar escrito **antes** de producir la primera pieza, no después | Cerrado (30/09/2026): generación propia del proyecto, acreditada en la fila «Música y sonido» de `CreditsContent.asset` (INC-78) |
 | `PS-05` | RNF-23 dice «recursos gráficos» y no menciona los sonoros (ver §17) | OE1 corrige CT-09 y RNF-23 a «recursos gráficos y sonoros» | Cerrado (29/09/2026) |
+| `PS-06` | La «cuenta de cinco» de §6.1 se justificaba como eco de las cinco bandas de la franja de Algoritm; el diseño nuevo (INC-136, 09/10/2026) no tiene franja, y su pantaloneta de cuadros no suma cinco de nada | Decidir si la regla se mantiene como identidad puramente sonora (con otra justificación) o se retoca; en cualquiera de los dos casos, reescribir la fila de §6.1. No afecta a ninguna pieza ya cableada | Abierto |
 
 ---
 
