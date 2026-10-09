@@ -1,0 +1,563 @@
+inicio N1_Apertura
+t=0,00 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[1040,1488] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1466,1878] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1257,1525] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1397,1666] y[317,586]
+t=0,25 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[1038,1486] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1463,1876] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1254,1523] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1394,1663] y[317,586]
+t=0,50 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[1033,1481] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1458,1870] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1249,1517] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1389,1658] y[317,586]
+t=0,75 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[1025,1473] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1450,1863] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1241,1510] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1381,1650] y[317,586]
+t=0,90 CAP0 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[1019,1467] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1444,1857] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1235,1504] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1376,1644] y[317,586]
+t=1,15 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[1008,1456] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1433,1845] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1224,1492] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1364,1633] y[317,586]
+t=1,40 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[994,1442] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1420,1832] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1210,1479] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1351,1620] y[317,586]
+t=1,65 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[979,1427] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1404,1817] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1195,1464] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1336,1604] y[317,586]
+t=1,90 CAP1 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[962,1410] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1388,1800] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1179,1447] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1319,1588] y[317,586]
+t=2,15 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[944,1392] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1370,1782] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1160,1429] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1301,1570] y[317,586]
+t=2,40 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[925,1373] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1351,1763] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1141,1410] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1282,1551] y[317,586]
+t=2,65 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[905,1353] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1331,1743] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1121,1390] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1262,1531] y[317,586]
+t=2,90 CAP2 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[885,1333] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1310,1723] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1101,1370] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1241,1510] y[317,586]
+t=3,15 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[864,1312] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1289,1702] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1080,1349] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1220,1489] y[317,586]
+t=3,40 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[842,1290] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1268,1680] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1059,1327] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1199,1468] y[317,586]
+t=3,65 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[821,1269] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1246,1659] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1037,1306] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1178,1447] y[317,586]
+t=3,90 CAP3 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[800,1248] y[328,776]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1225,1638] y[335,748]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1016,1285] y[322,591]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1157,1425] y[317,586]
+t=4,00 CLICK 1
+t=4,15 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=4,40 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=4,65 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=4,90 CAP4 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=5,15 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=5,40 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=5,65 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=5,90 CAP5 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=6,15 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=6,40 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=6,65 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=6,90 CAP6 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=7,15 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=7,40 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=7,65 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=7,90 CAP7 cuadroTop=232 ilu=(-1311,7,-26,4) esc=1,220
+    Prop_0 actor=Actor accion=Point vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[642,1090] y[328,776]
+    Prop_1 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1068,1480] y[335,748]
+    Prop_2 actor=Actor accion=Observe vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[858,1127] y[322,591]
+    Prop_3 actor=Actor accion=Surprise vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[999,1268] y[317,586]
+t=8,00 CLICK 2
+t=8,15 cuadroTop=232 ilu=(-1295,8,-19,0) esc=1,247
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[670,1128] y[331,789]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1104,1525] y[338,760]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[891,1165] y[325,600]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1034,1309] y[320,594]
+t=8,40 cuadroTop=232 ilu=(-1269,8,-8,1) esc=1,285
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[667,1139] y[334,806]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1109,1543] y[341,776]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[893,1177] y[328,611]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1039,1322] y[322,606]
+t=8,65 cuadroTop=232 ilu=(-1245,9,1,4) esc=1,316
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[608,1091] y[335,819]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1050,1495] y[343,788]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[837,1127] y[329,619]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[983,1273] y[323,613]
+t=8,90 CAP8 cuadroTop=232 ilu=(-1224,8,9,2) esc=1,341
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[502,994] y[335,827]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[939,1392] y[342,795]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[732,1028] y[328,623]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[877,1172] y[322,618]
+t=9,15 cuadroTop=232 ilu=(-1206,3,15,9) esc=1,362
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[357,857] y[332,832]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[784,1244] y[339,800]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[587,887] y[325,625]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[729,1029] y[320,620]
+t=9,40 cuadroTop=232 ilu=(-1190,4,21,5) esc=1,378
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[185,691] y[329,835]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[599,1065] y[336,801]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[414,718] y[321,625]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[551,855] y[316,620]
+t=9,65 cuadroTop=232 ilu=(-1177,0,26,1) esc=1,392
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-2,509] y[324,835]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[396,867] y[331,801]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[225,532] y[316,623]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[357,664] y[312,618]
+t=9,90 CAP9 cuadroTop=232 ilu=(-1165,8,29,9) esc=1,403
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-193,322] y[319,834]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[189,663] y[326,800]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[31,340] y[311,620]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[158,467] y[307,616]
+t=10,15 cuadroTop=232 ilu=(-1156,4,33,0) esc=1,412
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-377,141] y[314,833]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[-11,466] y[321,798]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-156,155] y[306,617]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-34,277] y[302,613]
+t=10,40 cuadroTop=232 ilu=(-1148,6,35,6) esc=1,419
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-542,-21] y[310,831]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[-190,289] y[316,796]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-323,-11] y[301,614]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-206,107] y[298,610]
+t=10,65 cuadroTop=232 ilu=(-1142,2,37,7) esc=1,425
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-677,-154] y[306,829]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[-337,145] y[312,794]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-460,-146] y[297,611]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-346,-32] y[294,608]
+t=10,90 CAP10 cuadroTop=232 ilu=(-1137,0,39,4) esc=1,429
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-768,-244] y[304,829]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[-436,47] y[310,793]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-553,-238] y[295,610]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-442,-127] y[292,607]
+t=11,15 cuadroTop=232 ilu=(-1132,7,40,8) esc=1,433
+    Prop_0 actor=Actor accion=Run vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-809,-283] y[303,829]
+    Prop_1 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[-480,5] y[309,794]
+    Prop_2 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-594,-278] y[294,610]
+    Prop_3 actor=Actor accion=Run vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-483,-168] y[291,607]
+t=11,40 cuadroTop=232 ilu=(-1129,2,42,0) esc=1,436
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-808,-281] y[303,831]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[-478,7] y[310,795]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-592,-276] y[295,611]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-482,-165] y[291,608]
+t=11,65 cuadroTop=232 ilu=(-1126,3,42,9) esc=1,439
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-806,-278] y[304,832]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[-476,11] y[310,797]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-590,-273] y[295,612]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-480,-162] y[292,609]
+t=11,90 CAP11 cuadroTop=232 ilu=(-1123,9,43,7) esc=1,441
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-805,-276] y[304,833]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[-474,13] y[311,798]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-588,-271] y[295,613]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-478,-160] y[292,610]
+t=12,00 CLICK 3
+t=12,15 cuadroTop=232 ilu=(-890,0,50,4) esc=1,461
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-581,-44] y[307,843]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[-245,249] y[314,807]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-361,-39] y[298,620]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-249,73] y[295,617]
+t=12,40 cuadroTop=232 ilu=(-552,9,59,8) esc=1,487
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[-261,285] y[311,857]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[81,584] y[318,821]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[-37,291] y[302,630]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[78,405] y[299,627]
+t=12,65 cuadroTop=232 ilu=(-269,3,67,7) esc=1,508
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[3,557] y[315,869]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[351,861] y[322,832]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[231,563] y[306,638]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[348,680] y[303,635]
+t=12,90 CAP12 cuadroTop=232 ilu=(-36,4,74,1) esc=1,525
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[215,775] y[318,879]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[568,1084] y[325,841]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[446,782] y[309,645]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[564,900] y[306,642]
+t=13,15 cuadroTop=232 ilu=(159,9,79,5) esc=1,539
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[388,953] y[321,886]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[746,1266] y[328,848]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[621,961] y[311,651]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[742,1081] y[308,647]
+t=13,40 cuadroTop=232 ilu=(321,3,83,9) esc=1,551
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[524,1094] y[324,893]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[887,1411] y[330,854]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[761,1102] y[314,655]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[883,1225] y[310,652]
+t=13,65 cuadroTop=232 ilu=(454,3,87,6) esc=1,560
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[632,1204] y[326,898]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[999,1526] y[332,859]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[870,1214] y[315,659]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[995,1338] y[312,656]
+t=13,90 CAP13 cuadroTop=232 ilu=(562,6,90,5) esc=1,568
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[714,1290] y[327,903]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1085,1615] y[333,863]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[955,1300] y[317,662]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1081,1426] y[313,659]
+t=14,15 cuadroTop=232 ilu=(651,9,93,0) esc=1,574
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[777,1355] y[329,907]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1152,1684] y[335,867]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1021,1367] y[318,665]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1148,1495] y[315,661]
+t=14,40 cuadroTop=232 ilu=(724,9,95,0) esc=1,579
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[826,1405] y[330,910]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1204,1737] y[336,869]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1071,1418] y[319,667]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1200,1547] y[316,663]
+t=14,65 cuadroTop=232 ilu=(784,6,96,6) esc=1,583
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[862,1443] y[331,912]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1243,1778] y[337,872]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1108,1457] y[320,669]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1239,1588] y[316,665]
+t=14,90 CAP14 cuadroTop=232 ilu=(832,6,97,9) esc=1,586
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[889,1471] y[332,914]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1273,1809] y[337,873]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1137,1486] y[321,670]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1269,1618] y[317,667]
+t=15,15 cuadroTop=232 ilu=(872,2,99,0) esc=1,589
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[910,1493] y[332,916]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1296,1833] y[338,875]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1160,1510] y[321,671]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1292,1642] y[318,668]
+t=15,40 cuadroTop=232 ilu=(904,5,99,9) esc=1,591
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[928,1512] y[333,917]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1316,1853] y[338,876]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1178,1528] y[322,672]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1312,1662] y[318,669]
+t=15,65 cuadroTop=232 ilu=(930,8,100,6) esc=1,592
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[943,1528] y[333,918]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1333,1871] y[339,877]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1194,1545] y[322,673]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1329,1680] y[318,669]
+t=15,90 CAP15 cuadroTop=232 ilu=(952,0,101,2) esc=1,594
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[959,1544] y[334,919]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1349,1888] y[339,878]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1210,1562] y[322,673]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1345,1696] y[319,670]
+t=16,00 CLICK 4
+t=16,15 cuadroTop=232 ilu=(969,4,101,6) esc=1,595
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[974,1560] y[334,920]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1365,1904] y[339,878]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1226,1577] y[322,674]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1361,1712] y[319,670]
+t=16,40 cuadroTop=232 ilu=(983,5,102,0) esc=1,596
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[981,1567] y[334,920]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1373,1912] y[339,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1233,1585] y[323,674]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1369,1720] y[319,671]
+t=16,65 cuadroTop=232 ilu=(994,9,102,3) esc=1,597
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[981,1567] y[335,921]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1373,1913] y[340,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1234,1585] y[323,674]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1369,1721] y[319,671]
+t=16,90 CAP16 cuadroTop=232 ilu=(1004,2,102,6) esc=1,597
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[974,1561] y[335,921]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1368,1908] y[340,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1228,1579] y[323,674]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1364,1716] y[319,671]
+t=17,15 cuadroTop=232 ilu=(1011,8,102,8) esc=1,598
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[962,1549] y[335,922]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1357,1897] y[340,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1216,1568] y[322,674]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1353,1705] y[319,671]
+t=17,40 cuadroTop=232 ilu=(1017,9,103,0) esc=1,598
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[945,1532] y[335,922]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1342,1883] y[340,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1200,1553] y[322,674]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1338,1690] y[319,671]
+t=17,65 cuadroTop=232 ilu=(1022,9,103,1) esc=1,599
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[925,1512] y[336,923]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1324,1865] y[340,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1181,1534] y[322,674]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1320,1672] y[319,671]
+t=17,90 CAP17 cuadroTop=232 ilu=(1027,0,103,2) esc=1,599
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[903,1490] y[336,923]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1304,1844] y[339,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1160,1512] y[322,674]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1300,1652] y[318,671]
+t=18,15 cuadroTop=232 ilu=(1030,3,103,3) esc=1,599
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[879,1466] y[336,924]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1282,1822] y[339,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1137,1489] y[322,674]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1278,1630] y[318,671]
+t=18,40 cuadroTop=232 ilu=(1033,0,103,4) esc=1,599
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[853,1441] y[337,924]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1259,1799] y[339,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1113,1465] y[321,674]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1255,1607] y[318,670]
+t=18,65 cuadroTop=232 ilu=(1035,1,103,4) esc=1,599
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[828,1415] y[337,924]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1236,1776] y[339,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1089,1441] y[321,674]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1231,1584] y[318,670]
+t=18,90 CAP18 cuadroTop=232 ilu=(1036,9,103,5) esc=1,599
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[804,1391] y[337,925]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1213,1754] y[339,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1065,1418] y[321,673]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1209,1562] y[317,670]
+t=19,15 cuadroTop=232 ilu=(1038,3,103,5) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[781,1368] y[338,925]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1192,1733] y[339,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1043,1396] y[321,673]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1188,1540] y[317,670]
+t=19,40 cuadroTop=232 ilu=(1039,5,103,5) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[760,1348] y[338,925]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1173,1714] y[339,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1023,1376] y[320,673]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1169,1521] y[317,669]
+t=19,65 cuadroTop=232 ilu=(1040,4,103,6) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[742,1330] y[338,926]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1157,1697] y[339,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1006,1359] y[320,673]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1152,1505] y[317,669]
+t=19,90 CAP19 cuadroTop=232 ilu=(1041,2,103,6) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[728,1316] y[338,926]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1144,1684] y[339,880]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[993,1345] y[320,673]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1139,1492] y[317,669]
+t=20,00 CLICK 5
+t=20,15 cuadroTop=232 ilu=(1041,8,103,6) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[712,1299] y[338,926]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1128,1669] y[339,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[977,1329] y[320,672]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1124,1477] y[316,669]
+t=20,40 cuadroTop=232 ilu=(1042,3,103,6) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[707,1295] y[339,926]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1121,1661] y[339,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[972,1324] y[320,672]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1120,1473] y[316,669]
+t=20,65 cuadroTop=232 ilu=(1042,7,103,6) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[699,1286] y[339,926]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1107,1648] y[339,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[962,1315] y[320,672]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1112,1465] y[316,668]
+t=20,90 CAP20 cuadroTop=232 ilu=(1043,0,103,6) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[686,1274] y[339,926]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1087,1628] y[339,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[949,1301] y[319,672]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1101,1453] y[315,668]
+t=21,15 cuadroTop=232 ilu=(1043,3,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[670,1258] y[339,927]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1063,1604] y[338,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[932,1285] y[319,671]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1086,1439] y[315,667]
+t=21,40 cuadroTop=232 ilu=(1043,5,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[652,1239] y[339,927]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1034,1575] y[338,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[912,1265] y[318,671]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1069,1422] y[314,666]
+t=21,65 cuadroTop=232 ilu=(1043,7,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[631,1219] y[340,927]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1002,1543] y[338,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[890,1243] y[317,670]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1050,1403] y[313,666]
+t=21,90 CAP21 cuadroTop=232 ilu=(1043,8,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[609,1197] y[340,928]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[968,1509] y[338,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[866,1219] y[317,669]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1030,1382] y[312,665]
+t=22,15 cuadroTop=232 ilu=(1044,0,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[586,1173] y[341,928]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[932,1473] y[338,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[841,1194] y[316,668]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1008,1361] y[311,664]
+t=22,40 cuadroTop=232 ilu=(1044,1,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[562,1149] y[341,928]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[894,1435] y[338,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[815,1168] y[315,668]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[986,1338] y[310,663]
+t=22,65 cuadroTop=232 ilu=(1044,1,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[537,1125] y[341,929]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[857,1398] y[338,879]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[789,1141] y[314,667]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[963,1316] y[309,662]
+t=22,90 CAP22 cuadroTop=232 ilu=(1044,2,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[513,1101] y[342,929]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[820,1360] y[338,878]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[763,1116] y[314,666]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[941,1294] y[308,660]
+t=23,15 cuadroTop=232 ilu=(1044,2,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[490,1078] y[342,930]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[783,1324] y[337,878]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[738,1091] y[313,665]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[919,1272] y[307,660]
+t=23,40 cuadroTop=232 ilu=(1044,3,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[468,1056] y[342,930]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[749,1290] y[337,878]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[714,1067] y[312,665]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[899,1252] y[306,659]
+t=23,65 cuadroTop=232 ilu=(1044,3,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[448,1035] y[343,930]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[718,1259] y[337,878]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[693,1045] y[311,664]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[880,1233] y[305,658]
+t=23,90 CAP23 cuadroTop=232 ilu=(1044,4,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[430,1017] y[343,931]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[690,1231] y[337,878]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[673,1026] y[311,663]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[864,1216] y[304,657]
+t=24,00 CLICK 6
+t=24,15 cuadroTop=232 ilu=(1044,4,103,7) esc=1,600
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[415,1002] y[343,931]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[667,1207] y[337,878]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[657,1009] y[310,663]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[850,1202] y[304,656]
+t=24,40 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[837,1406] y[366,936]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1074,1598] y[360,884]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1070,1412] y[334,675]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1259,1601] y[327,669]
+t=24,65 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[829,1398] y[367,936]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1062,1586] y[360,884]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1062,1403] y[334,675]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1252,1593] y[327,669]
+t=24,90 CAP24 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Walk vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[825,1394] y[367,936]
+    Prop_1 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1056,1580] y[360,884]
+    Prop_2 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1057,1399] y[334,675]
+    Prop_3 actor=Actor accion=Walk vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1248,1589] y[327,668]
+t=25,15 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[824,1393] y[367,936]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1055,1579] y[360,884]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1057,1399] y[334,675]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1248,1589] y[327,668]
+t=25,40 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[824,1393] y[367,936]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1055,1579] y[360,884]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1057,1399] y[334,675]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1248,1589] y[327,668]
+t=25,65 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[824,1393] y[367,936]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1055,1579] y[360,884]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1057,1399] y[334,675]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1248,1589] y[327,668]
+t=25,90 CAP25 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[824,1393] y[367,936]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1055,1579] y[360,884]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1057,1399] y[334,675]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1248,1589] y[327,668]
+t=26,15 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[824,1393] y[367,936]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1055,1579] y[360,884]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1057,1399] y[334,675]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1248,1589] y[327,668]
+t=26,40 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[824,1393] y[367,936]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1055,1579] y[360,884]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1057,1399] y[334,675]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1248,1589] y[327,668]
+t=26,65 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[824,1393] y[367,936]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1055,1579] y[360,884]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1057,1399] y[334,675]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1248,1589] y[327,668]
+t=26,90 CAP26 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[824,1393] y[367,936]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1055,1579] y[360,884]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1057,1399] y[334,675]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1248,1589] y[327,668]
+t=27,15 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[824,1393] y[367,936]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1055,1579] y[360,884]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1057,1399] y[334,675]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1248,1589] y[327,668]
+t=27,40 cuadroTop=232 ilu=(1428,5,117,2) esc=1,550
+    Prop_0 actor=Actor accion=Idle vista=Front mirrored=False lienzoX=0,36 casillaX=-1,00 x[824,1393] y[367,936]
+    Prop_1 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,33 casillaX=1,00 x[1055,1579] y[360,884]
+    Prop_2 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1057,1399] y[334,675]
+    Prop_3 actor=Actor accion=Idle vista=Front mirrored=True lienzoX=0,22 casillaX=1,00 x[1248,1589] y[327,668]
+DONE

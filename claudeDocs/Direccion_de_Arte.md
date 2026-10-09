@@ -194,9 +194,11 @@ Usados en interfaz y en elementos comunes a todos los niveles.
 | Marfil | `#F7EFE2` | Fondo del cuadro de diálogo y de los paneles |
 | Marfil sombra | `#E0D4C0` | Borde interior de paneles |
 | Carbón | `#3A1E18` | Texto y contornos |
+| Carbón oscuro | `#1F100C` | Solo el texto del cuadro de diálogo y el nombre del hablante (§10.3, INC-138) |
 | Carbón suave | `#6B5248` | Texto secundario |
 | Éxito | `#5FA842` | Confirmación de reto resuelto |
-| Atención | `#E8A33D` | Pista disponible, reintento |
+| Atención | `#E8A33D` | Pista disponible, reintento; en el laberinto, además, el fondo de toda la pantalla (§8.2) |
+| Rojo de fuego oscuro | `#A0330D` | Solo el aro del botón de pista del laberinto (§8.2, INC-137): el `#E2571F` de los otros niveles da 1,73:1 sobre el ámbar y este 3,27:1 |
 
 No se usa rojo para el error. Se explica en §12.3.
 
@@ -344,6 +346,7 @@ el cuerpo, con un clip del rig por acción (§13.3, `ActorAction`):
 | Sorpresa | `Surprise` | Descubrimiento, evento narrativo |
 | Atención | `Observe` | Al empezar un reto, al mirar algo |
 | Ánimo | `Encourage` | Tras un intento fallido |
+| Saludo | `Wave` (solo Algoritm) | Pantalla de créditos (INC-141) |
 
 **Arte final: seis expresiones (decisión de Santiago, 05/10/2026, INC-131).** Los personajes
 finales traen la cabeza separada del torso, con **ojos y boca en capas propias** (§13.1), y la cara
@@ -471,12 +474,18 @@ char_algoritm_n2_rueda_reposo.png
 char_algoritm_n3_gota_reposo.png
 ```
 
-**Arte actual (provisional): una sola imagen por forma, sin recorte en partes.** Los prefabs
-`Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` animan el cuerpo entero con
-`char_algoritm.controller`, así que sustituir el archivo basta. «Rueda» y «gota» nombran el nivel,
-no la silueta.
+**Arte actual (provisional): nueve piezas por forma, recortadas del `_reposo` (decisión de Santiago,
+08/10/2026, INC-140).** Los prefabs `Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` dibujan al
+guía por partes —torso, húmero y antebrazo de cada brazo, muslo y antepierna de cada pierna— con
+`char_algoritm.controller`, de modo que sus brazos y piernas se mueven en todas las escenas. Las
+piezas (`Frontal/char_algoritm_<forma>_parte_*.png`, 27 en total) las genera
+`pose_preview.py --exporta-maqueta` a partir del `_reposo` y cada una lleva una rótula en la
+articulación; `Cuerpo` queda apagado, y `Ojos` y `Boca` también, porque la cara sigue pintada en el
+torso. El `_reposo` se conserva como retrato y como icono del botón de ayuda. «Rueda» y «gota»
+nombran el nivel, no la silueta.
 
-**Arte final: recorte en partes (decisión de Santiago, 05/10/2026, INC-131).** Cada forma se
+**Arte final: recorte en partes (decisión de Santiago, 05/10/2026, INC-131).** Las nueve piezas
+provisionales de arriba ya existen; el arte final las sustituye con el mismo nombre. Cada forma se
 entrega, además de su `_reposo`, cortada en partes con el prefijo
 `char_algoritm_<fuego|rueda|gota>_` —una por forma, porque cada una va recoloreada (INC-52)—:
 
@@ -494,9 +503,12 @@ char_algoritm_<forma>_boca_{0,a,e,u}.png · _boca_{alegria,sorpresa,preocupacion
 Brazos, piernas, codos y rodillas en dos tramos, **ojos y boca como capas sobre el cuerpo**, y **sin
 cuello ni cabeza**: la cara va en la propia llama. La cara admite las mismas seis expresiones de
 §7.3, con la regla de no tristeza, enfado ni derrota; la **neutra** sigue siendo la del núcleo de
-identidad (ojos crema con iris café, sonrisa cerrada). **Provisional hasta la entrega:** mientras
-no llegue, el prefab lleva los nodos con las capas apagadas y se ve el sprite entero de hoy.
-`Cuerpo` se apaga solo cuando torso, brazos y piernas están puestos.
+identidad (ojos crema con iris café, sonrisa cerrada). **Provisional hasta la entrega:** las nueve
+piezas del cuerpo ya están puestas (arriba) y `Cuerpo` está apagado; los ojos y la boca como capas
+propias siguen apagados hasta que llegue su arte. Quedan dos defectos de las piezas provisionales
+que se corrigen con el arte final: en los fundidos (`Appear`, `Vanish`, `Hidden`) las rótulas se
+ven más oscuras unos 0,3 s, porque el alfa del `CanvasGroup` multiplica cada `Image` por separado
+donde se solapan, y el hombro girado deja ver un talón más claro de unos 12 px.
 
 Sustituyen a `char_chispa_*`. La palabra `chispa` queda libre para lo que siempre fue en
 este juego: el rayo del golpe del Nivel 1 (§12.2), que dibuja el motor, no tiene archivo y no
@@ -553,10 +565,17 @@ Elemento central del nivel y única excepción al sombreado de dos tonos.
 | Núcleo | `#FFE9A8` | Óvalo pequeño, borde duro |
 | Cuerpo | `#F5A62E` | Lengua de llama redondeada, borde duro |
 | Borde | `#E2571F` | Contorno de la llama, borde duro |
-| Halo de luz | `#F0A84E` al 20 % | Círculo plano, sin degradado, escala oscilante |
+| Halo de luz | `#F0A84E` al 20 % en el centro | Círculo con degradado radial, escala oscilante |
 
-El halo es un círculo de color plano, no un degradado radial. Oscila su escala entre
-0.95 y 1.05 en un ciclo de 1.2 s para sugerir el parpadeo sin coste de cómputo.
+El halo es un disco con degradado radial (opacidad plena hasta 0,3 del radio y a cero en el
+borde, con curva suave), generado por código. Oscila su escala entre 0.95 y 1.05 en un ciclo de
+2 s, una sola onda y sin tocar la opacidad, para sugerir el parpadeo sin destellos (RNF-21). Lo
+llevan todas las fogatas encendidas: las nueve llamas de las narrativas y la llama cenital de
+`Level1_Cave` (`FireGlow`, INC-139). Un círculo plano al 20 % se leía como una mancha naranja de
+noche y dejaba aros fantasma donde se cruzan dos fogatas a plena luz; con el degradado, de noche es
+un resplandor que se funde con la cueva y de día, un calor tenue junto al fuego. A plena luz casi
+no se ve, y es coherente. En la cueva el halo va al fondo del suelo, bajo el montón y las piedras,
+para no lavarles el color.
 
 #### Iluminación
 
@@ -602,8 +621,12 @@ luz de día despejado y sin tinte, que es la de la tarde (recolección y constru
 amanecer (puente I), el atardecer (escena 2.4) y la noche junto al fuego (escena 2.5 y arranque
 del puente II) los pone el motor encima —`NarrativeLight`—, no el dibujo. Lo vigila
 `NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche`. El laberinto (fase 3) queda fuera
-de ese reloj: no se tiñe, y su entorno se ve tal cual el arte, con panel marfil `#F7EFE2` y
-contorno `#C4A882` (decisión de Santiago, 07/10/2026).
+de ese reloj: no se tiñe, y su entorno se ve tal cual el arte (decisión de Santiago, 07/10/2026).
+Desde el 08/10/2026 (INC-137) todo lo que lo rodea es **un solo ámbar, `#E8A33D`**, detrás del
+entorno y detrás de la tarjeta de la secuencia; el entorno y la tarjeta llevan el mismo marco
+redondeado de `#C4A882` y 8 px, con 40 px de margen entre el marco del entorno y el borde de la
+pantalla; la zona donde se suelta la secuencia es marfil sombra `#E0D4C0`, igual que las muescas de
+los bloques; y el aro del botón de pista es `#A0330D`, porque el `#E2571F` se perdía sobre el ámbar.
 **Sensación buscada:** claridad y espacio para observar, comparar y construir. Es el
 nivel más luminoso de los tres.
 
@@ -840,17 +863,17 @@ desplazamiento de la lista, de 52 a 82 px).
 | Botón primario | Piedra redondeada | `#E8A33D`, borde `#3A1E18` | Sombra plana inferior de 6 px |
 | Botón secundario | Piedra clara | `#E0D4C0`, borde `#6B5248` | |
 | Lista de tareas (**solo Nivel 3**) | Tablilla de piedra clara | `#F7EFE2` sin borde; pendiente carbón suave `#6B5247`, cumplida verde `#336638` | Esquina superior izquierda, una fila por tarea de RF-36 con un círculo delante del texto. Tarea pendiente = círculo liso; tarea cumplida = círculo verde con marca de verificación, y el texto pasa al mismo verde: cambia la forma **más** el color, nunca solo el color (RNF-19). Sin cifras. Es el único componente que renuncia a la vía diegética de §10.1 (INC-46): el Nivel 3 es el escenario más claro, y una tablilla de marfil se lee sobre el follaje mejor que una cuerda suelta (RNF-20) |
-| Icono de pista | Algoritm en pequeño | `#E8A33D` | Pulso lento de escala cuando hay pista disponible. Es el guía quien ofrece la pista (CP-06), así que el icono es él |
+| Icono de pista | Algoritm en pequeño | `#E8A33D`; aro `#E2571F` (`#A0330D` en el laberinto, §8.2) | Pulso lento de escala cuando hay pista disponible. Es el guía quien ofrece la pista (CP-06), así que el icono es él |
 | Marco de inventario | Panel liso color arena | `#C7A87C` | Casillas cuadradas `#E0D4C0` en rejilla de 2×2, abajo a la izquierda; la de los troncos lleva cinco marcas que se encienden sin cifra (CP-03) |
 
 ### 10.3 Cuadro de diálogo
 
 El diálogo se lee en un cuadro con retrato, no en un globo con cola (INC-129). Es el
 `CuadroDialogo` de `Narrative.unity`, el panel de diálogo de §10.2: una tablilla de
-1400 × 180 px centrada abajo, a 16 px del borde, dentro del cuarto inferior de la pantalla, con
+1400 × 216 px centrada abajo, a 16 px del borde (su cima queda a 232 px de 1080; el cuarto inferior acaba en 270), con
 relleno marfil `#F7EFE2` en un marco `#C4A882` y una sombra plana inferior de 6 px, sin
-degradado. Arriba a la izquierda lleva el retrato del hablante en un recuadro de 128 px
-(`char_<x>_retrato_neutra.png`, o la forma de Algoritm de su nivel). A su derecha van el nombre
+degradado. A la izquierda, centrado en vertical, lleva el retrato del hablante en un recuadro de
+128 px (`char_<x>_retrato_neutra.png`, o la forma de Algoritm de su nivel). A su derecha van el nombre
 del hablante y el texto (§11.3). Abajo a la derecha quedan «Continuar», botón primario de
 260 × 76, y «Omitir», secundario de 200 × 76, que solo aparece en escenas ya vistas (RF-06).
 
@@ -858,8 +881,36 @@ No tiene cola: quién habla lo dicen el retrato y el nombre, y no una flecha hac
 que la cámara puede dejar fuera de cuadro. Lo que el texto nombra se ve por encima del cuadro
 (acta D05; lo vigila `NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo`).
 
-El texto es siempre `#3A1E18` sobre marfil. Nunca texto claro sobre fondo oscuro: la
+El texto y el nombre del hablante son siempre `#1F100C` sobre marfil (decisión de Santiago,
+08/10/2026, INC-138): un carbón más oscuro que el `#3A1E18` de los contornos y los botones, para
+que se lea a 30 px sin esfuerzo. Entre el nombre y el texto hay 32 px de blanco entre tinta y
+tinta, y el interlineado del texto es 1,1. Nunca texto claro sobre fondo oscuro: la
 legibilidad para lectores en formación es notablemente peor.
+
+### 10.4 Inicio, selección de niveles y créditos
+
+Tres pantallas comunes que el arte de los niveles también alcanza (decisión de Santiago,
+08/10/2026, INC-142 e INC-143).
+
+**Inicio.** Sobre el panel de la derecha va una portada: la mitad izquierda del bosque del Nivel 2
+(`env_n2_bosque_claro`, foco 0,25, de modo que ningún encuadre cruza la costura de x = 0,5) en una
+ventana siempre cuadrada, con Papá, Mamá, el Niño, la Niña y Algoritm en su forma de fuego en
+reposo. Los cinco arrancan el `Idle` en fases distintas (`CharacterRig.idlePhase`) para que no
+respiren al unísono; los padres al fondo y al centro, los niños a los lados y delante, Algoritm
+flotando delante de los padres. A la izquierda, el título «Algoritmia» va **encima** de la tarjeta,
+no dentro: blanco, 112 px, contorno `#3A1E18` de 4 px (§11.4). La tarjeta, de 712 × 120 px,
+solo lleva el lema «Piensa el orden, enciende el fuego». Debajo, los cuatro botones. El bloque
+entero queda centrado en vertical (222 px arriba y abajo a 1080p).
+
+**Selección de niveles.** Cada tarjeta lleva la ilustración de su escenario en una ventana de
+444 × 250 px que la recorta sin deformarla: la cueva, el **bosque** (con foco 0,25, por la misma
+costura) y el río. El icono de estado, el candado o la marca de completado, va abajo a la
+izquierda de la imagen, a 16 px de sus bordes, y su texto («Bloqueado», «Completado») centrado en
+la franja entre la imagen y el botón, sobre la propia tarjeta marfil y sin pastilla detrás. El
+nivel disponible no lleva insignia.
+
+**Créditos.** Algoritm en su forma de fuego saluda (`Wave`, §13.3) en un bucle con pausa de reposo,
+al ancho del panel que ocupaba la tarjeta, que ya no existe: el guía no necesita fondo propio.
 
 ---
 
@@ -890,25 +941,27 @@ Definida a resolución de diseño 1920×1080.
 
 | Nivel | Tamaño | Familia | Peso | Interlineado |
 | --- | --- | --- | --- | --- |
-| Título de pantalla | 64 px (el título del juego en la portada, 96 px en Baloo 2 ExtraBold) | Baloo 2 | 700 | 1.15 |
+| Título de pantalla | 64 px (el título del juego en la portada, 112 px en Baloo 2 ExtraBold, blanco con contorno `#3A1E18` de 4 px) | Baloo 2 | 700 | 1.15 |
 | Subtítulo | 48 px | Baloo 2 | 600 | 1.2 |
-| Diálogo | 26 px (nombre del hablante en Baloo 2 Bold a 22 px) | Nunito | 400 | 1.35 |
+| Diálogo | 30 px, `#1F100C` (nombre del hablante en Baloo 2 Bold a 30 px, `#1F100C`) | Nunito | 600 | 1.1 |
 | Tablilla del guía en las mecánicas (instrucción, mensajes y pista) | 26 px en el taller y el laberinto, 28 px en el río, 34 px en el bosque; 24 px en el Nivel 1 | Baloo 2 (Nunito en el Nivel 1) | 700 (400 en el Nivel 1) | 1.0 |
 | Texto secundario | 26 px | Nunito | 400 | 1.5 |
 | Contadores | 30 px | Baloo 2 | 700 | 1.0 |
 
 **Mínimo: 26 px para el texto que lee el estudiante.** Solo bajan de ese tamaño los rótulos
-secundarios —nombre del hablante, rótulo «Algoritm» del resumen, etiqueta del laberinto, «Aún no»
-del taller, a 22 px— y la instrucción del Nivel 1 (24 px).
+secundarios —rótulo «Algoritm» del resumen, etiqueta del laberinto, «Aún no» del taller, a 22 px— y la instrucción del Nivel 1 (24 px).
 
 ### 11.4 Reglas de composición
 
-- Máximo 2 líneas por cuadro de diálogo, 12 palabras por línea.
+- Hasta tres renglones por cuadro de diálogo, que es para lo que está dimensionado: a 30 px, 17 de
+  las 139 líneas de las narrativas ocupan tres y ninguna necesita cuatro. Lo vigila
+  `NarrativeScene_RNF01_TodasLasLineasDeLasDieciochoNarrativasCabenEnSuCuadro` (INC-138).
 - Alineación a la izquierda, nunca justificada.
 - Sin mayúsculas sostenidas en textos de más de tres palabras: entorpecen la lectura
   en formación.
 - Contorno de texto: `#3A1E18` de 3 px cuando el texto va sobre el escenario y no
-  sobre panel.
+  sobre panel. El título del juego, que va sobre el fondo ocre de la portada, lleva 4 px
+  (un único `Outline` de 4 px en diagonal; no se apilan dos, porque uGUI suma sus desfases).
 
 ---
 
@@ -931,6 +984,7 @@ impide, y el estilo plano no los necesita.
 | Chispa que se apaga (Nivel 1, fuerza de más con las piedras en su sitio) | El mismo rayo, más largo: sale hacia la mitad de arriba, a 0,52–0,6 del lado, pasa de la última hoja y se apaga en el aire, bajo la tablilla, sin prender nada (RF-16). Mismo trazo y mismo color: otro color lo volvería marca de error (CP-02, §12.3) | 0,35 s |
 | Humo del montón (Nivel 1) | Hilo de humo por cuadros (`fx_n1_humo_nacer`, que sigue en bucle con `fx_n1_humo`) con el pivote en la base, en el punto del golpe y de 87 × 150 u. Nace al converger, entre las hojas y las piedras, y no pasa de medio montón (RF-19). Al soplar sube a la corona de la llama, detrás de ella, y se encoge a 0,6 en el mismo barrido que el quemado (RF-20) | Nacer, 1,97 s; bucle, 7,27 s |
 | Salpicadura de la balsa (Nivel 3) | Solo sonora: `sfx_n3_hundimiento` al empezar cada hundimiento. En imagen no hay efecto de agua (§12.3, INC-123) | 1,74 s de sonido |
+| Halo de la fogata | Disco con degradado radial `#F0A84E` al 20 % que respira entre 0.95 y 1.05 de escala, hermano de la llama y detrás de ella (`FireGlow`, §8.1) | Ciclo 2 s |
 | Recolección de objeto | Círculo `#F7EFE2` que se expande y desaparece | 0.35 s |
 | Reto resuelto | 6 destellos de 4 puntas `#5FA842` en corona | 0.8 s |
 | Aparición de pista | El botón de pista del Nivel 1 pulsa de escala 1.0 a 1.06 en bucle desde que se abre la escena (`ui_pulso_pista`); los de los niveles 2 y 3 no pulsan | Ciclo 2.2 s |
@@ -976,15 +1030,17 @@ Animación por recorte (*cut-out*) en uGUI sobre los sprites base en A-pose, no
 animación fotograma a fotograma. Las partes son `Image` hijas de un lienzo de 1024 × 1024, el de
 los sprites base, con el pivote en la articulación (`char_<x>_parte_<parte>.png`). Un `Animator`
 las gira y desplaza con un estado por acción del juego (`ActorAction`) y un clip por estado
-(`char_<x>_anim_<accion>.anim`, 21 por miembro de la familia, con el controlador
+(`char_<x>_anim_<accion>.anim`, 21 por miembro de la familia y 10 en Algoritm, con el controlador
 `char_<x>.controller` al lado). El componente es `CharacterRig` (`Game.Scaffolding`), hay un
 prefab por personaje en `Assets/Game/Prefabs/Characters/`, y lo usan igual la escena narrativa
 y las cinco mecánicas.
 
 **Arte actual (provisional).** Cada miembro de la familia se corta en **cinco partes** —torso
 (con la cabeza dentro), brazo izquierdo, brazo derecho, pierna izquierda y pierna derecha, con
-izquierda y derecha de pantalla— y Algoritm es una sola `Image` por forma, sin recorte, con nueve
-clips que comparten las tres formas, para que sustituir su arte sea cambiar un archivo.
+izquierda y derecha de pantalla— y Algoritm, desde el 08/10/2026 (INC-140), se corta en **nueve
+piezas** por forma, recortadas de su `_reposo`, con diez clips que comparten las tres formas
+(los nueve de siempre más el saludo `Wave`); sustituir su arte es sustituir los PNG con el mismo
+nombre y correr el modo `sprites`.
 
 **Arte final: diez partes y una cara (decisión de Santiago, 05/10/2026, INC-131).** Cada miembro de
 la familia se corta en **diez partes** —torso, cabeza, húmero y antebrazo de cada brazo, muslo y
@@ -1038,6 +1094,7 @@ existe salto en ningún nivel (CT-06, RNF-02).
 | Golpear las piedras | Papá (N1) | 0.6 s | Crítica |
 | Soplar | Papá (N1) | 0.9 s | Crítica |
 | Señalar / observar | Niña (N2), Algoritm | 0.6 s | Alta |
+| Saludo (`Wave`): el brazo derecho de pantalla sube y se mece, con 0,9 s de reposo dentro del bucle | Algoritm (créditos) | Ciclo 4.8 s | Media |
 | Caminar: un solo ciclo que se voltea a izquierda o derecha según la dirección | Mamá (N3) | Ciclo 0.8 s | Crítica |
 | Recoger material | Mamá (N3) | 0.5 s | Alta |
 | Celebrar cierre de fase | El que corresponda | 1.2 s | Media |
@@ -1077,7 +1134,8 @@ movimiento, no con otro color.
 
 Todas las animaciones ambientales (niebla, nubes, corriente, flotación de objetos)
 tienen amplitudes pequeñas y ciclos lentos. No hay parpadeos rápidos ni destellos de
-alta frecuencia, que pueden resultar molestos o desencadenar malestar.
+alta frecuencia, que pueden resultar molestos o desencadenar malestar. El halo de las fogatas
+(§8.1) cumple lo mismo: una onda de 2 s sobre la escala y ninguna variación de opacidad.
 
 ---
 
@@ -1347,7 +1405,7 @@ producción de assets.
 
 | Pendiente | Impacto en arte | Estado |
 | --- | --- | --- |
-| **Título del videojuego** (`PG-01`) | Pantalla de título, logotipo, tipografía de marca | **Cerrado (09/09/2026): «Algoritmia».** La pantalla de inicio lo rotula en Baloo 2 ExtraBold, 96 px, `#3A1E18`, sin logotipo en imagen; el texto sale de `GameTitleConfig` |
+| **Título del videojuego** (`PG-01`) | Pantalla de título, logotipo, tipografía de marca | **Cerrado (09/09/2026): «Algoritmia».** La pantalla de inicio lo rotula en Baloo 2 ExtraBold, 112 px, blanco con contorno `#3A1E18` de 4 px, encima de la tarjeta del lema y no dentro de ella, sin logotipo en imagen; el texto sale de `GameTitleConfig` |
 | **Nombre definitivo del guía** (`PG-02`) | Nombre y **forma**: se llama **Algoritm** y cambia de forma en cada nivel (§7.6) | **Cerrado (02/09/2026).** Ver INC-44 e INC-45 |
 | **Valores del Nivel 1** (`PG-06`) | Número de muescas del control deslizante en `A9` | **Abierto** hasta validarlo jugando |
 
