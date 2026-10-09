@@ -1032,6 +1032,35 @@ namespace Game.Levels.Fire.Tests
             Assert.That(controller.Burn.Extent, Is.GreaterThan(0f), "y las hojas empiezan a quemarse desde el centro");
         }
 
+        /// <summary>
+        /// Al soplar, la llama cenital enciende su halo de luz (D8, 08/10/2026): hermano de la llama,
+        /// al fondo del suelo, por debajo del montón y de las piedras —encima de ellos el 20 % naranja
+        /// los velaba y el montón se veía lavado—, con el color de la luz de fuego, sin llevarse los clics
+        /// y con la llama como último hermano.
+        /// </summary>
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_RF20_LaLlamaCenitalEmiteSuHaloSinVelarElMonton()
+        {
+            var (controller, _) = await LoadPanelWithProfile(NewProfile());
+
+            await ConvergeAndBlow(controller);
+            await Awaitable.NextFrameAsync();
+
+            var llama = controller.FireFlame;
+            var suelo = llama.transform.parent;
+            var halo = suelo.Find(FireGlow.NamePrefix + llama.name);
+            Assert.That(halo, Is.Not.Null, "al encenderse la llama nace su halo, hermano suyo");
+
+            var imagen = halo.GetComponent<Image>();
+            Assert.That(imagen.color, Is.EqualTo(FireGlow.GlowColor), "#F0A84E al 20 %");
+            Assert.That(imagen.raycastTarget, Is.False, "el halo no se lleva los clics");
+            Assert.That(halo.GetSiblingIndex(), Is.LessThan(controller.LeafPile.transform.GetSiblingIndex()),
+                "va por debajo del montón y de las piedras: baña el suelo y no vela lo que acaba de encenderse");
+            Assert.That(llama.transform.GetSiblingIndex(), Is.EqualTo(suelo.childCount - 1), "y la llama sigue siendo el último hermano");
+        }
+
         // Hallazgo de la especificación de D10-1: «Soplar» admitía un segundo clic durante los 3,5 s
         // del encendido; la segunda vuelta empezaba en cero y el quemado retrocedía de golpe, lo que
         // choca con RNF-21 (un único barrido, sin volver). Se prueba por el clic del estudiante y
