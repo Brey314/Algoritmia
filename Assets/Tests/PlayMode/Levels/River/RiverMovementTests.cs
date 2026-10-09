@@ -66,8 +66,14 @@ namespace Game.Levels.River.Tests
             Assert.That(mama.Current, Is.EqualTo(ActorAction.Idle), "abre en reposo");
 
             // Primero a la derecha: desde el arranque hay orilla de sobra y no choca con el borde,
-            // donde dejaría de moverse y volvería al reposo.
-            foreach (var (direccion, espejo) in new[] { (Vector2.right, false), (Vector2.left, true) })
+            // donde dejaría de moverse y volvería al reposo. Después a la izquierda, que la devuelve cerca
+            // del arranque, y arriba y abajo, donde también hay orilla de sobra.
+            // INC-134 (09/10/2026): mira a la izquierda yendo a la izquierda o hacia arriba, y a la derecha
+            // yendo a la derecha o hacia abajo. Hasta entonces una flecha vertical conservaba el último lado.
+            foreach (var (direccion, espejo) in new[]
+                     {
+                         (Vector2.right, false), (Vector2.left, true), (Vector2.up, true), (Vector2.down, false)
+                     })
             {
                 var flecha = river.Pads.Single(pad => pad.Direction == direccion);
                 flecha.OnPointerDown(new PointerEventData(EventSystem.current));
@@ -83,6 +89,50 @@ namespace Game.Levels.River.Tests
                 await Awaitable.NextFrameAsync();
 
                 Assert.That(mama.Current, Is.EqualTo(ActorAction.Idle), $"al soltar «{flecha.name}» vuelve al reposo");
+            }
+        }
+
+        /// <summary>
+        /// Mamá va de perfil mientras camina y de frente al soltar la flecha (Santiago, 09/10/2026, INC-134),
+        /// y de perfil mira hacia donde anda: izquierda y arriba, a la izquierda; derecha y abajo, a la derecha.
+        /// Con arte de perfil el lienzo se voltea solo en perfil y el frente nunca se espeja por el rumbo.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task RiverScene_INC134_MamaVaDePerfilAlCaminarYDeFrenteAlSoltarLaFlecha()
+        {
+            var river = await OpenRiver();
+            var mama = river.PlayerRig;
+            Assert.That(mama, Is.Not.Null, "Mamá es un personaje animado");
+
+            // El cuerpo de perfil llega con la ronda del Editor (el modo «perfil» del generador): mientras los
+            // prefabs no lo tengan, Mamá camina de frente por diseño (CharacterRig ignora la regla sin arte de
+            // perfil) y esta prueba no tiene qué comprobar. Se salta, no se aprueba: Assume la marca como
+            // «inconclusa» y el informe lo dice, en vez de dar un verde que no prueba nada.
+            Assume.That(mama.HasProfile, Is.True, "Mamá tiene cuerpo de perfil (el arte de perfil todavía no llegó a su prefab)");
+            Assert.That(mama.View, Is.EqualTo(CharacterView.Front), "abre de frente, en reposo");
+
+            foreach (var (direccion, izquierda) in new[]
+                     {
+                         (Vector2.right, false), (Vector2.left, true), (Vector2.up, true), (Vector2.down, false)
+                     })
+            {
+                var flecha = river.Pads.Single(pad => pad.Direction == direccion);
+                flecha.OnPointerDown(new PointerEventData(EventSystem.current));
+                await Awaitable.NextFrameAsync();
+                await Awaitable.NextFrameAsync();
+
+                Assert.That(mama.Current, Is.EqualTo(ActorAction.Walk), $"con «{flecha.name}» sostenida, camina");
+                Assert.That(mama.View, Is.EqualTo(CharacterView.Profile), $"«{flecha.name}»: camina de perfil");
+                Assert.That(mama.Mirrored, Is.EqualTo(izquierda), $"«{flecha.name}»: mira a donde va");
+                Assert.That(mama.Stage.localScale.x < 0f, Is.EqualTo(izquierda), $"«{flecha.name}»: el lienzo se voltea solo si mira a la izquierda");
+
+                flecha.OnPointerUp(new PointerEventData(EventSystem.current));
+                await Awaitable.NextFrameAsync();
+
+                Assert.That(mama.Current, Is.EqualTo(ActorAction.Idle), $"al soltar «{flecha.name}» vuelve al reposo");
+                Assert.That(mama.View, Is.EqualTo(CharacterView.Front), $"al soltar «{flecha.name}» vuelve de frente");
+                Assert.That(mama.Stage.localScale.x, Is.GreaterThan(0f), "y de frente el lienzo nunca se espeja por el rumbo");
             }
         }
 

@@ -1096,6 +1096,83 @@ namespace Game.UI.Tests
         }
 
         /// <summary>
+        /// Quien se desplaza va de perfil, hacia donde camina, y quien está quieto va de frente (Santiago,
+        /// 09/10/2026, INC-134). En cada línea de las dieciocho escenas: la vista de cada personaje con arte
+        /// de perfil es la de su acción (<see cref="ActionView"/>), y de perfil mira hacia donde dice
+        /// <see cref="ActorTimeline.FacesLeftAt"/> **en el mundo**, descontando el volteo de la casilla
+        /// (<see cref="NarrativeProp.Mirrored"/>): el perfil no se espeja dos veces. Quien no tiene arte de
+        /// perfil (Algoritm, o la familia antes de que llegue) se queda de frente y su lienzo sin voltear. Con
+        /// los prefabs actuales, sin cuerpo de perfil, la prueba comprueba solo esa segunda parte.
+        /// </summary>
+        [TestCase("N1_Apertura", LevelId.Fire)]
+        [TestCase("N1_AparicionGuia", LevelId.Fire)]
+        [TestCase("N1_Hallazgo", LevelId.Fire)]
+        [TestCase("N1_NacimientoDelFuego", LevelId.Fire)]
+        [TestCase("N2_PuenteI", LevelId.Wheel)]
+        [TestCase("N2_PuenteI_Bosque", LevelId.Wheel)]
+        [TestCase("N2_Escena21_Bosque", LevelId.Wheel)]
+        [TestCase("N2_Escena22_ElPatron", LevelId.Wheel)]
+        [TestCase("N2_Escena23_Construccion", LevelId.Wheel)]
+        [TestCase("N2_Escena24_Regreso", LevelId.Wheel)]
+        [TestCase("N2_Escena25_Cierre", LevelId.Wheel)]
+        [TestCase("N3_PuenteII", LevelId.River)]
+        [TestCase("N3_PuenteII_Horizonte", LevelId.River)]
+        [TestCase("N3_PuenteII_Rio", LevelId.River)]
+        [TestCase("N3_Escena31_Llegada", LevelId.River)]
+        [TestCase("N3_Escena32_PrimerIntento", LevelId.River)]
+        [TestCase("N3_Escena33_Cruce", LevelId.River)]
+        [TestCase("N3_EscenaFinal", LevelId.River)]
+        [Timeout(240000)]
+        public async Task NarrativeScene_INC134_QuienSeDesplazaVaDePerfilHaciaDondeCamina(string id, LevelId nivel)
+        {
+            var (controller, _) = await OpenNarrative(id, nivel);
+            var secuencia = SequenceNamed(controller, id);
+            Assert.That(controller.Actors, Is.Not.Empty, $"{id}: la familia o el guía están en la escena");
+
+            for (var linea = 0; linea < secuencia.Lines.Length; linea++)
+            {
+                if (linea > 0)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                // La vista se decide al empezar la línea: en el mismo cuadro, sin esperar a que lleguen.
+                foreach (var (prop, _, rig, _) in controller.Actors)
+                {
+                    var vista = rig.HasProfile ? ActionView.For(rig.Current) : CharacterView.Front;
+                    Assert.That(rig.View, Is.EqualTo(vista), $"{id} L{linea}: «{prop.Actor.name}» hace {rig.Current}, y se ve así");
+                }
+
+                // Quien camina termina su camino aunque el texto avance; el lado definitivo se comprueba cuando
+                // todos llegaron, que es cuando la línea queda como la describe ActorTimeline.
+                var inicio = Time.realtimeSinceStartup;
+                while (controller.Actors.Any(actor => actor.Walking) && Time.realtimeSinceStartup - inicio < 15f)
+                {
+                    await Awaitable.NextFrameAsync();
+                }
+
+                foreach (var (prop, rect, rig, _) in controller.Actors)
+                {
+                    var vista = rig.HasProfile ? ActionView.For(rig.Current) : CharacterView.Front;
+                    Assert.That(rig.View, Is.EqualTo(vista), $"{id} L{linea}: «{prop.Actor.name}» llegó y hace {rig.Current}");
+                    if (rig.View == CharacterView.Front)
+                    {
+                        Assert.That(rig.Stage.localScale.x, Is.GreaterThan(0f),
+                            $"{id} L{linea}: «{prop.Actor.name}» de frente no se espeja nunca por el rumbo");
+                        continue;
+                    }
+
+                    var casillaVolteada = rect.localScale.x < 0f;
+                    var miraALaIzquierda = casillaVolteada ^ rig.Mirrored;
+                    Assert.That(miraALaIzquierda, Is.EqualTo(ActorTimeline.FacesLeftAt(prop, linea)),
+                        $"{id} L{linea}: «{prop.Actor.name}» de perfil mira hacia donde camina (casilla volteada: {casillaVolteada}, Mirrored: {rig.Mirrored})");
+                    Assert.That(rig.Stage.localScale.x < 0f, Is.EqualTo(rig.Mirrored),
+                        $"{id} L{linea}: el lienzo está volteado exactamente cuando Mirrored lo pide");
+                }
+            }
+        }
+
+        /// <summary>
         /// Una captura por línea de cada escena, con la cámara asentada y los personajes ya en su
         /// sitio, para revisar que se ve lo que el guion cuenta (en persistentDataPath/TestScreenshots).
         /// </summary>

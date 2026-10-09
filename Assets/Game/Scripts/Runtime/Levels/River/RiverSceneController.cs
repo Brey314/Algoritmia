@@ -283,11 +283,18 @@ namespace Game.Levels.River
                 return;
             }
 
-            if (moving && direction.x != 0f)
+            if (moving)
             {
-                // Voltea el lienzo del rig, nunca la raíz: la escala de «Personaje_Mama» es su
-                // profundidad y la vigila una prueba (DA83).
-                playerRig.Mirrored = direction.x < 0f;
+                // Mira hacia donde anda (INC-134): izquierda y arriba, a la izquierda; derecha y abajo, a la
+                // derecha, y en una diagonal manda el eje dominante (Heading). Hasta INC-134 una flecha
+                // vertical conservaba el último lado; ahora también gira a Mamá. Sin dirección (null) no hay
+                // rumbo nuevo y conserva el que tenía. Voltea el lienzo del rig, nunca la raíz: la escala de
+                // «Personaje_Mama» es su profundidad y la vigila una prueba (DA83). Solo se ve en perfil.
+                var facesLeft = Heading.FacesLeft(direction);
+                if (facesLeft.HasValue && playerRig.Mirrored != facesLeft.Value)
+                {
+                    playerRig.Mirrored = facesLeft.Value; // solo si cambia: cada asignación reajusta el lienzo
+                }
             }
 
             if (moving && playerRig.Current == ActorAction.Idle)
