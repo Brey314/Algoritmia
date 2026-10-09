@@ -33,7 +33,8 @@
 #   4. MIDE: hombro = centro del tapon de arriba del humero; codo = punto medio entre el tapon de abajo del humero y el de arriba del antebrazo (la holgura
 #      entre los dos queda en «holguras»); cadera (PiernaX.punto) = centro del tapon de arriba de la pierna; rodilla = punto medio del palo visible (entre la base
 #      del torso y donde empieza el pie); Tronco (la cintura) = el eje del cuerpo a CINTURA_SOBRE_BASE px sobre la base del torso. No se aplica hombro.py: el
-#      hombro de Algoritm es el centro del tapon, que se ve SOBRE el cuerpo (el humero va delante), no el borde del torso.
+#      hombro de Algoritm es el centro del tapon, no el borde del torso. Con el diseno de la entrega el humero iba DELANTE del cuerpo y el tapon se veia sobre
+#      el; desde INC-147 (Santiago, 09/10/2026) los dos brazos van DETRAS DE TODO EL CUERPO y el tapon queda oculto tras el torso: solo asoma lo que sobresale de su silueta.
 #   5. Sin --aplicar: informe y un composite (las tres formas en reposo con sus articulaciones). Con --aplicar: escribe en Assets/Game/Art/Characters/Algoritm/
 #      Frontal/ las 21 partes char_algoritm_<forma>_parte_{torso,brazo_izq,brazo_der,antebrazo_izq,antebrazo_der,pierna_izq,pierna_der}.png (los que ya existen
 #      se sustituyen DONDE ESTAN: mismo .meta, mismo GUID), BORRA con su .meta las seis char_algoritm_<forma>_parte_antepierna_{izq,der}.png (la pierna es entera),
@@ -56,7 +57,8 @@
 # --aplicar CONSERVA la cara si ya esta escrita (el _reposo del repo deja de ser el de hoy cuando se corre --reposo); --rehaz-cara la extrae de nuevo.
 #
 # LO QUE SE LLEVA EL EDITOR (sesion local): estado → perfil → sprites → clips → estado. «nodos» no hace falta (todos los nodos existen: solo se recolocan) y
-# «orden» tampoco (orden_tronco no cambia: Torso, Ojos, Boca, BrazoIzq, BrazoDer). «sprites» asigna las siete piezas, apaga y VACIA el sprite de AntepiernaX
+# «orden» SI hace falta desde INC-147 (09/10/2026): orden_tronco pasa de Torso, Ojos, Boca, BrazoIzq, BrazoDer a BrazoIzq, BrazoDer, Torso, Ojos, Boca (los brazos detras de
+# todo el cuerpo; articulaciones.ORDEN_TRONCO_GUIA), y --reposo ensambla los tres _reposo con ese mismo orden. «sprites» asigna las siete piezas, apaga y VACIA el sprite de AntepiernaX
 # (el PNG se borra: sin sprite ni Image encendida), enciende Ojos y Boca con la cara provisional y crea char_algoritm_<forma>_cara.asset (CharacterFaceSet con
 # EyesNeutral y MouthClosed) en Algoritm/Expresiones/, que cablea en CharacterFace.faceSet.
 
@@ -620,12 +622,15 @@ def entrada_de(clave, forma, j, holguras, tr, eje, rects_cara, cara_info):
 
 def ensambla(nodos, imagen_de, escala=1.0, fondo=(0, 0, 0, 0), origen=(0, 0), tam=None):
     """
-    La figura en reposo (sin ningun giro) en el orden de dibujo del rig: las dos piernas (hijas de Cuerpo, antes de Tronco), el torso, la cara y, encima, cada humero con
-    su antebrazo (el antebrazo es hijo del codo: se pinta justo despues de su humero). imagen_de(sprite) devuelve la imagen o None. El lienzo es el de 1024 por «escala»
+    La figura en reposo (sin ningun giro) en el orden de dibujo del rig: las dos piernas (hijas de Cuerpo, antes de Tronco) y luego los hijos de Tronco en el orden de
+    articulaciones.ORDEN_TRONCO_GUIA —desde INC-147 (09/10/2026), cada brazo, el torso y la cara: los brazos DETRAS de todo el cuerpo; antes de INC-147, el torso, la cara y
+    los brazos encima—. Cada humero va con su antebrazo (el antebrazo es hijo del codo: se pinta justo despues de su humero). imagen_de(sprite) devuelve la imagen o None. El lienzo es el de 1024 por «escala»
     (o «tam» px); «origen» es la esquina de arriba a la izquierda del encuadre, en el lienzo de 1024.
     """
     por = {n["nombre"]: n for n in nodos}
-    orden = [("PiernaIzq", None), ("PiernaDer", None), ("Torso", None), ("Ojos", None), ("Boca", None), ("BrazoIzq", "CodoIzq"), ("BrazoDer", "CodoDer")]
+    # el orden de Tronco sale de la unica fuente (el mismo que escribe rig_articulaciones.json y aplica BuildRigsFinal «orden»); el codo de cada brazo lo acompana
+    codo_de = {"BrazoIzq": "CodoIzq", "BrazoDer": "CodoDer"}
+    orden = [("PiernaIzq", None), ("PiernaDer", None)] + [(nombre, codo_de.get(nombre)) for nombre in A.ORDEN_TRONCO_GUIA]
     lado = tam if tam is not None else int(round(LIENZO * escala))
     lienzo = Image.new("RGBA", (lado, lado), fondo)
     for nombre, codo in orden:
@@ -831,9 +836,10 @@ def bloque_local():
       ClaudeBuildRigsFinal.Execute("estado")     // antes
       ClaudeBuildRigsFinal.Execute("perfil")     // la familia: las piernas detras del torso (SetSiblingIndex, ningun fileID)
       ClaudeBuildRigsFinal.Execute("sprites")    // Algoritm: siete piezas por forma, AntepiernaX sin sprite y apagada, Ojos y Boca encendidos, <forma>_cara.asset
+      ClaudeBuildRigsFinal.Execute("orden")      // INC-147: los brazos de Algoritm detras de todo el cuerpo (SetSiblingIndex, ningun fileID)
       ClaudeBuildRigsFinal.Execute("clips")      // vuelca clips_personajes.json en los .anim
       ClaudeBuildRigsFinal.Execute("estado")     // despues
-    «nodos» no hace falta (todos los nodos existen) ni «orden» (orden_tronco de Algoritm no cambia).
+    «nodos» no hace falta (todos los nodos existen); «orden» SI, desde INC-147 (orden_tronco de Algoritm: BrazoIzq, BrazoDer, Torso, Ojos, Boca).
  3. Comprobar los fileID:  git diff -U0 Assets/Game/Prefabs/Characters  (ninguna linea «--- !u!» quitada; en Algoritm cambian sprites, rects, pivotes y el CharacterFace.faceSet)
  4. Pruebas: tests-edit CharacterRig_ · tests-edit CharacterFace · tests-play Credits_ · tests-play MainMenu_ · tests-play NarrativeScene_
  5. Borrar el andamiaje (Assets/Editor/ClaudeBuildRigsFinal.cs y su .meta) y subir los .meta nuevos (las caras en Algoritm/Expresiones/) y los _cara.asset.
@@ -1129,6 +1135,27 @@ def autoprueba():
             caso("las piernas van detras del torso en el reposo (donde se solapan se ve el torso)", visto[:3] == solape[2][:3], "%s contra %s" % (visto, solape[2]))
         else:
             caso("la entrega sintetica solapa la pierna con el torso (para probar el orden)", False, "no hay solape")
+        # INC-147: los brazos van DETRAS de todo el cuerpo: donde un humero se solapa con el torso se ve el torso (antes de INC-147 se veia el brazo)
+        sol_b = None
+        for lado_ in ("Izq", "Der"):
+            bra = ps_[("brazo", lado_)]
+            for y in range(bra.rect[1], bra.rect[3]):
+                for x in range(bra.rect[0], bra.rect[2]):
+                    if tor.rect[0] <= x < tor.rect[2] and tor.rect[1] <= y < tor.rect[3]:
+                        tc, bc = tor.norm.getpixel((x - tor.rect[0], y - tor.rect[1])), bra.norm.getpixel((x - bra.rect[0], y - bra.rect[1]))
+                        if tc[3] == 255 and bc[3] == 255 and tc[:3] != bc[:3]:
+                            sol_b = (x, y, tc)
+                            break
+                if sol_b:
+                    break
+            if sol_b:
+                break
+        if sol_b:
+            visto = ensambla(entradas["fuego"]["nodos"], sprites.get).getpixel(sol_b[:2])
+            caso("los brazos van detras del torso en el reposo (INC-147: donde se solapan se ve el torso)", visto[:3] == sol_b[2][:3], "%s contra %s" % (visto, sol_b[2]))
+        else:
+            caso("la entrega sintetica solapa un humero con el torso (para probar el orden de INC-147)", False, "no hay solape")
+        caso("ensambla toma el orden de Tronco de articulaciones.ORDEN_TRONCO_GUIA (INC-147: brazos, torso, cara)", A.ORDEN_TRONCO_GUIA == ["BrazoIzq", "BrazoDer", "Torso", "Ojos", "Boca"])
         # --- aplicar y reposo sobre una copia: el repo no se toca
         print("== --aplicar y --reposo en una copia del arte")
         with tempfile.TemporaryDirectory() as tmp2:

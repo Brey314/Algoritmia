@@ -534,7 +534,8 @@ def acciones_brazos_delante(ruta=CHARACTER_RIG_CS):
 def orden_con_brazos_delante(nombres):
     """
     El orden de los hijos de Tronco en las acciones de «brazos delante» (el contrato de CharacterRig): cada BrazoIzq/BrazoDer
-    que se dibuja antes de Torso pasa inmediatamente despues de Torso; el que ya esta despues (Algoritm) no cambia. INC-133: los
+    que se dibuja antes de Torso pasa inmediatamente despues de Torso; el que ya esta despues no cambia (desde INC-147, 09/10/2026, tampoco los de
+    Algoritm van despues: [BrazoIzq, BrazoDer, Torso, Ojos, Boca], asi que la regla los pasa entre el torso y la cara, igual que ArmLayering). INC-133: los
     antebrazos (AntebrazoIzq/Der, al final de la lista de la familia) no se mueven: el humero queda justo tras el torso y sigue
     DETRAS de ellos.
     """

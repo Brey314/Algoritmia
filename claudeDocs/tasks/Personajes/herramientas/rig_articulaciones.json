@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "nota": "Valores PROVISIONALES salvo los de quien tiene entrada en arte_final.json (hoy la familia y las tres formas de Algoritm, INC-136). Lienzo de 1024, origen arriba a la izquierda, y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento 'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo (de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: en la familia los humeros van DETRAS DEL TORSO y DELANTE DE LA CABEZA (decision de Santiago, 05/10/2026: Cuello, BrazoIzq, BrazoDer, Torso; en Papa la cara va despues del torso) y, desde INC-133 (06/10/2026), los antebrazos (con la mano) DELANTE del torso, de la cara y de las piernas: AntebrazoIzq y AntebrazoDer al final de la lista (BuildRigsFinal 'orden' los pasa de su codo a Tronco y deja un ancla vacia bajo el codo, que es la que animan los clips); en Algoritm, Torso, la cara (Ojos, Boca) y, encima de todo, los brazos (decision de Santiago, 05/10/2026: sus manos van por encima de la cara y no la tapan en ningun clip). En las acciones de CharacterRig.armsInFrontActions (Strike) los brazos de la familia pasan delante del torso. Con el arte provisional de Papa, Mama y Nina la cabeza esta pintada dentro del torso: sus brazos quedan tras torso y cara hasta que llegue su arte final. PERFIL (INC-134): cada personaje de la familia lleva una clave 'perfil' {provisional, prefijo, nodos, partes, orden_tronco} con el cuerpo de perfil (Lienzo/Perfil/Tronco, pivote en la cadera, mirando a la DERECHA); 'nodos' es TODO nuevo (padre antes que hijo, en el orden de dibujo) y 'orden_tronco' el de los hijos de Perfil/Tronco. 'provisional': true = las medidas salen de la figura de frente (no hay arte de perfil todavia); con una entrada 'perfil' en arte_final.json (preparar_perfil.py) salen de ahi. Las piernas de perfil van SIEMPRE detras del torso (BrazoLejano, PiernaLejana, PiernaCercana, Torso, Cuello, BrazoCercano; Santiago, 09/10/2026). Algoritm no tiene perfil. ALGORITM (INC-136): sus tres entradas salen de arte_final.json (preparar_algoritm.py): siete piezas por forma con la PIERNA ENTERA (PiernaX con su sprite; RodillaX en el punto medio del palo, con AntepiernaX sin sprite) y la cara provisional (Ojos y Boca) sacada del sprite de hoy.",
+  "nota": "Valores PROVISIONALES salvo los de quien tiene entrada en arte_final.json (hoy la familia y las tres formas de Algoritm, INC-136). Lienzo de 1024, origen arriba a la izquierda, y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento 'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo (de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: en la familia los humeros van DETRAS DEL TORSO y DELANTE DE LA CABEZA (decision de Santiago, 05/10/2026: Cuello, BrazoIzq, BrazoDer, Torso; en Papa la cara va despues del torso) y, desde INC-133 (06/10/2026), los antebrazos (con la mano) DELANTE del torso, de la cara y de las piernas: AntebrazoIzq y AntebrazoDer al final de la lista (BuildRigsFinal 'orden' los pasa de su codo a Tronco y deja un ancla vacia bajo el codo, que es la que animan los clips); en Algoritm, los brazos DETRAS DE TODO EL CUERPO: BrazoIzq, BrazoDer, Torso, Ojos, Boca (INC-147, decision de Santiago, 09/10/2026, que revierte para el guia la de INC-132: sus manos ya no van por encima de la cara). En las acciones de CharacterRig.armsInFrontActions (Strike) los brazos de la familia pasan delante del torso. Con el arte provisional de Papa, Mama y Nina la cabeza esta pintada dentro del torso: sus brazos quedan tras torso y cara hasta que llegue su arte final. PERFIL (INC-134): cada personaje de la familia lleva una clave 'perfil' {provisional, prefijo, nodos, partes, orden_tronco} con el cuerpo de perfil (Lienzo/Perfil/Tronco, pivote en la cadera, mirando a la DERECHA); 'nodos' es TODO nuevo (padre antes que hijo, en el orden de dibujo) y 'orden_tronco' el de los hijos de Perfil/Tronco. 'provisional': true = las medidas salen de la figura de frente (no hay arte de perfil todavia); con una entrada 'perfil' en arte_final.json (preparar_perfil.py) salen de ahi. Las piernas de perfil van SIEMPRE detras del torso (BrazoLejano, PiernaLejana, PiernaCercana, Torso, Cuello, BrazoCercano; Santiago, 09/10/2026). Algoritm no tiene perfil. ALGORITM (INC-136): sus tres entradas salen de arte_final.json (preparar_algoritm.py): siete piezas por forma con la PIERNA ENTERA (PiernaX con su sprite; RodillaX en el punto medio del palo, con AntepiernaX sin sprite) y la cara provisional (Ojos y Boca) sacada del sprite de hoy.",
   "personajes": [
     {
       "id": "papa",
@@ -1056,7 +1056,7 @@
       "carpeta": "Algoritm",
       "prefijo": "char_algoritm_fuego",
       "guia": true,
-      "orden_tronco": ["Torso", "Ojos", "Boca", "BrazoIzq", "BrazoDer"],
+      "orden_tronco": ["BrazoIzq", "BrazoDer", "Torso", "Ojos", "Boca"],
       "nodos": [
         {
           "nombre": "PiernaIzq",
@@ -1175,7 +1175,7 @@
       "carpeta": "Algoritm",
       "prefijo": "char_algoritm_rueda",
       "guia": true,
-      "orden_tronco": ["Torso", "Ojos", "Boca", "BrazoIzq", "BrazoDer"],
+      "orden_tronco": ["BrazoIzq", "BrazoDer", "Torso", "Ojos", "Boca"],
       "nodos": [
         {
           "nombre": "PiernaIzq",
@@ -1294,7 +1294,7 @@
       "carpeta": "Algoritm",
       "prefijo": "char_algoritm_gota",
       "guia": true,
-      "orden_tronco": ["Torso", "Ojos", "Boca", "BrazoIzq", "BrazoDer"],
+      "orden_tronco": ["BrazoIzq", "BrazoDer", "Torso", "Ojos", "Boca"],
       "nodos": [
         {
           "nombre": "PiernaIzq",

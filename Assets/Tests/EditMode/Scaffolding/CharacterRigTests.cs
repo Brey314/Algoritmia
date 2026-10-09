@@ -402,27 +402,31 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// En Algoritm los brazos van delante del cuerpo y la cara ENCIMA de ellos no: son las manos las
-        /// que se pintan encima de la cara (Santiago, 05/10/2026, INC-132). El orden bajo Tronco es Torso,
-        /// Ojos, Boca, BrazoIzq, BrazoDer: sin esto una mano que sube a la cara quedaría escondida detrás
-        /// de ella. Lo fija el modo «orden» del generador.
+        /// En Algoritm los brazos van DETRÁS DE TODO EL CUERPO: del torso y de la cara (Santiago, 09/10/2026,
+        /// INC-147, que REVIERTE para el guía lo de INC-132 del 05/10/2026, «las manos encima de la cara»). El
+        /// orden bajo Tronco es BrazoIzq, BrazoDer, Torso, Ojos, Boca: una mano nunca tapa la cara con la que
+        /// el guía mira al niño, y de un brazo solo se ve lo que sobresale de la silueta del cuerpo. La
+        /// familia no cambia (<c>CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza</c>).
+        /// Lo fija el modo «orden» del generador (BuildRigsFinal.cs.txt) con SetSiblingIndex, que reordena y
+        /// no cambia ningún fileID: FALLA mientras no se haya corrido «orden» sobre los prefabs de Algoritm,
+        /// y debe pasar justo después.
         /// </summary>
         [Test]
-        public void CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara(
+        public void CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo(
             [Values("Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
         {
             var tronco = Rig(nombre).transform.Find(Tronco);
             Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
 
             var torso = Orden(tronco, nombre, "Torso");
+            foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
+            {
+                Assert.That(Orden(tronco, nombre, brazo), Is.LessThan(torso), $"{nombre}: {brazo} se dibuja antes del torso, detrás de todo el cuerpo");
+            }
+
             foreach (var cara in new[] { "Ojos", "Boca" })
             {
-                var indiceCara = Orden(tronco, nombre, cara);
-                Assert.That(indiceCara, Is.GreaterThan(torso), $"{nombre}: {cara} se dibuja sobre el torso");
-                foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
-                {
-                    Assert.That(Orden(tronco, nombre, brazo), Is.GreaterThan(indiceCara), $"{nombre}: {brazo} se dibuja sobre {cara}: la mano tapa la cara, no al revés");
-                }
+                Assert.That(Orden(tronco, nombre, cara), Is.GreaterThan(torso), $"{nombre}: {cara} se dibuja sobre el torso, y los brazos quedan detrás de ella");
             }
         }
 
@@ -673,8 +677,10 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// Algoritm queda como está (Santiago, 06/10/2026): sus brazos ya van delante del cuerpo, así que su
-        /// antebrazo sigue colgando del codo y no recibe ancla. Sin pares, CharacterRig no tiene nada que copiar.
+        /// Algoritm queda como está (Santiago, 06/10/2026): su antebrazo sigue colgando del codo y no recibe
+        /// ancla, y sigue así desde que sus brazos van detrás de todo el cuerpo (INC-147, 09/10/2026): el
+        /// antebrazo viaja con su brazo y queda detrás con él, sin pasar delante del torso como en la familia.
+        /// Sin pares, CharacterRig no tiene nada que copiar.
         /// </summary>
         [Test]
         public void CharacterRig_INC133_EnAlgoritmElAntebrazoSigueBajoElCodoYSinAncla(
@@ -694,11 +700,17 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// En Algoritm los brazos ya van después del torso: golpear no mueve nada, ni al empezar ni al
-        /// terminar. Así su cara (Ojos y Boca) tampoco se ve afectada.
+        /// Algoritm no golpea —su controlador no tiene el estado Strike y ningún asset se lo pide—, pero
+        /// CharacterRig pasa los brazos por ArmLayering aunque el estado no exista y los siete prefabs traen
+        /// Strike en armsInFrontActions. Desde INC-147 (Santiago, 09/10/2026) sus brazos van ANTES del torso, así
+        /// que esa petición sí los mueve: los trae justo después del torso, entre él y la cara. Lo que importa es
+        /// que la ida y vuelta es exacta: al terminar, el orden es el de origen, y mientras tanto las manos nunca
+        /// pasan por encima de la cara (Ojos y Boca siguen después de los brazos). Antes de INC-147 los brazos
+        /// ya iban después del torso y golpear no movía nada. Como CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo,
+        /// FALLA mientras no se haya corrido el modo «orden» del generador sobre los prefabs de Algoritm, y debe pasar justo después.
         /// </summary>
         [Test]
-        public void CharacterRig_INC132_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo(
+        public void CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen(
             [Values("Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
         {
             var copia = UnityEngine.Object.Instantiate(Rig(nombre).gameObject);
@@ -710,10 +722,20 @@ namespace Game.Scaffolding.Tests
                 var capas = new ArmLayering(tronco);
 
                 capas.Apply(true);
-                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: golpear no cambia el orden");
+                Assert.That(OrdenDeDibujo(tronco), Is.Not.EqualTo(inicial), $"{nombre}: con los brazos antes del torso, golpear sí cambia el orden (si no, la prueba no prueba nada)");
+                foreach (var cara in new[] { "Ojos", "Boca" })
+                {
+                    foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
+                    {
+                        Assert.That(Orden(tronco, nombre, cara), Is.GreaterThan(Orden(tronco, nombre, brazo)), $"{nombre}: al golpear {brazo} no pasa por encima de {cara}");
+                    }
+                }
 
                 capas.Apply(false);
-                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: terminar de golpear tampoco");
+                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: al terminar de golpear vuelve el orden de origen");
+
+                capas.Apply(false);
+                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: devolverlo dos veces no lo cambia");
             }
             finally
             {

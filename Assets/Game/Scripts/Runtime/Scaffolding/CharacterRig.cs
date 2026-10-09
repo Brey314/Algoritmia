@@ -80,10 +80,11 @@ namespace Game.Scaffolding
         // a otra acción vuelven a su sitio. El valor por defecto vale para los siete prefabs sin editarlos:
         // si el campo no está serializado en el prefab, Unity conserva el del inicializador. Ojo: en cuanto
         // un prefab se vuelve a guardar desde el Editor (Inspector, el generador) el campo queda escrito con
-        // el valor de ese momento, y un cambio posterior del inicializador ya no lo alcanza. Algoritm no se
-        // ve afectado: sus brazos ya van delante del cuerpo.
+        // el valor de ese momento, y un cambio posterior del inicializador ya no lo alcanza. En Algoritm
+        // (INC-147, 09/10/2026) los brazos van detrás de todo el cuerpo, así que la regla también los alcanzaría;
+        // en el juego no se da, porque el guía no golpea ni su controlador tiene el estado Strike.
         [SerializeField]
-        [Tooltip("Acciones durante las que los brazos se dibujan DELANTE del torso, para que se vea el choque de las manos delante del pecho. Al terminarlas vuelven a su sitio. Vacío = nunca. En Algoritm no cambia nada: sus brazos ya van delante del cuerpo.")]
+        [Tooltip("Acciones durante las que los brazos se dibujan DELANTE del torso, para que se vea el choque de las manos delante del pecho. Al terminarlas vuelven a su sitio. Vacío = nunca. Algoritm, cuyos brazos van detrás de todo el cuerpo (INC-147), no golpea: en el juego nada se lo pide.")]
         private ActorAction[] armsInFrontActions = { ActorAction.Strike };
 
         // Decisión de Santiago (08/10/2026, D9): la portada del menú pone a los cinco personajes en Idle, y con

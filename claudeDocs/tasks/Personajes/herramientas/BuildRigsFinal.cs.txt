@@ -54,7 +54,8 @@
 //             en la tabla: en la familia los húmeros (BrazoIzq, BrazoDer) DETRÁS del torso y los
 //             antebrazos DELANTE del torso, de la cara y de las piernas (p. ej. Cuello, BrazoIzq, BrazoDer,
 //             Torso, AntebrazoIzq, AntebrazoDer; en Papá el Cuello va después del Torso: la cara delante
-//             de él) y en Algoritm las manos ENCIMA de la cara (Torso, Ojos, Boca, BrazoIzq, BrazoDer).
+//             de él) y en Algoritm los brazos DETRÁS DE TODO EL CUERPO (BrazoIzq, BrazoDer, Torso, Ojos, Boca;
+//             INC-147, Santiago, 09/10/2026, que revierte para el guía lo de INC-132 «las manos encima de la cara»).
 //             Es el orden de REPOSO: en tiempo de ejecución, mientras el personaje
 //             golpea (Strike), CharacterRig pasa los brazos de la familia delante del torso (ArmLayering)
 //             y al terminar los devuelve; este modo no sabe nada de eso.
@@ -2069,9 +2070,13 @@ public static class ClaudeBuildRigsFinal
     //     delante de la cara—. Con el arte provisional de una pieza la cabeza está pintada dentro del torso,
     //     así que la regla solo se nota con el arte final; se aplica ya a Papá, Mamá, Niña y Niño para que
     //     todo quede listo cuando llegue.
-    //   - Algoritm: Torso, Ojos, Boca, BrazoIzq, BrazoDer. Los brazos van DELANTE del cuerpo y las manos se
-    //     pintan ENCIMA de la cara (decisión de Santiago, 05/10/2026, INC-132: la cara con la que el guía
-    //     mira al niño queda detrás de la mano que se lleva a ella, no al revés).
+    //   - Algoritm: BrazoIzq, BrazoDer, Torso, Ojos, Boca. Los brazos van DETRÁS DE TODO EL CUERPO: del torso
+    //     y de la cara (INC-147, decisión de Santiago, 09/10/2026, que REVIERTE para el guía la de INC-132 del
+    //     05/10/2026 —Torso, Ojos, Boca, BrazoIzq, BrazoDer: las manos ENCIMA de la cara—). Una mano ya no puede
+    //     tapar la cara con la que el guía mira al niño, y de un brazo solo se ve lo que sobresale de la
+    //     silueta del cuerpo. Los prefabs de Algoritm traen hoy Torso, Ojos, Boca, BrazoIzq, BrazoDer (el orden de
+    //     INC-132), así que este modo los reordena con SetSiblingIndex (ningún fileID cambia, ningún clip se toca: las curvas
+    //     direccionan por ruta de nombres).
     //   - 06/10/2026, INC-133: lo anterior vale para el HÚMERO (BrazoIzq, BrazoDer); el ANTEBRAZO va delante
     //     del torso, de la cara y de las piernas, y en Papá la cara va delante del torso (su Cuello, después
     //     de Torso). Para que el antebrazo pueda ir delante con el húmero detrás sale del codo y cuelga de

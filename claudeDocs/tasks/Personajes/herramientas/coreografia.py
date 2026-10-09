@@ -2810,10 +2810,11 @@ def _clips_familia(x):
 # ---------------------------------------------------------------------------- Algoritm: 10 clips (los 9 de siempre y Wave, el saludo, 08/10/2026)
 #
 # Una llama con extremidades que flota. Conserva la flotacion senoidal, el giro de Spin sobre Cuerpo, el alfa
-# y los nombres de siempre. Sus brazos son palitos que salen de los costados del vientre y sus MANOS van por ENCIMA de
-# la cara (decision de Santiago, 05/10/2026: «orden_tronco» = Torso, Ojos, Boca, BrazoIzq, BrazoDer): lo que cruce los ojos o
-# la boca los tapa de verdad, asi que ningun gesto pasa por ellos —pose_preview.py exige el 99,5 % de la caja de ojos y boca,
-# ampliada un 30 %, sin brazo encima (descontado lo que los hombros ya rozan en reposo)—. INC-136 (09/10/2026): Algoritm tiene arte final de siete piezas
+# y los nombres de siempre. Sus brazos son palitos que salen de los costados del vientre y van DETRAS DE TODO EL CUERPO
+# (INC-147, decision de Santiago, 09/10/2026, que revierte la de INC-132 del 05/10/2026 «las manos por encima de la cara»:
+# «orden_tronco» = BrazoIzq, BrazoDer, Torso, Ojos, Boca): una mano nunca tapa los ojos ni la boca, y de un brazo solo se ve lo que
+# sobresale de la silueta del torso. pose_preview.py conserva la comprobacion de la cara (el 99,5 % de la caja de ojos y boca,
+# ampliada un 30 %, sin brazo encima), que con este orden se cumple sola. INC-136 (09/10/2026): Algoritm tiene arte final de siete piezas
 # (preparar_algoritm.py) y la PIERNA ENTERA: la RodillaX ya no tiene antepierna colgada, asi que las curvas de rodilla de estos clips (cuelga_piernas, Spin,
 # Celebrate, Encourage) giran un nodo VACIO y lo que se ve es la pierna oscilando entera desde la cadera. Los clips no cambian (no leen la geometria del
 # guia: todo son grados); la prueba de pose_preview.py los dibuja con las piezas de Frontal/.

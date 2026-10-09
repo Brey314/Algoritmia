@@ -29,8 +29,8 @@ namespace Game.Scaffolding
     /// golpear): la composición posición-giro-escala no representa una cizalla. Con una escala desigual
     /// bajo un giro el antebrazo saldría un poco distinto del ancla, nunca fuera de sitio.
     ///
-    /// **Solo actúa si existen los dos.** Con el arte provisional y en Algoritm —sus brazos ya van
-    /// delante del cuerpo y su antebrazo sigue colgado del codo— no hay ancla y no se crea ningún
+    /// **Solo actúa si existen los dos.** Con el arte provisional y en Algoritm —sus brazos van detrás de todo el
+    /// cuerpo (INC-147) y su antebrazo sigue colgado del codo, con el brazo— no hay ancla y no se crea ningún
     /// seguidor: no se hace nada y nada lanza. Nada de esto toca los clips: ninguno anima el antebrazo ni
     /// el ancla.
     /// </remarks>

@@ -33,8 +33,9 @@
 # prefabs. El orden de dibujo es el orden de los hijos, con «orden_tronco» del JSON aplicado: simula el
 # estado del prefab tras correr el generador. Una capa apagada o sin sprite NO se dibuja. Y POR ACCION: las que lista
 # CharacterRig.armsInFrontActions (hoy Strike) se dibujan con los brazos DELANTE del torso, como hace ArmLayering en el
-# motor (prefabs.orden_con_brazos_delante: el brazo que va antes del torso pasa justo despues de el; el que ya va despues,
-# como los de Algoritm, no cambia). La lista se lee del .cs; si no esta, {Strike} con un aviso.
+# motor (prefabs.orden_con_brazos_delante: el brazo que va antes del torso pasa justo despues de el; el que ya va despues no cambia).
+# Desde INC-147 (09/10/2026) los brazos de Algoritm tambien van antes del torso, asi que la regla los alcanzaria en una accion de la lista;
+# Algoritm no tiene clip de Strike y la prueba no lo usa para el. La lista se lee del .cs; si no esta, {Strike} con un aviso.
 #
 # ALGORITM (INC-136, 09/10/2026). Su arte final son SIETE piezas por forma (torso, brazo, antebrazo con la mano y pierna ENTERA, a cada lado) que escribe
 # preparar_algoritm.py en Frontal/ mas la cara provisional (ojos_neutra y boca_0) en Expresiones/: esta vista previa las dibuja como al resto, por el estado
@@ -50,11 +51,13 @@
 # LA PRUEBA (cada clip, muestreado a 30 fps):
 #   (a) familia: el ANTEBRAZO (con la mano) conserva >= 85 % de sus pixeles opacos visibles y el HUMERO >= UMBRAL_HUMERO (30 %, ver abajo:
 #       el hombro sale por detras del torso por diseno y, en Papa, la barba y la melena van delante de los humeros). No cuenta lo que tapa
-#       el OTRO brazo (cruzar los antebrazos al chocar las manos no es perder el brazo). Algoritm: el brazo entero (humero + antebrazo)
-#       conserva >= 85 % (no tapado por capas dibujadas despues que no sean del propio brazo);
+#       el OTRO brazo (cruzar los antebrazos al chocar las manos no es perder el brazo). Algoritm (INC-147, 09/10/2026: sus brazos van DETRAS DE TODO
+#       EL CUERPO) se mide igual que la familia: antebrazo con la mano >= 85 % y humero >= UMBRAL_HUMERO, cada uno por su lado; el hombro sale por detras
+#       del torso por diseno y, con la Rueda (el disco ancho) y el brazo en alto, el humero entero puede quedar tras el disco (ver el informe de INC-147);
 #   (b) la cara conserva >= 90 % de su zona visible (ningun brazo la tapa; los gestos de EXCEPCIONES_CARA_TAPADA dejan menos, cada uno con su piso). En la familia, la zona son los PIXELES PINTADOS de CaraBase, Ojos y
 #       Boca en ese cuadro (la cara registrada de la entrega llena el ovalo: su caja toca el pelo y las orejas); solo cuenta lo que se dibuja
-#       DESPUES de la cara. En Algoritm, cuyos brazos van POR ENCIMA de la cara, el 99,5 % de la caja de ojos y boca ampliada un 30 %;
+#       DESPUES de la cara. En Algoritm, cuyos brazos van DETRAS de la cara desde INC-147 y no la pueden tapar, el 99,5 % de la caja de ojos y boca ampliada un 30 %
+#       (se conserva por si el orden de dibujo cambiara: la autoprueba lo comprueba con el orden de INC-132, las manos por encima);
 #   (c) ningun codo ni ninguna rodilla se dobla al reves (hiperextension): la pantorrilla vuelve hacia
 #       dentro y el codo sobresale hacia fuera y abajo de la recta hombro-mano (nunca se mete hacia el
 #       cuerpo o la cara); tolerancia de 6 grados sobre lo que ya trae el dibujo;
@@ -108,9 +111,10 @@ UMBRAL_BRAZO = 0.85
 # segun el personaje): el umbral bajo del 40 al 30 %. El solucionador (coreografia.UMBRAL_OCULTO) pide el 34 % y el reposo el 40 %.
 UMBRAL_HUMERO = 0.30
 UMBRAL_CARA = 0.90
-# Algoritm: sus brazos se dibujan POR ENCIMA de la cara (orden_tronco [Torso, Ojos, Boca, BrazoIzq, BrazoDer], Santiago 05/10/2026),
-# asi que lo que pase por ojos o boca los tapa de verdad. Para el la caja de ojos y boca se amplia un 30 % y no se admite casi
-# nada de brazo encima (99,5 %): el gesto no debe ni rozar la cara.
+# Algoritm: sus brazos se dibujan DETRAS DE TODO EL CUERPO (orden_tronco [BrazoIzq, BrazoDer, Torso, Ojos, Boca], INC-147, Santiago 09/10/2026, que
+# revierte el de INC-132 del 05/10/2026: «las manos por encima de la cara»), asi que ningun brazo puede tapar ojos ni boca y esta medida da 100 % sola.
+# Se conserva con su umbral de siempre (la caja de ojos y boca se amplia un 30 % y no se admite casi nada de brazo encima, 99,5 %): es lo que vigila
+# que un orden de dibujo futuro no vuelva a poner las manos sobre la cara (la autoprueba lo comprueba con el orden de INC-132).
 UMBRAL_CARA_GUIA = 0.995
 AMPLIA_CARA_GUIA = 1.30
 # Algoritm con menos de esta opacidad (el alfa de Lienzo en Appear, Vanish y Hidden) no se mide en (b): la cara casi no se ve, y Appear arranca con el cuerpo a 0,3 de escala, donde
@@ -158,8 +162,14 @@ EXCEPCIONES_VEL = {
 # (a') Los brazos van tras el torso, asi que un gesto que los junta delante del pecho los esconde. Las acciones que lo necesitan
 # NO son excepciones: el motor las dibuja con los brazos DELANTE del torso (CharacterRig.armsInFrontActions, hoy Strike) y la
 # prueba usa para ellas ese orden (Personaje.orden_de). Esta tabla queda para lo que de verdad no pueda cumplir el 85 %: la
-# acción, hasta que valor puede bajar y por que. Hoy esta vacia.
-EXCEPCIONES_BRAZO = {}
+# acción, hasta que valor puede bajar (antebrazo con la mano, humero) y por que. La clave es (personaje o «*», accion).
+# INC-147 (Santiago, 09/10/2026): los brazos de Algoritm van detras de TODO el cuerpo; la Rueda es un disco ancho y, con el brazo en alto,
+# el humero queda entero tras el disco y solo asoman antebrazo y mano. Se acepta: asi lo pidio Santiago, y la mano se sigue leyendo.
+EXCEPCIONES_BRAZO = {
+    ("algoritm_rueda", "Celebrate"): (75.0, 0.0, "INC-147: los brazos en V suben tras el disco; asoman antebrazo y mano (81,5 % y 1,4 % de humero)"),
+    ("algoritm_rueda", "Encourage"): (75.0, 0.0, "INC-147: el puño sube tras el disco; asoman antebrazo y mano (77,8 % y 3,8 % de humero)"),
+    ("algoritm_rueda", "Wave"): (45.0, 0.0, "INC-147: la mano saluda por encima del borde del disco (antebrazo 48,2 %, humero 3,7 %)"),
+}
 UMBRAL_TORSO = 5.0         # (g) como mucho este % de la caja de ojos y boca tapado por el torso (la cabeza va al fondo)
 ESCALA_PRUEBA = 0.25       # la prueba mide a 256 px (la mascara de cada capa)
 REGION = (40, 30, 984, 990)  # lo que se ve en las hojas: casi todo el lienzo (Sleep se sale de la figura de pie)
@@ -589,8 +599,8 @@ class Resultado:
     """El peor valor de cada medida en un clip, con el instante en que ocurre."""
 
     def __init__(self):
-        self.brazo = (100.0, 0.0, "")   # el antebrazo (con la mano) de la familia; en Algoritm, el brazo entero
-        self.humero = (100.0, 0.0, "")  # solo la familia (INC-133): el humero, que va detras del torso
+        self.brazo = (100.0, 0.0, "")   # el antebrazo (con la mano), en la familia y, desde INC-147, en Algoritm
+        self.humero = (100.0, 0.0, "")  # (INC-133, y Algoritm desde INC-147): el humero, que va detras del torso
         self.cara = (100.0, 0.0)
         self.codo = (0.0, 0.0, "")
         self.suelo = (-999.0, 0.0)
@@ -728,12 +738,12 @@ def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
     zona, lleva = pj.zona_cara()
     capas, indice = pj.orden_de(clip.accion)  # el orden de dibujo de ESTA accion (brazos delante o detras del torso)
     brazos = {}
-    partidos = {}  # INC-133: lado -> (humero, antebrazo) si el antebrazo sale de su codo y se dibuja delante (la familia); Algoritm no
+    partidos = {}  # lado -> (humero, antebrazo): INC-133, si el antebrazo sale de su codo y se dibuja delante (la familia); INC-147, siempre en Algoritm (todo el brazo va tras el cuerpo)
     for lado, (b, a) in {"Izq": (LA, LE + "/AntebrazoIzq"), "Der": (RA, RE + "/AntebrazoDer")}.items():
         grupo = [r for r in (b, a) if r in indice]
         if grupo:
             brazos[lado] = grupo
-        if b in indice and a in indice and pj.arbol[a].sigue:
+        if b in indice and a in indice and (pj.arbol[a].sigue or pj.guia):
             partidos[lado] = (b, a)
     piezas_brazo = {r for par in partidos.values() for r in par}
     # lo que se dibuja DESPUES de la cara (Ojos y Boca): solo eso puede taparla (la cabeza y su cara van al fondo en Mama, Nina y Nino; en
@@ -767,12 +777,12 @@ def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
             if im is not None:
                 masc[ruta] = _mascara(im)
         # (a) brazos visibles. Familia (INC-133): el ANTEBRAZO (con la mano) por su lado, >= 85 %, y el HUMERO por el suyo, >= UMBRAL_HUMERO,
-        # porque el humero va tras el torso. Algoritm: el brazo entero, como siempre.
+        # porque el humero va tras el torso. Algoritm (INC-147): igual, con los dos brazos tras el cuerpo; su antebrazo cuelga del codo y no se dibuja delante.
         union_brazos = Image.new("L", tam, 0)   # lo que de los brazos esta DELANTE de la cara: lo unico que puede taparla
 
         def visible_de(ruta, excluye):
             """
-            (total, oculto) de una pieza: no cuenta lo que tapan las piezas de «excluye» (las del propio brazo) ni, en la familia, las del OTRO
+            (total, oculto) de una pieza: no cuenta lo que tapan las piezas de «excluye» (las del propio brazo) ni, en la familia y en Algoritm, las del OTRO
             brazo (INC-133: cruzar los antebrazos al chocar las manos no es perder el brazo; lo que se pierde es lo que tapa el cuerpo).
             """
             m = masc[ruta]
@@ -903,7 +913,9 @@ def limite_cintura(pj):
 
 
 def fila(pid, clip, r):
-    ok_b = r.brazo[0] >= (EXCEPCIONES_BRAZO.get(("*", clip.accion), (UMBRAL_BRAZO * 100,))[0]) and r.humero[0] >= UMBRAL_HUMERO * 100
+    clave_brazo = _clave_cara(EXCEPCIONES_BRAZO, pid, clip.accion)
+    piso_brazo, piso_humero = EXCEPCIONES_BRAZO[clave_brazo][:2] if clave_brazo else (UMBRAL_BRAZO * 100, UMBRAL_HUMERO * 100)
+    ok_b = r.brazo[0] >= piso_brazo and r.humero[0] >= piso_humero
     clave_tapa = _clave_cara(EXCEPCIONES_CARA_TAPADA, pid, clip.accion)
     piso_cara = EXCEPCIONES_CARA_TAPADA[clave_tapa][0] if clave_tapa else (UMBRAL_CARA_GUIA if pid.startswith("algoritm") else UMBRAL_CARA) * 100
     ok_c = r.cara[0] >= piso_cara
@@ -1181,15 +1193,16 @@ def autoprueba(rig):
     for nombre, ok in P.autoprueba_arbol():
         malos += 0 if ok else 1
         print("%-40s %-9s %s" % ("prefab: " + nombre, "lectura", "bien" if ok else "FALLA"))
-    # el orden de dibujo por accion: en Strike los brazos de la familia pasan tras el torso al frente; Algoritm no cambia
-    for pid_, esperado in (("papa", True), ("nino", True), ("algoritm_fuego", False)):  # esperado: antes iban detras del torso
+    # el orden de dibujo por accion: en Strike los brazos pasan de tras el torso al frente (la familia y, desde INC-147, Algoritm, cuyos brazos tambien
+    # van tras el cuerpo; el guia no tiene clip de Strike, pero la regla del motor, ArmLayering, es la misma para todo rig)
+    for pid_ in ("papa", "nino", "algoritm_fuego"):
         pj_ = nino if pid_ == "nino" else Personaje(pid_, rig)
         ind_det = pj_.orden_de("Idle")[1]
         ind_del = pj_.orden_de("Strike")[1]
         brazo_r, torso_r = T + "/BrazoIzq", T + "/Torso"
         antes = ind_det[brazo_r] < ind_det[torso_r]
         delante = ind_del[brazo_r] > ind_del[torso_r]
-        ok = (antes and delante) if esperado else (not antes and delante)
+        ok = antes and delante
         malos += 0 if ok else 1
         print("%-40s %-9s %s" % ("orden de dibujo en Strike: " + pid_, "orden", "bien" if ok else "FALLA (los brazos no pasan delante del torso)"))
     # Strike delante del pecho: con los brazos delante se ve; la MISMA pose como accion de brazos detras (Idle) los esconde
@@ -1274,14 +1287,21 @@ def autoprueba(rig):
                 P.PNG_EXTRA.pop(k, None)
     malos += 0 if ok else 1
     print("%-40s %-9s %s" % ("CaraBase, Ojos y Boca sobre la cabeza", "cara", "bien (caja de la cara = lo pintado de Ojos y Boca)" if ok else "FALLA"))
-    # Algoritm: sus manos van por encima de la cara y no deben ni rozarla (99,5 % de la caja ampliada)
+    # Algoritm (INC-147): sus brazos van DETRAS de todo el cuerpo, asi que ninguno puede tapar la cara; y la medida de la cara sigue viva: con el orden de
+    # INC-132 (las manos por encima, [Torso, Ojos, Boca, BrazoIzq, BrazoDer]) la misma pose SI la tapa y se detecta (99,5 % de la caja ampliada)
     alg = Personaje("algoritm_fuego", rig)
+    alg_manos_encima = Personaje("algoritm_fuego", rig, ["Torso", "Ojos", "Boca", "BrazoIzq", "BrazoDer"])
     for ruta, ang, nombre in ((LA, 150.0, "un brazo sube a la cara"), (RA, 150.0, "un brazo apenas roza la cara")):
-        r = prueba_clip(alg, _clip_pose({(ruta, R): ang}), tiempos=[0.0])
+        pose = _clip_pose({(ruta, R): ang})
+        r = prueba_clip(alg_manos_encima, pose, tiempos=[0.0])
         ok, _ = fila("algoritm_fuego", _clip_pose({}), r)
         detecta = not ok and r.cara[0] < UMBRAL_CARA_GUIA * 100
         malos += 0 if detecta else 1
-        print("%-40s %-9s %s" % ("Algoritm: " + nombre, "cara", "detectada (%.1f %%)" % r.cara[0] if detecta else "NO SE DETECTA"))
+        print("%-40s %-9s %s" % ("Algoritm, manos encima: " + nombre, "cara", "detectada (%.1f %%)" % r.cara[0] if detecta else "NO SE DETECTA"))
+        r = prueba_clip(alg, pose, tiempos=[0.0])
+        libre = r.cara[0] >= UMBRAL_CARA_GUIA * 100
+        malos += 0 if libre else 1
+        print("%-40s %-9s %s" % ("Algoritm, brazos detras: " + nombre, "cara", "libre (%.1f %%)" % r.cara[0] if libre else "FALLA: un brazo detras tapa la cara (%.1f %%)" % r.cara[0]))
     # la maqueta, sumada, es el sprite original: sin eso la prueba con ella no vale (las piezas recortadas
     # tienen que dar el mismo dibujo en reposo que el arte provisional entero)
     vacio = Clip({"archivo": "x", "accion": "x", "duracion": 1.0, "bucle": True, "curvas": []})
@@ -1493,8 +1513,8 @@ def main(argv=None):
     for (p_, c_), motivo in EXCEPCIONES_VISERA.items():
         print("  %-8s %-9s %s" % (p_, c_, motivo))
     print("excepciones de «brazo visible >= 85 %%»:%s" % ("" if EXCEPCIONES_BRAZO else " ninguna"))
-    for (p_, c_), (minimo, motivo) in EXCEPCIONES_BRAZO.items():
-        print("  %-8s %-8s hasta %.0f %%: %s" % (p_, c_, minimo, motivo))
+    for (p_, c_), (minimo, minimo_humero, motivo) in EXCEPCIONES_BRAZO.items():
+        print("  %-14s %-9s antebrazo hasta %.0f %%, humero hasta %.0f %%: %s" % (p_, c_, minimo, minimo_humero, motivo))
     delante, hallada = P.acciones_brazos_delante()
     print("brazos DELANTE del torso en: %s (%s)" % (", ".join(sorted(delante)),
           "leido de CharacterRig.armsInFrontActions" if hallada else "AVISO: CharacterRig.cs no trae la lista; lista por defecto"))

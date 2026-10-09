@@ -32,10 +32,11 @@
 # de Papa, Mama y Nina la cabeza esta pintada DENTRO del torso: sus brazos quedan detras del torso y de la
 # cara (hasta que llegue su arte final, que cumple la regla). En Strike (CharacterRig.armsInFrontActions) el
 # motor pasa los brazos DELANTE del torso mientras dura la accion: [Cuello, Torso, BrazoIzq, BrazoDer].
-# Algoritm (decision de Santiago, 05/10/2026): sus MANOS van por ENCIMA de la cara: [Torso, Ojos, Boca,
-# BrazoIzq, BrazoDer] —el cuerpo al fondo, la cara, y los brazos encima de todo—; lo que ya va despues del torso
-# no se mueve en Strike. Por eso ninguna mano de Algoritm puede pasar por ojos ni boca (pose_preview.py lo exige,
-# mas estricto que en la familia). La coreografia de la familia lo respeta: los brazos solo van donde se ven
+# Algoritm (INC-147, decision de Santiago, 09/10/2026, que REVIERTE para el guia la clausula de INC-132 del 05/10/2026
+# «las manos por encima de la cara»): sus BRAZOS van DETRAS DE TODO EL CUERPO: [BrazoIzq, BrazoDer, Torso, Ojos,
+# Boca] —los brazos al fondo, luego el torso y la cara encima—. Ninguna mano de Algoritm puede tapar ni rozar su cara, y
+# lo que asoma de un brazo es solo lo que sobresale de la silueta del torso. El guia no golpea (no tiene Strike), asi que
+# nada lo mueve en ejecucion. La coreografia de la familia respeta la misma idea: los brazos solo van donde se ven
 # cuando van detras del torso (Brazo.visible, derivado de la silueta del torso) y delante no hay restriccion.
 #
 # PERFIL (INC-134, 09/10/2026). La familia gana un SEGUNDO cuerpo, dibujado de perfil y mirando a la DERECHA (el motor voltea el Lienzo para la
@@ -202,7 +203,10 @@ C = "Lienzo/Cuerpo"
 # animan nunca AntebrazoX ni AnclaAntebrazoX: solo BrazoX y BrazoX/CodoX. Algoritm NO lista antebrazos (sigue bajo el codo y sin ancla).
 ORDEN_TRONCO_FAMILIA = ["Cuello", "BrazoIzq", "BrazoDer", "Torso", "AntebrazoIzq", "AntebrazoDer"]   # Mama, Nina y Nino: cara al fondo, humeros, torso, antebrazos
 ORDEN_TRONCO_PAPA = ["BrazoIzq", "BrazoDer", "Torso", "Cuello", "AntebrazoIzq", "AntebrazoDer"]      # Papa: la barba y la cara DELANTE del torso (Santiago, 06/10/2026); los antebrazos delante de todo
-ORDEN_TRONCO_GUIA = ["Torso", "Ojos", "Boca", "BrazoIzq", "BrazoDer"]            # Algoritm: las manos por ENCIMA de la cara (Santiago, 05/10/2026)
+# INC-147 (Santiago, 09/10/2026), para el GUIA: los dos brazos van DETRAS DE TODO EL CUERPO (torso y cara), no delante. Revierte la clausula de INC-132
+# (05/10/2026: «las manos por ENCIMA de la cara») solo para Algoritm; la familia no cambia. Como en la familia, el humero asoma solo por donde sobresale
+# de la silueta del torso. Algoritm no lista antebrazos: el antebrazo sigue bajo el codo y viaja con el brazo, asi que tambien queda detras.
+ORDEN_TRONCO_GUIA = ["BrazoIzq", "BrazoDer", "Torso", "Ojos", "Boca"]            # Algoritm: brazos al fondo, luego torso y cara (Santiago, 09/10/2026, INC-147)
 
 # Arte final del Nino (05/10/2026), medido sobre el alfa de las piezas de Assets/Game/Art/Characters/Boy;
 # los numeros viven en arte_final.json (abajo se cargan).
@@ -754,8 +758,8 @@ def autoprueba():
              len(g["nodos"]) == 12 and n["PiernaIzq"]["sprite"] == pref + "_parte_pierna_izq" and n["PiernaDer"]["sprite"] == pref + "_parte_pierna_der"
              and n["RodillaIzq"]["sprite"] == "" and n["RodillaDer"]["sprite"] == "" and not any("antepierna" in x["sprite"] for x in g["nodos"])
              and n["Ojos"]["sprite"] == pref + "_ojos_neutra" and n["Boca"]["sprite"] == pref + "_boca_0")
-        caso("algoritm_%s: orden_tronco de siempre (Torso, Ojos, Boca, BrazoIzq, BrazoDer), cada punto dentro de su rect" % forma,
-             g["orden_tronco"] == ORDEN_TRONCO_GUIA and all(n[k]["rect"][0] <= n[k]["punto"][0] <= n[k]["rect"][2] and n[k]["rect"][1] <= n[k]["punto"][1] <= n[k]["rect"][3]
+        caso("algoritm_%s: orden_tronco de INC-147 (BrazoIzq, BrazoDer, Torso, Ojos, Boca: brazos detras de todo el cuerpo), cada punto dentro de su rect" % forma,
+             g["orden_tronco"] == ["BrazoIzq", "BrazoDer", "Torso", "Ojos", "Boca"] and g["orden_tronco"] == ORDEN_TRONCO_GUIA and all(n[k]["rect"][0] <= n[k]["punto"][0] <= n[k]["rect"][2] and n[k]["rect"][1] <= n[k]["punto"][1] <= n[k]["rect"][3]
                                                             for k in ("PiernaIzq", "PiernaDer", "BrazoIzq", "BrazoDer", "CodoIzq", "CodoDer", "Torso")))
     caso("el JSON de salida es ASCII", all(ord(c) < 128 for c in compacto({"perfil": [personaje_familia(*f)["perfil"] for f in FAMILIA]})))
     print("autoprueba de articulaciones.py:", "pasa" if not malos else "FALLA en %d casos" % malos)
@@ -779,8 +783,9 @@ def main(argv=None):
                 "(de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: en la familia los humeros van DETRAS DEL TORSO y "
                 "DELANTE DE LA CABEZA (decision de Santiago, 05/10/2026: Cuello, BrazoIzq, BrazoDer, Torso; en Papa la cara va despues del torso) y, "
                 "desde INC-133 (06/10/2026), los antebrazos (con la mano) DELANTE del torso, de la cara y de las piernas: AntebrazoIzq y AntebrazoDer "
-                "al final de la lista (BuildRigsFinal 'orden' los pasa de su codo a Tronco y deja un ancla vacia bajo el codo, que es la que animan los clips); en Algoritm, Torso, "
-                "la cara (Ojos, Boca) y, encima de todo, los brazos (decision de Santiago, 05/10/2026: sus manos van por encima de la cara y no la tapan en ningun clip). "
+                "al final de la lista (BuildRigsFinal 'orden' los pasa de su codo a Tronco y deja un ancla vacia bajo el codo, que es la que animan los clips); en Algoritm, los brazos "
+                "DETRAS DE TODO EL CUERPO: BrazoIzq, BrazoDer, Torso, Ojos, Boca (INC-147, decision de Santiago, 09/10/2026, que revierte para el guia la de INC-132: "
+                "sus manos ya no van por encima de la cara). "
                 "En las acciones de CharacterRig.armsInFrontActions (Strike) los brazos de la familia pasan delante del torso. Con el arte provisional de Papa, Mama y Nina la cabeza esta pintada "
                 "dentro del torso: sus brazos quedan tras torso y cara hasta que llegue su arte final. "
                 "PERFIL (INC-134): cada personaje de la familia lleva una clave 'perfil' {provisional, prefijo, nodos, partes, orden_tronco} con el cuerpo de perfil "

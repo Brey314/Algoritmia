@@ -725,12 +725,16 @@ def corre(args, etiqueta):
 
 
 def _mismos_pixeles(ruta, imagen):
-    """El PNG de disco decodifica a los mismos pixeles RGBA que «imagen»."""
+    """
+    El PNG de disco decodifica a los mismos pixeles RGBA que «imagen». Se compara canal por canal: en una imagen RGBA, Image.getbbox() mira por defecto SOLO el alfa
+    (Pillow reciente, alpha_only=True), asi que dos imagenes con el mismo alfa y otros colores —el _reposo de Algoritm con los brazos detras del torso en vez de delante,
+    INC-147— se daban por iguales y no se reescribian.
+    """
     try:
         previa = Image.open(ruta).convert("RGBA")
     except Exception:
         return False
-    return previa.size == imagen.size and ImageChops.difference(previa, imagen.convert("RGBA")).getbbox() is None
+    return previa.size == imagen.size and not any(canal.getbbox() for canal in ImageChops.difference(previa, imagen.convert("RGBA")).split())
 
 
 def aplica(res, args):
