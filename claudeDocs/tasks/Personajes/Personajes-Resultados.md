@@ -36,7 +36,11 @@ diálogo, y el botón de ayuda con la forma de Algoritm, listo para sustituir el
 > dos cuadros; y Algoritm, con su diseño final, se dibuja en siete piezas por forma (INC-134 a INC-136).
 > Lo registra el apartado
 > [C.13](#c13-vista-de-perfil-rumbo-parpadeo-de-dos-cuadros-y-el-algoritm-final-inc-134-a-inc-136-09102026).
-> La ronda 1 del Editor está hecha; la 2, pendiente.
+> Las dos rondas del Editor están hechas (la 2, también el 09/10/2026).
+>
+> **09/10/2026 (INC-147):** los brazos de Algoritm se dibujan detrás de todo el cuerpo, decisión de
+> Santiago. Lo registra el apartado [C.14](#c14-los-brazos-de-algoritm-detrás-de-todo-el-cuerpo-inc-147-09102026);
+> su ronda del Editor se hizo ese día (`ca62b9a`).
 
 ## Qué entró
 
@@ -1179,8 +1183,18 @@ Commit `a44ca96` (rama `feat/personajes-animados`, sobre `d89e5fb`). Lo que sigu
 | `CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo` (las tres formas) | `CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara` | `BrazoIzq` y `BrazoDer` van antes de `Torso`, y `Ojos` y `Boca` después. |
 | `CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen` (las tres formas) | `CharacterRig_INC132_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo` | Algoritm no tiene el estado `Strike`, pero `armsInFrontActions` lo incluye en los siete prefabs; con los brazos antes del torso, `ArmLayering` sí los movería. La prueba comprueba que cambia el orden al golpear, que las manos nunca pasan por encima de la cara, que al terminar vuelve el orden de origen y que devolverlo dos veces no lo cambia. |
 
-Las dos fallan hasta correr el modo `orden` sobre los prefabs de Algoritm (están escritas para pasar justo después). `CharacterRig_INC133_EnAlgoritmElAntebrazoSigueBajoElCodoYSinAncla` no cambia, solo su comentario.
+Las dos fallaban hasta correr el modo `orden` sobre los prefabs de Algoritm (estaban escritas para pasar justo después); pasan desde `ca62b9a` (abajo). `CharacterRig_INC133_EnAlgoritmElAntebrazoSigueBajoElCodoYSinAncla` no cambia, solo su comentario.
 
 *Lección (09/10/2026).* En Pillow 12, `getbbox()` sobre una imagen RGBA solo mira el alfa. `_mismos_pixeles` (`preparar_arte_final.py`, que usan los preparadores para decidir si una imagen cambió) comparaba con él, así que dos imágenes con el mismo alfa y distinto color parecían iguales y los `_reposo` rehechos con los brazos detrás del cuerpo no se habrían escrito. Ahora se compara canal por canal. Una comparación de imágenes que debe notar un cambio de color no puede apoyarse en `getbbox()` de RGBA.
 
-**Ronda del Editor del modo `orden`: en curso.** El modo `orden` de `BuildRigsFinal` sobre los tres prefabs de Algoritm (solo el orden de los hermanos, ningún fileID) se está corriendo en la sesión local de Santiago. Hasta que termine, las dos pruebas `INC147` y `Game.Scaffolding.Tests` quedan sin verificar en el Editor; el resultado se anota aquí al cerrarla.
+**Ronda del Editor del modo `orden` (hecha, 09/10/2026, `ca62b9a`).** Sesión local en el equipo de Santiago, sobre `a44ca96`. Quedó como sigue.
+
+- [x] Modo `estado` antes de empezar: «NO cumple la tabla» en los tres prefabs de Algoritm; la familia ya estaba en orden.
+- [x] Modo `orden` de `BuildRigsFinal`: reordenó `Tronco` en `Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` de `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer` a `BrazoIzq`, `BrazoDer`, `Torso`, `Ojos`, `Boca`. Modo `estado` después: «cumple la tabla».
+- [x] Comparación objeto por objeto contra `HEAD`. Familia: ningún cambio. Algoritm, en las tres formas: 69 → 69 bloques, ningún fileID añadido, perdido ni cambiado; cambia solo el orden de `m_Children` del `Transform` de `Tronco`. Los `.meta` de los tres `_reposo` no cambiaron.
+- [x] Pruebas. `Game.Scaffolding.Tests` 351/351, con `CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo` y `CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen` (las tres formas, en verde). PlayMode: `Credits` 6/6, `MainMenu` 19/19 y `NarrativeScene_` 107/107. No se corrió `suite2.ps1`: solo cambió el orden de los hijos de tres prefabs y tres PNG.
+- [x] Capturas en `claudeDocs/tasks/Personajes/capturas/2026-10-09-algoritm-brazos/`: 26 (JPEG de calidad 90, 4,83 MB), `N1_AparicionGuia` L00 a L10, `N2_Escena21_Bosque` L00 a L06 y `N3_Escena31_Llegada` L00 a L07.
+- [x] Revisión visual de las 26 capturas (orquestador). En las tres formas los brazos salen por detrás del cuerpo y ninguna mano tapa la cara.
+- [x] Commit de lo generado: `ca62b9a`, con los tres prefabs y las 26 capturas.
+
+**Corrección de `pose_preview.py` (`0220b74`, 09/10/2026, INC-134).** Desde `9966bcb`, cuando el cuerpo de perfil entró en los prefabs, la prueba dibujaba a la familia con **los dos cuerpos a la vez** (`Lienzo/Cuerpo` y `Lienzo/Perfil`), y medía capas del cuerpo que el motor mantiene apagado. De ahí salían 74 filas de la familia y 6 casos de la autoprueba en rojo: eran un fallo de la herramienta, no de los clips ni de los prefabs, y no deben leerse como fallos preexistentes del arte. `Personaje` construye ahora una vista por cuerpo y elige una por acción desde `ActionView.cs`, como el motor (un rig sin arte de perfil, Algoritm, se queda de frente). Las acciones de perfil se miden con los nodos del perfil: brazo cercano, cara, codo y rodilla por rotación, suelo y velocidad; el brazo lejano solo se informa, y la comprobación de que no se tapen los dos ojos se omite de perfil. Corrida completa: 0 fallos (antes 74); autoprueba: 0 (antes 6). La Figura F.2 del Anexo F se redibujó con el cuerpo frontal solo (`f290c0a`).

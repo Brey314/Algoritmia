@@ -107,7 +107,8 @@
 > `pose_preview.py` mide el antebrazo y el húmero del guía como los de la familia y registra tres
 > excepciones de la forma de rueda (`Celebrate`, `Encourage` y `Wave`: con el brazo en alto, el húmero
 > queda tras el disco). Entró en `a44ca96`; la ronda del Editor del modo `"orden"` sobre los tres prefabs
-> está en curso. Detalle en `Personajes-Resultados.md`, C.14.
+> se hizo ese mismo día (`ca62b9a`: solo cambió el orden de los hermanos de `Tronco`, ningún fileID;
+> `Game.Scaffolding.Tests` 351/351 y 26 capturas del guía revisadas). Detalle en `Personajes-Resultados.md`, C.14.
 >
 > **Siguen pendientes:** la medida de RNF-04 y RNF-05 en un ejecutable (próximo candidato del OE4); los ojos cerrados de frente;
 > la cara de Algoritm; el retrato animado del cuadro de diálogo (4.1) y poblar emociones en los 18

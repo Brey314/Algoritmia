@@ -222,7 +222,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-144 | El húmero de Papá asomaba por el codo; se corrige la tabla de articulaciones y no el arte entregado | Personajes-Resultados, Plan de personajes finales, herramientas, juego | **Cerrado** (09/10/2026) |
 | INC-145 | La cámara de la 3.3 acompaña a la balsa; el encuadre fijo la dejaba salir del cuadro | Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
 | INC-146 | Los cinco props del N1 entran a 256 px: el paquete con el arte final medía 499,3 MB contra el tope de 500 MB de RNF-06 | Dirección de arte, Inventario de arte, CLAUDE.md | **Cerrado** (09/10/2026) |
-| INC-147 | Los brazos de Algoritm se dibujan detrás de todo el cuerpo; INC-132 los pintaba delante, con las manos sobre la cara | Dirección de arte, Plan de personajes finales, Personajes-Resultados, Anexo F del OE3, CLAUDE.md, juego | **Cerrado** (09/10/2026), salvo la ronda del Editor |
+| INC-147 | Los brazos de Algoritm se dibujan detrás de todo el cuerpo; INC-132 los pintaba delante, con las manos sobre la cara | Dirección de arte, Plan de personajes finales, Personajes-Resultados, Anexo F del OE3, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
 
 ---
 
@@ -3207,7 +3207,7 @@ del peso y **no candidatos**: rc2 sigue siendo el candidato vigente del OE4. RNF
 midieron en ellos, porque el arnés exige el Editor cerrado y jugar el ejecutable; quedan para el
 próximo candidato del carril OE4.
 
-### INC-147 · Los brazos de Algoritm, detrás de todo el cuerpo — cerrado (09/10/2026), salvo la ronda del Editor
+### INC-147 · Los brazos de Algoritm, detrás de todo el cuerpo — cerrado (09/10/2026)
 
 **El conflicto.** INC-132 (05/10/2026) fijó para el guía el orden de dibujo `Torso`, `Ojos`, `Boca`,
 `BrazoIzq`, `BrazoDer`: los brazos delante del cuerpo y **las manos encima de la cara**. Con el diseño
@@ -3261,10 +3261,24 @@ finales (nota fechada) · `Personajes-Resultados.md` (C.14) · CLAUDE.md · Anex
 `CharacterRig_INC132_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo`: Algoritm no tiene el estado `Strike`, pero
 `armsInFrontActions` lo incluye en los siete prefabs, así que con los brazos antes del torso `ArmLayering`
 sí los movería; la prueba comprueba que la ida y vuelta es exacta y que las manos no pasan nunca por encima
-de la cara. Las dos fallan mientras no se corra el modo `"orden"` sobre los prefabs de Algoritm.
-**Verificación en el Editor: pendiente.** La ronda del Editor del modo `"orden"` sobre los tres prefabs de
-Algoritm (solo el orden de los hermanos) está en curso en la sesión local de Santiago; su resultado y el de
-las dos pruebas se anotan aquí al cerrarla.
+de la cara. Las dos fallaban mientras no se corriera el modo `"orden"` sobre los prefabs de Algoritm; pasan desde
+`ca62b9a`.
+
+**Verificación en el Editor (hecha el 09/10/2026, `ca62b9a`).** Sesión local de Santiago, sobre `a44ca96`.
+El modo `"orden"` de `BuildRigsFinal` reordenó `Tronco` en `Algoritm_Fuego`, `Algoritm_Rueda` y
+`Algoritm_Gota` de `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer` a `BrazoIzq`, `BrazoDer`, `Torso`,
+`Ojos`, `Boca`; el modo `"estado"` pasó de «NO cumple la tabla» a «cumple la tabla», y la familia ya estaba
+en orden. Comparados objeto por objeto contra `HEAD`: en la familia, ningún cambio; en los tres Algoritm,
+69 → 69 bloques, ningún fileID añadido, perdido ni cambiado, y cambia solo el orden de `m_Children` del
+`Transform` de `Tronco`. Los `.meta` de los tres `_reposo` no cambiaron. Pruebas: `Game.Scaffolding.Tests`
+351/351, con las dos `INC147`; PlayMode `Credits` 6/6, `MainMenu` 19/19 y `NarrativeScene_` 107/107. No se
+corrió la suite completa (`suite2.ps1`): solo cambió el orden de los hijos de tres prefabs y tres PNG. Las
+26 capturas del guía —`N1_AparicionGuia`, `N2_Escena21_Bosque` y `N3_Escena31_Llegada`, en
+`claudeDocs/tasks/Personajes/capturas/2026-10-09-algoritm-brazos/`— se revisaron: en las tres formas los
+brazos salen por detrás del cuerpo y ninguna mano tapa la cara. Después, `0220b74` corrigió
+`pose_preview.py`, que dibujaba a la familia con sus dos cuerpos (frente y perfil) a la vez desde
+`9966bcb`: las 74 filas y los 6 casos de autoprueba en rojo eran de la herramienta (ahora 0 y 0), no de
+los clips ni de los prefabs (`Personajes-Resultados.md`, C.14).
 
 ## Residuos y puntos abiertos
 
@@ -3349,8 +3363,7 @@ el margen de 21 MB era el de rc2 (01/10/2026) y el arte frontal final, el perfil
 medidas de carga y de memoria exigen el Editor cerrado y jugar el ejecutable, y quedan para el próximo
 candidato del carril OE4, junto con los ojos cerrados de frente que faltan; y (6) la
 republicación en Word del OE3: sus fuentes ya nombran INC-134 a INC-136 (Anexo F, apartado 2.13, `1e2fb6a`),
-pero los `.docx` publicados todavía no. A esa lista se suma la ronda del Editor del modo `"orden"` de
-INC-147 (09/10/2026) sobre los tres prefabs de Algoritm, que está en curso.
+pero los `.docx` publicados todavía no.
 
 ---
 
@@ -3362,7 +3375,9 @@ INC-147 (09/10/2026) sobre los tres prefabs de Algoritm, que está en curso.
   INC-132 y no toca la regla de la familia (INC-132 e INC-133). El código y las herramientas entraron en
   `a44ca96` (el `orden_tronco` de las tres formas, los tres `_reposo` rehechos en su sitio, las tres
   excepciones de `pose_preview.py` para la rueda y dos pruebas renombradas). La ronda del Editor del
-  modo `"orden"` sobre los prefabs de Algoritm queda pendiente. Mantiene CP-02.
+  modo `"orden"` sobre los prefabs de Algoritm se hizo ese mismo día (`ca62b9a`): solo cambió el orden de
+  los hermanos de `Tronco`, sin fileID nuevo ni perdido, y `Game.Scaffolding.Tests` dio 351/351; no cambia
+  la revisión ni el alcance de la decisión. Mantiene CP-02.
 
 - **rev. 22 (09/10/2026)** — Decisión de Santiago por el peso del paquete (RNF-06). Se registra y cierra
   **INC-146**: el ejecutable con el arte frontal final, Algoritm y el perfil medía 499,3 MB (build sobre
