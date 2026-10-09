@@ -37,6 +37,15 @@
 # Desde INC-147 (09/10/2026) los brazos de Algoritm tambien van antes del torso, asi que la regla los alcanzaria en una accion de la lista;
 # Algoritm no tiene clip de Strike y la prueba no lo usa para el. La lista se lee del .cs; si no esta, {Strike} con un aviso.
 #
+# UN CUERPO POR ACCION (INC-134, 09/10/2026). Los prefabs de la familia llevan DOS cuerpos, Lienzo/Cuerpo (de frente) y Lienzo/Perfil (de perfil, mirando a la derecha), y el
+# motor enciende UNO por accion (CharacterRig.ShowView, que decide ActionView.cs: Walk, Run, Carry, Push, PickUp, Kneel y Blow de perfil; todo lo demas, Wave incluida, de frente; corte
+# seco; un rig cuyo torso de perfil no tiene sprite —Algoritm— se queda de frente en toda accion). Personaje hace lo mismo: una Vista por cuerpo (sus capas y los nombres de SUS nodos) y
+# vista_de/orden_de eligen por la accion; lo que cuelga de Lienzo fuera de los dos cuerpos (la sombra) va en los dos. Las acciones de perfil se leen de ActionView.cs
+# (prefabs.acciones_de_perfil, como armsInFrontActions de CharacterRig.cs); si el .cs no esta o no se entiende, la lista acordada {Walk, Run, Carry, Push, PickUp, Kneel, Blow} y un AVISO.
+# Hasta esta fecha se dibujaban LOS DOS cuerpos a la vez (el de perfil, en reposo, encima del de frente) y todas las medidas de la familia veian las capas del otro: las hojas, los ~74
+# fallos de la familia y los 6 de la autoprueba desde que el perfil entro en los prefabs (9966bcb) eran de eso. La regla de «brazos delante» (armsInFrontActions) es por cuerpo: ArmLayering
+# solo toca Lienzo/Cuerpo/Tronco, y en el perfil no hay BrazoIzq/BrazoDer, asi que alli no cambia el orden.
+#
 # ALGORITM (INC-136, 09/10/2026). Su arte final son SIETE piezas por forma (torso, brazo, antebrazo con la mano y pierna ENTERA, a cada lado) que escribe
 # preparar_algoritm.py en Frontal/ mas la cara provisional (ojos_neutra y boca_0) en Expresiones/: esta vista previa las dibuja como al resto, por el estado
 # que dejara el modo «sprites» de BuildRigsFinal (prefabs.simula_sprites con apaga_faltantes: la AntepiernaX, sin sprite, queda apagada). Hasta el
@@ -70,6 +79,13 @@
 #       cadera del JSON menos coreografia.MARGEN_CINTURA, y de la cadera del contexto si es mas alta (nunca en la entrepierna);
 #   (f) ningun hombro ni codo gira mas de VELOCIDAD_MAX (1300 grados por segundo): atrapa el salto de rama de la
 #       cinematica inversa a mitad de un gesto (salvo el golpe del martillo, EXCEPCIONES_VEL).
+#   DE PERFIL (INC-134, 09/10/2026; filas con «perfil»): la misma prueba con los nodos de Lienzo/Perfil (BrazoCercano/BrazoLejano, CodoX, AntebrazoX, Cuello/Cabeza/{CaraBase,Ojos,Boca},
+#       PiernaCercana/Lejana con RodillaX/AntepiernaX). (a) solo el brazo CERCANO, partido como el de frente (antebrazo >= 85 %, humero >= UMBRAL_HUMERO): el LEJANO va detras del torso, de
+#       las dos piernas y del cercano POR DISENO (es el primer hijo de Tronco) y solo se INFORMA lo que asoma, en la fila; (b), (e), (g), (d), (f) y (h) como de frente, con la cara y las
+#       manos de perfil (la mano al 80 % del antebrazo desde el codo, como el modelo de frente); (c) el codo y la rodilla se miden por su ROTACION: mirando a la derecha el pliegue natural
+#       es positivo en el codo (el antebrazo se dobla hacia delante) y negativo en la rodilla (la pierna se dobla hacia atras), y mas de TOLERANCIA_CODO al reves es hiperextension (la
+#       geometria de codo_nu, que da por natural «hacia el costado y abajo», tomaria la mano en la cara de perfil por un codo al reves); (i) NO SE MIDE: de perfil hay una sola capa de
+#       ojos y no hay «los dos a la vez» (la cara a la vista de (b) ya lo vigila). Una fila de perfil dice «no se mide de perfil» en esa casilla.
 #   (j) el HUMERO no asoma del codo (Santiago, 08/10/2026): la punta del humero no pasa del casquete del antebrazo (el extremo redondo del lado del
 #       hombro) en mas de ASOMA_MAX_CODO px. Es una medida del arte y no de un cuadro: el casquete gira sobre el codo y lo que el humero se pase de el
 #       queda a la vista en cuanto el antebrazo se aparta (asoma_codo; la corrige codo.py).
@@ -234,6 +250,53 @@ class Capa:
         self.escalas = {}  # el sprite reducido a cada tamano de pantalla (no se recalcula en cada cuadro)
 
 
+class Vista:
+    """
+    Un cuerpo del personaje con los nombres de SUS nodos (INC-134, 09/10/2026): el de frente (Lienzo/Cuerpo, el de siempre y el unico de Algoritm) y, en la
+    familia, el de perfil (Lienzo/Perfil, mirando a la derecha). El motor enciende UNO por accion (CharacterRig.ShowView, que decide ActionView) y la
+    prueba mide el que se ve: Personaje arma una Vista por cuerpo, con SUS capas, y prueba_clip lee de ella los nombres, no las constantes de frente.
+      «brazos»:  {lado: (hombro, codo, antebrazo)};  «piernas»: {lado: (cadera, rodilla, antepierna)}  (rutas de nodo; en los dos cuerpos el antebrazo
+                 y la antepierna cuelgan de su articulacion);
+      «lado_codo»: con que lado lee codo_nu el pliegue de cada brazo, sobre la GEOMETRIA (de frente el codo sobresale hacia el costado de su brazo);
+      «codo_por_giro»: de perfil el codo se mide, como la rodilla, sobre su ROTACION y no sobre la geometria: el pliegue natural del codo es siempre el mismo
+                 giro (mirando a la derecha, el antebrazo se dobla hacia delante: rotacion antihoraria, positiva) pero la esquina del codo apunta atras con el brazo
+                 colgando y adelante con la mano en la cara, y codo_nu (que da por natural «hacia el costado y abajo») tomaria esto ultimo por hiperextension;
+      «signo_rodilla»: signo con que la rotacion de la rodilla es pliegue natural (de frente +1 en la izquierda y -1 en la derecha; de perfil la pierna se
+                 dobla hacia atras, que con la rotacion antihoraria de Unity es negativo: se invierte en las dos);
+      «exige»:   los lados cuyo brazo tiene que verse (medida (a)). De frente los dos; de perfil solo el CERCANO: el lejano va detras del torso, de las dos piernas
+                 y del brazo cercano POR DISENO (BrazoLejano es el primer hijo de Tronco) y solo asoma al balancearse, asi que su % a la vista se informa y no se exige.
+    Las capas (en el orden de dibujo del reposo y en el de «brazos delante») las pone Personaje._dibujables.
+    """
+
+    def __init__(self, nombre, cuerpo, tronco, cabeza, brazos, piernas, lado_codo, signo_rodilla, exige=None, codo_por_giro=False):
+        self.nombre, self.cuerpo, self.tronco, self.cabeza = nombre, cuerpo, tronco, cabeza
+        self.torso = tronco + "/Torso"
+        self.brazos, self.piernas, self.lado_codo, self.signo_rodilla = brazos, piernas, lado_codo, signo_rodilla
+        self.codo_por_giro = codo_por_giro
+        self.exige = set(brazos) if exige is None else set(exige)
+        self.capas = self.indice = self.capas_delante = self.indice_delante = None
+
+    @property
+    def huesos_brazo(self):
+        """Hombros y codos, en ese orden (lo que gira en la medida de velocidad (f))."""
+        return [h for h, _, _ in self.brazos.values()] + [c for _, c, _ in self.brazos.values()]
+
+
+def _vista_frente():
+    return Vista("frente", C, T, HD,
+                 {"Izq": (LA, LE, LE + "/AntebrazoIzq"), "Der": (RA, RE, RE + "/AntebrazoDer")},
+                 {"Izq": (LL, LK, LK + "/AntepiernaIzq"), "Der": (RL, RK, RK + "/AntepiernaDer")},
+                 {"Izq": "Izq", "Der": "Der"}, {"Izq": 1.0, "Der": -1.0})
+
+
+def _vista_perfil():
+    # «Lej» y «Cer»: lejano y cercano (la columna del lado de las filas mide 5)
+    return Vista("perfil", P.PF, P.PT, P.PHD,
+                 {"Lej": (P.PBL, P.PEL, P.PEL + "/AntebrazoLejano"), "Cer": (P.PBC, P.PEC, P.PEC + "/AntebrazoCercano")},
+                 {"Lej": (P.PLL, P.PKL, P.PKL + "/AntepiernaLejana"), "Cer": (P.PLC, P.PKC, P.PKC + "/AntepiernaCercana")},
+                 {"Lej": "Izq", "Cer": "Izq"}, {"Lej": -1.0, "Cer": -1.0}, exige=("Cer",), codo_por_giro=True)
+
+
 class Personaje:
     """Todo lo que la vista previa necesita de un personaje; se arma una vez."""
 
@@ -251,6 +314,8 @@ class Personaje:
         # las acciones en que el motor pasa los brazos DELANTE del torso (CharacterRig.armsInFrontActions): en ellas se
         # dibuja con otro orden (orden_de)
         self.delante, self.delante_hallada = P.acciones_brazos_delante()
+        # INC-134: las acciones que el motor ve de perfil (ActionView.cs). En ellas se dibuja Lienzo/Perfil y no Lienzo/Cuerpo (vista_de), si el rig tiene perfil
+        self.acciones_perfil, self.perfil_hallada = P.acciones_de_perfil()
         if maqueta and not self.guia:
             self.arbol, self.piezas = M.arbol_maqueta(pid, rig)
         else:
@@ -295,20 +360,25 @@ class Personaje:
     # ---- que capas se dibujan, en orden
     def _dibujables(self):
         """
-        Las capas en el orden del arbol (el de reposo: brazos detras del torso en la familia) y, aparte, en el orden de las
-        acciones de «brazos delante» (prefabs.orden_con_brazos_delante: lo que hace ArmLayering en el motor). Las dos listas
-        comparten las mismas Capa (y su cache de sprites reducidos).
+        Las capas de CADA cuerpo (INC-134): el de frente (Lienzo/Cuerpo) y, si el rig tiene perfil, el de perfil (Lienzo/Perfil). El motor enciende uno por
+        accion y apaga el otro (CharacterRig.ShowView), asi que cada lista deja fuera el subarbol del otro cuerpo; lo que cuelga de Lienzo fuera de los dos
+        (la sombra) va en las dos. De cada cuerpo, las capas en el orden del arbol (el de reposo: brazos detras del torso en la familia) y, aparte, en el
+        orden de las acciones de «brazos delante» (prefabs.orden_con_brazos_delante: lo que hace ArmLayering en el motor, que solo toca
+        Lienzo/Cuerpo/Tronco: en el perfil no hay BrazoIzq/BrazoDer y la regla no cambia nada). Las listas comparten las mismas Capa (y su cache de sprites
+        reducidos). self.capas, self.indice, … son las de frente, como siempre.
         """
         self._cache = {}
         hechas = {}
 
-        def recorre():
+        def recorre(otro_cuerpo):
             capas = []
 
             def visita(n):
                 if n.rect is None and n.ruta != "":
                     return
                 ruta = n.ruta
+                if ruta == otro_cuerpo:
+                    return  # INC-134: el cuerpo que la accion no muestra no se dibuja
                 if ruta:
                     if ruta not in hechas:
                         hechas[ruta] = self._capa(n)
@@ -322,21 +392,33 @@ class Personaje:
             visita(self.arbol[""])
             return capas
 
-        self.capas = recorre()
-        self.indice = {c.nodo.ruta: i for i, c in enumerate(self.capas)}
-        tronco = self.arbol[T]
-        orig = P.hijos_de_dibujo(tronco)
-        nombres = [h.nombre for h in orig]
-        nuevo = P.orden_con_brazos_delante(nombres)
-        if nuevo == nombres:
-            self.capas_delante, self.indice_delante = self.capas, self.indice
-        else:
-            por = {h.nombre: h for h in orig}
-            previo = tronco.dibujo
-            tronco.dibujo = [por[n] for n in nuevo]
-            self.capas_delante = recorre()
-            tronco.dibujo = previo
-            self.indice_delante = {c.nodo.ruta: i for i, c in enumerate(self.capas_delante)}
+        def arma(vista, otro_cuerpo):
+            vista.capas = recorre(otro_cuerpo)
+            vista.indice = {c.nodo.ruta: i for i, c in enumerate(vista.capas)}
+            tronco = self.arbol[vista.tronco]
+            orig = P.hijos_de_dibujo(tronco)
+            nombres = [h.nombre for h in orig]
+            nuevo = P.orden_con_brazos_delante(nombres)
+            if nuevo == nombres:
+                vista.capas_delante, vista.indice_delante = vista.capas, vista.indice
+            else:
+                por = {h.nombre: h for h in orig}
+                previo = tronco.dibujo
+                tronco.dibujo = [por[n] for n in nuevo]
+                vista.capas_delante = recorre(otro_cuerpo)
+                tronco.dibujo = previo
+                vista.indice_delante = {c.nodo.ruta: i for i, c in enumerate(vista.capas_delante)}
+            return vista
+
+        # el perfil existe para el motor (CharacterRig.HasProfile) si estan Lienzo/Cuerpo y Lienzo/Perfil y el torso del perfil tiene sprite; sin eso
+        # (Algoritm, o arte de perfil que aun no llego) toda accion se ve de frente
+        torso_perfil = self.arbol.get(P.PT + "/Torso")
+        tiene_perfil = C in self.arbol and P.PF in self.arbol and torso_perfil is not None and bool(torso_perfil.imagen and torso_perfil.imagen["guid"])
+        self.frente = arma(_vista_frente(), P.PF)
+        self.perfil = arma(_vista_perfil(), C) if tiene_perfil else None
+        self.capas, self.indice = self.frente.capas, self.frente.indice
+        self.capas_delante, self.indice_delante = self.frente.capas_delante, self.frente.indice_delante
+        self.todas = {r: c for r, c in hechas.items() if c is not None}  # toda capa por su ruta, de cualquiera de los dos cuerpos
 
     def cara_reposo(self):
         """Algoritm: el % de la caja de ojos y boca (ampliada) que queda a la vista en reposo, con los brazos que ya la rozan (prueba_clip la descuenta de (b))."""
@@ -345,11 +427,21 @@ class Personaje:
             self._cara0 = prueba_clip(self, vacio, tiempos=[0.0], _sin_base=True).cara[0]
         return self._cara0
 
+    def vista_de(self, accion):
+        """
+        La Vista (cuerpo) que el motor muestra en esa accion (INC-134): el de perfil si ActionView la manda de perfil Y el rig tiene perfil; si no, el de
+        frente (toda accion de frente, y Algoritm, que no tiene perfil, en todas).
+        """
+        if self.perfil is not None and accion in self.acciones_perfil:
+            return self.perfil
+        return self.frente
+
     def orden_de(self, accion):
-        """(capas, indice) en el orden de dibujo de esa accion: con los brazos delante del torso si CharacterRig la lista."""
+        """(capas, indice) del cuerpo que se ve en esa accion y en su orden de dibujo: con los brazos delante del torso si CharacterRig la lista."""
+        v = self.vista_de(accion)
         if accion in self.delante:
-            return self.capas_delante, self.indice_delante
-        return self.capas, self.indice
+            return v.capas_delante, v.indice_delante
+        return v.capas, v.indice
 
     def _capa(self, n):
         ruta = n.ruta
@@ -410,7 +502,7 @@ class Personaje:
         que queda por debajo de esa altura del lienzo: la canilla, sin el pie que sobresale ni la punta que
         se mete en el muslo). Sin sprite (arte provisional), el centro del rect (la base si es pierna).
         """
-        capa = next((c for c in self.capas if c.nodo.ruta == ruta), None)
+        capa = self.todas.get(ruta)
         rect = self.rect.get(ruta)
         if capa is None:
             if rect is None:
@@ -447,6 +539,22 @@ class Personaje:
                 self._manos[lado] = (nodo, pts)
         return self._manos
 
+    def manos_de(self, v):
+        """
+        Los puntos de las manos de la vista «v»: {lado: (nodo que los mueve, [puntos])}. De frente, el modelo de brazo de coreografia.py (manos_modelo).
+        De perfil el mismo modelo con la geometria del propio perfil: la mano al 80 % del antebrazo, a partir del codo (el centro del rect del antebrazo
+        esta al 50 % de su largo), y la muñeca un punto mas atras; los mueve el CodoX del perfil, que es el que animan los clips.
+        """
+        if v is self.frente:
+            return self.manos_modelo()
+        out = {}
+        for lado, (_, codo, ante) in v.brazos.items():
+            e, r = self.pivote[codo], self.rect[ante]
+            c = ((r[0] + r[2]) / 2.0, (r[1] + r[3]) / 2.0)
+            m = (e[0] + 1.6 * (c[0] - e[0]), e[1] + 1.6 * (c[1] - e[1]))
+            out[lado] = (codo, [m, (e[0] + 0.75 * (m[0] - e[0]), e[1] + 0.75 * (m[1] - e[1]))])
+        return out
+
     @staticmethod
     def _caja_pintada(capa):
         """El rect (lienzo) de los pixeles opacos de una capa."""
@@ -459,21 +567,22 @@ class Personaje:
         return (capa.rect[0] + b[0] / w * rw, capa.rect[1] + b[1] / h * rh, capa.rect[0] + b[2] / w * rw, capa.rect[1] + b[3] / h * rh)
 
     # ---- zona de la cara y puntos de articulacion
-    def zona_cara(self):
+    def zona_cara(self, v=None):
         """
-        Rects (lienzo, reposo) de ojos y boca y el nodo que los lleva (la cabeza si se dibuja, si no el torso). Con la cara
-        dibujada, el rect es el de lo que se PINTA (los pixeles opacos del sprite): Ojos, Boca y CaraBase comparten un rect del
+        Rects (lienzo, reposo) de ojos y boca del cuerpo «v» (por defecto el de frente) y el nodo que los lleva (la cabeza si se dibuja, si no el torso). Con la
+        cara dibujada, el rect es el de lo que se PINTA (los pixeles opacos del sprite): Ojos, Boca y CaraBase comparten un rect del
         tamano del lienzo de la cara entera, y el margen transparente no es cara. CaraBase (nariz y rubor) no cuenta: la caja
-        de la cara sigue siendo la de Ojos y Boca.
+        de la cara sigue siendo la de Ojos y Boca. Solo cuentan los nodos de ESE cuerpo: el otro no se ve (INC-134).
         """
+        v = v or self.frente
         rects = []
         for nombre in ("Ojos", "Boca"):
             for ruta, n in self.arbol.items():
-                if n.nombre == nombre and self.rect.get(ruta):
-                    capa = next((c for c in self.capas if c.nodo.ruta == ruta), None)
+                if n.nombre == nombre and self.rect.get(ruta) and ruta.startswith(v.cuerpo + "/"):
+                    capa = self.todas.get(ruta)
                     rects.append(self._caja_pintada(capa) if capa is not None else self.rect[ruta])
-        cabeza = self.arbol.get(HD)
-        lleva = HD if cabeza is not None and (cabeza.dibuja()) else T + "/Torso"
+        cabeza = self.arbol.get(v.cabeza)
+        lleva = v.cabeza if cabeza is not None and (cabeza.dibuja()) else v.torso
         return rects, lleva
 
 
@@ -599,8 +708,10 @@ class Resultado:
     """El peor valor de cada medida en un clip, con el instante en que ocurre."""
 
     def __init__(self):
+        self.vista = "frente"      # el cuerpo que se midio (INC-134): «frente» o «perfil»
         self.brazo = (100.0, 0.0, "")   # el antebrazo (con la mano), en la familia y, desde INC-147, en Algoritm
         self.humero = (100.0, 0.0, "")  # (INC-133, y Algoritm desde INC-147): el humero, que va detras del torso
+        self.lejano = None         # (INC-134) de perfil: el % a la vista del brazo LEJANO (humero y antebrazo juntos), el peor instante; solo se informa
         self.cara = (100.0, 0.0)
         self.codo = (0.0, 0.0, "")
         self.suelo = (-999.0, 0.0)
@@ -616,6 +727,8 @@ class Resultado:
             self.brazo = (valor, t, extra)
         elif nombre == "humero" and valor < self.humero[0]:
             self.humero = (valor, t, extra)
+        elif nombre == "lejano" and (self.lejano is None or valor < self.lejano[0]):
+            self.lejano = (valor, t, extra)
         elif nombre == "cara" and valor < self.cara[0]:
             self.cara = (valor, t)
         elif nombre == "codo" and valor > self.codo[0]:
@@ -699,30 +812,38 @@ def codo_nu(lado, hombro, codo, mano):
     return ang * (c[0] * w[0] + c[1] * w[1]) / (nc * math.hypot(*w))
 
 
-def bisagras(pj, mundo, clip=None, t=0.0):
+def bisagras(pj, mundo, clip=None, t=0.0, v=None):
     """
     El pliegue firmado de cada codo y rodilla en una pose: {nombre: nu}. El codo se mide sobre la geometria
     (la mano respecto al humero). La rodilla, sobre su rotacion: medir el pie respecto al muslo da un angulo
     que cambia solo con acortar la antepierna (el pie queda ladeado respecto a la caña), y no es doblar.
+    «v»: la Vista que se ve (por defecto la de frente). De perfil (INC-134) los codos y las rodillas son los del cuerpo de perfil y los dos se miden
+    sobre su rotacion, con el sentido de su pliegue (Vista.codo_por_giro, Vista.signo_rodilla).
     """
+    v = v or pj.frente
     out = {}
     piv = pj.pivote
-    if LA in piv and RA in piv:
-        for lado, brazo, codo, ante in (("Izq", LA, LE, LE + "/AntebrazoIzq"), ("Der", RA, RE, RE + "/AntebrazoDer")):
+    if all(h in piv for h, _, _ in v.brazos.values()):
+        for lado, (brazo, codo, ante) in v.brazos.items():
+            if ante not in v.indice:  # sin antebrazo dibujado (arte provisional) no hay codo que se vea
+                continue
+            if v.codo_por_giro:  # de perfil: sobre la rotacion del codo, como la rodilla (ver Vista)
+                out["codo" + lado] = clip.valor(codo, K.ROT, t, 0.0) if clip is not None else 0.0
+                continue
             pt = pj.punta(ante)
-            if pt is None or ante not in pj.indice:  # sin antebrazo dibujado (arte provisional) no hay codo que se vea
+            if pt is None:
                 continue
             # en el marco del tronco: si el cuerpo entero gira (Spin) o se inclina, «abajo» sigue siendo hacia los pies
-            inv = mat_inv(mundo[T])
+            inv = mat_inv(mundo[v.tronco])
             en_tronco = lambda p: mat_pt(inv, p)
-            out["codo" + lado] = codo_nu(lado, en_tronco(mat_pt(mundo[brazo], piv[brazo])), en_tronco(mat_pt(mundo[brazo], piv[codo])),
+            out["codo" + lado] = codo_nu(v.lado_codo[lado], en_tronco(mat_pt(mundo[brazo], piv[brazo])), en_tronco(mat_pt(mundo[brazo], piv[codo])),
                                          en_tronco(mat_pt(mundo[codo], pt)))
-    if LL in piv and RL in piv:
-        for lado, pierna, rod, ante in (("Izq", LL, LK, LK + "/AntepiernaIzq"), ("Der", RL, RK, RK + "/AntepiernaDer")):
-            if ante not in pj.indice:  # sin antepierna dibujada no hay rodilla que se vea
+    if all(c in piv for c, _, _ in v.piernas.values()):
+        for lado, (pierna, rod, ante) in v.piernas.items():
+            if ante not in v.indice:  # sin antepierna dibujada no hay rodilla que se vea
                 continue
             giro = clip.valor(rod, K.ROT, t, 0.0) if clip is not None else 0.0
-            out["rodilla" + lado] = giro if lado == "Izq" else -giro
+            out["rodilla" + lado] = giro * v.signo_rodilla[lado]
     return out
 
 
@@ -735,33 +856,35 @@ def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
     res = Resultado()
     esc = ESCALA_PRUEBA
     tam = (int(1024 * esc), int(1024 * esc))
-    zona, lleva = pj.zona_cara()
+    vista = pj.vista_de(clip.accion)  # el cuerpo que el motor muestra en ESTA accion (INC-134): de perfil o de frente; solo ese se dibuja y se mide
+    res.vista = vista.nombre
+    zona, lleva = pj.zona_cara(vista)
     capas, indice = pj.orden_de(clip.accion)  # el orden de dibujo de ESTA accion (brazos delante o detras del torso)
     brazos = {}
     partidos = {}  # lado -> (humero, antebrazo): INC-133, si el antebrazo sale de su codo y se dibuja delante (la familia); INC-147, siempre en Algoritm (todo el brazo va tras el cuerpo)
-    for lado, (b, a) in {"Izq": (LA, LE + "/AntebrazoIzq"), "Der": (RA, RE + "/AntebrazoDer")}.items():
+    for lado, (b, _, a) in vista.brazos.items():
         grupo = [r for r in (b, a) if r in indice]
         if grupo:
             brazos[lado] = grupo
-        if b in indice and a in indice and (pj.arbol[a].sigue or pj.guia):
-            partidos[lado] = (b, a)
+        if b in indice and a in indice and (pj.arbol[a].sigue or pj.guia or (vista is pj.perfil and lado in vista.exige)):
+            partidos[lado] = (b, a)   # de perfil, el brazo cercano se mide partido como el de frente: antebrazo >= 85 % y humero >= UMBRAL_HUMERO
     piezas_brazo = {r for par in partidos.values() for r in par}
     # lo que se dibuja DESPUES de la cara (Ojos y Boca): solo eso puede taparla (la cabeza y su cara van al fondo en Mama, Nina y Nino; en
     # Papa la cabeza va tras el torso y los humeros). Sin capas de cara (arte provisional), la cabeza o el torso.
     caras = [indice[c.nodo.ruta] for c in capas if c.nodo.nombre in ("Ojos", "Boca")]
-    idx_cara = max(caras) if caras else (indice[HD] if HD in indice else indice.get(T + "/Torso", -1))
+    idx_cara = max(caras) if caras else (indice[vista.cabeza] if vista.cabeza in indice else indice.get(vista.torso, -1))
     n = int(round(clip.duracion * FPS))
     tiempos = tiempos if tiempos is not None else [min(i / FPS, clip.duracion) for i in range(n + 1)]
     es_guia = pj.guia
     # (h) Strike: el punto de choque (el instante de minima distancia entre las manos) por encima de la cintura
-    es_strike = clip.accion == "Strike" and not es_guia
+    es_strike = clip.accion == "Strike" and not es_guia and vista is pj.frente
     choque = (1e18, 0.0, 0.0)  # distancia, instante, altura media de las manos
     vacio = Clip({"archivo": "", "accion": "", "duracion": 1.0, "bucle": True, "curvas": []})
-    reposo_nu = bisagras(pj, matrices(pj, vacio, 0.0)[0], vacio, 0.0)
+    reposo_nu = bisagras(pj, matrices(pj, vacio, 0.0)[0], vacio, 0.0, vista)
     previo = None
     for t in tiempos:
         # (f) velocidad angular de hombros y codos entre cuadros
-        vals = {r: clip.valor(r, K.ROT, t, 0.0) for r in (LA, RA, LE, RE)}
+        vals = {r: clip.valor(r, K.ROT, t, 0.0) for r in vista.huesos_brazo}
         if previo is not None and t > previo[0]:
             for r in vals:
                 v = abs(vals[r] - previo[1][r]) / (t - previo[0])
@@ -780,15 +903,16 @@ def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
         # porque el humero va tras el torso. Algoritm (INC-147): igual, con los dos brazos tras el cuerpo; su antebrazo cuelga del codo y no se dibuja delante.
         union_brazos = Image.new("L", tam, 0)   # lo que de los brazos esta DELANTE de la cara: lo unico que puede taparla
 
-        def visible_de(ruta, excluye):
+        def visible_de(ruta, excluye, tapa_el_otro=False):
             """
             (total, oculto) de una pieza: no cuenta lo que tapan las piezas de «excluye» (las del propio brazo) ni, en la familia y en Algoritm, las del OTRO
-            brazo (INC-133: cruzar los antebrazos al chocar las manos no es perder el brazo; lo que se pierde es lo que tapa el cuerpo).
+            brazo (INC-133: cruzar los antebrazos al chocar las manos no es perder el brazo; lo que se pierde es lo que tapa el cuerpo). «tapa_el_otro»: el
+            brazo lejano de perfil (INC-134) si cuenta lo que le tapa el cercano, que va delante de todo.
             """
             m = masc[ruta]
             oc = Image.new("L", tam, 0)
             for r2, m2 in masc.items():
-                if indice[r2] > indice[ruta] and r2 not in excluye and not (partidos and r2 in piezas_brazo):
+                if indice[r2] > indice[ruta] and r2 not in excluye and not (partidos and r2 in piezas_brazo and not tapa_el_otro):
                     oc = ImageChops.lighter(oc, m2)
             total = _cuenta(m)
             oculto = _cuenta(ImageChops.multiply(m, oc.point(lambda v: 255 if v else 0)))
@@ -798,6 +922,16 @@ def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
             for ruta in grupo:
                 if ruta in masc and indice[ruta] > idx_cara:
                     union_brazos = ImageChops.lighter(union_brazos, masc[ruta])
+            if lado not in vista.exige:
+                # INC-134: el brazo lejano de perfil va tras el torso, las piernas y el brazo cercano por diseno; se informa lo que asoma, no se exige
+                total = oculto = 0
+                for ruta in grupo:
+                    if ruta in masc:
+                        tt, oo = visible_de(ruta, grupo, True)
+                        total, oculto = total + tt, oculto + oo
+                if total:
+                    res.mejor_peor("lejano", 100.0 * (total - oculto) / total, t, lado)
+                continue
             if lado in partidos:
                 hum, ante = partidos[lado]
                 if ante in masc:
@@ -830,8 +964,8 @@ def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
             if area:
                 tapado = _cuenta(ImageChops.multiply(z, union_brazos))
                 res.mejor_peor("cara", 100.0 * (area - tapado) / area, t)
-                if lleva == HD and (T + "/Torso") in masc and indice[T + "/Torso"] > idx_cara:
-                    res.mejor_peor("torso", 100.0 * _cuenta(ImageChops.multiply(z, masc[T + "/Torso"])) / area, t)
+                if lleva == vista.cabeza and vista.torso in masc and indice[vista.torso] > idx_cara:
+                    res.mejor_peor("torso", 100.0 * _cuenta(ImageChops.multiply(z, masc[vista.torso])) / area, t)
         elif zona and not (es_guia and alfa_t < ALFA_MIN_CARA_GUIA):
             z = Image.new("L", tam, 0)
             dz = ImageDraw.Draw(z)
@@ -850,10 +984,10 @@ def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
                 res.mejor_peor("cara", 100.0 * (area - tapado) / area, t)
                 # (g) con la cabeza al fondo el torso (dibujado despues) puede tapar la barbilla y la boca al inclinarse; en Papa la cabeza va
                 # DELANTE del torso (Santiago, 06/10/2026) y el torso no puede taparla
-                if lleva == HD and (T + "/Torso") in masc and indice[T + "/Torso"] > idx_cara:
-                    res.mejor_peor("torso", 100.0 * _cuenta(ImageChops.multiply(z, masc[T + "/Torso"])) / area, t)
+                if lleva == vista.cabeza and vista.torso in masc and indice[vista.torso] > idx_cara:
+                    res.mejor_peor("torso", 100.0 * _cuenta(ImageChops.multiply(z, masc[vista.torso])) / area, t)
         # (i) los dos ojos a la vez: cuanto cubre un brazo de cada ojo; cuenta el MENOS tapado (con uno a la vista no se tapan los dos)
-        mitades = pj.ojos_mitades() if not es_guia else []
+        mitades = pj.ojos_mitades() if not es_guia and vista is pj.frente else []   # de perfil hay UN ojo: no hay «los dos a la vez» que medir
         if len(mitades) == 2:
             cub = []
             for cap in mitades:
@@ -868,7 +1002,7 @@ def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
             x1 = max(r[2] for r in zona); y1 = max(r[3] for r in zona)
             cx_, cy_, mw, mh = (x0 + x1) / 2, (y0 + y1) / 2, (x1 - x0) * AMPLIA_CAJA_CARA / 2, (y1 - y0) * AMPLIA_CAJA_CARA / 2
             caja = _poligono((cx_ - mw, cy_ - mh, cx_ + mw, cy_ + mh), mundo[lleva], 1.0)
-            for lado, (nodo, pts) in pj.manos_modelo().items():
+            for lado, (nodo, pts) in pj.manos_de(vista).items():
                 if any(_dentro(mat_pt(mundo[nodo], p), caja) for p in pts):
                     n_, t_, l_ = res.mano
                     res.mano = (n_ + 1, t_ if n_ else t, l_ or lado)
@@ -881,7 +1015,7 @@ def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
         # (c) codos y rodillas: el pliegue no puede ser mas «al reves» que el del propio dibujo (el arte
         # puede traer un pie o una mano ladeados) por mas de la tolerancia
         peor, quien = 0.0, ""
-        for nombre, nu in bisagras(pj, mundo, clip, t).items():
+        for nombre, nu in bisagras(pj, mundo, clip, t, vista).items():
             malo = max(0.0, -nu - max(0.0, -reposo_nu[nombre])) - TOLERANCIA_CODO
             if malo > peor:
                 peor, quien = malo, nombre
@@ -889,7 +1023,7 @@ def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
         # (d) suelo (Algoritm flota: no se mide)
         if not es_guia:
             bajo = -1e9
-            for capa in pj.capas:
+            for capa in capas:
                 nombre = capa.nodo.nombre
                 if nombre.startswith("Pierna") or nombre.startswith("Antepierna"):
                     m = mundo[capa.nodo.ruta]
@@ -932,9 +1066,13 @@ def fila(pid, clip, r):
     choque = "" if r.choque is None else " | choque y=%.0f @%.2fs (manos a %.0f px; limite y=%.0f) %s" % (
         r.choque[0], r.choque[1], r.choque[2], r.choque[3], "" if ok_h else "FALLA: bajo la cintura")
     mano = "libre" if ok_m else "%d cuadros @%.2fs %s" % (r.mano[0], r.mano[1], r.mano[2])
-    return ok, ("%-14s %-10s %-8s brazo %5.1f%% @%.2fs %-5s | humero %5.1f%% @%.2fs %-5s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s | ojos tapados: los dos %4.1f%% (un ojo hasta %4.1f%%) %s | giro max %4.0f deg/s %s | torso sobre la cara %4.1f%% %s%s" % (
-        pid, clip.accion, "ok" if ok else "FALLA", r.brazo[0], r.brazo[1], r.brazo[2], r.humero[0], r.humero[1], r.humero[2], r.cara[0], r.cara[1],
-        r.codo[0], r.codo[1], r.codo[2], r.suelo[0] if r.suelo[0] > -900 else 0.0, r.suelo[1], mano, r.ojos[0], r.ojo_peor, "" if ok_o else "FALLA", r.vel[0], "" if ok_v else "FALLA", r.torso[0], "" if ok_t else "FALLA", choque))
+    # INC-134: de perfil hay UN ojo (no hay «los dos a la vez» que medir: la cara a la vista ya lo vigila) y el brazo lejano solo se informa
+    perfil = r.vista == "perfil"
+    ojos = "no se mide de perfil (un solo ojo)" if perfil else "los dos %4.1f%% (un ojo hasta %4.1f%%) %s" % (r.ojos[0], r.ojo_peor, "" if ok_o else "FALLA")
+    lejano = "" if r.lejano is None else " | brazo lejano %5.1f%% @%.2fs (solo se informa: va tras el torso)" % (r.lejano[0], r.lejano[1])
+    return ok, ("%-14s %-10s %-8s %-6s brazo %5.1f%% @%.2fs %-5s | humero %5.1f%% @%.2fs %-5s%s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s | ojos tapados: %s | giro max %4.0f deg/s %s | torso sobre la cara %4.1f%% %s%s" % (
+        pid, clip.accion, "ok" if ok else "FALLA", r.vista, r.brazo[0], r.brazo[1], r.brazo[2], r.humero[0], r.humero[1], r.humero[2], lejano, r.cara[0], r.cara[1],
+        r.codo[0], r.codo[1], r.codo[2], r.suelo[0] if r.suelo[0] > -900 else 0.0, r.suelo[1], mano, ojos, r.vel[0], "" if ok_v else "FALLA", r.torso[0], "" if ok_t else "FALLA", choque))
 
 
 # --------------------------------------------------------------------------- hojas y GIF
@@ -955,7 +1093,7 @@ def tira(pj, clip, n, escala=0.5, tiempos=None):
     for i, c in enumerate(celdas):
         hoja.paste(c, (i * w, 0))
         d = ImageDraw.Draw(hoja)
-        d.text((i * w + 4, 2), "%s t=%.2fs" % (clip.accion, ts[i]), fill=(60, 60, 60, 255))
+        d.text((i * w + 4, 2), "%s%s t=%.2fs" % (clip.accion, " (perfil)" if pj.vista_de(clip.accion) is pj.perfil else "", ts[i]), fill=(60, 60, 60, 255))
     return hoja
 
 
@@ -985,7 +1123,7 @@ def hoja_todos(pj, clips, ruta, escala=0.2, columnas_clip=3):
         gx = (i % columnas_clip) * w * 3
         gy = (i // columnas_clip) * (h + 16)
         d.rectangle([gx, gy, gx + w * 3, gy + 14], fill=(255, 255, 255, 255))
-        d.text((gx + 4, gy + 1), "%s (%.2fs)" % (c.accion, c.duracion), fill=(20, 20, 20, 255))
+        d.text((gx + 4, gy + 1), "%s%s (%.2fs)" % (c.accion, " (perfil)" if pj.vista_de(c.accion) is pj.perfil else "", c.duracion), fill=(20, 20, 20, 255))
         for j, im in enumerate(fl):
             hoja.paste(im, (gx + j * w, gy + 16))
         d.line([gx, gy, gx, gy + h + 16], fill=(150, 150, 150, 255))
@@ -1327,6 +1465,26 @@ def autoprueba(rig):
         ok = frac < 0.6
         malos += 0 if ok else 1
         print("%-40s %.3f %%  %s" % (pid, frac, "bien" if ok else "LAS PIEZAS NO SUMAN EL _REPOSO: corre preparar_algoritm.py --reposo"))
+    # INC-134: el motor muestra UN cuerpo por accion (CharacterRig.ShowView, ActionView) y la prueba dibuja y mide ese. De frente no hay una capa de Lienzo/Perfil; de
+    # perfil no hay una de Lienzo/Cuerpo; la sombra, que cuelga de Lienzo, esta en los dos; y Algoritm, sin perfil, se ve de frente en toda accion
+    for pid_ in ("papa", "mama", "nina", "nino", "algoritm_fuego"):
+        pj_ = nino if pid_ == "nino" else Personaje(pid_, rig)
+        frente_, perfil_ = [c.nodo.ruta for c in pj_.orden_de("Idle")[0]], [c.nodo.ruta for c in pj_.orden_de("Walk")[0]]
+        hay = lambda rutas, cuerpo: any(r.startswith(cuerpo + "/") for r in rutas)
+        if pj_.guia:
+            ok = pj_.perfil is None and perfil_ == frente_ and not hay(perfil_, P.PF)
+        else:
+            ok = (pj_.perfil is not None and hay(frente_, C) and not hay(frente_, P.PF) and hay(perfil_, P.PF) and not hay(perfil_, C)
+                  and "Lienzo/Sombra" in frente_ and "Lienzo/Sombra" in perfil_
+                  and all(pj_.vista_de(a_) is pj_.perfil for a_ in P.ACCIONES_PERFIL) and all(pj_.vista_de(a_) is pj_.frente for a_ in ("Idle", "Talk", "Strike", "Wave")))
+        malos += 0 if ok else 1
+        print("%-40s %-9s %s" % ("INC-134, un cuerpo por accion: " + pid_, "vista", "bien" if ok else "FALLA (se dibujan los dos cuerpos o el equivocado)"))
+    sin_arte = Personaje("nino", rig)   # el torso de perfil sin sprite (el arte de perfil aun no llego): toda accion es de frente, como HasProfile en el motor
+    sin_arte.arbol[P.PT + "/Torso"].imagen = dict(sin_arte.arbol[P.PT + "/Torso"].imagen, encendida=False, guid=None)
+    sin_arte._dibujables()
+    ok = sin_arte.perfil is None and all(sin_arte.vista_de(a_) is sin_arte.frente for a_ in P.ACCIONES_PERFIL)
+    malos += 0 if ok else 1
+    print("%-40s %-9s %s" % ("INC-134, sin sprite en el torso de perfil", "vista", "bien (toda accion de frente)" if ok else "FALLA (usa un perfil sin dibujo)"))
     # (j) el humero que asoma del codo: el del Nino (termina en un extremo redondo con contorno que cabe en el casquete) no, y el mismo Nino con el
     # antebrazo subido 40 px a lo largo del brazo (el humero se pasa del casquete, como el de Papa antes de codo.py) si
     tabla = copy.deepcopy(P.personaje_rig(rig, "nino"))
@@ -1350,6 +1508,34 @@ def autoprueba(rig):
         detecta = not ok
         print("%-40s %-9s %s" % (nombre, medida, "detectada" if detecta else "NO SE DETECTA"))
         malos += 0 if detecta else 1
+    # 4b. INC-134: las mismas medidas con el cuerpo de perfil, en una accion de perfil (Walk): lo que se mide es Lienzo/Perfil, con sus nodos
+    print("%-40s %-9s %s" % ("pose mala de perfil (Walk)", "medida", "resultado"))
+    falla_la_medida = {"codo": lambda r_: r_.codo[0] > 1e-9, "suelo": lambda r_: r_.suelo[0] > TOLERANCIA_SUELO, "cara": lambda r_: r_.cara[0] < UMBRAL_CARA * 100,
+                       "mano": lambda r_: r_.mano[0] > 0, "giro": lambda r_: r_.vel[0] > VELOCIDAD_MAX}   # que falle LA medida, no cualquiera
+    for nombre, vals, medida in (
+            ("perfil: rodilla hacia delante", {(P.PKC, R): 30.0}, "codo"),
+            ("perfil: codo hacia atras", {(P.PEC, R): -30.0}, "codo"),
+            ("perfil: pie bajo el suelo", {(P.PLC, K.POSY): -30.0}, "suelo"),
+            ("perfil: brazo cercano delante de la cara", {(P.PBC, R): 140.0, (P.PEC, R): 0.0}, "cara"),
+            ("perfil: mano en la cara", {(P.PBC, R): 140.0, (P.PEC, R): 0.0}, "mano"),
+            ("perfil: salto de rama del codo", {(P.PEC, R): 150.0}, "giro")):
+        pose_ = _clip_pose(vals)
+        pose_.accion = "Walk"
+        if medida == "giro":   # el codo da 150 grados en un cuadro
+            pose_ = Clip({"archivo": "x", "accion": "Walk", "duracion": 1.0, "bucle": True,
+                          "curvas": [{"ruta": P.PEC, "propiedad": K.ROT, "claves": [[0.0, 0.0], [1.0 / 30.0, 150.0], [1.0, 150.0]]}]})
+        r = prueba_clip(nino, pose_, tiempos=[0.0, 1.0 / 30.0] if medida == "giro" else [0.0])
+        ok, _ = fila("nino", pose_, r)
+        detecta = r.vista == "perfil" and not ok and falla_la_medida[medida](r)
+        print("%-40s %-9s %s" % (nombre, medida, "detectada" if detecta else "NO SE DETECTA"))
+        malos += 0 if detecta else 1
+    # y lo que no se mide de perfil se dice: un solo ojo (no hay «los dos a la vez») y el brazo lejano, que va tras el torso, solo se informa (no falla un reposo)
+    reposo_perfil = Clip({"archivo": "x", "accion": "Walk", "duracion": 1.0, "bucle": True, "curvas": []})
+    r = prueba_clip(nino, reposo_perfil, tiempos=[0.0])
+    ok, linea = fila("nino", reposo_perfil, r)
+    ok = ok and r.lejano is not None and r.lejano[0] < UMBRAL_BRAZO * 100 and "no se mide de perfil" in linea
+    malos += 0 if ok else 1
+    print("%-40s %-9s %s" % ("perfil en reposo: el brazo lejano solo se informa", "lejano", "bien (brazo lejano %.0f %% a la vista, sin fallar)" % r.lejano[0] if ok else "FALLA"))
     # 5b. los gestos junto a la cabeza (Santiago, 06/10/2026: «acepto que cubra el rostro»): la mano en la sien no falla en un gesto de
     # EXCEPCIONES_CARA_TAPADA y si en cualquier otro; y nunca se tapan los dos ojos a la vez, ni siquiera en un gesto que deja tapar la cara
     def manos_a(objetivos):
@@ -1364,12 +1550,12 @@ def autoprueba(rig):
         b[lado_].permite_tapar_cara(True)
     cara_ = _clip_pose(manos_a({"Izq": (500, 390), "Der": (525, 390)}))
     resultados = {}
-    for accion_ in ("Hammer", "Walk"):
+    for accion_ in ("Hammer", "Talk"):   # «Talk», una accion de frente sin excepcion (Walk es de perfil desde INC-134: otro cuerpo, otras medidas)
         cara_.accion = accion_
         resultados[accion_] = fila("nino", cara_, prueba_clip(nino, cara_, tiempos=[0.0]))[0]
-    ok = resultados["Hammer"] and not resultados["Walk"]
+    ok = resultados["Hammer"] and not resultados["Talk"]
     malos += 0 if ok else 1
-    print("%-40s %-9s %s" % ("manos a la cara: Hammer lo deja, Walk no", "cara", "bien" if ok else "FALLA (la lista de excepciones no distingue los gestos)"))
+    print("%-40s %-9s %s" % ("manos a la cara: Hammer lo deja, Talk no", "cara", "bien" if ok else "FALLA (la lista de excepciones no distingue los gestos)"))
     ojos_ = _clip_pose(manos_a({"Izq": (470, 385), "Der": (555, 385)}))
     ojos_.accion = "Hammer"
     r = prueba_clip(nino, ojos_, tiempos=[0.0])
@@ -1518,6 +1704,10 @@ def main(argv=None):
     delante, hallada = P.acciones_brazos_delante()
     print("brazos DELANTE del torso en: %s (%s)" % (", ".join(sorted(delante)),
           "leido de CharacterRig.armsInFrontActions" if hallada else "AVISO: CharacterRig.cs no trae la lista; lista por defecto"))
+    perfil, hallada_perfil = P.acciones_de_perfil()
+    print("cuerpo de PERFIL (Lienzo/Perfil, el de frente se apaga) en: %s (%s)" % (", ".join(sorted(perfil)),
+          "leido de ActionView.cs" if hallada_perfil else "AVISO: ActionView.cs no trae la tabla; lista por defecto"))
+    print("  de perfil: brazo cercano exigido, el lejano solo se informa (va tras el torso); codo y rodilla por su rotacion; los dos ojos a la vez, no se mide (un solo ojo)")
     print("excepciones de «giro maximo %.0f grados por segundo»:" % VELOCIDAD_MAX)
     for (p_, c_), motivo in EXCEPCIONES_VEL.items():
         print("  %-8s %-8s %s" % (p_, c_, motivo))
