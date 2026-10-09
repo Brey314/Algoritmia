@@ -794,6 +794,7 @@ MonoBehaviour:
   animator: {fileID: 8752577940611133405}
   stage: {fileID: 5168794462078316552}
   armsInFrontActions: 05000000
+  idlePhase: 0
 --- !u!114 &770917298620880128
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -809,6 +810,9 @@ MonoBehaviour:
   eyes: {fileID: 2145279575635149620}
   mouth: {fileID: 6134728522037805741}
   faceSet: {fileID: 0}
+  profileEyes: {fileID: 0}
+  profileMouth: {fileID: 0}
+  profileFaceSet: {fileID: 0}
 --- !u!1 &5787053869496596884
 GameObject:
   m_ObjectHideFlags: 0
