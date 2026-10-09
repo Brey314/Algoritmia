@@ -145,8 +145,17 @@ namespace Game.Levels.Wheel
         [SerializeField] private Color softCharcoalColor = new Color(0.42f, 0.32f, 0.28f);
 
         [SerializeField]
-        [Tooltip("Contorno alrededor del entorno, como el marco del panel de diálogo (Dirección de arte §10.2): #C4A882.")]
+        [Tooltip("Color del marco del entorno: el mismo #C4A882 del contorno de la tarjeta de la secuencia (Dirección de arte §10.2).")]
         private Color environmentBorderColor = new Color(0.769f, 0.659f, 0.510f);
+
+        [SerializeField]
+        [Tooltip("Marco del entorno: una Image con ui_boton en nueve partes y sin centro, hermana del entorno y detrás de él. FitEnvironment le da tamaño, grosor y color. Vacío = el entorno sin marco.")]
+        private Image environmentFrame;
+
+        [SerializeField]
+        [Min(0f)]
+        [Tooltip("Grosor del marco del entorno, en píxeles del lienzo: no se escala con la ilustración. Es el mismo de la tarjeta de la secuencia —lo que separa a Panel_Secuencia de su Fondo—; si uno cambia, hay que cambiar el otro (lo vigila MazeScene_RF30_ElEntornoYLaTarjetaLlevanElMismoMarcoRedondeado).")]
+        private float environmentBorderWidth = 8f;
 
         [SerializeField]
         [Tooltip("Alto de un bloque desplegado (mockup: 112) y comprimido.")]
@@ -255,6 +264,7 @@ namespace Game.Levels.Wheel
         internal IReadOnlyList<RectTransform> Rows => _rows;
         internal RectTransform Cart => cart;
         internal Image Environment => environment;
+        internal Image EnvironmentFrame => environmentFrame;
         internal RectTransform SequenceList => sequenceList;
         internal RectTransform SequenceViewport => sequenceViewport;
         internal RectTransform DropZone => dropZone;
@@ -407,6 +417,11 @@ namespace Game.Levels.Wheel
         /// nativo y <c>localScale</c>, igual que <see cref="IllustrationFraming.Apply"/> pero sin
         /// recortar. Lo que cuelga de ella se mide en fracciones de la imagen.
         /// </summary>
+        /// <remarks>
+        /// **El marco la rodea por fuera**, así que el panel se descuenta el grosor del marco a cada
+        /// lado antes de calcular la escala: el marco entero queda dentro del panel y en pantalla, y
+        /// no se corta en las esquinas contra el borde de la pantalla ni contra la tarjeta.
+        /// </remarks>
         private void FitEnvironment()
         {
             environment.enabled = environment.sprite != null;
@@ -423,32 +438,61 @@ namespace Game.Levels.Wheel
             }
 
             // Lo que la ilustración no llena —arriba y abajo, porque cabe entera sin recortar— se
-            // pinta del color de interfaz del asset (mismo marfil que los paneles, RF-30).
+            // pinta del color de fondo del asset: el mismo de Fondo_Escena, que va detrás de la
+            // tarjeta de la secuencia, así que pantalla y panel son un solo fondo (RF-30).
             var backdrop = environment.rectTransform.parent.GetComponent<Image>();
             if (backdrop != null)
             {
                 backdrop.color = layout.BackdropColor;
             }
 
-            // El entorno lleva el mismo marco que el panel de diálogo (Dirección de arte §10.2).
-            var outline = environment.GetComponent<Outline>();
-            if (outline == null)
-            {
-                outline = environment.gameObject.AddComponent<Outline>();
-            }
-
-            outline.effectColor = environmentBorderColor;
-            outline.effectDistance = new Vector2(4f, -4f);
-            outline.enabled = true;
-
             var image = environment.sprite != null ? environment.sprite.rect.size : new Vector2(16f, 9f);
-            var viewport = ((RectTransform)environment.rectTransform.parent).rect.size;
+            var viewport = ((RectTransform)environment.rectTransform.parent).rect.size - Vector2.one * (2f * environmentBorderWidth);
             var scale = Mathf.Min(viewport.x / image.x, viewport.y / image.y);
             var rect = environment.rectTransform;
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0.5f, 0.5f);
             rect.sizeDelta = image;
             rect.localScale = new Vector3(scale, scale, 1f);
             rect.anchoredPosition = Vector2.zero;
+
+            FitFrame(image * scale);
+        }
+
+        /// <summary>
+        /// El marco del entorno: el mismo contorno de la tarjeta de la secuencia —<c>ui_boton</c> en
+        /// nueve partes, #C4A882, <see cref="environmentBorderWidth"/> píxeles—, pero **hermano** del
+        /// entorno y no un <c>Outline</c> suyo.
+        /// </summary>
+        /// <remarks>
+        /// **Por qué no un <c>Outline</c>:** el entorno vive escalado por <c>localScale</c>, y el
+        /// <c>Outline</c> se escala con él (4 px de contorno miden 4 × escala en pantalla, y la escala
+        /// cambia con la resolución), y sus esquinas son las del rectángulo de la ilustración.
+        /// **Por qué sin centro:** con <c>fillCenter</c> apagado el marco es un anillo de grosor
+        /// fijo cuyo hueco cuadrado es exactamente la ilustración visible; el radio de la esquina
+        /// exterior sale del mismo grosor (el sprite trae 26 px de borde y 24 de radio, así que a 8 px
+        /// el radio es ~7), y por eso el anillo mide 8 px también en la diagonal: con un radio mayor
+        /// el arco se comería el anillo en las esquinas contra el hueco cuadrado.
+        /// </remarks>
+        private void FitFrame(Vector2 visible)
+        {
+            if (environmentFrame == null)
+            {
+                return;
+            }
+
+            environmentFrame.enabled = environment.sprite != null;
+            environmentFrame.color = environmentBorderColor;
+            if (environmentFrame.sprite != null && environmentBorderWidth > 0f)
+            {
+                // Grosor en pantalla = borde del sprite / (px por unidad × multiplicador).
+                environmentFrame.pixelsPerUnitMultiplier = environmentFrame.sprite.border.x
+                                                           / (environmentBorderWidth * environmentFrame.pixelsPerUnit);
+            }
+
+            var frame = environmentFrame.rectTransform;
+            frame.anchorMin = frame.anchorMax = frame.pivot = new Vector2(0.5f, 0.5f);
+            frame.anchoredPosition = Vector2.zero;
+            frame.sizeDelta = visible + Vector2.one * (2f * environmentBorderWidth);
         }
 
         /// <summary>Centro de una casilla en fracciones de la ilustración: la matriz trazada sobre el seto.</summary>

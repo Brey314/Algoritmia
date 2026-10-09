@@ -103,7 +103,7 @@ namespace Game.Levels.Wheel
         public float Saturation { get; private set; } = 1f;
 
         [field: SerializeField]
-        [field: Tooltip("Color del panel que rodea al entorno cuando la ilustración no lo llena: el marfil de interfaz (#F7EFE2).")]
+        [field: Tooltip("Color del fondo de la pantalla: el panel que rodea al entorno cuando la ilustración no lo llena. Es el ámbar de atención (#E8A33D) y es el mismo de «Fondo_Escena», el fondo que va detrás de la tarjeta de la secuencia: pantalla y panel son un solo fondo. Si se cambia aquí, hay que cambiar también ese (lo vigila MazeScene_RF30_ElFondoDeLaEscenaYElDelAssetSonElMismoAmbar).")]
         public Color BackdropColor { get; private set; } = Color.black;
 
         [field: SerializeField]
