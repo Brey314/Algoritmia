@@ -28,6 +28,7 @@ namespace Game.Scaffolding.Tests
         [TestCase(ActorAction.Appear, FacialEmotion.Neutral)]
         [TestCase(ActorAction.Vanish, FacialEmotion.Neutral)]
         [TestCase(ActorAction.Spin, FacialEmotion.Neutral)]
+        [TestCase(ActorAction.Wave, FacialEmotion.Happy)]
         public void FacialEmotion_DA73_CadaAccionTieneSuEmocionPorDefecto(ActorAction accion, FacialEmotion esperada)
         {
             Assert.That(ActionEmotion.For(accion), Is.EqualTo(esperada));

@@ -77,6 +77,12 @@ namespace Game.Scaffolding
         Vanish = 20,
 
         /// <summary>Gira sobre sí mismo como un trompo (Algoritm, §1.4.1).</summary>
-        Spin = 21
+        Spin = 21,
+
+        /// <summary>
+        /// Saluda: el brazo derecho en alto y la mano que se mece, en bucle con una pausa de reposo dentro
+        /// (Algoritm en los créditos, D12 del 08/10/2026). Solo el guía lo tiene, como <see cref="Spin"/>.
+        /// </summary>
+        Wave = 22
     }
 }

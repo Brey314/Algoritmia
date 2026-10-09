@@ -335,20 +335,27 @@ def personaje_familia(pid, prefab, carpeta):
 
 # ----------------------------------------------------------------------------- Algoritm
 
-# Medidas «a ojo» sobre char_algoritm_n1_fuego_reposo.png (768 px, que el Image con
-# preserveAspect pinta a 1024). La rueda y la gota son el mismo dibujo recoloreado (forms.py), así
-# que la geometría es una sola. Las posiciones son píxeles del lienzo de 1024; el script las
-# convierte en fracciones del rect de Cuerpo, que en los prefabs es el lienzo entero.
+# Medidas sobre el ALFA de char_algoritm_n1_fuego_reposo.png (768 px, que el Image con preserveAspect pinta a 1024; maqueta.piezas_guia y su
+# bloque de arriba explican como se corta). La rueda y la gota son el mismo dibujo recoloreado (forms.py): la geometria es una sola. Las posiciones
+# son pixeles del lienzo de 1024; el script las convierte en fracciones del rect de Cuerpo, que en los prefabs es el lienzo entero.
+# 08/10/2026 (D13, Santiago: «sus brazos se moveran en todas sus escenas»): Algoritm se parte en sus nueve piezas, asi que estas medidas ya no son un
+# «a ojo» para una sola Image. Los palos miden 27 px (de 26 a 27,5) y cada articulacion cae sobre el EJE de su palo; antes el hombro estaba 17 px
+# por encima del eje (en la esquina del palo con el vientre), y un brazo que girara desde ahi se habria despegado del cuerpo.
+#   hombro: donde el eje del palo sale del vientre · codo: a mitad de camino entre el hombro y la muneca (donde empieza la mano) ·
+#   cadera: el eje del palo, en el borde de abajo del vientre · rodilla: a mitad de la pierna, sobre el eje.
+# Los rects de las piezas son lo que ocupa cada una (con el corte de maqueta.piezas_guia), en multiplos de 4: a 768 px caen en pixeles enteros del
+# sprite y las piezas se cortan sin reescalar. Con el arte final se miden sobre el alfa de sus PNG, como en la familia.
 ALG = {
-    "hombro_izq": (292, 612), "hombro_der": (735, 612),
-    "muneca_izq": (165, 765), "muneca_der": (860, 757),
-    "mano_izq": (10, 598, 300, 912),   # rect del brazo entero (hombro a punta de los dedos)
-    "mano_der": (730, 598, 1014, 912),
-    "cadera_izq": (455, 800), "cadera_der": (570, 800),
-    "pierna_izq": (390, 795, 480, 1002),
-    "pierna_der": (550, 795, 640, 1002),
-    "cuerpo": (250, 20, 780, 812),     # la llama y el vientre de colores, sin extremidades
-    "pivote_tronco": (512, 700),       # a la altura del vientre: de ahí gira el gesto de hablar
+    "hombro_izq": (287, 629), "hombro_der": (736, 630),
+    "codo_izq": (224, 693), "codo_der": (800, 693),
+    "cadera_izq": (455, 800), "cadera_der": (568, 800),
+    "rodilla_izq": (455, 901), "rodilla_der": (568, 901),
+    "brazo_izq": (208, 612, 304, 708), "brazo_der": (720, 612, 816, 708),                   # el palo del hombro al codo, con su rotula
+    "antebrazo_izq": (8, 684, 236, 908), "antebrazo_der": (788, 684, 1016, 908),            # el palo del codo a la muneca y la mano
+    "muslo_izq": (440, 784, 472, 916), "muslo_der": (552, 784, 584, 916),                   # de la cadera a la rodilla, con las dos rotulas
+    "antepierna_izq": (388, 900, 472, 1004), "antepierna_der": (552, 900, 636, 1004),       # de la rodilla al pie
+    "cuerpo": (248, 20, 776, 812),     # la llama y el vientre de colores, sin extremidades
+    "pivote_tronco": (512, 700),       # a la altura del vientre: de ahi gira el gesto de hablar
     "ojos": (370, 380, 655, 505),
     "boca": (410, 505, 610, 595),
 }
@@ -381,11 +388,10 @@ def personaje_guia(forma, prefab):
     nodos = []
 
     for lado, sufijo in (("Izq", "izq"), ("Der", "der")):
-        cadera = pt(ALG["cadera_" + sufijo])
         nodos.append({
             "nombre": "Pierna" + lado, "tipo": "imagen", "padre": C,
-            "punto": punto(*cadera), "imagen": "Pierna" + lado,
-            "sprite": "%s_parte_pierna_%s" % (pref, sufijo), "rect": caja_de(rc(ALG["pierna_" + sufijo])),
+            "punto": punto(*pt(ALG["cadera_" + sufijo])), "imagen": "Pierna" + lado,
+            "sprite": "%s_parte_pierna_%s" % (pref, sufijo), "rect": caja_de(rc(ALG["muslo_" + sufijo])),
         })
 
     pivote = pt(ALG["pivote_tronco"])
@@ -395,11 +401,10 @@ def personaje_guia(forma, prefab):
     })
 
     for lado, sufijo in (("Izq", "izq"), ("Der", "der")):
-        hombro = pt(ALG["hombro_" + sufijo])
         nodos.append({
             "nombre": "Brazo" + lado, "tipo": "imagen", "padre": T,
-            "punto": punto(*hombro), "imagen": "Brazo" + lado,
-            "sprite": "%s_parte_brazo_%s" % (pref, sufijo), "rect": caja_de(rc(ALG["mano_" + sufijo])),
+            "punto": punto(*pt(ALG["hombro_" + sufijo])), "imagen": "Brazo" + lado,
+            "sprite": "%s_parte_brazo_%s" % (pref, sufijo), "rect": caja_de(rc(ALG["brazo_" + sufijo])),
         })
 
     nodos.append({
@@ -414,30 +419,19 @@ def personaje_guia(forma, prefab):
             "sprite": sprite, "rect": caja_de(r),
         })
 
-    # Codos: en el punto medio entre el hombro y la muñeca (el brazo es un palo recto); el
-    # antebrazo es el cuadrante distal, entre el codo y la esquina lejana del rect (la mano).
+    # Codos y rodillas: sobre el eje de su palo (ALG); el antebrazo y la antepierna son lo que queda mas alla.
     for lado, sufijo in (("Izq", "izq"), ("Der", "der")):
-        hombro, muneca = pt(ALG["hombro_" + sufijo]), pt(ALG["muneca_" + sufijo])
-        r = rc(ALG["mano_" + sufijo])
-        ex, ey = (hombro[0] + muneca[0]) / 2, (hombro[1] + muneca[1]) / 2
-        esquina = max(((r[0], r[1]), (r[2], r[1]), (r[0], r[3]), (r[2], r[3])),
-                      key=lambda c: (c[0] - hombro[0]) ** 2 + (c[1] - hombro[1]) ** 2)
-        distal = [min(ex, esquina[0]), min(ey, esquina[1]), max(ex, esquina[0]), max(ey, esquina[1])]
         nodos.append({
             "nombre": "Codo" + lado, "tipo": "articulacion", "padre": T + "/Brazo" + lado,
-            "punto": punto(ex, ey), "imagen": "Antebrazo" + lado,
-            "sprite": "%s_parte_antebrazo_%s" % (pref, sufijo), "rect": caja_de(distal),
+            "punto": punto(*pt(ALG["codo_" + sufijo])), "imagen": "Antebrazo" + lado,
+            "sprite": "%s_parte_antebrazo_%s" % (pref, sufijo), "rect": caja_de(rc(ALG["antebrazo_" + sufijo])),
         })
 
-    # Rodillas: mismo criterio que la familia (punto medio entre cadera y centro de la base).
     for lado, sufijo in (("Izq", "izq"), ("Der", "der")):
-        cadera = pt(ALG["cadera_" + sufijo])
-        r = rc(ALG["pierna_" + sufijo])
-        kx, ky = (cadera[0] + (r[0] + r[2]) / 2) / 2, (cadera[1] + r[3]) / 2
         nodos.append({
             "nombre": "Rodilla" + lado, "tipo": "articulacion", "padre": C + "/Pierna" + lado,
-            "punto": punto(kx, ky), "imagen": "Antepierna" + lado,
-            "sprite": "%s_parte_antepierna_%s" % (pref, sufijo), "rect": caja_de((r[0], ky, r[2], r[3])),
+            "punto": punto(*pt(ALG["rodilla_" + sufijo])), "imagen": "Antepierna" + lado,
+            "sprite": "%s_parte_antepierna_%s" % (pref, sufijo), "rect": caja_de(rc(ALG["antepierna_" + sufijo])),
         })
 
     return {

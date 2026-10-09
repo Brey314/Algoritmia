@@ -49,7 +49,7 @@
 //             Idempotente: solo guarda un prefab si cambia el orden o se crea o se mueve algo, y registra
 //             antes → después. Un personaje sin «orden_tronco» no se toca y se anota.
 //   "clips"   reescribe EN SITIO las curvas de los .anim que ya existen con lo que diga
-//             clips_personajes.json: los 21 clips de cada miembro de la familia y los 9 de Algoritm.
+//             clips_personajes.json: los 21 clips de cada miembro de la familia y los 10 de Algoritm.
 //             No crea ningún clip (si falta, lo anota) y no calcula nada: ver «DÓNDE VIVE LA
 //             COREOGRAFÍA». Avisa de rutas que el prefab no tiene y de claves fuera de la duración.
 //   "todo"    nodos → sprites → orden → clips.      "estado"  solo informa, no escribe nada

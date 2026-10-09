@@ -12,10 +12,11 @@ namespace Game.Scaffolding
             switch (action)
             {
                 // Celebrar y abrazar son alegres. Animar también: el ánimo viene tras un intento sin
-                // éxito, y la cara que lo acompaña es positiva y nunca abatida (CP-02).
+                // éxito, y la cara que lo acompaña es positiva y nunca abatida (CP-02). Y saludar.
                 case ActorAction.Celebrate:
                 case ActorAction.Hug:
                 case ActorAction.Encourage:
+                case ActorAction.Wave:
                     return FacialEmotion.Happy;
 
                 case ActorAction.Surprise:
