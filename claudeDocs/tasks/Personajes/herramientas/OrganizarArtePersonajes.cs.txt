@@ -10,7 +10,8 @@
 //       Frontal/       las partes del cuerpo      char_<x>_parte_*.png
 //       Expresiones/   ojos, bocas, cara base     char_<x>_ojos_*.png, char_<x>_boca_*.png,
 //                      y el set de la cara        char_<x>_cara_base.png, char_<x>_cara.asset
-//       Perfil/        vacía por ahora (lleva un .gitkeep para que git la conserve)
+//       Perfil/        (INC-134) todo el arte de perfil: char_<x>_perfil_*.png (partes, ojos, bocas y cara base
+//                      de perfil) y el set char_<x>_perfil_cara.asset; lleva un .gitkeep para que git conserve la carpeta vacía
 //       Animations/, los retratos (char_*_retrato_*), char_mama_cenital.png y los
 //       char_algoritm_*_reposo.png NO se tocan: se quedan en la raíz.
 //
@@ -22,6 +23,8 @@
 //
 // QUÉ MUEVE. Solo los archivos que están DIRECTAMENTE en la raíz de cada <Carpeta> (no entra en
 // Animations/ ni en ninguna subcarpeta), por patrón de nombre:
+//   *_perfil_*                                         →  Perfil/      (INC-134; MANDA sobre las demás: char_<x>_perfil_ojos_neutra
+//                                                                       contiene «_ojos_» y char_<x>_perfil_cara_base, «_cara_base»)
 //   *_parte_*                                          →  Frontal/
 //   *_ojos_*   *_boca_*   *_cara_base*   *_cara.asset  →  Expresiones/
 // Todo lo demás se queda donde está y el log lo lista.
@@ -75,12 +78,14 @@ public static class ClaudeOrganizarArte
 
     /// <summary>
     /// La subcarpeta que le toca a un archivo por su nombre (con extensión), o null si se queda en la
-    /// raíz. Las partes del cuerpo van a Frontal; los ojos, las bocas, la cara base y el set de la cara
-    /// (_cara.asset) a Expresiones. Los retratos, la cenital de Mamá y los reposos de Algoritm no casan
+    /// raíz. TODO lo de perfil (char_&lt;x&gt;_perfil_*, también su _perfil_cara.asset) va a Perfil y manda sobre las
+    /// demás reglas (INC-134); las partes del cuerpo de frente van a Frontal; los ojos, las bocas, la cara base y el
+    /// set de la cara (_cara.asset) de frente a Expresiones. Los retratos, la cenital de Mamá y los reposos de Algoritm no casan
     /// con ningún patrón. Es la misma regla de nombres de ExpectedSubfolder en BuildRigsFinal.
     /// </summary>
     private static string SubfolderFor(string fileName)
     {
+        if (fileName.Contains("_perfil_")) return Perfil;
         if (fileName.Contains("_parte_")) return Frontal;
         if (fileName.Contains("_ojos_") || fileName.Contains("_boca_") || fileName.Contains("_cara_base")
             || fileName.EndsWith("_cara.asset", StringComparison.Ordinal))

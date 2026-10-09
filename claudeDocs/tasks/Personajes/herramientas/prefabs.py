@@ -11,6 +11,11 @@
 #   - la Image de cada nodo (encendida o no, sprite o no, preservar aspecto, color).
 # Coordenadas del lienzo: 1024, origen ARRIBA a la izquierda, y hacia ABAJO, como cut.py y el JSON.
 #
+# PERFIL (INC-134, 09/10/2026). Las constantes PF, PT, PBL… son las rutas del cuerpo de perfil (Lienzo/Perfil, hermano de Cuerpo; HUESOS_PERFIL sus 12
+# articulaciones) y ACCIONES_PERFIL las acciones que se ven de perfil (la tabla de ActionView.cs, que acciones_de_perfil() lee del .cs). Este lector NO dibuja el
+# perfil (no hay arte ni nodos en los prefabs hasta que corra BuildRigsFinal «perfil»): pose_preview.py y la coreografia de frente no lo ven. Y _png_de resuelve
+# por NOMBRE con la regla de carpetas de los dos .cs.txt (subcarpeta_de): los char_<id>_perfil_* se buscan en Perfil/ y no chocan con los de frente.
+#
 # DOS FORMAS DE ANTEBRAZO EN EL PREFAB (INC-133, 06/10/2026), y el arbol que sale de leer_arbol es el mismo:
 #   - ANTERIOR (hasta 433603f~1, y Algoritm, que no lista antebrazos): Tronco/BrazoX/CodoX/AntebrazoX; sin ancla.
 #   - ACTUAL (la familia tras BuildRigsFinal «orden»): AntebrazoX es el ULTIMO hijo de Tronco (se dibuja delante del torso, de la cara y de las
@@ -50,6 +55,27 @@ LK = LL + "/RodillaIzq"
 RK = RL + "/RodillaDer"
 NK = T + "/Cuello"
 HD = NK + "/Cabeza"
+
+# INC-134 (09/10/2026): el cuerpo de PERFIL de la familia, un segundo cuerpo junto a Lienzo/Cuerpo que se enciende en las acciones de
+# ActionView (Walk, Run, Carry, Push, PickUp, Kneel, Blow). Todo cuelga de UN Tronco con el pivote en la cadera, y los hijos de Tronco van en
+# este orden de dibujo (de atras adelante): BrazoLejano, PiernaLejana, Torso, PiernaCercana, Cuello, BrazoCercano. «Cercano» es el lado que
+# mira al espectador; el arte canonico mira a la DERECHA (el motor voltea el Lienzo para mirar a la izquierda). Papa, Mama, Nina y Nino; Algoritm no tiene.
+PF = "Lienzo/Perfil"
+PT = PF + "/Tronco"
+PBL = PT + "/BrazoLejano"
+PEL = PBL + "/CodoLejano"
+PBC = PT + "/BrazoCercano"
+PEC = PBC + "/CodoCercano"
+PLL = PT + "/PiernaLejana"
+PKL = PLL + "/RodillaLejana"
+PLC = PT + "/PiernaCercana"
+PKC = PLC + "/RodillaCercana"
+PNK = PT + "/Cuello"
+PHD = PNK + "/Cabeza"
+# las 12 articulaciones con rotacion de perfil (el espejo de las 12 de frente): cada clip de la familia lleva una curva en cada una
+HUESOS_PERFIL = [PF, PT, PBL, PBC, PEL, PEC, PLL, PLC, PKL, PKC, PNK, PHD]
+# las acciones que se ven de perfil: la MISMA tabla que ActionView.cs (Game.Scaffolding); si cambia una fila alli, cambia aqui
+ACCIONES_PERFIL = ("Walk", "Run", "Carry", "Push", "PickUp", "Kneel", "Blow")
 
 # id del JSON -> (prefab, carpeta de arte, guia)
 PERSONAJES = {
@@ -277,18 +303,48 @@ def _pon_en_el_arbol(nodos, n, ruta):
 PNG_EXTRA = {}
 
 
+def subcarpeta_de(nombre):
+    """
+    La subcarpeta de arte que le toca a un PNG por su NOMBRE: la misma regla que ExpectedSubfolder (BuildRigsFinal.cs.txt) y SubfolderFor
+    (OrganizarArtePersonajes.cs.txt). «_perfil_» MANDA sobre las demas (INC-134): char_<x>_perfil_ojos_neutra contiene «_ojos_», pero es
+    de Perfil/ y no de Expresiones/, y char_<x>_perfil_cara_base contiene «_cara_base». Las partes del cuerpo de frente (char_<x>_parte_*)
+    van a Frontal/ y los ojos, bocas y la cara base de frente a Expresiones/. None = ninguna (retratos, reposos de Algoritm: la raiz).
+    """
+    if "_perfil_" in nombre:
+        return "Perfil"
+    if "_parte_" in nombre:
+        return "Frontal"
+    if "_ojos_" in nombre or "_boca_" in nombre or "_cara_base" in nombre:
+        return "Expresiones"
+    return None
+
+
 def _png_de(carpeta, nombre):
     """
     Ruta del PNG «nombre» en la carpeta de arte del personaje o en sus subcarpetas (Frontal/, Expresiones/, Perfil/: el arte
-    se guarda por subcarpetas, y os.walk las recorre todas), o None. Si el PNG esta en PNG_EXTRA, el de ahi.
+    se guarda por subcarpetas), o None. Si el PNG esta en PNG_EXTRA, el de ahi. Si hay dos con el mismo nombre (uno olvidado en la raiz o
+    en la subcarpeta equivocada) gana el de la subcarpeta que le toca por su nombre (subcarpeta_de), luego el de la raiz, luego el primero
+    por orden alfabetico: un nombre de perfil se resuelve siempre en Perfil/ y uno de frente nunca en Perfil/ mientras exista fuera de ella.
+    Los nombres de perfil (char_<x>_perfil_*) y los de frente no se confunden: se busca el nombre ENTERO, y «_perfil_» los separa.
     """
     if nombre in PNG_EXTRA:
         return PNG_EXTRA[nombre]
     base = os.path.join(PERSONAJES_ARTE, carpeta)
+    esperada = subcarpeta_de(nombre)
+    candidatos = []
     for dentro, _, archivos in sorted(os.walk(base)):
         if nombre + ".png" in archivos:
-            return os.path.join(dentro, nombre + ".png")
-    return None
+            candidatos.append(os.path.join(dentro, nombre + ".png"))
+    if not candidatos:
+        return None
+
+    def rango(ruta):
+        carpeta_png = os.path.basename(os.path.dirname(ruta))
+        if esperada is not None and carpeta_png == esperada:
+            return 0
+        return 1 if os.path.normpath(os.path.dirname(ruta)) == os.path.normpath(base) else 2
+
+    return sorted(candidatos, key=lambda r: (rango(r), r))[0]
 
 
 def caja_contenido(png, rect):
@@ -476,6 +532,32 @@ def orden_con_brazos_delante(nombres):
     return resto[:i + 1] + mover + resto[i + 1:]
 
 
+ACTION_VIEW_CS = os.path.join(RAIZ, "Assets", "Game", "Scripts", "Runtime", "Scaffolding", "ActionView.cs")
+
+
+def lee_acciones_perfil(texto):
+    """
+    Las acciones de ActionView.cs (la tabla de INC-134: que accion se ve de perfil) que devuelven CharacterView.Profile: los «case ActorAction.X:» que
+    se apilan antes de «return CharacterView.Profile;». None si no encuentra ese return. Es el contrato con el motor: ACCIONES_PERFIL tiene que ser esta lista.
+    """
+    m = re.search(r"((?:\s*case\s+ActorAction\.\w+\s*:)+)\s*return\s+CharacterView\.Profile\s*;", texto)
+    if not m:
+        return None
+    return set(re.findall(r"ActorAction\.(\w+)", m.group(1)))
+
+
+def acciones_de_perfil(ruta=ACTION_VIEW_CS):
+    """(acciones, encontrada): las de ActionView.cs si el archivo existe y se lee; si no, ACCIONES_PERFIL (el contrato acordado) y encontrada = False."""
+    try:
+        with open(ruta, encoding="utf-8") as f:
+            acciones = lee_acciones_perfil(f.read())
+    except OSError:
+        acciones = None
+    if acciones is None:
+        return set(ACCIONES_PERFIL), False
+    return acciones, True
+
+
 def autoprueba_contrato():
     """
     Lo que la lectura de la lista tiene que cumplir, para las autopruebas de coreografia.py y pose_preview.py:
@@ -495,6 +577,77 @@ def autoprueba_contrato():
         real = None
     if real is not None and "armsInFrontActions" in real:
         casos.append(("CharacterRig.cs trae la lista y se lee", lee_acciones_delante(real) is not None))
+    # INC-134: la tabla de ActionView.cs. La lectura sobre un texto sintetico, y (si el archivo existe) que ACCIONES_PERFIL sea justo esa tabla
+    sintetico = "switch (action)\n{\n case ActorAction.Walk:\n case ActorAction.Kneel:\n return CharacterView.Profile;\n default:\n return CharacterView.Front;\n}"
+    casos.append(("ActionView: la lectura de la tabla", lee_acciones_perfil(sintetico) == {"Walk", "Kneel"}))
+    casos.append(("ActionView: sin tabla", lee_acciones_perfil("return CharacterView.Front;") is None))
+    acciones, hallada = acciones_de_perfil()
+    if hallada:
+        casos.append(("ActionView.cs coincide con ACCIONES_PERFIL", acciones == set(ACCIONES_PERFIL)))
+    casos += autoprueba_nombres()
+    casos += autoprueba_reglas_cs()
+    return casos
+
+
+def autoprueba_reglas_cs():
+    """
+    [(nombre, ok)]: los dos .cs.txt que reparten el arte por nombre (BuildRigsFinal: ExpectedSubfolder; OrganizarArtePersonajes: SubfolderFor) tienen la regla
+    de perfil ANTES que las demas (INC-134): sin ella char_<x>_perfil_ojos_neutra iria a Expresiones/ por contener «_ojos_». Es la misma regla que subcarpeta_de.
+    """
+    casos = []
+    for archivo, funcion in (("BuildRigsFinal.cs.txt", "ExpectedSubfolder"), ("OrganizarArtePersonajes.cs.txt", "SubfolderFor")):
+        try:
+            with open(os.path.join(AQUI, archivo), encoding="utf-8") as f:
+                texto = f.read()
+        except OSError:
+            continue
+        m = re.search(r"static string " + funcion + r"\([^)]*\)\s*\{(.*?)\n    \}", texto, re.S)
+        cuerpo = m.group(1) if m else ""
+        i, j = cuerpo.find('"_perfil_"'), min([k for k in (cuerpo.find('"_parte_"'), cuerpo.find('"_ojos_"')) if k >= 0] or [10 ** 9])
+        casos.append(("reglas: %s da prioridad a _perfil_" % funcion, m is not None and 0 <= i < j))
+    return casos
+
+
+def autoprueba_nombres():
+    """
+    [(nombre, ok)]: la regla de carpetas por nombre (subcarpeta_de) y _png_de sobre un arbol de arte SINTETICO en un directorio temporal (PERSONAJES_ARTE se
+    desvia mientras dura la prueba): lo de perfil se resuelve en Perfil/ aunque su nombre contenga «_ojos_», «_boca_» o «_cara_base» y no se confunde con
+    lo de frente; con una copia perdida fuera de su carpeta gana la que esta en la que le toca; lo que no existe es None.
+    """
+    import tempfile
+    global PERSONAJES_ARTE
+    casos = []
+    reglas = {"char_papa_perfil_ojos_neutra": "Perfil", "char_papa_perfil_boca_0": "Perfil", "char_papa_perfil_cara_base": "Perfil",
+              "char_papa_perfil_torso": "Perfil", "char_papa_perfil_antepierna_cercana": "Perfil",
+              "char_papa_parte_torso": "Frontal", "char_papa_ojos_neutra": "Expresiones", "char_papa_boca_a": "Expresiones", "char_papa_cara_base": "Expresiones",
+              "char_papa_retrato_neutra": None}
+    casos.append(("nombres: subcarpeta_de (perfil manda sobre ojos, boca y cara_base)", all(subcarpeta_de(n) == v for n, v in reglas.items())))
+    previo = PERSONAJES_ARTE
+    with tempfile.TemporaryDirectory() as tmp:
+        base = os.path.join(tmp, "Father")
+        for sub, nombre in (("Frontal", "char_papa_parte_torso"), ("Expresiones", "char_papa_ojos_neutra"), ("Expresiones", "char_papa_cara_base"),
+                            ("Perfil", "char_papa_perfil_ojos_neutra"), ("Perfil", "char_papa_perfil_cara_base"),
+                            ("Expresiones", "char_papa_perfil_torso"), ("Perfil", "char_papa_perfil_torso"), (".", "char_papa_perfil_boca_0"),
+                            ("Perfil", "char_papa_ojos_neutra"), (".", "char_papa_retrato_neutra")):
+            os.makedirs(os.path.join(base, sub), exist_ok=True)
+            open(os.path.join(base, sub, nombre + ".png"), "wb").close()
+
+        def donde(nombre):
+            ruta = _png_de("Father", nombre)
+            return None if ruta is None else os.path.relpath(ruta, base).replace(os.sep, "/")
+
+        PERSONAJES_ARTE = tmp
+        try:
+            casos.append(("nombres: un nombre de perfil se resuelve en Perfil/", donde("char_papa_perfil_ojos_neutra") == "Perfil/char_papa_perfil_ojos_neutra.png"
+                          and donde("char_papa_perfil_cara_base") == "Perfil/char_papa_perfil_cara_base.png"))
+            casos.append(("nombres: uno de frente nunca cae en Perfil/ si existe fuera", donde("char_papa_ojos_neutra") == "Expresiones/char_papa_ojos_neutra.png"
+                          and donde("char_papa_parte_torso") == "Frontal/char_papa_parte_torso.png"))
+            casos.append(("nombres: con una copia perdida gana la de su carpeta", donde("char_papa_perfil_torso") == "Perfil/char_papa_perfil_torso.png"))
+            casos.append(("nombres: sin copia en su carpeta se usa la que haya", donde("char_papa_perfil_boca_0") == "char_papa_perfil_boca_0.png"
+                          and donde("char_papa_retrato_neutra") == "char_papa_retrato_neutra.png"))
+            casos.append(("nombres: lo que no existe es None", donde("char_papa_perfil_ojos_alegria") is None))
+        finally:
+            PERSONAJES_ARTE = previo
     return casos
 
 

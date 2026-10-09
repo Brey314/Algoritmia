@@ -3,7 +3,9 @@
 // vuelca en sus clips la coreografía que genera coreografia.py.
 //
 // QUÉ ES. Hijo de BuildRigs.cs.txt (que armó los prefabs de cinco partes), pero NUNCA los
-// reconstruye: solo AÑADE nodos, reordena hermanos y reescribe curvas. Cuatro modos, más dos de apoyo:
+// reconstruye: solo AÑADE nodos, reordena hermanos y reescribe curvas. Cinco modos, más dos de apoyo
+// (desde INC-134, 09/10/2026, «perfil»; el orden cuando llega el arte de perfil es
+//  estado → perfil → sprites → clips → estado, y «orden» solo si cambió el orden de Tronco de frente):
 //   "nodos"   añade a los 7 prefabs (Papa, Mama, Nina, Nino, Algoritm_Fuego/Rueda/Gota) lo que la
 //             tabla rig_articulaciones.json pide y falta, y el componente CharacterFace. Idempotente:
 //             si un nodo existe no lo toca ni lo mueve (un antebrazo que «orden» ya soltó del codo y
@@ -15,11 +17,27 @@
 //             estática) queda como PRIMER hijo de Cabeza, detrás de Ojos y Boca, siempre que la tabla
 //             la liste ANTES que ellos; el log dice detrás de qué quedó. Los nodos «articulacion» y
 //             «grupo» nacen al final, como siempre (el orden de Tronco lo fija «orden»).
+//   "perfil"  (INC-134) añade a Papa, Mama, Nina y Nino el CUERPO DE PERFIL: Lienzo/Perfil, hermano de Cuerpo y justo detrás
+//             de él (INACTIVO: el motor enciende uno u otro cuerpo según la acción, ActionView), con todo colgando
+//             de Perfil/Tronco, un nodo con el pivote en la cadera, en este orden de dibujo (de atrás adelante):
+//               BrazoLejano/CodoLejano/AntebrazoLejano · PiernaLejana/RodillaLejana/AntepiernaLejana · Torso ·
+//               PiernaCercana/RodillaCercana/AntepiernaCercana · Cuello/Cabeza/{CaraBase, Ojos, Boca} ·
+//               BrazoCercano/CodoCercano/AntebrazoCercano
+//             Lo lee de la clave «perfil» de cada personaje en rig_articulaciones.json (nodos, partes y orden_tronco, con el
+//             mismo esquema que los de frente; medidas PROVISIONALES hasta que llegue el arte de perfil) y lo trata con el mismo
+//             código que a los nodos de frente. Idempotente (un nodo que existe no se toca), solo AÑADE, y cada Image nace
+//             apagada, sin sprite y sin raycastTarget. Crea o reutiliza <carpeta>/Perfil/char_<x>_perfil_cara.asset (un
+//             CharacterFaceSet, vacío hasta que «sprites» le ponga cuadros) y cablea CharacterFace.profileEyes, profileMouth y
+//             profileFaceSet (solo lo vacío; si CharacterFace aún no tiene esos campos —el código del motor sin compilar— lo
+//             dice y no cablea). CharacterRig NO tiene campo de perfil: el motor encuentra Lienzo/Perfil por ruta. Algoritm no
+//             tiene perfil y se salta. Hace falta que «nodos» haya corrido (CharacterFace) y no depende de «sprites» ni «orden».
 //   "sprites" para cuando llegue el arte final: asigna por nombre los PNG que existan, aplica rect y
 //             pivote de la tabla, enciende las Image (las de partes, las de la cara y CaraBase por
 //             igual), crea o actualiza <carpeta>/Expresiones/<prefijo>_cara.asset (CharacterFaceSet)
 //             y apaga la Image de Cuerpo en Algoritm cuando sus partes ya están. Lo que no existe se
-//             deja apagado y se anota en el log: un nodo imagen sin PNG queda con la Image apagada.
+//             deja apagado y se anota en el log: un nodo imagen sin PNG queda con la Image apagada. Con el prefab
+//             en «perfil», hace lo mismo con el cuerpo de perfil: asigna char_<x>_perfil_* por nombre exacto,
+//             recoloca cada nodo con su rect y su punto y rellena Perfil/char_<x>_perfil_cara.asset con los cuadros de cara que existan.
 //   "orden"   coloca los hijos de Lienzo/Cuerpo/Tronco en el orden de dibujo que fija «orden_tronco»
 //             en la tabla: en la familia los húmeros (BrazoIzq, BrazoDer) DETRÁS del torso y los
 //             antebrazos DELANTE del torso, de la cara y de las piernas (p. ej. Cuello, BrazoIzq, BrazoDer,
@@ -52,9 +70,15 @@
 //             clips_personajes.json: los 21 clips de cada miembro de la familia y los 9 de Algoritm.
 //             No crea ningún clip (si falta, lo anota) y no calcula nada: ver «DÓNDE VIVE LA
 //             COREOGRAFÍA». Avisa de rutas que el prefab no tiene y de claves fuera de la duración.
-//   "todo"    nodos → sprites → orden → clips.      "estado"  solo informa, no escribe nada
+//             Desde INC-134 los clips de la familia traen también curvas de perfil (rutas Lienzo/Perfil/…, las mismas
+//             propiedades que de frente: localEulerAnglesRaw.z, m_AnchoredPosition y m_LocalScale): se escriben como las demás, pero
+//             si el prefab de un personaje aún no tiene Lienzo/Perfil el modo SE NIEGA a escribir los clips de ese personaje
+//             y dice que corra «perfil» antes (unas curvas colgadas dejarían a medias CharacterRig_DA131_TodaCurvaApuntaAUnaParteQueExiste).
+//   "todo"    nodos → perfil → sprites → orden → clips.      "estado"  solo informa, no escribe nada
 //             (incluye el orden de dibujo actual de Tronco en cada prefab y, si la tabla suelta los
-//             antebrazos del codo, dónde está cada uno y si tiene ancla).
+//             antebrazos del codo, dónde está cada uno y si tiene ancla; y, por personaje, el estado del cuerpo de perfil:
+//             si Lienzo/Perfil existe y su activación, los nodos que están, las Image con sprite y encendidas, el cableado
+//             de CharacterFace.profileEyes/profileMouth/profileFaceSet, el _cara.asset de perfil y el orden de Perfil/Tronco).
 //
 // DÓNDE VIVE LA COREOGRAFÍA. Ya NO está en este archivo: la escribe herramientas/coreografia.py y la
 // entrega como herramientas/clips_personajes.json, con las curvas ya calculadas de cada clip (ruta,
@@ -70,13 +94,15 @@
 // CARPETAS DEL ARTE. Cada personaje (Assets/Game/Art/Characters/<Carpeta>/, con Carpeta = Boy, Girl,
 // Father, Mother o Algoritm) guarda su arte en subcarpetas: Frontal/ (las partes del cuerpo,
 // char_<x>_parte_*.png), Expresiones/ (ojos, bocas, char_<x>_cara_base.png y el set char_<x>_cara.asset)
-// y Perfil/ (vacía por ahora). Animations/, los retratos, char_mama_cenital.png y los
+// y Perfil/ (INC-134: TODO el arte de perfil, char_<x>_perfil_* —partes, ojos, bocas y cara base de perfil— y el
+// set char_<x>_perfil_cara.asset). «_perfil_» manda sobre las demás reglas de nombre: char_<x>_perfil_ojos_neutra
+// contiene «_ojos_» pero es de Perfil/, no de Expresiones/. Animations/, los retratos, char_mama_cenital.png y los
 // char_algoritm_*_reposo.png se quedan en la raíz. Lo que aún esté suelto en la raíz lo mueve
 // OrganizarArtePersonajes.cs.txt (conserva los GUID). Aquí:
 //   - FindSprite busca por nombre en toda la carpeta del personaje y, si hay dos PNG con el mismo
 //     nombre (uno olvidado en la raíz, otro en su subcarpeta), AVISA y usa el de la subcarpeta que le
-//     toca por su nombre (Frontal para las partes, Expresiones para ojos, bocas y cara base);
-//   - el _cara.asset se crea o se actualiza en Expresiones/, y si ya hay uno en la raíz se MUEVE con
+//     toca por su nombre (Frontal para las partes, Expresiones para ojos, bocas y cara base; Perfil para todo lo de perfil);
+//   - el _cara.asset se crea o se actualiza en Expresiones/ (el de perfil, en Perfil/), y si ya hay uno en la raíz se MUEVE con
 //     AssetDatabase.MoveAsset en vez de crear otro: el GUID es el que los prefabs ya referencian.
 //
 // CÓMO SE EJECUTA Y SE BORRA (lo hace la sesión local de Santiago, con el Editor abierto):
@@ -84,20 +110,27 @@
 //   1. Copiar este archivo a Assets/Editor/ClaudeBuildRigsFinal.cs (la clase se llama
 //      ClaudeBuildRigsFinal; el Editor genera el .meta solo, nunca a mano) y esperar a que compile.
 //   2. Llamar por coplay execute_script:  ClaudeBuildRigsFinal.Execute("nodos")  y después
-//      Execute("sprites"), Execute("orden") y Execute("clips") —o Execute("todo")—, en ESE orden: «orden»
-//      es el que crea las anclas y suelta los antebrazos (INC-133) y necesita los codos de «nodos».
+//      Execute("perfil"), Execute("sprites"), Execute("orden") y Execute("clips") —o Execute("todo")—, en ESE
+//      orden: «orden» es el que crea las anclas y suelta los antebrazos (INC-133) y necesita los codos de «nodos»;
+//      «perfil» (INC-134) necesita el CharacterFace de «nodos» y tiene que ir ANTES de «clips», que trae curvas de perfil.
 //      «sprites» corre bien antes o después de «orden»: encuentra el antebrazo en el codo o en Tronco.
+//      Con el cuerpo de perfil, la ronda del Editor es  estado → perfil → sprites → clips → estado  (los de frente ya están).
 //      Devuelve el log como texto. «clips» lee herramientas/clips_personajes.json: correr antes
-//      coreografia.py.
+//      coreografia.py. Los modos «perfil» y «sprites» necesitan el código del motor de INC-134 compilado
+//      (CharacterFace.profileEyes/profileMouth/profileFaceSet); si no, avisan y no cablean.
 //   3. Comprobar los fileID (abajo) y correr las pruebas CharacterRig_DA131_* / CharacterRig_DA73_* /
-//      CharacterRig_INC132_* / CharacterRig_INC133_* (las INC133 de la familia fallan hasta que corre «orden»).
+//      CharacterRig_INC132_* / CharacterRig_INC133_* (las INC133 de la familia fallan hasta que corre «orden») y,
+//      del perfil, CharacterRig_INC134_* / CharacterFace_INC134_*.
 //   4. Borrar Assets/Editor/ClaudeBuildRigsFinal.cs (y su .meta): es andamiaje, no código del juego.
 //      Este .txt es la copia que queda versionada.
 //
 // REGLA DE LOS fileID. 18 assets narrativos y 5 escenas referencian componentes de estos prefabs por
 // fileID. Reconstruirlos (Root()/Finish() de BuildRigs) cambia todos y rompe esas referencias. Aquí:
 //   - los prefabs se abren con LoadPrefabContents, se añaden hijos y componentes y se guardan con
-//     SaveAsPrefabAsset sobre la misma ruta; los objetos que ya existían conservan su fileID;
+//     SaveAsPrefabAsset sobre la misma ruta; los objetos que ya existían conservan su fileID. «perfil»
+//     solo AÑADE (Lienzo/Perfil y todo lo que cuelga de él, más tres campos de CharacterFace): en
+//     `git diff -U0 Assets/Game/Prefabs/Characters` de la familia solo deben salir altas, y el
+//     m_Children de Lienzo (Perfil, justo tras Cuerpo);
 //   - no se destruye ni se recrea ningún objeto existente; «orden» llama a SetSiblingIndex, que
 //     reordena m_Children del padre y no cambia ni un fileID, y a SetParent para pasar cada antebrazo
 //     de su codo a Tronco: cambia el padre del objeto, no su fileID, ni el de su Image. Lo único
@@ -149,9 +182,20 @@ public static class ClaudeBuildRigsFinal
 
         /// <summary>
         /// «orden_tronco» (opcional): nombres de hijos directos de Lienzo/Cuerpo/Tronco en orden de dibujo,
-        /// de atrás adelante. null = la tabla no lo fija y el modo «orden» no toca ese prefab.
+        /// de atrás adelante. null = la tabla no lo fija y el modo «orden» no toca ese prefab. En el perfil
+        /// (<see cref="isProfile"/>) son los hijos de Lienzo/Perfil/Tronco.
         /// </summary>
         public string[] ordenTronco;
+
+        /// <summary>
+        /// «perfil» (opcional, INC-134): el cuerpo de perfil de un personaje de la familia (Lienzo/Perfil), leído como un
+        /// Personaje más —el mismo id, prefab y carpeta, y el prefijo «char_&lt;x&gt;_perfil» de sus sprites— para reutilizar
+        /// todo el código de nodos y sprites. null = el personaje no tiene perfil (Algoritm). El perfil no lleva «perfil».
+        /// </summary>
+        public Personaje perfil;
+
+        /// <summary>true si este Personaje es el cuerpo de perfil de otro (lo que cuelga de «perfil»), no un prefab propio.</summary>
+        public bool isProfile;
     }
 
     /// <summary>
@@ -209,6 +253,7 @@ public static class ClaudeBuildRigsFinal
     /// Lee el texto de la tabla. Obligatorios: id, prefab, carpeta, prefijo y nodos por personaje; nombre,
     /// tipo y padre por nodo; nombre, ruta, rect y pivote por parte. «partes» ausente = lista vacía.
     /// «orden_tronco» es opcional: ausente = null (lista de textos sin repetir; vacía es un error).
+    /// «perfil» es opcional (INC-134): el cuerpo de perfil de la familia, con sus «nodos» (obligatorios), «partes», «orden_tronco» y «prefijo».
     /// Lanza InvalidOperationException con el motivo y el lugar exactos.
     /// </summary>
     public static Tabla ParseTable(string json)
@@ -248,6 +293,49 @@ public static class ClaudeBuildRigsFinal
             carpeta = Str(d, "carpeta", ctx, true),
             prefijo = Str(d, "prefijo", ctx, true),
             guia = Flag(d, "guia", ctx, false),
+            ordenTronco = StringList(d, "orden_tronco", ctx),
+        };
+
+        var nodos = Items(d, "nodos", ctx, true);
+        p.nodos = new Nodo[nodos.Count];
+        for (var k = 0; k < nodos.Count; k++)
+        {
+            p.nodos[k] = ToNodo(nodos[k], ctx, k);
+        }
+
+        var partes = Items(d, "partes", ctx, false);
+        p.partes = new Parte[partes.Count];
+        for (var k = 0; k < partes.Count; k++)
+        {
+            p.partes[k] = ToParte(partes[k], ctx, k);
+        }
+
+        object perfilRaw;
+        if (d.TryGetValue("perfil", out perfilRaw) && perfilRaw != null)
+        {
+            p.perfil = ToPerfil(perfilRaw, p);
+        }
+
+        return p;
+    }
+
+    /// <summary>
+    /// El cuerpo de perfil de un personaje (INC-134): «nodos» obligatorios (todo nuevo, padre antes que hijo, en el orden de
+    /// dibujo), «partes» y «orden_tronco» opcionales y «prefijo» opcional (por defecto el del personaje + «_perfil»). «provisional»
+    /// se ignora: es un aviso para quien lee la tabla. Se devuelve como un Personaje con isProfile.
+    /// </summary>
+    private static Personaje ToPerfil(object raw, Personaje owner)
+    {
+        var ctx = "personaje «" + owner.id + "», perfil";
+        var d = AsObject(raw, ctx);
+        var p = new Personaje
+        {
+            id = owner.id,
+            prefab = owner.prefab,
+            carpeta = owner.carpeta,
+            prefijo = Str(d, "prefijo", ctx, false) ?? owner.prefijo + "_perfil",
+            guia = false,
+            isProfile = true,
             ordenTronco = StringList(d, "orden_tronco", ctx),
         };
 
@@ -932,6 +1020,7 @@ public static class ClaudeBuildRigsFinal
     private const string Prefabs = "Assets/Game/Prefabs/Characters";
     private const string FrontFolder = "Frontal";
     private const string ExpressionsFolder = "Expresiones";
+    private const string ProfileFolder = "Perfil";
     private const float U = 1024f;
     private const float Fps = 30f;
     private const float KeyTolerance = 1e-4f;
@@ -941,6 +1030,11 @@ public static class ClaudeBuildRigsFinal
     private const string C = "Lienzo/Cuerpo";
     private const string T = C + "/Tronco";
     private const string LK = C + "/PiernaIzq/RodillaIzq";
+
+    // INC-134: el cuerpo de perfil de la familia. Lienzo/Perfil es hermano de Cuerpo y va justo detrás de él; todo cuelga de un Tronco
+    // con el pivote en la cadera. Las rutas de los demás nodos viven en rig_articulaciones.json («perfil») y en clips_personajes.json.
+    private const string ProfileRoot = "Lienzo/Perfil";
+    private const string ProfileTrunk = ProfileRoot + "/Tronco";
 
     /// <summary>
     /// Prefijo del ancla de un antebrazo (INC-133): «AnclaAntebrazoIzq». Tiene que ser el mismo que
@@ -964,6 +1058,9 @@ public static class ClaudeBuildRigsFinal
                 case "nodos":
                     foreach (var p in tabla.personajes) AddNodes(p, log);
                     break;
+                case "perfil":
+                    foreach (var p in tabla.personajes) AddProfile(p, log);
+                    break;
                 case "sprites":
                     foreach (var p in tabla.personajes) ApplySprites(p, log);
                     break;
@@ -975,6 +1072,7 @@ public static class ClaudeBuildRigsFinal
                     break;
                 case "todo":
                     foreach (var p in tabla.personajes) AddNodes(p, log);
+                    foreach (var p in tabla.personajes) AddProfile(p, log);
                     foreach (var p in tabla.personajes) ApplySprites(p, log);
                     ApplyOrderAll(tabla, log);
                     WriteClips(tabla, log);
@@ -983,7 +1081,7 @@ public static class ClaudeBuildRigsFinal
                     foreach (var p in tabla.personajes) Report(p, log);
                     break;
                 default:
-                    log.Add("modo desconocido «" + mode + "»: nodos | sprites | orden | clips | todo | estado");
+                    log.Add("modo desconocido «" + mode + "»: nodos | perfil | sprites | orden | clips | todo | estado");
                     break;
             }
 
@@ -1328,6 +1426,167 @@ public static class ClaudeBuildRigsFinal
         return true;
     }
 
+    // ---------------------------------------------------------------- modo «perfil» (INC-134)
+    //
+    // El cuerpo de PERFIL de la familia: Lienzo/Perfil, hermano de Cuerpo y justo detrás de él, con todo colgando de un Tronco con el pivote
+    // en la cadera, en este orden de dibujo (de atrás adelante; lo fija «orden_tronco» de «perfil» en la tabla):
+    //   Perfil/Tronco/ BrazoLejano/CodoLejano/AntebrazoLejano · PiernaLejana/RodillaLejana/AntepiernaLejana · Torso ·
+    //                  PiernaCercana/RodillaCercana/AntepiernaCercana · Cuello/Cabeza/{CaraBase, Ojos, Boca} ·
+    //                  BrazoCercano/CodoCercano/AntebrazoCercano
+    // Solo AÑADE: ningún objeto existente se toca ni se mueve (los fileID de los 18 assets y las 5 escenas siguen en pie); lo único que cambia
+    // de un prefab es que le salen hijos nuevos y los tres campos de perfil de CharacterFace. Idempotente: un nodo que existe no se toca. Todo
+    // nodo nuevo nace con la Image apagada y sin sprite, sin raycastTarget, y Perfil nace INACTIVO (el motor enciende uno u otro cuerpo según la
+    // acción: ActionView). El modo crea (o reutiliza) <carpeta>/Perfil/<prefijo>_perfil_cara.asset —un CharacterFaceSet, vacío hasta que
+    // «sprites» le ponga los cuadros— y cablea CharacterFace.profileEyes, profileMouth y profileFaceSet. Algoritm no tiene perfil: se salta.
+
+    /// <summary>
+    /// Añade a un prefab de la familia el cuerpo de perfil de la tabla y cablea la cara de perfil. No hace nada si la tabla no trae «perfil»
+    /// (Algoritm). Guarda solo si algo cambió. Lanza InvalidOperationException si falta Lienzo o si «orden_tronco» nombra un hijo que no existe.
+    /// </summary>
+    private static void AddProfile(Personaje c, List<string> log)
+    {
+        if (c.perfil == null)
+        {
+            log.Add(c.prefab + ": la tabla no trae «perfil»; no se toca");
+            return;
+        }
+
+        var path = PrefabPath(c);
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var added = new List<string>();    // los nodos que se añadieron (su número es el «N añadidos» del log)
+            var extras = new List<string>();   // lo demás que cambió (el orden de Tronco, el cableado de la cara): no son nodos y no se cuentan como tales
+            var existed = root.transform.Find(ProfileRoot) != null;
+            foreach (var n in c.perfil.nodos)
+            {
+                EnsureNode(root.transform, c.perfil, n, added);
+            }
+
+            var changed = added.Count > 0;
+            var body = (RectTransform)root.transform.Find(ProfileRoot);
+            if (!existed && body != null)
+            {
+                // Perfil nace detrás de Cuerpo y apagado: el motor enciende el cuerpo que toca (ActionView), y un prefab guardado con los dos
+                // encendidos se vería doble. Solo al crearlo: si una persona lo movió o lo encendió después, no se le contradice.
+                var front = body.parent.Find("Cuerpo");
+                if (front != null) body.SetSiblingIndex(front.GetSiblingIndex() + 1);
+                body.gameObject.SetActive(false);
+                changed = true;
+            }
+
+            changed |= OrderProfileTrunk(root.transform, c.perfil, extras);
+            changed |= EnsureProfileFace(root, c, extras, log);
+            if (changed)
+            {
+                PrefabUtility.SaveAsPrefabAsset(root, path);
+                log.Add(c.prefab + ": perfil, " + added.Count + " añadidos (" + string.Join(", ", added.ToArray()) + ")"
+                        + (extras.Count > 0 ? "; además: " + string.Join("; ", extras.ToArray()) : ""));
+            }
+            else
+            {
+                log.Add(c.prefab + ": el perfil ya estaba completo, sin cambios");
+            }
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
+    }
+
+    /// <summary>
+    /// El orden de los hijos de Lienzo/Perfil/Tronco que pide «orden_tronco» del perfil, calculado sin tocar nada: los que la tabla no lista
+    /// conservan su orden relativo y quedan delante (detrás en el dibujo); los listados, al final, en el orden dado. null si no hay Tronco de
+    /// perfil o la tabla no fija orden. Lanza InvalidOperationException si un nombre listado no es hijo directo o está repetido entre los hijos.
+    /// </summary>
+    private static List<string> ProfileTargetOrder(Transform root, Personaje profile)
+    {
+        var trunk = root.Find(ProfileTrunk);
+        if (trunk == null || profile.ordenTronco == null)
+        {
+            return null;
+        }
+
+        var children = ChildNames(trunk);
+        foreach (var name in profile.ordenTronco)
+        {
+            var count = children.Count(child => child == name);
+            if (count != 1)
+            {
+                throw new InvalidOperationException(profile.prefab + ": «orden_tronco» del perfil nombra «" + name + "» y hay " + count + " hijos de "
+                    + ProfileTrunk + " con ese nombre (hijos: " + string.Join(", ", children.ToArray()) + ")");
+            }
+        }
+
+        var target = children.Where(child => Array.IndexOf(profile.ordenTronco, child) < 0).ToList();
+        target.AddRange(profile.ordenTronco);
+        return target;
+    }
+
+    /// <summary>Pone los hijos de Perfil/Tronco en el orden de dibujo de la tabla (SetSiblingIndex: no cambia ningún fileID). Devuelve si cambió algo.</summary>
+    private static bool OrderProfileTrunk(Transform root, Personaje profile, List<string> extras)
+    {
+        var target = ProfileTargetOrder(root, profile);
+        if (target == null)
+        {
+            return false;
+        }
+
+        var trunk = root.Find(ProfileTrunk);
+        var before = ChildNames(trunk);
+        if (before.SequenceEqual(target))
+        {
+            return false;
+        }
+
+        for (var i = 0; i < target.Count; i++)
+        {
+            trunk.Find(target[i]).SetSiblingIndex(i); // los nombres son únicos: ProfileTargetOrder lo comprobó
+        }
+
+        extras.Add("orden de Perfil/Tronco: " + string.Join(", ", ChildNames(trunk).ToArray()));
+        return true;
+    }
+
+    /// <summary>
+    /// Cablea la cara de perfil de CharacterFace: profileEyes y profileMouth (solo si están vacíos: no se pisa un cableado manual) y profileFaceSet
+    /// (el _cara.asset de Perfil/, que se crea si falta). Si CharacterFace no tiene esos campos (el código del motor de INC-134 aún no está
+    /// compilado) lo dice y no cablea nada. Devuelve si cambió algo.
+    /// </summary>
+    private static bool EnsureProfileFace(GameObject root, Personaje c, List<string> extras, List<string> log)
+    {
+        var face = root.GetComponent<CharacterFace>();
+        if (face == null)
+        {
+            log.Add("AVISO " + c.prefab + ": no tiene CharacterFace (¿corrió «nodos»?); no se cablea la cara de perfil");
+            return false;
+        }
+
+        var so = new SerializedObject(face);
+        foreach (var field in new[] { "profileEyes", "profileMouth", "profileFaceSet" })
+        {
+            if (so.FindProperty(field) == null)
+            {
+                log.Add("AVISO " + c.prefab + ": CharacterFace no tiene el campo «" + field + "» (¿está compilado el código de INC-134?); no se cablea la cara de perfil");
+                return false;
+            }
+        }
+
+        var changed = WireImage(so, "profileEyes", FindImage(root, c.perfil, "Ojos"));
+        changed |= WireImage(so, "profileMouth", FindImage(root, c.perfil, "Boca"));
+        var set = EnsureFaceSet(c.perfil, log);
+        var prop = so.FindProperty("profileFaceSet");
+        if (set != null && prop.objectReferenceValue != set)
+        {
+            prop.objectReferenceValue = set;
+            changed = true;
+        }
+
+        so.ApplyModifiedPropertiesWithoutUndo();
+        if (changed) extras.Add("cara de perfil cableada en CharacterFace");
+        return changed;
+    }
+
     // ---------------------------------------------------------------- modo «sprites»
 
     private static readonly string[][] FaceNames =
@@ -1344,13 +1603,15 @@ public static class ClaudeBuildRigsFinal
     };
 
     /// <summary>
-    /// La subcarpeta del personaje donde le toca vivir a un PNG por su nombre: las partes del cuerpo
-    /// (char_&lt;x&gt;_parte_*) en Frontal; los ojos, las bocas y la cara base (char_&lt;x&gt;_ojos_*,
-    /// _boca_*, _cara_base) en Expresiones. null = ninguna (retratos, cenital, reposos de Algoritm: se
-    /// quedan en la raíz). Es la misma regla de nombres que usa OrganizarArtePersonajes.
+    /// La subcarpeta del personaje donde le toca vivir a un PNG por su nombre: TODO lo de perfil
+    /// (char_&lt;x&gt;_perfil_*: partes, ojos, bocas y cara base de perfil; INC-134) en Perfil, con prioridad
+    /// sobre las demás reglas; las partes del cuerpo de frente (char_&lt;x&gt;_parte_*) en Frontal; los ojos, las
+    /// bocas y la cara base de frente (char_&lt;x&gt;_ojos_*, _boca_*, _cara_base) en Expresiones. null = ninguna
+    /// (retratos, cenital, reposos de Algoritm: se quedan en la raíz). Es la misma regla de nombres que usa OrganizarArtePersonajes.
     /// </summary>
     private static string ExpectedSubfolder(string nombre)
     {
+        if (nombre.Contains("_perfil_")) return ProfileFolder; // INC-134: manda sobre las demás (char_<x>_perfil_ojos_neutra contiene «_ojos_»; _perfil_cara_base, «_cara_base»)
         if (nombre.Contains("_parte_")) return FrontFolder;
         if (nombre.Contains("_ojos_") || nombre.Contains("_boca_") || nombre.Contains("_cara_base")) return ExpressionsFolder;
         return null;
@@ -1382,7 +1643,7 @@ public static class ClaudeBuildRigsFinal
 
     /// <summary>
     /// El PNG por nombre, en cualquier subcarpeta de la del personaje. Si hay dos con el mismo nombre
-    /// avisa en «log» y prefiere el de la subcarpeta que le toca (Frontal o Expresiones). Lo pasa a Sprite Single.
+    /// avisa en «log» y prefiere el de la subcarpeta que le toca (Frontal, Expresiones o, los de perfil, Perfil). Lo pasa a Sprite Single.
     /// </summary>
     private static Sprite FindSprite(string carpeta, string nombre, List<string> log)
     {
@@ -1434,6 +1695,10 @@ public static class ClaudeBuildRigsFinal
         return AssetDatabase.LoadAssetAtPath<Sprite>(path);
     }
 
+    /// <summary>
+    /// Asigna los sprites del personaje (modo «sprites»): primero los de frente y después, si la tabla trae «perfil» y el prefab ya tiene
+    /// Lienzo/Perfil (modo «perfil»), los del cuerpo de perfil, por nombre exacto (char_&lt;x&gt;_perfil_*) y con su juego de cara de Perfil/.
+    /// </summary>
     private static void ApplySprites(Personaje c, List<string> log)
     {
         var path = PrefabPath(c);
@@ -1442,97 +1707,127 @@ public static class ClaudeBuildRigsFinal
         {
             var done = new List<string>();
             var missing = new List<string>();
+            var faced = ApplySpritesOf(root, c, done, missing, log);
 
-            // 1. Las partes que ya existen: sprite, rect y pivote. Primero ellas, porque sus hijos se anclan a su rect.
-            if (c.partes != null)
+            var profileDone = new List<string>();
+            var profileMissing = new List<string>();
+            if (c.perfil != null)
             {
-                foreach (var part in c.partes)
+                if (root.transform.Find(ProfileRoot) == null)
                 {
-                    var rt = root.transform.Find(part.ruta) as RectTransform;
-                    var sprite = FindSprite(c.carpeta, part.sprite, log);
-                    if (rt == null || sprite == null)
-                    {
-                        missing.Add(part.sprite);
-                        continue; // lo que ya se ve se queda como está
-                    }
-
-                    var image = rt.GetComponent<Image>();
-                    var changed = PlacePart(rt, part.rect, part.pivote);
-                    if (image.sprite != sprite || !image.enabled)
-                    {
-                        image.sprite = sprite;
-                        image.enabled = true;
-                        changed = true;
-                    }
-
-                    if (changed) done.Add(part.nombre);
+                    log.Add("AVISO " + c.prefab + ": no tiene «" + ProfileRoot + "» (¿corrió «perfil»?); no se asignan los sprites de perfil");
+                }
+                else
+                {
+                    faced |= ApplySpritesOf(root, c.perfil, profileDone, profileMissing, log);
                 }
             }
 
-            // 2. Los nodos nuevos, padre antes que hijo. Un pivote se recoloca siempre (su padre pudo cambiar de rect).
-            foreach (var n in c.nodos)
-            {
-                var parent = root.transform.Find(n.padre) as RectTransform;
-                var node = parent == null ? null : parent.Find(n.nombre) as RectTransform;
-                if (node == null)
-                {
-                    missing.Add(n.nombre + " (¿corrió «nodos»?)");
-                    continue;
-                }
-
-                RectTransform target = node;
-                if (n.tipo == "articulacion")
-                {
-                    PlacePoint(node, Pt(n.punto), null);
-                    target = FindSegment(root.transform, c, n, node); // bajo el codo, o ya suelto en Tronco (INC-133)
-                    MirrorAnchor(c, n, node);
-                }
-                else if (n.tipo == "grupo")
-                {
-                    PlacePart(node, n.rect, n.punto);
-                    continue;
-                }
-
-                var image = target == null ? null : target.GetComponent<Image>();
-                var sprite = FindSprite(c.carpeta, n.sprite, log);
-                if (image == null || sprite == null)
-                {
-                    if (n.tipo == "articulacion" && target != null) PlacePoint(target, Pt(n.punto), n.rect);
-                    missing.Add(n.sprite ?? n.nombre);
-                    continue; // sin PNG: la Image queda apagada (la de un nodo nuevo nace apagada y aquí no se enciende)
-                }
-
-                PlacePoint(target, Pt(n.punto), n.rect);
-                image.sprite = sprite;
-                image.enabled = true;
-                done.Add(target.name);
-            }
-
-            var faced = ApplyFaceSet(root, c, done, log);
-
-            // 3. Algoritm: con sus partes puestas, el sprite entero de Cuerpo sobra (se vería doble).
-            if (c.guia && AllEnabled(root, new[] { T + "/Torso", T + "/BrazoIzq", T + "/BrazoDer", C + "/PiernaIzq", C + "/PiernaDer" }))
-            {
-                var body = root.transform.Find(C).GetComponent<Image>();
-                if (body != null && body.enabled)
-                {
-                    body.enabled = false;
-                    done.Add("Cuerpo apagado");
-                }
-            }
-
-            if (done.Count > 0 || faced)
+            if (done.Count > 0 || faced || profileDone.Count > 0)
             {
                 PrefabUtility.SaveAsPrefabAsset(root, path);
             }
 
             log.Add(c.prefab + ": " + done.Count + " aplicados" + (done.Count > 0 ? " (" + string.Join(", ", done.ToArray()) + ")" : "")
                 + (missing.Count > 0 ? " | SIN PNG: " + string.Join(", ", missing.ToArray()) : ""));
+            if (c.perfil != null)
+            {
+                log.Add(c.prefab + " (perfil): " + profileDone.Count + " aplicados" + (profileDone.Count > 0 ? " (" + string.Join(", ", profileDone.ToArray()) + ")" : "")
+                    + (profileMissing.Count > 0 ? " | SIN PNG: " + string.Join(", ", profileMissing.ToArray()) : ""));
+            }
         }
         finally
         {
             PrefabUtility.UnloadPrefabContents(root);
         }
+    }
+
+    /// <summary>
+    /// Lo que hace «sprites» con UN cuerpo del prefab (el de frente, o el de perfil si «c» es c.perfil): asigna por nombre los PNG que existan a las partes y
+    /// a los nodos de la tabla, aplica rect y pivote, enciende las Image, y crea o actualiza el juego de cara. Rellena «done» y «missing» y devuelve si el
+    /// cableado de la cara cambió. No guarda: lo hace quien llama.
+    /// </summary>
+    private static bool ApplySpritesOf(GameObject root, Personaje c, List<string> done, List<string> missing, List<string> log)
+    {
+        // 1. Las partes que ya existen: sprite, rect y pivote. Primero ellas, porque sus hijos se anclan a su rect.
+        if (c.partes != null)
+        {
+            foreach (var part in c.partes)
+            {
+                var rt = root.transform.Find(part.ruta) as RectTransform;
+                var sprite = FindSprite(c.carpeta, part.sprite, log);
+                if (rt == null || sprite == null)
+                {
+                    missing.Add(part.sprite);
+                    continue; // lo que ya se ve se queda como está
+                }
+
+                var image = rt.GetComponent<Image>();
+                var changed = PlacePart(rt, part.rect, part.pivote);
+                if (image.sprite != sprite || !image.enabled)
+                {
+                    image.sprite = sprite;
+                    image.enabled = true;
+                    changed = true;
+                }
+
+                if (changed) done.Add(part.nombre);
+            }
+        }
+
+        // 2. Los nodos nuevos, padre antes que hijo. Un pivote se recoloca siempre (su padre pudo cambiar de rect).
+        foreach (var n in c.nodos)
+        {
+            var parent = root.transform.Find(n.padre) as RectTransform;
+            var node = parent == null ? null : parent.Find(n.nombre) as RectTransform;
+            if (node == null)
+            {
+                missing.Add(n.nombre + " (¿corrió «nodos»?)");
+                continue;
+            }
+
+            RectTransform target = node;
+            if (n.tipo == "articulacion")
+            {
+                PlacePoint(node, Pt(n.punto), null);
+                target = FindSegment(root.transform, c, n, node); // bajo el codo, o ya suelto en Tronco (INC-133)
+                MirrorAnchor(c, n, node);
+            }
+            else if (n.tipo == "grupo")
+            {
+                PlacePart(node, n.rect, n.punto);
+                continue;
+            }
+
+            var image = target == null ? null : target.GetComponent<Image>();
+            var sprite = FindSprite(c.carpeta, n.sprite, log);
+            if (image == null || sprite == null)
+            {
+                if (n.tipo == "articulacion" && target != null) PlacePoint(target, Pt(n.punto), n.rect);
+                missing.Add(n.sprite ?? n.nombre);
+                continue; // sin PNG: la Image queda apagada (la de un nodo nuevo nace apagada y aquí no se enciende)
+            }
+
+            PlacePoint(target, Pt(n.punto), n.rect);
+            image.sprite = sprite;
+            image.enabled = true;
+            done.Add(target.name);
+        }
+
+        var faced = ApplyFaceSet(root, c, done, log);
+
+        // 3. Algoritm: con sus partes puestas, el sprite entero de Cuerpo sobra (se vería doble).
+        if (c.guia && AllEnabled(root, new[] { T + "/Torso", T + "/BrazoIzq", T + "/BrazoDer", C + "/PiernaIzq", C + "/PiernaDer" }))
+        {
+            var body = root.transform.Find(C).GetComponent<Image>();
+            if (body != null && body.enabled)
+            {
+                body.enabled = false;
+                done.Add("Cuerpo apagado");
+            }
+        }
+
+        return faced;
     }
 
     private static bool AllEnabled(GameObject root, string[] paths)
@@ -1550,16 +1845,16 @@ public static class ClaudeBuildRigsFinal
         return true;
     }
 
-    /// <summary>Dónde vive el set de la cara de un personaje: en su subcarpeta Expresiones.</summary>
+    /// <summary>Dónde vive el set de la cara de un personaje: en su subcarpeta Expresiones; el de la cara de perfil (INC-134), en Perfil/ y con el prefijo de perfil (char_&lt;x&gt;_perfil_cara.asset).</summary>
     private static string FaceSetPath(Personaje c)
     {
-        return Art + "/" + c.carpeta + "/" + ExpressionsFolder + "/" + c.prefijo + "_cara.asset";
+        return Art + "/" + c.carpeta + "/" + (c.isProfile ? ProfileFolder : ExpressionsFolder) + "/" + c.prefijo + "_cara.asset";
     }
 
-    /// <summary>Donde vivía antes de las subcarpetas: la raíz de la carpeta del personaje.</summary>
+    /// <summary>Donde vivía antes de las subcarpetas: la raíz de la carpeta del personaje. El de perfil nació en su subcarpeta: null.</summary>
     private static string OldFaceSetPath(Personaje c)
     {
-        return Art + "/" + c.carpeta + "/" + c.prefijo + "_cara.asset";
+        return c.isProfile ? null : Art + "/" + c.carpeta + "/" + c.prefijo + "_cara.asset";
     }
 
     /// <summary>
@@ -1585,7 +1880,7 @@ public static class ClaudeBuildRigsFinal
     }
 
     /// <summary>
-    /// El set de la cara del personaje, en Expresiones/. Si ya está ahí, ese. Si no, y hay uno viejo en
+    /// El set de la cara del personaje, en Expresiones/ (el de la cara de perfil, en Perfil/). Si ya está ahí, ese. Si no, y hay uno viejo en
     /// la raíz, se MUEVE (AssetDatabase.MoveAsset conserva el GUID que los prefabs ya referencian) en
     /// vez de crear otro; si el movimiento falla se sigue usando el viejo en su sitio. Solo si no hay
     /// ninguno se crea. null si no se pudo ni crear la carpeta.
@@ -1597,7 +1892,7 @@ public static class ClaudeBuildRigsFinal
         var set = AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(assetPath);
         if (set != null)
         {
-            if (AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(oldPath) != null)
+            if (oldPath != null && AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(oldPath) != null)
             {
                 log.Add("AVISO " + c.prefijo + ": hay un _cara.asset en Expresiones y otro en la raíz (" + oldPath + "); se usa el de Expresiones y el de la raíz sobra");
             }
@@ -1605,12 +1900,12 @@ public static class ClaudeBuildRigsFinal
             return set;
         }
 
-        if (!EnsureFolder(Art + "/" + c.carpeta, ExpressionsFolder, log))
+        if (!EnsureFolder(Art + "/" + c.carpeta, c.isProfile ? ProfileFolder : ExpressionsFolder, log))
         {
             return null;
         }
 
-        var old = AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(oldPath);
+        var old = oldPath == null ? null : AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(oldPath);
         if (old != null)
         {
             var error = AssetDatabase.MoveAsset(oldPath, assetPath);
@@ -1665,7 +1960,7 @@ public static class ClaudeBuildRigsFinal
         if (face != null)
         {
             var faceSo = new SerializedObject(face);
-            var prop = faceSo.FindProperty("faceSet");
+            var prop = faceSo.FindProperty(c.isProfile ? "profileFaceSet" : "faceSet");
             if (prop != null && prop.objectReferenceValue != set)
             {
                 prop.objectReferenceValue = set;
@@ -2005,6 +2300,94 @@ public static class ClaudeBuildRigsFinal
         log.Add(c.prefab + " [" + c.nodos.Length + " nodos, " + c.partes.Length + " partes en la tabla]: " + (missing.Count == 0 ? "nodos completos" : "FALTAN " + string.Join(", ", missing.ToArray()))
             + " | CharacterFace " + (face == null ? "no" : "sí") + " | segmentado " + (IsSegmented(root.transform) ? "sí" : "no")
             + " | " + FaceSetState(c) + " | " + OrderState(root.transform, c) + " | " + LimbState(root.transform, c));
+        log.Add(c.prefab + " (perfil) " + ProfileState(root, c));
+    }
+
+    /// <summary>
+    /// El cuerpo de perfil (INC-134), solo lectura: si Lienzo/Perfil existe y está encendido o apagado, cuántos nodos de la tabla están, cuántas Image
+    /// tienen sprite y cuántas están encendidas, si CharacterFace tiene cableadas profileEyes, profileMouth y profileFaceSet (y si esos campos existen:
+    /// el código del motor de INC-134 compilado), dónde está el _cara.asset de perfil y si el orden de Perfil/Tronco cumple la tabla. No lanza.
+    /// </summary>
+    private static string ProfileState(GameObject root, Personaje c)
+    {
+        if (c.perfil == null)
+        {
+            return "la tabla no trae perfil (Algoritm no lo tiene)";
+        }
+
+        var perfil = root.transform.Find(ProfileRoot);
+        if (perfil == null)
+        {
+            return "FALTA «" + ProfileRoot + "» (correr «perfil»)";
+        }
+
+        var missing = new List<string>();
+        var images = 0;
+        var withSprite = 0;
+        var lit = 0;
+        foreach (var n in c.perfil.nodos)
+        {
+            var node = root.transform.Find(n.padre + "/" + n.nombre);
+            if (node == null)
+            {
+                missing.Add(n.nombre);
+                continue;
+            }
+
+            var holder = n.tipo == "articulacion" ? node.Find(n.imagen) : node; // el segmento de un codo o una rodilla lleva la Image
+            var image = n.tipo == "grupo" || holder == null ? null : holder.GetComponent<Image>();
+            if (image == null) continue;
+            images++;
+            if (image.sprite != null) withSprite++;
+            if (image.enabled) lit++;
+        }
+
+        var text = (perfil.gameObject.activeSelf ? "ENCENDIDO en el prefab (el motor lo apaga al arrancar)" : "apagado")
+            + " | nodos " + (c.perfil.nodos.Length - missing.Count) + "/" + c.perfil.nodos.Length
+            + (missing.Count > 0 ? " (FALTAN " + string.Join(", ", missing.ToArray()) + ")" : "")
+            + " | Image con sprite " + withSprite + "/" + images + ", encendidas " + lit
+            + " | " + ProfileFaceState(root, c);
+        var trunk = root.transform.Find(ProfileTrunk);
+        if (trunk == null)
+        {
+            return text + " | FALTA " + ProfileTrunk;
+        }
+
+        try
+        {
+            var target = ProfileTargetOrder(root.transform, c.perfil);
+            var now = ChildNames(trunk);
+            text += " | Perfil/Tronco [" + string.Join(", ", now.ToArray()) + "]"
+                + (target == null ? " (la tabla no fija orden)" : now.SequenceEqual(target) ? " (cumple la tabla)" : " (NO cumple la tabla: correr «perfil»)");
+        }
+        catch (InvalidOperationException e)
+        {
+            text += " | la tabla no se puede aplicar a Perfil/Tronco: " + e.Message;
+        }
+
+        return text;
+    }
+
+    /// <summary>El cableado de la cara de perfil en CharacterFace y dónde está su set. No lanza.</summary>
+    private static string ProfileFaceState(GameObject root, Personaje c)
+    {
+        var face = root.GetComponent<CharacterFace>();
+        if (face == null)
+        {
+            return "sin CharacterFace";
+        }
+
+        var so = new SerializedObject(face);
+        var parts = new List<string>();
+        foreach (var field in new[] { "profileEyes", "profileMouth", "profileFaceSet" })
+        {
+            var prop = so.FindProperty(field);
+            parts.Add(field + (prop == null ? " NO EXISTE en CharacterFace (¿compilado el código de INC-134?)" : prop.objectReferenceValue == null ? " vacío" : " sí"));
+        }
+
+        var asset = AssetDatabase.LoadAssetAtPath<CharacterFaceSet>(FaceSetPath(c.perfil)) != null
+            ? "_cara.asset de perfil en " + ProfileFolder : "sin _cara.asset de perfil";
+        return "CharacterFace: " + string.Join(", ", parts.ToArray()) + "; " + asset;
     }
 
     /// <summary>Los antebrazos que la tabla suelta del codo (INC-133): dónde está cada uno y si tiene ancla. No lanza.</summary>
@@ -2152,6 +2535,25 @@ public static class ClaudeBuildRigsFinal
 
             CheckRoutes(p, roots, log);
 
+            // INC-134: los clips de la familia traen curvas sobre Lienzo/Perfil/…; si el prefab aún no tiene ese cuerpo (no corrió «perfil»), esas curvas
+            // quedarían colgadas (el Animator las ignora y CharacterRig_DA131_TodaCurvaApuntaAUnaParteQueExiste falla). No se escribe nada de ese personaje.
+            var profileCurves = 0;
+            foreach (var clip in p.clips)
+            {
+                foreach (var curve in clip.curvas)
+                {
+                    if (IsProfilePath(curve.ruta)) profileCurves++;
+                }
+            }
+
+            var withoutProfile = roots.Where(entry => entry.Value.Find(ProfileRoot) == null).Select(entry => entry.Key).ToList();
+            if (profileCurves > 0 && withoutProfile.Count > 0)
+            {
+                log.Add("ERROR " + p.id + ": los clips traen " + profileCurves + " curvas de perfil y a " + string.Join(", ", withoutProfile.ToArray())
+                    + " le falta «" + ProfileRoot + "»: correr «perfil» antes. No se escribe ningún clip de " + p.id);
+                continue;
+            }
+
             var written = 0;
             foreach (var clip in p.clips)
             {
@@ -2159,8 +2561,15 @@ public static class ClaudeBuildRigsFinal
                 if (WriteClip(p.carpeta, clip, log)) written++;
             }
 
-            log.Add(p.id + ": " + written + "/" + p.clips.Length + " clips reescritos en " + p.carpeta);
+            log.Add(p.id + ": " + written + "/" + p.clips.Length + " clips reescritos en " + p.carpeta
+                + (profileCurves > 0 ? " (" + profileCurves + " curvas de perfil, sobre " + ProfileRoot + ")" : ""));
         }
+    }
+
+    /// <summary>¿Es la ruta de una curva del cuerpo de perfil (INC-134)? Lienzo/Perfil o algo que cuelga de él.</summary>
+    private static bool IsProfilePath(string ruta)
+    {
+        return ruta == ProfileRoot || ruta.StartsWith(ProfileRoot + "/", StringComparison.Ordinal);
     }
 
     private static Type BindingType(CurvaDef curve)

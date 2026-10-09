@@ -3,10 +3,32 @@
 #
 #     python3 claudeDocs/tasks/Personajes/herramientas/preparar_expresion.py <id> <emocion> <imagen>            # informe y composites
 #     python3 claudeDocs/tasks/Personajes/herramientas/preparar_expresion.py <id> <emocion> <imagen> --aplicar  # escribe
+#     python3 claudeDocs/tasks/Personajes/herramientas/preparar_expresion.py <id> abiertos <imagen> --vista perfil   # (INC-134) la cara del cuerpo de perfil
 #     python3 claudeDocs/tasks/Personajes/herramientas/preparar_expresion.py --autoprueba                       # se prueba solo
 #         <id> = nino (el que ya tiene cabeza propia: papa, mama y nina cuando entreguen su arte final)
 #         <emocion> = neutra | alegria | sorpresa | preocupacion | concentracion | sueno | parpadeo_medio | parpadeo_cerrado
-#                     (y las bocas de hablar: boca_a | boca_e | boca_u, que solo escriben la boca)
+#                     (y las bocas de hablar: boca_a | boca_e | boca_u, que solo escriben la boca). ALIAS (09/10/2026, la entrega nueva llama a las
+#                     expresiones «ojos abiertos» y «ojos cerrados»): abiertos = neutra y cerrados = parpadeo_cerrado (tambien abierto y cerrado).
+#                     El parpadeo es de DOS cuadros (INC-135): ojos_neutra (abiertos) y ojos_parpadeo_cerrado; el cuadro medio ya no hace falta.
+#         --vista frente|perfil   (INC-134, 09/10/2026) frente = lo de siempre. perfil = la cara del cuerpo de PERFIL: escribe en
+#                       Assets/Game/Art/Characters/<Carpeta>/Perfil/ char_<id>_perfil_ojos_<...>, char_<id>_perfil_boca_<...> y
+#                       char_<id>_perfil_cara_base, y anota el rect en los nodos CaraBase, Ojos y Boca de la entrada «perfil» de arte_final.json. Solo por
+#                       REGISTRO (no hay heuristica de cabeza de perfil): sale de arte_final.json, «perfil.registro» (la transformacion lienzo-de-entrega ->
+#                       lienzo-del-rig de la entrega de perfil, que escribe preparar_perfil.py) o, si la entrega de perfil comparte lienzo con la de
+#                       frente, de «registro». La caja de la cara de perfil se guarda APARTE, en «registro.cara_perfil» (coordenadas del lienzo de la entrega
+#                       de perfil): la caja de frente, «registro.cara», no se toca. Si la imagen no esta en el lienzo del registro, se rechaza. La
+#                       separacion en ojos, boca y base es la misma heuristica de siempre (nariz en la franja central…): en un perfil la nariz y la
+#                       boca caen al borde de delante, asi que lo normal es revisar el informe y corregir con --asigna; las
+#                       composites muestran la cara sobre char_<id>_perfil_cabeza si ya esta puesta.
+#                       LA CARA DE PERFIL SE SEPARA CON separa_perfil() (no con separa(), que supone una cara de frente): rubor = los pixeles rosados (sin el blanco
+#                       del ojo); boca = la mayor componente (8 vecinos, sin dilatar) cuyo centro cae en el 30 % de abajo de la cara, con lo que le cuelga
+#                       (labios rosados, comisuras, el pliegue); ojos = todo lo demas (ojo, parpados, cejas). cara_base de perfil = SOLO el rubor: Papa no tiene y
+#                       no se escribe. La boca y el rubor salen una sola vez, de la expresion abierta; la cerrada solo escribe los ojos. El registro de perfil
+#                       trae «espejo: true» (lo escribe preparar_perfil.py: las cuatro entregas miran a la izquierda): la expresion se ESPEJA igual que las partes
+#                       antes de recortarla. La caja comun de la cara sale de la expresion ABIERTA (haz primero «abiertos» y despues «cerrados»).
+#         --limpia-cerrados / --no-limpia-cerrados   (por defecto SI; Santiago, 09/10/2026) la cara de ojos cerrados trae un rastro casi blanco del ojo abierto
+#                       bajo los parpados (Nino 241 px, un arco tenue): se quitan los pixeles casi blancos (R, G y B > 215) y su halo (los vecinos claros y
+#                       semitransparentes), que no son trazo, y se informa cuantos fueron. Solo en la emocion parpadeo_cerrado de la vista de perfil.
 #         --registrada [CARPETA_FRENTE]   (06/10/2026) la expresion llega en el MISMO lienzo que las partes (1300x1500, registradas entre si): su
 #                       sitio sale de la transformacion lienzo-de-entrega -> lienzo-del-rig que preparar_arte_final.py uso con las partes
 #                       (arte_final.json, «registro»), no de una heuristica. Se activa SOLA si el personaje tiene registro y la imagen mide lo
@@ -70,10 +92,11 @@ import re
 import subprocess
 import sys
 import tempfile
+import unicodedata
 from collections import Counter
 
 try:
-    from PIL import Image, ImageChops, ImageDraw, ImageFilter
+    from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
 except ImportError:  # pragma: no cover
     sys.exit("hace falta Pillow: pip install pillow")
 
@@ -101,6 +124,11 @@ EMOCIONES = {
     "boca_e": (None, "boca_e"),
     "boca_u": (None, "boca_u"),
 }
+# Lo que la entrega nueva (09/10/2026) llama «ojos abiertos» y «ojos cerrados»: los dos cuadros del parpadeo (INC-135). Y las bocas de hablar,
+# con la letra sola.
+ALIAS_EMOCION = {"abiertos": "neutra", "abierto": "neutra", "cerrados": "parpadeo_cerrado", "cerrado": "parpadeo_cerrado",
+                 "a": "boca_a", "e": "boca_e", "u": "boca_u"}
+VISTAS = ("frente", "perfil")
 CAPAS = ("ojos", "boca", "nariz", "rubor")
 CODIGO = {"ojos": 1, "boca": 2, "nariz": 3, "rubor": 4, "nada": 0}
 NOMBRE_CODIGO = {v: k for k, v in CODIGO.items()}
@@ -387,6 +415,125 @@ def informe_separacion(res):
         print("AVISO", a)
 
 
+def separa_perfil(im, correcciones=()):
+    """
+    Separa una cara de PERFIL (INC-134) en ojos (con cejas), boca y rubor; la cabeza (nariz, oreja) trae la nariz, asi que no hay capa de nariz. Devuelve una
+    Separacion como separa(): capas «ojos», «boca» y «base» (= solo el rubor) y el resumen de CAPAS (nariz siempre vacia). La regla, comprobada en las ocho
+    imagenes de la entrega del 09/10/2026 (separa() no sirve: supone la boca en el centro y una nariz en la capa):
+      - rubor: los pixeles rosados (la misma prueba HSV de separa(), que deja fuera el blanco del ojo);
+      - boca: la mayor componente (8 vecinos, SIN dilatar: dilatada se une al contorno de la cara y a los ojos) cuyo centro cae en el 30 % de abajo de la
+        caja de la cara; y lo que le cuelga: componentes cuyo centro cae en su caja ensanchada (comisuras, el pliegue) y las manchas rosadas de los labios;
+      - ojos: todo lo demas (el ojo, los parpados, las cejas); lo que cae dentro de una mancha de rubor (rayitas, aliasing) es del rubor.
+    «correcciones» = [(capa, (x0, y0, x1, y1))] en pixeles de la imagen, como en separa().
+    """
+    im = im.convert("RGBA")
+    w, h = im.size
+    res = Separacion()
+    res.tamano = (w, h)
+    alfa = im.getchannel("A")
+    opaco = _binaria(alfa, lambda v: v >= UMBRAL_ALFA)
+    caja = opaco.getbbox()
+    if caja is None:
+        raise ValueError("la imagen esta vacia (todo transparente)")
+    res.caja = caja
+    W, H = caja[2] - caja[0], caja[3] - caja[1]
+    res.eje = (caja[0] + caja[2]) / 2.0
+    d = max(1, int(round(0.006 * max(W, H))))
+    th, ts, tv = im.convert("RGB").convert("HSV").split()
+    brillante = _y(_binaria(ts, lambda v: v >= SAT_ROSA * 255), _binaria(tv, lambda v: v >= VAL_ROSA * 255), _binaria(alfa, lambda v: v >= 8))
+    rosa = ImageChops.lighter(
+        _y(_binaria(th, lambda v: v >= TONO_ROSA[0] or v <= TONO_ROSA[1]), brillante),
+        _y(_binaria(th, lambda v: v >= TONO_ROSA[0] or v <= TONO_ROSA_BORDE), _binaria(alfa, lambda v: v < ALFA_BORDE), brillante))
+    oscuro = ImageChops.subtract(_binaria(alfa, lambda v: v >= 8), rosa)
+    rot_o, comp_o = etiqueta(oscuro)
+    rot_r, comp_r = etiqueta(_dilata(rosa, 2 * d))
+    bajas = [c for c in comp_o.values() if c.cy >= caja[1] + 0.70 * H]
+    boca = max(bajas, key=lambda c: c.area) if bajas else None
+    parches = []
+    if boca is None:
+        res.avisos.append("no encuentro la boca (una componente oscura cuyo centro caiga en el 30 % de abajo de la cara); usa --asigna boca:x0,y0,x1,y1")
+        caja_b = None
+    else:
+        boca.capa = "boca"
+        ex, ey = 0.08 * W, 0.10 * H
+        caja_b = (boca.x0 - ex, boca.y0 - ey, boca.x1 + ex, boca.y1 + ey)
+    for c in comp_r.values():
+        c.capa = "boca" if (caja_b is not None and c.dentro_de(caja_b)) else "rubor"
+        if c.capa == "rubor":
+            parches.append(c)
+    for c in comp_o.values():
+        if c.capa is not None:
+            continue
+        if caja_b is not None and c.dentro_de(caja_b) and c.area < 0.5 * boca.area:
+            c.capa = "boca"
+        elif any(c.dentro_de(p.caja, 2 * d) and c.ancho <= p.ancho + 4 * d and c.alto <= p.alto + 4 * d for p in parches):
+            c.capa = "rubor"
+        else:
+            c.capa = "ojos"
+    tabla_o = bytes(CODIGO[comp_o[i].capa] if i in comp_o and comp_o[i].capa else 0 for i in range(256))
+    tabla_r = bytes(CODIGO[comp_r[i].capa] if i in comp_r and comp_r[i].capa else 0 for i in range(256))
+    cl_o = _y(Image.frombytes("L", (w, h), bytes(rot_o).translate(tabla_o)), _binaria(oscuro, lambda v: v))
+    cl_r = _y(Image.frombytes("L", (w, h), bytes(rot_r).translate(tabla_r)), _binaria(rosa, lambda v: v))
+    clases = bytearray(ImageChops.add(cl_o, cl_r).tobytes())
+    datos_a = alfa.tobytes()
+    for capa, (x0, y0, x1, y1) in correcciones:
+        x0, y0, x1, y1 = max(0, int(x0)), max(0, int(y0)), min(w, int(x1)), min(h, int(y1))
+        for y in range(y0, y1):
+            for x in range(x0, x1):
+                if datos_a[y * w + x]:
+                    clases[y * w + x] = CODIGO[capa]
+    clase_im = Image.frombytes("L", (w, h), bytes(clases))
+    res.clases = clase_im
+
+    def capa_de(codigos):
+        mascara = clase_im.point(lambda v, cs=tuple(codigos): 255 if v in cs else 0)
+        out = im.copy()
+        out.putalpha(ImageChops.multiply(alfa, mascara))
+        return out
+
+    for nombre, codigos in (("ojos", (1,)), ("boca", (2,)), ("base", (3, 4))):
+        res.capas[nombre] = capa_de(codigos)
+    for nombre in CAPAS:
+        m = clase_im.point(lambda v, k=CODIGO[nombre]: 255 if v == k else 0)
+        vis = ImageChops.multiply(m, opaco)
+        res.resumen[nombre] = {"area": vis.histogram()[255], "caja": vis.getbbox(),
+                               "componentes": sum(1 for c in list(comp_o.values()) + list(comp_r.values()) if c.capa == nombre)}
+    perdidos = _y(_binaria(alfa, lambda v: v >= UMBRAL_ALFA), clase_im.point(lambda v: 255 if v == 0 else 0)).histogram()[255]
+    if perdidos:
+        res.avisos.append("%d pixeles opacos sin capa (aislados de todo): se descartan; --asigna los recoge" % perdidos)
+    if res.resumen["rubor"]["area"] == 0:
+        res.avisos.append("no hay rubor: la cara de perfil no lleva cara_base (se espera en Papa)")
+    return res
+
+
+BLANCO_CASI = 215     # un pixel con R, G y B por encima de esto es «casi blanco»: el blanco del ojo abierto
+HALO_CLARO = 150      # el halo de ese blanco: vecinos mas claros que esto...
+HALO_ALFA = 200       # ...y semitransparentes (por debajo de esto)
+HALO_RADIO = 2        # a esta distancia del blanco (px) como mucho
+
+
+def limpia_cerrados(im):
+    """
+    El rastro casi blanco que el ojo ABIERTO deja en la cara de ojos CERRADOS (un arco tenue bajo los parpados): quita (alfa a cero) los pixeles casi blancos
+    —R, G y B por encima de BLANCO_CASI— y su halo (los vecinos a HALO_RADIO pixeles, claros y semitransparentes: el borde difuso del blanco). El trazo es oscuro y
+    no se toca: ni los parpados ni las cejas ni el contorno. Devuelve (imagen limpia, pixeles casi blancos quitados, pixeles de halo quitados); los
+    conteos son de pixeles con alfa >= 12 (lo visible).
+    """
+    im = im.convert("RGBA")
+    r, g, b, a = im.split()
+    minimo = ImageChops.darker(ImageChops.darker(r, g), b)
+    blanco = _y(_binaria(minimo, lambda v: v > BLANCO_CASI), _binaria(a, lambda v: v > 0))
+    cerca = _dilata(blanco, HALO_RADIO)
+    halo = _y(cerca, _binaria(minimo, lambda v: v > HALO_CLARO), _binaria(a, lambda v: 0 < v < HALO_ALFA), ImageChops.invert(blanco))
+    quitar = ImageChops.lighter(blanco, halo)
+    visible = _binaria(a, lambda v: v >= 12)
+    n_blanco = _y(blanco, visible).histogram()[255]
+    n_halo = _y(halo, visible).histogram()[255]
+    out = im.copy()
+    out.putalpha(ImageChops.multiply(a, ImageChops.invert(quitar)))
+    return out, n_blanco, n_halo
+
+
 # ============================================================================ 3. medir la cabeza y colocar la cara
 
 
@@ -575,15 +722,34 @@ def compone_cabeza(cab, capas_rect, guias=False):
     return base.convert("RGB")
 
 
-def candidatas_png(res, cols, carpeta_png, pid, emocion):
-    """Escribe en carpeta_png los PNG (ya reducidos) y devuelve {nombre de sprite: ruta}: lo que PNG_EXTRA necesita."""
+def pliega(texto):
+    """Minusculas y sin tildes ni enes (NFKD): para comparar nombres de archivo."""
+    return "".join(c for c in unicodedata.normalize("NFKD", texto) if not unicodedata.combining(c)).lower()
+
+
+def prefijo_de(pid, vista="frente"):
+    """El prefijo de los sprites de la cara de una vista: char_<id> (frente) o char_<id>_perfil (perfil, INC-134)."""
+    return "char_%s_perfil" % pid if vista == "perfil" else "char_%s" % pid
+
+
+def carpeta_destino(pid, vista="frente"):
+    """Donde escribe --aplicar la cara de esa vista: Expresiones/ (frente) o Perfil/ (perfil) de la carpeta del personaje. Lo mismo que dice P.subcarpeta_de por el nombre."""
+    return os.path.join(P.PERSONAJES_ARTE, P.PERSONAJES[pid][1], "Perfil" if vista == "perfil" else "Expresiones")
+
+
+def capas_de(pid, emocion, vista="frente", con_base=True):
+    """[(capa, nombre del sprite)] que escribe esta emocion en esa vista: (ojos, boca y, con_base, base), sin las capas que esa emocion no cambia."""
     ojos_n, boca_n = EMOCIONES[emocion]
+    pref = prefijo_de(pid, vista)
+    capas = [("ojos", ojos_n), ("boca", boca_n), ("base", "cara_base" if con_base else None)]
+    return [(clave, "%s_%s" % (pref, n)) for clave, n in capas if n]
+
+
+def candidatas_png(res, cols, carpeta_png, pid, emocion, vista="frente"):
+    """Escribe en carpeta_png los PNG (ya reducidos) y devuelve {nombre de sprite: ruta}: lo que PNG_EXTRA necesita."""
     salida = {}
     os.makedirs(carpeta_png, exist_ok=True)
-    for clave, nombre in (("ojos", ojos_n), ("boca", boca_n), ("base", "cara_base")):
-        if nombre is None:
-            continue
-        sprite = "char_%s_%s" % (pid, nombre)
+    for clave, sprite in capas_de(pid, emocion, vista):
         ruta = os.path.join(carpeta_png, sprite + ".png")
         res.capas_salida[clave].save(ruta)
         salida[sprite] = ruta
@@ -713,6 +879,36 @@ def registro_de(pid, carpeta_frente=None):
     return registro, origen, errores
 
 
+def registro_perfil(pid):
+    """
+    El registro de la entrega de PERFIL (INC-134): la transformacion lienzo-de-entrega -> lienzo-del-rig con la que se coloco el cuerpo de perfil de ese
+    personaje. Sale de arte_final.json: «perfil.registro» (lo escribe preparar_perfil.py: lienzo, escala, tx, ty y, si la mide, cabeza) o, si la entrega
+    de perfil comparte lienzo y registro con la de frente, el «registro» de frente. La caja de la cara de perfil (coordenadas de ESE lienzo) es
+    «registro.cara_perfil»; si ya esta, entra como «cara» para que las demas expresiones la hereden. La caja de cara de FRENTE no entra aqui. Devuelve
+    (registro o None, de donde salio, errores); sin errores y sin registro es que no hay nada que decir.
+    """
+    entrada = A.cargar_arte_final().get(pid)
+    if entrada is None:
+        return None, "", ["%s no tiene entrada en arte_final.json: primero preparar_arte_final.py %s <carpeta> --aplicar" % (pid, pid)]
+    perfil = entrada.get("perfil")
+    if perfil is None:
+        return None, "", ["%s no tiene «perfil» en arte_final.json: primero preparar_perfil.py %s <carpeta> --aplicar (escribe sus piezas, sus nodos y su registro)" % (pid, pid)]
+    if perfil.get("registro"):
+        base, origen = perfil["registro"], "arte_final.json (perfil.registro)"
+    elif entrada.get("registro"):
+        base, origen = entrada["registro"], "arte_final.json (registro de frente: la entrega de perfil comparte su lienzo)"
+    else:
+        return None, "", ["%s no tiene registro: ni «perfil.registro» ni «registro» en arte_final.json" % pid]
+    registro = {k: base[k] for k in ("lienzo", "escala", "tx", "ty", "cabeza", "espejo") if k in base}   # «espejo»: la entrega de perfil mira a la izquierda y las partes se espejaron (preparar_perfil.py)
+    caja = entrada.get("registro", {}).get("cara_perfil")
+    if caja:
+        registro["cara"] = list(caja)
+    faltan = [k for k in ("lienzo", "escala", "tx", "ty") if k not in registro]
+    if faltan:
+        return None, origen, ["el registro de perfil de %s no trae %s" % (pid, ", ".join(faltan))]
+    return registro, origen, []
+
+
 def caja_de_cara(entrada, registro, reubica=False):
     """
     La caja del lienzo de la entrega que se guarda como cara, y de donde salio. Si el registro ya trae «cara» (la fijo la neutra) esa; si no,
@@ -725,7 +921,7 @@ def caja_de_cara(entrada, registro, reubica=False):
         return list(registro["cara"]), "la del registro (la fijo la neutra)", contenido
     w, h = contenido[2] - contenido[0], contenido[3] - contenido[1]
     ml, mt, mr, mb = MARGEN_CARA
-    cab = registro["cabeza"]
+    cab = registro.get("cabeza") or [0, 0, entrada.width, entrada.height]   # un registro de perfil puede no medir la cabeza: sin recorte a ella
     caja = [max(cab[0], int(math.floor(contenido[0] - ml * w))), max(cab[1], int(math.floor(contenido[1] - mt * h))),
             min(cab[2], int(math.ceil(contenido[2] + mr * w))), min(cab[3], int(math.ceil(contenido[3] + mb * h)))]
     return caja, "el contenido de esta imagen con margenes %s, recortado a la cabeza" % (MARGEN_CARA,), contenido
@@ -738,12 +934,17 @@ def reduce_a(im, k):
     return im.resize((max(1, int(round(im.width * k))), max(1, int(round(im.height * k)))), Image.LANCZOS)
 
 
-def prepara_registrada(entrada, registro, args):
+def prepara_registrada(entrada, registro, args, vista="frente", limpia=False):
     """
     La expresion por REGISTRO: recorta la caja comun de la cara, separa ojos, boca y base y los reduce a la densidad de las partes. Devuelve
     (Separacion con capas_salida, Colocacion, caja de la cara, avisos). El rect de las tres capas es la caja mapeada con la MISMA
     transformacion que las partes: no hay heuristica de escala ni de sitio.
+    INC-134: con vista = «perfil» la separacion es separa_perfil(); si el registro trae «espejo» (la entrega de perfil mira a la izquierda) la expresion se
+    ESPEJA antes de recortar, igual que las partes, y la caja de la cara y la de la cabeza estan en el lienzo ya espejado; con «limpia» (la cara de ojos cerrados)
+    se le quita antes el rastro casi blanco del ojo abierto (limpia_cerrados): res.limpieza = (casi blancos, halo).
     """
+    if registro.get("espejo"):
+        entrada = ImageOps.mirror(entrada)
     if list(entrada.size) != list(registro["lienzo"]):
         raise ValueError("la expresion mide %dx%d y las partes %dx%d: no estan en el mismo lienzo (sin registro, usa el modo por heuristica)"
                          % (entrada.width, entrada.height, registro["lienzo"][0], registro["lienzo"][1]))
@@ -753,16 +954,101 @@ def prepara_registrada(entrada, registro, args):
         raise ValueError("lo que pinta esta expresion %s se sale de la caja de la cara %s (%s): con otra caja la neutra y las que ya estan "
                          "puestas se desalinean; --reubica en la NEUTRA recalcula la caja (y hay que volver a exportar las demas)" % (contenido, caja, origen))
     recorte = entrada.crop(tuple(caja))
-    res = separa(recorte, parsea_asigna(args.asigna))
+    limpieza = None
+    if limpia:
+        recorte, n_blanco, n_halo = limpia_cerrados(recorte)
+        limpieza = (n_blanco, n_halo)
+    res = (separa_perfil if vista == "perfil" else separa)(recorte, parsea_asigna(args.asigna))
+    res.limpieza = limpieza
     s = registro["escala"]
     k = min(1.0, args.densidad * s, float(args.max_lado) / max(recorte.size))
     res.capas_salida = {c: reduce_a(v, k) for c, v in res.capas.items()}
     col = Colocacion()
     col.rect = F.caja_a_lienzo(registro, caja)
     col.s, col.fraccion = (col.rect[2] - col.rect[0]) / float(recorte.width), 0.0
-    res.registro_info = {"caja": caja, "origen": origen, "contenido": contenido, "k": k, "salida": res.capas_salida["ojos"].size, "entrada": recorte.size}
+    res.registro_info = {"caja": caja, "origen": origen, "contenido": contenido, "k": k, "salida": res.capas_salida["ojos"].size, "entrada": recorte.size,
+                         "espejo": bool(registro.get("espejo"))}
     # cuanto cabe, para el informe: los extremos de ojos y cejas, la boca y el rubor dentro del ovalo de la cara y la franja de la barbilla
     return res, col, caja, avisos
+
+
+# ============================================================================ 4c. la cara de PERFIL (INC-134)
+
+
+def composites_perfil(pid, emocion, res, col, salida):
+    """
+    Los composites del informe de la cara de perfil: las tres capas separadas y la cara puesta en su rect, sobre char_<id>_perfil_cabeza si esa pieza ya
+    esta en el repo (con su rect de la entrada «perfil» de arte_final.json) y, si no, sobre un fondo liso del tamano del rect.
+    """
+    from types import SimpleNamespace
+    os.makedirs(salida, exist_ok=True)
+    rutas = []
+    ruta = os.path.join(salida, "%s_perfil_%s_capas.png" % (pid, emocion))
+    capas_separadas(res).save(ruta)
+    rutas.append(ruta)
+    capas = {k: (res.capas_salida[k], col.rect) for k in ("base", "ojos", "boca")}
+    png_cab = P._png_de(P.PERSONAJES[pid][1], "char_%s_perfil_cabeza" % pid)
+    cuello = next((n for n in A.cargar_arte_final().get(pid, {}).get("perfil", {}).get("nodos", []) if n["nombre"] == "Cuello"), None)
+    if png_cab and cuello and cuello.get("rect"):
+        cab = SimpleNamespace(imagen=Image.open(png_cab).convert("RGBA"), rect=tuple(cuello["rect"]))
+        hoja = compone_cabeza(cab, capas)
+    else:
+        w, h = col.rect[2] - col.rect[0], col.rect[3] - col.rect[1]
+        cab = SimpleNamespace(imagen=Image.new("RGBA", (max(1, w), max(1, h)), FONDO), rect=tuple(col.rect))
+        hoja = compone_cabeza(cab, capas)
+    ruta = os.path.join(salida, "%s_perfil_%s_cabeza.png" % (pid, emocion))
+    hoja.save(ruta)
+    rutas.append(ruta)
+    return rutas
+
+
+def main_perfil(a, emocion, entrada):
+    """
+    --vista perfil: la cara del cuerpo de perfil, solo por REGISTRO (registro_perfil). Imprime el informe de la separacion, los composites y lo que
+    escribiria; con --aplicar escribe los PNG en Perfil/ y anota el rect en la entrada «perfil» de arte_final.json y la caja en registro.cara_perfil.
+    """
+    registro, origen, errores = registro_perfil(a.id)
+    if registro is None or errores:
+        for e in errores or ["%s no tiene registro de perfil en arte_final.json" % a.id]:
+            print("ERROR", e)
+        return 2
+    print("modo REGISTRADO (perfil): la expresion comparte lienzo (%dx%d) con la entrega de perfil; registro %s: x' = %.6f x + %.3f, y' = %.6f y + %.3f" % (
+        registro["lienzo"][0], registro["lienzo"][1], origen, registro["escala"], registro["tx"], registro["escala"], registro["ty"]))
+    cerrada = emocion == "parpadeo_cerrado"
+    if registro.get("espejo"):
+        print("  la entrega de perfil MIRA A LA IZQUIERDA (registro.espejo): la expresion se espeja antes de recortarla, como las partes")
+    if cerrada and not registro.get("cara"):
+        print("AVISO la caja comun de la cara sale de la expresion ABIERTA y aun no esta (registro.cara_perfil): corre primero «abiertos»; esta cerrada fijaria una caja distinta")
+    try:
+        res, col, caja, _ = prepara_registrada(entrada, registro, a, vista="perfil", limpia=bool(cerrada and getattr(a, "limpia_cerrados", True)))
+    except ValueError as e:
+        print("ERROR", e)
+        return 2
+    informe_separacion(res)
+    info = res.registro_info
+    if res.limpieza is not None:
+        print("  limpieza de la cara cerrada (--limpia-cerrados): %d pixeles casi blancos y %d de halo quitados del rastro del ojo abierto" % res.limpieza)
+    elif cerrada:
+        print("  limpieza de la cara cerrada APAGADA (--no-limpia-cerrados): el rastro casi blanco del ojo abierto se queda")
+    print("  caja de la cara de perfil en el lienzo de la entrega%s: %s (%s); contenido de esta imagen %s" % (" (ya espejado)" if info["espejo"] else "", caja, info["origen"], info["contenido"]))
+    print("  recorte %dx%d -> textura %dx%d (x %.3f: %.2f texeles por px del lienzo del rig%s, tope --max-lado %d)" % (
+        info["entrada"][0], info["entrada"][1], info["salida"][0], info["salida"][1], info["k"], info["k"] / registro["escala"],
+        "" if a.densidad else " (sin reducir por densidad)", a.max_lado))
+    print("  rect comun de CaraBase, Ojos y Boca de perfil (lienzo de 1024): %s, la caja mapeada con la transformacion de la entrega de perfil" % col.rect)
+    rutas = composites_perfil(a.id, emocion, res, col, a.salida)
+    print("\ncomposites:")
+    for r in rutas:
+        print("  " + r)
+    hay_base = P._png_de(P.PERSONAJES[a.id][1], "char_%s_perfil_cara_base" % a.id) is not None
+    if emocion == "neutra":
+        hay_base = False   # la neutra fija la caja de la cara de perfil: la base (nariz y rubor) se escribe con ella
+    print("\nescribiria (con --aplicar), en Assets/Game/Art/Characters/%s/Perfil/:" % P.PERSONAJES[a.id][1])
+    for _, sprite in capas_de(a.id, emocion, "perfil", con_base=bool(a.base or not hay_base)):
+        print("  %s.png" % sprite)
+    print("  arte_final.json: rect %s en CaraBase, Ojos y Boca de «perfil» y registro.cara_perfil %s; y regenera rig_articulaciones.json y clips_personajes.json" % (col.rect, caja))
+    if not a.aplicar:
+        return 0
+    return 1 if aplica(a.id, emocion, res, col, a, hay_base, vista="perfil") else 0
 
 
 # ============================================================================ 5. aplicar
@@ -772,7 +1058,35 @@ def carpeta_expresiones(pid):
     return os.path.join(P.PERSONAJES_ARTE, P.PERSONAJES[pid][1], "Expresiones")
 
 
-def bloque_local(pid):
+def bloque_local_perfil(pid):
+    """Las ordenes para la sesion local tras escribir la cara de PERFIL (INC-134): no hay «orden» ni «clips» que rehacer, la cara no cambia la coreografia."""
+    prefab, carpeta, _ = P.PERSONAJES[pid]
+    return """
+==================== Sesion local (Santiago), con el Editor abierto ====================
+ 0. git pull   (trae esta rama con la cara de perfil, arte_final.json y rig_articulaciones.json)
+ 1. Copiar el generador (el Editor crea el .meta solo, nunca a mano):
+      Copy-Item claudeDocs/tasks/Personajes/herramientas/BuildRigsFinal.cs.txt Assets/Editor/ClaudeBuildRigsFinal.cs
+ 2. Recompilar y esperar:   pwsh -NoProfile -File claudeDocs/tasks/OE4/herramientas/editor.ps1 recompile
+ 3. Por coplay execute_script, EN ESTE ORDEN (cada una devuelve su log):
+      ClaudeBuildRigsFinal.Execute("estado")     // antes
+      ClaudeBuildRigsFinal.Execute("perfil")     // Lienzo/Perfil y la cara de perfil cableada en CharacterFace (idempotente)
+      ClaudeBuildRigsFinal.Execute("sprites")    // asigna los PNG de Perfil/, el rect comun y crea o actualiza char_%(pid)s_perfil_cara.asset
+      ClaudeBuildRigsFinal.Execute("estado")     // despues
+ 4. Comprobar el set de cara de perfil: Assets/Game/Art/Characters/%(carpeta)s/Perfil/char_%(pid)s_perfil_cara.asset y que la Image de CaraBase, Ojos
+    y Boca bajo Lienzo/Perfil/Tronco/Cuello/Cabeza de %(prefab)s.prefab tenga sprite y el mismo rect.
+    git diff -U0 Assets/Game/Prefabs/Characters   (no debe QUITAR lineas «--- !u!»)
+ 5. Pruebas:   pwsh -NoProfile -File claudeDocs/tasks/OE4/herramientas/editor.ps1 tests-edit CharacterFace
+               pwsh -NoProfile -File claudeDocs/tasks/OE4/herramientas/editor.ps1 tests-edit CharacterRig_
+ 6. Borrar el andamiaje:   Remove-Item Assets/Editor/ClaudeBuildRigsFinal.cs, Assets/Editor/ClaudeBuildRigsFinal.cs.meta
+ 7. git add Assets/Game/Art/Characters/%(carpeta)s Assets/Game/Prefabs/Characters/%(prefab)s.prefab Assets/Game/Prefabs/Characters/%(prefab)s.prefab.meta
+      git add claudeDocs/tasks/Personajes/herramientas/arte_final.json claudeDocs/tasks/Personajes/herramientas/rig_articulaciones.json
+========================================================================================
+""" % {"pid": pid, "prefab": prefab, "carpeta": carpeta}
+
+
+def bloque_local(pid, vista="frente"):
+    if vista == "perfil":
+        return bloque_local_perfil(pid)
     prefab, carpeta, _ = P.PERSONAJES[pid]
     return """
 ==================== Sesion local (Santiago), con el Editor abierto ====================
@@ -812,26 +1126,33 @@ def corre(args, etiqueta):
     return r.returncode
 
 
-def actualiza_tabla(pid, rect, con_base=True, cara=None):
+def actualiza_tabla(pid, rect, con_base=True, cara=None, vista="frente"):
     """
     Pone el rect comun en CaraBase, Ojos y Boca de la entrada de arte_final.json (CaraBase se crea si falta, antes de Ojos). Con «cara» (modo
     registrado) guarda tambien la caja del lienzo de la entrega que es la cara (registro.cara): comun a todas las expresiones.
+    En la vista de PERFIL (INC-134) los nodos son los de la entrada «perfil» (Lienzo/Perfil/Tronco/Cuello/Cabeza/…) y la caja se guarda APARTE, en
+    registro.cara_perfil: la de frente (registro.cara) no se toca.
     """
     personajes = A.cargar_arte_final()
     if pid not in personajes:
         raise KeyError("%s no tiene entrada en arte_final.json: primero preparar_arte_final.py %s <carpeta>" % (pid, pid))
-    nodos = personajes[pid]["nodos"]
-    padre = A.T + "/Cuello/Cabeza"
+    if vista == "perfil":
+        perfil = personajes[pid].get("perfil")
+        if perfil is None:
+            raise KeyError("%s no tiene «perfil» en arte_final.json: primero preparar_perfil.py %s <carpeta>" % (pid, pid))
+        nodos, padre, base = perfil["nodos"], A.PT + "/Cuello/Cabeza", "char_%s_perfil_cara_base" % pid
+    else:
+        nodos, padre, base = personajes[pid]["nodos"], A.T + "/Cuello/Cabeza", "char_%s_cara_base" % pid
     centro = [(rect[0] + rect[2]) // 2, (rect[1] + rect[3]) // 2]
     if not any(n["nombre"] == "CaraBase" for n in nodos):
         i = next(k for k, n in enumerate(nodos) if n["nombre"] == "Ojos")
         nodos.insert(i, {"nombre": "CaraBase", "tipo": "imagen", "padre": padre, "punto": centro, "imagen": "CaraBase",
-                         "sprite": "char_%s_cara_base" % pid, "rect": list(rect)})
+                         "sprite": base, "rect": list(rect)})
     for n in nodos:
         if n["nombre"] in ("CaraBase", "Ojos", "Boca"):
             n["rect"], n["punto"] = list(rect), centro
     if cara is not None:
-        personajes[pid].setdefault("registro", {})["cara"] = [int(v) for v in cara]
+        personajes[pid].setdefault("registro", {})["cara_perfil" if vista == "perfil" else "cara"] = [int(v) for v in cara]
     A.guardar_arte_final(personajes)
 
 
@@ -843,33 +1164,31 @@ def rect_vigente(pid):
     return list(n["rect"]) if n else None
 
 
-def aplica(pid, emocion, res, col, args, hay_base):
-    carpeta = carpeta_expresiones(pid)
+def aplica(pid, emocion, res, col, args, hay_base, vista="frente"):
+    carpeta = carpeta_destino(pid, vista)
     os.makedirs(carpeta, exist_ok=True)
-    ojos_n, boca_n = EMOCIONES[emocion]
-    print("\n== Aplicando al repo ==")
-    escribe = []
-    if ojos_n:
-        escribe.append(("ojos", ojos_n))
-    if boca_n:
-        escribe.append(("boca", boca_n))
-    if args.base or not hay_base:
-        escribe.append(("base", "cara_base"))
-    for clave, nombre in escribe:
-        ruta = os.path.join(carpeta, "char_%s_%s.png" % (pid, nombre))
+    print("\n== Aplicando al repo (%s) ==" % vista)
+    for clave, sprite in capas_de(pid, emocion, vista, con_base=bool(args.base or not hay_base)):
+        ruta = os.path.join(carpeta, sprite + ".png")
         existia = os.path.isfile(ruta)
+        if vista == "perfil" and res.capas_salida[clave].getchannel("A").getbbox() is None:
+            print("  vacia     %s: no hay nada de esta capa (%s) y no se escribe" % (os.path.relpath(ruta, P.RAIZ), "el rubor: Papa no lo lleva" if clave == "base" else clave))
+            continue
         res.capas_salida[clave].save(ruta)
         print("  %s %s" % ("sustituye" if existia else "nuevo    ", os.path.relpath(ruta, P.RAIZ)))
-    actualiza_tabla(pid, col.rect, cara=getattr(res, "registro_info", {}).get("caja"))
-    print("  arte_final.json: rect %s en CaraBase, Ojos y Boca de %s%s" % (col.rect, pid, "; registro.cara %s" % getattr(res, "registro_info")["caja"]
-                                                                          if hasattr(res, "registro_info") else ""))
+    actualiza_tabla(pid, col.rect, cara=getattr(res, "registro_info", {}).get("caja"), vista=vista)
+    destino = "«perfil» de arte_final.json" if vista == "perfil" else "arte_final.json"
+    caja = "registro.cara_perfil" if vista == "perfil" else "registro.cara"
+    print("  %s: rect %s en CaraBase, Ojos y Boca de %s%s" % (destino, col.rect, pid, "; %s %s" % (caja, getattr(res, "registro_info")["caja"])
+                                                              if hasattr(res, "registro_info") else ""))
     py = sys.executable
     fallos = 0
     fallos += 1 if corre([py, os.path.join(AQUI, "articulaciones.py")], "articulaciones") else 0
     fallos += 1 if corre([py, os.path.join(AQUI, "coreografia.py"), "--valida"], "coreografia") else 0
-    fallos += 1 if corre([py, os.path.join(AQUI, "pose_preview.py"), "--solo", pid, "--salida", args.salida], "pose_preview") else 0
+    if vista != "perfil":   # pose_preview dibuja el cuerpo de frente: la cara de perfil no cambia nada de lo que ve
+        fallos += 1 if corre([py, os.path.join(AQUI, "pose_preview.py"), "--solo", pid, "--salida", args.salida], "pose_preview") else 0
     print("\n%s" % ("TODO EN VERDE" if not fallos else "%d pasos fallaron: revisa antes de entregar" % fallos))
-    print(bloque_local(pid))
+    print(bloque_local(pid, vista))
     return fallos
 
 
@@ -1002,6 +1321,8 @@ def autoprueba():
     malos += 0 if ok else 1
     print("%-46s %s" % ("el rect no depende del tamano de la imagen", "bien %s / %s" % (c.rect, c3.rect) if ok else "FALLA %s / %s" % (c.rect, c3.rect)))
     malos += autoprueba_registrada()
+    malos += autoprueba_perfil()
+    malos += autoprueba_perfil_cara()
     print("la herramienta recupera lo conocido" if not malos else "%d casos mal" % malos)
     return 1 if malos else 0
 
@@ -1074,6 +1395,276 @@ def autoprueba_registrada():
     return malos
 
 
+def autoprueba_perfil():
+    """
+    INC-134 y los alias: (1) «abiertos» y «cerrados» son neutra y parpadeo_cerrado y escriben los ojos de esos cuadros; (2) la vista de perfil escribe
+    char_<id>_perfil_* en Perfil/ y nunca en Expresiones/ (la regla de prefabs.subcarpeta_de y la de los dos .cs.txt); (3) con una entrega de perfil
+    sintetica (el lienzo del Nino) la cara de perfil se coloca por registro, su caja se guarda en registro.cara_perfil SIN tocar registro.cara de frente
+    ni los nodos de frente, y los nodos CaraBase, Ojos y Boca de «perfil» llevan el rect comun; (4) sin «perfil» en arte_final.json avisa y manda a
+    preparar_perfil.py; (5) la tabla de arte_final.json de verdad no se toca (la prueba trabaja sobre una copia).
+    """
+    import shutil
+    from types import SimpleNamespace
+    malos = 0
+    with open(A.ARTE_FINAL_JSON, "rb") as f:
+        bytes_antes = f.read()   # la tabla de verdad no se toca: se compara al final (con el arte de perfil ya aplicado ya no esta «sin perfil»)
+    # --- los alias
+    ok = ALIAS_EMOCION["abiertos"] == "neutra" and ALIAS_EMOCION["cerrados"] == "parpadeo_cerrado" and ALIAS_EMOCION["a"] == "boca_a"
+    ok = ok and all(ALIAS_EMOCION[k] in EMOCIONES for k in ALIAS_EMOCION)
+    malos += 0 if ok else 1
+    print("%-46s %s" % ("alias: abiertos = neutra, cerrados = parpadeo_cerrado", "bien" if ok else "FALLA"))
+    cerr = [n for _, n in capas_de("nino", ALIAS_EMOCION["cerrados"], "perfil", con_base=False)]
+    abie = [n for _, n in capas_de("nino", ALIAS_EMOCION["abiertos"], "perfil")]
+    ok = cerr == ["char_nino_perfil_ojos_parpadeo_cerrado"] and abie == ["char_nino_perfil_ojos_neutra", "char_nino_perfil_boca_0", "char_nino_perfil_cara_base"]
+    malos += 0 if ok else 1
+    print("%-46s %s" % ("alias: los PNG de perfil que escribe cada uno", "bien" if ok else "FALLA %s %s" % (cerr, abie)))
+    # --- las carpetas
+    perfil_ok = all(P.subcarpeta_de(n) == "Perfil" for _, n in capas_de("papa", "alegria", "perfil") + capas_de("papa", "boca_a", "perfil"))
+    frente_ok = all(P.subcarpeta_de(n) == "Expresiones" for _, n in capas_de("papa", "alegria", "frente"))
+    dest_ok = carpeta_destino("papa", "perfil").endswith(os.path.join("Father", "Perfil")) and carpeta_destino("papa").endswith(os.path.join("Father", "Expresiones"))
+    ok = perfil_ok and frente_ok and dest_ok and prefijo_de("nina", "perfil") == "char_nina_perfil" and prefijo_de("nina") == "char_nina"
+    malos += 0 if ok else 1
+    print("%-46s %s" % ("perfil: lo de perfil va a Perfil/, lo de frente a Expresiones/", "bien" if ok else "FALLA"))
+    # --- la vista de perfil con una entrega sintetica, sobre una COPIA de arte_final.json
+    with tempfile.TemporaryDirectory() as tmp:
+        F.entrega_sintetica(tmp)
+        res_f = F.procesa(tmp, "nino")
+        if res_f.errores:
+            print("%-46s %s" % ("perfil: la entrega sintetica no se procesa", "FALLA"))
+            return malos + 1
+        reg = dict(res_f.registro)
+        ruta_tabla = os.path.join(tmp, "arte_final_copia.json")
+        shutil.copy(A.ARTE_FINAL_JSON, ruta_tabla)
+        with open(ruta_tabla, encoding="utf-8") as f:
+            doc = json.load(f)
+        # la copia es «antes de que llegara el arte de perfil»: sin su clave «perfil» ni la caja de la cara de perfil (preparar_perfil.py las escribe en la de verdad)
+        doc["personajes"]["nino"].pop("perfil", None)
+        doc["personajes"]["nino"].get("registro", {}).pop("cara_perfil", None)
+        with open(ruta_tabla, "w", encoding="utf-8") as f:
+            json.dump(doc, f)
+        antes = copy.deepcopy(doc["personajes"]["nino"])
+        reg_rig = P.personaje_rig(P.cargar_rig(), "nino")["perfil"]
+        original = (A.cargar_arte_final, A.guardar_arte_final)
+        A.cargar_arte_final = lambda ruta=ruta_tabla: original[0](ruta)
+        A.guardar_arte_final = lambda personajes, ruta=ruta_tabla: original[1](personajes, ruta)
+        try:
+            # sin «perfil»: se niega y manda a preparar_perfil.py
+            registro, _, errores = registro_perfil("nino")
+            ok = registro is None and any("preparar_perfil.py" in e for e in errores)
+            malos += 0 if ok else 1
+            print("%-46s %s" % ("perfil: sin «perfil» en arte_final.json se niega", "bien" if ok else "FALLA"))
+            try:
+                actualiza_tabla("nino", [0, 0, 10, 10], vista="perfil")
+                ok = False
+            except KeyError:
+                ok = True
+            malos += 0 if ok else 1
+            print("%-46s %s" % ("perfil: actualiza_tabla sin «perfil» no inventa nodos", "bien" if ok else "FALLA"))
+            # con «perfil» (los nodos provisionales del rig y el registro de la entrega sintetica)
+            doc["personajes"]["nino"]["perfil"] = {"nodos": copy.deepcopy(reg_rig["nodos"]), "partes": [], "registro": {k: reg[k] for k in ("lienzo", "escala", "tx", "ty", "cabeza")}}
+            with open(ruta_tabla, "w", encoding="utf-8") as f:
+                json.dump(doc, f)
+            registro, origen, errores = registro_perfil("nino")
+            ok = registro is not None and not errores and "perfil.registro" in origen and "cara" not in registro
+            malos += 0 if ok else 1
+            print("%-46s %s" % ("perfil: el registro sale de «perfil.registro»", "bien" if ok else "FALLA %s %s" % (origen, errores)))
+            cara, _ = cara_sintetica(3)
+            k = 0.5
+            cara = cara.resize((int(cara.width * k), int(cara.height * k)), Image.LANCZOS)
+            cab = registro["cabeza"]
+            pos = ((cab[0] + cab[2]) // 2 - cara.width // 2, cab[1] + int(0.62 * (cab[3] - cab[1])) - cara.height // 2)
+            lienzo = Image.new("RGBA", tuple(registro["lienzo"]), (0, 0, 0, 0))
+            lienzo.alpha_composite(cara, pos)
+            args = SimpleNamespace(reubica=False, asigna=None, densidad=DENSIDAD, max_lado=512)
+            res, col, caja, _ = prepara_registrada(lienzo, registro, args)
+            actualiza_tabla("nino", col.rect, cara=caja, vista="perfil")
+            despues = A.cargar_arte_final()["nino"]
+            nodos_p = {n["nombre"]: n for n in despues["perfil"]["nodos"]}
+            ok = despues["registro"].get("cara_perfil") == list(caja)
+            malos += 0 if ok else 1
+            print("%-46s %s" % ("perfil: la caja se guarda en registro.cara_perfil", "bien" if ok else "FALLA"))
+            ok = despues["registro"].get("cara") == antes["registro"].get("cara") and despues["nodos"] == antes["nodos"] and despues["partes"] == antes["partes"]
+            malos += 0 if ok else 1
+            print("%-46s %s" % ("perfil: la cara y los nodos de frente no se tocan", "bien" if ok else "FALLA"))
+            ok = all(nodos_p[n]["rect"] == list(col.rect) for n in ("CaraBase", "Ojos", "Boca"))
+            malos += 0 if ok else 1
+            print("%-46s %s" % ("perfil: CaraBase, Ojos y Boca de perfil llevan el rect", "bien" if ok else "FALLA"))
+            registro2, _, _ = registro_perfil("nino")
+            ok = registro2.get("cara") == list(caja)
+            malos += 0 if ok else 1
+            print("%-46s %s" % ("perfil: la siguiente expresion hereda la caja", "bien" if ok else "FALLA"))
+            # el registro de perfil sin «cabeza» (preparar_perfil.py puede no medirla): no recorta y no falla
+            sin_cabeza = {k: v for k, v in registro.items() if k not in ("cabeza", "cara")}
+            try:
+                res3, col3, caja3, _ = prepara_registrada(lienzo, sin_cabeza, args)
+                ok = col3.rect is not None
+            except ValueError:
+                ok = False
+            malos += 0 if ok else 1
+            print("%-46s %s" % ("perfil: un registro sin cabeza se admite", "bien" if ok else "FALLA"))
+            # el lienzo de otro tamano se rechaza, como de frente
+            try:
+                prepara_registrada(Image.new("RGBA", (512, 512), (0, 0, 0, 0)), registro, args)
+                ok = False
+            except ValueError:
+                ok = True
+            malos += 0 if ok else 1
+            print("%-46s %s" % ("perfil: otro tamano de lienzo se rechaza", "bien" if ok else "FALLA"))
+            # los composites de perfil se pueden hacer (sin cabeza de perfil en el repo: sobre fondo liso)
+            rutas = composites_perfil("nino", "neutra", res, col, os.path.join(tmp, "comp"))
+            ok = len(rutas) == 2 and all(os.path.isfile(r) for r in rutas)
+            malos += 0 if ok else 1
+            print("%-46s %s" % ("perfil: los composites se escriben", "bien" if ok else "FALLA"))
+        finally:
+            A.cargar_arte_final, A.guardar_arte_final = original
+    # la tabla de verdad sigue como estaba
+    with open(A.ARTE_FINAL_JSON, "rb") as f:
+        ok = f.read() == bytes_antes
+    malos += 0 if ok else 1
+    print("%-46s %s" % ("perfil: arte_final.json de verdad sin tocar", "bien" if ok else "FALLA"))
+    return malos
+
+
+def cara_perfil_sintetica(k=1, con_rubor=True):
+    """
+    Una cara de PERFIL sintetica (como las de la entrega del 09/10/2026) en un lienzo de 256k, MIRANDO A LA DERECHA: una ceja, un ojo (blanco, iris) o su
+    parpado, una boca oscura en el BORDE DE DELANTE y abajo (no en el centro) y un rubor rosa blando; sin nariz (esta en la cabeza). Con «cerrada», el ojo
+    es un parpado y queda un arco casi blanco del ojo abierto. Devuelve (imagen RGBA, {capa: mascara L de lo que le toca}).
+    """
+    n = 256 * k
+    S = lambda *v: tuple(int(round(x * k)) for x in v)
+    capas = {c: Image.new("RGBA", (n, n), (0, 0, 0, 0)) for c in ("ojos", "boca", "rubor")}
+    d = ImageDraw.Draw(capas["ojos"])
+    d.polygon(S(70, 52, 150, 44, 176, 56, 120, 62), fill=(110, 55, 20, 255), outline=(0, 0, 0, 255))   # ceja
+    d.ellipse(S(96, 76, 160, 128), fill=(255, 255, 255, 255), outline=(0, 0, 0, 255), width=2 * k)      # ojo
+    d.ellipse(S(122, 82, 156, 124), fill=(224, 128, 32, 255), outline=(60, 30, 10, 255), width=k)
+    d.ellipse(S(134, 92, 150, 114), fill=(0, 0, 0, 255))
+    d = ImageDraw.Draw(capas["boca"])
+    d.line(S(176, 206, 204, 210, 214, 200), fill=(0, 0, 0, 255), width=4 * k)                            # boca: borde de delante, abajo
+    d.line(S(204, 196, 212, 190), fill=(0, 0, 0, 255), width=3 * k)                                      # y su pliegue
+    m = Image.new("L", (n, n), 0)
+    ImageDraw.Draw(m).ellipse(S(100, 150, 170, 196), fill=200)
+    m = m.filter(ImageFilter.GaussianBlur(4 * k))
+    rosa = Image.new("RGBA", (n, n), (250, 120, 140, 255))
+    rosa.putalpha(m)
+    if con_rubor:
+        capas["rubor"].alpha_composite(rosa)
+    im = Image.new("RGBA", (n, n), (0, 0, 0, 0))
+    for c in ("rubor", "ojos", "boca"):
+        im.alpha_composite(capas[c])
+    verdad = {c: _binaria(capas[c].getchannel("A"), lambda v: v >= UMBRAL_ALFA) for c in capas}
+    return im, verdad
+
+
+def cara_perfil_cerrada_sintetica(k=1):
+    """La misma cara con el ojo CERRADO: un parpado negro y, debajo, el rastro casi blanco y semitransparente del ojo abierto (un arco). Devuelve (imagen, arco: mascara de los pixeles del rastro)."""
+    im, _ = cara_perfil_sintetica(k)
+    S = lambda *v: tuple(int(round(x * k)) for x in v)
+    # quitar el ojo abierto y poner el parpado
+    ojo = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    ImageDraw.Draw(ojo).ellipse(S(94, 74, 162, 130), fill=(255, 255, 255, 255))
+    im.paste(Image.new("RGBA", im.size, (0, 0, 0, 0)), (0, 0), ojo.getchannel("A"))
+    d = ImageDraw.Draw(im)
+    d.line(S(100, 100, 130, 104, 158, 98), fill=(0, 0, 0, 255), width=5 * k)
+    arco = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    da = ImageDraw.Draw(arco)
+    da.arc(S(98, 84, 160, 126), 20, 160, fill=(190, 170, 175, 90), width=4 * k)    # el halo: claro y semitransparente, a un pixel del blanco
+    da.arc(S(98, 84, 160, 126), 20, 160, fill=(255, 255, 255, 200), width=2 * k)   # el rastro casi blanco
+    im.alpha_composite(arco)
+    return im, _binaria(arco.getchannel("A"), lambda v: v > 0)
+
+
+def autoprueba_perfil_cara():
+    """
+    La cara de PERFIL (INC-134, Santiago 09/10/2026): (1) separa_perfil encuentra la boca en el borde de delante y abajo (separa(), que la busca en el centro, no),
+    el rubor es solo lo rosado y los ojos todo lo demas, a dos tamanos de lienzo; (2) la cara que no tiene rubor (Papa) no tiene capa base; (3) limpia_cerrados
+    quita el arco casi blanco y su halo sin tocar el trazo negro y dice cuantos quito; (4) con «espejo» en el registro la expresion se espeja antes de recortar y
+    cae donde manda el registro espejado; (5) --vista perfil rechaza lo que no sea un lienzo registrado; (6) una imagen de perfil sin --vista perfil se rechaza.
+    """
+    import contextlib
+    import io
+    from types import SimpleNamespace
+    malos = 0
+
+    def caso(nombre, ok, detalle=""):
+        nonlocal malos
+        malos += 0 if ok else 1
+        print("%-46s %s" % (nombre, "bien" if ok else "FALLA " + detalle))
+
+    # --- (1) y (2) la separacion
+    for k in (1, 3):
+        im, verdad = cara_perfil_sintetica(k)
+        res = separa_perfil(im)
+        for capa, clave in (("ojos", "ojos"), ("boca", "boca"), ("rubor", "base")):
+            a = _binaria(res.capas[clave].getchannel("A"), lambda v: v >= UMBRAL_ALFA)
+            inter = _y(a, verdad[capa]).histogram()[255]
+            union = ImageChops.lighter(a, verdad[capa]).histogram()[255]
+            iou = inter / float(union)
+            caso("separa_perfil lienzo %dx%d: %s (IoU %.3f)" % (256 * k, 256 * k, capa, iou), iou > 0.93, "IoU %.3f" % iou)
+    r2 = separa_perfil(cara_perfil_sintetica(1, con_rubor=False)[0])
+    caso("una cara sin rubor (Papa): la capa base queda vacia", r2.capas["base"].getchannel("A").getbbox() is None and any("no hay rubor" in a for a in r2.avisos))
+    # --- (3) la limpieza de los ojos cerrados
+    cerr, arco = cara_perfil_cerrada_sintetica(1)
+    n_arco = arco.histogram()[255]
+    limpia, n_blanco, n_halo = limpia_cerrados(cerr)
+    negros = lambda im: _y(_binaria(im.getchannel("A"), lambda v: v >= 200), _binaria(ImageChops.darker(ImageChops.darker(*im.split()[:2]), im.split()[2]), lambda v: v < 60)).histogram()[255]
+    resto = _y(arco, _binaria(limpia.getchannel("A"), lambda v: v > 12)).histogram()[255]
+    caso("limpia_cerrados quita el arco (%d px casi blancos y %d de halo de %d)" % (n_blanco, n_halo, n_arco), n_blanco > 0 and n_halo > 0 and resto <= 0.05 * n_arco, "quedan %d de %d" % (resto, n_arco))
+    caso("limpia_cerrados no toca el trazo negro del parpado ni de la ceja", negros(limpia) >= 0.99 * negros(cerr), "%d contra %d" % (negros(limpia), negros(cerr)))
+    abierta, _ = cara_perfil_sintetica(1)
+    iguales = ImageChops.difference(limpia_cerrados(abierta)[0].getchannel("A"), abierta.getchannel("A")).getbbox()
+    caso("(una cara abierta pasada por limpia_cerrados pierde el blanco del ojo: por eso solo se aplica a la cerrada)", iguales is not None)
+    # --- (4) el espejo del registro
+    with tempfile.TemporaryDirectory() as tmp:
+        F.entrega_sintetica(tmp)
+        res_f = F.procesa(tmp, "nino")
+        reg = dict(res_f.registro)
+    cara, _ = cara_perfil_sintetica(3)
+    cara = cara.resize((cara.width // 2, cara.height // 2), Image.LANCZOS)
+    W, H = reg["lienzo"]
+    pos = (300, 500)
+    lienzo = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    lienzo.alpha_composite(cara, pos)   # la cara en el lienzo de la entrega, SIN espejar (mirando a la derecha); el registro dice que se espeja
+    reg_e = dict(reg, espejo=True, cabeza=[0, 0, W, H])
+    reg_e.pop("cara", None)
+    args = SimpleNamespace(reubica=False, asigna=None, densidad=DENSIDAD, max_lado=512)
+    res, col, caja, _ = prepara_registrada(lienzo, reg_e, args, vista="perfil")
+    ojos = res.resumen["ojos"]["caja"]
+    bo = separa_perfil(cara).resumen["ojos"]["caja"]             # la caja de los ojos en la cara sin espejar
+    ex0, ex1 = W - (pos[0] + bo[2]), W - (pos[0] + bo[0])        # espejada, en el lienzo de la entrega
+    mx0, mx1 = caja[0] + ojos[0], caja[0] + ojos[2]
+    caso("espejo: los ojos caen donde manda el registro espejado (<= 2 px)", abs(mx0 - ex0) <= 2 and abs(mx1 - ex1) <= 2, "%s..%s contra %s..%s" % (mx0, mx1, ex0, ex1))
+    res_s, _, caja_s, _ = prepara_registrada(lienzo, dict(reg_e, espejo=False), args, vista="perfil")
+    sx0 = caja_s[0] + res_s.resumen["ojos"]["caja"][0]
+    caso("sin «espejo» la misma imagen cae del otro lado, sin espejar (<= 2 px)", abs(sx0 - (pos[0] + bo[0])) <= 2 and abs(sx0 - mx0) > 50, "%s contra %s" % (sx0, pos[0] + bo[0]))
+    caso("el rect comun sale de la caja mapeada con la transformacion (la de las partes)", col.rect == F.caja_a_lienzo(reg_e, caja))
+    # --- (5) y (6) los resguardos de main()
+    def sale(argv):
+        err = io.StringIO()
+        try:
+            with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+                main(argv)
+        except SystemExit as e:
+            return e.code, err.getvalue()
+        return 0, err.getvalue()
+
+    with tempfile.TemporaryDirectory() as tmp:
+        for nombre in ("exoresion_neutra_perfil_papa.png", "Expresi\u00f3n_PERFIL_ni\u00f1o.png"):
+            ruta = os.path.join(tmp, nombre)
+            Image.new("RGBA", (1300, 1500), (0, 0, 0, 0)).save(ruta)
+            codigo, msg = sale(["papa", "abiertos", ruta])
+            caso("sin --vista perfil se rechaza «%s»" % nombre.encode("ascii", "replace").decode(), codigo == 2 and "--vista perfil" in msg, "%s %s" % (codigo, msg[-120:]))
+        ruta = os.path.join(tmp, "x_perfil_papa.png")
+        Image.new("RGBA", (1300, 1500), (0, 0, 0, 0)).save(ruta)
+        codigo, msg = sale(["papa", "abiertos", ruta, "--vista", "perfil"])
+        caso("con --vista perfil el resguardo no salta (y una imagen vacia se rechaza por otra razon)", "imagen de perfil" not in msg, msg[-120:])
+        ruta = os.path.join(tmp, "expresion_neutra_papa.png")
+        Image.new("RGBA", (1300, 1500), (0, 0, 0, 0)).save(ruta)
+        codigo, msg = sale(["papa", "abiertos", ruta])
+        caso("sin «perfil» en el nombre el resguardo no salta (la de frente sigue su camino)", "imagen de perfil" not in msg, msg[-120:])
+    return malos
+
+
 # ============================================================================ 7. principal
 
 
@@ -1090,7 +1681,7 @@ def parsea_asigna(textos):
 def main(argv=None):
     ap = argparse.ArgumentParser(description="De una imagen de cara completa a las capas CaraBase, Ojos y Boca del rig")
     ap.add_argument("id", nargs="?", help="personaje: nino, papa, mama o nina")
-    ap.add_argument("emocion", nargs="?", help="|".join(EMOCIONES))
+    ap.add_argument("emocion", nargs="?", help="|".join(EMOCIONES) + " (alias: abiertos = neutra, cerrados = parpadeo_cerrado)")
     ap.add_argument("imagen", nargs="?", help="PNG de la cara completa, fondo transparente")
     ap.add_argument("--registrada", nargs="?", const=True, default=False, metavar="CARPETA_FRENTE",
                     help="la expresion esta en el MISMO lienzo que las partes (registrada): su sitio sale de la transformacion que uso preparar_arte_final.py "
@@ -1104,6 +1695,11 @@ def main(argv=None):
     ap.add_argument("--base", action="store_true", help="reescribe tambien char_<x>_cara_base")
     ap.add_argument("--reubica", action="store_true", help="recalcula el rect comun (heuristica) o la caja comun de la cara (registrada) aunque ya este puesta")
     ap.add_argument("--asigna", action="append", metavar="CAPA:X0,Y0,X1,Y1", help="corrige a mano: lo que cae en esa caja (px de la imagen) pasa a esa capa")
+    ap.add_argument("--vista", choices=VISTAS, default="frente",
+                    help="frente (por defecto) o perfil (INC-134): la cara del cuerpo de perfil, que se escribe en Perfil/ como char_<id>_perfil_* y se coloca por registro; "
+                         "la caja de su cara se guarda aparte, en registro.cara_perfil de arte_final.json")
+    ap.add_argument("--limpia-cerrados", action=argparse.BooleanOptionalAction, default=True,
+                    help="(vista perfil, emocion parpadeo_cerrado) quitar el rastro casi blanco del ojo abierto y su halo; por defecto si (Santiago, 09/10/2026)")
     ap.add_argument("--max-lado", type=int, default=512)
     ap.add_argument("--salida", default=os.path.join(tempfile.gettempdir(), "algoritmia_expresion"))
     ap.add_argument("--autoprueba", action="store_true")
@@ -1112,19 +1708,25 @@ def main(argv=None):
         return autoprueba()
     if not (a.id and a.emocion and a.imagen):
         ap.error("hace falta <id> <emocion> <imagen> (o --autoprueba)")
-    emocion = {"a": "boca_a", "e": "boca_e", "u": "boca_u"}.get(a.emocion, a.emocion)
+    emocion = ALIAS_EMOCION.get(a.emocion, a.emocion)   # abiertos = neutra, cerrados = parpadeo_cerrado; a, e y u = las bocas del habla
     if emocion not in EMOCIONES:
         ap.error("emocion %r desconocida: %s" % (a.emocion, ", ".join(EMOCIONES)))
     if a.id not in P.FAMILIA:
         ap.error("id %r desconocido: %s" % (a.id, ", ".join(P.FAMILIA)))
     if not os.path.isfile(a.imagen):
         ap.error("no existe %s" % a.imagen)
+    if a.vista != "perfil" and "perfil" in pliega(os.path.basename(a.imagen)):
+        # una expresion de perfil comparte lienzo (1300x1500) con las de frente: en modo registrado se pondria SOBRE la cara de frente sin que nada lo notara
+        ap.error("imagen de perfil: añade --vista perfil")
 
     rig = P.cargar_rig()
     pj_rig = P.personaje_rig(rig, a.id)
     carpeta = P.PERSONAJES[a.id][1]
     entrada = Image.open(a.imagen).convert("RGBA")
-    print("== %s / %s: %s (%dx%d)" % (a.id, emocion, a.imagen, entrada.width, entrada.height))
+    print("== %s / %s%s: %s (%dx%d)" % (a.id, emocion, " (%s)" % a.emocion if emocion != a.emocion else "", a.imagen, entrada.width, entrada.height)
+          + ("  [vista de PERFIL]" if a.vista == "perfil" else ""))
+    if a.vista == "perfil":
+        return main_perfil(a, emocion, entrada)
 
     png_cab = P._png_de(carpeta, "char_%s_parte_cabeza" % a.id)
     cuello = next((n for n in pj_rig["nodos"] if n["nombre"] == "Cuello"), None)

@@ -31,6 +31,8 @@
 #   encaja en codos y rodillas (distancia entre los centros de los dos extremos redondos), que pose_preview.py --mide admite como tolerancia.
 #   CUELLO (06/10/2026): con melena o barba (Papa, Mama, Nina: la pieza de la cabeza las incluye) el cuello no esta en la base de la pieza sino en
 #   el eje de la cara, a la altura de la barbilla o del borde de arriba del torso (cuello_de); con pelo corto (el Nino), en la base, como siempre.
+#   PERFIL (INC-134, 09/10/2026): esta herramienta es SOLO de la vista de FRENTE (escribe en Frontal/). La entrada «perfil» de arte_final.json y
+#   «registro.cara_perfil» son de preparar_perfil.py y de preparar_expresion.py --vista perfil: --aplicar los CONSERVA al reescribir la entrada de frente.
 #   Por que coreografia.py y pose_preview.py ya tratan al personaje como segmentado ANTES de que el Editor
 #   corra «sprites»: prefabs.simula_sprites aplica al arbol del prefab lo que ese modo hara (enciende la Image
 #   de cada parte cuyo PNG existe en la carpeta de arte), asi que IsSegmented sale de «el PNG de la antepierna
@@ -748,7 +750,12 @@ def aplica(res, args):
     previo = personajes.get(pid, {}).get("registro", {})
     if "cara" in previo and previo.get("escala") == registro["escala"] and previo.get("tx") == registro["tx"]:
         registro["cara"] = previo["cara"]   # la caja de la cara que fijo la expresion neutra sigue valiendo si el registro es el mismo
+    if "cara_perfil" in previo:
+        registro["cara_perfil"] = previo["cara_perfil"]   # INC-134: la caja de la cara de PERFIL es de otro lienzo (el de la entrega de perfil): esta entrega de frente no la invalida
+    perfil_previo = personajes.get(pid, {}).get("perfil")   # INC-134: la entrada «perfil» (preparar_perfil.py) es del cuerpo de perfil: reaplicar el frente no la borra
     personajes[pid] = dict(res.tabla, registro=registro)   # «registro»: de donde sale el sitio de la cara (preparar_expresion.py)
+    if perfil_previo is not None:
+        personajes[pid]["perfil"] = perfil_previo
     A.guardar_arte_final(personajes)
     print("  arte_final.json: entrada de %s" % pid)
     py = sys.executable
@@ -766,6 +773,13 @@ def aplica(res, args):
 
 
 # ============================================================================ 4. la autoprueba
+
+
+def es_entrega_de_perfil(carpeta):
+    """True si la ruta de la entrega o el nombre de algun archivo de ella dicen «perfil» (sin tildes ni mayusculas): es de preparar_perfil.py (INC-134)."""
+    def pliega(t):
+        return "".join(c for c in unicodedata.normalize("NFKD", t) if not unicodedata.combining(c)).lower()
+    return "perfil" in pliega(carpeta) or any("perfil" in pliega(f) for f in os.listdir(carpeta))
 
 
 def entrega_sintetica(destino, a=1.3, centro=(600, 150), lienzo=(1300, 1500)):
@@ -832,6 +846,50 @@ def autoprueba_cuello():
     return malos
 
 
+def autoprueba_perfil_rechazado(frente):
+    """
+    INC-134: main() sale con 2 y manda a preparar_perfil.py si la ruta de la entrega o un archivo de ella dicen «perfil» (sin tildes ni mayusculas), y no si es
+    de frente («frente» es la entrega sintetica ya hecha). Devuelve los casos mal.
+    """
+    import contextlib
+    import io
+    malos = 0
+
+    def sale(argv):
+        err = io.StringIO()
+        try:
+            with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+                main(argv)
+        except SystemExit as e:
+            return e.code, err.getvalue()
+        return 0, err.getvalue()
+
+    with tempfile.TemporaryDirectory() as tmp:
+        por_ruta = os.path.join(tmp, "Mam\u00e1", "Perfil")
+        os.makedirs(por_ruta)
+        shutil_copy_all(frente, por_ruta)
+        por_nombre = os.path.join(tmp, "entrega")
+        os.makedirs(por_nombre)
+        shutil_copy_all(frente, por_nombre)
+        os.rename(os.path.join(por_nombre, "torso_ni\u00f1o.png"), os.path.join(por_nombre, "torso_PERFIL_ni\u00f1o.png"))
+        for nombre, carpeta in (("por la ruta (Mam\u00e1/Perfil)", por_ruta), ("por el nombre de un archivo (torso_PERFIL_...)", por_nombre)):
+            codigo, msg = sale(["mama", carpeta, "--salida", os.path.join(tmp, "sal")])
+            ok = codigo == 2 and "preparar_perfil.py" in msg
+            malos += 0 if ok else 1
+            print("%-60s %s" % ("una entrega de perfil se rechaza " + nombre, "bien" if ok else "FALLA (%s: %s)" % (codigo, msg.strip()[-120:])))
+    codigo, msg = sale(["nino", frente, "--salida", os.path.join(tempfile.gettempdir(), "algoritmia_perfil_rechazo")])
+    ok = codigo == 0 and "preparar_perfil.py" not in msg
+    malos += 0 if ok else 1
+    print("%-60s %s" % ("una entrega de frente sigue entrando", "bien" if ok else "FALLA (%s: %s)" % (codigo, msg.strip()[-120:])))
+    return malos
+
+
+def shutil_copy_all(origen, destino):
+    import shutil
+    for f in os.listdir(origen):
+        shutil.copyfile(os.path.join(origen, f), os.path.join(destino, f))
+
+
 def autoprueba():
     """Que la herramienta recupere, de una entrega sintetica hecha con el arte del Nino, sus rects y pivotes (<= 2 px)."""
     esperado = A.cargar_arte_final()["nino"]
@@ -893,6 +951,8 @@ def autoprueba():
         print("  %-60s %s" % ("se reconocen «pies_...» y los nombres con errata", "ok" if ok else "NO SE RECONOCEN"))
         # el cuello: con pelo corto (el Nino) la base de la cabeza; con melena o barba, la barbilla o el borde de arriba del torso
         malos += autoprueba_cuello()
+        # INC-134: una entrega de PERFIL no entra por aqui (sustituiria Frontal/): por la ruta, por el nombre de un archivo, y la de frente sigue entrando
+        malos += autoprueba_perfil_rechazado(tmp)
         print("\nAUTOPRUEBA: %s (error maximo %.1f px)" % ("pasa" if not malos else "FALLA en %d comprobaciones" % malos, peor))
         return 1 if malos else 0
 
@@ -922,6 +982,9 @@ def main(argv=None):
         ap.error("hace falta <id> y <carpeta_entrega> (o --autoprueba)")
     if not os.path.isdir(a.entrega):
         ap.error("no existe la carpeta %s" % a.entrega)
+    if es_entrega_de_perfil(a.entrega):
+        # una entrega de perfil (INC-134) pasaria por esta herramienta como si fuera de frente y --aplicar SUSTITUIRIA las diez partes de Frontal/
+        ap.error("entrega de perfil: usar preparar_perfil.py")
     os.makedirs(a.salida, exist_ok=True)
     res = procesa(a.entrega, a.id, a.cadera)
     informe(res)
