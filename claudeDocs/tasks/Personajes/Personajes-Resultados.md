@@ -565,7 +565,7 @@ la copia: el `.txt` es lo que queda versionado.
 |---|---|
 | `"nodos"` | Abre los siete prefabs con `LoadPrefabContents`, **añade** los nodos de la tabla que falten y el `CharacterFace`, y guarda con `SaveAsPrefabAsset`. Idempotente: si un nodo existe no lo toca, y nunca borra ni recrea uno. Todo nodo nuevo nace con la `Image` apagada y sin sprite |
 | `"sprites"` | Para cuando llegue el arte. Asigna por nombre los PNG que existan, aplica el rect y el pivote de la tabla (también a las partes que ya existían), enciende las `Image` y crea `<Art>/<Carpeta>/Expresiones/char_<x>_cara.asset` (un `CharacterFaceSet`; desde `63ed2fc` y `64e4b37` vive en `Expresiones/`, y un asset de la raíz se mueve con `MoveAsset`, mismo GUID) asignado al `CharacterFace`. En Algoritm apaga la `Image` de `Cuerpo` cuando torso, brazos y piernas ya están. Lo que no existe queda apagado y se anota en el log |
-| `"orden"` | Desde INC-132 (C.9). Reordena con `SetSiblingIndex` los hijos de `Tronco` según `orden_tronco` de la tabla: familia con los brazos detrás del torso y delante de la cabeza; Algoritm con los brazos delante del cuerpo y la cara encima. No crea ni borra nodos: los fileID no cambian |
+| `"orden"` | Desde INC-132 (C.9). Reordena con `SetSiblingIndex` los hijos de `Tronco` según `orden_tronco` de la tabla: familia con los brazos detrás del torso y delante de la cabeza; Algoritm, hasta INC-147, con los brazos delante del cuerpo y la cara encima, y desde INC-147 (C.14) con los brazos detrás de todo el cuerpo. No crea ni borra nodos: los fileID no cambian |
 | `"clips"` | Reescribe en sitio las curvas de los 84 `.anim` de la familia y los 9 de Algoritm (C.6), **aplicando `clips_personajes.json`** (C.9): el modo ya no contiene coreografía. Se niega si faltan los nodos: exige haber corrido «nodos» |
 | `"todo"` · `"estado"` | «Nodos», «sprites», «orden» y «clips», en ese orden · solo informa (nodos completos, `CharacterFace` sí o no, segmentado sí o no), sin escribir |
 
@@ -735,9 +735,9 @@ regla definitiva.)
   origen) desde `CharacterRig.Apply`, según el campo serializado `armsInFrontActions = { Strike }`; el
   inicializador del campo vale para los prefabs que no lo serializan (los tres de Algoritm sí lo
   serializan, con ese valor, al guardarse). El cambio de capa es seco al empezar la acción: no espera
-  el fundido de 0,18 s. Si falta un nodo, avisa y no mueve nada. En Algoritm no mueve nada, porque sus
-  brazos ya van delante del cuerpo.
-- **Algoritm: manos sobre la cara.** `orden_tronco` = `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`.
+  el fundido de 0,18 s. Si falta un nodo, avisa y no mueve nada. En Algoritm no movía nada, porque sus
+  brazos ya iban delante del cuerpo (hasta INC-147; ver C.14).
+- **Algoritm: manos sobre la cara (hasta INC-147, C.14).** `orden_tronco` = `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`.
   La coreografía y `pose_preview.py` impiden que una mano entre en la caja de ojos y boca (ampliada un
   30 %, con al menos el 99,5 % libre).
 - **Coreografía de Strike.** Choque delante del pecho con brazo partido; con el brazo de una pieza del
@@ -794,9 +794,9 @@ informe y composite; (2) con `--aplicar`; (3) la sesión local copia `BuildRigsF
 prefab y `.anim`, y borra el andamiaje.
 
 **Pruebas nuevas:** `CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza` (los cuatro
-de la familia) `CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara` (las tres formas, antes `…DelanteDelCuerpoYLaCaraEncima`)
+de la familia) `CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara` (las tres formas, antes `…DelanteDelCuerpoYLaCaraEncima`; hoy `CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo`, C.14)
 y, del 06/10, `CharacterRig_INC132_AlGolpearLosBrazosPasanDelanteDelTorso`,
-`…_AlTerminarElGolpeLosBrazosVuelvenDetrasDelTorso`, `…_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo`,
+`…_AlTerminarElGolpeLosBrazosVuelvenDetrasDelTorso`, `…_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo` (hoy `CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen`, C.14),
 `…_SoloElGolpePoneLosBrazosDelante` y `…_SiFaltaUnNodoElGolpeAvisaYNoMueveNada`.
 
 **Cambia una prueba existente:** `CharacterRig_DA131_LaFamiliaTieneCodosRodillasYCuello` deja de
@@ -815,7 +815,7 @@ Niña 21, Niño 19); `Game.Scaffolding.Tests` 215/215 y suite completa en un sol
 omitida preexistente, 1 fallo: `RiverLevel_RNF05`, 2199 MB con el Editor abierto todo el día; recién
 abierto mide 1533 MB reservados y 1072 asignados, y `Game.Levels.River.PlayMode.Tests` pasa 57/57).
 `suite2.ps1` no pudo correr esta ronda: el segundo Editor murió dos veces por memoria al abrirse.
-**Ronda de `8cdd4c5` (Strike delante, manos de Algoritm sobre la cara):** la sesión local corrió `orden`
+**Ronda de `8cdd4c5` (Strike delante, manos de Algoritm sobre la cara, hasta INC-147):** la sesión local corrió `orden`
 y `clips`; cambiaron 3 prefabs de Algoritm (orden de `Tronco` y el campo serializado
 `armsInFrontActions`), 4 `.anim` de golpear y se generó el `.meta` de `ArmLayering.cs`; fileIDs,
 `m_Script`, `m_Controller` y `m_Sprite` intactos en los siete. `Game.Scaffolding.Tests` 234/234 y suite
@@ -1150,3 +1150,37 @@ Las piezas se solapan en los extremos redondos; la holgura entre los centros, en
 - **Peso y memoria** del arte de perfil y de Algoritm: el peso (RNF-06) está medido, 499,3 MB y, con INC-146, 420,6 MB (ver la casilla de la ronda 2); **la carga (RNF-04) y la memoria (RNF-05) siguen sin medir** en un ejecutable y quedan para el próximo candidato del OE4. Tampoco incluye los ojos cerrados de frente que faltan.
 - **La republicación en Word del OE3**: sus fuentes (`claudeDocs/entregables/OE3/src/`, Anexo F apartado 2.13 y tablas) ya nombran INC-134 a INC-136 desde `1e2fb6a`, pero los `.docx` publicados todavía no.
 - Siguen sin ejecutarse el retrato animado del cuadro de diálogo y las emociones de las 18 narrativas.
+
+### C.14 Los brazos de Algoritm, detrás de todo el cuerpo (INC-147, 09/10/2026)
+
+Commit `a44ca96` (rama `feat/personajes-animados`, sobre `d89e5fb`). Lo que sigue se verificó contra `git show a44ca96` y contra los archivos del árbol.
+
+**La decisión de Santiago (09/10/2026).** Los brazos de Algoritm se dibujan **detrás de todo el cuerpo**: eligió «Detrás de todo el cuerpo» frente a «sobre el cuerpo, bajo la cara». El orden bajo `Lienzo/Cuerpo/Tronco`, de atrás adelante, pasa de `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer` (INC-132, 05/10/2026, «las manos encima de la cara») a `BrazoIzq`, `BrazoDer`, `Torso`, `Ojos`, `Boca`. **Revierte para el guía la cláusula de Algoritm de INC-132** (C.9); la regla de la familia no cambia (INC-132 e INC-133: húmero detrás del torso, antebrazo delante, los brazos delante solo mientras golpean con `ArmLayering`).
+
+**Qué entró en `a44ca96`** (15 archivos, +178 −89):
+
+| Archivo | Qué cambió |
+|---|---|
+| `articulaciones.py` y `rig_articulaciones.json` | `ORDEN_TRONCO_GUIA` y la clave `orden_tronco` de las tres formas llevan el orden nuevo. |
+| `BuildRigsFinal.cs.txt` | Solo comentarios: el modo `orden` ya reordenaba los hijos de `Tronco` según `orden_tronco` con `SetSiblingIndex` (sin tocar fileIDs), así que aplicará el orden nuevo a los tres prefabs sin cambiar su código. |
+| `preparar_algoritm.py` | Compone los `_reposo` desde ese orden y reescribió `char_algoritm_n1_fuego_reposo.png`, `char_algoritm_n2_rueda_reposo.png` y `char_algoritm_n3_gota_reposo.png` en su sitio (mismos nombres y GUID, 768 × 768, mismo alfa): solo cambian los casquetes de los hombros, que ya no se pintan sobre el cuerpo. |
+| `preparar_arte_final.py` | Corrige `_mismos_pixeles` (ver la lección). |
+| `pose_preview.py` | La prueba mide el antebrazo del guía (al menos el 85 %) y el húmero (al menos el 30 %) como los de la familia (INC-133); la medida de la cara se conserva y da el 100 % en las tres formas. `EXCEPCIONES_BRAZO` registra tres excepciones, todas de `algoritm_rueda` (abajo). |
+| `coreografia.py` y `prefabs.py` | Solo comentarios. |
+| `ArmLayering.cs`, `CharacterRig.cs`, `LimbFollower.cs` | Solo comentarios: el runtime no cambia. |
+| `CharacterRigTests.cs` | Dos pruebas renombradas y reescritas (abajo). |
+
+**Las excepciones de la rueda.** Con el brazo en alto, el húmero desaparece detrás del disco de madera, que es ancho, y solo se ven el antebrazo y la mano. `EXCEPCIONES_BRAZO` deja de estar vacía: `Celebrate` (antebrazo 81,5 %, húmero 1,4 %), `Encourage` (77,8 % y 3,8 %) y `Wave` (48,2 % y 3,7 %), con pisos de 75, 75 y 45 % para el antebrazo y de 0 % para el húmero. Se acepta como consecuencia de la decisión de Santiago; la mano se sigue leyendo. Las formas de fuego y de gota cumplen los umbrales sin excepción.
+
+**Pruebas** (`Game.Scaffolding.Tests`, `CharacterRigTests.cs`).
+
+| Prueba | Antes | Qué comprueba |
+|---|---|---|
+| `CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo` (las tres formas) | `CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara` | `BrazoIzq` y `BrazoDer` van antes de `Torso`, y `Ojos` y `Boca` después. |
+| `CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen` (las tres formas) | `CharacterRig_INC132_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo` | Algoritm no tiene el estado `Strike`, pero `armsInFrontActions` lo incluye en los siete prefabs; con los brazos antes del torso, `ArmLayering` sí los movería. La prueba comprueba que cambia el orden al golpear, que las manos nunca pasan por encima de la cara, que al terminar vuelve el orden de origen y que devolverlo dos veces no lo cambia. |
+
+Las dos fallan hasta correr el modo `orden` sobre los prefabs de Algoritm (están escritas para pasar justo después). `CharacterRig_INC133_EnAlgoritmElAntebrazoSigueBajoElCodoYSinAncla` no cambia, solo su comentario.
+
+*Lección (09/10/2026).* En Pillow 12, `getbbox()` sobre una imagen RGBA solo mira el alfa. `_mismos_pixeles` (`preparar_arte_final.py`, que usan los preparadores para decidir si una imagen cambió) comparaba con él, así que dos imágenes con el mismo alfa y distinto color parecían iguales y los `_reposo` rehechos con los brazos detrás del cuerpo no se habrían escrito. Ahora se compara canal por canal. Una comparación de imágenes que debe notar un cambio de color no puede apoyarse en `getbbox()` de RGBA.
+
+**Ronda del Editor del modo `orden`: en curso.** El modo `orden` de `BuildRigsFinal` sobre los tres prefabs de Algoritm (solo el orden de los hermanos, ningún fileID) se está corriendo en la sesión local de Santiago. Hasta que termine, las dos pruebas `INC147` y `Game.Scaffolding.Tests` quedan sin verificar en el Editor; el resultado se anota aquí al cerrarla.

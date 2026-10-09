@@ -520,6 +520,14 @@ artista. Sin cabeza ni cuello: la cara va sobre el cuerpo, en las capas `Ojos` y
 conservan como retrato y como icono del botón de ayuda. «Rueda» y «gota» nombran el nivel y también
 la silueta.
 
+**Orden de dibujo: los brazos, detrás de todo el cuerpo (decisión de Santiago, 09/10/2026, INC-147).**
+Bajo `Lienzo/Cuerpo/Tronco` los hijos van, de atrás adelante, `BrazoIzq`, `BrazoDer`, `Torso`, `Ojos`,
+`Boca`: de cada brazo se ve lo que sobresale de la silueta del cuerpo y ninguna mano pasa por encima de
+la cara. Revierte para el guía lo que INC-132 fijó el 05/10/2026 («las manos encima de la cara»); la
+familia no cambia. Los tres `_reposo` se compusieron con ese orden: solo difieren de los anteriores en
+los casquetes de los hombros. Consecuencia aceptada: con el brazo en alto, el húmero de la forma de
+madera queda tapado por el disco y solo se ven el antebrazo y la mano.
+
 **La cara es provisional.** El artista no entregó ojos ni boca, y un guía sin cara es un prop (condición 2
 de arriba). Los ojos y la boca se tomaron del sprite anterior y se marcaron `cara_provisional` en
 `arte_final.json`; se ven de otra mano (llevan contorno café). Como no hay cuadro de ojos cerrados,
@@ -1459,6 +1467,7 @@ Aplicar a cada pieza antes de darla por buena e importarla a Unity.
 - [ ] Arte final: las seis expresiones (§7.3) con ojos y bocas por sus nombres; ninguna es de tristeza, enfado ni derrota, y `Worried` no tiene lágrimas ni comisuras caídas
 - [ ] Parpadeo: ojos abiertos (`ojos_neutra`) y ojos cerrados (`ojos_parpadeo_cerrado`); el cuadro medio es opcional (§7.3, INC-135)
 - [ ] Perfil de la familia (§13.4): las diez piezas `char_<x>_perfil_*` y la cara de perfil, dibujadas mirando a la derecha o entregadas mirando a la izquierda para espejar, registradas sobre el mismo lienzo; las dos piernas detrás del torso
+- [ ] Algoritm, orden de dibujo (§7.6, INC-147): los brazos detrás de todo el cuerpo y las manos nunca sobre la cara
 - [ ] Algoritm, arte final (§7.6): siete piezas por forma sobre un lienzo común registrado, con la pierna entera y sin rodilla; las extremidades, la misma silueta en las tres formas; cara aparte (ojos abiertos, ojos cerrados y boca), no pintada en el torso
 
 ### Entornos

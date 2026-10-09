@@ -17,7 +17,7 @@
 > **Actualización posterior del 05/10/2026 (INC-132).** En la familia los brazos se dibujan detrás del
 > torso y delante de la cabeza, salvo al golpear (`Strike`, 06/10: `ArmLayering` los pasa delante del
 > torso y los devuelve al cambiar de acción), y en Algoritm delante del cuerpo con las manos sobre la
-> cara (modo `"orden"` de `BuildRigsFinal.cs.txt`); la coreografía de
+> cara (modo `"orden"` de `BuildRigsFinal.cs.txt`; **hasta INC-147, 09/10/2026: ver la nota del final de esta cabecera**); la coreografía de
 > Fase 3 se escribe ahora en `herramientas/coreografia.py` (→ `clips_personajes.json`) en vez de en
 > el C#, y `herramientas/preparar_arte_final.py` es la entrada del arte final. Detalle en
 > `Personajes-Resultados.md`, C.9. Este plan no se reescribe.
@@ -31,7 +31,7 @@
 > se colocan por registro (`preparar_expresion.py --registrada`, `233f2e5`), no por la heurística de
 > escala. (4) INC-133: en la familia el húmero va detrás del torso y el antebrazo delante del torso,
 > de la cara y de las piernas, con `AnclaAntebrazoX` y `LimbFollower` (`ef37dd9`); acota la regla de
-> INC-132 en la familia, que sigue vigente para `Strike` y Algoritm. Entró el arte final frontal de
+> INC-132 en la familia, que sigue vigente para `Strike` y, hasta INC-147, para Algoritm. Entró el arte final frontal de
 > Papá, Mamá, Niña y Niño; falta el de Algoritm, y la ronda del Editor (nodos, sprites, orden, clips,
 > pruebas `INC133`, capturas) está pendiente. Detalle en `Personajes-Resultados.md`, C.10.
 >
@@ -98,6 +98,16 @@
 > **Peso medido (09/10/2026):** el build sobre `0212469` pesó 499,3 MB frente al tope de 500 MB (RNF-06); por decisión de
 > Santiago cinco props del N1 pasaron a 256 px (INC-146) y el paquete pesa 420,6 MB, con 79,4 MB de margen. Son
 > medidas, no un candidato del OE4 (`Personajes-Resultados.md`, C.13).
+>
+> **Actualización del 09/10/2026 (INC-147).** Este plan no se reescribe; esta nota fija lo que cambió. Por
+> decisión de Santiago, los brazos de Algoritm se dibujan **detrás de todo el cuerpo**: el orden bajo
+> `Lienzo/Cuerpo/Tronco` es `BrazoIzq`, `BrazoDer`, `Torso`, `Ojos`, `Boca`, y no `Torso`, `Ojos`, `Boca`,
+> `BrazoIzq`, `BrazoDer` (las manos sobre la cara de INC-132, que aquí se cita en la nota del 05/10/2026
+> y en §3.1). Revierte esa cláusula solo para el guía; la regla de la familia (INC-132 e INC-133) no cambia.
+> `pose_preview.py` mide el antebrazo y el húmero del guía como los de la familia y registra tres
+> excepciones de la forma de rueda (`Celebrate`, `Encourage` y `Wave`: con el brazo en alto, el húmero
+> queda tras el disco). Entró en `a44ca96`; la ronda del Editor del modo `"orden"` sobre los tres prefabs
+> está en curso. Detalle en `Personajes-Resultados.md`, C.14.
 >
 > **Siguen pendientes:** la medida de RNF-04 y RNF-05 en un ejecutable (próximo candidato del OE4); los ojos cerrados de frente;
 > la cara de Algoritm; el retrato animado del cuadro de diálogo (4.1) y poblar emociones en los 18

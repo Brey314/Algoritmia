@@ -14,7 +14,7 @@ los dos tienen su conversión en `docs/md/`. Las citas por sección de este docu
 con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
 (control de cambios).
 
-**Verificación vigente: 09/10/2026, rev. 22.** La rev. 14 (29/09/2026) contrastó todos los
+**Verificación vigente: 09/10/2026, rev. 23.** La rev. 14 (29/09/2026) contrastó todos los
 documentos —los `.docx` de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago,
 **todos los hallazgos están cerrados**: ante un conflicto gana el juego y se edita el documento; lo
 que solo pide el documento se implementa en el juego; lo que solo tiene el juego se añade al
@@ -31,7 +31,7 @@ regla de Algoritm de una sola imagen **para el arte final**: caras con seis expr
 codos y rodillas. La rev. 18
 (05/10/2026) registra y cierra **INC-132**, otra decisión suya: en la familia los brazos se dibujan detrás del
 torso y delante de la cabeza (delante del torso al golpear); Algoritm, delante del cuerpo con las
-manos sobre la cara. La rev. 19 (06/10/2026) registra y cierra **INC-133**, decisión de Santiago que
+manos sobre la cara (hasta INC-147). La rev. 19 (06/10/2026) registra y cierra **INC-133**, decisión de Santiago que
 acota INC-132 en la familia: el húmero queda detrás del torso y el antebrazo se dibuja delante del
 torso, de la cara y de las piernas. La rev. 20 (09/10/2026) registra y cierra **INC-137** a **INC-145**,
 nueve decisiones de Santiago del 08/10/2026 que corrigen el juego o el documento: el laberinto con
@@ -47,7 +47,10 @@ cerrados (INC-135, acota §7.3), y el diseño nuevo de Algoritm —llama, disco 
 pantaloneta de cuadros— sustituye al núcleo de identidad de §7.6 (INC-136, levanta INC-52 y, para el
 guía, la regla de color plano). La rev. 22 (09/10/2026) registra y cierra **INC-146**, una decisión de
 Santiago por el peso del paquete (RNF-06): el ejecutable con el arte final medía 499,3 MB y los cinco
-props pequeños del Nivel 1 entran a 256 px, con lo que el paquete baja a 420,6 MB. Siguen abiertos
+props pequeños del Nivel 1 entran a 256 px, con lo que el paquete baja a 420,6 MB. La rev. 23
+(09/10/2026) registra y cierra **INC-147**, otra decisión de Santiago: los brazos de Algoritm se dibujan
+detrás de todo su cuerpo y no con las manos sobre la cara, lo que revierte para el guía la cláusula de
+INC-132 (la regla de la familia no cambia). Siguen abiertos
 solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
 **pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
@@ -88,7 +91,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 
 ---
 
-## Resumen — estado a 09/10/2026 (rev. 22)
+## Resumen — estado a 09/10/2026 (rev. 23)
 
 | ID | Hallazgo | Documentos | Estado |
 |---|---|---|---|
@@ -219,6 +222,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-144 | El húmero de Papá asomaba por el codo; se corrige la tabla de articulaciones y no el arte entregado | Personajes-Resultados, Plan de personajes finales, herramientas, juego | **Cerrado** (09/10/2026) |
 | INC-145 | La cámara de la 3.3 acompaña a la balsa; el encuadre fijo la dejaba salir del cuadro | Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
 | INC-146 | Los cinco props del N1 entran a 256 px: el paquete con el arte final medía 499,3 MB contra el tope de 500 MB de RNF-06 | Dirección de arte, Inventario de arte, CLAUDE.md | **Cerrado** (09/10/2026) |
+| INC-147 | Los brazos de Algoritm se dibujan detrás de todo el cuerpo; INC-132 los pintaba delante, con las manos sobre la cara | Dirección de arte, Plan de personajes finales, Personajes-Resultados, Anexo F del OE3, CLAUDE.md, juego | **Cerrado** (09/10/2026), salvo la ronda del Editor |
 
 ---
 
@@ -2610,7 +2614,7 @@ commit `5ce0797` → regla definitiva.)
   `Game.Scaffolding`) desde `CharacterRig.Apply`, según el campo serializado
   `armsInFrontActions = { Strike }` (el inicializador vale para los prefabs que no lo serializan); el
   cambio de capa es seco al empezar la acción, sin esperar el fundido de 0,18 s.
-- **Algoritm.** `orden_tronco` = `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`: sus brazos van delante
+- **Algoritm (hasta INC-147).** `orden_tronco` = `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`: sus brazos van delante
   del cuerpo y **las manos se pintan encima de la cara**. La coreografía y `pose_preview.py` impiden
   que una mano entre en la caja de ojos y boca (ampliada un 30 %, con al menos el 99,5 % libre). En
   Algoritm el golpe no mueve nada.
@@ -2642,6 +2646,11 @@ sin excepciones, 174/174), `maqueta.py` y
 `CharacterRig_INC132_AlGolpearLosBrazosPasanDelanteDelTorso`,
 `…_AlTerminarElGolpeLosBrazosVuelvenDetrasDelTorso`, `…_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo`,
 `…_SoloElGolpePoneLosBrazosDelante` y `…_SiFaltaUnNodoElGolpeAvisaYNoMueveNada`.
+*Nota (09/10/2026): la cláusula de Algoritm de este hallazgo —brazos delante del cuerpo y manos sobre la
+cara— la **revierte INC-147**: sus brazos van detrás de todo el cuerpo. Las dos pruebas de Algoritm se
+renombraron `CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo` y
+`CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen`. La regla de la familia, el golpe con
+`ArmLayering` y lo demás de esta entrada siguen vigentes.*
 **En el Editor:** `Game.Scaffolding.Tests` 215/215 y suite completa 941/942 (1 omitida preexistente, 0
 fallos) en la ronda de `5ce0797`, que aún tenía los brazos delante en los siete. Suite completa de la
 ronda de `0b76bbc` (regla definitiva), con sus prefabs y `.anim` subidos en `117287c` (4 prefabs, 77
@@ -3198,6 +3207,65 @@ del peso y **no candidatos**: rc2 sigue siendo el candidato vigente del OE4. RNF
 midieron en ellos, porque el arnés exige el Editor cerrado y jugar el ejecutable; quedan para el
 próximo candidato del carril OE4.
 
+### INC-147 · Los brazos de Algoritm, detrás de todo el cuerpo — cerrado (09/10/2026), salvo la ronda del Editor
+
+**El conflicto.** INC-132 (05/10/2026) fijó para el guía el orden de dibujo `Torso`, `Ojos`, `Boca`,
+`BrazoIzq`, `BrazoDer`: los brazos delante del cuerpo y **las manos encima de la cara**. Con el diseño
+nuevo de Algoritm (INC-136) Santiago revisó el resultado y decidió otra cosa.
+
+**Qué decían los documentos.** `Plan-Personajes-Finales.md` (§3.1 y la Fase 3), `Personajes-Resultados.md`
+(C.5, C.6 y C.9) y `CLAUDE.md` (la fila de este documento): «en Algoritm, delante del cuerpo y con las
+manos encima de la cara», con `pose_preview.py` impidiendo que una mano entrara en la caja de ojos y boca.
+El Anexo F del OE3 (tablas del orden de dibujo y de las pruebas de INC-132) lo repetía. Ningún `.docx`
+radicado habla del orden de dibujo.
+
+**Qué hacía el juego.** Los tres prefabs de Algoritm llevaban bajo `Lienzo/Cuerpo/Tronco` los hijos en el
+orden de INC-132, y los tres `_reposo` (768²) se habían compuesto con los brazos encima del cuerpo.
+
+**Decisión de Santiago (09/10/2026).** Los brazos de Algoritm se dibujan **detrás de todo el cuerpo**, en
+las tres formas: eligió «Detrás de todo el cuerpo» frente a «sobre el cuerpo, bajo la cara». El orden bajo
+`Lienzo/Cuerpo/Tronco`, de atrás adelante, es `BrazoIzq`, `BrazoDer`, `Torso`, `Ojos`, `Boca` (antes
+`Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`). Con ello una mano no tapa nunca la cara del guía, y de
+cada brazo se ve lo que sobresale de la silueta del cuerpo.
+
+**Regla.** Decisión de Santiago, como INC-115 a INC-117, INC-131 a INC-133 e INC-146: corrige el juego.
+**Revierte para el guía la cláusula de INC-132** («en Algoritm, delante del cuerpo y con las manos encima
+de la cara»). **No cambia** la regla de la familia (INC-132 e INC-133: el húmero detrás del torso, el
+antebrazo delante; los brazos delante solo mientras golpean, con `ArmLayering`) ni CP-02: `Encourage` sigue
+siendo un gesto del guía, ahora con el brazo detrás del cuerpo.
+
+**Consecuencia aceptada.** Con el brazo en alto, el húmero de la forma de rueda desaparece detrás del disco
+de madera, que es ancho, y solo se ven el antebrazo y la mano. `pose_preview.py` mide ahora el antebrazo
+(al menos el 85 %) y el húmero (al menos el 30 %) del guía como los de la familia (INC-133), y registra en
+`EXCEPCIONES_BRAZO` tres excepciones, todas de `algoritm_rueda`: `Celebrate` (antebrazo 81,5 %, húmero
+1,4 %), `Encourage` (77,8 % y 3,8 %) y `Wave` (48,2 % y 3,7 %). La medida de la cara se conserva y da el
+100 % en las tres formas.
+
+**Corrección aplicada (09/10/2026).** Código y herramientas (commit `a44ca96`, rama
+`feat/personajes-animados`): `articulaciones.py` (`ORDEN_TRONCO_GUIA`) y `rig_articulaciones.json` (clave
+`orden_tronco` de las tres formas) llevan el orden nuevo, que el modo `"orden"` de `BuildRigsFinal.cs.txt`
+aplica en el Editor con `SetSiblingIndex`, sin tocar ningún fileID; `preparar_algoritm.py` compone desde ese
+orden y rehízo en su sitio `char_algoritm_n1_fuego_reposo.png`, `char_algoritm_n2_rueda_reposo.png` y
+`char_algoritm_n3_gota_reposo.png` (mismos nombres y GUID, 768 × 768, mismo alfa: solo cambian los
+casquetes de los hombros, que ya no se pintan sobre el cuerpo); `pose_preview.py`, como se describe arriba
+(`coreografia.py`, `prefabs.py` y `BuildRigsFinal.cs.txt` solo cambian comentarios). En el motor solo cambian
+comentarios (`ArmLayering.cs`, `CharacterRig.cs`, `LimbFollower.cs`). **Un fallo de las herramientas que salió a la luz:** `_mismos_pixeles`
+(`preparar_arte_final.py`, que usan los preparadores para decidir si una imagen cambió) comparaba con
+`getbbox()`, que en RGBA con Pillow 12 solo mira el alfa, de modo que dos imágenes con el mismo alfa y
+distinto color parecían iguales y los `_reposo` no se habrían reescrito; ahora compara canal por canal.
+Documentos: este hallazgo · INC-132 (nota) · Dirección de arte (§7.6 y la lista de §17) · Plan de personajes
+finales (nota fechada) · `Personajes-Resultados.md` (C.14) · CLAUDE.md · Anexo F y capítulo 12 del OE3.
+**Pruebas:** `CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo`, que sustituye a
+`CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara`, y
+`CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen`, que sustituye a
+`CharacterRig_INC132_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo`: Algoritm no tiene el estado `Strike`, pero
+`armsInFrontActions` lo incluye en los siete prefabs, así que con los brazos antes del torso `ArmLayering`
+sí los movería; la prueba comprueba que la ida y vuelta es exacta y que las manos no pasan nunca por encima
+de la cara. Las dos fallan mientras no se corra el modo `"orden"` sobre los prefabs de Algoritm.
+**Verificación en el Editor: pendiente.** La ronda del Editor del modo `"orden"` sobre los tres prefabs de
+Algoritm (solo el orden de los hermanos) está en curso en la sesión local de Santiago; su resultado y el de
+las dos pruebas se anotan aquí al cerrarla.
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -3281,11 +3349,20 @@ el margen de 21 MB era el de rc2 (01/10/2026) y el arte frontal final, el perfil
 medidas de carga y de memoria exigen el Editor cerrado y jugar el ejecutable, y quedan para el próximo
 candidato del carril OE4, junto con los ojos cerrados de frente que faltan; y (6) la
 republicación en Word del OE3: sus fuentes ya nombran INC-134 a INC-136 (Anexo F, apartado 2.13, `1e2fb6a`),
-pero los `.docx` publicados todavía no.
+pero los `.docx` publicados todavía no. A esa lista se suma la ronda del Editor del modo `"orden"` de
+INC-147 (09/10/2026) sobre los tres prefabs de Algoritm, que está en curso.
 
 ---
 
 ## Historial de revisiones
+
+- **rev. 23 (09/10/2026)** — Decisión de Santiago sobre el orden de dibujo del guía. Se registra y cierra
+  **INC-147**: los brazos de Algoritm se dibujan detrás de todo el cuerpo (`BrazoIzq`, `BrazoDer`, `Torso`,
+  `Ojos`, `Boca`) y no delante, con las manos sobre la cara. **Revierte** para el guía la cláusula de
+  INC-132 y no toca la regla de la familia (INC-132 e INC-133). El código y las herramientas entraron en
+  `a44ca96` (el `orden_tronco` de las tres formas, los tres `_reposo` rehechos en su sitio, las tres
+  excepciones de `pose_preview.py` para la rueda y dos pruebas renombradas). La ronda del Editor del
+  modo `"orden"` sobre los prefabs de Algoritm queda pendiente. Mantiene CP-02.
 
 - **rev. 22 (09/10/2026)** — Decisión de Santiago por el peso del paquete (RNF-06). Se registra y cierra
   **INC-146**: el ejecutable con el arte frontal final, Algoritm y el perfil medía 499,3 MB (build sobre
@@ -3327,7 +3404,7 @@ pero los `.docx` publicados todavía no.
 - **rev. 18 (05/10/2026)** — Decisión de Santiago sobre el orden de dibujo de los personajes. Se
   registra y cierra **INC-132**: en la familia, los brazos detrás del torso y delante de la cabeza
   (delante del torso solo al golpear, 06/10)
-  (en Algoritm, delante del cuerpo y la cara encima), con la coreografía movida a `coreografia.py` y la entrada del arte final
+  (en Algoritm, delante del cuerpo y la cara encima, hasta INC-147), con la coreografía movida a `coreografia.py` y la entrada del arte final
   en `preparar_arte_final.py`. No levanta ninguna regla anterior; mantiene CP-02.
 - **rev. 17 (05/10/2026)** — Decisión de Santiago sobre el arte final de los personajes. Se registra
   y cierra **INC-131**: cabeza separada, ojos y boca en capas propias, seis expresiones, y
