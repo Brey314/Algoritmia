@@ -1,6 +1,6 @@
 # Dirección de arte — Videojuego educativo 2D
 
-Última actualización: 2026-10-01
+Última actualización: 2026-10-09
 Proyecto: prototipo de videojuego educativo 2D · Unity · C#
 Fase Árcade: Diseño (OE2)
 Documento de referencia obligatoria para todo asset visual del proyecto
@@ -93,6 +93,11 @@ se elige no ponerla.
 
 Esta regla es la que más se rompe accidentalmente al generar assets con IA, y es la
 que más rápido delata la inconsistencia entre piezas.
+
+**Única excepción: el cuerpo de Algoritm (decisión de Santiago, 09/10/2026, INC-136).** El diseño
+final del guía (§7.6) lleva degradados y brillos en la llama, el disco y la gota, y contorno negro.
+La regla sigue entera para todo lo demás, incluida la familia, y no se amplía: un degradado en
+cualquier otra pieza sigue siendo un defecto.
 
 ### 2.3 El personaje siempre gana
 
@@ -364,11 +369,21 @@ cambiar esta sección:
 | Focused (concentración) | Mirada concentrada, cejas bajas | Recta y apretada | `Strike`, `Hammer`, `Blow`, `Push`, `Carry`, `PickUp`, `Kneel` |
 | Sleeping (sueño) | Cerrados, pestañas hacia abajo | Cerrada | `Sleep` |
 
-Además, ojos a medio cerrar y cerrados para el **parpadeo** (cada 3,5 ± 1,2 s, 0,12 s; se apaga al
+Además, ojos abiertos y cerrados para el **parpadeo** (cada 3,5 ± 1,2 s, 0,12 s; se apaga al
 dormir) y cuatro bocas del **habla**: cerrada, A, E y U, que ciclan mientras el personaje dice su
 línea. Los nombres están en el Inventario de arte y en §13.1. Hasta que llegue ese arte las capas
 van apagadas y el juego muestra la cara única de arriba: **todo lo de este párrafo es provisional
 hasta entonces**.
+
+**El parpadeo es de dos cuadros, no de tres (decisión de Santiago, 09/10/2026, INC-135).** Este
+apartado pedía «ojos a medio cerrar y cerrados»; el arte de perfil trae solo **ojos abiertos**
+(`ojos_neutra`) y **ojos cerrados** (`ojos_parpadeo_cerrado`). Cuando no hay cuadro medio
+(`ojos_parpadeo_medio`, que queda opcional), `CharacterFaceSet.Eyes(Half)` devuelve el cerrado, y el
+parpadeo enseña los ojos cerrados sus 0,12 s completos; si algún día llega el cuadro medio, vuelve a
+ser de tres. **Hoy solo parpadea el perfil:** la entrega no trae ojos cerrados **de frente** (se
+pidieron al artista, `Expresiones/char_<x>_ojos_parpadeo_cerrado`) y, hasta que lleguen, el frente
+no parpadea. Algoritm tampoco, mientras lleve la cara provisional (§7.6). El parpadeo no es una
+expresión y no cambia la regla de la tristeza.
 
 **Regla sobre la tristeza y el enfado:** no existen, ni en la cara ni en el cuerpo, y **el arte
 final no las añade**. Un intento fallido nunca produce un gesto negativo en los personajes; produce
@@ -401,17 +416,23 @@ sustentación se generan aparte, usando el sprite base aprobado como referencia.
 
 ---
 
-### 7.6 Algoritm — un cuerpo, tres materiales
+### 7.6 Algoritm — un personaje, tres formas
 
-El guía se llama **Algoritm** (`PG-02` cerrado el 02/09/2026, INC-44) y **cambia de material
+El guía se llama **Algoritm** (`PG-02` cerrado el 02/09/2026, INC-44) y **cambia de forma
 en cada nivel**: fuego, madera y agua, en ese orden (INC-45). Es el mismo personaje en los
-tres —lo exige CN-03— y conserva en los tres **el mismo cuerpo**: una llama con cara, brazos y
-piernas de palo, manos y una franja de colores en la base (INC-52). Entre niveles cambia solo
-el color de la llama; la cara, las extremidades y la franja no cambian.
+tres —lo exige CN-03—: la misma cara, las mismas extremidades y la misma pantaloneta de cuadros,
+con un cuerpo distinto en cada nivel.
 
-**Para el arte final deja de ser una sola imagen (05/10/2026, INC-131):** el cuerpo se corta en
-partes, con brazos y piernas **en dos tramos** y la cara en dos capas **sobre el cuerpo**. Está
-descrito en «Nomenclatura» y en §13.1. No cambia el núcleo de identidad de la tabla siguiente.
+**Diseño final (decisión de Santiago, 09/10/2026, INC-136).** El artista entregó el 09/10/2026 el
+diseño nuevo de Algoritm y Santiago decidió que **es el oficial**. Sustituye al «núcleo de
+identidad» anterior —una sola llama recoloreada, con extremidades de palo del color del contorno y
+una franja de cinco bandas (INC-52)— y levanta para el guía la regla de color plano de §2.2. Lo que
+sigue valiendo de §7.6 es lo que exige el guion: es el mismo personaje en los tres niveles, cambia
+solo entre dos secuencias encadenadas, flota, tiene cara y es el único que pulsa.
+
+**Se dibuja por partes (05/10/2026, INC-131; 09/10/2026, INC-136):** siete piezas por forma, con la
+**pierna entera y sin rodilla**, y la cara en dos capas **sobre el cuerpo**. Está descrito en
+«Nomenclatura» y en §13.1.
 
 El guion ya lo empujaba: en §4.4 el guía aparece «en el corazón de las llamas […] hecho de
 fuego esta vez». Su cuerpo es el material del descubrimiento que el nivel acaba de nombrar.
@@ -422,30 +443,27 @@ Si uno solo de estos rasgos cambia, deja de leerse como el mismo personaje:
 
 | Rasgo | Especificación |
 | --- | --- |
-| Cuerpo | Una llama de tres lenguas —la central, más alta— que se ensancha hacia abajo y apoya en una base redondeada. Es el mismo cuerpo en los tres niveles; lo que cambia es el material (tabla siguiente) |
-| Tamaño | Pequeño frente a la familia. En las narrativas su `NarrativeProp.Size` está entre un tercio y dos quintos del de Papá y Mamá (0,12 frente a 0,313 y 0,34 en `N1_AparicionGuia`), y es menor cuando aparece en la fogata (0,07 en `N1_NacimientoDelFuego`) |
-| Ojos | Dos ojos redondos grandes a media altura de la llama, blanco crema con iris café oscuro y un punto de luz blanco en cada uno |
-| Boca | Una sola línea curva hacia arriba, sonrisa cerrada. Sin nariz, sin cejas |
-| Extremidades | Brazos y piernas de palo, finos y del color del contorno, que salen de la base; manos abiertas color piel; cada pie es un trazo corto horizontal. Sin accesorios |
-| Franja | Cinco bandas horizontales en la base —naranja, verde, amarilla, azul y roja—, **iguales en los tres niveles**: el material de madera o de agua no las cambia |
-| Núcleo interior | Área más clara dentro de la llama que repite su silueta en pequeño y enmarca la cara |
-| Contorno | Café oscuro (`#3B1205`, muestreado del archivo), el mismo en el cuerpo y en las extremidades |
+| Cuerpo | Tres siluetas, una por material (tabla siguiente): una llama de tres lenguas, un disco de madera con anillos y una gota con brillos. Es el mismo personaje; lo que cambia es la forma del cuerpo |
+| Tamaño | Pequeño frente a la familia. En las narrativas su `NarrativeProp.Size` está entre un tercio y dos quintos del de Papá y Mamá (0,12 frente a 0,313 y 0,34 en `N1_AparicionGuia`), y es menor cuando aparece en la fogata (0,07 en `N1_NacimientoDelFuego`). La opción de escala A del arte final conserva la altura que tenía la llama en pantalla: ningún `Size` cambió |
+| Cara | Dos ojos redondos y una sonrisa cerrada, sin nariz ni cejas. **Provisional:** el artista aún no entrega la cara del diseño nuevo; hasta entonces lleva los ojos (crema con iris café) y la boca del sprite anterior, centrados en el cuerpo de cada forma |
+| Extremidades | Brazos y piernas gruesos, **la misma silueta en las tres formas** y del color del material (`#FF9122` en el fuego, `#5B4134` en la madera y `#6ED6FB` en el agua); manos y pies son óvalos del mismo color, ya no color piel. Sin accesorios |
+| Pantaloneta | De cuadros, en la cintura, con un color por forma: verde `#277D4A` con cuadros amarillos (fuego), naranja `#FEAA40` con cuadros rojos (madera) y granate `#A13C4F` con cuadros rosa (agua). Sustituye a la franja de cinco bandas |
+| Cuerpo con volumen | Degradados y brillos dentro de la silueta: el núcleo amarillo de la llama, los anillos del disco, los brillos de la gota (excepción de §2.2) |
+| Contorno | Negro `#000000`, el mismo en el cuerpo y en las extremidades |
 | Estela | Cinco a siete puntos sueltos `#FFE9A8`, circulares, de tamaño decreciente, en curva. Nunca una nube difuminada |
 
 #### Las tres formas
 
-| Nivel | Material | Prefab · archivo | Cuerpo | Núcleo | Estado |
-| --- | --- | --- | --- | --- | --- |
-| 1 · La Oscuridad | **Fuego** | `Algoritm_Fuego` · `char_algoritm_n1_fuego_reposo.png` | Llama naranja `#FFA51E` | `#FFE093` | Arte entregado el 24/09/2026. Es la forma de origen: la que aparece en la fogata y se recoge en ella como brasa viva |
-| 2 · La Rueda | **Madera** | `Algoritm_Rueda` · `char_algoritm_n2_rueda_reposo.png` | La misma llama en tono de madera `#DBA362` | `#DBC0A1` | **Provisional.** El prefab y el archivo se llaman «rueda», pero no tiene disco, radios ni buje |
-| 3 · El Río | **Agua** | `Algoritm_Gota` · `char_algoritm_n3_gota_reposo.png` | La misma llama en tono de agua `#50C5EA` | `#A0D8EA` | **Provisional.** El prefab y el archivo se llaman «gota», pero no tiene forma de gota |
+| Nivel | Material | Prefab · archivo | Silueta | Estado |
+| --- | --- | --- | --- | --- |
+| 1 · La Oscuridad | **Fuego** | `Algoritm_Fuego` · `char_algoritm_n1_fuego_reposo.png` | Llama de tres lenguas con núcleo amarillo en degradado | Arte final (entrega del 09/10/2026). Es la forma de origen: la que aparece en la fogata y se recoge en ella como brasa viva. La más alta: ocupa los 982 px del lienzo del rig que ocupaba la llama anterior |
+| 2 · La Rueda | **Madera** | `Algoritm_Rueda` · `char_algoritm_n2_rueda_reposo.png` | Disco de madera con anillos (`#BDA483` y `#9C715C`) | Arte final. Más bajo que la llama (818 px del lienzo del rig), como lo dibujó el artista |
+| 3 · El Río | **Agua** | `Algoritm_Gota` · `char_algoritm_n3_gota_reposo.png` | Gota con brillos | Arte final. 878 px del lienzo del rig |
 
-**Madera y agua son provisionales.** Salen del arte del Nivel 1 recoloreado por encima de la
-franja (`claudeDocs/tasks/Personajes/herramientas/forms.py`), para que cada nivel muestre un
-guía distinto sin arte nuevo. El definitivo entra **sustituyendo el archivo con el mismo
-nombre**, sin tocar escenas, prefabs ni assets. Mientras no llegue, esta tabla describe lo que
-el juego muestra; si el arte definitivo cambia la silueta, esta tabla, §7.6 y el guion §1.1.1
-se corrigen con él.
+**Los `_reposo` se rehicieron en su sitio.** Los tres (768²) se ensamblaron a partir de las siete
+piezas y de la cara provisional, con el mismo nombre y el mismo GUID, de modo que el retrato, el botón de ayuda, las
+cinco escenas y los dieciséis assets narrativos que los referencian muestran ya el diseño nuevo sin tocarlos.
+`forms.py`, que recoloreaba la llama del Nivel 1 para dar un guía distinto por nivel, ya no interviene.
 
 **Cuándo muta.** En los dos puentes, al pasar de una secuencia narrativa a la siguiente,
 que es donde el juego funde a negro (`GameFlowRunner.FadesBetween`): en `N2_PuenteI` es de
@@ -456,14 +474,16 @@ dentro de una escena jugable**: en las cinco mecánicas aparece solo dentro del 
 ayuda, con el material de su nivel. El barrido de Algoritm de `TR-05` y `TR-09` todavía no
 existe en el juego (`fx_algoritm_barrido`, pendiente en `Assets/Game/Art/Inventario.md`).
 
-**El riesgo del nivel 2, y cómo se contiene.** El cuerpo de madera (`#DBA362`) queda muy
-cerca de `#C79A5E`, el acento del nivel y por tanto la señal de «esto es interactivo». La regla de §4.2 prohíbe
-ese tono en el **decorado**, y el guía no es decorado, así que no la infringe — pero sí
-puede confundir. Tres condiciones lo separan de un prop, y son obligatorias:
+**El riesgo del nivel 2, y cómo se contiene.** El disco de madera (`#BDA483` y `#9C715C`) parece la
+sección de un tronco y queda cerca de `#C79A5E`, el acento del nivel y por tanto la señal de «esto es
+interactivo». La regla de §4.2 prohíbe ese tono en el **decorado**, y el guía no es decorado, así
+que no la infringe — pero sí puede confundir, y más que la llama recoloreada: **sin cara, un disco
+de madera se lee como un prop del bosque**. Tres condiciones lo separan de un prop, y son
+obligatorias; la segunda depende de la entrega del artista y debe revisarse en la captura del bosque:
 
 1. **Nunca se posa.** Flota siempre por encima de la línea de los objetos del reto, y no
    entra en la zona de ensamblaje.
-2. **Tiene cara.** Ningún prop del juego tiene ojos ni boca.
+2. **Tiene cara.** Ningún prop del juego tiene ojos ni boca. Hoy la cara es la provisional.
 3. **Pulsa.** El pulso de escala de la pista (§10.2) es suyo y de nada más.
 
 #### Nomenclatura
@@ -474,41 +494,44 @@ char_algoritm_n2_rueda_reposo.png
 char_algoritm_n3_gota_reposo.png
 ```
 
-**Arte actual (provisional): nueve piezas por forma, recortadas del `_reposo` (decisión de Santiago,
-08/10/2026, INC-140).** Los prefabs `Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` dibujan al
-guía por partes —torso, húmero y antebrazo de cada brazo, muslo y antepierna de cada pierna— con
+**Arte final: siete piezas por forma (decisión de Santiago, 09/10/2026, INC-136).** Los prefabs
+`Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` dibujan al guía por partes con
 `char_algoritm.controller`, de modo que sus brazos y piernas se mueven en todas las escenas. Las
-piezas (`Frontal/char_algoritm_<forma>_parte_*.png`, 27 en total) las genera
-`pose_preview.py --exporta-maqueta` a partir del `_reposo` y cada una lleva una rótula en la
-articulación; `Cuerpo` queda apagado, y `Ojos` y `Boca` también, porque la cara sigue pintada en el
-torso. El `_reposo` se conserva como retrato y como icono del botón de ayuda. «Rueda» y «gota»
-nombran el nivel, no la silueta.
-
-**Arte final: recorte en partes (decisión de Santiago, 05/10/2026, INC-131).** Las nueve piezas
-provisionales de arriba ya existen; el arte final las sustituye con el mismo nombre. Cada forma se
-entrega, además de su `_reposo`, cortada en partes con el prefijo
-`char_algoritm_<fuego|rueda|gota>_` —una por forma, porque cada una va recoloreada (INC-52)—:
+piezas (`Frontal/char_algoritm_<forma>_parte_*.png`, 21 en total) las escribe
+`claudeDocs/tasks/Personajes/herramientas/preparar_algoritm.py` desde la entrega
+(`claudeDocs/tasks/Personajes/entregas/2026-10-09/Algoritm/`) con una sola transformación para las
+tres formas, que conserva la altura de hoy (escala 0,76183, «opción A»). Sustituyen **en su sitio**
+(mismo nombre, mismo GUID) a las nueve piezas provisionales que Santiago pidió el 08/10/2026
+(INC-140, recortadas del `_reposo` con `pose_preview.py --exporta-maqueta`):
 
 ```
-char_algoritm_<forma>_parte_torso.png           (la llama y el vientre de colores, sin extremidades)
+char_algoritm_<forma>_parte_torso.png                (el cuerpo y la pantaloneta, sin extremidades)
 char_algoritm_<forma>_parte_brazo_{izq,der}.png      (húmero)
-char_algoritm_<forma>_parte_antebrazo_{izq,der}.png
-char_algoritm_<forma>_parte_pierna_{izq,der}.png     (muslo)
-char_algoritm_<forma>_parte_antepierna_{izq,der}.png
-char_algoritm_<forma>_ojos_{neutra,alegria,sorpresa,preocupacion,concentracion,sueno}.png
-char_algoritm_<forma>_ojos_parpadeo_{medio,cerrado}.png
-char_algoritm_<forma>_boca_{0,a,e,u}.png · _boca_{alegria,sorpresa,preocupacion,concentracion}.png
+char_algoritm_<forma>_parte_antebrazo_{izq,der}.png  (antebrazo con la mano)
+char_algoritm_<forma>_parte_pierna_{izq,der}.png     (la pierna ENTERA, con el pie)
+char_algoritm_<forma>_ojos_neutra.png · char_algoritm_<forma>_boca_0.png    (cara PROVISIONAL, en Expresiones/)
 ```
 
-Brazos, piernas, codos y rodillas en dos tramos, **ojos y boca como capas sobre el cuerpo**, y **sin
-cuello ni cabeza**: la cara va en la propia llama. La cara admite las mismas seis expresiones de
-§7.3, con la regla de no tristeza, enfado ni derrota; la **neutra** sigue siendo la del núcleo de
-identidad (ojos crema con iris café, sonrisa cerrada). **Provisional hasta la entrega:** las nueve
-piezas del cuerpo ya están puestas (arriba) y `Cuerpo` está apagado; los ojos y la boca como capas
-propias siguen apagados hasta que llegue su arte. Quedan dos defectos de las piezas provisionales
-que se corrigen con el arte final: en los fundidos (`Appear`, `Vanish`, `Hidden`) las rótulas se
-ven más oscuras unos 0,3 s, porque el alfa del `CanvasGroup` multiplica cada `Image` por separado
-donde se solapan, y el hombro girado deja ver un talón más claro de unos 12 px.
+Se borraron las seis `parte_antepierna_*`: la pierna llega entera, sin muslo ni rodilla. En el
+rig, la pierna va en `PiernaX`, y `RodillaX` y `AntepiernaX` quedan como pivotes sin imagen (las
+curvas de rodilla de los clips siguen y no mueven nada); si algún día se quiere rodilla, la dibuja el
+artista. Sin cabeza ni cuello: la cara va sobre el cuerpo, en las capas `Ojos` y `Boca`. `Cuerpo`
+(el sprite entero) queda apagado. Los tres `_reposo` se rehicieron con el diseño nuevo (arriba) y se
+conservan como retrato y como icono del botón de ayuda. «Rueda» y «gota» nombran el nivel y también
+la silueta.
+
+**La cara es provisional.** El artista no entregó ojos ni boca, y un guía sin cara es un prop (condición 2
+de arriba). Los ojos y la boca se tomaron del sprite anterior y se marcaron `cara_provisional` en
+`arte_final.json`; se ven de otra mano (llevan contorno café). Como no hay cuadro de ojos cerrados,
+**Algoritm no parpadea ni mueve la boca todavía** (§7.3). Cuando el artista entregue `ojos_neutra`,
+`ojos_parpadeo_cerrado` y `boca_0` sobre el lienzo de 1300 × 1500 (las expresiones restantes de §7.3,
+con el prefijo `char_algoritm_<forma>_`, son lo siguiente), se sustituyen los PNG con el mismo nombre y
+se corre el modo `sprites`. La regla de no tristeza, enfado ni derrota de §7.3 rige para esa cara.
+
+**Los dos defectos del 08/10/2026** (decisión D20 del brief de esa ronda) eran de las rótulas de las
+piezas provisionales: los anillos oscuros en los fundidos (`Appear`, `Vanish`, `Hidden`) y el talón
+claro de unos 12 px en el hombro girado. Con la rodilla fuera se espera que se hayan ido, pero
+**no se ha comprobado**: se verifican en las capturas de la ronda 2 del Editor.
 
 Sustituyen a `char_chispa_*`. La palabra `chispa` queda libre para lo que siempre fue en
 este juego: el rayo del golpe del Nivel 1 (§12.2), que dibuja el motor, no tiene archivo y no
@@ -1037,10 +1060,10 @@ y las cinco mecánicas.
 
 **Arte actual (provisional).** Cada miembro de la familia se corta en **cinco partes** —torso
 (con la cabeza dentro), brazo izquierdo, brazo derecho, pierna izquierda y pierna derecha, con
-izquierda y derecha de pantalla— y Algoritm, desde el 08/10/2026 (INC-140), se corta en **nueve
-piezas** por forma, recortadas de su `_reposo`, con diez clips que comparten las tres formas
-(los nueve de siempre más el saludo `Wave`); sustituir su arte es sustituir los PNG con el mismo
-nombre y correr el modo `sprites`.
+izquierda y derecha de pantalla—. Algoritm ya tiene su arte final (09/10/2026, INC-136): se corta
+en **siete piezas** por forma, con diez clips que comparten las tres formas (los nueve de siempre
+más el saludo `Wave`); desde el 08/10/2026 (INC-140) se había cortado en nueve piezas provisionales
+del `_reposo`, que las siete sustituyeron con el mismo nombre.
 
 **Arte final: diez partes y una cara (decisión de Santiago, 05/10/2026, INC-131).** Cada miembro de
 la familia se corta en **diez partes** —torso, cabeza, húmero y antebrazo de cada brazo, muslo y
@@ -1049,9 +1072,10 @@ la emoción (§7.3). Las articulaciones son hombro, **codo**, cadera, **rodilla*
 `char_<x>_parte_brazo_*` pasa a ser el húmero y `char_<x>_parte_pierna_*` el muslo, con el mismo
 archivo y GUID; se añaden `char_<x>_parte_antebrazo_{izq,der}`, `char_<x>_parte_antepierna_{izq,der}`
 y `char_<x>_parte_cabeza`, y la cara es `char_<x>_ojos_<emocion>`, `char_<x>_ojos_parpadeo_{medio,cerrado}`,
-`char_<x>_boca_{0,a,e,u}` y `char_<x>_boca_<emocion>`. **Algoritm** se corta igual, con prefijo
-`char_algoritm_<forma>_`, en torso, húmero y antebrazo, muslo y antepierna (nueve partes) y los ojos
-y la boca sobre el cuerpo, **sin cuello ni cabeza** (§7.6). La posición de cada articulación vive en
+`char_<x>_boca_{0,a,e,u}` y `char_<x>_boca_<emocion>`. **Algoritm** se corta distinto, con prefijo
+`char_algoritm_<forma>_`: torso, húmero y antebrazo de cada brazo y la pierna entera (siete
+piezas, **sin rodilla**), y los ojos y la boca sobre el cuerpo, **sin cuello ni cabeza** (§7.6);
+sus codos siguen y la rodilla es un pivote sin imagen. La posición de cada articulación vive en
 `claudeDocs/tasks/Personajes/herramientas/rig_articulaciones.json`, y es **provisional hasta que
 llegue el arte**: mientras tanto codos, rodillas y cuello son pivotes vacíos y las capas nuevas
 están apagadas, de modo que el arte actual se ve igual. Los prefabs no se reconstruyen: se les
@@ -1095,13 +1119,51 @@ existe salto en ningún nivel (CT-06, RNF-02).
 | Soplar | Papá (N1) | 0.9 s | Crítica |
 | Señalar / observar | Niña (N2), Algoritm | 0.6 s | Alta |
 | Saludo (`Wave`): el brazo derecho de pantalla sube y se mece, con 0,9 s de reposo dentro del bucle | Algoritm (créditos) | Ciclo 4.8 s | Media |
-| Caminar: un solo ciclo que se voltea a izquierda o derecha según la dirección | Mamá (N3) | Ciclo 0.8 s | Crítica |
+| Caminar: de perfil (§13.4), mirando hacia donde se mueve; ya no es un solo ciclo de frente que se voltea (INC-134) | Mamá (N3) | Ciclo 0.8 s | Crítica |
 | Recoger material | Mamá (N3) | 0.5 s | Alta |
 | Celebrar cierre de fase | El que corresponda | 1.2 s | Media |
 | Ánimo tras un intento sin avance | Todos | 0.9 s | Media |
 
 El **ánimo** sustituye a cualquier animación de derrota o desánimo: no existen (CP-02,
 §7.3).
+
+### 13.4 Vista de perfil (decisión de Santiago, 09/10/2026, INC-134)
+
+La familia (Papá, Mamá, Niña y Niño) tiene un **segundo cuerpo, dibujado de perfil**
+(`Lienzo/Perfil`, hermano de `Cuerpo`), y se ve de perfil **siempre que se mueve en el entorno**; en
+reposo y en los gestos hacia el estudiante, de frente. Esto sustituye al «ciclo único que se voltea»
+que §13.3 daba para caminar.
+
+- **Qué acciones.** La vista la decide la **acción**, no el desplazamiento (`ActionView`, una línea por
+  acción): de perfil, `Walk`, `Run`, `Carry`, `Push`, `PickUp`, `Kneel` y `Blow`; de frente, todas las
+  demás, incluidas `Idle`, `Talk`, `Point`, `Strike`, `Hammer`, `Celebrate`, `Encourage` y `Wave`. Así la
+  balsa (`Idle` mientras se mueve) y Algoritm flotando siguen de frente, y los gestos de ánimo
+  nunca se dan de costado (CP-02). El corte entre vistas es seco, sin fundido.
+- **Hacia dónde mira.** Una sola regla (`Heading.FacesLeft`): a la izquierda o hacia arriba, mira a la
+  izquierda; a la derecha o hacia abajo, a la derecha. En una diagonal manda el eje dominante y en un
+  empate, el horizontal. En las narrativas cada paso decide su lado (`ActorTimeline.FacesLeftAt`; el
+  `ActorBeat.Facing` lo fija a mano donde haga falta); en el río, Mamá sigue las flechas, también las
+  de arriba y abajo; en el Nivel 1, Papá mira hacia el montón, y en el bosque la Niña mira hacia la
+  caja que empuja. **El frente nunca se espeja por el rumbo**: el volteo del lienzo solo existe en
+  perfil. Un personaje sin torso de perfil con sprite (Algoritm, que no tiene perfil) se queda de
+  frente en cualquier acción.
+- **El arte.** Se dibuja **mirando a la derecha**, que es la vista canónica; el perfil izquierdo es
+  ese mismo cuerpo con el lienzo volteado. La entrega del 09/10/2026 llegó mirando a la izquierda y la
+  ingesta la espeja. Cada personaje trae diez piezas (torso, cabeza, húmero, antebrazo, muslo y
+  antepierna, cercanos y lejanos; «cercano» es el lado que mira al espectador) más la cara de perfil
+  (`cara_base`, ojos y boca). El ancla horizontal del corte frente↔perfil es la **cadera** cercana
+  (x = 512 del lienzo del rig), para que los pies no resbalen al girar.
+- **Orden de dibujo del tronco de perfil**, de atrás adelante: brazo lejano, pierna lejana, pierna
+  cercana, torso, cuello y cabeza (con su cara) y brazo cercano. **Las dos piernas van siempre
+  detrás del torso**, de perfil igual que de frente (corrección de Santiago, 09/10/2026). Todo cuelga
+  de un `Tronco` con el pivote en la cadera, así que el orden es el de la jerarquía.
+- **Nomenclatura.** Carpeta `Perfil/` de cada personaje y archivos `char_<x>_perfil_<pieza>`:
+  `torso`, `cabeza`, `brazo_{cercano,lejano}`, `antebrazo_{cercano,lejano}`,
+  `pierna_{cercana,lejana}`, `antepierna_{cercana,lejana}` y, de la cara, `cara_base` (el rubor; Papá
+  no la tiene), `ojos_neutra`, `ojos_parpadeo_cerrado` y `boca_0`. La cara de perfil comparte el reloj
+  de parpadeo y de habla de la de frente (§7.3).
+- **Pendiente de revisar en capturas:** la asimetría de peinados y prendas que el volteo del perfil
+  derecho produce al mirar a la izquierda (el Plan de personajes finales la señalaba en su §4.1).
 
 ---
 
@@ -1381,6 +1443,9 @@ Aplicar a cada pieza antes de darla por buena e importarla a Unity.
 - [ ] Silueta distinguible de los otros tres personajes en negro sólido
 - [ ] Arte final: las diez partes (§13.1) con el codo y la rodilla donde dice la tabla de articulaciones; Algoritm, sin cabeza ni cuello
 - [ ] Arte final: las seis expresiones (§7.3) con ojos y bocas por sus nombres; ninguna es de tristeza, enfado ni derrota, y `Worried` no tiene lágrimas ni comisuras caídas
+- [ ] Parpadeo: ojos abiertos (`ojos_neutra`) y ojos cerrados (`ojos_parpadeo_cerrado`); el cuadro medio es opcional (§7.3, INC-135)
+- [ ] Perfil de la familia (§13.4): las diez piezas `char_<x>_perfil_*` y la cara de perfil, dibujadas mirando a la derecha o entregadas mirando a la izquierda para espejar, registradas sobre el mismo lienzo; las dos piernas detrás del torso
+- [ ] Algoritm, arte final (§7.6): siete piezas por forma sobre un lienzo común registrado, con la pierna entera y sin rodilla; las extremidades, la misma silueta en las tres formas; cara aparte (ojos abiertos, ojos cerrados y boca), no pintada en el torso
 
 ### Entornos
 

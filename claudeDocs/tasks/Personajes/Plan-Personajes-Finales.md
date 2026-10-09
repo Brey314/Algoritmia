@@ -50,6 +50,48 @@
 > el hombro girado; se revisan con el arte nuevo. El corte en nueve piezas es del arte provisional y lo
 > sustituirá la ingesta del diseño nuevo de Algoritm (INC-136) que hace el carril de perfil; el prompt
 > para meterla está en `Prompt-Arte-Final-Algoritm.md`.
+>
+> **Actualización del 09/10/2026 (INC-134 a INC-136).** Este plan no se reescribe; esta nota fija lo que
+> cambió. Detalle en `Personajes-Resultados.md`, C.13.
+>
+> **Perfil (§4, Fase 4.4 y casilla 2.4): ejecutado; ronda 1 del Editor hecha, ronda 2 pendiente.** Llegó el
+> arte de perfil de Papá, Mamá, la Niña y el Niño y Santiago decidió que el personaje se ve de perfil
+> siempre que recorre o trabaja el entorno (INC-134). Difiere del plan así: (1) **no existe
+> `CharacterOrientation`** (`Front`, `ProfileLeft`, `ProfileRight`) ni un `Facing` del rig: la vista la decide
+> la **acción** (`ActionView` → `CharacterView { Front, Profile }`, `CharacterRig.View` de solo lectura) y
+> el lado lo decide `Heading.FacesLeft`, con la regla «izquierda o arriba, a la izquierda; derecha o abajo,
+> a la derecha; en una diagonal, el eje dominante»; (2) **hay un solo arte de perfil, mirando a la
+> derecha**, y el perfil izquierdo es `CharacterRig.Mirrored` sobre el lienzo, solo en perfil: es la
+> «simetría controlada» que §4.2 dejaba como alternativa, con la asimetría de peinados y prendas que §4.1
+> señalaba, aún sin revisar en capturas; la entrega llegó mirando a la izquierda y la ingesta la espeja;
+> (3) la carpeta es `Perfil/` y no `Profile/`, y las piezas son diez más la cara, con los nombres
+> `char_<x>_perfil_*` de C.13, no los seis del árbol de §4.2; (4) **el orden de dibujo de §4.3 está
+> corregido: las dos piernas van siempre detrás del torso** (Santiago, 09/10/2026), y todo cuelga de un solo
+> `Perfil/Tronco` con el pivote en la cadera: brazo lejano, pierna lejana, pierna cercana, torso, cuello y
+> cabeza, brazo cercano; (5) los cuerpos se buscan por ruta, sin campo serializado, y un rig sin torso de
+> perfil con sprite (Algoritm) se queda de frente; (6) las columnas «Vista» de las tablas de §8 son
+> orientativas: el motor calcula el lado por el desplazamiento de cada paso y `ActorBeat.Facing` (`Auto`,
+> `Left`, `Right`) lo fija a mano donde el guion lo pida, y ninguno de los 18 assets lo declara hoy;
+> (7) Mamá, en el río, gira también con las flechas de arriba y de abajo (Fase 4.4). Papá, de cara al
+> montón, y la Niña, de cara a la caja, son añadidos de esta ejecución.
+>
+> **Cara y parpadeo (§5.2): dos cuadros (INC-135).** El arte final trae ojos abiertos y ojos cerrados, sin
+> cuadro medio: `CharacterFaceSet.Eyes(Half)` devuelve el cerrado cuando falta el medio, y el parpadeo
+> enseña los ojos cerrados sus 0,12 s completos. `CharacterFace` gana una cara de perfil opcional
+> (`profileEyes`, `profileMouth`, `profileFaceSet`) que comparte el reloj de parpadeo y de habla de la de
+> frente. Hoy **solo parpadea el perfil**: falta el cuadro cerrado de frente, pedido al artista.
+>
+> **Algoritm (§3.1 y §7): diseño nuevo oficial, ya aplicado (INC-136).** El artista entregó a Algoritm en
+> tres siluetas —llama, disco de madera y gota— con pantaloneta de cuadros, y Santiago decidió que es el
+> definitivo. Entró en **siete piezas por forma** (torso, húmero, antebrazo con la mano y pierna entera con
+> el pie), **sin rodilla**, con codos, sin cuello ni cabeza, sustituyendo en su sitio al corte provisional
+> de nueve: lo de §3.1 sobre las rodillas de Algoritm y los nombres `parte_pierna`/`parte_antepierna` de §7
+> no se cumplen para él. Escala que conserva la altura de hoy (`preparar_algoritm.py`), cara provisional del
+> sprite anterior hasta que llegue la del artista, y los tres `_reposo` rehechos en su sitio.
+>
+> **Siguen pendientes:** la ronda 2 del Editor (el orden nuevo de las piernas, los sprites y la cara de
+> Algoritm, pruebas, `suite2`, capturas y medición de RNF-06); los ojos cerrados de frente; la cara de
+> Algoritm; el retrato animado del cuadro de diálogo (4.1) y poblar emociones en los 18 `N*_*.asset`.
 
 ---
 
@@ -183,10 +225,15 @@ Para la vista de perfil, el orden de dibujo (de atrás hacia adelante en uGUI) d
 1. `Sombra` (contacto inferior)
 2. `BrazoLejano` (brazo del fondo)
 3. `PiernaLejana` (pierna del fondo)
-4. `Cuerpo/Tronco` (torso de perfil)
-5. `PiernaCercana` (pierna en primer plano)
+4. `PiernaCercana` (pierna cercana, **también detrás del torso**)
+5. `Cuerpo/Tronco` (torso de perfil)
 6. `Cabeza` (con cara de perfil)
 7. `BrazoCercano` (brazo en primer plano)
+
+> **Corregido el 09/10/2026 (INC-134).** La primera versión de esta lista ponía `PiernaCercana` delante del
+> torso (después del paso 4 actual). Santiago decidió que las dos piernas van siempre detrás del torso,
+> como de frente. En el motor todo cuelga de `Lienzo/Perfil/Tronco` y la `Sombra` sigue siendo la de la
+> familia (C.13).
 
 ---
 

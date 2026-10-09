@@ -67,7 +67,7 @@ los nombres `frente_` de `Plan-Personajes-Finales.md` §4.2. El estado de cada a
 | ○ Cabeza (separada del torso) | `parte_cabeza` |
 | ○ Antebrazo y antepierna (el segundo tramo) | `parte_antebrazo_izq`, `parte_antebrazo_der`, `parte_antepierna_izq`, `parte_antepierna_der` |
 | ○ Ojos, uno por expresión | `ojos_neutra`, `ojos_alegria`, `ojos_sorpresa`, `ojos_preocupacion`, `ojos_concentracion`, `ojos_sueno` |
-| ○ Ojos al parpadear | `ojos_parpadeo_medio`, `ojos_parpadeo_cerrado` |
+| ○ Ojos al parpadear | `ojos_parpadeo_cerrado` (el cuadro de ojos cerrados; falta **de frente**, y el parpadeo es de dos cuadros, INC-135) y `ojos_parpadeo_medio`, opcional |
 | ○ Boca al hablar | `boca_0` (cerrada, también el reposo de `neutra` y `sueno`), `boca_a`, `boca_e`, `boca_u` |
 | ○ Boca de reposo por expresión | `boca_alegria`, `boca_sorpresa`, `boca_preocupacion`, `boca_concentracion` |
 
@@ -90,41 +90,41 @@ controlador `char_<x>.controller` está al lado.
 
 | Archivo | Estado |
 |---|---|
-| ✓ `char_algoritm_n1_fuego_reposo.png` | Arte entregado (24/09/2026), recortado a cuadrado de 768². Es una llama con cara, brazos y piernas de palo, manos y franja de colores, tal como la describe `Direccion_de_Arte.md` §7.6 (INC-52, cerrado) |
-| ◐ `char_algoritm_n2_rueda_reposo.png` | **Provisional**: el fuego recoloreado en madera. El definitivo entra sustituyendo el archivo |
-| ◐ `char_algoritm_n3_gota_reposo.png` | **Provisional**: el fuego recoloreado en agua. Ídem |
+| ✓ `char_algoritm_n1_fuego_reposo.png` | Diseño final (INC-136, 09/10/2026): la **llama** de tres lenguas con núcleo amarillo en degradado, recortada a cuadrado de 768². Se **rehizo en su sitio** (mismo nombre y GUID) a partir de las siete piezas y de la cara provisional; antes era la llama del 24/09/2026 con franja de colores |
+| ✓ `char_algoritm_n2_rueda_reposo.png` | Diseño final: el **disco de madera** con anillos. Rehecho en su sitio, como el de arriba; antes era el fuego recoloreado en madera |
+| ✓ `char_algoritm_n3_gota_reposo.png` | Diseño final: la **gota** con brillos. Rehecha en su sitio; antes era el fuego recoloreado en agua |
 | ○ `_girando`, `_atenuado`, `char_algoritm_n*_retrato_*` | `S15`/`S03b`. Hoy el retrato del guía **es** el sprite de su forma |
 
-**Arte actual (08/10/2026, INC-140):** nueve piezas por forma, recortadas del `_reposo` provisional con
-`pose_preview.py --exporta-maqueta` (27 PNG en `Frontal/`, listados abajo); el motor las dibuja y apaga la
-`Image` de `Cuerpo`. Los tres prefabs `Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` comparten
-`Animations/char_algoritm.controller` y sus diez clips
+**Arte final (09/10/2026, INC-136):** siete piezas por forma, de la entrega del 09/10/2026
+(`claudeDocs/tasks/Personajes/entregas/2026-10-09/Algoritm/{Fuego,Rueda,Gota}`, 21 PNG sobre un lienzo
+común de 1300 × 1500; el inventario de la entrega, con su hoja de contacto, está en el `INVENTARIO.md` de
+esa carpeta). Las escribe `claudeDocs/tasks/Personajes/herramientas/preparar_algoritm.py` en
+`Frontal/` (21 PNG), con una sola transformación para las tres formas que conserva la altura de hoy
+(escala 0,76183, «opción A»; ningún `Size` de las narrativas cambia). Sustituyen **en su sitio** (mismo
+nombre y GUID) a las nueve piezas provisionales del 08/10/2026 (INC-140, 27 PNG recortados del `_reposo` con
+`pose_preview.py --exporta-maqueta`). Los tres prefabs `Algoritm_Fuego`, `Algoritm_Rueda` y
+`Algoritm_Gota` comparten `Animations/char_algoritm.controller` y sus diez clips
 `char_algoritm_anim_{flotar,hablar,senalar,girar,celebrar,animo,oculto,aparicion,apagado,saludar}`
 (`saludar` es el `Wave` de los créditos, INC-141). El `_reposo` va dentro del botón de ayuda circular
-de las cinco mecánicas y es el retrato del guía.
+de las cinco mecánicas y es el retrato del guía. Sin cabeza ni cuello:
 
-**Arte final: recorte en partes (decisión de Santiago, 05/10/2026, INC-131).** Cada forma se
-entrega además cortada, con el prefijo `char_algoritm_<fuego|rueda|gota>_` —uno por forma, porque
-cada una va recoloreada (INC-52)—. Brazos, piernas, codos y rodillas en dos tramos, ojos y boca
-sobre el cuerpo y **sin cuello ni cabeza**. Las nueve piezas del cuerpo existen ya como arte
-provisional (`◐`) y el arte final las sustituye con el mismo nombre; ojos y boca siguen `○`:
-
-| Qué | Archivos (`char_algoritm_<forma>_`) |
+| Qué | Archivos (`char_algoritm_<forma>_`, con `<forma>` = `fuego`, `rueda`, `gota`) |
 |---|---|
-| ◐ Torso (la llama y el vientre de colores, con la cara; sin extremidades) | `parte_torso` |
-| ◐ Brazos en dos tramos | `parte_brazo_izq`, `parte_brazo_der` (húmero con rótulas), `parte_antebrazo_izq`, `parte_antebrazo_der` (palo y mano) |
-| ◐ Piernas en dos tramos | `parte_pierna_izq`, `parte_pierna_der` (muslo con rótulas), `parte_antepierna_izq`, `parte_antepierna_der` (pierna y pie) |
-| ○ Ojos y su parpadeo | `ojos_neutra`, `ojos_alegria`, `ojos_sorpresa`, `ojos_preocupacion`, `ojos_concentracion`, `ojos_sueno`, `ojos_parpadeo_medio`, `ojos_parpadeo_cerrado` |
-| ○ Boca | `boca_0`, `boca_a`, `boca_e`, `boca_u`, `boca_alegria`, `boca_sorpresa`, `boca_preocupacion`, `boca_concentracion` |
+| ✓ Torso (el cuerpo y la pantaloneta de cuadros, sin extremidades) | `parte_torso` |
+| ✓ Brazos | `parte_brazo_izq`, `parte_brazo_der` (húmero), `parte_antebrazo_izq`, `parte_antebrazo_der` (antebrazo con la mano) |
+| ✓ Piernas **enteras**, con el pie | `parte_pierna_izq`, `parte_pierna_der` |
+| ◐ Cara **provisional** (en `Expresiones/`) | `ojos_neutra`, `boca_0`: los ojos y la boca del sprite anterior, centrados en el torso nuevo; marcados `cara_provisional` en `arte_final.json`, a la resolución del sprite de hoy |
+| ○ Resto de la cara (lo espera del artista) | `ojos_parpadeo_cerrado` (sin él Algoritm **no parpadea**); `ojos_alegria`, `ojos_sorpresa`, `ojos_preocupacion`, `ojos_concentracion`, `ojos_sueno`; `boca_a`, `boca_e`, `boca_u` y `boca_alegria`, `boca_sorpresa`, `boca_preocupacion`, `boca_concentracion`; todo sobre el lienzo de 1300 × 1500 |
 
-Las piezas provisionales (3,63 MiB de textura sin comprimir para las tres formas, sin medir aún en
-un ejecutable) se cortan por la forma del arte y no por rectángulos, y llevan una rótula en cada
-articulación; sustituirlas por el arte final se hace con el mismo nombre y corriendo `sprites`,
-`orden` y `clips` de `BuildRigsFinal.cs.txt`. Dos defectos del corte se corrigen con ese arte: las
-rótulas se ven más oscuras unos 0,3 s en los fundidos (`Appear`, `Vanish`, `Hidden`) y el hombro
-girado deja un talón más claro de unos 12 px. `Ojos` y `Boca` siguen apagados y sin sprite hasta que
-llegue su arte: la cara va pintada en el torso. El `_reposo` se conserva: es el retrato del guía y lo
-que va dentro del botón de ayuda. La guía para pedir el arte final está en
+`izq` y `der` son los de la pantalla (`BrazoDer` del rig es la derecha de pantalla), y las
+extremidades son la **misma silueta** en las tres formas, recoloreadas. Las seis
+`parte_antepierna_{izq,der}` se **borraron** con su `.meta`: la pierna no tiene muslo ni rodilla; en el
+rig la pierna va en `PiernaX` y `RodillaX` y `AntepiernaX` son pivotes sin imagen (`BuildRigsFinal`, modo
+`sprites`, vacía y apaga el sprite de un nodo sin arte). Las siete piezas pesan 6,9 MB de textura sin comprimir para las tres formas (estimado,
+sin medir aún en un ejecutable). Cuando el artista entregue la cara se sustituyen los PNG con el
+mismo nombre y se corre `sprites`; las dos cosas que los PNG provisionales no resolvían (los anillos de
+las rótulas en los fundidos y el talón del hombro girado) se revisan con este arte en las capturas de la
+ronda 2 del Editor. La guía para pedir el arte final está en
 `claudeDocs/tasks/Personajes/Prompt-Arte-Final-Algoritm.md`.
 
 ### `Characters/Father/` · `Mother/` · `Girl/` · `Boy/`
@@ -135,7 +135,18 @@ que va dentro del botón de ayuda. La guía para pedir el arte final está en
 |---|---|
 | `Frontal/` | Las partes `char_<x>_parte_*.png` de la vista frontal (torso, cabeza, brazos y antebrazos, piernas y antepiernas) |
 | `Expresiones/` | Ojos, bocas, `char_<x>_cara_base.png` y el set de cara `char_<x>_cara.asset` (`CharacterFaceSet`) |
-| `Perfil/` | Vacía, con `.gitkeep`, hasta que haya arte de perfil |
+| `Perfil/` | El cuerpo de perfil de la familia (desde el 09/10/2026, INC-134): `char_<x>_perfil_*.png` y su set de cara `char_<x>_perfil_cara.asset`. En `Algoritm/` sigue vacía, con `.gitkeep`: el guía no tiene perfil |
+
+**Perfil de la familia (09/10/2026, INC-134).** Los originales de la entrega del 09/10/2026 (Papá, Mamá, Niña y Niño; 48 PNG, más la `mano_atras` de la Niña que el artista entregó el mismo día) están en `claudeDocs/tasks/Personajes/entregas/2026-10-09/`, con su `INVENTARIO.md` y su hoja de contacto. Llegaron mirando a la **izquierda**; `preparar_perfil.py` los espeja para que el arte canónico mire a la **derecha**, los normaliza (870 px de alto con la coronilla en y = 77 y la cadera cercana en x = 512) y escribe **solo** en `Perfil/` (55 PNG: 13 de Papá, que no trae `cara_base`, y 14 de cada uno de los otros tres). Todo es RGBA sin comprimir. «Cercano» es el lado que mira al espectador y «lejano» el opuesto:
+
+| Qué | Archivos (`char_<x>_perfil_`, con `<x>` = `papa`, `mama`, `nina`, `nino`) |
+|---|---|
+| ✓ Cuerpo y cabeza | `torso`, `cabeza` |
+| ✓ Brazos | `brazo_cercano`, `brazo_lejano` (húmero), `antebrazo_cercano`, `antebrazo_lejano` (con la mano) |
+| ✓ Piernas | `pierna_cercana`, `pierna_lejana` (muslo), `antepierna_cercana`, `antepierna_lejana` (pierna y pie) |
+| ✓ Cara de perfil | `cara_base` (el rubor; Papá no la tiene), `ojos_neutra`, `ojos_parpadeo_cerrado`, `boca_0` |
+
+La cara de perfil es de **dos cuadros** de ojos, abiertos y cerrados, sin cuadro medio (`ojos_parpadeo_medio` queda opcional, INC-135). El frente de la familia **no tiene aún ojos cerrados**: `Expresiones/char_<x>_ojos_parpadeo_cerrado` está `○`, pedido al artista, y hasta entonces solo parpadea el perfil. Memoria de los 55 PNG: ≈ 8,5 MB sin comprimir, sin medir en un ejecutable. El orden de dibujo y la nomenclatura están en `Direccion_de_Arte.md` §13.4.
 
 Siguen en la raíz de la carpeta del personaje los retratos `char_<x>_retrato_neutra.png`, el cenital de Mamá, los reposos de Algoritm y `Animations/`. Los originales de cada entrega, sin tocar y fuera de `Assets`, viven en `claudeDocs/tasks/Personajes/entregas/<fecha>/` (la del 06/10/2026 trae Papá, Mamá, Niña y Niño, 45 PNG). Las tablas de abajo nombran los archivos sin la subcarpeta.
 
@@ -445,8 +456,9 @@ de `S06`, como manda §10.2— y la convención de nombres de los `.anim`.
    usa ni `env_n1_cueva_luz1..4` ni `ui_n1_mascara`, sino la capa del shader `fx_oscuridad`
    (`CaveLightingController`); ninguno de los dos assets se genera.
 5. ~~`char_mama_cenital.png` frente a `char_mama_cenital_norte.png`, `_este`, `_sur`, `_oeste`~~ —
-   resuelto el 30/09/2026: no hay láminas por dirección. En el río Mamá es su rig frontal, que
-   camina con un solo clip volteado; `Characters/Mother/char_mama_cenital.png` sigue en la `Image`
+   resuelto el 30/09/2026: no hay láminas por dirección. En el río Mamá era su rig frontal, que
+   caminaba con un solo clip volteado (desde el 09/10/2026, INC-134, camina de perfil hacia donde se
+   mueve: ver `Direccion_de_Arte.md` §13.4); `Characters/Mother/char_mama_cenital.png` sigue en la `Image`
    raíz de `Personaje_Mama`, apagada, de reserva, y no se ve.
 6. **Dos efectos de `§12.2` no están en el tablero:** recolección de objeto y reto resuelto. El
    de recolección puede estar cubierto por `prop_n3_material_recogida.anim` (`S10`), el otro no.
