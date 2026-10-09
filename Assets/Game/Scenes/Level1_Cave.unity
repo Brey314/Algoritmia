@@ -5295,6 +5295,7 @@ GameObject:
   - component: {fileID: 1644066245}
   - component: {fileID: 1644066244}
   - component: {fileID: 1644066243}
+  - component: {fileID: 1644066246}
   m_Layer: 5
   m_Name: Fuego
   m_TagString: Untagged
@@ -5381,6 +5382,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1644066241}
   m_CullTransparentMesh: 1
+--- !u!114 &1644066246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1644066241}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f9b108eefa9d4b4e97d4721bc520712, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.FireGlow
+  <Spread>k__BackingField: 1.8
+  <BehindSiblings>k__BackingField: 1
+  <Offset>k__BackingField: {x: 0, y: -0.1}
 --- !u!1 &1683851124
 GameObject:
   m_ObjectHideFlags: 0

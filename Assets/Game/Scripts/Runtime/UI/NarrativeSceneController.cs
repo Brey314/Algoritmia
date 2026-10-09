@@ -305,7 +305,7 @@ namespace Game.UI
                 return; // el fundido de apertura no salta a ningún sitio: ya está donde toca
             }
 
-            _camera = _cutKey.Framing;
+            _camera = Followed(_cutKey.Framing);
             _light = _cutKey.Light;
             _lightBefore = _cutKey.Light;
         }
@@ -454,6 +454,11 @@ namespace Game.UI
                 if (prop.BurnExtent > 0f)
                 {
                     go.AddComponent<BurnReveal>().Extent = prop.BurnExtent; // quemado quieto: la escena ya es después del fuego
+                }
+
+                if (prop.Glows)
+                {
+                    FireGlow.Attach(go); // el halo de la fogata: un hermano justo antes de la llama
                 }
 
                 if (prop.Rolling != null)
@@ -797,11 +802,17 @@ namespace Game.UI
         }
 
         /// <summary>
-        /// El encuadre que toca ahora. Con paradas, el de la última parada ya leída —y el inicial
-        /// hasta la primera—: la vista se queda quieta hasta que el texto la mueve. Sin paradas,
-        /// del inicial al final según cuánto va leído.
+        /// El encuadre que toca ahora: el de la parada en curso, corrido lo que se haya movido el
+        /// objeto que la cámara acompaña, si lo hay (<see cref="Followed"/>).
         /// </summary>
-        private CameraFraming TargetFraming()
+        private CameraFraming TargetFraming() => Followed(StopFraming());
+
+        /// <summary>
+        /// El encuadre de la parada en curso. Con paradas, el de la última parada ya leída —y el
+        /// inicial hasta la primera—: la vista se queda quieta hasta que el texto la mueve. Sin
+        /// paradas, del inicial al final según cuánto va leído.
+        /// </summary>
+        private CameraFraming StopFraming()
         {
             if (_sequence.CameraKeys.Length == 0)
             {
@@ -819,6 +830,28 @@ namespace Game.UI
             }
 
             return target;
+        }
+
+        /// <summary>
+        /// Con un objeto que la cámara acompaña (<see cref="NarrativeProp.CameraFollows"/>), el foco
+        /// de la parada se corre lo que ese objeto se ha movido desde donde empezó, en fracciones de
+        /// la ilustración: la balsa que cruza no se sale del cuadro por mucho que tarde el texto en
+        /// avanzar. El desplazamiento no se quita al llegar —se queda—, así la cámara no vuelve atrás
+        /// cuando el objeto se para. El acotado del foco lo hace <see cref="IllustrationFraming"/>.
+        /// </summary>
+        private CameraFraming Followed(CameraFraming stop)
+        {
+            var followed = _props.FindIndex(entry => entry.Prop.CameraFollows);
+            if (followed < 0 || illustration.sprite == null)
+            {
+                return stop;
+            }
+
+            var (prop, rect) = _props[followed];
+            // La casilla se mueve de dos maneras —los personajes cambian de ancla; lo demás, de
+            // posición—: se cuentan las dos y la que no se use vale cero.
+            var moved = (rect.anchorMin - prop.Position) + rect.anchoredPosition / illustration.sprite.rect.size;
+            return new CameraFraming(stop.Focus + moved, stop.Zoom);
         }
 
         /// <summary>

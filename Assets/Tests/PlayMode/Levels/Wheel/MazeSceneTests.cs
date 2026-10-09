@@ -58,6 +58,7 @@ namespace Game.Levels.Wheel.Tests
             var sprite = maze.Environment.sprite;
             Assert.That(sprite, Is.Not.Null, "el laberinto tiene entorno cenital");
             var entorno = EnPantalla(maze.Environment.rectTransform);
+            var marco = EnPantalla(maze.EnvironmentFrame.rectTransform);
             var panel = EnPantalla((RectTransform)maze.Environment.rectTransform.parent);
             var pantalla = new Rect(0f, 0f, Screen.width, Screen.height);
 
@@ -68,7 +69,14 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(entorno.yMax, Is.LessThanOrEqualTo(panel.yMax + 0.5f));
             Assert.That(entorno.width / entorno.height, Is.EqualTo(sprite.rect.width / sprite.rect.height).Within(0.01f),
                 "conserva la proporción del dibujo");
-            Assert.That(Mathf.Approximately(entorno.width, panel.width) || Mathf.Approximately(entorno.height, panel.height),
+
+            // El marco rodea la ilustración por fuera, así que el que llena el panel es el marco: la
+            // ilustración se ajusta a lo que queda de él una vez descontado el grosor a cada lado.
+            Assert.That(marco.xMin, Is.GreaterThanOrEqualTo(panel.xMin - 0.5f), "el marco entero cabe en el panel");
+            Assert.That(marco.xMax, Is.LessThanOrEqualTo(panel.xMax + 0.5f));
+            Assert.That(marco.yMin, Is.GreaterThanOrEqualTo(panel.yMin - 0.5f));
+            Assert.That(marco.yMax, Is.LessThanOrEqualTo(panel.yMax + 0.5f));
+            Assert.That(Mathf.Abs(marco.width - panel.width) < 0.5f || Mathf.Abs(marco.height - panel.height) < 0.5f,
                 "y llena el panel por uno de los dos ejes: se ajusta a la pantalla");
 
             // La matriz de 16 × 11 cubre el seto entero: sus casillas miden ~8 % del alto y las
@@ -272,12 +280,11 @@ namespace Game.Levels.Wheel.Tests
 
         /// <summary>
         /// El laberinto no lleva tinte de luz: el entorno, la carretilla, el refugio y los
-        /// obstáculos quedan tal cual viene el arte, y el entorno lleva el contorno del panel
-        /// de diálogo (Dirección de arte §10.2).
+        /// obstáculos quedan tal cual viene el arte.
         /// </summary>
         [Test]
         [Timeout(30000)]
-        public async Task MazeScene_RF30_ElEntornoQuedaSinTinteYConSuContorno()
+        public async Task MazeScene_RF30_ElEntornoQuedaSinTinte()
         {
             var maze = await OpenMaze();
 
@@ -287,14 +294,67 @@ namespace Game.Levels.Wheel.Tests
                     .Where(imagen => imagen != null && imagen.sprite != null)
                     .Select(imagen => imagen.color),
                 Has.All.EqualTo(Color.white), "y el refugio y los obstáculos dibujados");
+        }
 
-            var outline = maze.Environment.GetComponent<Outline>();
-            Assert.That(outline, Is.Not.Null, "el entorno lleva su contorno");
-            Assert.That(outline.enabled, Is.True);
-            var esperado = new Color(0.769f, 0.659f, 0.510f);
-            Assert.That(outline.effectColor.r, Is.EqualTo(esperado.r).Within(0.002f), "contorno #C4A882");
-            Assert.That(outline.effectColor.g, Is.EqualTo(esperado.g).Within(0.002f));
-            Assert.That(outline.effectColor.b, Is.EqualTo(esperado.b).Within(0.002f));
+        /// <summary>
+        /// El entorno lleva el mismo contorno que la tarjeta de la secuencia (decisión de Santiago,
+        /// 08/10/2026): #C4A882, <c>ui_boton</c> en nueve partes y 8 px de grosor, y sin cortes en
+        /// las esquinas. Los 8 px son del lienzo y no se escalan con la ilustración —por eso el
+        /// entorno ya no lleva un <c>Outline</c>, que sí se escala—, y las esquinas se cierran así:
+        /// en la tarjeta el <c>Fondo</c> es otro <c>ui_boton</c> con los arcos concéntricos con los
+        /// del panel (radio 24 − 8 = 16: el borde del sprite entre 1,5), porque con esquinas
+        /// cuadradas asomaría sobre el arco y se comería el contorno; en el entorno el marco es un
+        /// anillo sin centro cuyo hueco es exactamente la ilustración visible, y cabe entero en la
+        /// pantalla sin tocar la tarjeta.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RF30_ElEntornoYLaTarjetaLlevanElMismoMarcoRedondeado()
+        {
+            var maze = await OpenMaze();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            const float grosor = 8f;
+            var escala = maze.Environment.canvas.rootCanvas.scaleFactor;
+            var contorno = new Color(0.769f, 0.659f, 0.510f); // #C4A882
+            var relleno = maze.SequenceViewport.parent.GetComponent<Image>(); // Panel_Secuencia/Fondo
+            var tarjeta = relleno.transform.parent.GetComponent<Image>(); // Panel_Secuencia
+            var marco = maze.EnvironmentFrame;
+
+            // Los dos son el mismo contorno: color, sprite y nueve partes.
+            foreach (var (nombre, imagen) in new[] { ("la tarjeta", tarjeta), ("el marco del entorno", marco) })
+            {
+                Assert.That(imagen.color, Is.EqualTo(contorno).Using(ColorEqualityComparer.Instance), $"{nombre}: contorno #C4A882");
+                Assert.That(imagen.sprite.name, Is.EqualTo("ui_boton"), $"{nombre}: lleva ui_boton");
+                Assert.That(imagen.type, Is.EqualTo(Image.Type.Sliced), $"{nombre}: en nueve partes, con las esquinas redondeadas");
+            }
+
+            // La tarjeta: el Fondo redondeado, metido 8 px por cada lado y con el arco concéntrico.
+            Assert.That(relleno.sprite.name, Is.EqualTo("ui_boton"), "el relleno de la tarjeta también es redondeado: cuadrado, asomaría sobre el arco del contorno");
+            Assert.That(relleno.type, Is.EqualTo(Image.Type.Sliced));
+            Assert.That(relleno.fillCenter, Is.True, "y lleno");
+            Assert.That(relleno.pixelsPerUnitMultiplier, Is.EqualTo(1.5f).Within(0.01f),
+                "su arco es el del panel menos el grosor (24 − 8 = 16 = 24 / 1,5): el contorno mide 8 px también en la curva");
+            var panelTarjeta = EnPantalla(tarjeta.rectTransform);
+            AssertGrosor(panelTarjeta, EnPantalla(relleno.rectTransform), grosor * escala, "la tarjeta");
+
+            // El entorno: un anillo hermano, detrás, cuyo hueco es la ilustración visible.
+            Assert.That(marco.transform.parent, Is.SameAs(maze.Environment.transform.parent), "el marco es hermano del entorno, no un efecto suyo");
+            Assert.That(marco.transform.GetSiblingIndex(), Is.LessThan(maze.Environment.transform.GetSiblingIndex()), "y va detrás de él");
+            Assert.That(marco.fillCenter, Is.False, "sin centro: el hueco es la ilustración y sus esquinas son las del dibujo");
+            Assert.That(marco.raycastTarget, Is.False, "no recibe clics");
+            Assert.That(marco.sprite.border.x / (marco.pixelsPerUnit * marco.pixelsPerUnitMultiplier), Is.EqualTo(grosor).Within(0.01f),
+                "el sprite pinta esos 8 px del lienzo: ni un hueco entre el marco y la ilustración ni un anillo más grueso");
+            var marcoEnPantalla = EnPantalla(marco.rectTransform);
+            AssertGrosor(marcoEnPantalla, EnPantalla(maze.Environment.rectTransform), grosor * escala, "el marco del entorno");
+
+            // Sin cortes: entero en la pantalla —no lo recorta el borde— y sin fundirse con la tarjeta.
+            var pantalla = new Rect(0f, 0f, Screen.width, Screen.height);
+            Assert.That(pantalla.Contains(marcoEnPantalla.min) && pantalla.Contains(marcoEnPantalla.max), Is.True,
+                "el marco del entorno está entero en pantalla: ninguna esquina queda cortada por el borde (RNF-03)");
+            Assert.That(pantalla.Contains(panelTarjeta.min) && pantalla.Contains(panelTarjeta.max), Is.True, "y el de la tarjeta también");
+            Assert.That(marcoEnPantalla.Overlaps(panelTarjeta), Is.False, "y los dos contornos no se tocan: cada uno cierra sus cuatro esquinas");
         }
 
         /// <summary>
@@ -334,12 +394,15 @@ namespace Game.Levels.Wheel.Tests
 
         /// <summary>
         /// La salida no se marca con un cuadro de color —se lee en el entorno, en el hueco del
-        /// seto—; el panel que rodea al entorno es el marfil de interfaz; y el entorno lleva su
-        /// contraste y saturación en una copia del material, no en el asset compartido.
+        /// seto—; el fondo de la pantalla es uno solo, el ámbar #E8A33D (decisión de Santiago,
+        /// 08/10/2026): el panel que rodea al entorno se pinta con el <c>BackdropColor</c> del asset,
+        /// y <c>Fondo_Escena</c>, que va detrás de la tarjeta, lo comparte (lo vigila
+        /// <c>MazeSceneDataTests</c>); y el entorno lleva su contraste y saturación en una copia del
+        /// material, no en el asset compartido.
         /// </summary>
         [Test]
         [Timeout(30000)]
-        public async Task MazeScene_RF30_LaSalidaSeLeeEnElEntornoYElPanelEsMarfil()
+        public async Task MazeScene_RF30_LaSalidaSeLeeEnElEntornoYElFondoEsUnoSolo()
         {
             var maze = await OpenMaze();
             var layout = maze.Layout;
@@ -349,16 +412,45 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(refugio.enabled, Is.False, "sin ilustración, la casilla de llegada no se pinta de color");
 
             var panel = maze.Environment.rectTransform.parent.GetComponent<Image>();
-            Assert.That(panel.color.r, Is.EqualTo(layout.BackdropColor.r).Within(0.002f), "el panel es el color de interfaz del asset");
+            Assert.That(panel.color.r, Is.EqualTo(layout.BackdropColor.r).Within(0.002f), "el panel es el color de fondo del asset");
             Assert.That(panel.color.g, Is.EqualTo(layout.BackdropColor.g).Within(0.002f));
             Assert.That(panel.color.b, Is.EqualTo(layout.BackdropColor.b).Within(0.002f));
-            Assert.That(panel.color.r, Is.EqualTo(0.969f).Within(0.01f), "marfil #F7EFE2");
+            Assert.That(panel.color, Is.EqualTo(new Color(0.910f, 0.639f, 0.239f)).Using(ColorEqualityComparer.Instance), "ámbar #E8A33D");
 
             Assert.That(maze.Environment.material, Is.Not.SameAs(layout.EnvironmentMaterial), "una copia por escena");
             Assert.That(maze.Environment.material.GetFloat("_Contrast"), Is.EqualTo(layout.Contrast), "con el contraste del asset");
             Assert.That(maze.Environment.material.GetFloat("_Saturation"), Is.EqualTo(layout.Saturation), "y su saturación");
             Assert.That(layout.Contrast, Is.EqualTo(1f), "sin contraste añadido: el entorno queda plano");
             Assert.That(layout.Saturation, Is.EqualTo(1f), "y sin tocar el color del arte");
+        }
+
+        /// <summary>
+        /// La zona donde se coloca la secuencia (<c>Ventana_Secuencia</c>) es el marfil sombra
+        /// #E0D4C0 en nueve partes (decisión de Santiago, 08/10/2026): se lee como una zona sobre el
+        /// marfil de la tarjeta, y las muescas vacías de los bloques (<c>ivoryShadeColor</c>) son de
+        /// su mismo tono, así que un bloque sin otro encima queda encajado en un hueco del color de
+        /// la zona. Plana y del mismo marfil que la tarjeta, la zona desaparecía.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task MazeScene_RF31_LaZonaDeSoltarEsMarfilSombraSobreLaTarjeta()
+        {
+            var maze = await OpenMaze();
+            var zona = maze.SequenceViewport.GetComponent<Image>();
+            var tarjeta = maze.SequenceViewport.parent.GetComponent<Image>(); // Panel_Secuencia/Fondo
+            var marfilSombra = new Color(0.878f, 0.831f, 0.753f); // #E0D4C0
+
+            Assert.That(zona.color, Is.EqualTo(marfilSombra).Using(ColorEqualityComparer.Instance), "la zona es el marfil sombra #E0D4C0");
+            Assert.That(zona.sprite.name, Is.EqualTo("ui_boton"), "con las esquinas redondeadas del botón");
+            Assert.That(zona.type, Is.EqualTo(Image.Type.Sliced), "en nueve partes");
+            Assert.That(tarjeta.color, Is.Not.EqualTo(zona.color).Using(ColorEqualityComparer.Instance),
+                "sobre una tarjeta de otro tono: la zona se distingue de lo que la rodea");
+
+            maze.AddBlock(InstructionBlock.Forward(1));
+            var hueco = maze.Rows[0].Find("Muesca/Hueco").GetComponent<Image>();
+            Assert.That(hueco.color, Is.EqualTo(marfilSombra).Using(ColorEqualityComparer.Instance),
+                "la muesca vacía del primer bloque es del marfil sombra (ivoryShadeColor)");
+            Assert.That(hueco.color, Is.EqualTo(zona.color).Using(ColorEqualityComparer.Instance), "el mismo tono que la zona");
         }
 
         /// <summary>
@@ -1318,6 +1410,15 @@ namespace Game.Levels.Wheel.Tests
         {
             var estrecha = new Rect(a.xMin + 0.5f, a.yMin + 0.5f, a.width - 1f, a.height - 1f);
             return estrecha.Overlaps(b);
+        }
+
+        /// <summary>El interior queda a <paramref name="grosor"/> píxeles del exterior por sus cuatro lados.</summary>
+        private static void AssertGrosor(Rect exterior, Rect interior, float grosor, string quien)
+        {
+            Assert.That(interior.xMin - exterior.xMin, Is.EqualTo(grosor).Within(0.5f), $"{quien}: el contorno mide {grosor:F0} px por la izquierda");
+            Assert.That(exterior.xMax - interior.xMax, Is.EqualTo(grosor).Within(0.5f), $"{quien}: y por la derecha");
+            Assert.That(interior.yMin - exterior.yMin, Is.EqualTo(grosor).Within(0.5f), $"{quien}: y por abajo");
+            Assert.That(exterior.yMax - interior.yMax, Is.EqualTo(grosor).Within(0.5f), $"{quien}: y por arriba");
         }
 
         private static Rect EnPantalla(RectTransform rect)

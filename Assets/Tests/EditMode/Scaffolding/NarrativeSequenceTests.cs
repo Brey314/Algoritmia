@@ -216,6 +216,73 @@ namespace Game.Scaffolding.Tests
             Assert.That(desviados, Is.Empty);
         }
 
+        /// <summary>
+        /// La cámara del cruce acompaña a la balsa (RF-44, decisión de Santiago, 08/10/2026): la
+        /// balsa lleva la marca <see cref="NarrativeProp.CameraFollows"/> y, con la cámara
+        /// siguiéndola, no se sale del cuadro en ninguna parada ni en ningún punto del cruce, y la
+        /// cámara no retrocede mientras cruza.
+        /// </summary>
+        /// <remarks>
+        /// Sin la marca la balsa se sale del cuadro por la derecha si el texto tarda en avanzar: el
+        /// primer encuadre la deja a 164 px del borde y recorre 0,12 de la ilustración en 9 s.
+        /// «No retrocede» se mide sobre el foco que de verdad se ve, ya acotado por
+        /// <see cref="IllustrationFraming"/>, con la balsa llegada a la otra orilla: subir la parada de
+        /// la línea 1 por encima de 0,547 lo haría bajar al pasar a la línea 2, porque ahí el plano
+        /// abre (zoom 1,5) y el acotado del foco se cierra.
+        /// </remarks>
+        [Test]
+        public void NarrativeSequence_RF44_LaCamaraDelCruceAcompanaALaBalsa()
+        {
+            const float margen = 0.02f; // de la pantalla: la cámara se suaviza y la balsa llega a ir 77 px por detrás
+            var secuencias = TodasLasSecuencias().ToArray();
+            var cruce = secuencias.Single(sequence => sequence.Id == "N3_Escena33_Cruce");
+            var balsa = cruce.Props.Single(prop => prop.Motion == PropMotion.Drift);
+            var imagen = cruce.Illustration.rect.size;
+            var proporcionDeLaBalsa = balsa.Art.rect.width / balsa.Art.rect.height;
+            var llegada = new Vector2(balsa.MotionDistance, -balsa.MotionDrop);
+            var paradas = new[] { cruce.CameraStart }
+                .Concat(cruce.CameraKeys.Where(key => key.Line <= LineaDeDesembarco).Select(key => key.Framing))
+                .ToArray();
+
+            // Dónde queda la cámara con la balsa a mitad de camino, y dónde se ve el foco ya acotado.
+            CameraFraming Siguiendo(CameraFraming parada, Vector2 movido) =>
+                balsa.CameraFollows ? new CameraFraming(parada.Focus + movido, parada.Zoom) : parada;
+
+            Vector2 FocoVisto(CameraFraming encuadre)
+            {
+                var tamano = IllustrationFraming.CoverSize(imagen, Ventana, encuadre.Zoom);
+                var desplazamiento = IllustrationFraming.Offset(tamano, Ventana, encuadre.Focus);
+                return new Vector2(0.5f, 0.5f) - new Vector2(desplazamiento.x / tamano.x, desplazamiento.y / tamano.y);
+            }
+
+            var seSale = paradas
+                .SelectMany(parada => new[] { 0f, 0.25f, 0.5f, 0.75f, 1f }
+                    .Select(avance => (parada, movido: llegada * avance)))
+                .Select(caso =>
+                {
+                    var encuadre = Siguiendo(caso.parada, caso.movido);
+                    var tamano = IllustrationFraming.CoverSize(imagen, Ventana, encuadre.Zoom);
+                    var centro = IllustrationFraming.Offset(tamano, Ventana, encuadre.Focus)
+                                 + (balsa.Position + caso.movido - new Vector2(0.5f, 0.5f)) * tamano;
+                    var medioAncho = tamano.y * balsa.Size * Mathf.Min(1f, proporcionDeLaBalsa) / 2f;
+                    var izquierda = 0.5f + (centro.x - medioAncho) / Ventana.x;
+                    var derecha = 0.5f + (centro.x + medioAncho) / Ventana.x;
+                    return (caso, izquierda, derecha);
+                })
+                .Where(medida => medida.izquierda < margen || medida.derecha > 1f - margen)
+                .Select(medida => FormattableString.Invariant(
+                    $"foco ({medida.caso.parada.Focus.x:0.00}, {medida.caso.parada.Focus.y:0.00}) zoom {medida.caso.parada.Zoom:0.00} con la balsa {medida.caso.movido.x:0.000} más allá: ocupa de {medida.izquierda:0.000} a {medida.derecha:0.000} de la pantalla"))
+                .ToArray();
+
+            var focosAlLlegar = paradas.Select(parada => FocoVisto(Siguiendo(parada, llegada)).x).ToArray();
+
+            Assert.That(balsa.CameraFollows, Is.True, "la balsa lleva la marca: la cámara la acompaña");
+            Assert.That(secuencias.SelectMany(sequence => sequence.Props).Count(prop => prop.CameraFollows), Is.EqualTo(1),
+                "solo la balsa: en las otras escenas la cámara no sigue a nadie");
+            Assert.That(seSale, Is.Empty, "la balsa se ve entera en cada parada, con la cámara siguiéndola");
+            Assert.That(focosAlLlegar, Is.Ordered, "el foco que se ve no retrocede de una parada a la siguiente mientras cruzan");
+        }
+
         [Test]
         public void NarrativeVisitPolicy_CP07_ElCruceYLaEscenaFinalNoSeOmitenLaPrimeraVez()
         {
@@ -362,6 +429,36 @@ namespace Game.Scaffolding.Tests
 
             Assert.That(sinHumo, Is.Empty);
         }
+
+        /// <summary>
+        /// Cada llama de las narrativas (<c>prop_n1_fuego_normal</c>) emite su halo de luz
+        /// (<see cref="NarrativeProp.Glows"/>, FireGlow) y solo ellas: el halo en una piedra o en el
+        /// humo sería una mancha naranja sin fuego (decisión de Santiago, 08/10/2026).
+        /// </summary>
+        /// <remarks>
+        /// Se cuela solo: quien añade una fogata copia el objeto de la llama de otra escena —el
+        /// archivo ya trae el halo— o la dibuja nueva y se olvida de marcarla.
+        /// </remarks>
+        [Test]
+        public void NarrativeSequence_RF05_CadaLlamaEmiteSuHalo()
+        {
+            var entradas = TodasLasSecuencias()
+                .SelectMany(sequence => sequence.Props.Select((prop, indice) => (sequence, prop, indice)))
+                .ToArray();
+            var llamas = entradas.Where(entrada => Anima(entrada.prop, "prop_n1_fuego_normal")).ToArray();
+
+            var mal = entradas
+                .Where(entrada => Anima(entrada.prop, "prop_n1_fuego_normal") != entrada.prop.Glows)
+                .Select(entrada => FormattableString.Invariant(
+                    $"{entrada.sequence.Id} · objeto {entrada.indice} en ({entrada.prop.Position.x:0.000}, {entrada.prop.Position.y:0.000}): {Falla(entrada.prop)}"))
+                .ToArray();
+
+            Assert.That(llamas, Is.Not.Empty, "las narrativas tienen fogatas");
+            Assert.That(mal, Is.Empty);
+        }
+
+        private static string Falla(NarrativeProp prop) =>
+            prop.Glows ? "tiene halo y no es una llama" : "es una llama sin halo";
 
         private static bool Anima(NarrativeProp prop, string clip) =>
             prop.FrameAnimation != null && prop.FrameAnimation.name.StartsWith(clip, StringComparison.Ordinal);

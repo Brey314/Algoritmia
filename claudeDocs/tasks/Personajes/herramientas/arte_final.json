@@ -290,19 +290,19 @@
           "nombre": "CodoIzq",
           "tipo": "articulacion",
           "padre": "Lienzo/Cuerpo/Tronco/BrazoIzq",
-          "punto": [326, 588],
+          "punto": [327, 585],
           "imagen": "AntebrazoIzq",
           "sprite": "char_papa_parte_antebrazo_izq",
-          "rect": [178, 543, 376, 718]
+          "rect": [150, 567, 348, 742]
         },
         {
           "nombre": "CodoDer",
           "tipo": "articulacion",
           "padre": "Lienzo/Cuerpo/Tronco/BrazoDer",
-          "punto": [672, 574],
+          "punto": [685, 584],
           "imagen": "AntebrazoDer",
           "sprite": "char_papa_parte_antebrazo_der",
-          "rect": [637, 542, 835, 717]
+          "rect": [665, 566, 863, 741]
         },
         {
           "nombre": "RodillaIzq",
@@ -364,7 +364,7 @@
           "nombre": "BrazoIzq",
           "ruta": "Lienzo/Cuerpo/Tronco/BrazoIzq",
           "sprite": "char_papa_parte_brazo_izq",
-          "rect": [296, 457, 478, 612],
+          "rect": [311, 445, 493, 600],
           "pivote": [406, 477]
         },
         {
@@ -397,9 +397,9 @@
         }
       ],
       "holguras": {
-        "CodoIzq": 42.0,
+        "CodoIzq": 14.2,
         "RodillaIzq": 13.6,
-        "CodoDer": 20.9,
+        "CodoDer": 16.1,
         "RodillaDer": 13.3
       },
       "registro": {

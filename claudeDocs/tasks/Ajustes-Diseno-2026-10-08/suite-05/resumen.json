@@ -1,0 +1,191 @@
+{
+  "head": "eb9be13",
+  "arbol": "f2afbb9ed338",
+  "unity": "6000.5.10f1",
+  "paredMin": 24.4,
+  "editmode": {
+    "Total": 711.0,
+    "Passed": 706.0,
+    "Failed": 4.0,
+    "Skipped": 1.0
+  },
+  "playmode": {
+    "Total": 417.0,
+    "Passed": 416.0,
+    "Failed": 0.0,
+    "Skipped": 0.0
+  },
+  "listadas": 1128,
+  "ejecutadas": 1128,
+  "faltan": [],
+  "repetidas": [],
+  "corridas": [
+    {
+      "carril": "A",
+      "archivo": "2026-10-09_002914_editmode.json",
+      "modo": "editmode",
+      "filtro": "",
+      "seg": 16.4,
+      "s": {
+        "Total": 711,
+        "Passed": 706,
+        "Failed": 4,
+        "Skipped": 1,
+        "Inconclusive": 0
+      }
+    },
+    {
+      "carril": "A",
+      "archivo": "2026-10-09_002932_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.UI.PlayMode.Tests",
+      "seg": 1359.6,
+      "s": {
+        "Total": 177,
+        "Passed": 177,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      }
+    },
+    {
+      "carril": "B",
+      "archivo": "2026-10-09_002915_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.Audio.PlayMode.Tests",
+      "seg": 7.2,
+      "s": {
+        "Total": 4,
+        "Passed": 4,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      }
+    },
+    {
+      "carril": "B",
+      "archivo": "2026-10-09_002923_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.Core.PlayMode.Tests",
+      "seg": 22.2,
+      "s": {
+        "Total": 12,
+        "Passed": 12,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      }
+    },
+    {
+      "carril": "B",
+      "archivo": "2026-10-09_002946_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.Levels.Fire.PlayMode.Tests",
+      "seg": 117.4,
+      "s": {
+        "Total": 64,
+        "Passed": 64,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      }
+    },
+    {
+      "carril": "B",
+      "archivo": "2026-10-09_003144_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.Levels.River.PlayMode.Tests",
+      "seg": 147.4,
+      "s": {
+        "Total": 58,
+        "Passed": 57,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 1
+      }
+    },
+    {
+      "carril": "B",
+      "archivo": "2026-10-09_003413_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.Levels.Wheel.PlayMode.Tests",
+      "seg": 317.7,
+      "s": {
+        "Total": 102,
+        "Passed": 102,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      }
+    }
+  ],
+  "fallos": [
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_INC134_LaFamiliaTieneCuerpoDePerfilConArte(\"Papa\")",
+      "Message": "  Papa: existe Lienzo/Perfil\r\n  Expected: not null\r\n  But was:  null\r\n"
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_INC134_LaFamiliaTieneCuerpoDePerfilConArte(\"Mama\")",
+      "Message": "  Mama: existe Lienzo/Perfil\r\n  Expected: not null\r\n  But was:  null\r\n"
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_INC134_LaFamiliaTieneCuerpoDePerfilConArte(\"Nina\")",
+      "Message": "  Nina: existe Lienzo/Perfil\r\n  Expected: not null\r\n  But was:  null\r\n"
+    },
+    {
+      "FullName": "Game.Scaffolding.Tests.CharacterRigTests.CharacterRig_INC134_LaFamiliaTieneCuerpoDePerfilConArte(\"Nino\")",
+      "Message": "  Nino: existe Lienzo/Perfil\r\n  Expected: not null\r\n  But was:  null\r\n"
+    }
+  ],
+  "codigos": [
+    {
+      "corrida": "tests-edit - testName 900",
+      "codigo": 1,
+      "PSComputerName": "localhost",
+      "RunspaceId": "6d2174aa-c235-4808-9092-ef9f8fe6125d",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.UI.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "6d2174aa-c235-4808-9092-ef9f8fe6125d",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.Audio.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "634a7f00-24dc-4677-b04f-e736f90ef787",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.Core.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "634a7f00-24dc-4677-b04f-e736f90ef787",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.Levels.Fire.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "634a7f00-24dc-4677-b04f-e736f90ef787",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.Levels.River.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "634a7f00-24dc-4677-b04f-e736f90ef787",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.Levels.Wheel.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "634a7f00-24dc-4677-b04f-e736f90ef787",
+      "PSShowComputerName": false
+    }
+  ]
+}

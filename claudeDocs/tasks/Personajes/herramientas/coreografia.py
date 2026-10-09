@@ -14,7 +14,8 @@
 #   1. preparar_arte_final.py <id> <carpeta_entrega> [--aplicar]: reconoce las piezas, las limpia y normaliza,
 #      las mide (rect y punto de cada articulacion, entrada del personaje en arte_final.json) y, con --aplicar,
 #      copia los PNG al repo, lleva el pivote del hombro al borde del torso (hombro.py: Santiago, 06/10/2026; el arte entrega el humero con su
-#      extremo redondo en el centro del pecho y, girando desde ahi, el reposo salia en A), regenera rig_articulaciones.json (articulaciones.py)
+#      extremo redondo en el centro del pecho y, girando desde ahi, el reposo salia en A), encaja el humero y el antebrazo en el codo si el humero
+#      se pasa del casquete (codo.py: Santiago, 08/10/2026; Papa lo entrego solapado y el humero asomaba al doblar el codo), regenera rig_articulaciones.json (articulaciones.py)
 #      y este JSON de clips, y corre pose_preview.py; imprime las ordenes para la sesion local. Es todo lo que hace falta antes de Unity;
 #   2. en el Editor, BuildRigsFinal.cs.txt, modos «sprites», «orden» (si hace falta) y «clips».
 # La coreografia no se toca: la cinematica de los brazos y las medidas de las piernas salen del JSON del rig y
@@ -861,7 +862,9 @@ def _brazos_de(rig, pid, arbol, piezas=None):
         e = codo["punto"]
         ruta_ante = (LE if lado == "Izq" else RE) + "/Antebrazo" + lado
         nodo_ante = arbol.get(ruta_ante)
-        partido = bool(not guia and nodo_ante is not None and nodo_ante.dibuja())
+        # Algoritm siempre se trata como brazo partido (humero y antebrazo): desde el 08/10/2026 su maqueta (maqueta.piezas_guia) y su arte provisional ya
+        # traen el antebrazo suelto, y la mano que prueba pose_preview.py (manos_modelo) tiene que seguir al codo.
+        partido = bool(guia or (nodo_ante is not None and nodo_ante.dibuja()))
         r = codo["rect"]  # el antebrazo del arte final: la mano esta al 80 % de su largo desde el codo
         c = ((r[0] + r[2]) / 2.0, (r[1] + r[3]) / 2.0)
         m_dos = (e[0] + 1.6 * (c[0] - e[0]), e[1] + 1.6 * (c[1] - e[1]))
@@ -2804,7 +2807,7 @@ def _clips_familia(x):
 
 
 
-# ---------------------------------------------------------------------------- Algoritm: 9 clips
+# ---------------------------------------------------------------------------- Algoritm: 10 clips (los 9 de siempre y Wave, el saludo, 08/10/2026)
 #
 # Una llama con extremidades que flota. Conserva la flotacion senoidal, el giro de Spin sobre Cuerpo, el alfa
 # y los nombres de siempre. Sus brazos son palitos que salen de los costados del vientre y sus MANOS van por ENCIMA de
@@ -2832,6 +2835,32 @@ def guia_idle(x):
         for k in s._get(ruta, ROT).claves:
             k[1] += delta
     cuelga_piernas(s, 12)
+    s.follow(C, ROT, T, 2, 0.4)
+    return s
+
+
+def guia_wave(x):
+    """
+    Saluda (D12, Santiago, 08/10/2026: la pantalla de creditos). El brazo derecho de la pantalla sube, la mano se mece de un lado a otro unos cuatro vaivenes con el
+    antebrazo casi vertical, el brazo baja y el clip descansa antes de volver a empezar: un bucle de 4,8 s con una pausa de reposo de 0,9 s dentro, para que el saludo
+    no sea un tic continuo. El codo se dobla antes de que el hombro llegue arriba (no se estira horizontal) y la mano no pasa nunca por la cara (pose_preview exige libre el
+    99,5 % de la caja de ojos y boca ampliada un 30 %: con el hombro a mas de 98 grados o el codo a 27 +- 18 el antebrazo ya la roza). El cuerpo flota como en Idle (dos
+    vueltas de 2,4 s) y se inclina un poco hacia la mano. Es una accion solo del guia, como Spin: la familia no la tiene.
+    """
+    largo = 4.8
+    s = guia_spec("Wave", "saludar", largo)
+    alza = lambda t: suave(t, 0.0, 0.55) * (1.0 - suave(t, 3.35, 3.95))                    # 0 = el hombro abajo, 1 = arriba
+    dobla = lambda t: suave(t, 0.0, 0.38) * (1.0 - suave(t, 3.55, 3.98))                   # el codo se dobla antes de que suba el hombro y se estira al final
+    mece = lambda t: math.sin(TAU * (t - 0.55) / 0.7) * suave(t, 0.5, 0.95) * (1.0 - suave(t, 3.0, 3.4))   # el vaiven de la mano: 0,7 s por vaiven, con rampa de entrada y de salida
+    muestrea(s, C, POSY, lambda t: 12.0 * (1.0 - math.cos(TAU * t / 2.4)), largo, 0.05)
+    muestrea(s, RA, ROT, lambda t: 94.0 * alza(t) + 3.0 * mece(t), largo, 0.05)               # el humero a unos 139 grados de la vertical (el prefab lo trae a 45)
+    muestrea(s, RE, ROT, lambda t: -7.0 * (1.0 - dobla(t)) + (27.0 + 16.0 * mece(t)) * dobla(t), largo, 0.05)   # abajo, algo plegado hacia dentro como en Idle; arriba, 27 +- 16 grados
+    muestrea(s, C, ROT, lambda t: alza(t) * (-2.5 + 1.2 * mece(t)), largo, 0.05)
+    cuelga_piernas(s, 12)
+    s.follow(C, POSY, LA, 4, -0.4, 12)                  # el brazo que no saluda cuelga y sigue la flotacion, con su codo plegado hacia dentro
+    s.follow(LA, ROT, LE, 3, 0.8)
+    for k in s._get(LE, ROT).claves:
+        k[1] += 7.0
     s.follow(C, ROT, T, 2, 0.4)
     return s
 
@@ -2911,6 +2940,7 @@ def clips_guia(x):
                  .raw("Lienzo", ALFA, 0, 1.0, 0.3, 0.35, 0.6, 1.0, 0.9, 0.35, 1.2, 1.0, 1.6, 0.0)
                  .raw(C, ESCX, 0, 1.0, 1.2, 1.0, 1.6, 0.6)
                  .raw(C, ESCY, 0, 1.0, 1.2, 1.0, 1.6, 0.6))
+    lista.append(guia_wave(x))
     return lista
 
 

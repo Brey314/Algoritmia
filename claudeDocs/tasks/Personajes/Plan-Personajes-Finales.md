@@ -34,6 +34,22 @@
 > INC-132 en la familia, que sigue vigente para `Strike` y Algoritm. Entró el arte final frontal de
 > Papá, Mamá, Niña y Niño; falta el de Algoritm, y la ronda del Editor (nodos, sprites, orden, clips,
 > pruebas `INC133`, capturas) está pendiente. Detalle en `Personajes-Resultados.md`, C.10.
+>
+> **Actualización del 08/10/2026 (ronda de ajustes de diseño).** Este plan no se reescribe; esta nota
+> fija lo que cambió. (1) **Algoritm ya se dibuja por partes con arte provisional**: nueve piezas por
+> forma recortadas de su `_reposo` (`pose_preview.py --exporta-maqueta`, 27 PNG en `Frontal/`), con
+> `Cuerpo` apagado; `Ojos` y `Boca` siguen apagados porque la cara va en el torso. Cuando llegue su arte
+> final se sustituyen los PNG con el mismo nombre y se corren `sprites`, `orden` y `clips`. (2) El
+> enum `ActorAction` **ya no está intacto** (§7, árbol de archivos): gana `Wave = 22`, el saludo de
+> Algoritm en los créditos (emoción `Happy`), y Algoritm pasa de 9 a **10 clips** (§7 dice 9). (3) Papá:
+> el húmero sube y el antebrazo baja (`codo.py`) para que no asome por el codo. (4) `CharacterRig.idlePhase`
+> desfasa el `Idle` de los cinco personajes de la portada. Detalle en `Personajes-Resultados.md`, C.12.
+> **Quedan pendientes para el arte final de Algoritm (decisión D20, no se corrigen antes):** los
+> anillos oscuros en las rótulas durante los fundidos (`Appear`, `Vanish`, `Hidden`), porque el alfa del
+> `CanvasGroup` multiplica cada `Image` por separado donde se solapan, y el talón claro de unos 12 px en
+> el hombro girado; se revisan con el arte nuevo. El corte en nueve piezas es del arte provisional y lo
+> sustituirá la ingesta del diseño nuevo de Algoritm (INC-136) que hace el carril de perfil; el prompt
+> para meterla está en `Prompt-Arte-Final-Algoritm.md`.
 
 ---
 

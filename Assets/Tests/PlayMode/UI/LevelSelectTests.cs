@@ -1,8 +1,10 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Game.Core;
+using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,6 +19,12 @@ namespace Game.UI.Tests
     public class LevelSelectTests
     {
         private const string SceneName = "LevelSelect";
+
+        /// <summary>Un píxel del lienzo duplicado (3840 de ancho) en fracción de su ancho: lo que se perdona al decir «no cruza el eje».</summary>
+        private const float SeamTolerance = 1f / 3840f;
+
+        /// <summary>Lo que el icono de estado se separa de la esquina de abajo a la izquierda de la imagen, en unidades del lienzo (D11).</summary>
+        private const float IconInset = 16f;
 
         [TearDown]
         public void DestruirLosObjetosPersistentes()
@@ -72,13 +80,57 @@ namespace Game.UI.Tests
 
             foreach (var level in new[] { LevelId.Fire, LevelId.Wheel, LevelId.River })
             {
-                var arte = ArtFor(controller, level);
-                Assert.That(arte, Is.Not.Null, $"{level}: sin «Arte» bajo la tarjeta");
-                Assert.That(arte.sprite, Is.Not.Null, $"{level}: sin sprite asignado");
+                var window = WindowFor(controller, level);
+                Assert.That(window, Is.Not.Null, $"{level}: sin «Ventana» con la ilustración bajo la tarjeta");
+                Assert.That(window.Art.sprite, Is.Not.Null, $"{level}: sin sprite asignado");
 
-                var size = arte.sprite.rect.size;
-                Assert.That(size.x / size.y, Is.EqualTo(16f / 9f).Within(0.01f),
-                    $"{level}: el sprite de la tarjeta no es 16:9 — un lienzo duplicado enseña la costura de x = 0,5");
+                // Desde la etapa 4b (D11) el Nivel 2 muestra el bosque, un lienzo duplicado de 3840 × 1080: ya no basta con exigir
+                // 16:9, hay que mirar qué parte del lienzo cae en la ventana. Un 16:9 se ve entero; un duplicado, solo por un lado del eje.
+                var size = window.Art.sprite.rect.size;
+                var aspect = size.x / size.y;
+                var (left, right) = IllustrationProbe.VisibleRange(window);
+                var duplicated = Mathf.Abs(aspect - IllustrationFraming.DuplicatedCanvasAspect) < 0.01f;
+
+                Assert.That(aspect, Is.EqualTo(16f / 9f).Within(0.01f).Or.EqualTo(IllustrationFraming.DuplicatedCanvasAspect).Within(0.01f),
+                    $"{level}: el sprite de la tarjeta no es 16:9 ni el lienzo duplicado");
+                Assert.That(left, Is.GreaterThanOrEqualTo(-SeamTolerance), $"{level}: la ilustración llena la ventana por la izquierda");
+                Assert.That(right, Is.LessThanOrEqualTo(1f + SeamTolerance), $"{level}: la ilustración llena la ventana por la derecha");
+                Assert.That(duplicated && left < IllustrationFraming.MirrorAxis - SeamTolerance && right > IllustrationFraming.MirrorAxis + SeamTolerance,
+                    Is.False, $"{level}: la ventana cruza el eje x = 0,5 del lienzo duplicado y enseña la costura");
+            }
+        }
+
+        // D11 (08/10/2026): el icono de estado (candado o visto) va abajo a la izquierda de la imagen y su texto, centrado
+        // entre la imagen y el botón. Se miden las dos insignias de cada tarjeta, aunque en pantalla solo se vea una.
+        [Test]
+        [Timeout(20000)]
+        public async Task LevelSelect_RNF19_ElIconoDeEstadoVaAbajoALaIzquierdaDeLaImagenYSuTextoEntreImagenYBoton()
+        {
+            var (controller, _) = await OpenLevelSelect(NewProfile());
+
+            foreach (var level in new[] { LevelId.Fire, LevelId.Wheel, LevelId.River })
+            {
+                var framed = WindowFor(controller, level);
+                var scale = framed.GetComponentInParent<Canvas>().rootCanvas.scaleFactor;
+                var window = ScreenRectOf((RectTransform)framed.transform);
+                var button = ScreenRectOf((RectTransform)controller.ButtonFor(level).transform);
+
+                foreach (var badge in new[] { controller.LockedBadgeFor(level), controller.CompletedBadgeFor(level) })
+                {
+                    badge.SetActive(true);
+                    var icon = badge.GetComponentsInChildren<Image>(true).Select(image => ScreenRectOf(image.rectTransform)).Aggregate(IllustrationProbe.Union);
+                    var text = ScreenRectOf(badge.GetComponentInChildren<Text>(true).rectTransform);
+                    var name = $"{level} · {badge.name}";
+
+                    Assert.That(icon.xMin - window.xMin, Is.EqualTo(IconInset * scale).Within(1.5f), $"{name}: el icono, a 16 de la izquierda de la imagen");
+                    Assert.That(icon.yMin - window.yMin, Is.EqualTo(IconInset * scale).Within(1.5f), $"{name}: y a 16 de su borde de abajo");
+                    Assert.That(icon.xMax, Is.LessThanOrEqualTo(window.xMax), $"{name}: el icono cabe dentro de la imagen por la derecha");
+                    Assert.That(icon.yMax, Is.LessThanOrEqualTo(window.yMax), $"{name}: y por arriba");
+                    Assert.That(text.center.x, Is.EqualTo(window.center.x).Within(1.5f), $"{name}: el texto, centrado respecto de la imagen");
+                    Assert.That(text.yMax, Is.LessThanOrEqualTo(window.yMin + 0.5f), $"{name}: el texto empieza debajo de la imagen");
+                    Assert.That(text.yMin, Is.GreaterThanOrEqualTo(button.yMax - 0.5f), $"{name}: y termina encima del botón");
+                    Assert.That(text.center.y, Is.EqualTo((window.yMin + button.yMax) / 2f).Within(1.5f), $"{name}: a media altura entre la imagen y el botón");
+                }
             }
         }
 
@@ -258,8 +310,8 @@ namespace Game.UI.Tests
             ExecuteEvents.Execute(button.gameObject, new PointerEventData(EventSystem.current),
                 ExecuteEvents.pointerClickHandler);
 
-        /// <summary>El «Arte» de la tarjeta del nivel: sube desde su botón hasta «Level{N}Card».</summary>
-        private static Image ArtFor(LevelSelectController controller, LevelId level)
+        /// <summary>La ventana con la ilustración de la tarjeta del nivel: sube desde su botón hasta «Level{N}Card».</summary>
+        private static FramedIllustration WindowFor(LevelSelectController controller, LevelId level)
         {
             var card = controller.ButtonFor(level).transform;
             while (card != null && !card.name.EndsWith("Card"))
@@ -267,8 +319,11 @@ namespace Game.UI.Tests
                 card = card.parent;
             }
 
-            return card != null ? card.Find("Fondo/Arte")?.GetComponent<Image>() : null;
+            return card != null ? card.GetComponentInChildren<FramedIllustration>(true) : null;
         }
+
+        /// <summary>El rectángulo en píxeles de pantalla: el Canvas de la escena es Screen Space - Overlay.</summary>
+        private static Rect ScreenRectOf(RectTransform rectTransform) => IllustrationProbe.WorldRect(rectTransform);
 
         /// <summary>
         /// Guarda la captura que la prueba deja para revisar a mano, y **afirma que existe**.

@@ -95,28 +95,37 @@ controlador `char_<x>.controller` está al lado.
 | ◐ `char_algoritm_n3_gota_reposo.png` | **Provisional**: el fuego recoloreado en agua. Ídem |
 | ○ `_girando`, `_atenuado`, `char_algoritm_n*_retrato_*` | `S15`/`S03b`. Hoy el retrato del guía **es** el sprite de su forma |
 
-**Arte actual:** una sola `Image` por forma y ningún recorte, para que sustituir el archivo baste. Los tres prefabs
-`Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` comparten `Animations/char_algoritm.controller`
-y sus clips `char_algoritm_anim_{flotar,hablar,senalar,girar,celebrar,animo,oculto,aparicion,apagado}`.
-El mismo sprite va dentro del botón de ayuda circular de las cinco mecánicas.
+**Arte actual (08/10/2026, INC-140):** nueve piezas por forma, recortadas del `_reposo` provisional con
+`pose_preview.py --exporta-maqueta` (27 PNG en `Frontal/`, listados abajo); el motor las dibuja y apaga la
+`Image` de `Cuerpo`. Los tres prefabs `Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` comparten
+`Animations/char_algoritm.controller` y sus diez clips
+`char_algoritm_anim_{flotar,hablar,senalar,girar,celebrar,animo,oculto,aparicion,apagado,saludar}`
+(`saludar` es el `Wave` de los créditos, INC-141). El `_reposo` va dentro del botón de ayuda circular
+de las cinco mecánicas y es el retrato del guía.
 
 **Arte final: recorte en partes (decisión de Santiago, 05/10/2026, INC-131).** Cada forma se
 entrega además cortada, con el prefijo `char_algoritm_<fuego|rueda|gota>_` —uno por forma, porque
 cada una va recoloreada (INC-52)—. Brazos, piernas, codos y rodillas en dos tramos, ojos y boca
-sobre el cuerpo y **sin cuello ni cabeza**. Estado `○`:
+sobre el cuerpo y **sin cuello ni cabeza**. Las nueve piezas del cuerpo existen ya como arte
+provisional (`◐`) y el arte final las sustituye con el mismo nombre; ojos y boca siguen `○`:
 
 | Qué | Archivos (`char_algoritm_<forma>_`) |
 |---|---|
-| ○ Torso (la llama y el vientre de colores, sin extremidades) | `parte_torso` |
-| ○ Brazos en dos tramos | `parte_brazo_izq`, `parte_brazo_der` (húmero), `parte_antebrazo_izq`, `parte_antebrazo_der` |
-| ○ Piernas en dos tramos | `parte_pierna_izq`, `parte_pierna_der` (muslo), `parte_antepierna_izq`, `parte_antepierna_der` |
+| ◐ Torso (la llama y el vientre de colores, con la cara; sin extremidades) | `parte_torso` |
+| ◐ Brazos en dos tramos | `parte_brazo_izq`, `parte_brazo_der` (húmero con rótulas), `parte_antebrazo_izq`, `parte_antebrazo_der` (palo y mano) |
+| ◐ Piernas en dos tramos | `parte_pierna_izq`, `parte_pierna_der` (muslo con rótulas), `parte_antepierna_izq`, `parte_antepierna_der` (pierna y pie) |
 | ○ Ojos y su parpadeo | `ojos_neutra`, `ojos_alegria`, `ojos_sorpresa`, `ojos_preocupacion`, `ojos_concentracion`, `ojos_sueno`, `ojos_parpadeo_medio`, `ojos_parpadeo_cerrado` |
 | ○ Boca | `boca_0`, `boca_a`, `boca_e`, `boca_u`, `boca_alegria`, `boca_sorpresa`, `boca_preocupacion`, `boca_concentracion` |
 
-Hasta que lleguen, el prefab lleva los nodos con las capas apagadas y se sigue viendo el
-`_reposo`; cuando torso, brazos y piernas están puestos, el motor apaga la `Image` de `Cuerpo`. El
-`_reposo` se conserva mientras no se decida otra cosa: es hoy el retrato del guía y lo que va
-dentro del botón de ayuda.
+Las piezas provisionales (3,63 MiB de textura sin comprimir para las tres formas, sin medir aún en
+un ejecutable) se cortan por la forma del arte y no por rectángulos, y llevan una rótula en cada
+articulación; sustituirlas por el arte final se hace con el mismo nombre y corriendo `sprites`,
+`orden` y `clips` de `BuildRigsFinal.cs.txt`. Dos defectos del corte se corrigen con ese arte: las
+rótulas se ven más oscuras unos 0,3 s en los fundidos (`Appear`, `Vanish`, `Hidden`) y el hombro
+girado deja un talón más claro de unos 12 px. `Ojos` y `Boca` siguen apagados y sin sprite hasta que
+llegue su arte: la cara va pintada en el torso. El `_reposo` se conserva: es el retrato del guía y lo
+que va dentro del botón de ayuda. La guía para pedir el arte final está en
+`claudeDocs/tasks/Personajes/Prompt-Arte-Final-Algoritm.md`.
 
 ### `Characters/Father/` · `Mother/` · `Girl/` · `Boy/`
 
@@ -185,9 +194,9 @@ sprite nuevo hay que pasarlo a `Single` desde el motor (`TextureImporter.spriteI
 
 | Archivo | Origen |
 |---|---|
-| ✓ `env_n2_bosque_claro.png` — 3840×1080, definitivo (acta D06), `Single`. El bosque de la recolección y el claro del taller y del refugio en un solo lienzo duplicado en espejo (`Camara_Narrativa_N2.md` §2), pintado con la luz de la tarde, sin tinte: el amanecer, el atardecer y la noche los pone `NarrativeLight`. Lo usan las narrativas del N2, `Level2_Forest` y `Level2_Workshop` | `B1` (Slice 2) |
+| ✓ `env_n2_bosque_claro.png` — 3840×1080, definitivo (acta D06), `Single`. El bosque de la recolección y el claro del taller y del refugio en un solo lienzo duplicado en espejo (`Camara_Narrativa_N2.md` §2), pintado con la luz de la tarde, sin tinte: el amanecer, el atardecer y la noche los pone `NarrativeLight`. Lo usan las narrativas del N2, `Level2_Forest` y `Level2_Workshop`, la portada de `MainMenu` (mitad izquierda, foco 0,25) y la tarjeta del Nivel 2 de `LevelSelect` | `B1` (Slice 2) |
 | ○ `env_n2_taller.png` — **no hace falta mientras el taller sea el claro este del entorno duplicado**: `Level2_Workshop` usa `env_n2_bosque_claro.png` con el encuadre de `Camara_Narrativa_N2.md` §5.6 (W09, 12/09/2026) | `B4` |
-| ✓ `env_n2_laberinto.png` — el tablero cenital del laberinto (1920×1080), entregado en D06 como `entorno_n2_laberinto`; lo usan `Level2_Maze` y la tarjeta del nivel en el menú de niveles. El tablero se llamaba `env_n2_tablero` en el plan | `B8` |
+| ✓ `env_n2_laberinto.png` — el tablero cenital del laberinto (1920×1080), entregado en D06 como `entorno_n2_laberinto`; lo usa solo `Level2_Maze` (la tarjeta del nivel en el menú de niveles es ahora el bosque). El tablero se llamaba `env_n2_tablero` en el plan | `B8` |
 | ○ `env_n2_refugio_noche.png` | `S16b` — refugio con fuego encendido, 21:9 |
 
 **`Environments/Wheel/Animations/`** · ○ `env_n2_nubes.anim` (`S12`, deriva lenta)
@@ -392,7 +401,7 @@ sin más shaders propios que los dos de color plano que viven aquí, `fx_oscurid
 |---|---|
 | ○ `fx_algoritm_barrido.png` | `S02` — 8 frames |
 | — ~~`fx_n1_llama.png`~~ | `S07b` — no se genera: la llama es `prop_n1_fuego_cenital` y `prop_n1_fuego_normal` (`Props/Fire/Animations/`) |
-| ○ `fx_n1_halo.png` | `S07b` |
+| — ~~`fx_n1_halo.png`~~ | `S07b` — no se genera: el halo de la fogata es un disco con degradado radial que crea `FireGlow` por código (INC-139) |
 
 **`FX/Animations/`**
 
@@ -402,7 +411,7 @@ sin más shaders propios que los dos de color plano que viven aquí, `fx_oscurid
 | ○ `fx_algoritm_barrido_tr05.anim`, `fx_algoritm_barrido_tr09.anim` | `S06` — barridos con muta del guía |
 | — ~~`fx_n1_chispa_lejos.anim`, `_cerca`, `_muycerca`~~ | `S07a` — retirados (INC-47, INC-68): la chispa del golpe la dibuja el motor, y no hay archivo. Es un solo rayo `#FFE9A8` de 4 u de grosor que nace en el punto del golpe y hace un único barrido de cabeza y cola, sin volver (RNF-21): el efectivo cae en las hojas y el de fuerza de más se apaga en el aire (INC-119, Dirección de arte §12.2). En `Level1_Cave` es `Suelo/Chispa`, con el pivote en la cola, y su `Image` `RayoH` estirada; `FirePanelController` le da dirección, largo y tiempo |
 | ✓ `fx_n1_humo_nacer.anim`, `fx_n1_humo.anim` | `S07a` — en `Props/Fire/Animations/`, junto al fuego. En la mecánica del N1 (`Level1_Cave`, `Suelo/Humo`) el humo tiene el pivote en la base y mide 87 × 150 en el punto del golpe: nace al converger y al prender sube a la corona de la llama, detrás de ella, encogiéndose a 0,6 (§12.2) |
-| — ~~`fx_n1_llama.anim`~~ · ○ `fx_n1_halo.anim` | `S07b` — la llama anima con `prop_n1_fuego_*.anim`. Halo: escala 0.95–1.05, ciclo 1.2 s |
+| — ~~`fx_n1_llama.anim`~~ · — ~~`fx_n1_halo.anim`~~ | `S07b` — la llama anima con `prop_n1_fuego_*.anim`. El halo respira por código (`FireGlow`): escala 0.95–1.05, ciclo 2 s |
 | ○ `fx_n2_polvo.anim` | `S09a` — polvo del mecanizado |
 | ○ `fx_vaho.anim` | `S16a` — vaho de la noche helada |
 

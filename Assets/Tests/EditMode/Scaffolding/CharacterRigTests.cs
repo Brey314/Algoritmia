@@ -19,14 +19,14 @@ namespace Game.Scaffolding.Tests
         private static readonly string[] Familia = { "Papa", "Mama", "Nina", "Nino" };
         private static readonly string[] Guia = { "Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota" };
 
-        /// <summary>Lo que el guion y §13.3 piden a la familia: todo salvo el trompo del guía.</summary>
+        /// <summary>Lo que el guion y §13.3 piden a la familia: todo salvo el trompo y el saludo, que son del guía.</summary>
         private static readonly ActorAction[] AccionesDeLaFamilia =
-            ((ActorAction[])Enum.GetValues(typeof(ActorAction))).Where(accion => accion != ActorAction.Spin).ToArray();
+            ((ActorAction[])Enum.GetValues(typeof(ActorAction))).Where(accion => accion != ActorAction.Spin && accion != ActorAction.Wave).ToArray();
 
         private static readonly ActorAction[] AccionesDelGuia =
         {
             ActorAction.Idle, ActorAction.Hidden, ActorAction.Talk, ActorAction.Point, ActorAction.Spin,
-            ActorAction.Celebrate, ActorAction.Encourage, ActorAction.Appear, ActorAction.Vanish
+            ActorAction.Celebrate, ActorAction.Encourage, ActorAction.Appear, ActorAction.Vanish, ActorAction.Wave
         };
 
         // ---- Articulaciones (Plan-Personajes-Finales, Direccion_de_Arte §13.1): rutas desde la raíz del prefab ----
@@ -299,6 +299,42 @@ namespace Game.Scaffolding.Tests
             Assert.That(tronco.Find("Ojos").GetSiblingIndex(), Is.GreaterThan(tronco.Find("Torso").GetSiblingIndex()),
                 $"{nombre}: los ojos se dibujan sobre el torso");
             Assert.That(tronco.Find("Boca").GetSiblingIndex(), Is.GreaterThan(tronco.Find("Torso").GetSiblingIndex()));
+        }
+
+        /// <summary>
+        /// Algoritm se dibuja por partes desde el 08/10/2026 (D13): el torso, los dos brazos con su antebrazo y las dos
+        /// piernas con su antepierna llevan el sprite de SU forma (cada una va recoloreada, INC-52) y están encendidos, y la
+        /// Image de Cuerpo —el sprite entero— se apaga: si siguiera encendida se vería doble, y el brazo que se mueve dejaría
+        /// su copia quieta detrás. Los ojos y la boca siguen apagados: la cara va pintada en el torso, y una capa de cara sin
+        /// su sprite pintaría un recuadro blanco. Con el arte final se sustituyen los PNG con el mismo nombre.
+        /// </summary>
+        [Test]
+        public void CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga(
+            [Values("Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
+        {
+            var rig = Rig(nombre);
+            var forma = nombre.Substring("Algoritm_".Length).ToLowerInvariant();
+            var partes = new[]
+            {
+                Tronco + "/Torso",
+                Tronco + "/BrazoIzq", Tronco + "/BrazoIzq/CodoIzq/AntebrazoIzq",
+                Tronco + "/BrazoDer", Tronco + "/BrazoDer/CodoDer/AntebrazoDer",
+                Cuerpo + "/PiernaIzq", Cuerpo + "/PiernaIzq/RodillaIzq/AntepiernaIzq",
+                Cuerpo + "/PiernaDer", Cuerpo + "/PiernaDer/RodillaDer/AntepiernaDer",
+            };
+
+            foreach (var ruta in partes)
+            {
+                var imagen = rig.transform.Find(ruta).GetComponent<Image>();
+                Assert.That(imagen.enabled && imagen.sprite != null, Is.True, $"{nombre}: {ruta} se dibuja");
+                Assert.That(imagen.sprite.name, Does.StartWith($"char_algoritm_{forma}_parte_"), $"{nombre}: {ruta} lleva su pieza de la forma {forma}");
+            }
+
+            Assert.That(rig.transform.Find(Cuerpo).GetComponent<Image>().enabled, Is.False, $"{nombre}: el sprite entero de Cuerpo se apaga");
+            foreach (var cara in new[] { "Ojos", "Boca" })
+            {
+                Assert.That(rig.transform.Find($"{Tronco}/{cara}").GetComponent<Image>().enabled, Is.False, $"{nombre}: {cara} sigue apagado, la cara va en el torso");
+            }
         }
 
         /// <summary>

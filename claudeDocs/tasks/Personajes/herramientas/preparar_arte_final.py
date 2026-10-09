@@ -42,7 +42,8 @@
 #   hombro = centro del extremo redondo del humero que queda lejos del antebrazo (esta herramienta mide ESE centro, el centro del pecho; despues
 #   de escribir arte_final.json, --aplicar corre hombro.py, que lleva el pivote al borde del torso, donde esta un hombro: 06/10/2026); codo = centro del extremo
 #   del antebrazo que toca al humero (si no comparten extremo —la pieza es solo la mano—, avisa y lo pone en
-#   el punto de contacto mas cercano); rodilla, igual con muslo y antepierna; cadera = centro del borde de
+#   el punto de contacto mas cercano; y si el humero se pasa del casquete del antebrazo, --aplicar corre codo.py despues de hombro.py: 08/10/2026); rodilla,
+#   igual con muslo y antepierna; cadera = centro del borde de
 #   arriba del muslo (--cadera capsula: el centro del extremo redondo, unos 30 px mas abajo: el torso lo tapa y
 #   moverla cambiaria los clips del Nino ya revisados); cuello = centro de la base del bbox de la cabeza;
 #   pivote del torso = centro de la base de su bbox. CaraBase, Ojos y boca: se colocan en la misma fraccion de la cabeza
@@ -763,6 +764,9 @@ def aplica(res, args):
     # el pivote del hombro: de aqui sale el centro del extremo redondo del humero (el centro del pecho); hombro.py lo lleva al borde del torso, donde esta un
     # hombro, para que los brazos cuelguen relajados y no abiertos en A (Santiago, 06/10/2026). Con los PNG ya en el repo y antes de regenerar nada
     fallos += 1 if corre([py, os.path.join(AQUI, "hombro.py"), pid, "--aplica"], "hombro") else 0
+    # el humero y el antebrazo encajados en el codo (Santiago, 08/10/2026): si el humero se pasa del casquete del antebrazo (Papa lo entrego solapado 42 y 21 px,
+    # el aviso de «la costura no sera limpia» de arriba) asomaba por el codo al doblarlo; codo.py sube el humero y baja el antebrazo, despues de hombro.py y sin mover el hombro
+    fallos += 1 if corre([py, os.path.join(AQUI, "codo.py"), pid, "--aplica"], "codo") else 0
     fallos += 1 if corre([py, os.path.join(AQUI, "articulaciones.py")], "articulaciones") else 0
     fallos += 1 if corre([py, os.path.join(AQUI, "coreografia.py"), "--valida"], "coreografia") else 0
     fallos += 1 if corre([py, os.path.join(AQUI, "pose_preview.py"), "--solo", pid, "--salida", args.salida], "pose_preview") else 0

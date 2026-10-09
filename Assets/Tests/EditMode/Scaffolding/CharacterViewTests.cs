@@ -54,7 +54,7 @@ namespace Game.Scaffolding.Tests
         [Test]
         public void ActionView_INC134_LaTablaCubreTodasLasAcciones()
         {
-            Assert.That(TodasLasAcciones, Has.Length.EqualTo(22), "si el enum crece, esta prueba pide decidir la vista de la acción nueva");
+            Assert.That(TodasLasAcciones, Has.Length.EqualTo(23), "si el enum crece, esta prueba pide decidir la vista de la acción nueva");
 
             foreach (var accion in TodasLasAcciones)
             {
@@ -78,7 +78,7 @@ namespace Game.Scaffolding.Tests
                          ActorAction.Idle, ActorAction.Hidden, ActorAction.Talk, ActorAction.Strike, ActorAction.Hammer,
                          ActorAction.Point, ActorAction.Observe, ActorAction.Celebrate, ActorAction.Encourage,
                          ActorAction.Hug, ActorAction.Surprise, ActorAction.Sleep, ActorAction.Appear,
-                         ActorAction.Vanish, ActorAction.Spin
+                         ActorAction.Vanish, ActorAction.Spin, ActorAction.Wave // Wave: el saludo de Algoritm a quien juega
                      })
             {
                 Assert.That(ActionView.For(accion), Is.EqualTo(CharacterView.Front), $"{accion}");

@@ -462,7 +462,8 @@ segmento (`AntebrazoX`, `AntepiernaX`, `Cabeza`) cuelga de ellos, así que girar
 segmento. `Sombra` y `Estela` (B.2) no se tocan.
 
 **Algoritm** (`Algoritm_Fuego`, `Algoritm_Rueda`, `Algoritm_Gota`). Hoy `Lienzo/Cuerpo` es una sola
-`Image`, y **sigue siendo lo visible**. Cuelga de `Cuerpo` la misma jerarquía, **sin `Cuello` ni
+`Image`, y **sigue siendo lo visible** *(08/10/2026: ya no; las nueve piezas provisionales están
+encendidas y `Cuerpo` apagado, ver C.12)*. Cuelga de `Cuerpo` la misma jerarquía, **sin `Cuello` ni
 `Cabeza`**, porque la cara va en el propio cuerpo de la llama:
 
 ```
@@ -627,7 +628,8 @@ máxima de 0,00002 (C.9). Lo que sigue describe el contenido, no quién lo calcu
   y el alfa; añaden piernas que cuelgan con 3 cuadros de retraso (juntas arriba, abiertas abajo, y
   las rodillas devuelven lo que abre el muslo), brazos que suben un poco con 4 cuadros de retraso y
   gestos de brazos y codos en señalar, celebrar y ánimo. En `hablar` el gesto lo lleva el **tronco**,
-  porque no tiene cuello. Con el sprite entero de hoy, **lo visible no cambia**.
+  porque no tiene cuello. Con el sprite entero de hoy, **lo visible no cambia** *(desde el 08/10/2026
+  Algoritm se dibuja por partes y tiene diez clips, el décimo `saludar`: ver C.12)*.
 - **CP-02**: el ánimo es un puño arriba con un bombeo y nunca un gesto de desánimo;
   `Sleep` queda sentado y recostado, no tumbado, porque con los ojos abiertos se leería como caído.
 
@@ -875,3 +877,113 @@ Rama `feat/personajes-animados`, de `6ed4d23` a `28337c0`. Lo que sigue se verif
 **Capturas** (`claudeDocs/tasks/Personajes/capturas/2026-10-06b/`, en LFS): `01_reposo_cuatro_zoom.png` y `01_reposo_escena_completa.png` (línea 6 de la escena 2.2 del Nivel 2: el Niño y Mamá con los brazos caídos y sin hueco en el hombro; Papá con las manos en la cintura y la Niña con los brazos en alto son los gestos de esa línea), `02_gestos_cabeza_L05_cuatro_zoom.png` y `02_gestos_cabeza_L05_escena_completa.png` (línea 5: el Niño con las manos junto a la cara, la Niña con los brazos en alto, Mamá señalando), `03_mama_hablando.png` y `04_nina_hablando.png`. No hay captura del Editor de un `Observe` o un `Celebrate` con la mano en la frente, ni del choque de `Strike`.
 
 **Puntos abiertos.** Falta el arte final de Algoritm. El brazo del Niño queda de 25 a 33 px corto de la sien. No hay captura del Editor de los gestos sobre la frente ni del choque de `Strike`: ambos se comprobaron solo en `pose_preview.py`. `RiverLevel_RNF05` falla en el Editor de larga duración (2353 MB aquí): conviene reiniciar el Editor antes de la suite. Peso y memoria del arte nuevo no se han medido en un ejecutable.
+
+### C.12 El codo de Papá y Algoritm por partes con `Wave` (08/10/2026)
+
+Rama `feat/personajes-animados`, ronda de ajustes de diseño del 08/10/2026
+(`claudeDocs/tasks/Ajustes-Diseno-2026-10-08/`; decisiones D13, D14, D16, D12 y D20 de su `brief.md`).
+Commits: `a938f9a` (Papá), `bd8b802` (Algoritm y créditos), integrados con el carril de perfil en el
+merge `eb9be13`. Las cifras de abajo salen de los partes de las etapas 1 y 4a y de `git show` de
+cada commit. Es el registro de lo hecho; el estado vigente está en C.2 a C.11 con las notas de
+remisión, en `Direccion_de_Arte.md` §7.6 y §13 y en CLAUDE.md.
+
+**Papá: el húmero ya no asoma por el codo (D14, D16).** Santiago vio que, al mover el antebrazo de
+Papá, se veía parte del húmero. El arte final de Papá trae el húmero con una punta clara y sin
+contorno que se pasa de su extremo redondo, con el antebrazo solapado encima: la distancia entre el
+extremo del húmero y el casquete del antebrazo era de 42 px a la izquierda y 21 px a la derecha (en
+Mamá, Niña y Niño, de 1 a 8 px). El pivote del codo quedó en el extremo del húmero, a 40,0 y 20,9 px
+del casquete, y al doblar el codo la punta salía como un bulto sin contorno. `codo.py`, nuevo, sube el
+húmero y baja el antebrazo a lo largo de su eje hasta dejar el punto más lejano 4 px dentro del
+casquete, sin mover el pivote del hombro y sin tocar ningún PNG. Resultado, en px del lienzo de 1024:
+
+| Dato | Antes | Después |
+|---|---|---|
+| `BrazoIzq.rect` (húmero izquierdo) | [296, 457, 478, 612] | [311, 445, 493, 600] (sube 19,2) |
+| `CodoIzq.rect` (antebrazo izquierdo) | [178, 543, 376, 718] | [150, 567, 348, 742] (baja 37,4) |
+| `CodoDer.rect` (antebrazo derecho) | [637, 542, 835, 717] | [665, 566, 863, 741] (baja 37,4) |
+| `BrazoDer.rect` (húmero derecho) | [537, 457, 700, 601] | igual |
+| Holguras `CodoIzq` / `CodoDer` | 42,0 / 20,9 | 14,2 / 16,1 |
+| Húmero que asoma (`asoma_codo`, tope 15) | 52,6 / 33,4 | −3,2 / +1,0 |
+
+Los dos antebrazos bajan lo mismo para que los brazos queden simétricos. Efectos que Santiago
+aprobó (D16): los brazos de Papá miden unos 37 px más (4 % de su alto) y el choque de `Strike`
+baja de y = 549 a y = 595, con tope en la cintura a 616, con los codos más abiertos. `Idle` con las
+manos en la cadera, `Push`, `Hug` y `Observe` también cambian algo; el reposo no (15° de hombro,
+6° de codo). `preparar_arte_final.py` corre ahora `codo.py` justo después de `hombro.py`, y
+`pose_preview.py` gana la comprobación (j) del codo (`ASOMA_MAX_CODO = 15`). En el motor, el modo
+`sprites` de `BuildRigsFinal` cambió 15 líneas de `Papa.prefab` (anclas y pivotes de siete
+`RectTransform`, ningún fileID) y `clips` reescribió los 21 `.anim` de Papá; los clips de los otros
+cuatro personajes no cambian. Corridas: `pose_preview.py` pasa en 119 filas (111 clips más 8 codos),
+`CharacterRig_` 142/142 y `Game.Scaffolding.Tests` 278/278 en EditMode.
+
+**Algoritm se dibuja por partes con arte provisional (D13).** Decisión de Santiago: sus brazos y
+piernas se mueven en todas sus escenas sin esperar al arte final. Las tres formas comparten
+geometría, así que se cortaron las tres: nueve piezas por forma (`char_algoritm_<forma>_parte_torso`,
+`_brazo_{izq,der}`, `_antebrazo_{izq,der}`, `_pierna_{izq,der}` y `_antepierna_{izq,der}`), 27 PNG
+en `Assets/Game/Art/Characters/Algoritm/Frontal/`. Los genera
+`pose_preview.py --exporta-maqueta` con `maqueta.piezas_guia`, que corta por la forma del dibujo y
+no por rectángulos (un rectángulo se llevaba un trozo del contorno del vientre en cada hombro y
+cadera y dejaba escalones en el codo y la rodilla): el cuerpo es lo que sobrevive a una apertura
+con disco de 16 px, lo libre dentro de la zona de cada extremidad es de ella, cada extremidad se
+parte en el codo o la rodilla con un plano perpendicular al eje y la pieza de arriba lleva una
+rótula del radio del palo. Se corta a la resolución del sprite (768) y las piezas sumadas
+reproducen el sprite con 0,002 % de píxeles distintos. Pesan 908,6 KB en disco y 3,63 MiB como
+textura sin comprimir para las tres formas (sin medir aún en un ejecutable; RNF-06 tenía 21 MB de
+margen). Los puntos de articulación se midieron sobre el alfa de los palos (27 px de ancho): el
+hombro estaba 17 px por encima del palo y pasó de (292, 612) y (735, 612) a (287, 629) y (736, 630),
+y el codo, de (228, 688) y (798, 684) a (224, 693) y (800, 693). `articulaciones.py` regeneró
+`rig_articulaciones.json` (solo cambian las tres entradas de Algoritm). En el Editor, `BuildRigsFinal`
+corrió `sprites`, `orden` y `clips` solo sobre Algoritm, con una copia efímera filtrada para no
+volver a guardar los prefabs de la familia: nueve piezas aplicadas por forma y `Cuerpo` apagado,
+`orden` sin cambios y 10 clips reescritos. Cada prefab de Algoritm conserva sus 69 objetos y
+ningún fileID cambia. `Ojos` y `Boca` siguen apagados y sin sprite, porque la cara está pintada en
+el torso: encenderlos habría puesto ojos sobre ojos.
+
+**`Wave`, el saludo de Algoritm (D12).** `ActorAction.Wave = 22`, al final del enum para no mover
+los números que guardan los assets; el enum pasa de 22 a 23 acciones (0 a 22) y
+`ActionEmotion.For(Wave)` es `Happy`. El clip `char_algoritm_anim_saludar.anim` (4,8 s, bucle,
+11 curvas) lo escribe `coreografia.guia_wave` y lo crean, junto con el estado `Wave` de
+`char_algoritm.controller`, un script de Editor efímero y el modo `clips`: ese modo no crea clips ni
+estados. Es un solo brazo, el derecho de pantalla: sube 94° en 0,55 s, se mece con 4 vaivenes de
+0,7 s (codo 27° ± 16°), baja en 0,6 s y descansa unos 0,9 s, con el cuerpo flotando todo el clip. El
+parámetro que manda es la cara: `pose_preview.py` exige libre el 99,5 % de la caja de ojos y boca
+ampliada un 30 %, y con 94° y 27 ± 16 queda libre el 100 % en las tres formas. Algoritm pasa a
+10 clips (94 en total bajo `Characters`: 21 por miembro de la familia y 10 de Algoritm). `Wave` es
+solo del guía: a un miembro de la familia le caería a `Idle`.
+
+**Créditos (D12).** `Credits.unity` pierde `Fondo`, `Marco`, `Sombra` y la imagen vacía
+`AlgoritmSaluda`; el rig `Algoritm_Fuego(Creditos)` cuelga directo de `AlgoritmPanel` y llena su
+ancho de 520 px, centrado en vertical. `CreditsController.guide` (un `CharacterRig`) recibe
+`Play(ActorAction.Wave)` en `Start`, escrito como `if (guide != null)` y no con `?.`, que se salta la
+comprobación de nulo de Unity. La portada del menú principal también usa los cinco rigs
+(`CharacterRig.idlePhase`, etapa 4b): es la escena que más personajes lleva a la vez.
+
+**Pruebas.** `CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga` (3 formas),
+`CharacterRig_DA133_CadaPersonajeTieneUnEstadoPorAccion` con `Wave` en los tres guías,
+`FacialEmotion` con `Wave` a `Happy`, `Credits_RF08_AlgoritmSaludaOcupandoElLugarDeLaTarjetaSinElla`
+(PlayMode) y la autoprueba de `pose_preview.py` con el caso de que las piezas suman el sprite. En
+EditMode, `CharacterRig` 145/145, `FacialEmotion` 30/30 y `Game.Scaffolding.Tests` 296/296; en
+`pose_preview.py`, 10/10 clips por forma de Algoritm y 21/21 por miembro de la familia.
+
+**Pendientes para el arte final de Algoritm (D20).** Santiago decidió no corregir ahora dos defectos
+menores de las piezas provisionales; se revisan con el arte que llegue. El corte en nueve piezas es del
+arte provisional y lo sustituirá la ingesta del diseño nuevo de Algoritm (INC-136) que hace el carril de
+perfil; si ese diseño no solapa piezas o cambia el hombro, los defectos pueden desaparecer solos:
+
+1. **Anillos en los fundidos.** En `Appear`, `Vanish` y `Hidden` las rótulas se ven más oscuras
+   unos 0,3 s, porque el alfa del `CanvasGroup` de `Lienzo` multiplica cada `Image` por separado y
+   donde dos piezas se solapan el color se oscurece. Con 35 % de alfa quedan anillos oscuros en
+   codos, rodillas, hombros y caderas (`capturas/04a-algoritm-creditos/limite-conocido-vanish-alfa-035.png`).
+   Es inherente a las piezas solapadas; la familia y su arte final también las solapan.
+2. **Talón en el hombro girado.** La rótula copia el contorno del vientre, más claro que el palo, y al
+   levantar el brazo asoma un bulto claro de unos 12 px del lienzo, visible ampliando ×6; a escala
+   normal pasa por la articulación.
+
+Quedan además `Ojos` y `Boca` apagados hasta que el arte separe la cara, y `pose_preview.py` sigue
+dibujando a Algoritm con la maqueta de su sprite entero y no con los PNG de `Frontal/`: hay que
+enseñarle a leerlos. El orden de trabajo y los límites están en
+`Ajustes-Diseno-2026-10-08/notas-04a-algoritm-creditos.md` (§9 y §10). La entrega de arte de Algoritm
+del 09/10/2026 la ingiere el carril de perfil (`545127e` guarda los originales en
+`entregas/2026-10-09/Algoritm/`), no esta ronda: el corte en nueve piezas sale del arte provisional
+`_reposo` (decisión D22). El prompt para meter el arte final está en
+`claudeDocs/tasks/Personajes/Prompt-Arte-Final-Algoritm.md`.

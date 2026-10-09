@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Game.Core;
+using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -49,6 +51,30 @@ namespace Game.UI.Tests
             Assert.That(controller.BodyLabel.text, Does.Contain("Bibiana Patricia Rey Barrote"));
             Assert.That(controller.BodyLabel.text, Does.Contain("Luis Eduardo Benavides Porras"));
             Assert.That(controller.BodyLabel.text, Does.Contain("Tecnología para niños: libro de actividades"));
+        }
+
+        /// <summary>
+        /// Decisión de Santiago del 08/10/2026 (D12): la tarjeta que contenía a Algoritm desaparece y él saluda
+        /// solo, tan ancho como ella, sobre el fondo de la pantalla.
+        /// </summary>
+        [Test]
+        [Timeout(20000)]
+        public async Task Credits_RF08_AlgoritmSaludaOcupandoElLugarDeLaTarjetaSinElla()
+        {
+            var (controller, _) = await OpenCredits();
+            var algoritm = controller.Guide;
+            Assert.That(algoritm, Is.Not.Null, "la pantalla de créditos lleva a Algoritm");
+            var panel = (RectTransform)algoritm.transform.parent;
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(algoritm.Current, Is.EqualTo(ActorAction.Wave), "Algoritm saluda");
+            Assert.That(panel.name, Is.EqualTo("AlgoritmPanel"), "cuelga directamente de su panel");
+            Assert.That(new[] { "Fondo", "Marco", "Sombra" }.Select(nombre => panel.Find(nombre)), Is.All.Null, "la tarjeta ya no existe");
+            Assert.That(panel.GetComponentsInChildren<Image>(true).Where(imagen => !imagen.transform.IsChildOf(algoritm.transform)),
+                Is.Empty, "nada pinta una tarjeta detrás de Algoritm");
+            Assert.That(AnchoEnPantalla(algoritm.Stage), Is.EqualTo(AnchoEnPantalla(panel)).Within(1f),
+                "el lienzo de Algoritm llena el ancho de la tarjeta que ocupaba");
         }
 
         [Test]
@@ -104,6 +130,13 @@ namespace Game.UI.Tests
             controller.Runner = runner;
             await Awaitable.NextFrameAsync();
             return (controller, runner);
+        }
+
+        private static float AnchoEnPantalla(RectTransform rect)
+        {
+            var esquinas = new Vector3[4];
+            rect.GetWorldCorners(esquinas);
+            return esquinas[2].x - esquinas[0].x;
         }
 
         private static Button FindButtonByLabel(string label) => Array.Find(

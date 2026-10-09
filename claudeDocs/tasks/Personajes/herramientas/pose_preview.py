@@ -9,6 +9,7 @@
 #     python3 .../pose_preview.py --salida /ruta/de/trabajo                            # donde dejar los PNG/GIF
 #     python3 .../pose_preview.py --orden Torso,Cuello,BrazoIzq,BrazoDer              # otro orden de dibujo de Tronco (el del JSON es el vigente)
 #     python3 .../pose_preview.py --autoprueba                                         # la prueba SI detecta poses malas a proposito
+#     python3 .../pose_preview.py --exporta-maqueta [CARPETA]                          # escribe las piezas de Algoritm (char_algoritm_<forma>_parte_*.png) en Assets/Game/Art/Characters/Algoritm/Frontal
 #     python3 .../pose_preview.py --mide nino                                          # las articulaciones del rig caen en la rotula
 #
 # Necesita Pillow (pip install pillow). Sale con codigo 1 si algun clip falla la prueba.
@@ -35,11 +36,12 @@
 # motor (prefabs.orden_con_brazos_delante: el brazo que va antes del torso pasa justo despues de el; el que ya va despues,
 # como los de Algoritm, no cambia). La lista se lee del .cs; si no esta, {Strike} con un aviso.
 #
-# ALGORITM. Sus tres formas aun tienen un solo sprite (cuerpo, brazos y piernas juntos), asi que sus
-# brazos no se pueden esconder ni mover por separado. Para probar la coreografia contra la geometria que
-# llevara el arte final, la vista previa hace una MAQUETA: recorta del sprite entero las piezas que
-# define el JSON (torso, brazo, antebrazo, pierna, antepierna). Sumadas dan el sprite original. Es solo
-# de vista previa: el prefab no se toca.
+# ALGORITM. Sus tres formas tienen un solo sprite (cuerpo, brazos y piernas juntos). Desde el 08/10/2026 (D13) la maqueta de su
+# sprite entero es tambien el arte provisional del juego: maqueta.piezas_guia lo recorta en las nueve piezas que define el JSON (torso, brazo,
+# antebrazo, pierna, antepierna, a cada lado), sin repetir pixeles (sumadas dan el sprite original) y con una rotula en cada articulacion; esta
+# vista previa las dibuja y las prueba, y «--exporta-maqueta» las escribe como char_algoritm_<forma>_parte_*.png para que el modo «sprites» de
+# BuildRigsFinal las asigne a los prefabs. Cuando llegue el arte final de Algoritm se sustituyen esos PNG por los suyos y se vuelve a correr
+# «sprites». Hasta que la vista previa lea tambien esos PNG, Algoritm se sigue dibujando con la maqueta, no con el arte entregado.
 #
 # INC-133 (06/10/2026), la familia: el HUMERO va detras del torso y el ANTEBRAZO con la mano delante del torso, de la cara y de las piernas.
 # BuildRigsFinal «orden» lo hace pasando cada AntebrazoX de su codo a hijo de Tronco (con un ancla vacia bajo el codo que animan los clips);
@@ -67,6 +69,9 @@
 #       cadera del JSON menos coreografia.MARGEN_CINTURA, y de la cadera del contexto si es mas alta (nunca en la entrepierna);
 #   (f) ningun hombro ni codo gira mas de VELOCIDAD_MAX (1300 grados por segundo): atrapa el salto de rama de la
 #       cinematica inversa a mitad de un gesto (salvo el golpe del martillo, EXCEPCIONES_VEL).
+#   (j) el HUMERO no asoma del codo (Santiago, 08/10/2026): la punta del humero no pasa del casquete del antebrazo (el extremo redondo del lado del
+#       hombro) en mas de ASOMA_MAX_CODO px. Es una medida del arte y no de un cuadro: el casquete gira sobre el codo y lo que el humero se pase de el
+#       queda a la vista en cuanto el antebrazo se aparta (asoma_codo; la corrige codo.py).
 
 import argparse
 import copy
@@ -114,6 +119,10 @@ TOLERANCIA_CODO = 6.0      # grados de hiperextension que se perdonan
 HOMBRO_CAPSULA = 1.1       # el pivote del hombro cae a menos de tantos radios del eje del humero (hombro.FRACCION_CAPSULA)
 TOLERANCIA_SUELO = 2.0     # px
 AMPLIA_CAJA_CARA = 1.10    # la caja de la cara (ojos y boca) se amplia un 10 % para la prueba de las manos
+# (j) Santiago, 08/10/2026: «cuando el papa mueve el antebrazo se ve parte del humero». El antebrazo gira sobre el codo y su casquete tapa el extremo
+# del humero; el arte de Papa traia el humero 53 y 33 px mas alla del casquete (con la punta sin contorno), y asomaba por el codo al doblarlo. Mama, la
+# Nina y el Nino: de -5 a 7 px (su humero termina en un extremo redondo con contorno, que cabe en el casquete). El tope queda entre unos y otro.
+ASOMA_MAX_CODO = 15.0
 
 # (b) y (e) Santiago, 06/10/2026: «acepto que cubra el rostro». Los gestos junto a la cabeza dejan que la mano y el antebrazo tapen parte de la
 # cara y llevan la mano de verdad a la sien o a la frente (antes el solucionador los desviaba a un lado de la cara, y con una cabeza ancha y brazos
@@ -280,7 +289,7 @@ class Personaje:
         comparten las mismas Capa (y su cache de sprites reducidos).
         """
         self._cache = {}
-        base = self._lienzo_baked() if self.guia else None
+        base = self._piezas_guia() if self.guia else None
         hechas = {}
 
         def recorre():
@@ -325,19 +334,15 @@ class Personaje:
             return self.capas_delante, self.indice_delante
         return self.capas, self.indice
 
-    def _lienzo_baked(self):
-        """Algoritm: el sprite entero a 1024 (el Image de Cuerpo conserva el aspecto)."""
-        n = self.arbol[C]
-        ruta = P.sprite_por_guid(n.imagen["guid"])
-        im = Image.open(ruta).convert("RGBA")
-        lado = int(round(min(1024, 1024) / max(im.size) * max(im.size)))
-        return im.resize((1024, 1024), Image.LANCZOS) if im.size != (lado, lado) else im
+    def _piezas_guia(self):
+        """Algoritm: sus nueve piezas, cortadas del sprite entero de su forma (el de la Image de Cuerpo) con maqueta.piezas_guia."""
+        return M.piezas_guia(P.sprite_por_guid(self.arbol[C].imagen["guid"]), self.rig)
 
-    def _capa(self, n, baked):
+    def _capa(self, n, piezas_guia):
         ruta = n.ruta
         rect = self.rect[ruta]
         if self.guia:
-            return self._capa_guia(n, rect, baked)
+            return self._capa_guia(n, rect, piezas_guia)
         if not n.dibuja() or rect is None:
             return None
         if n.imagen["guid"].startswith("maqueta:"):
@@ -349,35 +354,12 @@ class Personaje:
         return Capa(n, rect, _abre(arch), n.imagen["color"])
 
     # ---- maqueta de Algoritm
-    def _capa_guia(self, n, rect, baked):
-        nombre = n.nombre
-        if nombre == "Cuerpo":
-            return None  # su Image se apaga cuando llegan las partes (la maqueta las sustituye)
-        if nombre not in ("Torso", "BrazoIzq", "BrazoDer", "AntebrazoIzq", "AntebrazoDer", "PiernaIzq", "PiernaDer",
-                          "AntepiernaIzq", "AntepiernaDer"):
-            return None
-        x0, y0, x1, y1 = [int(round(v)) for v in rect]
-        pieza = baked.crop((x0, y0, x1, y1)).copy()
-        # Lo que pertenece a otra pieza se borra: torso = lienzo menos extremidades; brazo = brazo menos antebrazo.
-        borrar = []
-        if nombre == "Torso":
-            for r in ("BrazoIzq", "BrazoDer", "PiernaIzq", "PiernaDer"):
-                borrar.append(self.rect[T + "/" + r] if r.startswith("Brazo") else self.rect[C + "/" + r])
-        elif nombre == "BrazoIzq":
-            borrar.append(self.rect[LE + "/AntebrazoIzq"])
-        elif nombre == "BrazoDer":
-            borrar.append(self.rect[RE + "/AntebrazoDer"])
-        elif nombre == "PiernaIzq":
-            borrar.append(self.rect[LK + "/AntepiernaIzq"])
-        elif nombre == "PiernaDer":
-            borrar.append(self.rect[RK + "/AntepiernaDer"])
-        if borrar:
-            alfa = pieza.getchannel("A")
-            d = ImageDraw.Draw(alfa)
-            for r in borrar:
-                d.rectangle([r[0] - x0, r[1] - y0, r[2] - x0 - 1, r[3] - y0 - 1], fill=0)
-            pieza.putalpha(alfa)
-        return Capa(n, (x0, y0, x1, y1), pieza, (1, 1, 1, 1), maqueta=True)
+    def _capa_guia(self, n, rect, piezas):
+        """La capa de una de las nueve piezas de Algoritm (maqueta.piezas_guia); Cuerpo y lo que no es pieza (Tronco, Ojos, Boca, los pivotes) no se dibujan."""
+        if n.nombre == "Cuerpo" or n.nombre not in M.NOMBRES_GUIA:
+            return None  # la Image de Cuerpo se apaga cuando llegan las partes (las piezas la sustituyen)
+        pieza = piezas[n.nombre]
+        return Capa(n, pieza.rect, pieza.imagen, (1, 1, 1, 1), maqueta=True)
 
     # ---- los dos ojos por separado (perezoso)
     def ojos_mitades(self):
@@ -1030,6 +1012,48 @@ def extremos_capsula(imagen):
     return (cx + (lo + r) * ux, cy + (lo + r) * uy), (cx + (hi - r) * ux, cy + (hi - r) * uy), r
 
 
+def asoma_codo(pid, tabla):
+    """
+    (j) Cuanto asoma el humero del codo, por brazo: {lado: {"asoma", "hd", "hp", "fp"}}, con «tabla» (la entrada del personaje en arte_final.json o
+    en rig_articulaciones.json: sus nodos y partes) y el arte de Assets/Game/Art/Characters/<Carpeta>/. «asoma» (px del lienzo) es cuanto pasa el punto del
+    HUMERO mas lejano del centro del casquete del antebrazo (solo del lado de la mano de ese centro) del borde del casquete, que es el radio de la
+    capsula del antebrazo: negativo, la punta cabe en el casquete. «hd» y «hp»: los centros del extremo del humero junto al codo y del del hombro;
+    «fp»: el centro del casquete (el extremo del antebrazo del lado del humero). Se mide sobre el alfa de las piezas, sin dibujar ningun cuadro: el casquete
+    gira sobre el codo, asi que lo que el humero se pase de el no depende de la pose.
+    """
+    carpeta = P.PERSONAJES[pid][1]
+    partes = {q["nombre"]: q for q in tabla["partes"]}
+    nodos = {n["nombre"]: n for n in tabla["nodos"]}
+
+    def pieza(sprite, rect):
+        im = Image.open(P._png_de(carpeta, sprite)).convert("RGBA")
+        a, b, r = extremos_capsula(im)
+        kx, ky = (rect[2] - rect[0]) / float(im.size[0]), (rect[3] - rect[1]) / float(im.size[1])
+        return (rect[0] + a[0] * kx, rect[1] + a[1] * ky), (rect[0] + b[0] * kx, rect[1] + b[1] * ky), r * kx, im, (kx, ky)
+
+    out = {}
+    for lado in ("Izq", "Der"):
+        q, n = partes["Brazo" + lado], nodos["Codo" + lado]
+        h1, h2, _, im, (kx, ky) = pieza(q["sprite"], q["rect"])
+        hd, hp = (h1, h2) if math.dist(h1, n["punto"]) < math.dist(h2, n["punto"]) else (h2, h1)
+        f1, f2, rf, _, _ = pieza(n["sprite"], n["rect"])
+        fp = f1 if math.dist(f1, hd) < math.dist(f2, hd) else f2
+        ux, uy = hd[0] - hp[0], hd[1] - hp[1]  # del hombro al codo
+        largo = math.hypot(ux, uy)
+        ux, uy = ux / largo, uy / largo
+        alfa = im.getchannel("A")
+        datos = alfa.load()
+        lejos = 0.0
+        for y in range(alfa.size[1]):
+            for x in range(alfa.size[0]):
+                if datos[x, y] > 127:
+                    px, py = q["rect"][0] + (x + 0.5) * kx, q["rect"][1] + (y + 0.5) * ky
+                    if (px - fp[0]) * ux + (py - fp[1]) * uy > 0:
+                        lejos = max(lejos, math.hypot(px - fp[0], py - fp[1]))
+        out[lado] = {"asoma": lejos - rf, "hd": hd, "hp": hp, "fp": fp}
+    return out
+
+
 def mide(pj):
     """
     Que cada articulacion del rig caiga en el centro del extremo redondo de la pieza que gira (la rotula),
@@ -1087,6 +1111,13 @@ def mide(pj):
         fallos += 0 if ok else 1
         print("%-22s (%5.1f, %5.1f) a %4.1f px del centro del extremo redondo, %4.2f radios del eje %s" % (
             "Hombro " + lado, hombro[0], hombro[1], math.hypot(rx, ry), a_ad / b[2], "ok" if ok else "FALLA (fuera de la capsula del humero)"))
+    # (j) la punta del humero cabe en el casquete del antebrazo: si no, asoma por el codo al doblarlo (codo.py lo corrige)
+    if LE + "/AntebrazoIzq" in capas and RE + "/AntebrazoDer" in capas:
+        for lado, v in asoma_codo(pj.pid, pj.rig).items():
+            ok = v["asoma"] <= ASOMA_MAX_CODO
+            fallos += 0 if ok else 1
+            print("%-22s la punta del humero pasa %5.1f px del casquete del antebrazo (maximo %.0f) %s" % (
+                "Codo asoma " + lado, v["asoma"], ASOMA_MAX_CODO, "ok" if ok else "FALLA (el humero asoma del codo)"))
     for lado in ("Izq", "Der"):
         m, a = centros((LL if lado == "Izq" else RL)), centros((LK if lado == "Izq" else RK) + "/Antepierna" + lado)
         rod = piv[LK if lado == "Izq" else RK]
@@ -1262,6 +1293,35 @@ def autoprueba(rig):
         ok = frac < 0.6
         malos += 0 if ok else 1
         print("%-40s %.3f %%  %s" % (pid, frac, "bien" if ok else "LA MAQUETA NO SUMA EL SPRITE"))
+    # Algoritm: sus nueve piezas (maqueta.piezas_guia), sumadas en reposo, son el sprite entero: el corte reparte los pixeles y las rotulas son copias que
+    # caen debajo de lo que ya esta. Si el vientre quedara mordido en un hombro o una cadera, o una pieza se desplazara, la diferencia subiria.
+    print("%-40s %s" % ("las piezas de Algoritm suman el sprite", "diferencia de pixeles en reposo (tope 0,6 %)"))
+    for pid in ("algoritm_fuego", "algoritm_rueda", "algoritm_gota"):
+        pj_ = Personaje(pid, rig)
+        sprite = Image.open(P.sprite_por_guid(pj_.arbol[C].imagen["guid"])).convert("RGBA").resize((512, 512), Image.LANCZOS)
+        entero = Image.new("RGBA", render(pj_, vacio, 0.0, 0.5, alfa_grupo=False).size, (236, 232, 222, 255))
+        entero.alpha_composite(sprite, (int(-REGION_GUIA[0] * 0.5), int(-REGION_GUIA[1] * 0.5)))
+        dif = ImageChops.difference(render(pj_, vacio, 0.0, 0.5, alfa_grupo=False).convert("RGB"), entero.convert("RGB")).convert("L").point(lambda v: 255 if v > 40 else 0)
+        frac = 100.0 * _cuenta(dif) / (dif.width * dif.height)
+        ok = frac < 0.6
+        malos += 0 if ok else 1
+        print("%-40s %.3f %%  %s" % (pid, frac, "bien" if ok else "LAS PIEZAS NO SUMAN EL SPRITE"))
+    # (j) el humero que asoma del codo: el del Nino (termina en un extremo redondo con contorno que cabe en el casquete) no, y el mismo Nino con el
+    # antebrazo subido 40 px a lo largo del brazo (el humero se pasa del casquete, como el de Papa antes de codo.py) si
+    tabla = copy.deepcopy(P.personaje_rig(rig, "nino"))
+    bien = asoma_codo("nino", tabla)
+    for lado in ("Izq", "Der"):
+        v = bien[lado]
+        sube = (v["hp"][0] - v["hd"][0], v["hp"][1] - v["hd"][1])
+        largo = math.hypot(*sube)
+        nodo = next(n for n in tabla["nodos"] if n["nombre"] == "Codo" + lado)
+        dx, dy = round(40 * sube[0] / largo), round(40 * sube[1] / largo)
+        nodo["rect"] = [nodo["rect"][0] + dx, nodo["rect"][1] + dy, nodo["rect"][2] + dx, nodo["rect"][3] + dy]
+    mal = asoma_codo("nino", tabla)
+    ok = all(bien[l]["asoma"] <= ASOMA_MAX_CODO < mal[l]["asoma"] for l in ("Izq", "Der"))
+    malos += 0 if ok else 1
+    print("%-40s %-9s %s" % ("humero que asoma del codo", "asoma", ("detectado (Nino %.0f y %.0f px; con el antebrazo subido 40 px, %.0f y %.0f; maximo %.0f)" % (
+        bien["Izq"]["asoma"], bien["Der"]["asoma"], mal["Izq"]["asoma"], mal["Der"]["asoma"], ASOMA_MAX_CODO)) if ok else "NO SE DETECTA"))
     print("%-40s %-9s %s" % ("pose mala", "medida", "resultado"))
     for nombre, pj, vals, medida in casos:
         r = prueba_clip(pj, _clip_pose(vals), tiempos=[0.0])
@@ -1313,6 +1373,40 @@ def autoprueba(rig):
     return 1 if malos else 0
 
 
+# --------------------------------------------------------------------------- exportar la maqueta de Algoritm
+
+
+CARPETA_PARTES_GUIA = os.path.join(P.PERSONAJES_ARTE, "Algoritm", "Frontal")
+
+
+def exporta_maqueta(rig, carpeta, ids):
+    """
+    --exporta-maqueta: escribe las nueve piezas de cada forma de Algoritm (maqueta.piezas_guia, las mismas que dibuja y prueba esta vista previa) como
+    char_algoritm_<forma>_parte_*.png, con los nombres que fija rig_articulaciones.json, en «carpeta» (por defecto Assets/Game/Art/Characters/Algoritm/Frontal,
+    donde BuildRigsFinal las busca). Cada PNG mide el rect de su pieza a la resolucion del sprite (el lienzo de 1024 a 768 px: rect x 0,75). Despues, en el
+    Editor: «sprites», «orden» y «clips» de BuildRigsFinal, por ese orden. Devuelve cuantos PNG escribio.
+    """
+    os.makedirs(carpeta, exist_ok=True)
+    escritos = 0
+    for pid in ids:
+        pj = Personaje(pid, rig)
+        sprites = {}
+        for nd in pj.rig["nodos"]:
+            if nd.get("sprite") and nd["tipo"] in ("imagen", "articulacion"):
+                sprites[nd["imagen"] if nd["tipo"] == "articulacion" else nd["nombre"]] = nd["sprite"]
+        for capa in pj.capas:
+            nombre = capa.nodo.nombre
+            if nombre not in M.NOMBRES_GUIA:
+                continue
+            ruta = os.path.join(carpeta, sprites[nombre] + ".png")
+            capa.imagen.save(ruta, optimize=True)
+            opacos = sum(capa.imagen.getchannel("A").histogram()[1:])
+            print("%-44s %4d x %-4d px  rect %-22s %6d px opacos  %6.1f KB" % (
+                os.path.basename(ruta), capa.imagen.size[0], capa.imagen.size[1], list(capa.rect), opacos, os.path.getsize(ruta) / 1024.0))
+            escritos += 1
+    return escritos
+
+
 # --------------------------------------------------------------------------- principal
 
 
@@ -1334,6 +1428,12 @@ def corrida(pid, modo, rig, clips, a):
     pj = Personaje(pid, rig, a.orden, maqueta=(modo == "maqueta"))
     cl = clips_de(clips, pid)
     fallos = 0
+    if modo == "final":  # (j) el humero no asoma del codo: una medida del arte, no de un clip
+        for lado, v in asoma_codo(pid, pj.rig).items():
+            ok = v["asoma"] <= ASOMA_MAX_CODO
+            fallos += 0 if ok else 1
+            print("%-14s codo %-5s %-8s la punta del humero pasa %5.1f px del casquete del antebrazo (maximo %.0f)%s" % (
+                pid, lado, "ok" if ok else "FALLA", v["asoma"], ASOMA_MAX_CODO, "" if ok else ": el humero asoma del codo (codo.py)"))
     for clip in cl:
         r = prueba_clip(pj, clip)
         ok, linea = fila(pid + ("/" + modo if modo in ("hoy", "maqueta") else ""), clip, r)
@@ -1362,6 +1462,9 @@ def main(argv=None):
     ap.add_argument("--tira", nargs=4, metavar=("PERSONAJE", "ACCION", "N", "PNG"))
     ap.add_argument("--mide", metavar="PERSONAJE", help="comprueba las articulaciones del rig contra el alfa de las piezas")
     ap.add_argument("--autoprueba", action="store_true", help="comprueba que la prueba SI falla con poses malas a proposito")
+    ap.add_argument("--exporta-maqueta", nargs="?", const=CARPETA_PARTES_GUIA, metavar="CARPETA",
+                    help="escribe las nueve piezas de cada forma de Algoritm (char_algoritm_<forma>_parte_*.png) en CARPETA (por defecto Assets/Game/Art/Characters/Algoritm/Frontal); "
+                         "con --solo, solo esas formas")
     a = ap.parse_args(argv)
     a.orden = a.orden.split(",") if a.orden else None
     modos = [m for m, on in (("hoy", a.hoy), ("maqueta", a.maqueta)) if on] or ["hoy", "maqueta"]
@@ -1370,6 +1473,11 @@ def main(argv=None):
     clips = cargar_clips(a.json)
     os.makedirs(a.salida, exist_ok=True)
 
+    if a.exporta_maqueta:
+        formas = a.solo or [pid for pid in P.PERSONAJES if P.PERSONAJES[pid][2]]
+        n = exporta_maqueta(rig, a.exporta_maqueta, formas)
+        print("%d PNG escritos en %s" % (n, a.exporta_maqueta))
+        return 0
     if a.mide:
         return mide(Personaje(a.mide, rig))
     if a.autoprueba:
@@ -1432,7 +1540,7 @@ def main(argv=None):
                         clips_maqueta = clips_de_doc(K.construir(rig, maqueta=True)[0])
                     print("--- %s maqueta: el arte final simulado (brazos, piernas y cabeza partidos), clips calculados para el" % pid)
                     fallos += corrida(pid, "maqueta", rig, clips_maqueta, a)
-    print("\n%d clips con fallos" % fallos if fallos else "\nla prueba pasa en todos los clips")
+    print("\n%d fallos (clips o codos)" % fallos if fallos else "\nla prueba pasa en todos los clips")
     if not a.sin_hojas:
         print("hojas y GIF en", a.salida)
     return 1 if fallos else 0
