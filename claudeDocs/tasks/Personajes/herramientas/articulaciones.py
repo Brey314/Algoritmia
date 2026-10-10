@@ -55,6 +55,12 @@
 # longitudes con las que resolver pasos y agachadas. Cuando llegue el arte de perfil, preparar_perfil.py escribe en arte_final.json una entrada
 # «perfil» ({nodos, partes, orden_tronco?}) y este script la vuelca tal cual, como hace con las del arte final de frente. Algoritm no tiene perfil.
 #
+# CARA FINAL DE ALGORITM Y RETRATO ANIMADO (INC-148, 10/10/2026). La entrada «algoritm_<forma>» de arte_final.json puede traer «prefijo_cara» («char_algoritm»): las tres
+# formas comparten UNA cara (Algoritm/Expresiones/char_algoritm_{ojos_*,boca_*}, sin el nombre de la forma, 11 texturas en vez de 33) y personaje_guia() lo lleva tal cual al
+# JSON para que BuildRigsFinal (FaceNames) busque primero el prefijo de la forma y despues ese. Y cualquier entrada puede traer «retrato» (lo escribe preparar_retrato.py:
+# el recorte de la tarjeta del dialogo, el rect de la cara normalizado y la IoU de registro); al JSON van solo «base» (el sprite char_<x>_retrato_base) y «cara» (x, y, ancho,
+# alto normalizados, origen ABAJO a la izquierda: lo que BuildRigsFinal «retrato» escribe en CharacterRig.PortraitBase y PortraitFace).
+#
 # Por qué el JSON no lleva «segmentado»: se deduce del prefab. Un personaje está segmentado
 # cuando la Image de AntepiernaIzq tiene sprite y está encendida; guardarlo también en la tabla
 # sería una segunda fuente de verdad que se desincroniza al primer cambio de arte.
@@ -411,6 +417,14 @@ def rect_centrado(cx, cy, w, h):
     return [entero(cx - w / 2), entero(cy - h / 2), entero(cx + w / 2), entero(cy + h / 2)]
 
 
+def retrato_de(entrada):
+    """{base, cara} del «retrato» de una entrada de arte_final.json (INC-148), o None si aun no lo tiene. «cara» = [x, y, ancho, alto] normalizados con el origen abajo a la izquierda."""
+    r = (entrada or {}).get("retrato")
+    if not r:
+        return None
+    return {"base": r["base"], "cara": [round(float(v), 5) for v in r["cara"]]}
+
+
 def personaje_familia(pid, prefab, carpeta):
     g = leer_prefab(os.path.join(PREFABS, prefab + ".prefab"))
     pref = "char_" + pid
@@ -494,11 +508,14 @@ def personaje_familia(pid, prefab, carpeta):
 
     if pid in ARTE_FINAL:  # arte final: las medidas salen del alfa de las piezas, no de las formulas de arriba
         nodos, partes = ARTE_FINAL[pid]["nodos"], ARTE_FINAL[pid]["partes"]
-    return {
+    out = {
         "id": pid, "prefab": prefab, "carpeta": carpeta, "prefijo": pref, "guia": False,
         "orden_tronco": orden_tronco_de(pid), "nodos": nodos, "partes": partes,
         "perfil": perfil_familia(pid, nodos, partes),
     }
+    if retrato_de(ARTE_FINAL.get(pid)):
+        out["retrato"] = retrato_de(ARTE_FINAL[pid])
+    return out
 
 
 # ----------------------------------------------------------------------------- Algoritm
@@ -609,10 +626,15 @@ def personaje_guia(forma, prefab):
     entrada = ARTE_FINAL.get("algoritm_" + forma)
     if entrada:
         nodos, partes = entrada["nodos"], entrada.get("partes", [])
-    return {
+    out = {
         "id": "algoritm_" + forma, "prefab": prefab, "carpeta": "Algoritm", "prefijo": pref,
         "guia": True, "orden_tronco": ORDEN_TRONCO_GUIA, "nodos": nodos, "partes": partes,
     }
+    if entrada and entrada.get("prefijo_cara"):   # INC-148: la cara FINAL es una sola para las tres formas (char_algoritm_ojos_neutra, sin la forma)
+        out["prefijo_cara"] = entrada["prefijo_cara"]
+    if retrato_de(entrada):
+        out["retrato"] = retrato_de(entrada)
+    return out
 
 
 # ----------------------------------------------------------------------------- escritura
@@ -754,13 +776,35 @@ def autoprueba():
         g = personaje_guia(forma, prefab)
         n = _por_nombre(g["nodos"])
         pref = "char_algoritm_" + forma
-        caso("algoritm_%s: 12 nodos, la pierna entera (RodillaX sin sprite), cara provisional en Ojos y Boca" % forma,
+        pref_cara = g.get("prefijo_cara") or pref   # INC-148: con la cara final los nodos nombran la cara COMPARTIDA (char_algoritm_ojos_neutra)
+        caso("algoritm_%s: 12 nodos, la pierna entera (RodillaX sin sprite), cara en Ojos y Boca (%s)" % (forma, "final y compartida" if g.get("prefijo_cara") else "provisional"),
              len(g["nodos"]) == 12 and n["PiernaIzq"]["sprite"] == pref + "_parte_pierna_izq" and n["PiernaDer"]["sprite"] == pref + "_parte_pierna_der"
              and n["RodillaIzq"]["sprite"] == "" and n["RodillaDer"]["sprite"] == "" and not any("antepierna" in x["sprite"] for x in g["nodos"])
-             and n["Ojos"]["sprite"] == pref + "_ojos_neutra" and n["Boca"]["sprite"] == pref + "_boca_0")
+             and n["Ojos"]["sprite"] == pref_cara + "_ojos_neutra" and n["Boca"]["sprite"] == pref_cara + "_boca_0")
+        if g.get("prefijo_cara"):
+            caso("algoritm_%s: la cara final comparte rect (Ojos = Boca) en las tres formas y no hay CaraBase" % forma,
+                 n["Ojos"]["rect"] == n["Boca"]["rect"] and "CaraBase" not in n and all(
+                     _por_nombre(personaje_guia(f2, p2)["nodos"])["Ojos"]["rect"] == n["Ojos"]["rect"] for f2, p2 in FORMAS))
         caso("algoritm_%s: orden_tronco de INC-147 (BrazoIzq, BrazoDer, Torso, Ojos, Boca: brazos detras de todo el cuerpo), cada punto dentro de su rect" % forma,
              g["orden_tronco"] == ["BrazoIzq", "BrazoDer", "Torso", "Ojos", "Boca"] and g["orden_tronco"] == ORDEN_TRONCO_GUIA and all(n[k]["rect"][0] <= n[k]["punto"][0] <= n[k]["rect"][2] and n[k]["rect"][1] <= n[k]["punto"][1] <= n[k]["rect"][3]
                                                             for k in ("PiernaIzq", "PiernaDer", "BrazoIzq", "BrazoDer", "CodoIzq", "CodoDer", "Torso")))
+    # INC-148: «prefijo_cara» (Algoritm) y «retrato» (cualquiera) de arte_final.json viajan al JSON, y sin ellos no aparece nada
+    antes = dict(ARTE_FINAL)
+    try:
+        ARTE_FINAL["algoritm_fuego"] = dict(ARTE_FINAL.get("algoritm_fuego", {}), prefijo_cara="char_algoritm",
+                                            retrato={"base": "char_algoritm_fuego_retrato_base", "cara": [0.25, 0.3333333, 0.5, 0.4], "iou": 0.99})
+        ARTE_FINAL["papa"] = dict(ARTE_FINAL.get("papa", {}), retrato={"base": "char_papa_retrato_base", "cara": [0.1, 0.2, 0.3, 0.4]})
+        g = personaje_guia("fuego", "Algoritm_Fuego")
+        f = personaje_familia(*FAMILIA[0])
+        caso("INC-148: prefijo_cara y retrato de Algoritm viajan al JSON (solo base y cara, redondeados)",
+             g.get("prefijo_cara") == "char_algoritm" and g.get("retrato") == {"base": "char_algoritm_fuego_retrato_base", "cara": [0.25, 0.33333, 0.5, 0.4]})
+        caso("INC-148: el retrato de la familia viaja al JSON", f.get("retrato") == {"base": "char_papa_retrato_base", "cara": [0.1, 0.2, 0.3, 0.4]})
+        ARTE_FINAL["algoritm_fuego"].pop("prefijo_cara"); ARTE_FINAL["algoritm_fuego"].pop("retrato"); ARTE_FINAL["papa"].pop("retrato")
+        caso("INC-148: sin prefijo_cara ni retrato el JSON no los trae",
+             "prefijo_cara" not in personaje_guia("fuego", "Algoritm_Fuego") and "retrato" not in personaje_guia("fuego", "Algoritm_Fuego") and "retrato" not in personaje_familia(*FAMILIA[0]))
+    finally:
+        ARTE_FINAL.clear()
+        ARTE_FINAL.update(antes)
     caso("el JSON de salida es ASCII", all(ord(c) < 128 for c in compacto({"perfil": [personaje_familia(*f)["perfil"] for f in FAMILIA]})))
     print("autoprueba de articulaciones.py:", "pasa" if not malos else "FALLA en %d casos" % malos)
     return 1 if malos else 0
@@ -794,7 +838,11 @@ def main(argv=None):
                 "con una entrada 'perfil' en arte_final.json (preparar_perfil.py) salen de ahi. Las piernas de perfil van SIEMPRE detras del torso (BrazoLejano, PiernaLejana, "
                 "PiernaCercana, Torso, Cuello, BrazoCercano; Santiago, 09/10/2026). Algoritm no tiene perfil. ALGORITM (INC-136): sus tres entradas salen de arte_final.json "
                 "(preparar_algoritm.py): siete piezas por forma con la PIERNA ENTERA (PiernaX con su sprite; RodillaX en el punto medio del palo, con AntepiernaX sin sprite) y la "
-                "cara provisional (Ojos y Boca) sacada del sprite de hoy.",
+                "cara (Ojos y Boca): hasta INC-148 la provisional, sacada del sprite de hoy; desde INC-148 (10/10/2026) la FINAL de la artista, UNA para las tres formas "
+                "(char_algoritm_ojos_*, char_algoritm_boca_*, sin el nombre de la forma): la entrada trae 'prefijo_cara' y BuildRigsFinal busca los sprites de cara con el prefijo de "
+                "la forma y despues con ese. 'retrato' (INC-148, preparar_retrato.py): 'base' = el sprite char_<x>_retrato_base de la tarjeta del dialogo (el personaje sin cara, "
+                "cuadrado y de 256 px como maximo) y 'cara' = [x, y, ancho, alto] de la cara normalizado sobre ella con el origen ABAJO a la izquierda (CharacterRig.PortraitBase "
+                "y PortraitFace; modo «retrato» de BuildRigsFinal).",
         "personajes": personajes,
     }
     with open(SALIDA, "w", encoding="utf-8", newline="\n") as f:

@@ -133,12 +133,18 @@ MonoBehaviour:
       <Destination>k__BackingField: {x: 0, y: 0}
       <Seconds>k__BackingField: 2
       <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 4
+      <Facing>k__BackingField: 0
     - <Line>k__BackingField: 1
       <Action>k__BackingField: 0
       <Moves>k__BackingField: 0
       <Destination>k__BackingField: {x: 0, y: 0}
       <Seconds>k__BackingField: 2
       <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 4
+      <Facing>k__BackingField: 0
   - <Art>k__BackingField: {fileID: 21300000, guid: f0a9b4f8c87bf2243a5ea3fa44d9ec0d, type: 3}
     <Position>k__BackingField: {x: 0.72, y: 0.543}
     <Size>k__BackingField: 0.2307
@@ -154,7 +160,16 @@ MonoBehaviour:
     <LandSound>k__BackingField: {fileID: 0}
     <Actor>k__BackingField: {fileID: 8612951356872757514, guid: 53a0ad01bc40e1b42be23176238414c3, type: 3}
     <ActorStart>k__BackingField: 0
-    <Beats>k__BackingField: []
+    <Beats>k__BackingField:
+    - <Line>k__BackingField: 0
+      <Action>k__BackingField: 0
+      <Moves>k__BackingField: 0
+      <Destination>k__BackingField: {x: 0, y: 0}
+      <Seconds>k__BackingField: 0
+      <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 4
+      <Facing>k__BackingField: 0
   - <Art>k__BackingField: {fileID: 21300000, guid: 19df714a131467f4db89973933e2d398, type: 3}
     <Position>k__BackingField: {x: 0.79, y: 0.5038}
     <Size>k__BackingField: 0.1384
@@ -171,18 +186,33 @@ MonoBehaviour:
     <Actor>k__BackingField: {fileID: 832422384234550645, guid: f79b469f8bde6ff408c6c0f17e02ef28, type: 3}
     <ActorStart>k__BackingField: 0
     <Beats>k__BackingField:
+    - <Line>k__BackingField: 0
+      <Action>k__BackingField: 0
+      <Moves>k__BackingField: 0
+      <Destination>k__BackingField: {x: 0, y: 0}
+      <Seconds>k__BackingField: 0
+      <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 0
+      <Facing>k__BackingField: 0
     - <Line>k__BackingField: 2
       <Action>k__BackingField: 14
       <Moves>k__BackingField: 0
       <Destination>k__BackingField: {x: 0, y: 0}
       <Seconds>k__BackingField: 2
       <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 1
+      <Facing>k__BackingField: 0
     - <Line>k__BackingField: 3
       <Action>k__BackingField: 0
       <Moves>k__BackingField: 0
       <Destination>k__BackingField: {x: 0, y: 0}
       <Seconds>k__BackingField: 2
       <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 1
+      <Facing>k__BackingField: 0
   - <Art>k__BackingField: {fileID: 21300000, guid: 8f21db6f6119dfb45947752a1fa80a19, type: 3}
     <Position>k__BackingField: {x: 0.866, y: 0.5352}
     <Size>k__BackingField: 0.2123
@@ -199,12 +229,33 @@ MonoBehaviour:
     <Actor>k__BackingField: {fileID: 4856857524079811693, guid: 292a2af82e9618a4a8571c0ba5344e6a, type: 3}
     <ActorStart>k__BackingField: 0
     <Beats>k__BackingField:
+    - <Line>k__BackingField: 0
+      <Action>k__BackingField: 0
+      <Moves>k__BackingField: 0
+      <Destination>k__BackingField: {x: 0, y: 0}
+      <Seconds>k__BackingField: 0
+      <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 0
+      <Facing>k__BackingField: 0
+    - <Line>k__BackingField: 3
+      <Action>k__BackingField: 0
+      <Moves>k__BackingField: 0
+      <Destination>k__BackingField: {x: 0, y: 0}
+      <Seconds>k__BackingField: 0
+      <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 4
+      <Facing>k__BackingField: 0
     - <Line>k__BackingField: 4
       <Action>k__BackingField: 2
       <Moves>k__BackingField: 1
       <Destination>k__BackingField: {x: 0.9, y: 0.5352}
       <Seconds>k__BackingField: 1.5
       <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 4
+      <Facing>k__BackingField: 0
   - <Art>k__BackingField: {fileID: 21300000, guid: 0792b2c700950ea4bb7333f999dd66f4, type: 3}
     <Position>k__BackingField: {x: 0.655, y: 0.408}
     <Size>k__BackingField: 0.12
@@ -333,30 +384,51 @@ MonoBehaviour:
     <Actor>k__BackingField: {fileID: 6041154823210184738, guid: 1ad09a67f6c1b6f4ebeb76a8d3da7b4e, type: 3}
     <ActorStart>k__BackingField: 0
     <Beats>k__BackingField:
+    - <Line>k__BackingField: 0
+      <Action>k__BackingField: 0
+      <Moves>k__BackingField: 0
+      <Destination>k__BackingField: {x: 0, y: 0}
+      <Seconds>k__BackingField: 0
+      <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 0
+      <Facing>k__BackingField: 0
     - <Line>k__BackingField: 4
       <Action>k__BackingField: 0
       <Moves>k__BackingField: 1
       <Destination>k__BackingField: {x: 0.677, y: 0.505}
       <Seconds>k__BackingField: 1.2
       <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 0
+      <Facing>k__BackingField: 0
     - <Line>k__BackingField: 5
       <Action>k__BackingField: 0
       <Moves>k__BackingField: 1
       <Destination>k__BackingField: {x: 0.76, y: 0.465}
       <Seconds>k__BackingField: 1.2
       <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 0
+      <Facing>k__BackingField: 0
     - <Line>k__BackingField: 6
       <Action>k__BackingField: 0
       <Moves>k__BackingField: 1
       <Destination>k__BackingField: {x: 0.857, y: 0.46}
       <Seconds>k__BackingField: 1.2
       <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 0
+      <Facing>k__BackingField: 0
     - <Line>k__BackingField: 7
       <Action>k__BackingField: 0
       <Moves>k__BackingField: 1
       <Destination>k__BackingField: {x: 0.935, y: 0.51}
       <Seconds>k__BackingField: 1.2
       <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 0
+      <Facing>k__BackingField: 0
   <IsReflectiveClosing>k__BackingField: 0
   <EndsInCredits>k__BackingField: 0
   <NextPhase>k__BackingField: 2

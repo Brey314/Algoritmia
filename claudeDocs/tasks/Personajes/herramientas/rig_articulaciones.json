@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "nota": "Valores PROVISIONALES salvo los de quien tiene entrada en arte_final.json (hoy la familia y las tres formas de Algoritm, INC-136). Lienzo de 1024, origen arriba a la izquierda, y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento 'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo (de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: en la familia los humeros van DETRAS DEL TORSO y DELANTE DE LA CABEZA (decision de Santiago, 05/10/2026: Cuello, BrazoIzq, BrazoDer, Torso; en Papa la cara va despues del torso) y, desde INC-133 (06/10/2026), los antebrazos (con la mano) DELANTE del torso, de la cara y de las piernas: AntebrazoIzq y AntebrazoDer al final de la lista (BuildRigsFinal 'orden' los pasa de su codo a Tronco y deja un ancla vacia bajo el codo, que es la que animan los clips); en Algoritm, los brazos DETRAS DE TODO EL CUERPO: BrazoIzq, BrazoDer, Torso, Ojos, Boca (INC-147, decision de Santiago, 09/10/2026, que revierte para el guia la de INC-132: sus manos ya no van por encima de la cara). En las acciones de CharacterRig.armsInFrontActions (Strike) los brazos de la familia pasan delante del torso. Con el arte provisional de Papa, Mama y Nina la cabeza esta pintada dentro del torso: sus brazos quedan tras torso y cara hasta que llegue su arte final. PERFIL (INC-134): cada personaje de la familia lleva una clave 'perfil' {provisional, prefijo, nodos, partes, orden_tronco} con el cuerpo de perfil (Lienzo/Perfil/Tronco, pivote en la cadera, mirando a la DERECHA); 'nodos' es TODO nuevo (padre antes que hijo, en el orden de dibujo) y 'orden_tronco' el de los hijos de Perfil/Tronco. 'provisional': true = las medidas salen de la figura de frente (no hay arte de perfil todavia); con una entrada 'perfil' en arte_final.json (preparar_perfil.py) salen de ahi. Las piernas de perfil van SIEMPRE detras del torso (BrazoLejano, PiernaLejana, PiernaCercana, Torso, Cuello, BrazoCercano; Santiago, 09/10/2026). Algoritm no tiene perfil. ALGORITM (INC-136): sus tres entradas salen de arte_final.json (preparar_algoritm.py): siete piezas por forma con la PIERNA ENTERA (PiernaX con su sprite; RodillaX en el punto medio del palo, con AntepiernaX sin sprite) y la cara provisional (Ojos y Boca) sacada del sprite de hoy.",
+  "nota": "Valores PROVISIONALES salvo los de quien tiene entrada en arte_final.json (hoy la familia y las tres formas de Algoritm, INC-136). Lienzo de 1024, origen arriba a la izquierda, y hacia abajo. 'nodos' se ANADE a los prefabs (padre antes que hijo); 'partes' describe los nodos que ya existen. tipo: articulacion = pivote de tamano 0 en 'punto' con un segmento 'imagen' colgado de el; imagen = el propio nodo lleva la Image; grupo = nodo estirado sin Image. El estado 'segmentado' no se guarda: se deduce del prefab. 'orden_tronco' es el orden de dibujo (de atras adelante) de los hijos directos de Lienzo/Cuerpo/Tronco: en la familia los humeros van DETRAS DEL TORSO y DELANTE DE LA CABEZA (decision de Santiago, 05/10/2026: Cuello, BrazoIzq, BrazoDer, Torso; en Papa la cara va despues del torso) y, desde INC-133 (06/10/2026), los antebrazos (con la mano) DELANTE del torso, de la cara y de las piernas: AntebrazoIzq y AntebrazoDer al final de la lista (BuildRigsFinal 'orden' los pasa de su codo a Tronco y deja un ancla vacia bajo el codo, que es la que animan los clips); en Algoritm, los brazos DETRAS DE TODO EL CUERPO: BrazoIzq, BrazoDer, Torso, Ojos, Boca (INC-147, decision de Santiago, 09/10/2026, que revierte para el guia la de INC-132: sus manos ya no van por encima de la cara). En las acciones de CharacterRig.armsInFrontActions (Strike) los brazos de la familia pasan delante del torso. Con el arte provisional de Papa, Mama y Nina la cabeza esta pintada dentro del torso: sus brazos quedan tras torso y cara hasta que llegue su arte final. PERFIL (INC-134): cada personaje de la familia lleva una clave 'perfil' {provisional, prefijo, nodos, partes, orden_tronco} con el cuerpo de perfil (Lienzo/Perfil/Tronco, pivote en la cadera, mirando a la DERECHA); 'nodos' es TODO nuevo (padre antes que hijo, en el orden de dibujo) y 'orden_tronco' el de los hijos de Perfil/Tronco. 'provisional': true = las medidas salen de la figura de frente (no hay arte de perfil todavia); con una entrada 'perfil' en arte_final.json (preparar_perfil.py) salen de ahi. Las piernas de perfil van SIEMPRE detras del torso (BrazoLejano, PiernaLejana, PiernaCercana, Torso, Cuello, BrazoCercano; Santiago, 09/10/2026). Algoritm no tiene perfil. ALGORITM (INC-136): sus tres entradas salen de arte_final.json (preparar_algoritm.py): siete piezas por forma con la PIERNA ENTERA (PiernaX con su sprite; RodillaX en el punto medio del palo, con AntepiernaX sin sprite) y la cara (Ojos y Boca): hasta INC-148 la provisional, sacada del sprite de hoy; desde INC-148 (10/10/2026) la FINAL de la artista, UNA para las tres formas (char_algoritm_ojos_*, char_algoritm_boca_*, sin el nombre de la forma): la entrada trae 'prefijo_cara' y BuildRigsFinal busca los sprites de cara con el prefijo de la forma y despues con ese. 'retrato' (INC-148, preparar_retrato.py): 'base' = el sprite char_<x>_retrato_base de la tarjeta del dialogo (el personaje sin cara, cuadrado y de 256 px como maximo) y 'cara' = [x, y, ancho, alto] de la cara normalizado sobre ella con el origen ABAJO a la izquierda (CharacterRig.PortraitBase y PortraitFace; modo \u00abretrato\u00bb de BuildRigsFinal).",
   "personajes": [
     {
       "id": "papa",
@@ -59,28 +59,28 @@
           "nombre": "CaraBase",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [515, 351],
+          "punto": [517, 330],
           "imagen": "CaraBase",
           "sprite": "char_papa_cara_base",
-          "rect": [393, 241, 638, 461]
+          "rect": [406, 241, 628, 420]
         },
         {
           "nombre": "Ojos",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [515, 351],
+          "punto": [517, 330],
           "imagen": "Ojos",
           "sprite": "char_papa_ojos_neutra",
-          "rect": [393, 241, 638, 461]
+          "rect": [406, 241, 628, 420]
         },
         {
           "nombre": "Boca",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [515, 351],
+          "punto": [517, 330],
           "imagen": "Boca",
           "sprite": "char_papa_boca_0",
-          "rect": [393, 241, 638, 461]
+          "rect": [406, 241, 628, 420]
         }
       ],
       "partes": [
@@ -218,28 +218,28 @@
             "nombre": "CaraBase",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [594, 357],
+            "punto": [594, 352],
             "imagen": "CaraBase",
             "sprite": "char_papa_perfil_cara_base",
-            "rect": [521, 268, 668, 447]
+            "rect": [529, 294, 660, 410]
           },
           {
             "nombre": "Ojos",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [594, 357],
+            "punto": [594, 352],
             "imagen": "Ojos",
             "sprite": "char_papa_perfil_ojos_neutra",
-            "rect": [521, 268, 668, 447]
+            "rect": [529, 294, 660, 410]
           },
           {
             "nombre": "Boca",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [594, 357],
+            "punto": [594, 352],
             "imagen": "Boca",
             "sprite": "char_papa_perfil_boca_0",
-            "rect": [521, 268, 668, 447]
+            "rect": [529, 294, 660, 410]
           },
           {
             "nombre": "BrazoCercano",
@@ -262,6 +262,10 @@
         ],
         "partes": [],
         "orden_tronco": ["BrazoLejano", "PiernaLejana", "PiernaCercana", "Torso", "Cuello", "BrazoCercano"]
+      },
+      "retrato": {
+        "base": "char_papa_retrato_base",
+        "cara": [0.29859, 0.30728, 0.40282, 0.32573]
       }
     },
     {
@@ -321,28 +325,28 @@
           "nombre": "CaraBase",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [508, 426],
+          "punto": [508, 416],
           "imagen": "CaraBase",
           "sprite": "char_mama_cara_base",
-          "rect": [335, 313, 681, 540]
+          "rect": [357, 331, 659, 502]
         },
         {
           "nombre": "Ojos",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [508, 426],
+          "punto": [508, 416],
           "imagen": "Ojos",
           "sprite": "char_mama_ojos_neutra",
-          "rect": [335, 313, 681, 540]
+          "rect": [357, 331, 659, 502]
         },
         {
           "nombre": "Boca",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [508, 426],
+          "punto": [508, 416],
           "imagen": "Boca",
           "sprite": "char_mama_boca_0",
-          "rect": [335, 313, 681, 540]
+          "rect": [357, 331, 659, 502]
         }
       ],
       "partes": [
@@ -480,28 +484,28 @@
             "nombre": "CaraBase",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [557, 430],
+            "punto": [557, 426],
             "imagen": "CaraBase",
             "sprite": "char_mama_perfil_cara_base",
-            "rect": [478, 333, 636, 527]
+            "rect": [487, 362, 627, 490]
           },
           {
             "nombre": "Ojos",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [557, 430],
+            "punto": [557, 426],
             "imagen": "Ojos",
             "sprite": "char_mama_perfil_ojos_neutra",
-            "rect": [478, 333, 636, 527]
+            "rect": [487, 362, 627, 490]
           },
           {
             "nombre": "Boca",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [557, 430],
+            "punto": [557, 426],
             "imagen": "Boca",
             "sprite": "char_mama_perfil_boca_0",
-            "rect": [478, 333, 636, 527]
+            "rect": [487, 362, 627, 490]
           },
           {
             "nombre": "BrazoCercano",
@@ -524,6 +528,10 @@
         ],
         "partes": [],
         "orden_tronco": ["BrazoLejano", "PiernaLejana", "PiernaCercana", "Torso", "Cuello", "BrazoCercano"]
+      },
+      "retrato": {
+        "base": "char_mama_retrato_base",
+        "cara": [0.27827, 0.30742, 0.44346, 0.25]
       }
     },
     {
@@ -583,28 +591,28 @@
           "nombre": "CaraBase",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [505, 405],
+          "punto": [505, 395],
           "imagen": "CaraBase",
           "sprite": "char_nina_cara_base",
-          "rect": [341, 295, 670, 515]
+          "rect": [361, 305, 650, 485]
         },
         {
           "nombre": "Ojos",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [505, 405],
+          "punto": [505, 395],
           "imagen": "Ojos",
           "sprite": "char_nina_ojos_neutra",
-          "rect": [341, 295, 670, 515]
+          "rect": [361, 305, 650, 485]
         },
         {
           "nombre": "Boca",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [505, 405],
+          "punto": [505, 395],
           "imagen": "Boca",
           "sprite": "char_nina_boca_0",
-          "rect": [341, 295, 670, 515]
+          "rect": [361, 305, 650, 485]
         }
       ],
       "partes": [
@@ -742,28 +750,28 @@
             "nombre": "CaraBase",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [596, 398],
+            "punto": [596, 392],
             "imagen": "CaraBase",
             "sprite": "char_nina_perfil_cara_base",
-            "rect": [518, 291, 674, 506]
+            "rect": [526, 323, 666, 461]
           },
           {
             "nombre": "Ojos",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [596, 398],
+            "punto": [596, 392],
             "imagen": "Ojos",
             "sprite": "char_nina_perfil_ojos_neutra",
-            "rect": [518, 291, 674, 506]
+            "rect": [526, 323, 666, 461]
           },
           {
             "nombre": "Boca",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [596, 398],
+            "punto": [596, 392],
             "imagen": "Boca",
             "sprite": "char_nina_perfil_boca_0",
-            "rect": [518, 291, 674, 506]
+            "rect": [526, 323, 666, 461]
           },
           {
             "nombre": "BrazoCercano",
@@ -786,6 +794,10 @@
         ],
         "partes": [],
         "orden_tronco": ["BrazoLejano", "PiernaLejana", "PiernaCercana", "Torso", "Cuello", "BrazoCercano"]
+      },
+      "retrato": {
+        "base": "char_nina_retrato_base",
+        "cara": [0.2803, 0.30682, 0.44034, 0.27557]
       }
     },
     {
@@ -845,28 +857,28 @@
           "nombre": "CaraBase",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [506, 398],
+          "punto": [508, 400],
           "imagen": "CaraBase",
           "sprite": "char_nino_cara_base",
-          "rect": [331, 263, 681, 533]
+          "rect": [353, 292, 663, 508]
         },
         {
           "nombre": "Ojos",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [506, 398],
+          "punto": [508, 400],
           "imagen": "Ojos",
           "sprite": "char_nino_ojos_neutra",
-          "rect": [331, 263, 681, 533]
+          "rect": [353, 292, 663, 508]
         },
         {
           "nombre": "Boca",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco/Cuello/Cabeza",
-          "punto": [506, 398],
+          "punto": [508, 400],
           "imagen": "Boca",
           "sprite": "char_nino_boca_0",
-          "rect": [331, 263, 681, 533]
+          "rect": [353, 292, 663, 508]
         }
       ],
       "partes": [
@@ -1004,28 +1016,28 @@
             "nombre": "CaraBase",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [604, 401],
+            "punto": [601, 411],
             "imagen": "CaraBase",
             "sprite": "char_nino_perfil_cara_base",
-            "rect": [518, 288, 690, 515]
+            "rect": [524, 327, 679, 495]
           },
           {
             "nombre": "Ojos",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [604, 401],
+            "punto": [601, 411],
             "imagen": "Ojos",
             "sprite": "char_nino_perfil_ojos_neutra",
-            "rect": [518, 288, 690, 515]
+            "rect": [524, 327, 679, 495]
           },
           {
             "nombre": "Boca",
             "tipo": "imagen",
             "padre": "Lienzo/Perfil/Tronco/Cuello/Cabeza",
-            "punto": [604, 401],
+            "punto": [601, 411],
             "imagen": "Boca",
             "sprite": "char_nino_perfil_boca_0",
-            "rect": [518, 288, 690, 515]
+            "rect": [524, 327, 679, 495]
           },
           {
             "nombre": "BrazoCercano",
@@ -1048,6 +1060,10 @@
         ],
         "partes": [],
         "orden_tronco": ["BrazoLejano", "PiernaLejana", "PiernaCercana", "Torso", "Cuello", "BrazoCercano"]
+      },
+      "retrato": {
+        "base": "char_nino_retrato_base",
+        "cara": [0.28587, 0.33333, 0.42826, 0.29989]
       }
     },
     {
@@ -1116,19 +1132,19 @@
           "nombre": "Ojos",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco",
-          "punto": [514, 490],
+          "punto": [506, 457],
           "imagen": "Ojos",
-          "sprite": "char_algoritm_fuego_ojos_neutra",
-          "rect": [374, 430, 655, 550]
+          "sprite": "char_algoritm_ojos_neutra",
+          "rect": [285, 269, 728, 646]
         },
         {
           "nombre": "Boca",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco",
-          "punto": [514, 590],
+          "punto": [506, 457],
           "imagen": "Boca",
-          "sprite": "char_algoritm_fuego_boca_0",
-          "rect": [421, 565, 608, 614]
+          "sprite": "char_algoritm_boca_0",
+          "rect": [285, 269, 728, 646]
         },
         {
           "nombre": "CodoIzq",
@@ -1167,7 +1183,12 @@
           "rect": [513, 909, 670, 1003]
         }
       ],
-      "partes": []
+      "partes": [],
+      "prefijo_cara": "char_algoritm",
+      "retrato": {
+        "base": "char_algoritm_fuego_retrato_base",
+        "cara": [0.27921, 0.30804, 0.44158, 0.37481]
+      }
     },
     {
       "id": "algoritm_rueda",
@@ -1235,19 +1256,19 @@
           "nombre": "Ojos",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco",
-          "punto": [520, 436],
+          "punto": [506, 457],
           "imagen": "Ojos",
-          "sprite": "char_algoritm_rueda_ojos_neutra",
-          "rect": [380, 376, 660, 495]
+          "sprite": "char_algoritm_ojos_neutra",
+          "rect": [285, 269, 728, 646]
         },
         {
           "nombre": "Boca",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco",
-          "punto": [520, 536],
+          "punto": [506, 457],
           "imagen": "Boca",
-          "sprite": "char_algoritm_rueda_boca_0",
-          "rect": [427, 511, 612, 560]
+          "sprite": "char_algoritm_boca_0",
+          "rect": [285, 269, 728, 646]
         },
         {
           "nombre": "CodoIzq",
@@ -1286,7 +1307,12 @@
           "rect": [513, 909, 670, 1003]
         }
       ],
-      "partes": []
+      "partes": [],
+      "prefijo_cara": "char_algoritm",
+      "retrato": {
+        "base": "char_algoritm_rueda_retrato_base",
+        "cara": [0.20082, 0.3069, 0.59938, 0.50875]
+      }
     },
     {
       "id": "algoritm_gota",
@@ -1354,19 +1380,19 @@
           "nombre": "Ojos",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco",
-          "punto": [512, 503],
+          "punto": [506, 457],
           "imagen": "Ojos",
-          "sprite": "char_algoritm_gota_ojos_neutra",
-          "rect": [372, 443, 653, 563]
+          "sprite": "char_algoritm_ojos_neutra",
+          "rect": [285, 269, 728, 646]
         },
         {
           "nombre": "Boca",
           "tipo": "imagen",
           "padre": "Lienzo/Cuerpo/Tronco",
-          "punto": [512, 602],
+          "punto": [506, 457],
           "imagen": "Boca",
-          "sprite": "char_algoritm_gota_boca_0",
-          "rect": [419, 578, 604, 627]
+          "sprite": "char_algoritm_boca_0",
+          "rect": [285, 269, 728, 646]
         },
         {
           "nombre": "CodoIzq",
@@ -1405,7 +1431,12 @@
           "rect": [513, 909, 670, 1003]
         }
       ],
-      "partes": []
+      "partes": [],
+      "prefijo_cara": "char_algoritm",
+      "retrato": {
+        "base": "char_algoritm_gota_retrato_base",
+        "cara": [0.23497, 0.30692, 0.53006, 0.44991]
+      }
     }
   ]
 }
