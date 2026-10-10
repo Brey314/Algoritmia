@@ -286,19 +286,20 @@
       "retrato": {
         "base": "char_nino_retrato_base",
         "fuente": "dialogo_ni\u00f1o.png",
-        "recorte": [178, 197, 1105, 1124],
-        "lado": 927,
+        "recorte": [273, 225, 1010, 962],
+        "lado": 737,
         "textura": 256,
-        "cara": [0.285868, 0.333333, 0.428263, 0.299892],
+        "cara": [0.230665, 0.199457, 0.53867, 0.377205],
         "cabeza": {
           "arriba": 262,
           "barbilla": 837,
-          "fraccion": 0.62,
-          "aire": 0.07
+          "fraccion": 0.78,
+          "aire": 0.05
         },
         "iou": 0.9995,
         "cobertura": 1.0,
-        "cara_horneada": true
+        "cara_horneada": true,
+        "sin_brazos": true
       }
     },
     "papa": {
@@ -585,19 +586,20 @@
       "retrato": {
         "base": "char_papa_retrato_base",
         "fuente": "dialogo_papa.png",
-        "recorte": [176, -36, 1097, 885],
-        "lado": 921,
+        "recorte": [270, -9, 1002, 723],
+        "lado": 732,
         "textura": 256,
-        "cara": [0.298588, 0.307275, 0.402823, 0.325733],
+        "cara": [0.247268, 0.165301, 0.506831, 0.409836],
         "cabeza": {
           "arriba": 28,
           "barbilla": 599,
-          "fraccion": 0.62,
-          "aire": 0.07
+          "fraccion": 0.78,
+          "aire": 0.05
         },
         "iou": 0.9382,
         "cobertura": 1.0,
-        "cara_horneada": true
+        "cara_horneada": true,
+        "sin_brazos": true
       }
     },
     "nina": {
@@ -883,19 +885,20 @@
       "retrato": {
         "base": "char_nina_retrato_base",
         "fuente": "dialogo_ni\u00f1a.png",
-        "recorte": [126, -60, 1182, 996],
-        "lado": 1056,
+        "recorte": [234, -28, 1074, 812],
+        "lado": 840,
         "textura": 256,
-        "cara": [0.280303, 0.306818, 0.440341, 0.275568],
+        "cara": [0.22381, 0.166667, 0.553571, 0.346429],
         "cabeza": {
           "arriba": 14,
           "barbilla": 669,
-          "fraccion": 0.62,
-          "aire": 0.07
+          "fraccion": 0.78,
+          "aire": 0.05
         },
         "iou": 0.983,
         "cobertura": 1.0,
-        "cara_horneada": true
+        "cara_horneada": true,
+        "sin_brazos": true
       }
     },
     "mama": {
@@ -1182,19 +1185,20 @@
       "retrato": {
         "base": "char_mama_retrato_base",
         "fuente": "dialogo_mama.png",
-        "recorte": [61, -66, 1193, 1066],
-        "lado": 1132,
+        "recorte": [177, -32, 1077, 868],
+        "lado": 900,
         "textura": 256,
-        "cara": [0.278269, 0.30742, 0.443463, 0.25],
+        "cara": [0.221111, 0.166667, 0.557778, 0.314444],
         "cabeza": {
           "arriba": 13,
           "barbilla": 715,
-          "fraccion": 0.62,
-          "aire": 0.07
+          "fraccion": 0.78,
+          "aire": 0.05
         },
         "iou": 0.9385,
         "cobertura": 1.0,
-        "cara_horneada": true
+        "cara_horneada": true,
+        "sin_brazos": true
       }
     },
     "algoritm_fuego": {

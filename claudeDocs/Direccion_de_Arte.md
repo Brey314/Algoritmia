@@ -946,9 +946,11 @@ cabeza y hombros sin cara** (`char_<x>_retrato_base.png`, 256 × 256; para Algor
 (`CharacterRig.PortraitBase` es la base y `PortraitFace` el recuadro de la cara dentro de ella). La cara
 muestra la expresión que el guion fija en esa línea (§7.3), parpadea y mueve la boca mientras la línea
 está en pantalla. No hay máquina de escribir —el texto sale entero—, así que la boca se mueve hasta que
-el estudiante avanza, como la del personaje en escena. El encuadre es **«cabeza y hombros, igual para
-todos»**: la cabeza ocupa 0,62 del lado, con 0,07 de aire arriba; los niños salen tan grandes como los
-adultos y Algoritm se encuadra desde la punta de su forma hasta el mentón. La cara se arma en tiempo de
+el estudiante avanza, como la del personaje en escena. La familia sale **en primer plano y sin
+brazos**: la cabeza ocupa 0,78 del lado, con 0,05 de aire arriba, los brazos y las manos se borran fuera
+del cuerpo y los niños salen tan grandes como los adultos. Algoritm conserva un encuadre más abierto, de
+la punta de su forma al mentón en 0,62 del lado, con 0,07 de aire y con los brazos (decisiones de
+Santiago, 10/10/2026). La cara se arma en tiempo de
 ejecución (`Arte/Cara`, en `NarrativeSceneController`); `Narrative.unity` no cambia. Si un hablante no
 tiene base, cara o set de cara, el cuadro cae al retrato fijo (`PortraitLook`), de modo que ninguna
 línea se queda sin retrato; `char_<x>_retrato_neutra.png` se reescribió el mismo día, en su sitio, con
@@ -1528,7 +1530,7 @@ Aplicar a cada pieza antes de darla por buena e importarla a Unity.
 - [ ] Arte final: las seis expresiones (§7.3) con ojos y bocas por sus nombres; ninguna es de tristeza, enfado ni derrota, y `Worried` no tiene lágrimas ni comisuras caídas
 - [ ] Parpadeo: ojos abiertos (`ojos_neutra`) y ojos cerrados (`ojos_parpadeo_cerrado`), de frente y de perfil; el cuadro medio es opcional (§7.3, INC-135)
 - [ ] Expresiones de frente (§7.3, INC-148): neutra, concentración, preocupación y sorpresa más una boca de hablar y los ojos cerrados, registradas sobre el lienzo de 1300 × 1500 y recortadas a la caja común del personaje; alegría y sueño siguen pendientes del artista
-- [ ] Tarjeta del diálogo (§10.3, INC-148): una base sin cara de 256 × 256 con el mismo encuadre de cabeza y hombros para los siete retratos; la cara no va pintada en ella
+- [ ] Tarjeta del diálogo (§10.3, INC-148): una base sin cara de 256 × 256; la familia en primer plano y sin brazos, con la cabeza del mismo tamaño en los cuatro, y Algoritm con su encuadre abierto; la cara no va pintada en ella
 - [ ] Caras y retratos a 256 px como máximo y sin comprimir (§15.2, INC-149)
 - [ ] Perfil de la familia (§13.4): las diez piezas `char_<x>_perfil_*` y la cara de perfil, dibujadas mirando a la derecha o entregadas mirando a la izquierda para espejar, registradas sobre el mismo lienzo; las dos piernas detrás del torso
 - [ ] Algoritm, orden de dibujo (§7.6, INC-147): los brazos detrás de todo el cuerpo y las manos nunca sobre la cara

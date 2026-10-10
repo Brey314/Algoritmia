@@ -3337,9 +3337,12 @@ pedir una neutra nueva de los dos.
    la expresión que el guion fija en esa línea, parpadea y mueve la boca mientras la línea está en pantalla.
    No hay máquina de escribir: el texto sale entero y la boca se mueve hasta que el estudiante avanza,
    como la del personaje en escena.
-3. **Encuadre «cabeza y hombros, igual para todos».** La cabeza ocupa 0,62 del lado, con 0,07 de aire
-   arriba; los niños salen tan grandes como los adultos y Algoritm se encuadra desde la punta de su forma
-   hasta el mentón. Para la familia, `char_<x>_retrato_neutra.png` se reescribió en su sitio (mismo GUID)
+3. **Encuadre igual para todos.** La familia sale **en primer plano y sin brazos** (Santiago, el mismo
+   día, tras ver la primera hoja: «en los diálogos recorta los brazos, que quede en un primer plano el
+   personaje»): la cabeza ocupa 0,78 del lado, con 0,05 de aire arriba, y los brazos y las manos se borran
+   fuera del cuerpo. Los niños salen tan grandes como los adultos. Algoritm conserva el primer encuadre
+   («cuando es Algoritm quien habla, como está actualmente está bien»): de la punta de su forma al mentón
+   en 0,62 del lado, con 0,07 de aire y con los brazos. Para la familia, `char_<x>_retrato_neutra.png` se reescribió en su sitio (mismo GUID)
    con el mismo encuadre y la cara neutra nueva, y queda como respaldo fijo.
 4. **Algoritm tiene su cara final**, compartida: `Algoritm/Expresiones/char_algoritm_{ojos_*,boca_*}.png`
    (10 texturas en lugar de las 30 que habrían sido tres por forma). Sustituye la cara provisional; los

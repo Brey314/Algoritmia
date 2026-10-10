@@ -15,9 +15,15 @@
 # DECISIONES DE SANTIAGO (10/10/2026), las que fijan esta herramienta:
 #   1. La tarjeta del cuadro de dialogo esta ANIMADA (parpadea y mueve la boca): el retrato es una BASE sin cara mas los sprites de cara del propio rig (ojos y boca de la expresion de
 #      la linea), puestos en un rect normalizado. Esta herramienta hace la base; el motor (CharacterRig.PortraitBase y PortraitFace, NarrativeSceneController) hace el resto.
-#   2. Encuadre «cabeza y hombros, igual para todos»: la cabeza del mismo tamano y a la misma altura en los siete retratos (los ninos tan grandes como los adultos), y Algoritm desde
-#      la punta de su forma hasta los «hombros». Una sola receta, las mismas constantes para los siete (FRACCION_CABEZA y AIRE_ARRIBA).
+#   2. Encuadre «cabeza y hombros, igual para todos»: la cabeza del mismo tamano y a la misma altura en los retratos de un grupo (los ninos tan grandes como los adultos), y Algoritm desde
+#      la punta de su forma hasta los «hombros». Una receta por GRUPO, con las mismas constantes dentro del grupo (ver 4 y 5).
 #   3. Todo lo que entra a Assets/ de esta entrega mide 256 px como maximo (INC-149): el retrato es de 256 x 256.
+#   4. LA FAMILIA EN PRIMER PLANO Y SIN BRAZOS (Santiago, 10/10/2026: «en los diálogos recorta los brazos, que quede en un primer plano el personaje»): en los cuatro retratos de la
+#      familia se QUITAN los brazos y las manos (quita_brazos) y la cabeza ocupa FRACCION_CABEZA_FAMILIA = 0,78 del lado, con AIRE_ARRIBA_FAMILIA = 0,05 de aire arriba; quedan la cabeza,
+#      el cuello y los hombros del torso.
+#   5. ALGORITM NO CAMBIA (Santiago, 10/10/2026: «cuando es Algoritm quien habla, como está actualmente está bien»): sus tres retratos conservan EXACTAMENTE el encuadre de antes de la
+#      decision 4 —con los brazos, la cabeza en FRACCION_CABEZA_GUIA = 0,62 del lado y AIRE_ARRIBA_GUIA = 0,07 de aire—, y por eso la herramienta ni mira sus brazos. Con --aplicar
+#      conviene dar --solo papa mama nina nino: sus PNG y su recuadro de cara en arte_final.json no deben moverse (preparar_retrato.py --valida lo comprueba contra las constantes).
 #
 # QUE HACE (por retrato; la «pieza» es la cabeza sin cara de la familia —entregas/2026-10-06/<X>/Frente/cabeza_*— o el torso sin cara de Algoritm —entregas/2026-10-09/Algoritm/<Forma>/torso_*—;
 # las dos estan en el MISMO lienzo registrado de 1300 x 1500 que la imagen del dialogo y que las expresiones):
@@ -30,16 +36,22 @@
 #      expresiones) y el informe dice cuanto crecio y cuanto se pinta fuera de la silueta de la pieza.
 #   3. HORNEA LA BASE ESTATICA de la cara: la nariz y el rubor (CaraBase de la neutra, tal como separa() la da, a resolucion plena) se pegan sobre la base. En Algoritm no hay nada que
 #      hornear: su rig no tiene CaraBase y el rubor de los cachetes va en la capa de ojos.
-#   4. ENCUADRE (las mismas constantes para los siete): arriba = el borde de arriba del alfa de la pieza (la punta de la forma en Algoritm); barbilla = la de mide_cabeza() o, si la cara
+#   2b. QUITA LOS BRAZOS (solo la familia). Las partes de la entrega del 06/10 (<X>/Frente/brazo_* y mano_*, su cuerpo en torso_* y cabeza_*) estan registradas con la imagen del dialogo
+#      en el mismo lienzo. Mascara de los brazos = la union del alfa (>= UMBRAL) de los brazos y las manos, dilatada DILATA_BRAZOS px por el borde suavizado. Dentro de ella: si el pixel
+#      esta dentro del CUERPO (torso + cabeza, alfa >= UMBRAL) gana el pixel del cuerpo —incluido su contorno— y la silueta del hombro queda entera; si esta fuera, queda transparente.
+#      La dilatacion nunca come el contorno del cuerpo: solo se borra lo que cae FUERA de su mascara. Se hace antes de borrar la cara (los pasos de la cara no se enteran).
+#      El cuerpo se compone en el ORDEN DEL DIALOGO (cuerpo_del_dialogo): en Papa y en el Nino la cabeza va delante del torso, pero en Mama y en la Nina el pelo largo cae DETRAS del torso y del
+#      cuello; se mide donde las partes se solapan, fuera de los brazos, y gana la composicion que mas se parece al dialogo (si no, el pelo de Mama taparia su cuello).
+#   4. ENCUADRE (las constantes de su grupo): arriba = el borde de arriba del alfa de la pieza (la punta de la forma en Algoritm); barbilla = la de mide_cabeza() o, si la cara
 #      pintada baja mas (la barba de Papa, que cubre la barbilla), la del fondo de la caja union de la cara; en Algoritm, el fondo de su caja union. Lado S = (barbilla - arriba) /
-#      FRACCION_CABEZA; el cuadrado empieza AIRE_ARRIBA * S sobre «arriba» y se centra en x en el centro de la caja union de la cara. Si el cuadrado se sale del lienzo se rellena con
+#      fraccion del grupo; el cuadrado empieza «aire» * S sobre «arriba» y se centra en x en el centro de la caja union de la cara. Si el cuadrado se sale del lienzo se rellena con
 #      transparencia. Se reduce a 256 x 256 con LANCZOS (Pillow premultiplica el alfa).
 #   5. ESCRIBE (con --aplicar), sin tocar ningun .meta: Assets/Game/Art/Characters/<Carpeta>/char_<x>_retrato_base.png (familia) o Algoritm/char_algoritm_<forma>_retrato_base.png y,
 #      solo en la familia, REESCRIBE EN SU SITIO char_<x>_retrato_neutra.png (mismo nombre y mismo GUID: lo referencian los prefabs) = base + ojos_neutra + boca_0, tambien de 256 x 256.
 #      Algoritm conserva su _reposo como Portrait fijo.
 #   6. TABLA. arte_final.json, «retrato» de cada personaje: base, recorte (caja del cuadrado en px del lienzo de la entrega), lado, cara = [x, y, ancho, alto] de la caja union de la cara
-#      NORMALIZADA sobre la base con el origen ABAJO a la izquierda (lo que espera CharacterRig.PortraitFace), cabeza (arriba, barbilla, fraccion, aire), iou, cobertura y
-#      cara_horneada. articulaciones.py lleva base y cara a rig_articulaciones.json, de donde las lee BuildRigsFinal «retrato».
+#      NORMALIZADA sobre la base con el origen ABAJO a la izquierda (lo que espera CharacterRig.PortraitFace), cabeza (arriba, barbilla, fraccion, aire), iou, cobertura,
+#      cara_horneada y, solo en la familia, sin_brazos (true). articulaciones.py lleva base y cara a rig_articulaciones.json, de donde las lee BuildRigsFinal «retrato».
 #   7. --hoja: hoja_retratos.png (los siete retratos a 256 y a 128 px dentro del marco de la tarjeta del juego, #C4A882 y #E0D4C0, cada uno con la cara neutra y con la de preocupacion)
 #      y hoja_caras.png (cada personaje con cada expresion de frente a 256 px, de la neutra a los ojos cerrados).
 #
@@ -70,8 +82,17 @@ CABEZAS_06 = os.path.join(ENTREGAS, "2026-10-06")
 TORSOS_09 = os.path.join(ENTREGAS, "2026-10-09", "Algoritm")
 
 LADO = 256                     # INC-149: el retrato mide 256 x 256
-FRACCION_CABEZA = 0.62         # de la punta de arriba a la barbilla: lo que ocupa la cabeza del lado del cuadrado (igual para los siete)
-AIRE_ARRIBA = 0.07             # del lado: el aire sobre la cabeza
+# ENCUADRE POR GRUPO. «fraccion» = de la punta de arriba a la barbilla, lo que ocupa la cabeza del lado del cuadrado; «aire» = del lado, lo que hay sobre la cabeza. Las mismas dos cifras
+# para todo el grupo: la cabeza del mismo tamano y a la misma altura en los cuatro de la familia y en las tres formas de Algoritm.
+#   Familia, PRIMER PLANO SIN BRAZOS (Santiago, 10/10/2026: «en los diálogos recorta los brazos, que quede en un primer plano el personaje»): la cabeza llena 0,78 del lado y
+#   queda debajo solo lo que cabe de cuello y hombros (0,17 del lado); los brazos y las manos se quitan (quita_brazos).
+FRACCION_CABEZA_FAMILIA = 0.78
+AIRE_ARRIBA_FAMILIA = 0.05
+#   Algoritm, EL ENCUADRE DE HOY (Santiago, 10/10/2026: «cuando es Algoritm quien habla, como está actualmente está bien»): cabeza y hombros con los brazos, 0,62 y 0,07. No se toca:
+#   sus PNG, su recuadro de cara y su entrada de arte_final.json tienen que seguir igual (--valida lo vigila).
+FRACCION_CABEZA_GUIA = 0.62
+AIRE_ARRIBA_GUIA = 0.07
+DILATA_BRAZOS = 2              # px del lienzo de la entrega: la mascara de los brazos se dilata para cubrir el borde suavizado de lo pintado (solo fuera del cuerpo se borra)
 DILATA_CARA = 3                # px del lienzo de la entrega: la mascara de la cara se dilata para cubrir los halos de lo pintado
 AMPLIA_CARA = 24               # px: la mascara CRECE, dentro de la caja de la cara ampliada en esto, hacia lo que el dialogo pinta distinto de la pieza (la boca abierta del Nino es mas grande
                                # que la de cualquiera de sus expresiones y deja un borde rosado fuera de la union)
@@ -88,9 +109,12 @@ FONDO_TARJETA = (0xE0, 0xD4, 0xC0)   # y su fondo, #E0D4C0
 # clave del retrato (la del arte_final.json) -> (id de la expresion, carpeta de arte, prefijo del archivo del retrato, carpeta de la entrega de las expresiones,
 #                                                 ficha del archivo de dialogo, forma o None)
 FAMILIA = [("papa", "Father", "papa", "Papá"), ("mama", "Mother", "mama", "Mamá"), ("nina", "Girl", "nina", "Niña"), ("nino", "Boy", "nino", "Niño")]
-RETRATOS = [{"clave": pid, "guia": False, "carpeta": carp, "prefijo": "char_%s" % ide, "entrega": ent, "ficha": ide, "forma": None, "expresion": pid}
+# «fraccion», «aire» y «sin_brazos» son del GRUPO (ver arriba): la familia en primer plano y sin brazos, Algoritm como estaba.
+RETRATOS = [{"clave": pid, "guia": False, "carpeta": carp, "prefijo": "char_%s" % ide, "entrega": ent, "ficha": ide, "forma": None, "expresion": pid,
+             "fraccion": FRACCION_CABEZA_FAMILIA, "aire": AIRE_ARRIBA_FAMILIA, "sin_brazos": True}
             for pid, carp, ide, ent in FAMILIA]
-RETRATOS += [{"clave": "algoritm_" + f, "guia": True, "carpeta": "Algoritm", "prefijo": "char_algoritm_%s" % f, "entrega": "Algoritm", "ficha": f, "forma": f, "expresion": E.GUIA}
+RETRATOS += [{"clave": "algoritm_" + f, "guia": True, "carpeta": "Algoritm", "prefijo": "char_algoritm_%s" % f, "entrega": "Algoritm", "ficha": f, "forma": f, "expresion": E.GUIA,
+              "fraccion": FRACCION_CABEZA_GUIA, "aire": AIRE_ARRIBA_GUIA, "sin_brazos": False}
              for f in E.FORMAS_GUIA]
 NOMBRE_BASE = "%s_retrato_base"          # char_papa_retrato_base, char_algoritm_fuego_retrato_base
 NOMBRE_NEUTRA = "%s_retrato_neutra"      # solo la familia: el retrato fijo de siempre, reescrito en su sitio
@@ -114,6 +138,14 @@ def busca(carpeta, *fichas, sin=()):
     return hallados[0] if hallados else None
 
 
+def busca_todos(carpeta, *prefijos):
+    """Todos los PNG de la carpeta (no recursivo) cuya PRIMERA ficha NFKD-ASCII empieza por alguno de los prefijos (los nombres de las partes son irregulares: «mano_papa_izquierda», «muslo_papa_dercho»), en orden."""
+    if not os.path.isdir(carpeta):
+        return []
+    return [os.path.join(carpeta, f) for f in sorted(os.listdir(carpeta))
+            if f.lower().endswith(".png") and E.fichas(f) and any(E.fichas(f)[0].startswith(p) for p in prefijos)]
+
+
 def busca_carpeta(raiz, ficha):
     """La subcarpeta de «raiz» cuyo nombre (NFKD-ASCII) es o contiene la ficha, o None."""
     if not os.path.isdir(raiz):
@@ -125,7 +157,11 @@ def busca_carpeta(raiz, ficha):
 
 
 def rutas_de(r, a):
-    """Donde estan, en la entrega, la imagen del dialogo, la pieza sin cara y las expresiones del retrato r. Lanza ValueError con lo que falte."""
+    """
+    (dialogo, pieza, expresiones, partes): donde estan, en la entrega, la imagen del dialogo, la pieza sin cara y las expresiones del retrato r; «partes» = {"brazos": [rutas de los brazos
+    y las manos], "torso": ruta} en la familia (lo que quita_brazos necesita) y None en Algoritm, que conserva los brazos. Lanza ValueError con lo que falte.
+    """
+    partes = None
     if r["guia"]:
         dialogos = os.path.join(a.entrega, "Algoritm", "Dialogos")
         dialogo = busca(dialogos, r["ficha"])
@@ -135,13 +171,19 @@ def rutas_de(r, a):
     else:
         dialogo = busca(os.path.join(a.entrega, "Dialogos"), "dialogo", r["ficha"])
         carpeta_pers = busca_carpeta(a.cabezas, r["ficha"])
-        pieza = busca(os.path.join(carpeta_pers, "Frente"), "cabeza") if carpeta_pers else None
+        frente = os.path.join(carpeta_pers, "Frente") if carpeta_pers else None
+        pieza = busca(frente, "cabeza") if frente else None
         expresiones = busca_carpeta(a.entrega, r["ficha"])
         expresiones = os.path.join(expresiones, "Expresiones") if expresiones else None
+        if r["sin_brazos"] and frente:
+            brazos, torso = busca_todos(frente, "brazo", "mano"), busca(frente, "torso")
+            if len(brazos) < 4 or torso is None:
+                raise ValueError("%s: en %s faltan partes de los brazos (hay %d brazo_* y mano_*; hacen falta 4) o el torso" % (r["clave"], frente, len(brazos)))
+            partes = {"brazos": brazos, "torso": torso}
     faltan = [n for n, v in (("la imagen del dialogo", dialogo), ("la pieza sin cara (cabeza o torso)", pieza), ("la carpeta de las expresiones", expresiones)) if not v]
     if faltan:
         raise ValueError("%s: no encuentro %s en la entrega" % (r["clave"], ", ".join(faltan)))
-    return dialogo, pieza, expresiones
+    return dialogo, pieza, expresiones, partes
 
 
 # ============================================================================ 2. las operaciones sobre imagenes (puras: la autoprueba las prueba sueltas)
@@ -173,6 +215,61 @@ def difiere(dialogo, pieza, tol=TOL_RESTO):
     return ImageChops.lighter(ImageChops.lighter(r, g), ImageChops.lighter(b, a)).point(lambda v: 255 if v > tol else 0)
 
 
+def mascara_union(imagenes, umbral=UMBRAL):
+    """Mascara L (0 / 255) de la union del alfa (>= umbral) de las imagenes RGBA, que comparten lienzo."""
+    out = Image.new("L", imagenes[0].size, 0)
+    for im in imagenes:
+        out = ImageChops.lighter(out, mascara_alfa(im, umbral))
+    return out
+
+
+def quita_brazos(dialogo, brazos, cuerpo, dilata=DILATA_BRAZOS):
+    """
+    (imagen, borrados, sustituidos, sobreviven): el dialogo SIN los brazos ni las manos (decision de Santiago, 10/10/2026: «recorta los brazos»). «brazos» son las partes RGBA de los brazos y
+    las manos y «cuerpo» la imagen RGBA del torso y la cabeza compuestos como los dibuja el dialogo (cuerpo_del_dialogo), todas en el lienzo del dialogo. La mascara de los brazos (alfa >= UMBRAL, dilatada «dilata» px por el borde suavizado)
+    se parte en dos: lo que cae FUERA del cuerpo (alfa >= UMBRAL) pasa a transparente, y lo que cae DENTRO toma el pixel del cuerpo, que gana con su propio contorno: asi el hombro conserva la
+    silueta del torso y la dilatacion no se come su borde. «borrados» y «sustituidos» son esos dos conteos; «sobreviven» = pixeles de los brazos (sin dilatar) fuera del cuerpo que aun
+    se ven (alfa >= UMBRAL): tiene que ser 0.
+    """
+    dialogo, cuerpo = dialogo.convert("RGBA"), cuerpo.convert("RGBA")
+    brazo = mascara_union(brazos)
+    zona = brazo.filter(ImageFilter.MaxFilter(2 * dilata + 1)) if dilata > 0 else brazo
+    dentro_cuerpo = mascara_alfa(cuerpo)
+    fuera = ImageChops.multiply(zona, ImageChops.invert(dentro_cuerpo))
+    dentro = ImageChops.multiply(zona, dentro_cuerpo)
+    out = dialogo.copy()
+    out.paste((0, 0, 0, 0), (0, 0, out.width, out.height), fuera)
+    out.paste(cuerpo, (0, 0), dentro)
+    sobreviven = ImageChops.multiply(ImageChops.multiply(brazo, ImageChops.invert(dentro_cuerpo)), mascara_alfa(out)).histogram()[255]
+    return out, fuera.histogram()[255], dentro.histogram()[255], sobreviven
+
+
+def cuerpo_del_dialogo(dialogo, torso, cabeza, brazos, dilata=DILATA_BRAZOS):
+    """
+    (cuerpo, delante): el torso y la cabeza compuestos EN EL ORDEN en que los dibuja el dialogo; «delante» es "cabeza" o "torso", la parte que va por delante donde se solapan. No es el mismo
+    en toda la familia: en Papa y en el Nino la cabeza (la barba, el pelo) va delante del torso, pero en Mama y en la Nina el pelo largo cae DETRAS del torso y del cuello. Se decide midiendo,
+    donde las dos partes se solapan (alfa >= 128) y fuera de los brazos (la mascara dilatada de quita_brazos), cuantos pixeles del dialogo difieren (mas de TOL_RESTO) de cada
+    composicion, y gana la que menos: en la medida real una da 0 y la otra miles. Con el solape vacio (o empatado) va delante la cabeza. Sin este paso, el pelo de Mama se pintaba sobre
+    su cuello al rellenar el hueco que dejan las manos.
+    """
+    dialogo, torso, cabeza = dialogo.convert("RGBA"), torso.convert("RGBA"), cabeza.convert("RGBA")
+    brazo = mascara_union(brazos)
+    brazo = brazo.filter(ImageFilter.MaxFilter(2 * dilata + 1)) if dilata > 0 else brazo
+    solape = ImageChops.multiply(ImageChops.multiply(mascara_alfa(cabeza, 128), mascara_alfa(torso, 128)), ImageChops.invert(brazo))
+    cabeza_delante = torso.copy()
+    cabeza_delante.alpha_composite(cabeza)
+    torso_delante = cabeza.copy()
+    torso_delante.alpha_composite(torso)
+    fallos = []
+    for candidato in (cabeza_delante, torso_delante):
+        r, g, b, a = ImageChops.difference(candidato, dialogo).split()
+        distinto = ImageChops.lighter(ImageChops.lighter(r, g), ImageChops.lighter(b, a)).point(lambda v: 255 if v > TOL_RESTO else 0)
+        fallos.append(ImageChops.multiply(distinto, solape).histogram()[255])
+    if fallos[1] < fallos[0]:
+        return torso_delante, "torso"
+    return cabeza_delante, "cabeza"
+
+
 def borra_cara(dialogo, pieza, mascara_cara, amplia=AMPLIA_CARA):
     """
     (base, crecio, fuera): el dialogo SIN la cara pintada. Dentro de «mascara_cara» (la union de las expresiones, ya dilatada) y de la silueta de la pieza (alfa >= UMBRAL) los pixeles del
@@ -200,8 +297,11 @@ def borra_cara(dialogo, pieza, mascara_cara, amplia=AMPLIA_CARA):
     return base, crecio, fuera
 
 
-def encuadre(arriba, barbilla, cx, fraccion=FRACCION_CABEZA, aire=AIRE_ARRIBA):
-    """(x0, y0, S): el cuadrado de cabeza y hombros. S = (barbilla - arriba) / fraccion; empieza «aire» * S sobre «arriba» y se centra en x en «cx». Enteros (px del lienzo de la entrega)."""
+def encuadre(arriba, barbilla, cx, fraccion, aire):
+    """
+    (x0, y0, S): el cuadrado de cabeza y hombros. S = (barbilla - arriba) / fraccion; empieza «aire» * S sobre «arriba» y se centra en x en «cx». Enteros (px del lienzo de la entrega).
+    «fraccion» y «aire» son los del grupo del retrato (FRACCION_CABEZA_FAMILIA / AIRE_ARRIBA_FAMILIA o los de Algoritm): no hay valor por defecto a proposito.
+    """
     lado = int(round((barbilla - arriba) / float(fraccion)))
     return int(round(cx - lado / 2.0)), int(round(arriba - aire * lado)), lado
 
@@ -246,15 +346,23 @@ def _pega_recortado(out, im, tam, pos):
         out.alpha_composite(im.crop((ax0 - x, ay0 - y, ax1 - x, ay1 - y)), (ax0, ay0))
 
 
-def construye(dialogo, pieza, union_alfa, caja, contenido, base_cara, arriba, barbilla, iou_min, lado=LADO):
+def construye(dialogo, pieza, union_alfa, caja, contenido, base_cara, arriba, barbilla, iou_min, fraccion, aire, brazos=None, cuerpo=None, lado=LADO):
     """
-    Todo el retrato de UNA imagen, sin tocar el disco: SimpleNamespace(base, recorte, lado_px, cara, iou, cobertura, crecio, fuera, arriba, barbilla). Lanza ValueError si el dialogo no esta
-    registrado con la pieza. «union_alfa» es la mascara L (lienzo entero) de la union de las expresiones; «caja» la caja de la cara del rig (registro.cara), «contenido» la de lo pintado
-    (sin margen) y «base_cara» la capa de nariz y rubor a resolucion plena (RGBA del tamano de «caja») o None.
+    Todo el retrato de UNA imagen, sin tocar el disco: SimpleNamespace(base, recorte, lado_px, cara, iou, cobertura, crecio, fuera, arriba, barbilla, brazos). Lanza ValueError si el dialogo
+    no esta registrado con la pieza. «union_alfa» es la mascara L (lienzo entero) de la union de las expresiones; «caja» la caja de la cara del rig (registro.cara), «contenido» la de lo pintado
+    (sin margen) y «base_cara» la capa de nariz y rubor a resolucion plena (RGBA del tamano de «caja») o None. «fraccion» y «aire» son los del grupo (ver las constantes). Con «brazos» (las
+    partes RGBA de los brazos y las manos) y «cuerpo» (torso y cabeza en el orden del dialogo) se quitan los brazos antes de borrar la cara; sin ellos (Algoritm) la imagen queda como esta.
+    «res.brazos» = (borrados, sustituidos, sobreviven) de quita_brazos, o None.
     """
     iou, cobertura, _ = registro_iou(dialogo, pieza)
     if iou < iou_min or cobertura < COBERTURA_MIN:
         raise ValueError("el dialogo no esta registrado con la pieza: IoU %.3f (minimo %.2f) y cobertura %.3f (minimo %.2f)" % (iou, iou_min, cobertura, COBERTURA_MIN))
+    quitados = None
+    if brazos:
+        if cuerpo is None:
+            raise ValueError("para quitar los brazos hace falta el cuerpo (torso con la cabeza encima)")
+        dialogo, borrados, sustituidos, sobreviven = quita_brazos(dialogo, brazos, cuerpo)
+        quitados = (borrados, sustituidos, sobreviven)
     mascara = union_alfa.filter(ImageFilter.MaxFilter(2 * DILATA_CARA + 1)) if DILATA_CARA > 0 else union_alfa
     base, crecio, fuera = borra_cara(dialogo, pieza, mascara)
     if base_cara is not None:
@@ -262,10 +370,11 @@ def construye(dialogo, pieza, union_alfa, caja, contenido, base_cara, arriba, ba
         capa.paste(base_cara.convert("RGBA"), (caja[0], caja[1]))
         base.alpha_composite(capa)
     cx = (contenido[0] + contenido[2]) / 2.0
-    x0, y0, s = encuadre(arriba, barbilla, cx)
+    x0, y0, s = encuadre(arriba, barbilla, cx, fraccion, aire)
     cuadrado = recorta_cuadrado(base, x0, y0, s)
     return SimpleNamespace(base=cuadrado.resize((lado, lado), Image.LANCZOS), recorte=[x0, y0, x0 + s, y0 + s], lado_px=s, cara=cara_normalizada(caja, x0, y0, s),
-                           iou=round(iou, 4), cobertura=round(cobertura, 4), crecio=crecio, fuera=fuera, arriba=arriba, barbilla=barbilla, cx=cx)
+                           iou=round(iou, 4), cobertura=round(cobertura, 4), crecio=crecio, fuera=fuera, arriba=arriba, barbilla=barbilla, cx=cx,
+                           fraccion=fraccion, aire=aire, brazos=quitados)
 
 
 # ============================================================================ 3. un retrato de la entrega
@@ -281,7 +390,7 @@ def prepara(r, a):
     El retrato r (una fila de RETRATOS) leido de la entrega: SimpleNamespace(r, rutas, retrato, lote, ...). Lanza ValueError si falta algo o no esta registrado. Pide que la caja union de la
     cara que ve el lote sea la que ya guarda arte_final.json (registro.cara): si no, falta correr preparar_expresion.py --entrega --aplicar.
     """
-    dialogo_ruta, pieza_ruta, expresiones = rutas_de(r, a)
+    dialogo_ruta, pieza_ruta, expresiones, partes = rutas_de(r, a)
     por, errores = E.lee_lote(expresiones)
     if errores:
         raise ValueError("%s: %s" % (r["clave"], "; ".join(errores)))
@@ -299,6 +408,14 @@ def prepara(r, a):
     union = Image.new("L", dialogo.size, 0)
     for emo, ruta in lote.archivos.items():
         union = ImageChops.lighter(union, mascara_alfa(Image.open(ruta)))
+    brazos, cuerpo, delante = None, None, None
+    if partes:
+        brazos = [Image.open(ruta).convert("RGBA") for ruta in partes["brazos"]]
+        torso = Image.open(partes["torso"]).convert("RGBA")
+        for nombre, im in [(os.path.basename(x), i) for x, i in zip(partes["brazos"], brazos)] + [(os.path.basename(partes["torso"]), torso)]:
+            if list(im.size) != list(dialogo.size):
+                raise ValueError("%s: %s mide %s y el dialogo %s: las partes tienen que estar en el mismo lienzo" % (r["clave"], nombre, im.size, dialogo.size))
+        cuerpo, delante = cuerpo_del_dialogo(dialogo, torso, pieza, brazos)      # lo que cubre el hombro, en el orden en que el dialogo dibuja la cabeza y el torso
     caja_pieza = mascara_alfa(pieza).getbbox()
     contenido = lote.contenido
     if r["guia"]:
@@ -308,9 +425,10 @@ def prepara(r, a):
         barbilla = max(cab.barbilla, contenido[3])
         arriba, base_cara = caja_pieza[1], lote.emociones["neutra"].capas_plenas["base"]
         medida = "mide_cabeza (%.0f)%s" % (cab.barbilla, " y el fondo de la caja union de la cara (%d), que baja mas" % contenido[3] if contenido[3] > cab.barbilla else "")
-    res = construye(dialogo, pieza, union, lote.caja, contenido, base_cara, arriba, barbilla, IOU_GUIA if r["guia"] else IOU_FAMILIA)
+    res = construye(dialogo, pieza, union, lote.caja, contenido, base_cara, arriba, barbilla, IOU_GUIA if r["guia"] else IOU_FAMILIA, r["fraccion"], r["aire"], brazos, cuerpo)
     res.medida_barbilla = medida
-    return SimpleNamespace(r=r, rutas=(dialogo_ruta, pieza_ruta, expresiones), retrato=res, lote=lote, caja_pieza=caja_pieza)
+    res.delante = delante
+    return SimpleNamespace(r=r, rutas=(dialogo_ruta, pieza_ruta, expresiones), retrato=res, lote=lote, caja_pieza=caja_pieza, partes=partes)
 
 
 def ruta_base(r):
@@ -348,8 +466,16 @@ def informe(p):
     print("  registro: IoU %.3f (minimo %.2f), cobertura %.3f; caja de la pieza %s" % (res.iou, IOU_GUIA if r["guia"] else IOU_FAMILIA, res.cobertura, list(p.caja_pieza)))
     print("  cara pintada borrada: la mascara crecio %d px sobre la union de las expresiones (lo que el dialogo pinta distinto de la pieza fuera de ellas), pintado fuera de la silueta %d px%s" % (
         res.crecio, res.fuera, "" if r["guia"] else "; nariz y rubor horneados"))
-    print("  encuadre: arriba %d, barbilla %.0f (%s), lado %d px, recorte %s; cabeza %.3f del lado, aire %.3f" % (
-        res.arriba, res.barbilla, res.medida_barbilla, res.lado_px, res.recorte, (res.barbilla - res.arriba) / res.lado_px, (res.arriba - res.recorte[1]) / float(res.lado_px)))
+    if res.brazos is not None:
+        print("  brazos quitados (%d partes de brazo y mano): %d px fuera del cuerpo borrados, %d dentro sustituidos por el torso o la cabeza (donde se solapan va delante: %s); sobreviven fuera del cuerpo: %d px" % (
+            len(p.partes["brazos"]), res.brazos[0], res.brazos[1], res.delante, res.brazos[2]))
+        if res.brazos[2]:
+            print("  AVISO %d px de brazo siguen visibles fuera del cuerpo" % res.brazos[2])
+    else:
+        print("  brazos: se conservan (el encuadre de Algoritm no cambia)")
+    print("  encuadre: arriba %d, barbilla %.0f (%s), lado %d px, recorte %s; cabeza %.3f del lado (pide %.2f), aire %.3f (pide %.2f)" % (
+        res.arriba, res.barbilla, res.medida_barbilla, res.lado_px, res.recorte, (res.barbilla - res.arriba) / res.lado_px, res.fraccion,
+        (res.arriba - res.recorte[1]) / float(res.lado_px), res.aire))
     print("  cara (x, y, ancho, alto; origen abajo a la izquierda): %s" % res.cara)
     for a_ in lote.avisos:
         print("  AVISO (lote) %s" % a_)
@@ -363,9 +489,12 @@ def informe(p):
 def entrada_retrato(p):
     """El «retrato» de arte_final.json de este retrato."""
     r, res = p.r, p.retrato
-    return {"base": NOMBRE_BASE % r["prefijo"], "fuente": os.path.basename(p.rutas[0]), "recorte": list(res.recorte), "lado": res.lado_px, "textura": LADO,
-            "cara": list(res.cara), "cabeza": {"arriba": int(res.arriba), "barbilla": int(round(res.barbilla)), "fraccion": FRACCION_CABEZA, "aire": AIRE_ARRIBA},
-            "iou": res.iou, "cobertura": res.cobertura, "cara_horneada": bool(not r["guia"])}
+    entrada = {"base": NOMBRE_BASE % r["prefijo"], "fuente": os.path.basename(p.rutas[0]), "recorte": list(res.recorte), "lado": res.lado_px, "textura": LADO,
+               "cara": list(res.cara), "cabeza": {"arriba": int(res.arriba), "barbilla": int(round(res.barbilla)), "fraccion": r["fraccion"], "aire": r["aire"]},
+               "iou": res.iou, "cobertura": res.cobertura, "cara_horneada": bool(not r["guia"])}
+    if r["sin_brazos"]:
+        entrada["sin_brazos"] = True      # solo la familia: la entrada de Algoritm no gana ninguna clave (no cambia)
+    return entrada
 
 
 def escribe(ps, log):
@@ -479,12 +608,15 @@ def hoja_caras(ps, ruta):
 def valida():
     """
     Comprueba lo que ya esta en el repo: para cada retrato, el PNG de la base (256 x 256), el retrato neutro de la familia (256 x 256), el «retrato» de arte_final.json (caja de la cara
-    dentro de 0..1, centrada en x, la cabeza igual en los siete y a la misma altura), la caja de la cara de la tabla y el borde de arriba de la base. Devuelve la lista de errores.
+    dentro de 0..1, centrada en x), la caja de la cara de la tabla y el borde de arriba de la base. Y el ENCUADRE POR GRUPO: la cabeza ocupa la fraccion y deja el aire de su grupo
+    (familia: FRACCION_CABEZA_FAMILIA y AIRE_ARRIBA_FAMILIA, «sin_brazos»; Algoritm: FRACCION_CABEZA_GUIA y AIRE_ARRIBA_GUIA, sin esa clave), tanto en la tabla como en la medida real
+    de la tabla (la fraccion que sale de arriba, barbilla y lado) y el borde de arriba de cada base cae a la misma fila dentro del grupo. Devuelve la lista de errores.
     """
     errores = []
     tabla = A.cargar_arte_final()
-    fracciones, aires, altos = [], [], []
+    fracciones, aires, altos = {}, {}, {}      # por grupo: "familia" / "guia"
     for r in RETRATOS:
+        g = "guia" if r["guia"] else "familia"
         e = (tabla.get(r["clave"]) or {}).get("retrato")
         if not e:
             errores.append("%s: arte_final.json no trae «retrato»: corre preparar_retrato.py --aplicar" % r["clave"])
@@ -509,8 +641,13 @@ def valida():
             if max(abs(a - b) for a, b in zip(esperada, e["cara"])) > 1e-4:
                 errores.append("%s: la cara %s no es la de registro.cara %s mapeada al recorte (%s): la caja cambio despues del retrato" % (r["clave"], e["cara"], caja, esperada))
         c = e["cabeza"]
-        fracciones.append((c["barbilla"] - c["arriba"]) / float(e["lado"]))
-        aires.append((c["arriba"] - e["recorte"][1]) / float(e["lado"]))
+        if abs(c.get("fraccion", -1) - r["fraccion"]) > 1e-9 or abs(c.get("aire", -1) - r["aire"]) > 1e-9:
+            errores.append("%s: la tabla anota la cabeza en %s del lado con %s de aire y %s pide %s y %s: corre preparar_retrato.py --aplicar --solo %s" % (
+                r["clave"], c.get("fraccion"), c.get("aire"), g, r["fraccion"], r["aire"], r["clave"]))
+        if bool(e.get("sin_brazos")) != r["sin_brazos"]:
+            errores.append("%s: sin_brazos deberia ser %s en la tabla (la familia sin brazos, Algoritm como estaba)" % (r["clave"], r["sin_brazos"]))
+        fracciones.setdefault(g, []).append((r["clave"], (c["barbilla"] - c["arriba"]) / float(e["lado"])))
+        aires.setdefault(g, []).append((r["clave"], (c["arriba"] - e["recorte"][1]) / float(e["lado"])))
         if e.get("textura") != LADO or e["recorte"][2] - e["recorte"][0] != e["lado"] or e["recorte"][3] - e["recorte"][1] != e["lado"]:
             errores.append("%s: el recorte %s no es un cuadrado de lado %s" % (r["clave"], e["recorte"], e["lado"]))
         if not e.get("cara_horneada") == (not r["guia"]):
@@ -518,23 +655,32 @@ def valida():
         if os.path.isfile(ruta_base(r)):
             fila = mascara_alfa(Image.open(ruta_base(r)), 24).getbbox()
             if fila is not None:
-                altos.append(fila[1])
-    if fracciones and max(fracciones) - min(fracciones) > 0.004:
-        errores.append("la cabeza no ocupa lo mismo en los siete retratos: fracciones %s" % ", ".join("%.3f" % f for f in fracciones))
-    if aires and max(aires) - min(aires) > 0.004:
-        errores.append("la cabeza no esta a la misma altura en los siete retratos: aire de arriba %s" % ", ".join("%.3f" % f for f in aires))
-    if altos and max(altos) - min(altos) > 3:
-        errores.append("el borde de arriba de la base no esta a la misma fila en los siete (filas %s)" % altos)
+                altos.setdefault(g, []).append((r["clave"], fila[1]))
+    for g, pide_f, pide_a in (("familia", FRACCION_CABEZA_FAMILIA, AIRE_ARRIBA_FAMILIA), ("guia", FRACCION_CABEZA_GUIA, AIRE_ARRIBA_GUIA)):
+        fs, as_, hs = fracciones.get(g, []), aires.get(g, []), altos.get(g, [])
+        if any(abs(f - pide_f) > 0.004 for _, f in fs):
+            errores.append("grupo %s: la cabeza no ocupa %.2f del lado en todos: %s" % (g, pide_f, ", ".join("%s %.3f" % x for x in fs)))
+        if any(abs(v - pide_a) > 0.004 for _, v in as_):
+            errores.append("grupo %s: el aire sobre la cabeza no es %.2f en todos: %s" % (g, pide_a, ", ".join("%s %.3f" % x for x in as_)))
+        if hs and (max(h for _, h in hs) - min(h for _, h in hs) > 3 or any(abs(h - pide_a * LADO) > 3 for _, h in hs)):
+            errores.append("grupo %s: el borde de arriba de la base no cae a la misma fila (%.1f +- 3) en todos: %s" % (g, pide_a * LADO, ", ".join("%s %d" % x for x in hs)))
     return errores
 
 
 # ============================================================================ 7. la autoprueba (un personaje sintetico)
 
 
+AZUL_BRAZO = (40, 120, 200, 255)       # el color de los brazos del personaje sintetico: ningun pixel azul puede quedar en un retrato de la familia
+NARANJA_TORSO = (220, 120, 40, 255)
+CONTORNO_TORSO = (60, 30, 10, 255)
+
+
 def _sintetico():
     """
-    Un «personaje» sintetico en un lienzo de 1300 x 1500: la pieza (una cabeza de pelo oscuro con la piel en el ovalo, sin cara), el dialogo (la cabeza, un cuerpo y la cara pintada)
-    y dos expresiones. Devuelve (dialogo, pieza, expresiones {nombre: imagen}, caja de la cara (con margen), contenido, base_cara, arriba, barbilla).
+    Un «personaje» sintetico en un lienzo de 1300 x 1500: la pieza (una cabeza de pelo oscuro con la piel en el ovalo, sin cara), el torso con hombros y contorno, dos brazos azules con su
+    mano delante del torso y con un halo suave de 1 px (como el borde suavizado del arte real), el dialogo (todo junto mas la cara pintada) y dos expresiones.
+    Devuelve (dialogo, pieza, union de las expresiones, caja de la cara (con margen), contenido, base_cara, arriba, barbilla, neutra, brazos, cuerpo): «brazos» = las partes RGBA de los brazos
+    y las manos y «cuerpo» = el torso con la cabeza encima (en el sintetico va delante la cabeza), como las pide construye().
     """
     W, H = 1300, 1500
     piel, pelo = (255, 198, 159, 255), (40, 25, 15, 255)
@@ -542,10 +688,26 @@ def _sintetico():
     d = ImageDraw.Draw(pieza)
     d.ellipse([400, 100, 900, 700], fill=pelo)                    # el pelo
     d.ellipse([450, 330, 850, 690], fill=piel)                    # la piel del ovalo: de y 330 a 690 (la barbilla)
-    cuerpo = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(cuerpo).rectangle([520, 690, 780, 1300], fill=(220, 120, 40, 255))   # cuello y torso
-    ImageDraw.Draw(cuerpo).rectangle([300, 760, 1000, 860], fill=(220, 120, 40, 255))    # hombros y brazos
-    dialogo = cuerpo.copy()
+    torso = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    dt = ImageDraw.Draw(torso)
+    dt.rectangle([520, 690, 780, 1300], fill=NARANJA_TORSO, outline=CONTORNO_TORSO, width=3)       # cuello y torso, con contorno
+    dt.rectangle([440, 760, 860, 900], fill=NARANJA_TORSO, outline=CONTORNO_TORSO, width=3)        # los hombros
+    dt.rectangle([525, 765, 775, 895], fill=NARANJA_TORSO)                                         # (el contorno interior se tapa: queda la silueta)
+    brazo_i = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(brazo_i).rectangle([300, 780, 479, 1100], fill=AZUL_BRAZO)                      # el brazo izquierdo: de 300 a 479, cruza el hombro (440..)
+    brazo_d = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(brazo_d).rectangle([821, 780, 1000, 1100], fill=AZUL_BRAZO)                     # el derecho: de 821 a 1000, cruza el hombro (..860)
+    manos = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(manos).rectangle([300, 1100, 479, 1180], fill=AZUL_BRAZO)
+    ImageDraw.Draw(manos).rectangle([821, 1100, 1000, 1180], fill=AZUL_BRAZO)
+    brazos = [brazo_i, brazo_d, manos]
+    cuerpo = torso.copy()
+    cuerpo.alpha_composite(pieza)
+    dialogo = torso.copy()
+    for b in brazos:                                               # el dialogo trae cada brazo con 1 px de halo suave (alfa 80) alrededor de su nucleo
+        halo = b.getchannel("A").filter(ImageFilter.MaxFilter(3)).point(lambda v: 80 if v else 0)
+        dialogo.alpha_composite(Image.merge("RGBA", (halo.point(lambda v: AZUL_BRAZO[0]), halo.point(lambda v: AZUL_BRAZO[1]), halo.point(lambda v: AZUL_BRAZO[2]), halo)))
+        dialogo.alpha_composite(b)
     dialogo.alpha_composite(pieza)
 
     def cara(ojos_alto, boca_ancho):
@@ -568,7 +730,15 @@ def _sintetico():
     nariz = Image.new("RGBA", (1300, 1500), (0, 0, 0, 0))
     ImageDraw.Draw(nariz).line([620, 520, 680, 520], fill=(0, 0, 0, 255), width=3)
     base_cara.alpha_composite(nariz.crop(tuple(caja)))
-    return dialogo, pieza, union, caja, contenido, base_cara, 100, 690, neutra
+    return dialogo, pieza, union, caja, contenido, base_cara, 100, 690, neutra, brazos, cuerpo
+
+
+def _azules(im, alfa_min=24):
+    """Cuantos pixeles de «im» (RGBA) son del azul de los brazos sinteticos y se ven (alfa >= alfa_min)."""
+    r, g, b, a = im.convert("RGBA").split()
+    azul = ImageChops.multiply(ImageChops.multiply(r.point(lambda v: 255 if v < 110 else 0), g.point(lambda v: 255 if v < 160 else 0)),
+                               ImageChops.multiply(b.point(lambda v: 255 if v > 150 else 0), a.point(lambda v: 255 if v >= alfa_min else 0)))
+    return azul.histogram()[255]
 
 
 def autoprueba():
@@ -579,24 +749,70 @@ def autoprueba():
         malos += 0 if ok else 1
         print("%-84s %s" % (nombre, "bien" if ok else "FALLA " + detalle))
 
-    dialogo, pieza, union, caja, contenido, base_cara, arriba, barbilla, neutra = _sintetico()
+    dialogo, pieza, union, caja, contenido, base_cara, arriba, barbilla, neutra, brazos, cuerpo = _sintetico()
+    F_, A_ = FRACCION_CABEZA_FAMILIA, AIRE_ARRIBA_FAMILIA
     # --- el registro
     iou, cob, _ = registro_iou(dialogo, pieza)
     caso("el registro de un dialogo bien puesto es 1,00 (IoU %.3f, cobertura %.3f)" % (iou, cob), iou > 0.97 and cob > 0.99)
     movido = Image.new("RGBA", dialogo.size, (0, 0, 0, 0))
     movido.alpha_composite(dialogo, (40, 25))
     try:
-        construye(movido, pieza, union, caja, contenido, base_cara, arriba, barbilla, IOU_FAMILIA)
+        construye(movido, pieza, union, caja, contenido, base_cara, arriba, barbilla, IOU_FAMILIA, F_, A_)
         rechazado = False
     except ValueError as e:
         rechazado = "no esta registrado" in str(e)
     caso("un dialogo corrido 40 px no esta registrado: se rechaza", rechazado)
+    # --- los brazos se quitan (decision de Santiago, 10/10/2026: «recorta los brazos»)
+    sin, borrados, sustituidos, sobreviven = quita_brazos(dialogo, brazos, cuerpo)
+    caso("brazos: el dialogo sintetico trae brazos azules (%d px) y despues de quitarlos no queda ninguno (%d)" % (_azules(dialogo), _azules(sin)), _azules(dialogo) > 10000 and _azules(sin) == 0)
+    caso("brazos: ningun pixel de brazo sobrevive fuera de la mascara del cuerpo (sobreviven %d; borrados %d, sustituidos %d)" % (sobreviven, borrados, sustituidos),
+         sobreviven == 0 and borrados > 0 and sustituidos > 0)
+    brazo_total = mascara_union(brazos)
+    fuera_del_cuerpo = ImageChops.multiply(brazo_total, ImageChops.invert(mascara_alfa(cuerpo)))
+    caso("brazos: todo pixel del brazo fuera del cuerpo quedo transparente (alfa 0)", ImageChops.multiply(fuera_del_cuerpo, mascara_alfa(sin, 1)).getbbox() is None)
+    halo_a, halo_b = sin.getpixel((299, 900))[3], sin.getpixel((298, 900))[3]
+    caso("brazos: el halo suave del brazo (1 px, alfa 80) y la dilatacion de %d px tambien se borran fuera del cuerpo (alfa %d y %d)" % (DILATA_BRAZOS, halo_a, halo_b), halo_a == 0 and halo_b == 0)
+    caso("brazos: dentro del hombro gana el pixel del cuerpo (naranja del torso, no el azul del brazo)", sin.getpixel((470, 840)) == NARANJA_TORSO and sin.getpixel((830, 840)) == NARANJA_TORSO)
+    caso("brazos: el contorno del hombro sigue ahi, entero (la dilatacion no se come el borde del cuerpo)",
+         all(sin.getpixel((x, y)) == CONTORNO_TORSO for x in (440, 441, 442) for y in (850, 880)) and all(sin.getpixel((x, y)) == CONTORNO_TORSO for x in (858, 859, 860) for y in (850, 880)))
+    resto = (0, 700, 1300, 1500)
+    caso("brazos: debajo de la barbilla la silueta y los pixeles del dialogo son exactamente los del cuerpo (el hombro queda tal cual)", ImageChops.difference(sin.crop(resto), cuerpo.crop(resto)).getbbox() is None)
+    caso("brazos: lo que no es brazo no cambia (la cabeza y la cara pintada siguen como estaban)", ImageChops.difference(sin.crop((0, 0, 1300, 690)), dialogo.crop((0, 0, 1300, 690))).getbbox() is None)
     # --- la cara pintada se borra
-    res = construye(dialogo, pieza, union, caja, contenido, base_cara, arriba, barbilla, IOU_FAMILIA)
+    res = construye(dialogo, pieza, union, caja, contenido, base_cara, arriba, barbilla, IOU_FAMILIA, F_, A_, brazos, cuerpo)
     x0, y0, s = res.recorte[0], res.recorte[1], res.lado_px
-    base_plena = recorta_cuadrado(dialogo, x0, y0, s)
-    base_plena = base_plena.resize((LADO, LADO), Image.LANCZOS)
     esc = LADO / float(s)
+    con_brazos = _azules(construye(dialogo, pieza, union, caja, contenido, base_cara, arriba, barbilla, IOU_FAMILIA, F_, A_).base)
+    caso("construye con brazos: el cuadrado de primer plano no trae ni un pixel azul de brazo (%d) y SIN quitarlos si (%d)" % (_azules(res.base), con_brazos),
+         _azules(res.base) == 0 and con_brazos > 0)
+    caso("construye informa de los brazos: (borrados, sustituidos, sobreviven) = (%d, %d, %d)" % res.brazos, res.brazos == (borrados, sustituidos, sobreviven))
+    try:
+        construye(dialogo, pieza, union, caja, contenido, base_cara, arriba, barbilla, IOU_FAMILIA, F_, A_, brazos, None)
+        pide_cuerpo = False
+    except ValueError as e:
+        pide_cuerpo = "cuerpo" in str(e)
+    caso("quitar los brazos sin el cuerpo se rechaza (no hay con que rellenar el hombro)", pide_cuerpo)
+    # --- el orden del cuerpo: la cabeza delante (Papa, Nino) o el torso delante (Mama, Nina: el pelo cae detras del cuello)
+    def rect(caja, color):
+        im = Image.new("RGBA", (500, 500), (0, 0, 0, 0))
+        ImageDraw.Draw(im).rectangle(caja, fill=color)
+        return im
+    rojo, verde, azul = (200, 30, 30, 255), (30, 160, 60, 255), (40, 120, 200, 255)
+    cab, tor, bra = rect([100, 100, 299, 299], rojo), rect([200, 200, 399, 399], verde), [rect([250, 150, 449, 349], azul)]
+    d_cab = tor.copy()
+    d_cab.alpha_composite(cab)
+    d_cab.alpha_composite(bra[0])
+    d_tor = cab.copy()
+    d_tor.alpha_composite(tor)
+    d_tor.alpha_composite(bra[0])
+    c1, o1 = cuerpo_del_dialogo(d_cab, tor, cab, bra)
+    c2, o2 = cuerpo_del_dialogo(d_tor, tor, cab, bra)
+    caso("el orden del cuerpo se lee del dialogo: cabeza delante -> «%s», torso delante -> «%s»" % (o1, o2), (o1, o2) == ("cabeza", "torso"))
+    caso("con el solape vacio o sin nada que comparar va delante la cabeza", cuerpo_del_dialogo(rect([0, 0, 10, 10], rojo), rect([300, 300, 310, 310], verde), rect([0, 0, 10, 10], rojo), bra)[1] == "cabeza")
+    s1 = quita_brazos(d_cab, bra, c1)[0]
+    s2 = quita_brazos(d_tor, bra, c2)[0]
+    caso("el hueco del brazo se rellena con lo que habia debajo: rojo si la cabeza va delante (%s), verde si va el torso (%s); con el orden equivocado saldria el otro" % (s1.getpixel((275, 275))[:3], s2.getpixel((275, 275))[:3]),
+         s1.getpixel((275, 275)) == rojo and s2.getpixel((275, 275)) == verde and quita_brazos(d_tor, bra, c1)[0].getpixel((275, 275)) == rojo)
     ojo = res.base.getpixel((int(round((570 - x0) * esc)), int(round((430 - y0) * esc))))
     caso("el ojo pintado se borro: en su sitio hay piel y no el blanco del ojo", ojo[:3] != (255, 255, 255) and abs(ojo[0] - 255) <= 6 and abs(ojo[1] - 198) <= 12, str(ojo))
     boca = res.base.getpixel((int(round((650 - x0) * esc)), int(round((605 - y0) * esc))))
@@ -604,14 +820,14 @@ def autoprueba():
     caso("y la cara horneada cabe en lo entregado (la mascara crece %d px) y no hay nada pintado fuera de la silueta (%d)" % (res.crecio, res.fuera), res.crecio == 0 and res.fuera == 0)
     nariz = res.base.getpixel((int(round((650 - x0) * esc)), int(round((520 - y0) * esc))))
     caso("la nariz SI esta horneada en la base (un trazo oscuro sobre la piel)", nariz[0] < 200 and nariz[3] == 255, str(nariz))
-    # --- el encuadre
-    caso("lado = (barbilla - arriba) / 0,62 = %d" % res.lado_px, res.lado_px == int(round((barbilla - arriba) / FRACCION_CABEZA)))
-    caso("el recorte es un cuadrado que empieza AIRE_ARRIBA * lado sobre la cabeza", res.recorte[3] - res.recorte[1] == res.lado_px and res.recorte[2] - res.recorte[0] == res.lado_px
-         and abs((arriba - res.recorte[1]) / float(res.lado_px) - AIRE_ARRIBA) < 0.002)
+    # --- el encuadre de la familia: primer plano
+    caso("lado = (barbilla - arriba) / %.2f = %d" % (F_, res.lado_px), res.lado_px == int(round((barbilla - arriba) / F_)))
+    caso("el recorte es un cuadrado que empieza AIRE_ARRIBA_FAMILIA * lado sobre la cabeza", res.recorte[3] - res.recorte[1] == res.lado_px and res.recorte[2] - res.recorte[0] == res.lado_px
+         and abs((arriba - res.recorte[1]) / float(res.lado_px) - A_) < 0.002)
     caso("la base mide 256 x 256", res.base.size == (LADO, LADO))
     caso("el cuadrado se centra en x en la caja de la cara", abs((res.recorte[0] + res.recorte[2]) / 2.0 - (contenido[0] + contenido[2]) / 2.0) <= 1.0)
     fila = mascara_alfa(res.base, 24).getbbox()[1]
-    caso("el borde de arriba de la cabeza cae en AIRE_ARRIBA * 256 = %.1f (fila %d)" % (AIRE_ARRIBA * LADO, fila), abs(fila - AIRE_ARRIBA * LADO) <= 2.0)
+    caso("el borde de arriba de la cabeza cae en AIRE_ARRIBA_FAMILIA * 256 = %.1f (fila %d)" % (A_ * LADO, fila), abs(fila - A_ * LADO) <= 2.0)
     # --- la cara normalizada, con el origen ABAJO a la izquierda
     x, y, w, h = res.cara
     caso("cara: x, ancho y alto salen de la caja y del lado", abs(x - (caja[0] - x0) / float(s)) < 1e-5 and abs(w - (caja[2] - caja[0]) / float(s)) < 1e-5 and abs(h - (caja[3] - caja[1]) / float(s)) < 1e-5)
@@ -626,16 +842,21 @@ def autoprueba():
     # --- el padding transparente si el cuadrado se sale del lienzo
     cuad = recorta_cuadrado(dialogo, -50, -40, 200)
     caso("un cuadrado que se sale del lienzo se rellena con transparencia", cuad.getpixel((5, 5))[3] == 0 and cuad.getpixel((60, 60)) == dialogo.getpixel((10, 20)) and cuad.size == (200, 200))
-    # --- lo igual para dos personajes de tamanos distintos
-    grande = Image.new("RGBA", (1300, 1500), (0, 0, 0, 0))
-    k = 1.5
-    ocho = pieza.resize((int(1300 * k), int(1500 * k)), Image.LANCZOS)
-    grande.alpha_composite(ocho.crop((int(650 * k - 650), int(0), int(650 * k + 650), int(1500))), (0, 0))
-    a1 = encuadre(100, 690, 650)
-    a2 = encuadre(100, 100 + (690 - 100) * 1.5, 650)
-    caso("la receta no depende del tamano del personaje: la cabeza siempre ocupa %.2f del lado y a %.2f del borde" % (FRACCION_CABEZA, AIRE_ARRIBA),
-         abs((690 - 100) / float(a1[2]) - FRACCION_CABEZA) < 0.002 and abs((100 + 590 * 1.5 - 100) / float(a2[2]) - FRACCION_CABEZA) < 0.002
-         and abs((100 - a1[1]) / float(a1[2]) - AIRE_ARRIBA) < 0.002 and abs((100 - a2[1]) / float(a2[2]) - AIRE_ARRIBA) < 0.002)
+    # --- lo igual para dos personajes de tamanos distintos, y cada grupo con sus cifras
+    a1 = encuadre(100, 690, 650, F_, A_)
+    a2 = encuadre(100, 100 + (690 - 100) * 1.5, 650, F_, A_)
+    caso("la receta no depende del tamano del personaje: la cabeza siempre ocupa %.2f del lado y a %.2f del borde" % (F_, A_),
+         abs((690 - 100) / float(a1[2]) - F_) < 0.002 and abs((100 + 590 * 1.5 - 100) / float(a2[2]) - F_) < 0.002
+         and abs((100 - a1[1]) / float(a1[2]) - A_) < 0.002 and abs((100 - a2[1]) / float(a2[2]) - A_) < 0.002)
+    g1 = encuadre(100, 690, 650, FRACCION_CABEZA_GUIA, AIRE_ARRIBA_GUIA)
+    caso("Algoritm conserva el encuadre de hoy: cabeza %.2f del lado y %.2f de aire (lado %d, no el de la familia %d)" % (FRACCION_CABEZA_GUIA, AIRE_ARRIBA_GUIA, g1[2], a1[2]),
+         (FRACCION_CABEZA_GUIA, AIRE_ARRIBA_GUIA) == (0.62, 0.07) and g1[2] == int(round(590 / 0.62)) and abs((100 - g1[1]) / float(g1[2]) - 0.07) < 0.002 and g1[2] > a1[2])
+    caso("la familia sale en primer plano (0,78 y 0,05) y sin brazos; Algoritm como estaba (0,62 y 0,07) y con brazos",
+         all((r["fraccion"], r["aire"], r["sin_brazos"]) == (FRACCION_CABEZA_FAMILIA, AIRE_ARRIBA_FAMILIA, True) for r in RETRATOS if not r["guia"])
+         and all((r["fraccion"], r["aire"], r["sin_brazos"]) == (0.62, 0.07, False) for r in RETRATOS if r["guia"]) and (FRACCION_CABEZA_FAMILIA, AIRE_ARRIBA_FAMILIA) == (0.78, 0.05))
+    # Algoritm sin brazos que quitar: construye con la imagen como esta (sin «brazos») conserva los pixeles azules del dialogo
+    guia = construye(dialogo, pieza, union, caja, contenido, base_cara, arriba, barbilla, IOU_GUIA, FRACCION_CABEZA_GUIA, AIRE_ARRIBA_GUIA)
+    caso("el encuadre de Algoritm no quita nada: sin «brazos» la imagen queda como esta (res.brazos es None y los brazos siguen en el cuadrado)", guia.brazos is None and _azules(guia.base) > 0)
     # --- el marco de la tarjeta y las hojas (con el personaje sintetico)
     celda = tarjeta_marco(tarjeta, 128)
     caso("el marco: #C4A882 en el borde, #E0D4C0 detras y 128 px", celda.size == (128, 128) and celda.getpixel((64, 2))[:3] == ENMARCADO and celda.getpixel((10, 10))[:3] == FONDO_TARJETA)
@@ -645,6 +866,14 @@ def autoprueba():
             Image.new("RGBA", (4, 4)).save(os.path.join(tmp, n))
         caso("busca: «dialogo_niña» y «dialogo_niño» no se confunden (fichas NFKD-ASCII: nina / nino)", os.path.basename(busca(tmp, "dialogo", "nina")) == "dialogo_niña.png"
              and os.path.basename(busca(tmp, "dialogo", "nino")) == "dialogo_niño.png" and busca(tmp, "dialogo", "mama") is None)
+    with tempfile.TemporaryDirectory() as tmp:
+        nombres = ("brazo_papa_derecho.png", "brazo_papa_izquierdo.png", "mano_papa_derecho.png", "mano_papa_izquierda.png", "muslo_papa_dercho.png", "muslo_papa_izquierdo.png",
+                   "pie_papa_derecho.png", "torso_papa_frente.png", "cabeza_papa_frente.png", "Brazo_Niña_izquierdo.png", "notas.txt")
+        for n in nombres:
+            open(os.path.join(tmp, n), "wb").write(b"") if n.endswith(".txt") else Image.new("RGBA", (4, 4)).save(os.path.join(tmp, n))
+        hallados = [os.path.basename(x) for x in busca_todos(tmp, "brazo", "mano")]
+        caso("busca_todos: los brazos y las manos por el prefijo (NFKD-ASCII), con los nombres irregulares, y ni los muslos ni el torso", hallados == [
+            "Brazo_Niña_izquierdo.png", "brazo_papa_derecho.png", "brazo_papa_izquierdo.png", "mano_papa_derecho.png", "mano_papa_izquierda.png"] and busca_todos(tmp + "_no_existe", "brazo") == [])
     caso("las siete filas de RETRATOS: cuatro de la familia y las tres formas de Algoritm", len(RETRATOS) == 7 and [r["clave"] for r in RETRATOS if r["guia"]] == ["algoritm_fuego", "algoritm_rueda", "algoritm_gota"])
     print("autoprueba de preparar_retrato.py:", "pasa" if not malos else "FALLA en %d casos" % malos)
     return 1 if malos else 0
@@ -671,7 +900,7 @@ def main(argv=None):
         errores = valida()
         for e in errores:
             print("ERROR", e)
-        print("valida:", "bien: los siete retratos cumplen las constantes de encuadre" if not errores else "%d problemas" % len(errores))
+        print("valida:", "bien: la familia cumple su primer plano sin brazos y Algoritm su encuadre de siempre" if not errores else "%d problemas" % len(errores))
         return 1 if errores else 0
     filas = [r for r in RETRATOS if not a.solo or r["clave"] in a.solo]
     desconocidos = sorted(set(a.solo or []) - {r["clave"] for r in RETRATOS})
