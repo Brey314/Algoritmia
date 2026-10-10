@@ -1090,6 +1090,54 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(nina.Current, Is.EqualTo(ActorAction.Idle), "colocada, deja de empujar");
         }
 
+        /// <summary>
+        /// Al empujar la caja la Niña va de perfil y la mira (Santiago, 09/10/2026, INC-134): el lado se
+        /// recalcula con cada movimiento de la caja, así que si el estudiante la arrastra al otro lado de ella,
+        /// la Niña se da vuelta. Con arte de perfil la vista es de perfil y el lienzo se voltea solo si la caja
+        /// queda a su izquierda; sin él (prefabs de antes de la ronda del Editor) empuja de frente y solo se
+        /// comprueba el lado que recuerda. Al soltar, el «ánimo» es de frente.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_INC134_LaNinaMiraALaCajaMientrasLaEmpujaYSeGiraSiLaCajaCruza()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+            var nina = Nina(forest);
+            await Acopiar(forest);
+
+            forest.TakeCargo();
+            Assert.That(nina.Current, Is.EqualTo(ActorAction.Push), "al tomar la caja, la Niña la empuja");
+
+            // Se arrastra sin esperar cuadros: Update también arrastra con el cursor real y deshace el punto.
+            var centro = Centro((RectTransform)nina.transform);
+            foreach (var (desplazamiento, cajaALaIzquierda) in new[] { (-400f, true), (400f, false), (-400f, true) })
+            {
+                forest.DragCargoTo(centro + new Vector2(desplazamiento, 0f));
+
+                Assert.That(Centro(forest.CargoRect).x < Centro((RectTransform)nina.transform).x, Is.EqualTo(cajaALaIzquierda),
+                    "la caja está donde se la arrastró (si no, la prueba no prueba nada)");
+                Assert.That(nina.Mirrored, Is.EqualTo(cajaALaIzquierda), $"con la caja {(cajaALaIzquierda ? "a la izquierda" : "a la derecha")}, la Niña la mira");
+                if (nina.HasProfile)
+                {
+                    Assert.That(nina.View, Is.EqualTo(CharacterView.Profile), "empujar se ve de perfil");
+                    Assert.That(nina.Stage.localScale.x < 0f, Is.EqualTo(cajaALaIzquierda), "y el lienzo se voltea solo si la caja queda a su izquierda");
+                }
+                else
+                {
+                    Assert.That(nina.View, Is.EqualTo(CharacterView.Front), "sin arte de perfil, empuja de frente");
+                    Assert.That(nina.Stage.localScale.x, Is.GreaterThan(0f), "y sin voltear");
+                }
+            }
+
+            forest.DragCargoTo(Centro((RectTransform)forest.HelpButton.transform));
+            forest.ReleaseCargo();
+            Assert.That(nina.Current, Is.EqualTo(ActorAction.Encourage), "suelta fuera de los troncos: «ánimo»");
+            Assert.That(nina.View, Is.EqualTo(CharacterView.Front), "y el ánimo es de frente");
+            Assert.That(nina.Stage.localScale.x, Is.GreaterThan(0f), "sin espejo por el rumbo");
+        }
+
         [Test]
         [Timeout(30000)]
         public async Task ForestScene_DA133_AlCompletarElAcopioCelebranLaNinaYLaFamilia()

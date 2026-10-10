@@ -1,4 +1,5 @@
 using Game.Core;
+using Game.Scaffolding;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +15,9 @@ namespace Game.UI
         [SerializeField] private Text bodyLabel;
         [SerializeField] private Button backButton;
 
+        [Tooltip("Algoritm (fuego), que saluda mientras la pantalla está abierta: sin tarjeta detrás, directamente bajo su panel.")]
+        [SerializeField] private CharacterRig guide;
+
         [Header("Rejilla de dos columnas")]
         [SerializeField] private Transform entryList;
         [SerializeField] private GameObject entryPrototype;
@@ -22,6 +26,7 @@ namespace Game.UI
 
 #if UNITY_INCLUDE_TESTS
         internal Text BodyLabel => bodyLabel;
+        internal CharacterRig Guide => guide;
 #endif
 
         private void Awake() => Runner ??= GameFlowRunner.Instance;
@@ -34,6 +39,12 @@ namespace Game.UI
             }
 
             PaintEntries();
+
+            // `guide?.Play` se saltaría la comprobación de nulo de Unity: un campo sin asignar no es null en el Editor.
+            if (guide != null)
+            {
+                guide.Play(ActorAction.Wave);
+            }
 
             backButton.onClick.AddListener(BackToMainMenu);
         }

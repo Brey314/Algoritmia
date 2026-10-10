@@ -62,6 +62,10 @@ namespace Game.Scaffolding
         public float BurnExtent { get; private set; }
 
         [field: SerializeField]
+        [field: Tooltip("Si el objeto es una fogata encendida (prop_n1_fuego_normal): se le pinta detrás un halo de luz naranja tenue que respira despacio (FireGlow, Dirección de Arte §8.1). Solo para la llama, no para lo que arde ni para el humo.")]
+        public bool Glows { get; private set; }
+
+        [field: SerializeField]
         [field: Tooltip("Qué hace el objeto cuando llega su línea: nada, rodar, que lo levanten y ruede, que lo levanten y se quede (la piedra), o deslizarse sin girar (la balsa).")]
         public PropMotion Motion { get; private set; } = PropMotion.None;
 
@@ -89,6 +93,10 @@ namespace Game.Scaffolding
         [field: SerializeField]
         [field: Tooltip("Ambiente que suena en la segunda capa **mientras el objeto se mueve**, en lugar de la de la escena, y se va al llegar: el agua contra los troncos de la balsa que cruza (RF-44). Dura lo que dura el movimiento, no lo que tarde en leerse el texto. Vacío = nada cambia.")]
         public AudioClip MotionAmbient { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("Si la cámara acompaña al objeto mientras se mueve: el foco de cada parada se corre lo que el objeto se ha desplazado desde donde arrancó, así que no se sale del cuadro aunque el texto no avance. Para lo que cruza el encuadre solo: la balsa que cruza el río (RF-44). Si varios lo llevan, manda el primero. El acotado del foco lo sigue haciendo IllustrationFraming.")]
+        public bool CameraFollows { get; private set; }
 
         [field: SerializeField]
         [field: Tooltip("Si se asigna, el objeto es un tronco en 3/4: la ilustración es el corte y detrás se pinta este cuerpo, cuyas vetas giran con él al rodar. El mismo asset que el bosque. Vacío = solo la ilustración.")]

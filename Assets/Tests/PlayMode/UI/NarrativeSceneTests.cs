@@ -250,27 +250,89 @@ namespace Game.UI.Tests
             Assert.That(pausa, Is.Empty);
         }
 
+        /// <summary>
+        /// Todo lo que dice el juego cabe en el cuadro de diálogo (RNF-01, decisión de Santiago,
+        /// 08/10/2026): las 139 líneas de las dieciocho narrativas, en Nunito SemiBold de 30 px,
+        /// dentro de la caja del cuerpo. No se mira solo la línea más larga —la más alta no es la de más
+        /// letras—, y el texto es contenido radicado que no se recorta: si una línea no cabe se ajusta
+        /// la caja o el interlineado, nunca la línea.
+        /// </summary>
         [Test]
         [Timeout(30000)]
-        public async Task NarrativeScene_RNF01_LaLineaMasLargaCabeEnSuCuadroDeDialogo()
+        public async Task NarrativeScene_RNF01_TodasLasLineasDeLasDieciochoNarrativasCabenEnSuCuadro()
         {
             var (controller, _) = await OpenNarrative("N1_Hallazgo");
-            var masLarga = controller.Sequences
-                .SelectMany(sequence => sequence.Lines)
-                .OrderByDescending(line => line.Text.Length)
-                .First();
-
-            controller.BodyLabel.text = masLarga.Text;
             Canvas.ForceUpdateCanvases();
             await Awaitable.NextFrameAsync();
 
             var caja = controller.BodyLabel.rectTransform.rect;
-            var generador = controller.BodyLabel.cachedTextGenerator;
-            var alto = generador.GetPreferredHeight(masLarga.Text,
-                controller.BodyLabel.GetGenerationSettings(caja.size)) / controller.BodyLabel.pixelsPerUnit;
+            var lineas = controller.Sequences
+                .SelectMany(sequence => sequence.Lines.Select((line, indice) => (sequence.Id, indice, line.Text)))
+                .ToArray();
+            var desbordadas = lineas
+                .Select(linea => (linea, alto: AltoDe(controller.BodyLabel, linea.Text, caja)))
+                .Where(medida => medida.alto > caja.height)
+                .Select(medida => $"{medida.linea.Id} · línea {medida.linea.indice}: {medida.alto:0} px en una caja de {caja.height:0} px")
+                .ToArray();
 
-            Assert.That(alto, Is.LessThanOrEqualTo(caja.height),
-                $"«{masLarga.Text}» desborda su cuadro: {alto:0} px en una caja de {caja.height:0} px");
+            Assert.That(controller.Sequences, Has.Length.EqualTo(18), "las dieciocho narrativas del juego");
+            Assert.That(lineas, Has.Length.GreaterThanOrEqualTo(139), "y todas sus líneas");
+            Assert.That(desbordadas, Is.Empty, "ninguna línea desborda su cuadro: " + string.Join(" · ", desbordadas));
+        }
+
+        /// <summary>
+        /// El nombre de quien habla —Baloo 2 Bold de 30 px— cabe en una línea, también el más largo
+        /// (ALGORITM), y la caja alcanza para una línea.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF05_ElNombreDelHablanteCabeEnUnaLinea()
+        {
+            var (controller, _) = await OpenNarrative("N1_Hallazgo");
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            var etiqueta = controller.SpeakerLabel;
+            var caja = etiqueta.rectTransform.rect;
+            var unaLinea = AltoDe(etiqueta, "A", caja);
+            var nombres = controller.Sequences
+                .SelectMany(sequence => sequence.Lines)
+                .Select(line => line.Speaker)
+                .Where(nombre => !string.IsNullOrEmpty(nombre))
+                .Distinct()
+                .ToArray();
+            var enVariasLineas = nombres.Where(nombre => AltoDe(etiqueta, nombre, caja) > unaLinea + 0.5f).ToArray();
+
+            Assert.That(nombres, Is.Not.Empty, "las narrativas nombran a quien habla");
+            Assert.That(unaLinea, Is.LessThanOrEqualTo(caja.height), "una línea cabe en la caja del nombre");
+            Assert.That(enVariasLineas, Is.Empty, "ningún nombre pasa a una segunda línea (el más largo: " + nombres.OrderByDescending(nombre => nombre.Length).First() + ")");
+        }
+
+        /// <summary>
+        /// El nombre, el texto y los botones del cuadro de diálogo no se pisan y todo queda dentro del
+        /// cuadro (D5 y D17, 08/10/2026): el nombre va encima del texto con aire entre los dos, el
+        /// texto acaba antes de «Omitir» y la caja del texto cabe en el interior del cuadro.
+        /// </summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RNF03_ElNombreElTextoYLosBotonesNoSePisanDentroDelCuadro()
+        {
+            var (controller, _) = await OpenNarrative("N1_Hallazgo");
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            var interior = EnPantalla((RectTransform)controller.BodyLabel.transform.parent); // Cuerpo → Fondo
+            var nombre = EnPantalla(controller.SpeakerLabel.rectTransform);
+            var texto = EnPantalla(controller.BodyLabel.rectTransform);
+            var omitir = EnPantalla((RectTransform)controller.SkipButton.transform); // aunque la primera visita lo oculte, su sitio está reservado
+            var continuar = EnPantalla((RectTransform)controller.AdvanceButton.transform);
+
+            Assert.That(nombre.yMin, Is.GreaterThanOrEqualTo(texto.yMax), "el nombre va encima del texto, con aire entre los dos: no se pisan");
+            Assert.That(texto.xMin, Is.GreaterThanOrEqualTo(interior.xMin - 0.5f), "el texto no sale por la izquierda del cuadro");
+            Assert.That(texto.yMin, Is.GreaterThanOrEqualTo(interior.yMin - 0.5f), "ni por abajo");
+            Assert.That(nombre.yMax, Is.LessThanOrEqualTo(interior.yMax + 0.5f), "y el nombre no sale por arriba");
+            Assert.That(texto.Overlaps(omitir), Is.False, "el texto acaba antes de «Omitir»");
+            Assert.That(texto.Overlaps(continuar), Is.False, "y de «Continuar»");
         }
 
         [Test]
@@ -515,6 +577,112 @@ namespace Game.UI.Tests
             Assert.That(animados, Has.Some.EqualTo("fx_n1_humo_nacer"), "y echa humo desde que nace");
         }
 
+        /// <summary>
+        /// Cada fogata encendida de una narrativa emite su halo (D8, 08/10/2026): el hermano justo antes
+        /// de la llama, que no se lleva los clics, con el color de la luz de fuego a su 20 % y centrado
+        /// en la llama —un poco más abajo, donde está su cuerpo—. Vale con la capa de oscuridad de la
+        /// noche (2.5) y a plena luz con tres fogatas (escena final).
+        /// </summary>
+        [TestCase("N2_Escena25_Cierre", LevelId.Wheel, 1)]
+        [TestCase("N3_EscenaFinal", LevelId.River, 3)]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RF05_CadaFogataTieneSuHaloJustoAntesDeLaLlama(string id, LevelId nivel, int fogatas)
+        {
+            var (controller, _) = await OpenNarrative(id, nivel);
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            var llamas = controller.Props.Where(entrada => entrada.Prop.Glows).Select(entrada => entrada.Rect).ToArray();
+            Assert.That(llamas, Has.Length.EqualTo(fogatas), $"{id}: las fogatas que la escena declara con halo");
+
+            foreach (var llama in llamas)
+            {
+                var brillo = llama.GetComponent<FireGlow>();
+                var halo = llama.parent.GetChild(llama.GetSiblingIndex() - 1).GetComponent<Image>();
+                Assert.That(halo.name, Is.EqualTo(FireGlow.NamePrefix + llama.name), $"{llama.name}: el hermano justo antes de la llama es su halo");
+                Assert.That(halo.raycastTarget, Is.False, $"{llama.name}: el halo no se lleva los clics");
+                Assert.That(halo.color, Is.EqualTo(FireGlow.GlowColor), $"{llama.name}: #F0A84E al 20 %");
+                Assert.That(halo.sprite, Is.SameAs(FireGlow.GetOrCreateGlowSprite()), $"{llama.name}: un disco que se desvanece, no uno plano");
+
+                var cuadro = EnPantalla(llama);
+                var lado = Mathf.Min(cuadro.width, cuadro.height);
+                var esperado = cuadro.center + Vector2.up * (brillo.Offset.y * lado);
+                Assert.That(Vector2.Distance(EnPantalla(halo.rectTransform).center, esperado), Is.LessThan(1f),
+                    $"{llama.name}: el halo está centrado en su llama, un poco más abajo");
+                Assert.That(EnPantalla(halo.rectTransform).width, Is.EqualTo(lado * brillo.Spread * halo.rectTransform.localScale.x).Within(1f),
+                    $"{llama.name}: y mide lo que dice Spread");
+            }
+        }
+
+        /// <summary>
+        /// El halo de la fogata respira despacio y sin destellos (RNF-21, decisión de Santiago,
+        /// 08/10/2026): su escala sigue una sola onda entre 0,95 y 1,05 con un ciclo de 2 s, sin saltos
+        /// ni cambios de color; la opacidad no oscila nunca. Se mide al final de cada cuadro, con la
+        /// escala ya puesta en ese cuadro.
+        /// </summary>
+        [Test]
+        [Category("Acceptance")]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RNF21_ElHaloDeLaFogataPulsaLentoYSinDestellos()
+        {
+            var (controller, _) = await OpenNarrative("N2_Escena25_Cierre", LevelId.Wheel);
+            var llama = controller.Props.Single(entrada => entrada.Prop.Glows).Rect;
+            var halo = llama.parent.GetChild(llama.GetSiblingIndex() - 1).GetComponent<Image>();
+            var muestras = new System.Collections.Generic.List<(float Tiempo, float Escala)>();
+            var colores = new System.Collections.Generic.HashSet<Color>();
+            var fin = Time.realtimeSinceStartup + 2f * FireGlow.CycleSeconds + 0.5f;
+
+            while (Time.realtimeSinceStartup < fin)
+            {
+                await Awaitable.EndOfFrameAsync();
+                muestras.Add((Time.time, halo.rectTransform.localScale.x));
+                colores.Add(halo.color);
+            }
+
+            var cambios = muestras.Zip(muestras.Skip(1), (a, b) => Mathf.Abs(b.Escala - a.Escala) / Mathf.Max(b.Tiempo - a.Tiempo, 1e-4f)).ToArray();
+            var fueraDeLaOnda = muestras.Where(m => Mathf.Abs(m.Escala - FireGlow.ScaleAt(m.Tiempo)) > 1e-4f).ToArray();
+
+            Assert.That(muestras.Min(m => m.Escala), Is.InRange(FireGlow.MinScale - 1e-3f, 0.96f), "mengua hasta 0,95");
+            Assert.That(muestras.Max(m => m.Escala), Is.InRange(1.04f, FireGlow.MaxScale + 1e-3f), "crece hasta 1,05");
+            Assert.That(cambios.Max(), Is.LessThan(0.2f), "la escala cambia como mucho 0,16 por segundo (la pendiente de la onda): nada destella");
+            Assert.That(fueraDeLaOnda, Is.Empty, "y en cada cuadro vale lo que la onda dice para el tiempo de juego");
+            Assert.That(colores, Has.Count.EqualTo(1), "la opacidad no cambia nunca: solo respira la escala");
+        }
+
+        /// <summary>El halo usa el tiempo del juego: con la pausa —escala de tiempo a 0— se queda quieto, igual que la llama.</summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_RNF21_ElHaloDeLaFogataSeQuedaQuietoConLaPausa()
+        {
+            var (controller, _) = await OpenNarrative("N2_Escena25_Cierre", LevelId.Wheel);
+            var llama = controller.Props.Single(entrada => entrada.Prop.Glows).Rect;
+            var halo = llama.parent.GetChild(llama.GetSiblingIndex() - 1).GetComponent<Image>();
+
+            // Se pausa con la onda lejos del 1,00 —en cualquier momento del ciclo pasa de ahí en menos de
+            // un segundo—, para que quieto no se confunda con «justo por donde cruza la onda».
+            var tope = Time.realtimeSinceStartup + 2f;
+            while (Mathf.Abs(halo.rectTransform.localScale.x - 1f) < 0.01f && Time.realtimeSinceStartup < tope)
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            try
+            {
+                Time.timeScale = 0f;
+                await Awaitable.EndOfFrameAsync();
+                var enPausa = halo.rectTransform.localScale.x;
+                await EsperarSegundos(0.5f);
+                await Awaitable.EndOfFrameAsync();
+
+                Assert.That(Mathf.Abs(enPausa - 1f), Is.GreaterThanOrEqualTo(0.01f), "la pausa pilló al halo lejos del 1,00");
+                Assert.That(halo.rectTransform.localScale.x, Is.EqualTo(enPausa).Within(1e-6f), "con el juego en pausa el halo no respira, ni medio segundo después");
+            }
+            finally
+            {
+                Time.timeScale = 1f;
+            }
+        }
+
         [Test]
         [Timeout(30000)]
         public async Task NarrativeScene_RF05_LaEscena21MuestraLosObjetosRepartidosPorElSuelo()
@@ -528,10 +696,10 @@ namespace Game.UI.Tests
             Assert.That(secuencia.Props.Length, Is.GreaterThanOrEqualTo(15),
                 "la escena declara los catorce objetos del bosque y la caja");
 
-            // La capa de sombras de gota también cuelga de la ilustración, pero no es un objeto.
+            // La capa de sombras de gota y los halos de las fogatas también cuelgan de la ilustración, pero no son objetos.
             var pintados = Enumerable.Range(0, controller.IllustrationRect.childCount)
                 .Select(i => controller.IllustrationRect.GetChild(i))
-                .Where(hijo => !PropShadow.IsLayer(hijo))
+                .Where(hijo => !PropShadow.IsLayer(hijo) && !hijo.name.StartsWith(FireGlow.NamePrefix, StringComparison.Ordinal))
                 .Select(hijo => hijo.GetComponent<Image>())
                 .ToArray();
             Assert.That(pintados.Select(p => p.sprite), Is.EqualTo(secuencia.Props.Select(p => p.Art)),
@@ -785,6 +953,89 @@ namespace Game.UI.Tests
             Assert.That(cuadros, Is.GreaterThan(30), "el cruce dura muchos cuadros: es un movimiento, no un corte");
             Assert.That(salto, Is.LessThan(0.01f), $"ningún cuadro salta más del 1 % de la ilustración (máximo {salto:F4})");
             Assert.That(desvio, Is.LessThan(0.002f), $"la familia viaja pegada a la balsa (máximo {desvio:F4})");
+        }
+
+        /// <summary>
+        /// La cámara acompaña a la balsa mientras cruza (RF-44, decisión de Santiago, 08/10/2026): el
+        /// foco pedido es el del encuadre más lo que la balsa lleva recorrido, así que, aunque el texto
+        /// no avance, la balsa no se sale del cuadro —antes asomaba por la derecha a los 4 s y al
+        /// llegar estaba 204 px fuera— y la cámara no retrocede mientras ella cruza.
+        /// </summary>
+        [Test]
+        [Category("Acceptance")]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF44_LaCamaraSigueALaBalsaMientrasCruza()
+        {
+            var (controller, _) = await OpenNarrative("N3_Escena33_Cruce", LevelId.River);
+            var secuencia = SequenceNamed(controller, "N3_Escena33_Cruce");
+            var (balsa, rect) = controller.Props.Single(p => p.Prop.Motion == PropMotion.Drift);
+            Assert.That(balsa.CameraFollows, Is.True, "la balsa lleva la marca: la cámara la acompaña");
+
+            var lienzo = controller.IllustrationRect.rect.size; // tamaño nativo del sprite (IllustrationFraming.Apply)
+            var pantalla = new Rect(0f, 0f, Screen.width, Screen.height);
+            var focoInicial = secuencia.CameraStart.Focus;
+            var anterior = controller.CameraCurrent.Focus.x;
+            var (desvio, margen, retrocede, cuadros) = (0f, float.MaxValue, 0f, 0);
+            var tope = Time.realtimeSinceStartup + balsa.MotionSeconds + 1f;
+
+            // Sin avanzar el texto: es cuando más deprisa se sale la balsa del cuadro.
+            while (Time.realtimeSinceStartup < tope)
+            {
+                await Awaitable.NextFrameAsync();
+                cuadros++;
+                desvio = Mathf.Max(desvio, Vector2.Distance(controller.CameraTarget.Focus - focoInicial, rect.anchoredPosition / lienzo));
+                var caja = Dibujo(rect);
+                margen = Mathf.Min(margen, caja.xMin - pantalla.xMin, pantalla.xMax - caja.xMax);
+                retrocede = Mathf.Max(retrocede, anterior - controller.CameraCurrent.Focus.x);
+                anterior = controller.CameraCurrent.Focus.x;
+            }
+
+            Assert.That(cuadros, Is.GreaterThan(30), "el cruce dura muchos cuadros");
+            Assert.That(rect.anchoredPosition.x / lienzo.x, Is.EqualTo(balsa.MotionDistance).Within(1e-3f), "la balsa llegó a la otra orilla");
+            Assert.That(desvio, Is.LessThan(0.002f), $"el foco pedido va con la balsa (máximo {desvio:F4})");
+            Assert.That(margen, Is.GreaterThan(Screen.width * 0.02f), $"la balsa no se sale del cuadro ni se asoma al borde (margen mínimo {margen:0} px)");
+            Assert.That(retrocede, Is.LessThan(1e-5f), "y la cámara no retrocede");
+        }
+
+        /// <summary>
+        /// Leer el texto mientras la balsa cruza tampoco la saca del cuadro ni hace retroceder la
+        /// cámara: con las líneas 1, 2 y 3 leídas a los 3, 5,5 y 8 s —una lectura corriente— el foco que
+        /// se ve solo avanza hasta el desembarco. La línea 4 queda fuera a propósito: ahí la cámara se
+        /// aleja al plano general.
+        /// </summary>
+        [Test]
+        [Category("Acceptance")]
+        [Timeout(60000)]
+        public async Task NarrativeScene_RF44_LaBalsaNoSeSaleDelCuadroNiLaCamaraRetrocedeAlLeerElTextoMientrasCruza()
+        {
+            var (controller, _) = await OpenNarrative("N3_Escena33_Cruce", LevelId.River);
+            var (balsa, rect) = controller.Props.Single(p => p.Prop.Motion == PropMotion.Drift);
+            var pantalla = new Rect(0f, 0f, Screen.width, Screen.height);
+            var lecturas = new[] { 3f, 5.5f, 8f };
+            var leidas = 0;
+            var anterior = FocoVisto(controller);
+            var (margen, retrocede) = (float.MaxValue, 0f);
+            var inicio = Time.realtimeSinceStartup;
+
+            while (Time.realtimeSinceStartup - inicio < balsa.MotionSeconds + 2f)
+            {
+                if (leidas < lecturas.Length && Time.realtimeSinceStartup - inicio >= lecturas[leidas])
+                {
+                    Click(controller.AdvanceButton);
+                    leidas++;
+                }
+
+                await Awaitable.NextFrameAsync();
+                var caja = Dibujo(rect);
+                margen = Mathf.Min(margen, caja.xMin - pantalla.xMin, pantalla.xMax - caja.xMax);
+                var foco = FocoVisto(controller);
+                retrocede = Mathf.Max(retrocede, anterior - foco);
+                anterior = foco;
+            }
+
+            Assert.That(controller.Dialogue.Index, Is.EqualTo(3), "se leyeron las líneas 1, 2 y 3 mientras cruzaba");
+            Assert.That(margen, Is.GreaterThan(Screen.width * 0.02f), $"la balsa no se sale del cuadro ni se asoma al borde (margen mínimo {margen:0} px)");
+            Assert.That(retrocede, Is.LessThan(1e-3f), $"el foco que se ve no retrocede al pasar de una parada a otra (máximo {retrocede:F4})");
         }
 
         /// <summary>
@@ -1096,6 +1347,83 @@ namespace Game.UI.Tests
         }
 
         /// <summary>
+        /// Quien se desplaza va de perfil, hacia donde camina, y quien está quieto va de frente (Santiago,
+        /// 09/10/2026, INC-134). En cada línea de las dieciocho escenas: la vista de cada personaje con arte
+        /// de perfil es la de su acción (<see cref="ActionView"/>), y de perfil mira hacia donde dice
+        /// <see cref="ActorTimeline.FacesLeftAt"/> **en el mundo**, descontando el volteo de la casilla
+        /// (<see cref="NarrativeProp.Mirrored"/>): el perfil no se espeja dos veces. Quien no tiene arte de
+        /// perfil (Algoritm, o la familia antes de que llegue) se queda de frente y su lienzo sin voltear. Con
+        /// los prefabs actuales, sin cuerpo de perfil, la prueba comprueba solo esa segunda parte.
+        /// </summary>
+        [TestCase("N1_Apertura", LevelId.Fire)]
+        [TestCase("N1_AparicionGuia", LevelId.Fire)]
+        [TestCase("N1_Hallazgo", LevelId.Fire)]
+        [TestCase("N1_NacimientoDelFuego", LevelId.Fire)]
+        [TestCase("N2_PuenteI", LevelId.Wheel)]
+        [TestCase("N2_PuenteI_Bosque", LevelId.Wheel)]
+        [TestCase("N2_Escena21_Bosque", LevelId.Wheel)]
+        [TestCase("N2_Escena22_ElPatron", LevelId.Wheel)]
+        [TestCase("N2_Escena23_Construccion", LevelId.Wheel)]
+        [TestCase("N2_Escena24_Regreso", LevelId.Wheel)]
+        [TestCase("N2_Escena25_Cierre", LevelId.Wheel)]
+        [TestCase("N3_PuenteII", LevelId.River)]
+        [TestCase("N3_PuenteII_Horizonte", LevelId.River)]
+        [TestCase("N3_PuenteII_Rio", LevelId.River)]
+        [TestCase("N3_Escena31_Llegada", LevelId.River)]
+        [TestCase("N3_Escena32_PrimerIntento", LevelId.River)]
+        [TestCase("N3_Escena33_Cruce", LevelId.River)]
+        [TestCase("N3_EscenaFinal", LevelId.River)]
+        [Timeout(240000)]
+        public async Task NarrativeScene_INC134_QuienSeDesplazaVaDePerfilHaciaDondeCamina(string id, LevelId nivel)
+        {
+            var (controller, _) = await OpenNarrative(id, nivel);
+            var secuencia = SequenceNamed(controller, id);
+            Assert.That(controller.Actors, Is.Not.Empty, $"{id}: la familia o el guía están en la escena");
+
+            for (var linea = 0; linea < secuencia.Lines.Length; linea++)
+            {
+                if (linea > 0)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                // La vista se decide al empezar la línea: en el mismo cuadro, sin esperar a que lleguen.
+                foreach (var (prop, _, rig, _) in controller.Actors)
+                {
+                    var vista = rig.HasProfile ? ActionView.For(rig.Current) : CharacterView.Front;
+                    Assert.That(rig.View, Is.EqualTo(vista), $"{id} L{linea}: «{prop.Actor.name}» hace {rig.Current}, y se ve así");
+                }
+
+                // Quien camina termina su camino aunque el texto avance; el lado definitivo se comprueba cuando
+                // todos llegaron, que es cuando la línea queda como la describe ActorTimeline.
+                var inicio = Time.realtimeSinceStartup;
+                while (controller.Actors.Any(actor => actor.Walking) && Time.realtimeSinceStartup - inicio < 15f)
+                {
+                    await Awaitable.NextFrameAsync();
+                }
+
+                foreach (var (prop, rect, rig, _) in controller.Actors)
+                {
+                    var vista = rig.HasProfile ? ActionView.For(rig.Current) : CharacterView.Front;
+                    Assert.That(rig.View, Is.EqualTo(vista), $"{id} L{linea}: «{prop.Actor.name}» llegó y hace {rig.Current}");
+                    if (rig.View == CharacterView.Front)
+                    {
+                        Assert.That(rig.Stage.localScale.x, Is.GreaterThan(0f),
+                            $"{id} L{linea}: «{prop.Actor.name}» de frente no se espeja nunca por el rumbo");
+                        continue;
+                    }
+
+                    var casillaVolteada = rect.localScale.x < 0f;
+                    var miraALaIzquierda = casillaVolteada ^ rig.Mirrored;
+                    Assert.That(miraALaIzquierda, Is.EqualTo(ActorTimeline.FacesLeftAt(prop, linea)),
+                        $"{id} L{linea}: «{prop.Actor.name}» de perfil mira hacia donde camina (casilla volteada: {casillaVolteada}, Mirrored: {rig.Mirrored})");
+                    Assert.That(rig.Stage.localScale.x < 0f, Is.EqualTo(rig.Mirrored),
+                        $"{id} L{linea}: el lienzo está volteado exactamente cuando Mirrored lo pide");
+                }
+            }
+        }
+
+        /// <summary>
         /// Una captura por línea de cada escena, con la cámara asentada y los personajes ya en su
         /// sitio, para revisar que se ve lo que el guion cuenta (en persistentDataPath/TestScreenshots).
         /// </summary>
@@ -1296,6 +1624,17 @@ namespace Game.UI.Tests
         }
 
         // --- helpers -----------------------------------------------------------------------
+
+        /// <summary>Lo que mide a lo alto <paramref name="texto"/> dentro de la caja de la etiqueta, como lo calcula el propio <c>Text</c> al pintarlo.</summary>
+        private static float AltoDe(Text etiqueta, string texto, Rect caja) =>
+            etiqueta.cachedTextGenerator.GetPreferredHeight(texto, etiqueta.GetGenerationSettings(caja.size)) / etiqueta.pixelsPerUnit;
+
+        /// <summary>El foco que de verdad se ve —ya acotado por IllustrationFraming—: 0,5 menos lo que la ilustración se ha corrido, en fracciones de su ancho.</summary>
+        private static float FocoVisto(NarrativeSceneController controller)
+        {
+            var ilustracion = controller.IllustrationRect;
+            return 0.5f - ilustracion.anchoredPosition.x / (ilustracion.rect.width * ilustracion.localScale.x);
+        }
 
         private static async Task EsperarSegundos(float segundos)
         {

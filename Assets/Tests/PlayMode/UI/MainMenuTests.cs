@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Game.Core;
+using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -20,6 +21,22 @@ namespace Game.UI.Tests
     {
         private const string SceneName = "MainMenu";
         private static readonly string[] Options = { "Jugar", "Créditos", "Progreso del equipo", "Salir" };
+
+        /// <summary>El lema que queda solo en la tarjeta del título (D10, 08/10/2026).</summary>
+        private const string Tagline = "Piensa el orden, enciende el fuego";
+
+        /// <summary>Los retratos con que se reconoce a los cinco de la portada (D9): la familia y Algoritm de fuego.</summary>
+        private static readonly string[] PortraitCast =
+        {
+            "char_papa_retrato_neutra", "char_mama_retrato_neutra", "char_nina_retrato_neutra",
+            "char_nino_retrato_neutra", "char_algoritm_n1_fuego_reposo"
+        };
+
+        /// <summary>Separación mínima entre dos fases de reposo, en fracción del ciclo: con menos se respira casi igual.</summary>
+        private const float MinimumPhaseGap = 0.1f;
+
+        /// <summary>Un píxel del lienzo duplicado (3840 de ancho) en fracción de su ancho: lo que se perdona al decir «no cruza el eje».</summary>
+        private const float SeamTolerance = 1f / 3840f;
 
         /// <summary>Aviso de <c>ScreenFlow</c> cuando la pantalla no tiene con qué navegar.</summary>
         private static readonly Regex MissingFlow = new Regex("sin pasar por");
@@ -217,6 +234,79 @@ namespace Game.UI.Tests
                 && rects.Count(other => other.Overlaps(rect)) == 1));
         }
 
+        // D9 (08/10/2026): la portada son los cinco en el claro del bosque del Nivel 2, parados y sin respirar a la vez.
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_RF01_LosCincoPersonajesEsperanEnReposoSinRespirarAlUnisono()
+        {
+            await LoadMainMenu();
+
+            var rigs = Object.FindObjectsByType<CharacterRig>(FindObjectsInactive.Exclude);
+            var phases = rigs.Select(rig => rig.IdlePhase).OrderBy(phase => phase).ToArray();
+            var gaps = phases.Zip(phases.Skip(1).Append(phases[0] + 1f), (previous, next) => next - previous).ToArray();
+
+            Assert.That(rigs.Select(rig => rig.Portrait.name), Is.EquivalentTo(PortraitCast),
+                "Papá, Mamá, Niño, Niña y Algoritm de fuego, uno de cada");
+            Assert.That(rigs.Select(rig => rig.Current), Has.All.EqualTo(ActorAction.Idle), "todos en reposo");
+            Assert.That(rigs.Select(rig => rig.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName(nameof(ActorAction.Idle))),
+                Has.All.True, "y su Animator también está en el estado de reposo");
+            Assert.That(gaps, Has.All.GreaterThanOrEqualTo(MinimumPhaseGap),
+                "cada uno arranca su reposo en otra fase del ciclo (el mismo arranque los haría respirar al unísono)");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_RF01_ElBosqueNoCruzaLaCosturaDelLienzo()
+        {
+            await LoadMainMenu();
+            var window = Object.FindAnyObjectByType<FramedIllustration>();
+
+            var (left, right) = IllustrationProbe.VisibleRange(window);
+
+            Assert.That(window.Art.sprite.name, Is.EqualTo("env_n2_bosque_claro"), "la portada es el bosque del Nivel 2");
+            Assert.That(right, Is.LessThanOrEqualTo(IllustrationFraming.MirrorAxis + SeamTolerance),
+                "la ventana termina antes del eje del espejo del lienzo (x = 0,5): ahí empieza la costura");
+            Assert.That(left, Is.GreaterThanOrEqualTo(-SeamTolerance), "y no descubre el borde izquierdo del lienzo");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_RF01_LosCincoPersonajesQuedanDentroDeLaPortada()
+        {
+            await LoadMainMenu();
+            var window = ScreenRectOf((RectTransform)Object.FindAnyObjectByType<FramedIllustration>().transform);
+
+            var cells = Object.FindObjectsByType<CharacterRig>(FindObjectsInactive.Exclude)
+                .Select(rig => ScreenRectOf((RectTransform)rig.transform)).ToArray();
+
+            Assert.That(cells, Has.Length.EqualTo(PortraitCast.Length));
+            Assert.That(cells, Has.All.Matches<Rect>(cell =>
+                cell.xMin >= window.xMin - 1f && cell.xMax <= window.xMax + 1f
+                && cell.yMin >= window.yMin - 1f && cell.yMax <= window.yMax + 1f),
+                "la casilla de cada personaje cabe entera en la ventana: ninguno queda recortado por la máscara");
+        }
+
+        // D10 (08/10/2026): el nombre del juego sale de la tarjeta y va encima; la tarjeta, más corta, queda con el lema;
+        // y el bloque entero —título, tarjeta y botones— está centrado en vertical.
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_RF01_TituloTarjetaYBotonesQuedanCentradosEnVertical()
+        {
+            await LoadMainMenu();
+            var sut = Object.FindAnyObjectByType<MainMenuController>();
+            var cardTransform = TextContaining(Tagline).transform.parent.parent;
+            var title = ScreenRectOf(sut.TitleLabel.rectTransform);
+            var card = ScreenRectOf((RectTransform)cardTransform);
+            var buttons = Options.Select(FindOption).Select(ScreenRectOf).ToArray();
+            var block = buttons.Append(title).Append(card).Aggregate(IllustrationProbe.Union);
+
+            Assert.That(sut.TitleLabel.transform.IsChildOf(cardTransform), Is.False, "el nombre del juego ya no va dentro de la tarjeta");
+            Assert.That(title.yMin, Is.GreaterThanOrEqualTo(card.yMax), "el título va encima de la tarjeta");
+            Assert.That(card.yMin, Is.GreaterThanOrEqualTo(buttons.Max(button => button.yMax)), "y la tarjeta encima de los botones");
+            Assert.That(Screen.height - block.yMax, Is.EqualTo(block.yMin).Within(1f),
+                "el bloque deja tanto espacio encima del título como debajo de los botones");
+        }
+
         [Test]
         [Timeout(20000)]
         public async Task MainMenu_RNF13_SusBotonesNoLanzanSiLaEscenaSeAbreSinPasarPorBoot()
@@ -248,8 +338,10 @@ namespace Game.UI.Tests
         [Timeout(20000)]
         [Category("VisualVerification")]
         [Description("Tras ejecutar esta prueba, revisar la captura: contraste entre el texto " +
-                     "(título y botones) y su fondo, que los glifos con tilde y «¿ ¡» se dibujen, " +
-                     "y que nada se recorte ni deforme.")]
+                     "(título y botones) y su fondo —el título es blanco sobre el ocre y se lee por su " +
+                     "reborde carbón de 4 px, que debe verse continuo—, que los glifos con tilde y «¿ ¡» " +
+                     "se dibujen, que los cinco personajes de la portada se vean enteros y que nada se " +
+                     "recorte ni deforme.")]
         public async Task MainMenu_RNF20_ContrasteTextoFondoSuficiente()
         {
             await LoadMainMenu();

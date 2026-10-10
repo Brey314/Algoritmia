@@ -16,9 +16,12 @@ namespace Game.Scaffolding
     /// el choque de las manos delante del pecho (Papá enciende la chispa así en el Nivel 1) queda
     /// tapado por el propio cuerpo y el gesto que enseña la mecánica no se ve.
     ///
-    /// **Solo toca hermanos de Tronco, por nombre, y solo los brazos que están ANTES del torso.** En
-    /// Algoritm los brazos ya se dibujan después del torso y no se tocan; la cara de Algoritm
-    /// (Ojos, Boca) tampoco se mueve nunca. El resto de los hijos de Tronco —el cuello con la cabeza
+    /// **Solo toca hermanos de Tronco, por nombre, y solo los brazos que están ANTES del torso.** Desde
+    /// INC-147 (Santiago, 09/10/2026) los brazos de Algoritm también van antes del torso —detrás de todo el
+    /// cuerpo—, así que la regla los alcanza igual que a la familia: pasarían justo después del torso, entre
+    /// él y la cara, y la cara de Algoritm (Ojos, Boca) no se toca nunca, de modo que una mano no llega a
+    /// pasar por encima de ella. En el juego nada se lo pide a Algoritm: no golpea y su controlador no tiene
+    /// el estado Strike. El resto de los hijos de Tronco —el cuello con la cabeza
     /// dentro, los antebrazos— conserva su sitio: el cuello sigue donde estaba respecto del torso (detrás
     /// de él en Mamá, Niña y Niño; delante en Papá) y la cabeza, por tanto, sigue detrás de los brazos
     /// que suben salvo en Papá.
@@ -97,7 +100,7 @@ namespace Game.Scaffolding
 
             foreach (var child in current)
             {
-                // Solo se mueve el brazo que se dibuja antes del torso; el que ya va después (Algoritm) se queda.
+                // Solo se mueve el brazo que se dibuja antes del torso; el que ya va después se queda.
                 if (Array.IndexOf(arms, child) >= 0 && child.GetSiblingIndex() < torsoIndex)
                 {
                     moving.Add(child);
@@ -110,7 +113,7 @@ namespace Game.Scaffolding
 
             if (moving.Count == 0)
             {
-                return; // ya están delante (Algoritm) o ya se movieron
+                return; // ya están delante o ya se movieron
             }
 
             // «moving» sale en el orden en que estaban, así que entre ellos se conserva. Entran justo después del

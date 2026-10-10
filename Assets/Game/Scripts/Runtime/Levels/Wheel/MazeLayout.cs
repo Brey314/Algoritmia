@@ -89,10 +89,6 @@ namespace Game.Levels.Wheel
         public float ObstacleScale { get; private set; } = 1.65f;
 
         [field: SerializeField]
-        [field: Tooltip("La luz de la hora del día: tiñe el entorno y todo lo que cuelga de él. El Nivel 2 dura un día entero y la fase 3 es al atardecer. Blanco = sin tinte.")]
-        public Color LightTint { get; private set; } = Color.white;
-
-        [field: SerializeField]
         [field: Tooltip("Material con el shader «Algoritm/UI Contraste» (fx_contraste). Vacío = el entorno sin contraste añadido.")]
         public Material EnvironmentMaterial { get; private set; }
 
@@ -107,7 +103,7 @@ namespace Game.Levels.Wheel
         public float Saturation { get; private set; } = 1f;
 
         [field: SerializeField]
-        [field: Tooltip("Color del panel que rodea al entorno cuando la ilustración no lo llena. Se tiñe con la luz del momento, como el entorno, para que parezca su continuación.")]
+        [field: Tooltip("Color del fondo de la pantalla: el panel que rodea al entorno cuando la ilustración no lo llena. Es el ámbar de atención (#E8A33D) y es el mismo de «Fondo_Escena», el fondo que va detrás de la tarjeta de la secuencia: pantalla y panel son un solo fondo. Si se cambia aquí, hay que cambiar también ese (lo vigila MazeScene_RF30_ElFondoDeLaEscenaYElDelAssetSonElMismoAmbar).")]
         public Color BackdropColor { get; private set; } = Color.black;
 
         [field: SerializeField]

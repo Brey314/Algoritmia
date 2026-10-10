@@ -14,7 +14,8 @@
 #   1. preparar_arte_final.py <id> <carpeta_entrega> [--aplicar]: reconoce las piezas, las limpia y normaliza,
 #      las mide (rect y punto de cada articulacion, entrada del personaje en arte_final.json) y, con --aplicar,
 #      copia los PNG al repo, lleva el pivote del hombro al borde del torso (hombro.py: Santiago, 06/10/2026; el arte entrega el humero con su
-#      extremo redondo en el centro del pecho y, girando desde ahi, el reposo salia en A), regenera rig_articulaciones.json (articulaciones.py)
+#      extremo redondo en el centro del pecho y, girando desde ahi, el reposo salia en A), encaja el humero y el antebrazo en el codo si el humero
+#      se pasa del casquete (codo.py: Santiago, 08/10/2026; Papa lo entrego solapado y el humero asomaba al doblar el codo), regenera rig_articulaciones.json (articulaciones.py)
 #      y este JSON de clips, y corre pose_preview.py; imprime las ordenes para la sesion local. Es todo lo que hace falta antes de Unity;
 #   2. en el Editor, BuildRigsFinal.cs.txt, modos «sprites», «orden» (si hace falta) y «clips».
 # La coreografia no se toca: la cinematica de los brazos y las medidas de las piernas salen del JSON del rig y
@@ -28,6 +29,18 @@
 # y el rascado del Nino) ya no se desvian: el brazo hace lo que el gesto pide, la mano llega de verdad a la sien o a la frente (cabeza_objetivo) y
 # pose_preview.py solo les relaja la cara (nunca los dos ojos a la vez). Los clips NUNCA animan AntebrazoX ni su
 # ancla: solo BrazoX y BrazoX/CodoX (el ancla vive bajo el codo y el motor copia su pose al antebrazo).
+#
+# PERFIL (INC-134, 09/10/2026). La familia (Papa, Mama, Nina y Nino; Algoritm no) tiene un SEGUNDO cuerpo, Lienzo/Perfil, dibujado de perfil y mirando a
+# la DERECHA, que el motor enseña en las siete acciones de ActionView (ACCIONES_PERFIL = Walk, Run, Carry, Push, PickUp, Kneel y Blow) y apaga en las
+# demas. Este script anade, al mismo clip y con la misma duracion que su version de frente, las curvas del cuerpo de perfil (rutas Lienzo/Perfil/…, las
+# mismas propiedades: localEulerAnglesRaw.z, m_AnchoredPosition y m_LocalScale): las piernas oscilan adelante y atras con la rodilla doblada en el balanceo,
+# los brazos a contrafase con el codo llegando tarde, el tronco inclinado hacia delante con las piernas compensandolo (cuelgan de el), squash & stretch <= 15 %
+# en Perfil, anticipacion al recoger, una rodilla en el suelo al arrodillarse y la agachada al soplar. TODO clip de la familia fija ademas las 12 articulaciones
+# de perfil (constantes, en su reposo, en las acciones de frente) para que ninguna caiga a la pose en T; los huesos de frente no cambian en ningun clip. Las
+# longitudes salen de la clave «perfil» de rig_articulaciones.json (PROVISIONALES hasta que llegue el arte de perfil: preparar_perfil.py las sustituye y este script
+# se vuelve a correr sin tocar la coreografia). --valida y --autoprueba comprueban ademas con una cinematica de la figura de perfil (GeoPerfil, valida_perfil)
+# que los pies no atraviesan el suelo, que ninguna rodilla ni codo se dobla al reves, el giro maximo, el squash & stretch y que no hay poses de caida (CP-02).
+# OJO: la constante PERFIL de mas abajo es el angulo de reposo de los brazos de cada personaje, no una vista de lado.
 #
 # Los prefabs se leen con prefabs.py. Pillow hace falta para medir la silueta de los pies y el grosor de los
 # brazos (sin el se usan los rects) y para la prueba.
@@ -83,6 +96,16 @@ PROPIEDADES = (ROT, POSX, POSY, ESCX, ESCY, ALFA)
 
 HUESOS_FAMILIA = [C, T, LA, RA, LE, RE, LL, RL, LK, RK, NK, HD]
 HUESOS_GUIA = [C, T, LA, RA, LE, RE, LL, RL, LK, RK]
+
+# INC-134 (09/10/2026): el cuerpo de PERFIL de la familia. Cada clip de la familia lleva ademas una curva de rotacion en CADA una de estas 12
+# articulaciones (las acciones de frente la dejan constante en su reposo, para que ningun hueso de perfil quede sin curva y caiga a la pose en T),
+# y los siete clips de ACCIONES_PERFIL las animan. Los huesos de frente no cambian en ningun clip. OJO con el nombre: PERFIL (mas abajo) es el angulo de
+# reposo de los brazos de cada personaje, no una vista de lado.
+PF, PT, PBL, PEL, PBC, PEC = P.PF, P.PT, P.PBL, P.PEL, P.PBC, P.PEC
+PLL, PKL, PLC, PKC, PNK, PHD = P.PLL, P.PKL, P.PLC, P.PKC, P.PNK, P.PHD
+HUESOS_PERFIL = P.HUESOS_PERFIL
+ACCIONES_PERFIL = P.ACCIONES_PERFIL
+HUESOS_FAMILIA_COMPLETA = HUESOS_FAMILIA + HUESOS_PERFIL
 
 
 class Familia:
@@ -233,13 +256,13 @@ class Spec:
             b.set(tv[i] * self.k, self.reposo(der) + tv[i + 1])
         return self
 
-    def vol(self, *tv):
+    def vol(self, *tv, ruta=None):
         """
-        Squash & stretch de Cuerpo: pares (tiempo, escala Y). X compensa (1 - 0,5 (Y - 1)): con Y entre
-        0,92 y 1,08 la X queda entre 1,04 y 0,96 y ninguna pasa del 15 % (DA 13.2).
+        Squash & stretch de Cuerpo (o de «ruta»: Lienzo/Perfil en el cuerpo de perfil): pares (tiempo, escala Y). X compensa
+        (1 - 0,5 (Y - 1)): con Y entre 0,92 y 1,08 la X queda entre 1,04 y 0,96 y ninguna pasa del 15 % (DA 13.2).
         """
-        y = self._get(C, ESCY)
-        x = self._get(C, ESCX)
+        y = self._get(ruta or C, ESCY)
+        x = self._get(ruta or C, ESCX)
         for i in range(0, len(tv) - 1, 2):
             y.set(tv[i] * self.k, tv[i + 1])
             x.set(tv[i] * self.k, 1.0 - 0.5 * (tv[i + 1] - 1.0))
@@ -353,6 +376,7 @@ class Ctx:
         self.pliegue = 0.0    # reposo: flexion de los codos hacia dentro
         self.delante = set()  # acciones en que los brazos van DELANTE del torso (CharacterRig.armsInFrontActions); las demas, detras
         self.delante_hallada = False  # la lista se leyo de CharacterRig.cs (si no, la de por defecto)
+        self.perfil = None    # GeoPerfil: la figura de perfil (INC-134), de la clave «perfil» del JSON del rig; None en Algoritm
 
 
 def leer_contexto_prefab(pid, rig=None):
@@ -838,7 +862,9 @@ def _brazos_de(rig, pid, arbol, piezas=None):
         e = codo["punto"]
         ruta_ante = (LE if lado == "Izq" else RE) + "/Antebrazo" + lado
         nodo_ante = arbol.get(ruta_ante)
-        partido = bool(not guia and nodo_ante is not None and nodo_ante.dibuja())
+        # Algoritm siempre se trata como brazo partido (humero y antebrazo): desde el 08/10/2026 su arte (primero el corte provisional, desde INC-136 las siete
+        # piezas finales) trae el antebrazo suelto, y la mano que prueba pose_preview.py (manos_modelo) tiene que seguir al codo.
+        partido = bool(guia or (nodo_ante is not None and nodo_ante.dibuja()))
         r = codo["rect"]  # el antebrazo del arte final: la mano esta al 80 % de su largo desde el codo
         c = ((r[0] + r[2]) / 2.0, (r[1] + r[3]) / 2.0)
         m_dos = (e[0] + 1.6 * (c[0] - e[0]), e[1] + 1.6 * (c[1] - e[1]))
@@ -982,6 +1008,8 @@ def leer_contexto(pid, rig=None, arbol=None, piezas=None):
     nodos = {n["nombre"]: n for n in p["nodos"]}
     partes = {q["nombre"]: q for q in p["partes"]}
     x = Ctx(pid, guia=guia)
+    if not guia and p.get("perfil"):
+        x.perfil = GeoPerfil(p)   # la figura de perfil: longitudes y puntos del JSON, no del prefab (que aun no tiene Lienzo/Perfil)
     x.delante, x.delante_hallada = P.acciones_brazos_delante()
     x.brazos = _brazos_de(rig, pid, arbol, piezas)
     x.hombro_y = x.brazos["Izq"].S[1]
@@ -1276,6 +1304,17 @@ def reposo_nuevo(x):
     for lado, hom, cod in (("Izq", LA, LE), ("Der", RA, RE)):
         b = x.brazos[lado]
         r[hom], r[cod] = b.pose(x.hang, x.pliegue)
+    r.update(reposo_perfil(x))
+    return r
+
+
+def reposo_perfil(x):
+    """
+    Pose de reposo de las 12 articulaciones del cuerpo de perfil (INC-134): de pie, los brazos colgando rectos y los codos con la flexion de reposo del
+    personaje (FAMILIA[...].codo, hacia delante: + en perfil mirando a la derecha). Es lo que llevan, constante, los clips de las acciones de frente.
+    """
+    r = {h: 0.0 for h in HUESOS_PERFIL}
+    r[PEL] = r[PEC] = FAMILIA[x.id].codo
     return r
 
 
@@ -1308,7 +1347,7 @@ def familia_spec(x, accion, archivo, largo_base, bucle=True):
     for b in x.brazos.values():
         b.pon_delante(accion in x.delante)
         b.permite_tapar_cara(tapa)
-    return Spec(accion, "char_%s_anim_%s" % (x.id, archivo), largo_base, x.k, bucle, reposo_nuevo(x), HUESOS_FAMILIA)
+    return Spec(accion, "char_%s_anim_%s" % (x.id, archivo), largo_base, x.k, bucle, reposo_nuevo(x), HUESOS_FAMILIA_COMPLETA)
 
 
 def brazos(x, s, izq=None, der=None):
@@ -2217,10 +2256,545 @@ def visibilidad(x, lista):
     lista.append(van)
 
 
+# ============================================================================ 2b. EL CUERPO DE PERFIL (INC-134, 09/10/2026)
+#
+# La familia gana un SEGUNDO cuerpo, Lienzo/Perfil, dibujado de perfil y mirando a la DERECHA (el motor voltea el Lienzo para mirar a la izquierda), que
+# se ve en las siete acciones de ActionView (ACCIONES_PERFIL: Walk, Run, Carry, Push, PickUp, Kneel y Blow); en las demas se ve el de frente. Los DOS
+# cuerpos los anima el mismo clip, con las mismas duraciones: aqui solo se AÑADEN curvas sobre los huesos de perfil (P.HUESOS_PERFIL) y los de frente
+# no se tocan en ningun clip. En los clips de frente los 12 huesos de perfil llevan una curva constante en su reposo (Spec.finish), para que ninguno
+# caiga a la pose en T.
+#
+# SIGNOS (el cuerpo mira a la DERECHA; el + de Z de Unity es antihorario en pantalla):
+#   Tronco       - inclina hacia DELANTE (la cabeza se va a la derecha) y + hacia atras. Las piernas, los brazos y la cabeza cuelgan de Tronco: si el
+#                tronco se inclina, ellos lo hacen con el. Por eso la coreografia se escribe en angulos del MUNDO (el muslo a +20 es 20 grados hacia
+#                delante, incline lo que se incline el tronco) y aqui se restan al tronco para sacar la rotacion LOCAL (resuelve_pose).
+#   Muslo, brazo + lleva el pie o la mano hacia DELANTE; - hacia atras.
+#   Rodilla      - FLEXIONA (la pantorrilla se va hacia atras): una rodilla nunca pasa de 0 hacia el lado contrario (hiperextension).
+#   Codo         + FLEXIONA (el antebrazo sube hacia delante): un codo nunca baja de 0.
+#   Cuello/Cabeza + levanta la cara hacia atras; - la baja hacia delante. Llegan tarde al tronco (2 y 4 cuadros), como de frente.
+# Las coordenadas son las del resto del archivo (lienzo de 1024, y hacia ABAJO); rota() gira un vector en esos ejes.
+#
+# CINEMATICA (GeoPerfil). La figura son cadenas de segmentos con las longitudes y los puntos de la clave «perfil» de rig_articulaciones.json (que son
+# PROVISIONALES hasta que llegue el arte de perfil: se derivan de la figura de frente): el muslo y la canilla de cada pierna, el humero y el antebrazo
+# de cada brazo, el tronco con la cabeza. Con ella:
+#   - los pies se PLANTAN: en cada cuadro se baja (o sube) Tronco lo justo para que el punto mas bajo de las dos piernas toque el suelo, asi un paso
+#     abre las piernas y la cadera BAJA sola, y una agachada baja la cadera lo que pide la flexion; en las agachadas y el arrodillado, ademas, un
+#     desplazamiento en X deja el pie de apoyo donde estaba (Tronco POSX), de modo que la cadera va hacia atras y los pies no resbalan;
+#   - las manos que tocan algo (los muslos, el monton del suelo) se llevan por cinematica inversa de dos segmentos (GeoPerfil.ik), no a ojo;
+#   - la prueba de valida_perfil() recorre cada clip de perfil de clips_personajes.json con esta misma cinematica: pies que no atraviesan el suelo,
+#     rodillas y codos que no se doblan al reves, giros de <= 1300 grados por segundo, squash & stretch <= 15 %, manos y cabeza sobre el suelo.
+# El pie es parte de la canilla (un solo sprite, como de frente): en una agachada la canilla se inclina y el pie con ella, y el punto mas bajo del
+# pie (talon o punta) es el que toca el suelo; GeoPerfil.contactos lleva las dos esquinas de la suela y la rotula (el borde de delante de la rodilla,
+# que es lo que toca el suelo al arrodillarse).
+
+DENSIDAD_PLANTA = 3   # el desplazamiento de Tronco (que planta los pies) se muestrea este numero de veces mas denso que las rotaciones
+
+
+def rota(v, grados):
+    """El vector v = (x, y con la y hacia ABAJO, como el lienzo) girado «grados» en sentido antihorario en pantalla (el + de Z de Unity)."""
+    c, sn = math.cos(math.radians(grados)), math.sin(math.radians(grados))
+    return (v[0] * c + v[1] * sn, -v[0] * sn + v[1] * c)
+
+
+def _mas(a, b):
+    return (a[0] + b[0], a[1] + b[1])
+
+
+def _menos(a, b):
+    return (a[0] - b[0], a[1] - b[1])
+
+
+def _dist(a, b):
+    return math.hypot(a[0] - b[0], a[1] - b[1])
+
+
+def _angulo(v):
+    """El angulo de un vector del lienzo, en grados, medido antihorario desde «hacia abajo» (el inverso de rota((0, 1), a))."""
+    return math.degrees(math.atan2(v[0], v[1]))
+
+
+def biseca(f, lo, hi, iteraciones=48):
+    """La raiz de f en [lo, hi] por biseccion; si f no cambia de signo, el extremo donde |f| es menor (el limite al que se llega)."""
+    flo, fhi = f(lo), f(hi)
+    if flo == 0.0:
+        return lo
+    if fhi == 0.0:
+        return hi
+    if flo * fhi > 0.0:
+        return lo if abs(flo) <= abs(fhi) else hi
+    for _ in range(iteraciones):
+        mid = 0.5 * (lo + hi)
+        fm = f(mid)
+        if flo * fm <= 0.0:
+            hi, fhi = mid, fm
+        else:
+            lo, flo = mid, fm
+    return 0.5 * (lo + hi)
+
+
+class GeoPerfil:
+    """
+    La figura de perfil como cadenas de segmentos (INC-134): sale de la clave «perfil» de un personaje de rig_articulaciones.json (nodos con su punto
+    y su rect) y es lo unico que la coreografia de perfil sabe del cuerpo. Cercano = el lado que mira al espectador (las claves «c»); Lejano = el
+    otro («l»). Cuando llegue el arte de perfil se vuelve a correr este script con el JSON nuevo y todo se recalcula.
+    """
+
+    def __init__(self, pj):
+        pf = pj["perfil"]
+        n = {q["nombre"]: q for q in pf["nodos"]}
+        self.provisional = bool(pf.get("provisional"))
+        self.suelo = P.SUELO
+        self.raiz = tuple(float(v) for v in n["Perfil"]["punto"])   # el pivote de Perfil: el suelo, donde escala el squash & stretch
+        self.cadera = tuple(float(v) for v in n["Tronco"]["punto"])  # el pivote de Tronco
+        self.cuello = tuple(float(v) for v in n["Cuello"]["punto"])
+        rc = n["Cuello"]["rect"]
+        self.copa = (0.5 * (rc[0] + rc[2]), float(rc[1]))              # lo mas alto de la cabeza
+        self.alto = self.suelo - self.copa[1]                          # la figura entera (870 con la coronilla en y = 77)
+        self.brazo, self.pierna = {}, {}
+        for lado, nb, np_ in (("c", "Cercano", "Cercana"), ("l", "Lejano", "Lejana")):
+            hombro = tuple(float(v) for v in n["Brazo" + nb]["punto"])
+            codo = tuple(float(v) for v in n["Codo" + nb]["punto"])
+            ra = n["Codo" + nb]["rect"]
+            mano = (codo[0], float(ra[3]))                              # la punta: el borde de abajo del antebrazo
+            self.brazo[lado] = {"hombro": hombro, "codo": codo, "mano": mano, "l1": _dist(hombro, codo), "l2": _dist(codo, mano),
+                                "a1": _angulo(_menos(codo, hombro)), "a2": _angulo(_menos(mano, codo))}
+            cadera = tuple(float(v) for v in n["Pierna" + np_]["punto"])
+            rodilla = tuple(float(v) for v in n["Rodilla" + np_]["punto"])
+            rm, rr = n["Pierna" + np_]["rect"], n["Rodilla" + np_]["rect"]
+            self.pierna[lado] = {
+                "cadera": cadera, "rodilla": rodilla, "l1": _dist(cadera, rodilla), "l2": float(rr[3]) - rodilla[1], "grosor": float(rm[2] - rm[0]),
+                # relativos a la rodilla: las dos esquinas de la suela (talon y punta) y la rotula (el borde de delante del muslo a la altura de la rodilla)
+                "contactos": [(rr[0] - rodilla[0], rr[3] - rodilla[1]), (rr[2] - rodilla[0], rr[3] - rodilla[1]), (rm[2] - rodilla[0], 0.0)],
+            }
+        pts = self.puntos({})
+        self.pie_x0 = {l: self.x_suela(pts, l) for l in ("c", "l")}
+        self.y_reposo = {l: max(p[1] for p in pts["pies_" + l]) - pts["cadera_" + l][1] for l in ("c", "l")}   # del pivote de la cadera al suelo, de pie
+
+    # -- cinematica directa
+    def puntos(self, loc, desp=(0.0, 0.0), esc=(1.0, 1.0)):
+        """
+        Los puntos del cuerpo (lienzo, y hacia abajo) con las rotaciones LOCALES de «loc» (grados; T tronco, pc/pl muslos, kc/kl rodillas, bc/bl brazos,
+        ec/el codos, n cuello, h cabeza, P el giro de Perfil; lo que falte vale 0), el desplazamiento «desp» (dx, dy) de Tronco y la escala «esc» de
+        Perfil (alrededor del suelo). Devuelve cadera_c/l, rodilla_c/l, pies_c/l (lista de puntos de contacto), hombro_c/l, codo_c/l, mano_c/l,
+        cuello y copa.
+        """
+        tau = loc.get("T", 0.0)
+        cad0 = _mas(self.cadera, desp)
+
+        def del_tronco(p):
+            return _mas(cad0, rota(_menos(p, self.cadera), tau))
+
+        out = {}
+        for lado in ("c", "l"):
+            pi, br = self.pierna[lado], self.brazo[lado]
+            cadera = del_tronco(pi["cadera"])
+            mu = tau + loc.get("p" + lado, 0.0)
+            rod = _mas(cadera, rota(_menos(pi["rodilla"], pi["cadera"]), mu))
+            ca = mu + loc.get("k" + lado, 0.0)
+            out["cadera_" + lado], out["rodilla_" + lado] = cadera, rod
+            out["pies_" + lado] = [_mas(rod, rota(q, ca)) for q in pi["contactos"]]
+            hombro = del_tronco(br["hombro"])
+            ba = tau + loc.get("b" + lado, 0.0)
+            codo = _mas(hombro, rota(_menos(br["codo"], br["hombro"]), ba))
+            mano = _mas(codo, rota(_menos(br["mano"], br["codo"]), ba + loc.get("e" + lado, 0.0)))
+            out["hombro_" + lado], out["codo_" + lado], out["mano_" + lado] = hombro, codo, mano
+        cuello = del_tronco(self.cuello)
+        out["cuello"] = cuello
+        out["copa"] = _mas(cuello, rota(_menos(self.copa, self.cuello), tau + loc.get("n", 0.0) + loc.get("h", 0.0)))
+        giro = loc.get("P", 0.0)
+        if giro or tuple(esc) != (1.0, 1.0):
+            def raiz(q):
+                v = rota(((q[0] - self.raiz[0]) * esc[0], (q[1] - self.raiz[1]) * esc[1]), giro)
+                return (self.raiz[0] + v[0], self.raiz[1] + v[1])
+            out = {k: ([raiz(q) for q in v] if isinstance(v, list) else raiz(v)) for k, v in out.items()}
+        return out
+
+    # -- pies en el suelo
+    @staticmethod
+    def x_suela(pts, lado):
+        """La x del centro de la suela (el talon y la punta, no la rotula) de ese lado: el pie que no resbala."""
+        return 0.5 * (pts["pies_" + lado][0][0] + pts["pies_" + lado][1][0])
+
+    def baja(self, loc):
+        """Cuanto hay que BAJAR el cuerpo (negativo = subirlo) para que el punto mas bajo de las dos piernas toque el suelo."""
+        pts = self.puntos(loc)
+        return self.suelo - max(p[1] for lado in ("c", "l") for p in pts["pies_" + lado])
+
+    def corre_x(self, loc, lado="c"):
+        """El desplazamiento en X de Tronco que deja el pie de ese lado donde estaba de pie: el pie de apoyo no resbala, es la cadera la que se mueve."""
+        return self.pie_x0[lado] - self.x_suela(self.puntos(loc), lado)
+
+    def y_apoyo(self, lado, muslo, canilla):
+        """El punto mas bajo de una pierna medido desde su cadera, con el muslo y la canilla a esos angulos del MUNDO (la flexion es muslo - canilla)."""
+        pi = self.pierna[lado]
+        rod = rota(_menos(pi["rodilla"], pi["cadera"]), muslo)
+        return max(rod[1] + rota(q, canilla)[1] for q in pi["contactos"])
+
+    def resuelve_muslo(self, lado, canilla, y_objetivo):
+        """El angulo del muslo (0 a 100 grados hacia delante) con el que, con la canilla a ese angulo del mundo, el punto mas bajo de la pierna queda a y_objetivo de la cadera."""
+        return biseca(lambda m: self.y_apoyo(lado, m, canilla) - y_objetivo, 0.0, 100.0)
+
+    def canilla_apoyada(self, lado, muslo):
+        """
+        El angulo del mundo de la canilla de una pierna ARRODILLADA (la rodilla en el suelo, la canilla hacia atras y arriba) con el que la rotula y la punta
+        del pie tocan el suelo a la vez: ni la rodilla flota ni la punta se clava. Entre -60 y -175 grados: con el arte de perfil de verdad (preparar_perfil.py,
+        09/10/2026) el cruce cae cerca de -90 (-79 en el Nino), fuera del intervalo -95..-175 que bastaba para la figura provisional, y la pantorrilla quedaba
+        apoyada solo por la rotula con el pie ~12 px en el aire.
+        """
+        pi = self.pierna[lado]
+
+        def resta(a):
+            ys = [rota(q, a)[1] for q in pi["contactos"]]
+            return max(ys[0], ys[1]) - ys[2]
+
+        return biseca(resta, -60.0, -175.0)
+
+    # -- cinematica inversa del brazo
+    def ik(self, lado, hombro, objetivo):
+        """
+        (angulo del MUNDO del humero, flexion del codo >= 0) con los que la mano de ese brazo llega a «objetivo» desde «hombro» (el hombro en el lienzo,
+        ya con el tronco inclinado): dos segmentos y la ley de los cosenos. El angulo del humero es del mundo, como los de la coreografia: la rotacion local
+        sale de restarle el giro del tronco (resuelve_pose). El codo queda del lado de atras de la recta hombro-mano (un codo
+        solo flexiona hacia delante). Si el objetivo no se alcanza, el brazo se estira todo lo que puede hacia el.
+        """
+        br = self.brazo[lado]
+        l1, l2 = br["l1"], br["l2"]
+        v = _menos(objetivo, hombro)
+        d = min(max(math.hypot(v[0], v[1]), abs(l1 - l2) + 1e-3), 0.995 * (l1 + l2))
+        th = _angulo(v)
+        psi = math.degrees(math.acos(max(-1.0, min(1.0, (l1 * l1 + d * d - l2 * l2) / (2.0 * l1 * d)))))
+        interior = math.degrees(math.acos(max(-1.0, min(1.0, (l1 * l1 + l2 * l2 - d * d) / (2.0 * l1 * l2)))))
+        humero = th - psi                       # el angulo efectivo del humero
+        flexion = 180.0 - interior              # entre el humero y el antebrazo
+        return humero - br["a1"], flexion - (br["a2"] - br["a1"])
+
+
+def resuelve_pose(g, m, reposo_codo):
+    """
+    De los OBJETIVOS de un instante (grados del MUNDO) a las rotaciones LOCALES de los huesos de perfil y al desplazamiento de Tronco. «m»:
+      tau            giro de Tronco (- = hacia delante)         mc, ml     angulo del muslo cercano y del lejano (+ = hacia delante)
+      fc, fl         flexion de las rodillas (>= 0)             bc, bl     angulo del humero cercano y del lejano
+      ec, el         flexion de los codos (>= 0)                n, h       cuello y cabeza, locales
+      extra          px que se SUBE el cuerpo (el salto de correr)         vol    escala Y de Perfil (X la compensa)
+      pie_x          "c" o "l": el pie que no resbala (agachadas, arrodillado); sin el, Tronco no se desplaza en X
+      mano_c/mano_l  objetivo de la mano (punto del lienzo o funcion de los puntos del cuerpo ya plantado), con peso_c/peso_l (0 a 1) que mezcla
+                     la cinematica inversa con el angulo pedido en bc/ec
+    El desplazamiento de Tronco PLANTA los pies (GeoPerfil.baja). Devuelve (loc, dx, dy): loc con T, pc, pl, kc, kl, bc, bl, ec, el, n, h; dy es lo que BAJA.
+    """
+    tau = m.get("tau", 0.0)
+    loc = {"T": tau, "pc": m.get("mc", 0.0) - tau, "pl": m.get("ml", 0.0) - tau, "kc": -m.get("fc", 0.0), "kl": -m.get("fl", 0.0),
+           "n": m.get("n", 0.0), "h": m.get("h", 0.0), "P": m.get("P", 0.0)}
+    dy = g.baja(loc) - m.get("extra", 0.0)
+    dx = g.corre_x(loc, m["pie_x"]) if m.get("pie_x") else 0.0
+    pts = g.puntos(loc, (dx, dy))
+    for lado in ("c", "l"):
+        b, e = m.get("b" + lado, 0.0), m.get("e" + lado, reposo_codo)
+        objetivo = m.get("mano_" + lado)
+        if objetivo is not None:
+            peso = m.get("peso_" + lado, 1.0)
+            punto_ = objetivo(pts) if callable(objetivo) else objetivo
+            bi, ei = g.ik(lado, pts["hombro_" + lado], punto_)
+            b, e = b + peso * (bi - b), e + peso * (ei - e)
+        loc["b" + lado], loc["e" + lado] = b - tau, e
+    return loc, dx, dy
+
+
+def emite_perfil(x, s, largo, f, paso):
+    """
+    Muestrea f(t) (t en segundos base) cada «paso» y escribe en el clip «s» las curvas del cuerpo de perfil: la rotacion de las 12 articulaciones, el
+    desplazamiento de Tronco que planta los pies (POSX y POSY, si no es cero) y el squash & stretch de Perfil (ESCX y ESCY, si no es 1). Una curva
+    que no varia se escribe con dos claves. El desplazamiento de Tronco se muestrea el TRIPLE de denso (DENSIDAD_PLANTA) que las rotaciones: el
+    «el punto mas bajo de dos piernas» tiene picos en cada cruce de piernas y una curva suave de pocas claves los redondearia, hundiendo el pie unos px.
+    En un bucle f debe ser periodica en «largo», y cierra sola. Devuelve la lista de (t, loc, dx, dy) de todas las muestras.
+    """
+    g = x.perfil
+    codo = reposo_perfil(x)[PEC]
+    n = max(1, int(round(largo / paso)))
+    paso_ = DENSIDAD_PLANTA
+    tiempos = [min(largo, i * largo / (n * paso_)) for i in range(n * paso_ + 1)]
+    cols = {}
+    muestras = []
+
+    def pon(ruta, prop, i, v):
+        cols.setdefault((ruta, prop), []).append((i, v))
+
+    for i, t in enumerate(tiempos):
+        m = f(t)
+        loc, dx, dy = resuelve_pose(g, m, codo)
+        muestras.append((t, loc, dx, dy))
+        pon(PT, POSX, i, dx)
+        pon(PT, POSY, i, -dy)
+        if i % paso_:
+            continue      # el resto de las curvas, a la densidad de «paso»
+        pon(PF, ROT, i, loc["P"])
+        pon(PT, ROT, i, loc["T"])
+        pon(PLC, ROT, i, loc["pc"])
+        pon(PLL, ROT, i, loc["pl"])
+        pon(PKC, ROT, i, loc["kc"])
+        pon(PKL, ROT, i, loc["kl"])
+        pon(PBC, ROT, i, loc["bc"])
+        pon(PBL, ROT, i, loc["bl"])
+        pon(PEC, ROT, i, loc["ec"])
+        pon(PEL, ROT, i, loc["el"])
+        pon(PNK, ROT, i, loc["n"])
+        pon(PHD, ROT, i, loc["h"])
+        v = m.get("vol", 1.0)
+        pon(PF, ESCY, i, v)
+        pon(PF, ESCX, i, 1.0 - 0.5 * (v - 1.0))
+    for (ruta, prop), pares in cols.items():
+        vs = [v for _, v in pares]
+        if prop in (POSX, POSY) and max(abs(v) for v in vs) < 1e-3:
+            continue
+        if prop in (ESCX, ESCY) and all(abs(v - 1.0) < 1e-4 for v in vs):
+            continue
+        if max(vs) - min(vs) < 1e-4:
+            tv = [0.0, vs[0], largo, vs[0]]
+        else:
+            tv = []
+            for i, v in pares:
+                tv += [tiempos[i], v]
+        s.raw(ruta, prop, *tv)
+    return muestras
+
+
+# ---------------------------------------------------------------------------- las siete acciones de perfil
+
+
+def _punto_muslo(g, pts, lado, frac=0.6, arriba=0.5):
+    """El punto del lienzo sobre el muslo de ese lado, a «frac» del camino de la cadera a la rodilla y «arriba» grosores por encima del muslo: donde descansa una mano."""
+    a, b = pts["cadera_" + lado], pts["rodilla_" + lado]
+    vx, vy = b[0] - a[0], b[1] - a[1]
+    largo = max(math.hypot(vx, vy), 1e-6)
+    nx, ny = vy / largo, -vx / largo
+    if ny > 0.0:
+        nx, ny = -nx, -ny
+    r = arriba * g.pierna[lado]["grosor"]
+    return (a[0] + frac * vx + nx * r, a[1] + frac * vy + ny * r)
+
+
+def perfil_ciclo(x, s, par):
+    """
+    Caminar, correr, cargar y empujar de perfil: un paso con dos zancadas por ciclo (el mismo ciclo de duracion que el clip de frente de la misma
+    accion). Cada pierna es una cosenoidal de cadera centrada en par[c] con amplitud par[A] —adelante del todo a fase 0, atras a fase 0,5— con una
+    flexion de rodilla en el balanceo (par[Fsw], cuando la pierna vuelve hacia delante) y una pequeña de apoyo (par[Fst]) tras tocar el suelo; la otra
+    pierna va a contrafase. Los brazos se contraponen a las piernas (el cercano va atras cuando la pierna cercana va adelante) y el codo llega
+    tarde al brazo (3 cuadros) y flexiona mas cuanto mas adelante va; con par[brazos] = (humero, flexion, oscilacion) quedan fijos delante, para
+    cargar y empujar. El tronco se inclina hacia delante (par[lean]) y las piernas lo compensan, porque cuelgan de el; la cabeza se queda mas erguida
+    y llega tarde. El cuerpo baja solo al abrir las piernas (los pies se plantan) y, al correr, ademas salta (par[hop]). Squash & stretch en Perfil.
+    """
+    k = x.k
+    largo = s.largo / k
+    e0 = reposo_perfil(x)[PEC] if par.get("e0") is None else par["e0"]
+
+    def lag(cuadros):
+        return cuadros / FPS / k          # cuadros -> segundos BASE
+
+    def tau(t):
+        return par["lean"] - par["osc"] * math.cos(TAU * 2.0 * t / largo)
+
+    def pierna(v):
+        v %= 1.0
+        sw_c, sw_w = par.get("sw", (0.70, 0.25))     # centro y semiancho (en fracciones de ciclo) de la flexion del balanceo
+        return (par["c"] + par["A"] * math.cos(TAU * v), par["Fst"] * bump(v, 0.11, 0.11) + par["Fsw"] * bump(v, sw_c, sw_w))
+
+    def f(t):
+        u = t / largo
+        fase = TAU * u
+        mc, fc = pierna(u)
+        ml, fl = pierna(u + 0.5)
+        m = {"tau": tau(t), "mc": mc, "fc": fc, "ml": ml, "fl": fl,
+             "n": -par["nk"] * tau(t - lag(2)), "h": -par["hk"] * tau(t - lag(4)),
+             "vol": 1.0 - par["sq"] * math.cos(2.0 * fase)}
+        if par.get("brazos"):
+            humero, flexion, o = par["brazos"]
+            m["bc"], m["bl"] = humero + o * math.sin(2.0 * fase), humero + o * math.sin(2.0 * fase + 0.8)
+            m["ec"], m["el"] = flexion + 0.5 * o * math.cos(2.0 * fase), flexion + 0.5 * o * math.cos(2.0 * fase + 0.8)
+        else:
+            tarde = fase - TAU * lag(3) / largo
+            m["bc"], m["bl"] = par["b0"] - par["B"] * math.cos(fase), par["b0"] + par["B"] * math.cos(fase)
+            m["ec"] = e0 + par["e1"] * 0.5 * (1.0 - math.cos(tarde))
+            m["el"] = e0 + par["e1"] * 0.5 * (1.0 + math.cos(tarde))
+        if par.get("hop"):
+            m["extra"] = par["hop"] * 0.5 * (1.0 + math.cos(2.0 * TAU * (u - 0.42)))   # el vuelo: dos por ciclo, entre un apoyo y el siguiente
+        return m
+
+    return emite_perfil(x, s, largo, f, largo / 20.0)
+
+
+def par_walk(a):
+    return dict(c=4.0, A=19.0 * a, Fsw=56.0, Fst=7.0, lean=-4.0 * a, osc=0.8, b0=3.0, B=18.0 * a, e0=None, e1=20.0, sq=0.015 * a, nk=0.45, hk=0.30)
+
+
+def par_run(a):
+    return dict(c=2.0, A=28.0 * a, Fsw=85.0, Fst=18.0, sw=(0.68, 0.30), lean=-8.0 * a, osc=1.2, b0=8.0, B=38.0, e0=70.0, e1=20.0, hop=14.0 * a, sq=0.04 * a, nk=0.50, hk=0.35)
+
+
+def par_carry(a):
+    # el paso de caminar, mas corto, con los brazos recogidos delante del pecho sosteniendo la carga: humero 40, antebrazo a 118 del suelo
+    return dict(c=3.0, A=12.0 * a, Fsw=44.0, Fst=5.0, lean=-2.0 * a, osc=0.6, brazos=(40.0, 78.0, 3.0), sq=0.01 * a, nk=0.45, hk=0.30)
+
+
+def par_push(a):
+    # inclinado hacia delante, las piernas echadas hacia atras (la de atras empuja) y los brazos tensos casi horizontales con los puños a la altura del pecho
+    return dict(c=-8.0, A=11.0 * a, Fsw=46.0, Fst=8.0, lean=-13.0, osc=1.0, brazos=(82.0, 6.0, 3.0), sq=0.01 * a, nk=0.55, hk=0.40)
+
+
+def _m_agachada(g, w, profundidad, canilla, tau, n, h, vol):
+    """
+    Los objetivos de una agachada con los DOS pies en el suelo, sin manos (perfil_agachada los añade): la cadera baja profundidad * w de la altura de la
+    cadera al suelo, con las canillas inclinadas «canilla» grados hacia atras (la lejana, 6 mas) y el muslo que haga falta (GeoPerfil.resuelve_muslo); el pie
+    cercano no resbala (pie_x: Tronco POSX).
+    """
+    d = profundidad * g.y_reposo["c"] * w
+    gc, gl = -canilla * w, -(canilla + 6.0) * w
+    mc = g.resuelve_muslo("c", gc, g.y_reposo["c"] - d)
+    ml = g.resuelve_muslo("l", gl, g.y_reposo["l"] - d)
+    return {"tau": tau, "mc": mc, "fc": mc - gc, "ml": ml, "fl": ml - gl, "n": n, "h": h, "vol": vol, "pie_x": "c"}
+
+
+def perfil_agachada(x, s, profundidad, canilla, tau_f, mano_c, mano_l, cabeza_f, vol_f, paso, w_f=None):
+    """
+    Agachada de perfil con los DOS pies en el suelo (soplar y recoger). «w_f(t)» (0 a 1, por defecto 1) es cuanto esta agachado (_m_agachada); tau_f(t) es el
+    giro del tronco, cabeza_f(t) devuelve (cuello, cabeza), vol_f(t) la escala Y y mano_c/mano_l(t) -> (objetivo, peso) de las manos (o None).
+    """
+    g = x.perfil
+    largo = s.largo / x.k
+    w_f = w_f or (lambda t: 1.0)
+
+    def f(t):
+        n, h = cabeza_f(t)
+        m = _m_agachada(g, w_f(t), profundidad, canilla, tau_f(t), n, h, vol_f(t))
+        for lado, mano in (("c", mano_c), ("l", mano_l)):
+            if mano is not None:
+                objetivo, peso = mano(t)
+                m["mano_" + lado], m["peso_" + lado] = objetivo, peso
+        return m
+
+    return emite_perfil(x, s, largo, f, paso)
+
+
+def _monton(g, m_max, fraccion):
+    """
+    El monton del suelo (fuego, objeto), FIJO: a «fraccion» del alcance horizontal del hombro del personaje agachado del todo (m_max, los objetivos de
+    _m_agachada a la profundidad maxima), a ras de suelo (la mano a 0,04 de la figura sobre el). Se mide con el hombro y no a un tanto de la altura:
+    un brazo corto lo tiene mas cerca que uno largo y ninguno se estira mas de lo que puede.
+    """
+    loc, dx, dy = resuelve_pose(g, m_max, 0.0)
+    hombro = g.puntos(loc, (dx, dy))["hombro_c"]
+    alto_mano = g.suelo - 0.04 * g.alto
+    br = g.brazo["c"]
+    alcance_x = math.sqrt(max((0.97 * (br["l1"] + br["l2"])) ** 2 - (alto_mano - hombro[1]) ** 2, 0.0))
+    return (hombro[0] + fraccion * alcance_x, alto_mano)
+
+
+def perfil_blow(x, s):
+    """
+    Soplar sobre el monton (0,9 s): agachado (el 22 % de la altura de la cadera al suelo), el tronco muy inclinado hacia delante, la cabeza hacia el fuego, los
+    brazos estirados hacia delante y abajo hasta cerca del suelo, y tres soplos (a 0,18, 0,46 y 0,74 s): inspira (el pecho sube un poco, la cabeza se alza) y
+    sopla (el pecho baja y la cabeza se echa hacia delante). El pie cercano no resbala.
+    """
+    g = x.perfil
+    profundidad, canilla, tau_base = 0.22, 14.0, -32.0
+    centros = (0.18, 0.46, 0.74)
+    llena = lambda t: sum(bump(t, c - 0.08, 0.08) for c in centros)
+    sopla = lambda t: sum(bump(t, c + 0.03, 0.09) for c in centros)
+    fuego = _monton(g, _m_agachada(g, 1.0, profundidad, canilla, tau_base, 0.0, 0.0, 1.0), 0.75)
+    mano_c = lambda t: (fuego, 1.0)
+    mano_l = lambda t: ((fuego[0] - 0.02 * g.alto, fuego[1]), 1.0)
+    return perfil_agachada(
+        x, s, profundidad, canilla,
+        lambda t: tau_base + 2.0 * llena(t) - 4.0 * sopla(t),
+        mano_c, mano_l,
+        lambda t: (-10.0 + 5.0 * llena(t) - 8.0 * sopla(t), -4.0 - 2.0 * sopla(t)),
+        lambda t: 1.0 + 0.03 * llena(t) - 0.05 * sopla(t), 0.025)
+
+
+def perfil_pickup(x, s):
+    """
+    Recoger (1,4 s): un respingo de anticipacion (0,1 s: el pecho sube y el tronco se echa un poco atras), se agacha hasta el monton del suelo (0,4 s), tira del
+    objeto con el brazo cercano (la mano llega al suelo por cinematica inversa, el lejano la acompaña), lo sostiene (0,7 s) y se levanta con el objeto contra
+    el vientre (1,1 s) hasta volver al reposo (1,4 s). Los pies no resbalan. El monton esta en el suelo, FIJO (_monton).
+    """
+    g = x.perfil
+    F = g.alto
+    profundidad, canilla, tau_max = 0.27, 12.0, -42.0
+
+    def w(t):
+        return suave(t, 0.10, 0.40) * (1.0 - suave(t, 0.70, 1.10))
+
+    monton = _monton(g, _m_agachada(g, 1.0, profundidad, canilla, tau_max, 0.0, 0.0, 1.0), 0.9)
+
+    def vientre(pts):
+        return (pts["cadera_c"][0] + 0.17 * F, pts["cadera_c"][1] - 0.08 * F)
+
+    def objetivo(t):
+        paso_ = suave(t, 0.70, 1.15)
+        return lambda pts: tuple(a + paso_ * (b - a) for a, b in zip(monton, vientre(pts)))
+
+    def peso(t):
+        return suave(t, 0.10, 0.32) * (1.0 - suave(t, 1.15, 1.38))
+
+    mano_c = lambda t: (objetivo(t), peso(t))
+    mano_l = lambda t: (objetivo(t), peso(t))
+    ant = lambda t: bump(t, 0.06, 0.06)
+    return perfil_agachada(
+        x, s, profundidad, canilla,
+        lambda t: tau_max * w(t) + 3.0 * ant(t),
+        mano_c, mano_l,
+        lambda t: (-6.0 * w(t), -3.0 * w(t)),
+        lambda t: 1.0 + 0.02 * ant(t) - 0.035 * w(t), 0.05, w_f=w)
+
+
+def perfil_kneel(x, s):
+    """
+    Arrodillado (3 s, bucle): una rodilla en el suelo —la lejana, con la canilla hacia atras y arriba y la punta del pie apoyada— y la otra pierna
+    adelante con el pie plano y el muslo casi horizontal (GeoPerfil.canilla_apoyada y resuelve_muslo lo calculan de las longitudes), el tronco algo
+    inclinado hacia delante y respirando, una mano sobre la rodilla de delante y la otra colgando. Se sostiene la pose: solo respira. El pie cercano no resbala.
+    """
+    g = x.perfil
+    L = s.largo / x.k
+    ml = -8.0
+    sg = g.canilla_apoyada("l", ml)
+    fl = ml - sg
+    y_lejana = g.y_apoyo("l", ml, sg)
+    gc = -10.0
+    mc = g.resuelve_muslo("c", gc, y_lejana)
+    fc = mc - gc
+
+    def f(t):
+        respira = math.sin(TAU * t / L)
+        return {"tau": -6.0 + 1.2 * respira, "mc": mc, "fc": fc, "ml": ml, "fl": fl,
+                "n": -3.0 - 0.8 * respira, "h": -1.5 * respira, "vol": 1.0 + 0.012 * respira, "pie_x": "c",
+                # la mano cercana descansa sobre la rodilla de la pierna de delante; la lejana cuelga relajada, un poco hacia delante
+                "mano_c": lambda pts: _punto_muslo(g, pts, "c", 1.0, 0.55), "bl": 6.0 + 1.5 * respira, "el": reposo_perfil(x)[PEL] + 14.0 + 3.0 * respira}
+
+    return emite_perfil(x, s, L, f, 0.25)
+
+
+PERFIL_ACCION = {
+    "Walk": lambda x, s: perfil_ciclo(x, s, par_walk(x.a)),
+    "Run": lambda x, s: perfil_ciclo(x, s, par_run(x.a)),
+    "Carry": lambda x, s: perfil_ciclo(x, s, par_carry(x.a)),
+    "Push": lambda x, s: perfil_ciclo(x, s, par_push(x.a)),
+    "PickUp": perfil_pickup,
+    "Kneel": perfil_kneel,
+    "Blow": perfil_blow,
+}
+
+
+def perfil_clip(x, s):
+    """Añade al clip «s» la coreografia de perfil si su accion es de ACCIONES_PERFIL y el personaje tiene perfil; si no, no hace nada (Spec.finish deja los 12 huesos en reposo)."""
+    f = PERFIL_ACCION.get(s.accion)
+    if f is not None and x.perfil is not None:
+        f(x, s)
+    return s
+
+
 def clips_familia(x):
     lista = _clips_familia(x)
     for sp in lista:
         plantar(x, sp)
+        perfil_clip(x, sp)   # INC-134: el cuerpo de perfil, tras el de frente (que no se toca)
     return lista
 
 
@@ -2233,13 +2807,17 @@ def _clips_familia(x):
 
 
 
-# ---------------------------------------------------------------------------- Algoritm: 9 clips
+# ---------------------------------------------------------------------------- Algoritm: 10 clips (los 9 de siempre y Wave, el saludo, 08/10/2026)
 #
 # Una llama con extremidades que flota. Conserva la flotacion senoidal, el giro de Spin sobre Cuerpo, el alfa
-# y los nombres de siempre. Sus brazos son palitos que salen de los costados del vientre y sus MANOS van por ENCIMA de
-# la cara (decision de Santiago, 05/10/2026: «orden_tronco» = Torso, Ojos, Boca, BrazoIzq, BrazoDer): lo que cruce los ojos o
-# la boca los tapa de verdad, asi que ningun gesto pasa por ellos —pose_preview.py exige el 99,5 % de la caja de ojos y boca,
-# ampliada un 30 %, sin brazo encima—. Con el sprite entero actual lo visible no cambia; la prueba usa una maqueta recortada.
+# y los nombres de siempre. Sus brazos son palitos que salen de los costados del vientre y van DETRAS DE TODO EL CUERPO
+# (INC-147, decision de Santiago, 09/10/2026, que revierte la de INC-132 del 05/10/2026 «las manos por encima de la cara»:
+# «orden_tronco» = BrazoIzq, BrazoDer, Torso, Ojos, Boca): una mano nunca tapa los ojos ni la boca, y de un brazo solo se ve lo que
+# sobresale de la silueta del torso. pose_preview.py conserva la comprobacion de la cara (el 99,5 % de la caja de ojos y boca,
+# ampliada un 30 %, sin brazo encima), que con este orden se cumple sola. INC-136 (09/10/2026): Algoritm tiene arte final de siete piezas
+# (preparar_algoritm.py) y la PIERNA ENTERA: la RodillaX ya no tiene antepierna colgada, asi que las curvas de rodilla de estos clips (cuelga_piernas, Spin,
+# Celebrate, Encourage) giran un nodo VACIO y lo que se ve es la pierna oscilando entera desde la cadera. Los clips no cambian (no leen la geometria del
+# guia: todo son grados); la prueba de pose_preview.py los dibuja con las piezas de Frontal/.
 
 
 def guia_idle(x):
@@ -2261,6 +2839,32 @@ def guia_idle(x):
         for k in s._get(ruta, ROT).claves:
             k[1] += delta
     cuelga_piernas(s, 12)
+    s.follow(C, ROT, T, 2, 0.4)
+    return s
+
+
+def guia_wave(x):
+    """
+    Saluda (D12, Santiago, 08/10/2026: la pantalla de creditos). El brazo derecho de la pantalla sube, la mano se mece de un lado a otro unos cuatro vaivenes con el
+    antebrazo casi vertical, el brazo baja y el clip descansa antes de volver a empezar: un bucle de 4,8 s con una pausa de reposo de 0,9 s dentro, para que el saludo
+    no sea un tic continuo. El codo se dobla antes de que el hombro llegue arriba (no se estira horizontal) y la mano no pasa nunca por la cara (pose_preview exige libre el
+    99,5 % de la caja de ojos y boca ampliada un 30 %: con el hombro a mas de 98 grados o el codo a 27 +- 18 el antebrazo ya la roza). El cuerpo flota como en Idle (dos
+    vueltas de 2,4 s) y se inclina un poco hacia la mano. Es una accion solo del guia, como Spin: la familia no la tiene.
+    """
+    largo = 4.8
+    s = guia_spec("Wave", "saludar", largo)
+    alza = lambda t: suave(t, 0.0, 0.55) * (1.0 - suave(t, 3.35, 3.95))                    # 0 = el hombro abajo, 1 = arriba
+    dobla = lambda t: suave(t, 0.0, 0.38) * (1.0 - suave(t, 3.55, 3.98))                   # el codo se dobla antes de que suba el hombro y se estira al final
+    mece = lambda t: math.sin(TAU * (t - 0.55) / 0.7) * suave(t, 0.5, 0.95) * (1.0 - suave(t, 3.0, 3.4))   # el vaiven de la mano: 0,7 s por vaiven, con rampa de entrada y de salida
+    muestrea(s, C, POSY, lambda t: 12.0 * (1.0 - math.cos(TAU * t / 2.4)), largo, 0.05)
+    muestrea(s, RA, ROT, lambda t: 94.0 * alza(t) + 3.0 * mece(t), largo, 0.05)               # el humero a unos 139 grados de la vertical (el prefab lo trae a 45)
+    muestrea(s, RE, ROT, lambda t: -7.0 * (1.0 - dobla(t)) + (27.0 + 16.0 * mece(t)) * dobla(t), largo, 0.05)   # abajo, algo plegado hacia dentro como en Idle; arriba, 27 +- 16 grados
+    muestrea(s, C, ROT, lambda t: alza(t) * (-2.5 + 1.2 * mece(t)), largo, 0.05)
+    cuelga_piernas(s, 12)
+    s.follow(C, POSY, LA, 4, -0.4, 12)                  # el brazo que no saluda cuelga y sigue la flotacion, con su codo plegado hacia dentro
+    s.follow(LA, ROT, LE, 3, 0.8)
+    for k in s._get(LE, ROT).claves:
+        k[1] += 7.0
     s.follow(C, ROT, T, 2, 0.4)
     return s
 
@@ -2340,6 +2944,7 @@ def clips_guia(x):
                  .raw("Lienzo", ALFA, 0, 1.0, 0.3, 0.35, 0.6, 1.0, 0.9, 0.35, 1.2, 1.0, 1.6, 0.0)
                  .raw(C, ESCX, 0, 1.0, 1.2, 1.0, 1.6, 0.6)
                  .raw(C, ESCY, 0, 1.0, 1.2, 1.0, 1.6, 0.6))
+    lista.append(guia_wave(x))
     return lista
 
 
@@ -2486,7 +3091,124 @@ def valida(doc, ruta=SALIDA):
             falta = [h for h in huesos if h not in rutas_rot]
             if falta:
                 errores.append("%s: sin rotacion en %s" % (ctx, falta))
+            if p["id"] != "algoritm":   # INC-134: cada clip de la familia (de frente o de perfil) fija las 12 articulaciones de perfil: ninguna cae a la pose en T
+                falta_p = [h for h in HUESOS_PERFIL if h not in rutas_rot]
+                if falta_p:
+                    errores.append("%s: sin rotacion de perfil en %s" % (ctx, falta_p))
     return errores
+
+
+# ---------------------------------------------------------------------------- la prueba del cuerpo de perfil (INC-134)
+
+# Lo que la prueba cinematica deja pasar (px y grados): el suelo (un pie puede bajar esto por debajo y seguir "apoyado"), cuanto puede flotar el cuerpo
+# en una accion que no salta, el giro por segundo, la escala y la inclinacion del tronco.
+TOL_SUELO = 2.0
+TOL_FLOTA = 4.0
+VELOCIDAD_PERFIL = 1300.0
+ESCALA_PERFIL = (0.85, 1.15)        # squash & stretch <= 15 % (DA 13.2)
+TRONCO_PERFIL = (-48.0, 10.0)       # hacia delante hasta 48 grados (soplar y recoger); hacia atras, casi nada: sin poses de caida (CP-02)
+SIN_SALTO = ("Walk", "Carry", "Push", "PickUp", "Kneel", "Blow")   # Run salta: es la unica que puede tener los dos pies en el aire
+SOSTENIDAS = ("Kneel",)             # poses que se sostienen (solo respiran): se piden lejos del reposo, no en movimiento
+
+
+def valida_perfil(doc, rig=None):
+    """
+    La prueba de que la coreografia de perfil se puede ver: recorre cada clip de ACCIONES_PERFIL de los cuatro de la familia a 30 cuadros por segundo con la
+    MISMA cinematica con que se escribio (GeoPerfil, con la geometria del JSON del rig) y comprueba, desde las curvas del JSON y no desde las funciones:
+      - el punto mas bajo de las piernas no atraviesa el suelo mas de TOL_SUELO px y, salvo al correr, no flota mas de TOL_FLOTA (los pies se plantan);
+      - ningun codo (>= 0) ni rodilla (<= 0) se dobla al reves, descontando 1 grado;
+      - ninguna articulacion gira mas de VELOCIDAD_PERFIL grados por segundo;
+      - la escala de Perfil se queda en ESCALA_PERFIL (squash & stretch de a lo sumo el 15 %);
+      - el tronco no pasa de TRONCO_PERFIL grados: sin poses de caida ni de derrota (CP-02);
+      - la mano y la cabeza no bajan del suelo;
+      - la accion MUEVE el cuerpo de perfil (una accion de perfil con las curvas constantes es un cuerpo de perfil que no se anima).
+    Devuelve la lista de problemas (vacia = bien).
+    """
+    errores = []
+    rig = rig or P.cargar_rig()
+    for p in doc["personajes"]:
+        if p["id"] not in FAMILIA:
+            continue
+        try:
+            g = GeoPerfil(P.personaje_rig(rig, p["id"]))
+        except KeyError:
+            errores.append("%s: rig_articulaciones.json no tiene la clave «perfil»" % p["id"])
+            continue
+        for clip in p["clips"]:
+            if clip["accion"] not in ACCIONES_PERFIL:
+                continue
+            ctx = "%s/%s" % (p["id"], clip["archivo"])
+            curvas = {(c["ruta"], c["propiedad"]): CurvaAuto(c["claves"]) for c in clip["curvas"]}
+            falta = [h for h in HUESOS_PERFIL if (h, ROT) not in curvas]
+            if falta:
+                errores.append("%s: sin rotacion de perfil en %s" % (ctx, falta))
+                continue
+            dur = clip["duracion"]
+            n = max(2, int(math.ceil(dur * FPS)))
+            previo, peor = None, {}
+            var = {h: [1e9, -1e9] for h in HUESOS_PERFIL}
+
+            def v(ruta, prop, t, defecto=0.0):
+                c = curvas.get((ruta, prop))
+                return c.evaluar(t) if c is not None else defecto
+
+            for i in range(n + 1):
+                t = min(dur, i * dur / n)
+                loc = {"P": v(PF, ROT, t), "T": v(PT, ROT, t), "pc": v(PLC, ROT, t), "pl": v(PLL, ROT, t), "kc": v(PKC, ROT, t), "kl": v(PKL, ROT, t),
+                       "bc": v(PBC, ROT, t), "bl": v(PBL, ROT, t), "ec": v(PEC, ROT, t), "el": v(PEL, ROT, t), "n": v(PNK, ROT, t), "h": v(PHD, ROT, t)}
+                esc = (v(PF, ESCX, t, 1.0), v(PF, ESCY, t, 1.0))
+                pts = g.puntos(loc, (v(PT, POSX, t), -v(PT, POSY, t)), esc)
+                bajo = max(q[1] for lado in ("c", "l") for q in pts["pies_" + lado])
+                peor["hunde"] = max(peor.get("hunde", -1e9), bajo - g.suelo)
+                peor["flota"] = max(peor.get("flota", -1e9), g.suelo - bajo)
+                peor["rodilla"] = max(peor.get("rodilla", -1e9), loc["kc"], loc["kl"])
+                peor["codo"] = max(peor.get("codo", -1e9), -loc["ec"], -loc["el"])
+                peor["esc_min"] = min(peor.get("esc_min", 1e9), esc[0], esc[1])
+                peor["esc_max"] = max(peor.get("esc_max", -1e9), esc[0], esc[1])
+                peor["tau_min"] = min(peor.get("tau_min", 1e9), loc["T"])
+                peor["tau_max"] = max(peor.get("tau_max", -1e9), loc["T"])
+                peor["mano"] = max(peor.get("mano", -1e9), pts["mano_c"][1] - g.suelo, pts["mano_l"][1] - g.suelo)
+                peor["copa"] = max(peor.get("copa", -1e9), pts["copa"][1] - g.suelo)
+                for h in HUESOS_PERFIL:
+                    var[h][0], var[h][1] = min(var[h][0], loc_de(loc, h)), max(var[h][1], loc_de(loc, h))
+                if previo is not None:
+                    dt = t - previo[0]
+                    for h in HUESOS_PERFIL:
+                        rapido = abs(loc_de(loc, h) - loc_de(previo[1], h)) / dt
+                        peor["vel"] = max(peor.get("vel", 0.0), rapido)
+                        if rapido > VELOCIDAD_PERFIL:
+                            peor.setdefault("vel_en", (h.split("/")[-1], round(t, 3), round(rapido)))
+                previo = (t, loc)
+            if peor["hunde"] > TOL_SUELO:
+                errores.append("%s: un pie atraviesa el suelo %.1f px" % (ctx, peor["hunde"]))
+            if clip["accion"] in SIN_SALTO and peor["flota"] > TOL_FLOTA:
+                errores.append("%s: el cuerpo flota %.1f px sobre el suelo" % (ctx, peor["flota"]))
+            if peor["rodilla"] > 1.0:
+                errores.append("%s: una rodilla se dobla al reves (%.1f grados)" % (ctx, peor["rodilla"]))
+            if peor["codo"] > 1.0:
+                errores.append("%s: un codo se dobla al reves (%.1f grados)" % (ctx, peor["codo"]))
+            if peor["vel"] > VELOCIDAD_PERFIL:
+                errores.append("%s: giro demasiado rapido (%.0f grados/s en %s a los %.2f s)" % ((ctx, peor["vel"]) + peor["vel_en"][:1] + peor["vel_en"][1:2]))
+            if peor["esc_min"] < ESCALA_PERFIL[0] or peor["esc_max"] > ESCALA_PERFIL[1]:
+                errores.append("%s: squash & stretch de Perfil fuera del 15 %% (%.3f a %.3f)" % (ctx, peor["esc_min"], peor["esc_max"]))
+            if peor["tau_min"] < TRONCO_PERFIL[0] or peor["tau_max"] > TRONCO_PERFIL[1]:
+                errores.append("%s: el tronco se inclina de %.1f a %.1f grados (limite %s)" % (ctx, peor["tau_min"], peor["tau_max"], TRONCO_PERFIL))
+            if peor["mano"] > TOL_SUELO:
+                errores.append("%s: una mano baja %.1f px del suelo" % (ctx, peor["mano"]))
+            if peor["copa"] > 0.0:
+                errores.append("%s: la cabeza baja del suelo" % ctx)
+            reposo = reposo_perfil(Ctx(p["id"]))
+            if clip["accion"] in SOSTENIDAS:
+                if max(max(abs(a - reposo[h]), abs(b - reposo[h])) for h, (a, b) in var.items()) < 8.0:
+                    errores.append("%s: la pose sostenida no se aparta del reposo (ninguna articulacion pasa de 8 grados)" % ctx)
+            elif max(b - a for a, b in var.values()) < 8.0:
+                errores.append("%s: la accion de perfil no mueve el cuerpo de perfil (ninguna articulacion varia 8 grados)" % ctx)
+    return errores
+
+
+def loc_de(loc, hueso):
+    """La rotacion local de un hueso de perfil dentro del dict de GeoPerfil.puntos."""
+    return loc[{PF: "P", PT: "T", PLC: "pc", PLL: "pl", PKC: "kc", PKL: "kl", PBC: "bc", PBL: "bl", PEC: "ec", PEL: "el", PNK: "n", PHD: "h"}[hueso]]
 
 
 def autoprueba():
@@ -2538,12 +3260,132 @@ def autoprueba():
     for nombre, ok in P.autoprueba_arbol():
         malos += 0 if ok else 1
         print("%-34s %s" % ("prefab: " + nombre, "bien" if ok else "FALLA"))
+    # INC-134: el cuerpo de perfil: la prueba cinematica y la validacion de que cada clip de la familia lleva las 12 articulaciones de perfil
+    for nombre, ok in autoprueba_perfil(doc):
+        malos += 0 if ok else 1
+        print("%-34s %s" % (nombre, ("detectado" if nombre.startswith("perfil: se detecta") else "bien") if ok else "FALLA"))
     # INC-133 y la cara registrada: el solucionador sabe que el antebrazo va delante (solo el humero se tapa), que en Papa la cabeza tapa el
     # humero, que no deja una mano sobre la cara salvo en CARA_TAPADA y que la visera llega a la frente o a la sien
     for nombre, ok in autoprueba_inc133():
         malos += 0 if ok else 1
         print("%-34s %s" % (nombre, "bien" if ok else "FALLA"))
     return 1 if malos else 0
+
+
+def autoprueba_perfil(doc):
+    """
+    [(nombre, ok)]: lo que el cuerpo de perfil (INC-134) tiene que cumplir. (1) La cinematica: los pies de pie tocan el suelo, la IK llega adonde
+    se le pide, la rodilla arrodillada apoya rotula y punta a la vez, el giro de rota() es el antihorario de Unity. (2) El documento bueno pasa
+    valida() y valida_perfil(). (3) Cada defecto introducido a proposito se detecta: una articulacion de perfil sin curva, una rodilla al reves,
+    un codo al reves, un squash del 30 %, un pie bajo el suelo, un giro de 3000 grados por segundo y una accion de perfil sin movimiento.
+    """
+    import copy
+    import tempfile
+    casos = []
+    rig = P.cargar_rig()
+    # --- la cinematica
+    for pid in FAMILIA:
+        g = GeoPerfil(P.personaje_rig(rig, pid))
+        casos.append(("perfil: %s de pie toca el suelo" % pid, abs(g.baja({})) < 1e-6))
+        # la IK: la mano llega al objetivo (o se estira hacia el) desde un hombro con el tronco inclinado
+        loc = {"T": -20.0}
+        hombro = g.puntos(loc)["hombro_c"]
+        br = g.brazo["c"]
+        alcanzable = (hombro[0] + 0.6 * (br["l1"] + br["l2"]), hombro[1] + 0.5 * (br["l1"] + br["l2"]))
+        b, e = g.ik("c", hombro, alcanzable)
+        loc.update({"bc": b + 20.0, "ec": e})            # la IK da el angulo del MUNDO; el local resta el tronco
+        mano = g.puntos(loc)["mano_c"]
+        casos.append(("perfil: la IK de %s llega al objetivo" % pid, _dist(mano, alcanzable) < 0.5 and e >= 0.0))
+        lejos = (hombro[0] + 3.0 * (br["l1"] + br["l2"]), hombro[1])
+        b, e = g.ik("c", hombro, lejos)
+        loc.update({"bc": b + 20.0, "ec": e})
+        casos.append(("perfil: la IK de %s se estira hacia lo inalcanzable" % pid, abs(_dist(g.puntos(loc)["mano_c"], hombro) - 0.995 * (br["l1"] + br["l2"])) < 1.0))
+        sg = g.canilla_apoyada("l", -8.0)
+        ys = [rota(q, sg)[1] for q in g.pierna["l"]["contactos"]]
+        casos.append(("perfil: %s arrodillado apoya rotula y punta" % pid, -175.0 < sg < -60.0 and abs(max(ys[0], ys[1]) - ys[2]) < 0.5))
+        m = g.resuelve_muslo("c", -10.0, g.y_reposo["c"] - 60.0)
+        casos.append(("perfil: %s agachado 60 px baja 60 px" % pid, abs(g.y_apoyo("c", m, -10.0) - (g.y_reposo["c"] - 60.0)) < 0.5))
+    v = rota((0.0, 1.0), 90.0)
+    casos.append(("perfil: rota() es el antihorario de Unity", abs(v[0] - 1.0) < 1e-9 and abs(v[1]) < 1e-9))   # un vector hacia abajo gira a la DERECHA con +
+    # --- el documento bueno, y los defectos que se detectan
+    casos.append(("perfil: el documento bueno pasa", not valida(doc) and not valida_perfil(doc, rig)))
+
+    def con(cambia, esperado, buscar=valida_perfil, nombre=None):
+        d = copy.deepcopy(doc)
+        cambia(d)
+        errores = buscar(d) if buscar is valida else buscar(d, rig)
+        casos.append(("perfil: se detecta %s" % nombre, any(esperado in e for e in errores)))
+
+    def clip(d, pid, accion):
+        return next(c for q in d["personajes"] if q["id"] == pid for c in q["clips"] if c["accion"] == accion)
+
+    def curva(d, pid, accion, ruta, prop):
+        return next(c for c in clip(d, pid, accion)["curvas"] if c["ruta"] == ruta and c["propiedad"] == prop)
+
+    def sin_curva(d):
+        c = clip(d, "papa", "Idle")
+        c["curvas"] = [k for k in c["curvas"] if not (k["ruta"] == PKL and k["propiedad"] == ROT)]
+
+    con(sin_curva, "sin rotacion de perfil", valida, "una articulacion de perfil sin curva en un clip de frente")
+
+    def sin_curva_perfil(d):
+        c = clip(d, "nino", "Walk")
+        c["curvas"] = [k for k in c["curvas"] if not (k["ruta"] == PHD and k["propiedad"] == ROT)]
+
+    con(sin_curva_perfil, "sin rotacion de perfil", valida, "una articulacion de perfil sin curva en un clip de perfil")
+
+    def rodilla_al_reves(d):
+        for k in curva(d, "mama", "Walk", PKC, ROT)["claves"]:
+            k[1] += 30.0
+
+    con(rodilla_al_reves, "rodilla se dobla al reves", nombre="una rodilla al reves")
+
+    def codo_al_reves(d):
+        for k in curva(d, "nina", "Run", PEL, ROT)["claves"]:
+            k[1] -= 120.0
+
+    con(codo_al_reves, "codo se dobla al reves", nombre="un codo al reves")
+
+    def squash(d):
+        for k in curva(d, "papa", "Carry", PF, ESCY)["claves"]:
+            k[1] += 0.3
+
+    con(squash, "squash & stretch", nombre="un squash del 30 %")
+
+    def sin_suelo(d):
+        c = curva(d, "nino", "Push", PT, POSY)
+        for k in c["claves"]:
+            k[1] -= 40.0
+
+    con(sin_suelo, "atraviesa el suelo", nombre="un pie bajo el suelo")
+
+    def giro(d):
+        c = curva(d, "papa", "Walk", PBC, ROT)
+        c["claves"][2][1] += 90.0
+
+    con(giro, "giro demasiado rapido", nombre="un giro de miles de grados por segundo")
+
+    def quieto(d):
+        # todas las rotaciones de perfil de Blow, fijas en su primer valor: la accion no mueve el cuerpo de perfil
+        for k in clip(d, "mama", "Blow")["curvas"]:
+            if k["ruta"].startswith(PF) and k["propiedad"] == ROT:
+                k["claves"] = [[k["claves"][0][0], k["claves"][0][1]], [k["claves"][-1][0], k["claves"][0][1]]]
+
+    con(quieto, "no mueve el cuerpo de perfil", nombre="una accion de perfil sin movimiento")
+    # --- el contrato con ActionView.cs: las siete acciones
+    acciones, hallada = P.acciones_de_perfil()
+    casos.append(("perfil: ActionView.cs " + ("coincide con ACCIONES_PERFIL" if hallada else "no esta: se usa el contrato"), acciones == set(ACCIONES_PERFIL)))
+    # --- que las 7 acciones de perfil y solo ellas se muevan, y los clips de frente lleven los 12 huesos en reposo constante
+    for q in doc["personajes"]:
+        if q["id"] not in FAMILIA:
+            continue
+        ok = True
+        for c in q["clips"]:
+            rot = {k["ruta"]: k["claves"] for k in c["curvas"] if k["propiedad"] == ROT}
+            if c["accion"] not in ACCIONES_PERFIL:
+                ok = ok and all(len({round(v, 4) for _, v in rot[h]}) == 1 for h in HUESOS_PERFIL)
+        casos.append(("perfil: %s deja los 12 huesos de perfil quietos en los clips de frente" % q["id"], ok))
+    return casos
 
 
 def autoprueba_inc133():
@@ -2601,7 +3443,7 @@ def main(argv):
         print("AVISO CharacterRig.cs no trae armsInFrontActions: se usa la lista por defecto %s" % sorted(acciones))
     else:
         print("brazos delante del torso en: %s (leido de CharacterRig.cs)" % ", ".join(sorted(acciones)))
-    errores = valida(doc)
+    errores = valida(doc) + valida_perfil(doc)
     for e in errores:
         print("ERROR", e)
     if "--valida" in argv or errores:

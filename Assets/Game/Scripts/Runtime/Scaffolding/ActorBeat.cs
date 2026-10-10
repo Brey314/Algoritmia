@@ -47,6 +47,12 @@ namespace Game.Scaffolding
         [field: Tooltip("La expresión que pone desde esta línea hasta que otro paso la cambie. Solo cuenta si «Sets Emotion» está marcado. No hay expresión de derrota ni de tristeza (CP-02).")]
         public FacialEmotion Emotion { get; private set; } = FacialEmotion.Neutral;
 
+        // INC-134: va AL FINAL de los campos serializados. Los 18 assets narrativos se escribieron sin él y Unity
+        // deserializa lo que falta con el valor del inicializador (Auto): ninguno cambia de rumbo ni se reescribe.
+        [field: SerializeField]
+        [field: Tooltip("Hacia dónde mira el personaje cuando esta acción se ve de perfil (caminar, empujar, agacharse…), desde esta línea y hasta el paso siguiente. Auto = hacia donde se desplaza o, si no se desplaza, hacia donde se desplazó o se va a desplazar. Izquierda o Derecha lo fijan a mano; solo hace falta cuando el guion pide mirar a un lado que el movimiento no dice.")]
+        public ActorFacing Facing { get; private set; } = ActorFacing.Auto;
+
         /// <summary>Requerido por la serialización de Unity.</summary>
         private ActorBeat()
         {
@@ -72,6 +78,13 @@ namespace Game.Scaffolding
         {
             SetsEmotion = true;
             Emotion = emotion;
+            return this;
+        }
+
+        /// <summary>Fija hacia dónde mira de perfil desde esta línea (<see cref="Facing"/>, INC-134).</summary>
+        public ActorBeat WithFacing(ActorFacing facing)
+        {
+            Facing = facing;
             return this;
         }
     }

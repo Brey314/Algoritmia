@@ -129,3 +129,6 @@ graphify-out/
 
 # Archivos de bloqueo de Word y Office (~$*.docx): los crea Word mientras un documento está abierto
 ~$*
+
+# Caché de bytecode de Python (las herramientas de claudeDocs/tasks/Personajes/herramientas/)
+__pycache__/

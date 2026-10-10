@@ -23,6 +23,10 @@
 # arbol tal cual. INC-133 (06/10/2026): el «orden_tronco» que aplica (prefabs.arbol_vigente / aplicar_orden_tronco) lista los antebrazos de la
 # familia al final de Tronco: el antebrazo SIGUE bajo su codo en el arbol (las rutas y la geometria no cambian) y solo se dibuja delante del
 # torso y de la cara, como hace el motor con el ancla bajo el codo; las piezas de la maqueta no se enteran.
+#
+# ALGORITM (08/10/2026, D13): al final de este archivo, piezas_guia parte el sprite entero de cada forma en las nueve piezas del JSON. Fue el arte
+# provisional de los prefabs (pose_preview.py --exporta-maqueta las escribia como char_algoritm_<forma>_parte_*.png). RETIRADO el 09/10/2026 (INC-136): el arte
+# final de Algoritm son siete piezas con la pierna entera (preparar_algoritm.py) y pose_preview.py ya no corta nada; piezas_guia queda como historia del corte.
 
 import math
 import os
@@ -242,3 +246,167 @@ def pieza_o_png(arbol, piezas, ruta):
     if arch is None:
         return None, None
     return Image.open(arch).convert("RGBA"), n.rect
+
+
+# ---------------------------------------------------------------------------------------------- Algoritm
+#
+# El sprite de Algoritm (char_algoritm_n1_fuego_reposo.png y sus dos recoloreados, 768 px) es UNO solo: la llama, el vientre de colores, los
+# palos de los brazos y las piernas, las manos y los pies. piezas_guia lo parte en las NUEVE piezas que pide rig_articulaciones.json (el
+# torso y, a cada lado, brazo = humero, antebrazo, pierna = muslo y antepierna) para que los brazos y las piernas se muevan por separado.
+# pose_preview.py las dibujaba y las probaba y su --exporta-maqueta las escribia como char_algoritm_<forma>_parte_*.png (RETIRADO, INC-136: el arte final de
+# Algoritm lo sustituyo con siete piezas de pierna entera; ver preparar_algoritm.py). Esta funcion ya no la llama nadie.
+#
+# COMO SE CORTA. Cortar por rects no sirve: los brazos van en diagonal y salen del borde curvo del vientre, y un rect se llevaba un trozo del
+# contorno del vientre en cada hombro y cada cadera (al girar la extremidad el trozo se iba con ella y el vientre quedaba mordido). Aqui:
+#   1. el CUERPO es lo que sobrevive a una apertura (erosion y dilatacion con un disco de R_ABRE px: los palos no caben) en la componente que
+#      contiene SEMILLA_CUERPO, con BORDE_CUERPO px mas para su borde suave: la llama y el vientre, sin palos ni manos;
+#   2. lo LIBRE es lo opaco que no es cuerpo; dentro de la zona de cada extremidad (ZONA_BRAZO, ZONA_PIERNA) es de esa extremidad, y el torso se
+#      queda con todo lo demas;
+#   3. cada extremidad se parte en su articulacion (el codo y la rodilla del JSON, sobre el palo) con un plano perpendicular al eje: las dos mitades
+#      se reparten los pixeles, sin repetir ninguno, para que en reposo no quede un hilo transparente en la costura;
+#   4. la pieza de arriba lleva una ROTULA, un disco del radio del palo en la articulacion con los pixeles del dibujo (en el hombro y en la cadera solo
+#      los oscuros: el contorno del vientre y el palo): tapa la cuna que se abre en el lado de fuera al doblar y, en reposo, queda debajo de lo que ya esta.
+# Las piezas se cortan a la RESOLUCION del sprite (sin reescalar) y cada una ocupa el rect del JSON en el lienzo de 1024: por eso los rects de
+# Algoritm son multiplos de 4 (a 768 px caen en pixeles enteros).
+
+R_ABRE = 16                  # px del sprite: radio de la apertura que deja solo el cuerpo (los palos miden 20 px a 768; el vientre, mucho mas). Cuanto mayor, menos
+                             # se mete el cuerpo en el palo donde se unen (la protuberancia es de unos 5 px del lienzo con 16 y de 9 con 11)
+BORDE_CUERPO = 2             # px que se le suman al cuerpo para que se quede su borde suave
+PALO = 27.0                  # grosor de los palos en el lienzo de 1024, medido sobre el alfa (de 26 a 27,5): la rotula mide la mitad
+SEMILLA_CUERPO = (512, 700)  # un punto dentro del vientre (lienzo de 1024)
+FRANJA_CUERPO = (500, 860)   # filas del lienzo de 1024 donde se calcula el cuerpo: de los hombros a las caderas, con margen
+OSCURO = (115, 50, 30)       # R, G y B por debajo de esto es el contorno del vientre o un palo (la rotula del hombro y de la cadera copia solo eso)
+RUIDO = 8                    # el alfa por debajo de esto (3 %) es la pelusa del borde del sprite original: no es de ninguna pieza (ni se ve)
+# Donde caen las extremidades en el lienzo de 1024 (x0, y0, x1, y1): lo libre que cae aqui es suyo.
+ZONA_BRAZO = {"Izq": (0, 590, 340, 960), "Der": (690, 590, 1024, 960)}
+ZONA_PIERNA = {"Izq": (380, 780, 505, 1024), "Der": (505, 780, 650, 1024)}
+NOMBRES_GUIA = ("Torso", "BrazoIzq", "BrazoDer", "AntebrazoIzq", "AntebrazoDer", "PiernaIzq", "PiernaDer", "AntepiernaIzq", "AntepiernaDer")
+_CACHE_GUIA = {}
+
+
+def _disco(r):
+    return [(dx, dy) for dy in range(-r, r + 1) for dx in range(-r, r + 1) if dx * dx + dy * dy <= r * r]
+
+
+def _morfo(m, r, op):
+    """Erosion (op = ImageChops.darker) o dilatacion (ImageChops.lighter) de una mascara L de 0/255 con un disco de radio r; lo de fuera de la imagen es vacio."""
+    w, h = m.size
+    pad = Image.new("L", (w + 2 * r, h + 2 * r), 0)
+    pad.paste(m, (r, r))
+    out = pad
+    for dx, dy in _disco(r):
+        if dx or dy:
+            out = op(out, ImageChops.offset(pad, dx, dy))
+    return out.crop((r, r, r + w, r + h))
+
+
+def _cuerpo(alfa, k):
+    """
+    La llama y el vientre, sin palos ni manos (mascara L de 0/255): la componente de la apertura que contiene la semilla, con su borde suave. Solo se
+    calcula en la franja del lienzo donde estan los hombros y las caderas (FRANJA_CUERPO): arriba esta la llama sola y abajo solo las piernas.
+    """
+    y0, y1 = int(FRANJA_CUERPO[0] * k), int(FRANJA_CUERPO[1] * k)
+    solido = alfa.point(lambda v: 255 if v > 127 else 0).crop((0, y0, alfa.size[0], y1))
+    abierto = _morfo(_morfo(solido, R_ABRE, ImageChops.darker), R_ABRE, ImageChops.lighter)
+    semilla = (int(SEMILLA_CUERPO[0] * k), int(SEMILLA_CUERPO[1] * k) - y0)
+    if abierto.getpixel(semilla) != 255:
+        raise ValueError("la semilla %s no esta dentro del cuerpo de Algoritm" % (SEMILLA_CUERPO,))
+    ImageDraw.floodfill(abierto, semilla, 128)
+    cuerpo = _morfo(abierto.point(lambda v: 255 if v == 128 else 0), BORDE_CUERPO, ImageChops.lighter)
+    completo = Image.new("L", alfa.size, 0)
+    completo.paste(cuerpo, (0, y0))
+    return completo
+
+
+def _semiplano(tam, p0, u):
+    """Mascara L de 0/255: 255 donde (p - p0) . u >= 0, sin suavizar (el otro lado es su inversa: los pixeles se reparten)."""
+    w, h = tam
+    big = 4.0 * (w + h)
+    n = (-u[1], u[0])
+    m = Image.new("L", tam, 0)
+    ImageDraw.Draw(m).polygon([(p0[0] + n[0] * big, p0[1] + n[1] * big), (p0[0] - n[0] * big, p0[1] - n[1] * big),
+                               (p0[0] - n[0] * big + u[0] * big, p0[1] - n[1] * big + u[1] * big),
+                               (p0[0] + n[0] * big + u[0] * big, p0[1] + n[1] * big + u[1] * big)], fill=255)
+    return m
+
+
+def _mascaras_guia(im, p):
+    """{nombre: mascara L de 0/255, del tamano de la imagen} de las nueve piezas, sin recortar a su rect. Ver el bloque de arriba."""
+    k = im.size[0] / 1024.0
+    alfa = im.getchannel("A")
+    pos = alfa.point(lambda v: 255 if v >= RUIDO else 0)
+    nodos = {n["nombre"]: n for n in p["nodos"]}
+    libre = ImageChops.subtract(pos, _cuerpo(alfa, k))
+    r, g, b, _ = im.split()
+    oscuro = ImageChops.multiply(ImageChops.multiply(r.point(lambda v: 255 if v < OSCURO[0] else 0), g.point(lambda v: 255 if v < OSCURO[1] else 0)),
+                                 b.point(lambda v: 255 if v < OSCURO[2] else 0))
+    rotula = (PALO / 2.0 + 0.5) * k
+
+    def zona(rect):
+        m = Image.new("L", im.size, 0)
+        ImageDraw.Draw(m).rectangle([rect[0] * k, rect[1] * k, rect[2] * k - 1, rect[3] * k - 1], fill=255)
+        return m
+
+    def disco(c):
+        m = Image.new("L", im.size, 0)
+        ImageDraw.Draw(m).ellipse([c[0] - rotula, c[1] - rotula, c[0] + rotula, c[1] + rotula], fill=255)
+        return ImageChops.multiply(m, pos)
+
+    def arranque(raiz, u):
+        """Los pixeles oscuros del primer trecho del palo (un PALO desde el hombro o la cadera): la protuberancia del cuerpo se mete unos px en el palo y ahi se lo habria comido."""
+        h, largo = (PALO / 2.0 + 2.0) * k, PALO * k
+        m = Image.new("L", im.size, 0)
+        ImageDraw.Draw(m).polygon([(raiz[0] - u[1] * h, raiz[1] + u[0] * h), (raiz[0] + u[1] * h, raiz[1] - u[0] * h),
+                                   (raiz[0] + u[1] * h + u[0] * largo, raiz[1] - u[0] * h + u[1] * largo),
+                                   (raiz[0] - u[1] * h + u[0] * largo, raiz[1] + u[0] * h + u[1] * largo)], fill=255)
+        return ImageChops.multiply(ImageChops.multiply(m, pos), oscuro)
+
+    mascaras, zonas = {}, Image.new("L", im.size, 0)
+    for sup, inf, art, zonas_de in (("Brazo", "Antebrazo", "Codo", ZONA_BRAZO), ("Pierna", "Antepierna", "Rodilla", ZONA_PIERNA)):
+        for lado in ("Izq", "Der"):
+            raiz = tuple(v * k for v in nodos[sup + lado]["punto"])     # el hombro o la cadera
+            junta = tuple(v * k for v in nodos[art + lado]["punto"])    # el codo o la rodilla
+            propias = ImageChops.multiply(libre, zona(zonas_de[lado]))
+            zonas = ImageChops.lighter(zonas, propias)
+            eje = _unit(raiz, junta)
+            mas_alla = _semiplano(im.size, junta, eje)
+            mascaras[sup + lado] = ImageChops.lighter(ImageChops.multiply(propias, ImageChops.invert(mas_alla)),
+                                                      ImageChops.lighter(disco(junta), ImageChops.lighter(arranque(raiz, eje), ImageChops.multiply(disco(raiz), oscuro))))
+            mascaras[inf + lado] = ImageChops.multiply(propias, mas_alla)
+    mascaras["Torso"] = ImageChops.subtract(pos, zonas)
+    return mascaras
+
+
+def piezas_guia(png, p):
+    """
+    {nombre: Pieza} de las nueve piezas de Algoritm (NOMBRES_GUIA), recortadas del sprite «png» a su resolucion y puestas en los rects que
+    el JSON da a «p» (la entrada de la forma en rig_articulaciones.json; el rect de un antebrazo o una antepierna es el de su articulacion).
+    Lanza ValueError si un rect no cae en pixeles enteros del sprite o si una pieza se sale de el: el JSON y el corte tienen que cuadrar.
+    """
+    clave = (os.path.abspath(png), repr(p["nodos"]))
+    if clave in _CACHE_GUIA:
+        return _CACHE_GUIA[clave]
+    im = Image.open(png).convert("RGBA")
+    k = im.size[0] / 1024.0
+    nodos = {n["nombre"]: n for n in p["nodos"]}
+    rects = {"Torso": nodos["Torso"]["rect"]}
+    for lado in ("Izq", "Der"):
+        rects.update({"Brazo" + lado: nodos["Brazo" + lado]["rect"], "Antebrazo" + lado: nodos["Codo" + lado]["rect"],
+                      "Pierna" + lado: nodos["Pierna" + lado]["rect"], "Antepierna" + lado: nodos["Rodilla" + lado]["rect"]})
+    alfa = im.getchannel("A")
+    piezas = {}
+    for nombre, mascara in _mascaras_guia(im, p).items():
+        caja = tuple(v * k for v in rects[nombre])
+        if any(abs(v - round(v)) > 1e-6 for v in caja):
+            raise ValueError("%s: el rect %s no cae en pixeles enteros del sprite (a %d px, el lienzo de 1024 vale %.4f px por unidad): usa multiplos de 4" % (
+                nombre, list(rects[nombre]), im.size[0], k))
+        caja = tuple(int(round(v)) for v in caja)
+        pieza = im.copy()
+        pieza.putalpha(ImageChops.multiply(alfa, mascara))
+        dentro = pieza.getchannel("A").point(lambda v: 255 if v else 0).getbbox()
+        if dentro is None or dentro[0] < caja[0] or dentro[1] < caja[1] or dentro[2] > caja[2] or dentro[3] > caja[3]:
+            raise ValueError("%s: la pieza ocupa %s (px del sprite) y su rect %s es %s: no cabe" % (
+                nombre, dentro, list(rects[nombre]), caja))
+        piezas[nombre] = Pieza(rects[nombre], pieza.crop(caja))
+    _CACHE_GUIA[clave] = piezas
+    return piezas

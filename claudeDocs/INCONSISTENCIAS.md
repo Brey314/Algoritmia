@@ -14,7 +14,7 @@ los dos tienen su conversión en `docs/md/`. Las citas por sección de este docu
 con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
 (control de cambios).
 
-**Verificación vigente: 06/10/2026, rev. 19.** La rev. 14 (29/09/2026) contrastó todos los
+**Verificación vigente: 09/10/2026, rev. 23.** La rev. 14 (29/09/2026) contrastó todos los
 documentos —los `.docx` de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago,
 **todos los hallazgos están cerrados**: ante un conflicto gana el juego y se edita el documento; lo
 que solo pide el documento se implementa en el juego; lo que solo tiene el juego se añade al
@@ -31,11 +31,28 @@ regla de Algoritm de una sola imagen **para el arte final**: caras con seis expr
 codos y rodillas. La rev. 18
 (05/10/2026) registra y cierra **INC-132**, otra decisión suya: en la familia los brazos se dibujan detrás del
 torso y delante de la cabeza (delante del torso al golpear); Algoritm, delante del cuerpo con las
-manos sobre la cara. La rev. 19 (06/10/2026) registra y cierra **INC-133**, decisión de Santiago que
+manos sobre la cara (hasta INC-147). La rev. 19 (06/10/2026) registra y cierra **INC-133**, decisión de Santiago que
 acota INC-132 en la familia: el húmero queda detrás del torso y el antebrazo se dibuja delante del
-torso, de la cara y de las piernas. Siguen abiertos
+torso, de la cara y de las piernas. La rev. 20 (09/10/2026) registra y cierra **INC-137** a **INC-145**,
+nueve decisiones de Santiago del 08/10/2026 que corrigen el juego o el documento: el laberinto con
+un solo ámbar (revierte el marfil del 07/10), el diálogo en `#1F100C` a 30 px, el halo de las
+fogatas con degradado y ciclo de 2 s, Algoritm por partes con arte provisional, su saludo `Wave`,
+los créditos sin tarjeta, el inicio y el menú de niveles, el codo de Papá y la cámara que sigue a
+la balsa. Con ella se cierran además dos pendientes de Santiago del trabajo de grado, las
+herramientas de ilustración y la colaboración en el arte. La rev. 21 (09/10/2026) registra y
+cierra **INC-134** a **INC-136**, tres decisiones de Santiago con la llegada del arte de perfil y del
+nuevo Algoritm: la familia se ve de perfil al recorrer o trabajar el entorno (INC-134, levanta el
+«ciclo único que se voltea» de la dirección de arte), el parpadeo es de dos cuadros, ojos abiertos y
+cerrados (INC-135, acota §7.3), y el diseño nuevo de Algoritm —llama, disco de madera y gota, con
+pantaloneta de cuadros— sustituye al núcleo de identidad de §7.6 (INC-136, levanta INC-52 y, para el
+guía, la regla de color plano). La rev. 22 (09/10/2026) registra y cierra **INC-146**, una decisión de
+Santiago por el peso del paquete (RNF-06): el ejecutable con el arte final medía 499,3 MB y los cinco
+props pequeños del Nivel 1 entran a 256 px, con lo que el paquete baja a 420,6 MB. La rev. 23
+(09/10/2026) registra y cierra **INC-147**, otra decisión de Santiago: los brazos de Algoritm se dibujan
+detrás de todo su cuerpo y no con las manos sobre la cara, lo que revierte para el guía la cláusula de
+INC-132 (la regla de la familia no cambia). Siguen abiertos
 solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
-**pendientes de Santiago** que el juego no zanja: tres del trabajo de grado y uno del sonido (ver
+**pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
 (acta D10), lo que deja sin efecto la decisión D1 del 29/09/2026 de darle solo una nota fechada.
 
@@ -74,7 +91,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 
 ---
 
-## Resumen — estado a 06/10/2026 (rev. 19)
+## Resumen — estado a 09/10/2026 (rev. 23)
 
 | ID | Hallazgo | Documentos | Estado |
 |---|---|---|---|
@@ -192,6 +209,20 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-131 | El arte final trae seis expresiones y extremidades en dos tramos; INC-108 fijaba una sola cara y Algoritm una sola imagen | Interfaces, Dirección de arte, Inventario de arte, Plan de personajes finales, CLAUDE.md, juego | **Cerrado** (05/10/2026) |
 | INC-132 | Los brazos se escondían detrás de la cabeza y del cuerpo; la jerarquía los pintaba antes | Plan de personajes finales, Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (05/10/2026) |
 | INC-133 | En la familia el antebrazo debe dibujarse delante del torso, de la cara y de las piernas, con el húmero detrás del torso | Plan de personajes finales, Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (06/10/2026) |
+| INC-134 | La familia se ve de perfil al moverse en el entorno, hacia donde va; la dirección de arte (§13.3) daba un solo ciclo de frente que se voltea | Dirección de arte, Inventario de arte, Plan de personajes finales, Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
+| INC-135 | El parpadeo es de dos cuadros, ojos abiertos y cerrados; la dirección de arte (§7.3) pedía tres | Dirección de arte, Inventario de arte, Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
+| INC-136 | El diseño nuevo de Algoritm (llama, disco de madera y gota, con pantaloneta de cuadros) es el oficial; §7.6, §2.2 e INC-52 decían otro | Dirección de arte, Inventario de arte, Interfaces, Dirección de sonido, Plan de personajes finales, Personajes-Resultados, CLAUDE.md, guion y trabajo de grado, juego | **Cerrado** (09/10/2026), salvo los radicados |
+| INC-137 | El laberinto tenía panel marfil y contorno suelto; el fondo es un solo ámbar y los marcos de entorno y tarjeta son iguales | CLAUDE.md, SPEC, Dirección de arte, Interfaces, Anexo C del OE3, juego | **Cerrado** (09/10/2026) |
+| INC-138 | El texto del diálogo es `#1F100C` a 30 px en un cuadro de 216 px, y no `#3A1E18` a 26 px en uno de 180 | Dirección de arte, Interfaces, Anexo E del OE3, juego | **Cerrado** (09/10/2026) |
+| INC-139 | El halo de las fogatas lleva degradado radial y ciclo de 2 s, y no es un círculo plano de 1,2 s | Dirección de arte, Inventario de arte, SPEC, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
+| INC-140 | Algoritm se dibuja por partes ya con el arte provisional; INC-131 lo pedía solo para el arte final | Dirección de arte, Inventario de arte, Interfaces, Plan de personajes finales, Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
+| INC-141 | Algoritm tiene una acción nueva, `Wave` (saludo), que ningún documento nombraba | Dirección de arte, Interfaces, Personajes-Resultados, juego | **Cerrado** (09/10/2026) |
+| INC-142 | La pantalla de créditos no lleva tarjeta detrás de Algoritm, que saluda | Interfaces, Dirección de arte, juego | **Cerrado** (09/10/2026) |
+| INC-143 | El inicio y el menú de niveles cambian de composición: portada con los cinco personajes, título fuera de la tarjeta, icono de estado junto a la imagen | Interfaces, Dirección de arte, Inventario de arte, mockups 2 y 4, Anexo G del OE3, juego | **Cerrado** (09/10/2026) |
+| INC-144 | El húmero de Papá asomaba por el codo; se corrige la tabla de articulaciones y no el arte entregado | Personajes-Resultados, Plan de personajes finales, herramientas, juego | **Cerrado** (09/10/2026) |
+| INC-145 | La cámara de la 3.3 acompaña a la balsa; el encuadre fijo la dejaba salir del cuadro | Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
+| INC-146 | Los cinco props del N1 entran a 256 px: el paquete con el arte final medía 499,3 MB contra el tope de 500 MB de RNF-06 | Dirección de arte, Inventario de arte, CLAUDE.md | **Cerrado** (09/10/2026) |
+| INC-147 | Los brazos de Algoritm se dibujan detrás de todo el cuerpo; INC-132 los pintaba delante, con las manos sobre la cara | Dirección de arte, Plan de personajes finales, Personajes-Resultados, Anexo F del OE3, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
 
 ---
 
@@ -746,6 +777,10 @@ acotaciones del N1 que decían «estrella» (tarea DATA-03) y se implementa la e
 narrativas, porque muestreaba la raíz del personaje y no la casilla que camina; ahora la sigue y se
 borra al quedarse quieto (`GuideTrail_DA76_LaEstelaSigueALaCasillaQueCaminaYSeBorraAlDetenerse`).
 
+*Nota (09/10/2026): esta decisión vale para el **arte anterior**. La levanta INC-136: el guía pasa a tener
+tres siluetas —llama, disco de madera y gota— con pantaloneta de cuadros, y deja de ser la llama
+recoloreada.*
+
 ### INC-53 · Los personajes se animan por recorte en uGUI, no con 2D Animation — cerrado (29/09/2026)
 
 **Decisión técnica, 24/09/2026.** `Direccion_de_Arte.md` §13.1 pide «rigging 2D en Unity (paquete
@@ -1105,12 +1140,19 @@ SPEC dice que la capa de luz es solo del N1.
 `Direccion_de_Arte.md` §8 y §8.2; SPEC §Estados.
 
 **Qué hace el juego.** `NarrativeLight` tiñe de amanecer `N2_PuenteI`, deja sin tinte la tarde, pone
-atardecer en la 2.4 y noche junto al fuego en la 2.5 y el arranque de `N3_PuenteII`; en el laberinto
-lo hace `MazeLayout.LightTint`. Lo vigilan
-`NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche` y
-`MazeScene_RF30_ElLaberintoEsAlAtardecer`.
+atardecer en la 2.4 y noche junto al fuego en la 2.5 y el arranque de `N3_PuenteII`. Lo vigila
+`NarrativeSequence_RF05_ElNivel2TranscurreDelAmanecerALaNoche`.
 
 **Regla (a).** Conflicto: gana el juego y se corrige el documento.
+
+**Nota (07/10/2026).** Decisión de Santiago: el laberinto (fase 3) sale de este reloj de luz.
+`MazeLayout.LightTint` se eliminó y `MazeScene_RF30_ElLaberintoEsAlAtardecer` se retiró; el
+entorno del laberinto queda tal cual el arte, sin tinte, con panel marfil `#F7EFE2` y contorno
+`#C4A882`. El resto de la narrativa del Nivel 2 sigue como se describe arriba.
+
+**Nota (08/10/2026).** Santiago revirtió el panel marfil y el contorno suelto: ahora todo lo que rodea
+al laberinto es un solo ámbar `#E8A33D` y el entorno y la tarjeta llevan el mismo marco redondeado de 8 px.
+Ver INC-137. El laberinto sigue sin teñirse.
 
 **Corrección aplicada (29/09/2026).** Documentos: OE2: §1.6; §1.6.1.1; §1.6.3.1; §1.6.3.2; §1.6.4;
 §1.7 · Dirección de arte: §8; §8.2 · SPEC: §Arquitectura › Estados.
@@ -1329,6 +1371,9 @@ están a la vista.
 Se completó además (30/09/2026): la tarjeta del Nivel 2 muestra `entorno_n2_laberinto`, de 16:9, en
 lugar del bosque de 3840 px, que se veía repetido y partido por la costura
 (`LevelSelect_RF03_CadaTarjetaMuestraUnaIlustracionSinCostura`) · OE4: S-INI paso 13.
+
+**Nota (08/10/2026).** Vuelve el bosque, encuadrado con foco 0,25 por `FramedIllustration` para no cruzar la
+costura, y el laberinto deja la tarjeta (INC-143). Los créditos pierden la tarjeta de Algoritm (INC-142).
 
 ### INC-83 · Creación del perfil: validación del nombre y ejecución sin instalación — cerrado (29/09/2026)
 
@@ -2419,6 +2464,8 @@ pasarlos a `Single` antes de que una escena o un asset los use. Se completó ade
 cuadros del fuego y del humo de `Props/Fire/Animations/` entran a 1024 px como máximo, la única
 excepción al tope de 4096 (INC-130).
 
+**Nota (09/10/2026).** Desde INC-146 hay una segunda excepción: cinco props del Nivel 1 entran a 256 px.
+
 ### INC-129 · El diálogo se lee en un cuadro con retrato, no en un globo con cola — cerrado (01/10/2026)
 
 **El conflicto.** La dirección de arte e Interfaces describen el diálogo de las narrativas como un
@@ -2438,6 +2485,8 @@ con `Marco`, `Retrato`, `Hablante`, `Cuerpo`, `BotonContinuar` y `BotonOmitir`, 
 **Corrección aplicada (01/10/2026).** Documentos: Dirección de arte: §4.3 fila «Marfil»; §10.3, que
 pasa a «Cuadro de diálogo» y lo describe; §11.4 · Interfaces: §1.1, punto 5. La regla del texto
 `#3A1E18` sobre marfil no cambia.
+
+**Nota (08/10/2026).** El cuadro mide hoy 1400 × 216 px y su texto es `#1F100C` a 30 px (INC-138).
 
 ### INC-130 · El paquete de entrega superaba los 500 MB por los cuadros del fuego y del humo del Nivel 1 — cerrado (01/10/2026)
 
@@ -2481,6 +2530,9 @@ paquete a 478 979 915 bytes (479,0 MB; 456,8 MiB), con 21 MB de margen
 `ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`, que sigue exigiendo que esa carpeta
 entre sin comprimir y solo a ella le admite otro tope. La memoria (RNF-05) se mide sobre el
 ejecutable.
+
+**Nota (09/10/2026).** Con el arte final el paquete llegó a 499,3 MB y se añadió una segunda excepción, la de
+los cinco props del Nivel 1 a 256 px (INC-146); hoy pesa 420,6 MB.
 
 ### INC-131 · El arte final trae seis expresiones y extremidades en dos tramos — cerrado (05/10/2026)
 
@@ -2537,6 +2589,11 @@ los siete prefabs sin reconstruirlos y reescribe los 93 clips. **Pruebas:** `Cha
 Editor: pendiente** (los prefabs y los clips aún no se han regenerado ni las pruebas se han
 corrido).
 
+*Nota (09/10/2026): el parpadeo de tres cuadros (`ojos_parpadeo_medio`) lo acota INC-135: la entrega trae solo
+ojos abiertos y cerrados, y el cuadro medio es opcional. Las nueve partes de Algoritm que este hallazgo
+pedía (torso y cuatro extremidades en dos tramos) las sustituye INC-136: siete piezas por forma, con la
+pierna entera y sin rodilla.*
+
 ### INC-132 · Orden de dibujo de los brazos: detrás del torso y delante de la cabeza — cerrado (05/10/2026)
 
 **El conflicto.** Santiago observó que el Idle frontal era pobre y que los brazos se escondían detrás
@@ -2557,7 +2614,7 @@ commit `5ce0797` → regla definitiva.)
   `Game.Scaffolding`) desde `CharacterRig.Apply`, según el campo serializado
   `armsInFrontActions = { Strike }` (el inicializador vale para los prefabs que no lo serializan); el
   cambio de capa es seco al empezar la acción, sin esperar el fundido de 0,18 s.
-- **Algoritm.** `orden_tronco` = `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`: sus brazos van delante
+- **Algoritm (hasta INC-147).** `orden_tronco` = `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`: sus brazos van delante
   del cuerpo y **las manos se pintan encima de la cara**. La coreografía y `pose_preview.py` impiden
   que una mano entre en la caja de ojos y boca (ampliada un 30 %, con al menos el 99,5 % libre). En
   Algoritm el golpe no mueve nada.
@@ -2589,6 +2646,11 @@ sin excepciones, 174/174), `maqueta.py` y
 `CharacterRig_INC132_AlGolpearLosBrazosPasanDelanteDelTorso`,
 `…_AlTerminarElGolpeLosBrazosVuelvenDetrasDelTorso`, `…_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo`,
 `…_SoloElGolpePoneLosBrazosDelante` y `…_SiFaltaUnNodoElGolpeAvisaYNoMueveNada`.
+*Nota (09/10/2026): la cláusula de Algoritm de este hallazgo —brazos delante del cuerpo y manos sobre la
+cara— la **revierte INC-147**: sus brazos van detrás de todo el cuerpo. Las dos pruebas de Algoritm se
+renombraron `CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo` y
+`CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen`. La regla de la familia, el golpe con
+`ArmLayering` y lo demás de esta entrada siguen vigentes.*
 **En el Editor:** `Game.Scaffolding.Tests` 215/215 y suite completa 941/942 (1 omitida preexistente, 0
 fallos) en la ronda de `5ce0797`, que aún tenía los brazos delante en los siete. Suite completa de la
 ronda de `0b76bbc` (regla definitiva), con sus prefabs y `.anim` subidos en `117287c` (4 prefabs, 77
@@ -2634,6 +2696,590 @@ omitida y PlayMode 376 de 377 (falla `RiverLevel_RNF05` por la memoria del Edito
 `claudeDocs/tasks/Personajes/capturas/2026-10-06/`. Fuera del Editor: `pose_preview.py` 21/21 por miembro de la familia y 9/9 por
 Algoritm (`233f2e5`).
 
+### INC-134 · Los personajes se ven de perfil al recorrer o trabajar el entorno — cerrado (09/10/2026)
+
+**El conflicto.** Con la llegada del arte de perfil, Santiago decidió el 09/10/2026 que el personaje se ve
+**de perfil siempre que se mueve en el entorno** y de frente en reposo. Eso contradice la dirección de arte
+(§13.3: «Caminar: un solo ciclo que se voltea a izquierda o derecha según la dirección») y la lectura del
+inventario de arte de que Mamá camina en el río «con un solo clip volteado».
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §13.3 (el ciclo único que se voltea) y §13.1 (un solo
+cuerpo por personaje); `Assets/Game/Art/Inventario.md` (`Characters/`, la nota de `char_mama_cenital` y el
+hallazgo 5 de los pendientes); `Plan-Personajes-Finales.md` §4 (el perfil izquierdo «derivado mediante
+simetría controlada», `CharacterOrientation` y Fase 4.4, sin ejecutar) y su §4.3 (el orden de dibujo del
+perfil, con la pierna cercana delante del torso).
+
+**Qué hace el juego.** Hasta ahora, un solo cuerpo de frente. `CharacterRig.Mirrored` volteaba el lienzo
+entero y solo lo usaba el río, y solo en el eje horizontal (una flecha vertical conservaba el último lado);
+las narrativas volteaban la casilla con `NarrativeProp.Mirrored`, fijo para toda la escena, y nadie
+calculaba hacia dónde camina el actor.
+
+**Decisión de Santiago (09/10/2026).**
+- **La vista la decide la acción, no el desplazamiento** (`ActionView`, C# plano): `Walk`, `Run`, `Carry`,
+  `Push`, `PickUp`, `Kneel` y `Blow` muestran el cuerpo de perfil (`Lienzo/Perfil`); las demás acciones,
+  incluida `Wave`, el de frente, con corte seco. Así la balsa (`Idle` mientras se mueve) y Algoritm
+  flotando siguen de frente, y los gestos hacia el estudiante —hablar, señalar, animar— nunca se dan de
+  costado (CP-02).
+- **El lado** lo da una sola función pura, `Heading.FacesLeft`: a la izquierda o hacia arriba, mira a la
+  izquierda; a la derecha o hacia abajo, a la derecha; en una diagonal manda el eje dominante y en un empate,
+  el horizontal. «Arriba» es y positiva, como en las flechas del río.
+- **Narrativas.** Cada paso decide su lado con `ActorTimeline.FacesLeftAt`, en este orden: el
+  `ActorBeat.Facing` explícito (`Auto`, `Left`, `Right`; campo nuevo al final del beat, de modo que los 18
+  assets no cambian), el desplazamiento del paso si mide al menos 0,01, el rumbo del paso anterior, el del
+  siguiente y, si nada decide, hacia el centro de la ilustración. El resultado se combina con un O exclusivo
+  con el volteo de la casilla (`NarrativeProp.Mirrored`), para que el perfil no se espeje dos veces.
+- **Mecánicas.** En el río, Mamá sigue las flechas y las verticales también la giran (arriba a la
+  izquierda, abajo a la derecha); en el Nivel 1, Papá mira hacia el montón al recoger, soplar y arrodillarse;
+  en el bosque, la Niña mira hacia la caja que empuja y se da vuelta si la caja cruza al otro lado. El
+  laberinto y el taller no tienen acciones de perfil.
+- **El frente nunca se espeja por el rumbo.** `Mirrored` solo voltea el lienzo en perfil. Un rig sin torso de
+  perfil con sprite (Algoritm, que no tiene arte de perfil, o un personaje antes de que entre el suyo) se
+  queda de frente en cualquier acción.
+- **El arte** llegó mirando a la **izquierda** y la ingesta lo espeja para que el canónico mire a la
+  derecha; el ancla horizontal del corte frente↔perfil es la **cadera** (x = 512 del lienzo del rig), para que
+  los pies no resbalen al girar; el rastro casi blanco del ojo abierto que quedó bajo los párpados cerrados se
+  limpia solo. La mano lejana de la Niña, que faltaba, se pidió al artista y no se sintetizó; llegó el mismo
+  día.
+- **Orden de dibujo del tronco de perfil**, de atrás adelante: brazo lejano, pierna lejana, pierna cercana,
+  torso, cuello y cabeza (con su cara) y brazo cercano. **Las dos piernas van siempre detrás del torso**:
+  la primera versión dibujaba la pierna cercana delante de él y Santiago lo corrigió el mismo día. De frente
+  ya se cumplía, porque las piernas son hijas de `Cuerpo`, que va antes de `Tronco`.
+
+**Regla.** Decisión de Santiago, como INC-115 a INC-117 e INC-131 a INC-133: **levanta** el «ciclo único que
+se voltea» de §13.3. No contradice ningún `.docx` radicado ni cambia CP-02, y los gestos de ánimo siguen de
+frente. Cambia una prueba existente a propósito: `RiverScene_DA133_MamaCaminaMientrasSeSostieneUnaFlechaYReposaAlSoltarla`
+exige ahora que las flechas verticales también giren a Mamá.
+
+**Corrección aplicada (09/10/2026).** Documentos: Dirección de arte: §13.3 (fila «Caminar») y una subsección
+nueva, §13.4, con las acciones, el rumbo, el orden de dibujo y los nombres del perfil · Inventario de arte:
+`Perfil/`, `Characters/` y el hallazgo 5 · Plan de personajes finales: nota fechada y §4.3 · `Personajes-Resultados.md`:
+C.13 · CLAUDE.md: el párrafo de personajes. En el código (`910c0f0`, rama `feat/personajes-animados`): `ActionView`,
+`CharacterView`, `Heading` y `ActorFacing` nuevos; `CharacterRig` (`HasProfile`, `View`, y el espejo solo en
+perfil; busca `Lienzo/Cuerpo` y `Lienzo/Perfil` por ruta, sin campos serializados nuevos), `CharacterFace`
+(capas y set de la cara de perfil, con un solo reloj de parpadeo y de habla), `ActorBeat`, `ActorTimeline`,
+`NarrativeSceneController` y los controladores del fuego, el bosque y el río; `123785e` pone `Wave` en la
+tabla de vistas (de frente). En las herramientas (`claudeDocs/tasks/Personajes/herramientas/`, `beb1cfe`):
+`preparar_perfil.py`, nuevo, y los modos y claves de perfil de `preparar_expresion.py`, `articulaciones.py`,
+`coreografia.py`, `prefabs.py` y `BuildRigsFinal.cs.txt`. Arte: la entrega original en `3efa765`, la mano
+de la Niña en `3a0f6ad`, su inventario en `a2d32e2` y los 55 PNG de `Perfil/` en `beb1cfe`. Ronda 1 del
+Editor (`9966bcb`): `Lienzo/Perfil` en los cuatro prefabs de la familia (82 a 148 bloques, ningún fileID
+perdido o cambiado), los sprites y las capas de cara de perfil cableados, los 84 clips de la familia
+reescritos y los `.meta`. `2cd8a75` pone las piernas detrás del torso (`ORDEN_TRONCO_PERFIL`; en el Editor,
+el modo `perfil` reordena los hijos existentes con `SetSiblingIndex`, sin cambiar fileID).
+**Pruebas** (31 métodos nuevos de INC-134; los de INC-135 van en su entrada):
+`ActionView_INC134_LaTablaCubreTodasLasAcciones`, `ActionView_INC134_LosGestosHaciaElEstudianteVanDeFrente`,
+`Heading_INC134_IzquierdaYArribaMiranALaIzquierdaDerechaYAbajoALaDerecha`,
+`Heading_INC134_UnVectorNuloNoDecideNada`, `Heading_INC134_EncararUnObjetivoMiraHaciaSuLado`,
+`CharacterRig_INC134_AlMoverseMuestraElPerfilYEnReposoElFrente`,
+`CharacterRig_INC134_LaVistaLaDecideLaAccionYNoElDesplazamiento`,
+`CharacterRig_INC134_SinCuerpoDePerfilSiempreDeFrente`, `CharacterRig_INC134_SinArteDePerfilSiempreDeFrente`,
+`CharacterRig_INC134_SinLienzoNoLanza`, `CharacterRig_INC134_ElEspejoSoloVolteaElPerfil`,
+`CharacterRig_INC134_ElLadoNoCambiaElTamanoDelLienzo`,
+`CharacterRig_INC134_LaFamiliaTieneCuerpoDePerfilConArte` (que comprueba además el orden de dibujo, con las
+piernas detrás del torso), `CharacterFace_INC134_ElPerfilParpadeaAlCompasDelFrente`,
+`CharacterFace_INC134_SinCaraDePerfilLaDeFrenteSigueYLaDePerfilNoSeDibuja`, nueve
+`ActorTimeline_INC134_*` y `ActorBeat_INC134_PorDefectoElRumboEsAuto` en EditMode;
+`NarrativeScene_INC134_QuienSeDesplazaVaDePerfilHaciaDondeCamina` (un caso por secuencia),
+`RiverScene_INC134_MamaVaDePerfilAlCaminarYDeFrenteAlSoltarLaFlecha`, tres `FireLevel_INC134_*` y
+`ForestScene_INC134_LaNinaMiraALaCajaMientrasLaEmpujaYSeGiraSiLaCajaCruza` en PlayMode.
+**Verificación en el Editor: rondas 1 y 2 hechas.** Tras `9966bcb`, `Game.Scaffolding.Tests` pasa
+351/351 y `NarrativeScene_` 107/107 en PlayMode. La ronda 2 (09/10/2026, `f20b271`) corrió el modo `perfil`
+con el orden nuevo de las piernas —detrás del torso en los cuatro prefabs, sin perder ni cambiar ningún
+fileID—, los grupos de PlayMode `NarrativeScene_`, `RiverScene_`, `Fire`, `Forest`, `Credits` y `MainMenu`
+(todos verdes) y `suite2.ps1`: EditMode 710 de 711 (1 omitida), PlayMode 417/417. Las capturas, de perfil al
+recoger y al arrodillarse y de frente en reposo, están en
+`claudeDocs/tasks/Personajes/capturas/2026-10-09/` (`0212469`). No hay captura de una caminata a mitad de
+paso: lo cubre `NarrativeScene_INC134_QuienSeDesplazaVaDePerfilHaciaDondeCamina`
+(`Personajes-Resultados.md`, C.13).
+
+### INC-135 · El parpadeo es de dos cuadros: ojos abiertos y ojos cerrados — cerrado (09/10/2026)
+
+**El conflicto.** El arte de perfil trae la cara en dos cuadros, **ojos abiertos** y **ojos cerrados**, sin
+párpado a medias, y la dirección de arte pide un parpadeo de tres: «ojos a medio cerrar y cerrados».
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §7.3 (ojos a medio cerrar y cerrados para el
+parpadeo); `Plan-Personajes-Finales.md` §5.2 (el parpadeo procedural pasa por medio cerrado); INC-131 y el
+inventario de arte (`ojos_parpadeo_medio` y `ojos_parpadeo_cerrado`).
+
+**Qué hace el juego.** `BlinkClock` recorre medio cerrado, cerrado y medio cerrado en 0,12 s; con solo el
+cuadro cerrado, `CharacterFaceSet.Eyes(Half)` no devolvía nada y los ojos cerrados se verían apenas 0,04 s,
+el tercio central.
+
+**Decisión de Santiago (09/10/2026).** El parpadeo es de **dos cuadros**: «ojos abiertos» es `ojos_neutra` y
+«ojos cerrados» es `ojos_parpadeo_cerrado`. `CharacterFaceSet.Eyes(Half)` devuelve el cuadro cerrado cuando
+no hay cuadro medio (comparación explícita con `null`, que respeta los objetos destruidos), de modo que el
+parpadeo enseña los ojos cerrados sus 0,12 s completos. `ojos_parpadeo_medio` queda **opcional**: si algún
+día llega, vuelve a ser el cuadro medio. `preparar_expresion.py` acepta `abiertos` y `cerrados` como alias de
+`neutra` y `parpadeo_cerrado`. **Hoy solo parpadea el perfil:** no hay ojos cerrados de frente en la entrega
+(ni en `Assets/`) y el frente no parpadeará hasta que llegue `Expresiones/char_<x>_ojos_parpadeo_cerrado`,
+que se pidió al artista. Algoritm tampoco parpadea mientras lleve la cara provisional (INC-136).
+
+**Regla.** Decisión de Santiago. **Acota** §7.3 y el segundo cuadro de INC-131: el parpadeo de tres cuadros
+vale solo mientras exista el cuadro medio. Mantiene CP-02 (el parpadeo no es una expresión) y el ciclo de
+3,5 ± 1,2 s y 0,12 s.
+
+**Corrección aplicada (09/10/2026).** Documentos: Dirección de arte: §7.3 y la lista de §17 · Inventario de
+arte: la tabla del arte final (`ojos_parpadeo_cerrado` y `ojos_parpadeo_medio` opcional) · `Personajes-Resultados.md`:
+C.13 · CLAUDE.md. En el código (`910c0f0`): `CharacterFaceSet.Eyes(Half)`, con el tooltip del campo al día.
+**Pruebas:** `CharacterFaceSet_INC135_SinCuadroMedioElParpadeoUsaElCerrado` y
+`CharacterFaceSet_INC135_ConCuadroMedioSigueSiendoElMedioYSinNingunoNoSeInventaNada`; el parpadeo de la cara
+de perfil, a compás con el del frente: `CharacterFace_INC134_ElPerfilParpadeaAlCompasDelFrente`.
+**Verificación en el Editor:** `Game.Scaffolding.Tests` 351/351 tras `9966bcb`, con los sets de cara de perfil
+ya generados; en la ronda 2 (`f20b271`, 09/10/2026) volvió a pasar 351/351. Una captura fija no muestra el
+parpadeo, así que sigue cubierto solo por las pruebas.
+
+### INC-136 · El diseño nuevo de Algoritm es el oficial: llama, disco de madera y gota — cerrado (09/10/2026), salvo los radicados
+
+**El conflicto.** El artista entregó el 09/10/2026 el diseño nuevo de Algoritm —21 PNG, siete piezas por
+forma— y Santiago decidió que **es el oficial**. No es el de la dirección de arte ni el que INC-52 describió
+con el sprite del 24/09/2026, y cambia de una vez los rasgos que §7.6 declara invariables.
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §7.6, que fija el «núcleo de identidad»: una llama de
+tres lenguas en los tres niveles, brazos y piernas de palo finos del color del contorno, manos abiertas color
+piel, pies de trazo corto, **franja de cinco bandas** y contorno café `#3B1205`; «rueda» y «gota» eran nombres
+de nivel y no de silueta (INC-52). §2.2: color plano, sin degradados, también para los personajes.
+`Interfaces.md` §4.3 y la dirección de sonido §6.1 (la «cuenta de cinco» como eco de las cinco bandas). Los
+radicados: el guion `Solucion_OE2_Diseno_final.docx` §1.1.1 («Conserva el mismo cuerpo en los tres niveles y
+cambia de material», con la franja de colores) y, en las notas de las dos escenas puente que abren los
+Niveles 2 y 3, «Su forma de llama no cambia»; y el trabajo de grado, que lo repite en su descripción del guía.
+
+**Qué trae la entrega** (`545127e`, inventario en `57fbc58`). Un solo personaje con **tres siluetas**: la
+**llama** de tres lenguas con el núcleo amarillo en degradado (Nivel 1), un **disco de madera** con anillos
+(Nivel 2) y una **gota** con brillos (Nivel 3). Comparten la cara —aún por llegar—, las extremidades —las
+mismas siluetas en las tres formas, gruesas, con las manos y los pies óvalos **del color del material**, ya
+no color piel—, el contorno **negro** `#000000` y una **pantaloneta de cuadros** que sustituye a la franja,
+con un color por forma: verde `#277D4A` con cuadros amarillos, naranja `#FEAA40` con cuadros rojos y granate
+`#A13C4F` con cuadros rosa. Brazos, manos y piernas son `#FF9122`, `#5B4134` y `#6ED6FB`. El cuerpo
+lleva **degradados y brillos**.
+
+**Decisión de Santiago (09/10/2026).**
+- El diseño nuevo es el oficial, en las tres formas.
+- **Siete piezas por forma**, sin cabeza, sin cuello y **sin rodilla**: torso (cuerpo y pantaloneta),
+  húmero, antebrazo con la mano y **pierna entera con el pie**, a izquierda y derecha de la pantalla. En el
+  rig, la pierna va en `PiernaX`, y `RodillaX` y `AntepiernaX` quedan como pivotes sin imagen; las curvas de
+  rodilla de los clips siguen y no mueven nada. Si algún día se quiere rodilla, la dibuja el artista.
+- **Escala, opción A:** la altura de hoy y una sola transformación para las tres formas
+  (`x' = 0,76183·x + 29,7`, `y' = 0,76183·y − 12,5` sobre el lienzo de 1300 × 1500), de modo que el Fuego
+  ocupa los mismos 982 px del lienzo del rig que el sprite de hoy y la Rueda y la Gota quedan más bajas
+  (818 y 878 px), como las dibujó el artista. **Ningún `Size` de las narrativas cambia.**
+- **Cara provisional:** los ojos y la boca se toman del sprite de hoy, se marcan `cara_provisional` y **no
+  parpadean ni mueven la boca** hasta que el artista entregue `ojos_neutra`, `ojos_parpadeo_cerrado` y `boca_0` sobre
+  el lienzo de 1300 × 1500, registrados sobre el torso de cada forma.
+- Los tres `_reposo` (768²) se **rehicieron en su sitio**, con el mismo nombre y GUID, a partir de las piezas
+  y de la cara provisional: el botón de ayuda, el retrato y los `Art` de las narrativas ya enseñan el diseño
+  nuevo, sin tocar escenas ni assets.
+- **El guion radicado no se toca sin una autorización aparte de Santiago.** Los párrafos afectados y su
+  redacción propuesta irán a `claudeDocs/entregables/tools/pares/` cuando se pida esa autorización (ver
+  «Residuos y puntos abiertos»); hoy no hay pares escritos.
+
+**Regla.** Decisión de Santiago, como INC-115 a INC-117 e INC-131 a INC-135. **Levanta** INC-52 —el guía
+deja de ser «la llama recoloreada en madera y agua»— y, para el guía, la regla de color plano de §2.2 y el
+contorno `#3B1205`; el núcleo de identidad de §7.6 se reescribe. **Sustituye** el corte provisional en nueve
+piezas de INC-140 (los dos defectos de las rótulas que la decisión D20 dejó para el arte final se esperan
+resueltos sin la rodilla: en las capturas de la ronda 2 ya no se ven los anillos, y el talón claro del
+hombro girado no se ve en reposo y sigue sin comprobarse). **Mantiene** lo que el guion exige
+del guía: es el mismo personaje en los tres niveles (CN-03), cambia solo entre dos secuencias encadenadas
+(nunca a la vista dentro de una escena jugable), flota, tiene cara y es el único que pulsa. Cambia el riesgo
+del Nivel 2: el disco (`#BDA483` y `#9C715C`) parece la sección de un tronco y queda cerca del acento
+interactivo `#C79A5E`, y **sin cara se lee como un prop**; las tres condiciones de §7.6 siguen siendo
+obligatorias, y la segunda («tiene cara») depende de la entrega del artista.
+
+**Corrección aplicada (09/10/2026).** Documentos: Dirección de arte: §7.6 (núcleo, tres formas, `_reposo`,
+riesgo del Nivel 2, nomenclatura y cara provisional), §2.2 (excepción), §13.1 (siete piezas y no nueve), y las
+listas de §17 · Inventario de arte: `Characters/Algoritm/` · Plan de personajes finales: nota fechada ·
+`Personajes-Resultados.md`: C.13 · CLAUDE.md. **Revisados después (`1e2fb6a`, 09/10/2026):** `Interfaces.md` §4.3
+(describía a Algoritm con la franja y las extremidades de palo), la dirección de sonido §6.1 y PS-06 (la «cuenta
+de cinco» se justificaba en las cinco bandas de la franja; el motivo sonoro se conserva, su justificación cambia
+y es del carril de sonido) y el Anexo F del OE3 (apartado 2.13). **Pendientes**, con la autorización de Santiago:
+el guion §1.1.1, las notas de las dos escenas puente de `Solucion_OE2_Diseno_final.docx` y la descripción del
+guía del trabajo de grado. En las herramientas (`2cd8a75`): `preparar_algoritm.py` (la ingesta de las 21
+piezas con la opción A, `--aplicar` y `--reposo`), `articulaciones.py`, `coreografia.py`, `prefabs.py`,
+`maqueta.py`, `pose_preview.py` y `BuildRigsFinal.cs.txt`, cuyo modo `sprites` vacía y apaga el sprite de un
+nodo sin arte y enciende `Ojos` y `Boca` de Algoritm con la cara provisional; en `Assets/`, las 21 piezas
+sustituidas en su sitio, las seis `antepierna` borradas con su `.meta`, la cara provisional en `Expresiones/`
+y los tres `_reposo` rehechos. **Pruebas:** `CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga`
+pasa a exigir las siete piezas, la `Antepierna` sin sprite y la cara provisional. **Verificación en el
+Editor: hecha en la ronda 2** (09/10/2026, `f20b271`): `sprites` aplicó el arte final a los tres prefabs de
+Algoritm, con la cara provisional en `CharacterFace.faceSet`, sin perder ni cambiar ningún fileID, y
+`CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga` pasa en sus tres formas (351/351 en
+`Game.Scaffolding.Tests`) tras tres correcciones del generador (`ad4fd58`, `24ce278` y `b4aed0e`: la
+`AntepiernaX` conservaba la referencia al PNG borrado, y se detecta ahora en el YAML del prefab). En las
+capturas se ven la llama (`Personajes_N1_AparicionGuia_L07`), el disco del Nivel 2
+(`Personajes_N2_Escena21_Bosque_L01`) y la gota (`Personajes_N3_Escena31_Llegada_L02`) con el diseño final y
+la cara provisional, sin los anillos de las rótulas de D20; el talón claro del hombro girado no se ve en
+reposo y sigue sin comprobarse.
+
+### INC-137 · Laberinto: un solo ámbar y marcos iguales, no panel marfil — cerrado (09/10/2026)
+
+**El conflicto.** La nota del 07/10/2026 de INC-71 sacó el laberinto del reloj de luz del Nivel 2 y
+fijó que su entorno se viera tal cual el arte «con panel marfil `#F7EFE2` y contorno `#C4A882`».
+Santiago, el 08/10/2026, revirtió esa parte: el marfil se perdía contra la tarjeta y el contorno se
+cortaba en las esquinas.
+
+**Qué decían los documentos.** `CLAUDE.md` (párrafo del Nivel 2), `SPEC.md` (la capa de luz de las
+narrativas), `Direccion_de_Arte.md` §8.2, la nota del 07/10 de INC-71 y el Anexo C del OE3: panel
+marfil `#F7EFE2` y contorno `#C4A882` como el del panel de diálogo.
+
+**Qué hace el juego.** Detrás del entorno y de la tarjeta hay un solo color, `#E8A33D`
+(`Canvas/Fondo_Escena` y `MazeLayout.BackdropColor`, que vigila `MazeSceneDataTests`). El entorno y
+la tarjeta de la secuencia llevan el mismo marco redondeado `ui_boton` de 8 px y `#C4A882`, sin
+cortes en las esquinas: el de la tarjeta es su `Fondo`; el del entorno, el anillo hermano
+`Marco_Entorno`, que sustituye al `Outline`, con 40 px de margen (el tablero encoge 7,4 %). La zona
+de la secuencia (`Ventana_Secuencia`) y las muescas de los bloques vuelven a `#E0D4C0`. El aro del
+botón de pista pasa de `#E2571F` a `#A0330D` solo en este nivel: sobre el ámbar daba 1,73:1 y ahora
+3,27:1; ese color no estaba en la paleta y se añade a §4.3.
+
+**Decisión de Santiago (08/10/2026).** D1 a D4 y D15 de la ronda. Corrige el juego; no hay `.docx`
+radicado que lo diga.
+
+**Regla.** Decisión de Santiago, como INC-115 a INC-117: revierte la nota del 07/10 de INC-71 en
+lo que decía del panel y del contorno. El resto de esa nota sigue: el laberinto no se tiñe.
+
+**Corrección aplicada (09/10/2026).** Documentos: CLAUDE.md (párrafo del Nivel 2) · SPEC (capa de luz de
+las narrativas) · Dirección de arte: §4.3 (dos filas nuevas), §8.2, §10.2 · Interfaces: §1.1, 8–10 y
+§2 · Anexo C del OE3. En el código (commit `108f95e`): `MazeLayout`, `MazeSceneController`
+(`environmentFrame`, `environmentBorderWidth`), `Level2_Maze.unity` y `N2_MazeLayout.asset`.
+**Pruebas:** `MazeScene_RF30_ElEntornoYLaTarjetaLlevanElMismoMarcoRedondeado`,
+`MazeScene_RF30_LaSalidaSeLeeEnElEntornoYElFondoEsUnoSolo`,
+`MazeScene_RF31_LaZonaDeSoltarEsMarfilSombraSobreLaTarjeta`, y en EditMode `MazeSceneDataTests`
+(`…ElFondoDeLaEscenaYElDelAssetSonElMismoAmbar`, `…ElAroDelBotonDePistaSeDistingueDelFondoAmbar`).
+
+### INC-138 · Diálogo: `#1F100C` a 30 px en un cuadro de 216 px — cerrado (09/10/2026)
+
+**El conflicto.** `Direccion_de_Arte.md` fijaba el texto del diálogo en `#3A1E18` a 26 px (nombre del
+hablante a 22 px en `#6B5248`) dentro de un cuadro de 1400 × 180 px, con la regla de «máximo 2 líneas
+por cuadro». Santiago pidió un texto más grande y más oscuro.
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §10.3, §11.3 y §11.4 (que `INC-129` y `INC-79`
+habían dejado así); `Interfaces.md` §1.1 (punto 5) y §2 (tipografía).
+
+**Qué hace el juego.** El texto es Nunito SemiBold 30 px, interlineado 1,1, y el nombre del hablante
+Baloo 2 Bold 30 px, los dos en `#1F100C`; el cuadro mide 1400 × 216 px, con la cima a 232 px de 1080
+(el cuarto inferior acaba en 270), el retrato centrado en vertical y 32 px de blanco entre el nombre
+y el texto. La línea más alta de las 139 de las 18 narrativas mide 131 px en una caja de 137 y ninguna
+necesita cuatro renglones; 17 usan tres, de modo que la regla de dos líneas ya no se cumplía (a 26 px
+la incumplían 9). El `#6B5248` deja de usarse en el nombre.
+
+**Decisión de Santiago (08/10/2026).** D5, D6 y D17 de la ronda. El carbón más oscuro se añade a la
+paleta como color solo del diálogo; `#3A1E18` sigue siendo el de contornos y botones.
+
+**Regla.** Decisión de Santiago: gana el juego y se corrige el documento. La regla del texto oscuro sobre
+marfil de INC-129 no cambia.
+
+**Corrección aplicada (09/10/2026).** Documentos: Dirección de arte: §4.3 (fila `#1F100C`), §10.3,
+§11.3 (filas de título de pantalla y de diálogo, y el mínimo de 26 px sin el nombre del hablante) y
+§11.4 (hasta tres renglones) · Interfaces: §1.1 (punto 5) y §2 · Anexo E del OE3. En el código (commit
+`08b6c63`): `Narrative.unity`. **Pruebas:**
+`NarrativeScene_RNF01_TodasLasLineasDeLasDieciochoNarrativasCabenEnSuCuadro` (sustituye a la de la
+línea más larga), `NarrativeScene_RF05_ElNombreDelHablanteCabeEnUnaLinea` y
+`NarrativeScene_RNF03_ElNombreElTextoYLosBotonesNoSePisanDentroDelCuadro`.
+
+### INC-139 · El halo de las fogatas: degradado radial y ciclo de 2 s — cerrado (09/10/2026)
+
+**El conflicto.** `Direccion_de_Arte.md` §8.1 pedía un halo de «círculo plano, sin degradado» que oscilara
+entre 0,95 y 1,05 en un ciclo de 1,2 s, y no estaba implementado. Santiago pidió un pulso lento y
+suave, y las pruebas con el círculo plano mostraron que no se sostiene.
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §8.1 (tabla de la hoguera y el párrafo que sigue);
+`Assets/Game/Art/Inventario.md` (`fx_n1_halo.png` y `.anim`, pendientes); el plan del Slice 1.
+
+**Qué hace el juego.** `FireGlow` (`Game.Scaffolding`) pone un halo `#F0A84E` al 20 % en el centro, un
+disco con degradado radial generado por código (opacidad plena hasta 0,3 del radio y a cero en el
+borde), hermano de la llama justo antes de ella. Respira entre 0,95 y 1,05 de escala en un ciclo de
+2 s, sobre tiempo escalado y sin cambiar nunca la opacidad (RNF-21). Lo llevan las nueve llamas de las
+narrativas (`NarrativeProp.Glows`) y la llama cenital de `Level1_Cave`, donde el halo va al fondo del
+suelo para no lavar el montón ni las piedras. El círculo plano al 20 % se leía de noche como una
+mancha naranja de unos 625 px que cortaba la pared, y a plena luz casi no se veía salvo por los aros
+fantasma donde se cruzan dos discos; a plena luz el halo con degradado también se ve poco, y se dejó así.
+
+**Decisión de Santiago (08/10/2026).** D8 y D18 de la ronda: halo en todas las fogatas encendidas, incluida la
+cenital del Nivel 1, con ciclo de 2 s. El degradado lo decidió el orquestador de la ronda por delegación,
+mirando las capturas (`capturas/03-narrativa/decision-halo-*.png`), y es la parte que contradice el documento.
+
+**Regla.** Gana el juego y se corrige el documento. No hay `.docx` radicado que describa el halo.
+
+**Corrección aplicada (09/10/2026).** Documentos: Dirección de arte: §8.1, §12.2 (fila nueva) y §14.3 ·
+Inventario de arte (`FX/`) · SPEC (andamiaje) · CLAUDE.md · Anexo E del OE3. En el código (commit `08b6c63`):
+`FireGlow`, `NarrativeProp.Glows`, `NarrativeSceneController` y `Level1_Cave.unity`. **Pruebas:** `FireGlowTests`
+(12), `NarrativeSequence_RF05_CadaLlamaEmiteSuHalo`, `CaveSceneDataTests`,
+`NarrativeScene_RNF21_ElHaloDeLaFogataPulsaLentoYSinDestellos` y
+`FireLevel_RF20_LaLlamaCenitalEmiteSuHaloSinVelarElMonton`.
+
+### INC-140 · Algoritm por partes con el arte provisional — cerrado (09/10/2026)
+
+**El conflicto.** INC-131 levantó la regla de «una sola imagen por forma, sin recorte» **para el arte
+final** de Algoritm y la dejó vigente para el actual. Santiago decidió el 08/10/2026 que sus brazos y
+piernas se muevan ya, en todas sus escenas, sin esperar la entrega.
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §7.6 y §13.1 («Arte actual (provisional): una sola
+imagen por forma»), `Interfaces.md` §4.3, `Inventario.md` (`Characters/Algoritm/`), el Plan de personajes
+finales y `Personajes-Resultados.md` (C.2 y C.6).
+
+**Qué hace el juego.** Las tres formas se cortan de su `_reposo` en nueve piezas cada una (27 PNG en
+`Frontal/`, con `pose_preview.py --exporta-maqueta`), con una rótula en cada articulación; `Cuerpo` queda
+apagado y `Ojos` y `Boca` también, porque la cara va pintada en el torso. Cuando llegue el arte final
+se sustituyen los PNG con el mismo nombre y se corre `sprites`. Dos defectos de las piezas provisionales
+quedan **pendientes para el arte final** (decisión D20): los anillos oscuros de las rótulas en los fundidos
+y el talón claro de unos 12 px en el hombro girado. El corte en nueve piezas sale del arte provisional y lo
+sustituirá la ingesta del diseño nuevo de Algoritm (INC-136, del carril de perfil); esos dos defectos se
+revisan con ese arte.
+
+**Regla.** Decisión de Santiago, como INC-131: levanta la regla de la imagen única también para el arte
+provisional de Algoritm. No hay `.docx` radicado que lo diga.
+
+**Corrección aplicada (09/10/2026).** Documentos: Dirección de arte: §7.6 (arte actual y arte final), §13.1 ·
+Interfaces: §4.3 · Inventario de arte · Plan de personajes finales (nota) · `Personajes-Resultados.md`: C.12
+y notas en C.2 y C.6 · CLAUDE.md · Anexo F del OE3. En el código (commit `bd8b802`): los tres prefabs de
+Algoritm, `rig_articulaciones.json` y las herramientas `maqueta.py`, `pose_preview.py`, `articulaciones.py` y
+`coreografia.py`. **Pruebas:**
+`CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga`, `CharacterRig_DA133_*` y
+`CharacterRig_CP02_NingunClipEsDeDerrotaCaidaNiSalto`.
+
+*Nota (09/10/2026): el corte en nueve piezas lo sustituyó INC-136 con las siete piezas del diseño final,
+en su sitio y con los mismos nombres de archivo; las seis `antepierna` se borraron.*
+
+### INC-141 · `Wave`, el saludo de Algoritm — cerrado (09/10/2026)
+
+**El conflicto.** Ningún documento nombraba un saludo. La tarjeta de los créditos (INC-82) mostraba a
+Algoritm quieto en `Idle`; Santiago pidió que saludara.
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §7.3 y §13.3 (el set mínimo no tenía saludo) e
+`Interfaces.md` §1.1.
+
+**Qué hace el juego.** `ActorAction.Wave = 22`, al final del enum para conservar los números que guardan
+los assets, con emoción `Happy`. El clip `char_algoritm_anim_saludar.anim` (bucle de 4,8 s con un reposo de
+unos 0,9 s) y su estado `Wave` están en `char_algoritm.controller`. Es solo del guía: a un miembro de la
+familia le caería a `Idle`. El brazo es el derecho de pantalla y nunca tapa la cara (la prueba de
+`pose_preview.py` exige libre el 99,5 % de ojos y boca).
+
+**Regla.** Solo en el juego: se añade al documento (regla b).
+
+**Corrección aplicada (09/10/2026).** Documentos: Dirección de arte §7.3 (fila «Saludo») y §13.3 ·
+Interfaces §1.1 · `Personajes-Resultados.md` C.12. En el código (commit `bd8b802`): `ActorAction`,
+`ActionEmotion`, el clip y el controlador. **Pruebas:** `CharacterRig_DA133_CadaPersonajeTieneUnEstadoPorAccion`
+y `FacialEmotion` (`Wave` a `Happy`).
+
+### INC-142 · Créditos sin tarjeta detrás de Algoritm — cerrado (09/10/2026)
+
+**El conflicto.** INC-82 reemplazó el rótulo «Algoritm saluda · placeholder» de la pantalla de créditos
+por Algoritm en una tarjeta de 520 × 952 px. Santiago decidió que la tarjeta sobra: el guía saluda solo.
+
+**Qué decían los documentos.** `Interfaces.md` §1 (fila 14, Créditos); la nota de INC-82.
+
+**Qué hace el juego.** `Credits.unity` pierde `Fondo`, `Marco`, `Sombra` y la imagen vacía
+`AlgoritmSaluda`; el rig de Algoritm en fuego cuelga directo de `AlgoritmPanel` a su ancho de 520 px y
+`CreditsController.guide` lo anima con `Wave` al abrir la pantalla.
+
+**Regla.** Decisión de Santiago: gana el juego y se corrige el documento.
+
+**Corrección aplicada (09/10/2026).** Documentos: Interfaces §1 (fila 14) y §1.1 · Dirección de arte §10.4
+(sección nueva). En el código (commit `bd8b802`): `Credits.unity` y `CreditsController`. **Prueba:**
+`Credits_RF08_AlgoritmSaludaOcupandoElLugarDeLaTarjetaSinElla`.
+
+### INC-143 · Inicio y menú de niveles: portada, título y marcas de estado — cerrado (09/10/2026)
+
+**El conflicto.** El inicio llevaba el título dentro de una tarjeta de 280 px y a Algoritm solo en un
+cuadro marfil vacío (mockup 2); el menú de niveles, las insignias arriba a la derecha de la imagen
+(mockup 4) y la tarjeta del Nivel 2 con el laberinto, que INC-82 había puesto en lugar del bosque. Santiago
+pidió otra composición.
+
+**Qué decían los documentos.** `Interfaces.md` §1.1 (puntos 2 y 4), `Direccion_de_Arte.md` §11.3 (el título a
+96 px) y la fila `PG-01` de §18, los mockups 2 y 4 de `Mockups de interfaz Algoritmia.html` (que no se
+editan: quedan superados) y la nota de INC-82.
+
+**Qué hace el juego.** La portada del inicio es la mitad izquierda del bosque del Nivel 2
+(`env_n2_bosque_claro`, foco 0,25, sin cruzar la costura de x = 0,5) en una ventana siempre cuadrada, con
+Papá, Mamá, el Niño, la Niña y Algoritm en fuego en `Idle` desfasados (`CharacterRig.idlePhase`). El título
+sale de la tarjeta: blanco, 112 px, con contorno `#3A1E18` de 4 px; la tarjeta baja de 280 a 120 px y solo
+lleva el lema; título, tarjeta y botones forman un bloque centrado en vertical (222 px arriba y abajo). En el
+menú de niveles, cada tarjeta lleva una ventana de 444 × 250 px; el icono de estado va abajo a la izquierda
+de la imagen y su texto, centrado entre la imagen y el botón, sin la pastilla marfil; la imagen del Nivel 2
+es el bosque con foco 0,25. `FramedIllustration` (`Game.UI`) aplica el encuadre desde la ventana.
+
+**Decisión de Santiago (08/10/2026).** D9, D10 y D11 de la ronda.
+
+**Regla.** Gana el juego y se corrige el documento; los mockups no se tocan.
+
+**Corrección aplicada (09/10/2026).** Documentos: Interfaces §1.1 (puntos 2, 4 y 14) y §2 · Dirección de arte:
+§10.4 (sección nueva), §11.3, §11.4 y §18 (`PG-01`) · Inventario de arte (`Environments/Wheel/`) · CLAUDE.md ·
+SPEC · Anexos E y G del OE3 y el capítulo 7. En el código (commit `c96846f`): `MainMenu.unity`,
+`LevelSelect.unity`, `FramedIllustration`, `CharacterRig.idlePhase`. **Pruebas:**
+`MainMenu_RF01_LosCincoPersonajesEsperanEnReposoSinRespirarAlUnisono`,
+`MainMenu_RF01_ElBosqueNoCruzaLaCosturaDelLienzo`,
+`MainMenu_RF01_TituloTarjetaYBotonesQuedanCentradosEnVertical`,
+`LevelSelect_RNF19_ElIconoDeEstadoVaAbajoALaIzquierdaDeLaImagenYSuTextoEntreImagenYBoton`,
+`LevelSelect_RF03_CadaTarjetaMuestraUnaIlustracionSinCostura` (ajustada) y, en EditMode,
+`FramedIllustrationTests` y `CharacterRigIdlePhaseTests`.
+
+### INC-144 · El húmero de Papá ya no asoma por el codo — cerrado (09/10/2026)
+
+**El conflicto.** El arte final de Papá, entregado el 06/10/2026, trae el húmero con una punta clara y sin
+contorno que sobresale de su extremo redondo; con el antebrazo solapado, la punta asomaba por el codo al
+doblarlo. `preparar_arte_final.py` lo dejaba como tolerancia (`holguras` de 42,0 y 20,9 px). Santiago pidió
+que se subiera el húmero y se bajara un poco el antebrazo.
+
+**Qué decían los documentos.** `Personajes-Resultados.md` C.9 a C.11, que daban la costura por aceptada.
+
+**Qué hace el juego.** `codo.py` corrige `arte_final.json` sin tocar ningún PNG: el húmero izquierdo sube
+19,2 px y los dos antebrazos bajan 37,4 px, con lo que lo que asoma pasa de 52,6 y 33,4 px a −3,2 y 1,0.
+Los brazos miden unos 37 px más, y el choque de `Strike` baja de y = 549 a y = 595 con los codos más
+abiertos; Santiago los aprobó (D16), y con ello cierra el punto de C.9 que el choque tenía pendiente.
+
+**Regla.** Decisión de Santiago: corrige el juego; ningún documento radicado cambia.
+
+**Corrección aplicada (09/10/2026).** Documentos: `Personajes-Resultados.md` C.12 · Plan de personajes
+finales (nota del 08/10). En el código (commit `a938f9a`): `Papa.prefab`, los 21 `.anim` de Papá,
+`arte_final.json`, `codo.py` y `pose_preview.py` (comprobación del codo).
+
+### INC-145 · La cámara de la 3.3 acompaña a la balsa — cerrado (09/10/2026)
+
+**El conflicto.** En el cruce de la 3.3 la cámara tenía paradas fijas y la balsa, que se desliza durante 9 s,
+salía del cuadro cuando el texto tardaba: el pendiente «3.3, línea 0» de `Personajes-Resultados.md`, que
+dejaba al criterio de Santiago. El diseño de cámara del Nivel 3 ya no está en el equipo.
+
+**Qué hace el juego.** `NarrativeProp.CameraFollows`, marcado solo en la balsa de `N3_Escena33_Cruce`: el
+foco de cada parada se corre lo que ella se ha movido, y el desplazamiento se queda al llegar. La parada de
+la línea 1 sube de 0,47 a 0,52 y la apertura (`CameraStart` y `CameraEnd`) pasa de 0,38 a 0,50 (D19), para
+que la balsa se deslice menos hacia la izquierda de la pantalla. Antes, sin avanzar el texto, la balsa
+quedaba 204 px fuera del cuadro; ahora el margen mínimo es de 77 px.
+
+**Decisión de Santiago (08/10/2026).** D7 y D19 de la ronda.
+
+**Regla.** Corrige el juego; lo aplicado sobrevive solo en `N3_Escena33_Cruce.asset`.
+
+**Corrección aplicada (09/10/2026).** Documentos: CLAUDE.md (párrafo del sonido y la balsa) ·
+`Personajes-Resultados.md` (el punto pendiente queda resuelto por esta ronda) · Anexo F del OE3. En el código
+(commit `08b6c63`): `NarrativeProp`, `NarrativeSceneController` y `N3_Escena33_Cruce.asset`. **Pruebas:**
+`NarrativeSequence_RF44_LaCamaraDelCruceAcompanaALaBalsa` y
+`NarrativeScene_RF44_LaCamaraSigueALaBalsaMientrasCruza`.
+
+### INC-146 · Los cinco props del N1 entran a 256 px por el peso del paquete (RNF-06) — cerrado (09/10/2026)
+
+**El conflicto.** RNF-06 limita el ejecutable y sus recursos a 500 MB. El primer ejecutable con el arte
+frontal final, Algoritm y el perfil de la familia, compilado el 09/10/2026 sobre `0212469`, pesó
+499 314 282 bytes (499,3 MB; 476,2 MiB): 0,7 MB de margen, y +20,3 MB sobre rc2 (479,0 MB, 01/10/2026).
+Con ese margen cualquier entrega de arte nueva —entre ellas los ojos cerrados de frente y la cara de
+Algoritm, que faltan— rompía el tope.
+
+**Qué decían los documentos.** OE1 §4.2 RNF-06 («El tamaño total del ejecutable y sus recursos no debe
+superar los 500 MB»), que no cambia; `Direccion_de_Arte.md` §15.2 (fila «Max Size» y párrafo «Sin
+comprimir y a 4096, por regla», con la única excepción de INC-130); `Inventario.md`, párrafo «Cómo
+entran», y `CLAUDE.md`, «Cómo entra una imagen» («Única excepción»); la prueba
+`ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`, que exigía el tope de 4096 a toda
+textura de `Art/` salvo la carpeta de los cuadros del fuego.
+
+**Qué hacía el juego.** El informe del build dio 342,5 MB de texturas (95,9 % del paquete); `Characters/`
+suma 35,8 MB (`Frontal/` 13,5 MB en 61 archivos, `Perfil/` 8,2 MB en 59, `Expresiones/` 3,7 MB en 25 y el
+resto 10,4 MB en 107). Lo más pesado eran cinco props del N1 entregados a 2000 × 2000, sin comprimir, a
+15,3 MB cada uno en el build: `prop_n1_pedernal`, `prop_n1_silex`, `prop_n1_hoja`, `prop_n1_monton_hojas` y
+`prop_n1_monton_hojas_cenital`. En pantalla miden de 72 a 300 px: en `Level1_Cave`, las hojas 84 px, las
+piedras 72 px y el montón cenital 300 px; en las narrativas, piedras y hojas unos 96 a 135 px y el montón
+de frente unos 230 a 280 px con el zoom más cerrado.
+
+**Decisión de Santiago (09/10/2026):** «Deja los props en 256x256». Los cinco se importan a **256 px de lado
+máximo** y siguen **sin comprimir**, por el mismo motivo de INC-130: comprimidos enseñarían la rejilla de
+bloques de 4×4. Las piedras y las hojas se ven reducidas aun así (256 px de textura para 135 px como
+mucho en pantalla); los dos montones se amplían como mucho unas 1,2 veces con el zoom más cerrado. La
+revisión comparó las capturas de la mecánica de la cueva, de `N1_NacimientoDelFuego` (L00 a L16) y de
+`N1_Hallazgo` (L15 y L16) con las de antes (`claudeDocs/tasks/Personajes/capturas/2026-10-09/`) y no
+halló diferencia apreciable, tampoco en los montones.
+
+**Regla.** Decisión de Santiago: corrige el juego; RNF-06 ya lo pedía y no cambia. La excepción es una
+lista explícita de cinco rutas y no la carpeta `Props/Fire/`, porque allí caben también las animaciones
+(que tienen su tope) y lo que llegue después, que debe entrar a 4096.
+
+**Corrección aplicada (09/10/2026).** Documentos: Dirección de arte: §15.2 (fila «Max Size» y la
+excepción) · Inventario de arte: «Cómo entran»; `Props/Fire/` · CLAUDE.md: «Cómo entra una imagen» y los
+apartados del peso del paquete · INC-128 e INC-130 (notas) · `Personajes-Resultados.md` (C.13) · Plan de
+personajes finales · Anexos E y F y capítulos 9, 10 y 12 del OE3. En el código (commit `83fd986`):
+`ArtImportRules` (`Game.EditorTools`) lleva `SmallPropPaths` con las cinco rutas a `maxTextureSize` 256
+(`SmallPropsMaxTextureSize`), sin comprimir, y el resto de `Art/` sigue a 4096; el reimport de los cinco
+desde el motor (commit `4062ae3`) solo cambia `maxTextureSize` de 4096 a 256 en cada `.meta`. Pruebas:
+`ArtImport_RNF06_LosCincoPropsDelN1SeImportanA256SinComprimir`, nueva, en `ArtImportTest`
+(`Game.Architecture.Tests`), y `ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`, que salta
+las cinco como a los cuadros del fuego. En el reimport, `ArtImport_` pasó 4 de 4 y PlayMode `Fire`, 76 de
+76.
+
+**Medida (09/10/2026, `editor.ps1 exec build` y `oe4.ps1 Tamano`, sin `Datos/`).** El build sobre `83fd986`
+más el reimport pesa **420 561 594 bytes = 420,6 MB (401,1 MiB)**, 78,7 MB menos que el de antes de
+la excepción (499,3 MB), con 79,4 MB de margen sobre los 500 MB de RNF-06. Los dos builds son medidas
+del peso y **no candidatos**: rc2 sigue siendo el candidato vigente del OE4. RNF-04 y RNF-05 no se
+midieron en ellos, porque el arnés exige el Editor cerrado y jugar el ejecutable; quedan para el
+próximo candidato del carril OE4.
+
+### INC-147 · Los brazos de Algoritm, detrás de todo el cuerpo — cerrado (09/10/2026)
+
+**El conflicto.** INC-132 (05/10/2026) fijó para el guía el orden de dibujo `Torso`, `Ojos`, `Boca`,
+`BrazoIzq`, `BrazoDer`: los brazos delante del cuerpo y **las manos encima de la cara**. Con el diseño
+nuevo de Algoritm (INC-136) Santiago revisó el resultado y decidió otra cosa.
+
+**Qué decían los documentos.** `Plan-Personajes-Finales.md` (§3.1 y la Fase 3), `Personajes-Resultados.md`
+(C.5, C.6 y C.9) y `CLAUDE.md` (la fila de este documento): «en Algoritm, delante del cuerpo y con las
+manos encima de la cara», con `pose_preview.py` impidiendo que una mano entrara en la caja de ojos y boca.
+El Anexo F del OE3 (tablas del orden de dibujo y de las pruebas de INC-132) lo repetía. Ningún `.docx`
+radicado habla del orden de dibujo.
+
+**Qué hacía el juego.** Los tres prefabs de Algoritm llevaban bajo `Lienzo/Cuerpo/Tronco` los hijos en el
+orden de INC-132, y los tres `_reposo` (768²) se habían compuesto con los brazos encima del cuerpo.
+
+**Decisión de Santiago (09/10/2026).** Los brazos de Algoritm se dibujan **detrás de todo el cuerpo**, en
+las tres formas: eligió «Detrás de todo el cuerpo» frente a «sobre el cuerpo, bajo la cara». El orden bajo
+`Lienzo/Cuerpo/Tronco`, de atrás adelante, es `BrazoIzq`, `BrazoDer`, `Torso`, `Ojos`, `Boca` (antes
+`Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`). Con ello una mano no tapa nunca la cara del guía, y de
+cada brazo se ve lo que sobresale de la silueta del cuerpo.
+
+**Regla.** Decisión de Santiago, como INC-115 a INC-117, INC-131 a INC-133 e INC-146: corrige el juego.
+**Revierte para el guía la cláusula de INC-132** («en Algoritm, delante del cuerpo y con las manos encima
+de la cara»). **No cambia** la regla de la familia (INC-132 e INC-133: el húmero detrás del torso, el
+antebrazo delante; los brazos delante solo mientras golpean, con `ArmLayering`) ni CP-02: `Encourage` sigue
+siendo un gesto del guía, ahora con el brazo detrás del cuerpo.
+
+**Consecuencia aceptada.** Con el brazo en alto, el húmero de la forma de rueda desaparece detrás del disco
+de madera, que es ancho, y solo se ven el antebrazo y la mano. `pose_preview.py` mide ahora el antebrazo
+(al menos el 85 %) y el húmero (al menos el 30 %) del guía como los de la familia (INC-133), y registra en
+`EXCEPCIONES_BRAZO` tres excepciones, todas de `algoritm_rueda`: `Celebrate` (antebrazo 81,5 %, húmero
+1,4 %), `Encourage` (77,8 % y 3,8 %) y `Wave` (48,2 % y 3,7 %). La medida de la cara se conserva y da el
+100 % en las tres formas.
+
+**Corrección aplicada (09/10/2026).** Código y herramientas (commit `a44ca96`, rama
+`feat/personajes-animados`): `articulaciones.py` (`ORDEN_TRONCO_GUIA`) y `rig_articulaciones.json` (clave
+`orden_tronco` de las tres formas) llevan el orden nuevo, que el modo `"orden"` de `BuildRigsFinal.cs.txt`
+aplica en el Editor con `SetSiblingIndex`, sin tocar ningún fileID; `preparar_algoritm.py` compone desde ese
+orden y rehízo en su sitio `char_algoritm_n1_fuego_reposo.png`, `char_algoritm_n2_rueda_reposo.png` y
+`char_algoritm_n3_gota_reposo.png` (mismos nombres y GUID, 768 × 768, mismo alfa: solo cambian los
+casquetes de los hombros, que ya no se pintan sobre el cuerpo); `pose_preview.py`, como se describe arriba
+(`coreografia.py`, `prefabs.py` y `BuildRigsFinal.cs.txt` solo cambian comentarios). En el motor solo cambian
+comentarios (`ArmLayering.cs`, `CharacterRig.cs`, `LimbFollower.cs`). **Un fallo de las herramientas que salió a la luz:** `_mismos_pixeles`
+(`preparar_arte_final.py`, que usan los preparadores para decidir si una imagen cambió) comparaba con
+`getbbox()`, que en RGBA con Pillow 12 solo mira el alfa, de modo que dos imágenes con el mismo alfa y
+distinto color parecían iguales y los `_reposo` no se habrían reescrito; ahora compara canal por canal.
+Documentos: este hallazgo · INC-132 (nota) · Dirección de arte (§7.6 y la lista de §17) · Plan de personajes
+finales (nota fechada) · `Personajes-Resultados.md` (C.14) · CLAUDE.md · Anexo F y capítulo 12 del OE3.
+**Pruebas:** `CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo`, que sustituye a
+`CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara`, y
+`CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen`, que sustituye a
+`CharacterRig_INC132_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo`: Algoritm no tiene el estado `Strike`, pero
+`armsInFrontActions` lo incluye en los siete prefabs, así que con los brazos antes del torso `ArmLayering`
+sí los movería; la prueba comprueba que la ida y vuelta es exacta y que las manos no pasan nunca por encima
+de la cara. Las dos fallaban mientras no se corriera el modo `"orden"` sobre los prefabs de Algoritm; pasan desde
+`ca62b9a`.
+
+**Verificación en el Editor (hecha el 09/10/2026, `ca62b9a`).** Sesión local de Santiago, sobre `a44ca96`.
+El modo `"orden"` de `BuildRigsFinal` reordenó `Tronco` en `Algoritm_Fuego`, `Algoritm_Rueda` y
+`Algoritm_Gota` de `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer` a `BrazoIzq`, `BrazoDer`, `Torso`,
+`Ojos`, `Boca`; el modo `"estado"` pasó de «NO cumple la tabla» a «cumple la tabla», y la familia ya estaba
+en orden. Comparados objeto por objeto contra `HEAD`: en la familia, ningún cambio; en los tres Algoritm,
+69 → 69 bloques, ningún fileID añadido, perdido ni cambiado, y cambia solo el orden de `m_Children` del
+`Transform` de `Tronco`. Los `.meta` de los tres `_reposo` no cambiaron. Pruebas: `Game.Scaffolding.Tests`
+351/351, con las dos `INC147`; PlayMode `Credits` 6/6, `MainMenu` 19/19 y `NarrativeScene_` 107/107. No se
+corrió la suite completa (`suite2.ps1`): solo cambió el orden de los hijos de tres prefabs y tres PNG. Las
+26 capturas del guía —`N1_AparicionGuia`, `N2_Escena21_Bosque` y `N3_Escena31_Llegada`, en
+`claudeDocs/tasks/Personajes/capturas/2026-10-09-algoritm-brazos/`— se revisaron: en las tres formas los
+brazos salen por detrás del cuerpo y ninguna mano tapa la cara. Después, `0220b74` corrigió
+`pose_preview.py`, que dibujaba a la familia con sus dos cuerpos (frente y perfil) a la vez desde
+`9966bcb`: las 74 filas y los 6 casos de autoprueba en rojo eran de la herramienta (ahora 0 y 0), no de
+los clips ni de los prefabs (`Personajes-Resultados.md`, C.14).
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -2657,8 +3303,8 @@ INC-44), `PG-03` y `PG-04` (redacción de `RF-16` y `RF-32`, 24/08/2026) y `PG-0
 escrita de los personajes, 30/08/2026 — INC-43).
 
 **Pendientes de Santiago (01/10/2026).** Puntos del trabajo de grado que el juego no zanja; quedan
-abiertos hasta que Santiago aporte el dato o la decisión. Siguen abiertos los tres primeros; el
-cuarto se cerró el 01/10/2026. Las secciones son las del trabajo de grado vigente, la plantilla del
+abiertos hasta que Santiago aporte el dato o la decisión. Sigue abierto el primero; el cuarto se
+cerró el 01/10/2026, y el segundo y el tercero el 09/10/2026 con el dato de Santiago. Las secciones son las del trabajo de grado vigente, la plantilla del
 28/07 (`Trabajo_de_Grado_Entrega_Plantilla_28jul.docx`, desde el 30/09/2026):
 
 1. **Anexo con la autorización de la Familia Anonaky** (INC-78). La letra C ya no está libre: en la
@@ -2667,13 +3313,18 @@ cuarto se cerró el 01/10/2026. Las secciones son las del trabajo de grado vigen
    tarjeta D10-8), así que la autorización será el **Anexo G**. Falta el escaneo y su enlace de
    SharePoint para añadirla en las dos listas; al añadirla, la viñeta de §3.3.2 que cita la
    autorización cambia su punto final por «; su constancia es el Anexo G.».
-2. **Herramientas de ilustración** (§5.1, viñeta de Adobe Illustrator y Photoshop; era §5.2 en la
-   versión anterior). `Interfaces.md` §4 describe una especificación de estilo que se pega en un
-   generador de imágenes, y el trabajo de grado solo nombra Illustrator y Photoshop. Falta saber qué
-   herramientas se usaron de verdad.
-3. **Colaboración en el arte.** Los créditos acreditan la «Producción de arte» a Sofía Valentina
-   Giraldo Segovia (`CreditsContent.asset`), a quien el trabajo de grado no nombra ni en §5.1 ni en
-   el presupuesto. Falta decidir cómo se nombra esa colaboración.
+2. **Herramientas de ilustración — cerrado (09/10/2026).** El trabajo de grado solo nombraba
+   Illustrator y Photoshop (§5.1, viñeta de Adobe Illustrator y Photoshop; era §5.2 en la versión
+   anterior). **Dato de Santiago: el programa es CLIP Studio.** Cada sprite pasa por cinco pasos:
+   (1) búsqueda de inspiración en equipo, mediante lluvia de ideas; (2) boceto; (3) limpieza de la
+   línea; (4) aplicación de color y sombras; (5) entrega y correcciones. Consta en el trabajo de grado
+   (§5.1 y el capítulo 8) y en el entregable del OE3 (Anexo E y capítulo 2).
+3. **Colaboración en el arte — cerrado (09/10/2026).** Los créditos acreditan la «Producción de arte» a
+   Sofía Valentina Giraldo Segovia (`CreditsContent.asset`). **Dato de Santiago: es estudiante de
+   animación y diseño, contratada para el diseño y la asesoría de los sprites; se vinculó en el acta
+   D01 (02/09/2026) y entregó entornos y props en las actas D03, D04, D06 y D09.** Su participación es
+   de diseño y asesoría gráfica; la autoría del trabajo y las decisiones de diseño pedagógico y de
+   mecánica son del equipo de estudiantes (acta D01). El trabajo de grado y el entregable la nombran así.
 4. **Las correcciones del 29/09 en la plantilla — cerrado (01/10/2026).** La plantilla partía de un
    texto anterior a la rev. 14 y no recogía las correcciones que se hicieron en
    `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx`: las de INC-78 —el Resumen, el Abstract, la
@@ -2697,10 +3348,70 @@ anteriores: hacen falta un corte con duración en `AudioManager` (`Game.Audio`),
 `SilenceCut` (`Game.Scaffolding`) y partir esa línea de `N3_EscenaFinal`, como explica §5. Es del
 carril de sonido, que lleva Santiago desde el acta D08.
 
+**Pendientes del carril de personajes (09/10/2026).** Dependen de cosas que el juego no zanja o de un
+build nuevo: (1) el artista debe entregar los **ojos cerrados de frente** de Papá, Mamá, la
+Niña y el Niño (en el lienzo del 06/10/2026, `Expresiones/char_<x>_ojos_parpadeo_cerrado`); sin ellos el
+frente no parpadea (INC-135); (2) debe entregar la **cara de Algoritm** —`ojos_neutra`,
+`ojos_parpadeo_cerrado` y `boca_0` como mínimo, sobre el lienzo de 1300 × 1500—; hasta entonces lleva la cara
+provisional del sprite anterior y no parpadea (INC-136); (3) la **autorización de Santiago para editar los
+radicados** que describen el diseño anterior de Algoritm (guion §1.1.1, las notas de las dos escenas puente
+y la descripción del guía del trabajo de grado); (4) los tonos de piel y el contorno que trae el arte final
+(`#FFC69F`, `#DE9563` y trazo negro) no son los de `Direccion_de_Arte.md` §4.1 (`#F2D3BC`, `#D9AF95` y
+`#3A1E18`): hay que decidir si se corrige §4.1 o se pide otro tono; (5) **RNF-04 y RNF-05 en un ejecutable nuevo**; la **medición de RNF-06** ya se hizo (09/10/2026, INC-146):
+el margen de 21 MB era el de rc2 (01/10/2026) y el arte frontal final, el perfil y Algoritm lo dejaron en
+0,7 MB (499,3 MB); con los cinco props del N1 a 256 px el paquete pesa 420,6 MB, con 79,4 MB de margen. Las
+medidas de carga y de memoria exigen el Editor cerrado y jugar el ejecutable, y quedan para el próximo
+candidato del carril OE4, junto con los ojos cerrados de frente que faltan; y (6) la
+republicación en Word del OE3: sus fuentes ya nombran INC-134 a INC-136 (Anexo F, apartado 2.13, `1e2fb6a`),
+pero los `.docx` publicados todavía no.
+
 ---
 
 ## Historial de revisiones
 
+- **rev. 23 (09/10/2026)** — Decisión de Santiago sobre el orden de dibujo del guía. Se registra y cierra
+  **INC-147**: los brazos de Algoritm se dibujan detrás de todo el cuerpo (`BrazoIzq`, `BrazoDer`, `Torso`,
+  `Ojos`, `Boca`) y no delante, con las manos sobre la cara. **Revierte** para el guía la cláusula de
+  INC-132 y no toca la regla de la familia (INC-132 e INC-133). El código y las herramientas entraron en
+  `a44ca96` (el `orden_tronco` de las tres formas, los tres `_reposo` rehechos en su sitio, las tres
+  excepciones de `pose_preview.py` para la rueda y dos pruebas renombradas). La ronda del Editor del
+  modo `"orden"` sobre los prefabs de Algoritm se hizo ese mismo día (`ca62b9a`): solo cambió el orden de
+  los hermanos de `Tronco`, sin fileID nuevo ni perdido, y `Game.Scaffolding.Tests` dio 351/351; no cambia
+  la revisión ni el alcance de la decisión. Mantiene CP-02.
+
+- **rev. 22 (09/10/2026)** — Decisión de Santiago por el peso del paquete (RNF-06). Se registra y cierra
+  **INC-146**: el ejecutable con el arte frontal final, Algoritm y el perfil medía 499,3 MB (build sobre
+  `0212469`), y los cinco props pequeños del Nivel 1 (`prop_n1_pedernal`, `_silex`, `_hoja`,
+  `_monton_hojas` y `_monton_hojas_cenital`) entran a 256 px, sin comprimir, con lo que el paquete baja a
+  420,6 MB. El código entró en `83fd986` y el reimport en `4062ae3`. Ninguna regla anterior se levanta;
+  añade una segunda excepción al tope de 4096 de INC-128, junto a la de INC-130. RNF-04 y RNF-05 quedan
+  por medir en el próximo candidato del OE4. Mantiene CP-02.
+
+- **rev. 21 (09/10/2026)** — Decisiones de Santiago con la llegada del arte de perfil y del nuevo
+  Algoritm. Se registran y cierran **INC-134** (la familia se ve de perfil al recorrer o trabajar el entorno,
+  hacia donde se mueve, con las dos piernas siempre detrás del torso; levanta el «ciclo único que se voltea»
+  de la dirección de arte §13.3), **INC-135** (el parpadeo es de dos cuadros, ojos abiertos y cerrados; acota
+  §7.3 y INC-131) e **INC-136** (el diseño nuevo de Algoritm —llama, disco de madera y gota, con pantaloneta
+  de cuadros— sustituye al núcleo de identidad de §7.6; levanta INC-52 y, para el guía, la regla de color
+  plano, y sustituye el corte provisional de INC-140). El runtime de INC-134 e INC-135 entró en `910c0f0`,
+  las entregas de arte en `3efa765`, `3a0f6ad` y `545127e`, sus inventarios en `a2d32e2` y `57fbc58`, las
+  herramientas y el arte de perfil en `beb1cfe`, la ronda 1 del Editor en `9966bcb` y la corrección de las
+  piernas con el Algoritm final en `2cd8a75`. La ronda 2 del Editor se hizo el mismo día en `f20b271` (prefabs y sets de cara), `b4aed0e` (generador) y
+  `0212469` (capturas). Los radicados que
+  describen el diseño anterior de Algoritm (guion §1.1.1 y las notas de las dos escenas puente, y el
+  trabajo de grado) **no se editan** sin la autorización de Santiago. Mantiene CP-02.
+
+- **rev. 20 (09/10/2026)** — Ronda de ajustes de diseño del 08/10/2026. Decisiones de Santiago que
+  corrigen el juego o el documento: se registran y cierran **INC-137** (laberinto con un solo ámbar y
+  marcos iguales, que revierte el marfil del 07/10), **INC-138** (diálogo `#1F100C` a 30 px en un cuadro de
+  216 px), **INC-139** (halo de las fogatas con degradado radial y ciclo de 2 s), **INC-140** (Algoritm por
+  partes con arte provisional, que adelanta INC-131), **INC-141** (el saludo `Wave`), **INC-142** (créditos sin
+  tarjeta), **INC-143** (portada del inicio, título fuera de la tarjeta, marcas del menú de niveles),
+  **INC-144** (el codo de Papá) e **INC-145** (la cámara de la 3.3 acompaña a la balsa). Se cierran dos
+  pendientes de Santiago del trabajo de grado con su dato: las herramientas de ilustración (CLIP Studio,
+  proceso de cinco pasos) y la colaboración en el arte (Sofía Valentina Giraldo Segovia). Mantiene CP-02 y
+  RNF-21. Ninguna regla anterior se levanta salvo la nota del 07/10 de INC-71 en lo del panel marfil y la
+  parte de INC-131 que dejaba el arte provisional de Algoritm sin recorte.
 - **rev. 19 (06/10/2026)** — Decisión de Santiago sobre el antebrazo de la familia. Se registra y cierra
   **INC-133**: el húmero detrás del torso y el antebrazo delante del torso, de la cara y de las piernas
   (Papá con la cabeza delante del torso), con `AnclaAntebrazoX` y `LimbFollower`. Acota INC-132 en la
@@ -2708,7 +3419,7 @@ carril de sonido, que lleva Santiago desde el acta D08.
 - **rev. 18 (05/10/2026)** — Decisión de Santiago sobre el orden de dibujo de los personajes. Se
   registra y cierra **INC-132**: en la familia, los brazos detrás del torso y delante de la cabeza
   (delante del torso solo al golpear, 06/10)
-  (en Algoritm, delante del cuerpo y la cara encima), con la coreografía movida a `coreografia.py` y la entrada del arte final
+  (en Algoritm, delante del cuerpo y la cara encima, hasta INC-147), con la coreografía movida a `coreografia.py` y la entrada del arte final
   en `preparar_arte_final.py`. No levanta ninguna regla anterior; mantiene CP-02.
 - **rev. 17 (05/10/2026)** — Decisión de Santiago sobre el arte final de los personajes. Se registra
   y cierra **INC-131**: cabeza separada, ojos y boca en capas propias, seis expresiones, y

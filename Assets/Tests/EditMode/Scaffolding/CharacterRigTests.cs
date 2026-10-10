@@ -19,14 +19,14 @@ namespace Game.Scaffolding.Tests
         private static readonly string[] Familia = { "Papa", "Mama", "Nina", "Nino" };
         private static readonly string[] Guia = { "Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota" };
 
-        /// <summary>Lo que el guion y §13.3 piden a la familia: todo salvo el trompo del guía.</summary>
+        /// <summary>Lo que el guion y §13.3 piden a la familia: todo salvo el trompo y el saludo, que son del guía.</summary>
         private static readonly ActorAction[] AccionesDeLaFamilia =
-            ((ActorAction[])Enum.GetValues(typeof(ActorAction))).Where(accion => accion != ActorAction.Spin).ToArray();
+            ((ActorAction[])Enum.GetValues(typeof(ActorAction))).Where(accion => accion != ActorAction.Spin && accion != ActorAction.Wave).ToArray();
 
         private static readonly ActorAction[] AccionesDelGuia =
         {
             ActorAction.Idle, ActorAction.Hidden, ActorAction.Talk, ActorAction.Point, ActorAction.Spin,
-            ActorAction.Celebrate, ActorAction.Encourage, ActorAction.Appear, ActorAction.Vanish
+            ActorAction.Celebrate, ActorAction.Encourage, ActorAction.Appear, ActorAction.Vanish, ActorAction.Wave
         };
 
         // ---- Articulaciones (Plan-Personajes-Finales, Direccion_de_Arte §13.1): rutas desde la raíz del prefab ----
@@ -81,6 +81,50 @@ namespace Game.Scaffolding.Tests
         {
             Cuerpo, Tronco, Tronco + "/BrazoIzq", Tronco + "/BrazoDer", Tronco + "/BrazoIzq/CodoIzq", Tronco + "/BrazoDer/CodoDer",
             Cuerpo + "/PiernaIzq", Cuerpo + "/PiernaDer", Cuerpo + "/PiernaIzq/RodillaIzq", Cuerpo + "/PiernaDer/RodillaDer",
+        };
+
+        // ---- Cuerpo de perfil (INC-134): rutas desde la raíz del prefab ----
+
+        private const string Perfil = "Lienzo/Perfil";
+        private const string TroncoDePerfil = Perfil + "/Tronco";
+
+        /// <summary>
+        /// Todos los nodos que el generador añade bajo Lienzo/Perfil, en el orden de dibujo del contrato: la
+        /// jerarquía cuelga entera de un Tronco con el pivote en la cadera. Las rutas son el contrato con
+        /// CharacterRig (busca Perfil/Tronco/Torso) y con el modo «perfil» del generador.
+        /// </summary>
+        private static readonly string[] NodosDePerfil =
+        {
+            Perfil, TroncoDePerfil,
+            TroncoDePerfil + "/BrazoLejano", TroncoDePerfil + "/BrazoLejano/CodoLejano", TroncoDePerfil + "/BrazoLejano/CodoLejano/AntebrazoLejano",
+            TroncoDePerfil + "/PiernaLejana", TroncoDePerfil + "/PiernaLejana/RodillaLejana", TroncoDePerfil + "/PiernaLejana/RodillaLejana/AntepiernaLejana",
+            TroncoDePerfil + "/PiernaCercana", TroncoDePerfil + "/PiernaCercana/RodillaCercana", TroncoDePerfil + "/PiernaCercana/RodillaCercana/AntepiernaCercana",
+            TroncoDePerfil + "/Torso",
+            TroncoDePerfil + "/Cuello", TroncoDePerfil + "/Cuello/Cabeza", TroncoDePerfil + "/Cuello/Cabeza/CaraBase",
+            TroncoDePerfil + "/Cuello/Cabeza/Ojos", TroncoDePerfil + "/Cuello/Cabeza/Boca",
+            TroncoDePerfil + "/BrazoCercano", TroncoDePerfil + "/BrazoCercano/CodoCercano", TroncoDePerfil + "/BrazoCercano/CodoCercano/AntebrazoCercano",
+        };
+
+        /// <summary>
+        /// El orden en que se dibujan los hijos de Tronco del perfil, de atrás adelante: el brazo lejano y las dos piernas al
+        /// fondo (las piernas, siempre detrás del torso: Santiago, 09/10/2026), luego el torso, la cabeza y el brazo cercano delante.
+        /// </summary>
+        private static readonly string[] OrdenDeDibujoDelPerfil =
+            { "BrazoLejano", "PiernaLejana", "PiernaCercana", "Torso", "Cuello", "BrazoCercano" };
+
+        /// <summary>
+        /// Los huesos del perfil que cada clip tiene que girar, como <c>HuesosDeLaFamilia</c> con el frente: el
+        /// que un clip no usa queda en su reposo y no en la pose en T. Sin la raíz Perfil (análoga a Cuerpo):
+        /// su inclinación es un adorno, no una articulación que pueda quedar en T.
+        /// </summary>
+        private static readonly string[] HuesosDePerfil =
+        {
+            TroncoDePerfil,
+            TroncoDePerfil + "/BrazoLejano", TroncoDePerfil + "/BrazoLejano/CodoLejano",
+            TroncoDePerfil + "/BrazoCercano", TroncoDePerfil + "/BrazoCercano/CodoCercano",
+            TroncoDePerfil + "/PiernaLejana", TroncoDePerfil + "/PiernaLejana/RodillaLejana",
+            TroncoDePerfil + "/PiernaCercana", TroncoDePerfil + "/PiernaCercana/RodillaCercana",
+            TroncoDePerfil + "/Cuello", TroncoDePerfil + "/Cuello/Cabeza",
         };
 
         private const string GiroEnZ = "localEulerAnglesRaw.z";
@@ -261,6 +305,68 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
+        /// Algoritm se dibuja por partes (INC-136, 09/10/2026: el arte final de la entrega del 09/10, que sustituye al corte provisional de nueve piezas del
+        /// 08/10): SIETE piezas por forma —el torso, los dos brazos con su antebrazo y las dos piernas ENTERAS— llevan el sprite de SU forma (cada una va
+        /// recoloreada, INC-52) y están encendidas; la Image de Cuerpo —el sprite entero— se apaga: si siguiera encendida se vería doble, y el brazo que se mueve
+        /// dejaría su copia quieta detrás. La pierna no está partida: la AntepiernaX (bajo la RodillaX, que sigue existiendo para los clips) no lleva sprite y está
+        /// apagada —sin referencia rota a un PNG borrado, que pintaría un recuadro blanco—. En el Editor un sprite sin asignar es también un nulo falso, igual que la
+        /// referencia rota, así que ésta se comprueba en el archivo del prefab (ningún GUID de m_Sprite sin asset) y no con Is.Null. La entrega no trae cara: Ojos y
+        /// Boca llevan la cara PROVISIONAL sacada del sprite de hoy (char_algoritm_&lt;forma&gt;_ojos_neutra y _boca_0, en Expresiones/). Con el arte del artista se
+        /// sustituyen los PNG con el mismo nombre.
+        /// FALLA mientras no se haya corrido el modo «sprites» del generador (BuildRigsFinal.cs.txt) sobre los prefabs de Algoritm, y debe pasar justo después.
+        /// </summary>
+        [Test]
+        public void CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga(
+            [Values("Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
+        {
+            var rig = Rig(nombre);
+            var forma = nombre.Substring("Algoritm_".Length).ToLowerInvariant();
+            var partes = new[]
+            {
+                Tronco + "/Torso",
+                Tronco + "/BrazoIzq", Tronco + "/BrazoIzq/CodoIzq/AntebrazoIzq",
+                Tronco + "/BrazoDer", Tronco + "/BrazoDer/CodoDer/AntebrazoDer",
+                Cuerpo + "/PiernaIzq", Cuerpo + "/PiernaDer",
+            };
+
+            foreach (var ruta in partes)
+            {
+                var imagen = rig.transform.Find(ruta).GetComponent<Image>();
+                Assert.That(imagen.enabled && imagen.sprite != null, Is.True, $"{nombre}: {ruta} se dibuja");
+                Assert.That(imagen.sprite.name, Does.StartWith($"char_algoritm_{forma}_parte_"), $"{nombre}: {ruta} lleva su pieza de la forma {forma}");
+            }
+
+            foreach (var ruta in new[] { Cuerpo + "/PiernaIzq/RodillaIzq/AntepiernaIzq", Cuerpo + "/PiernaDer/RodillaDer/AntepiernaDer" })
+            {
+                var imagen = rig.transform.Find(ruta).GetComponent<Image>();
+                Assert.That(imagen.enabled, Is.False, $"{nombre}: {ruta} no se dibuja, la pierna es entera");
+                Assert.That(imagen.sprite == null, Is.True, $"{nombre}: {ruta} no lleva sprite"); // el == de Unity: el nulo falso del Editor también cuenta como vacío
+            }
+
+            // La referencia rota se mira en el archivo del prefab: en el Editor Image.sprite da el mismo nulo falso para un PNG borrado que para un sprite vacío.
+            var rotas = new List<string>();
+            foreach (Match referencia in Regex.Matches(System.IO.File.ReadAllText($"{Carpeta}{nombre}.prefab"), @"m_Sprite: \{fileID: -?\d+, guid: ([0-9a-fA-F]{32})"))
+            {
+                var guid = referencia.Groups[1].Value;
+                if (!guid.StartsWith("0000000000000000", StringComparison.Ordinal) && string.IsNullOrEmpty(AssetDatabase.GUIDToAssetPath(guid)) && !rotas.Contains(guid))
+                {
+                    rotas.Add(guid);
+                }
+            }
+
+            Assert.That(rotas, Is.Empty, $"{nombre}: ninguna Image guarda la referencia a un sprite que ya no existe (un PNG borrado)");
+
+            Assert.That(rig.transform.Find(Cuerpo).GetComponent<Image>().enabled, Is.False, $"{nombre}: el sprite entero de Cuerpo se apaga");
+            var caras = new[] { ("Ojos", "ojos_neutra"), ("Boca", "boca_0") };
+            foreach (var (cara, sprite) in caras)
+            {
+                var imagen = rig.transform.Find($"{Tronco}/{cara}").GetComponent<Image>();
+                Assert.That(imagen.enabled && imagen.sprite != null, Is.True, $"{nombre}: {cara} se dibuja con la cara provisional");
+                Assert.That(imagen.sprite.name, Is.EqualTo($"char_algoritm_{forma}_{sprite}"), $"{nombre}: {cara} lleva la cara de la forma {forma}");
+            }
+        }
+
+        /// <summary>
         /// En la familia los brazos —el húmero— se dibujan DETRÁS del torso y DELANTE de la cabeza (Santiago,
         /// 05/10/2026): los hombros salen por detrás del torso. uGUI pinta los hijos de atrás adelante. Lo de
         /// «delante de la cabeza» rige donde el cuello va detrás del torso (Mamá, Niña, Niño: Cuello, BrazoIzq,
@@ -296,27 +402,31 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// En Algoritm los brazos van delante del cuerpo y la cara ENCIMA de ellos no: son las manos las
-        /// que se pintan encima de la cara (Santiago, 05/10/2026, INC-132). El orden bajo Tronco es Torso,
-        /// Ojos, Boca, BrazoIzq, BrazoDer: sin esto una mano que sube a la cara quedaría escondida detrás
-        /// de ella. Lo fija el modo «orden» del generador.
+        /// En Algoritm los brazos van DETRÁS DE TODO EL CUERPO: del torso y de la cara (Santiago, 09/10/2026,
+        /// INC-147, que REVIERTE para el guía lo de INC-132 del 05/10/2026, «las manos encima de la cara»). El
+        /// orden bajo Tronco es BrazoIzq, BrazoDer, Torso, Ojos, Boca: una mano nunca tapa la cara con la que
+        /// el guía mira al niño, y de un brazo solo se ve lo que sobresale de la silueta del cuerpo. La
+        /// familia no cambia (<c>CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza</c>).
+        /// Lo fija el modo «orden» del generador (BuildRigsFinal.cs.txt) con SetSiblingIndex, que reordena y
+        /// no cambia ningún fileID: FALLA mientras no se haya corrido «orden» sobre los prefabs de Algoritm,
+        /// y debe pasar justo después.
         /// </summary>
         [Test]
-        public void CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara(
+        public void CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo(
             [Values("Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
         {
             var tronco = Rig(nombre).transform.Find(Tronco);
             Assert.That(tronco, Is.Not.Null, $"{nombre}: existe {Tronco}");
 
             var torso = Orden(tronco, nombre, "Torso");
+            foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
+            {
+                Assert.That(Orden(tronco, nombre, brazo), Is.LessThan(torso), $"{nombre}: {brazo} se dibuja antes del torso, detrás de todo el cuerpo");
+            }
+
             foreach (var cara in new[] { "Ojos", "Boca" })
             {
-                var indiceCara = Orden(tronco, nombre, cara);
-                Assert.That(indiceCara, Is.GreaterThan(torso), $"{nombre}: {cara} se dibuja sobre el torso");
-                foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
-                {
-                    Assert.That(Orden(tronco, nombre, brazo), Is.GreaterThan(indiceCara), $"{nombre}: {brazo} se dibuja sobre {cara}: la mano tapa la cara, no al revés");
-                }
+                Assert.That(Orden(tronco, nombre, cara), Is.GreaterThan(torso), $"{nombre}: {cara} se dibuja sobre el torso, y los brazos quedan detrás de ella");
             }
         }
 
@@ -567,8 +677,10 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// Algoritm queda como está (Santiago, 06/10/2026): sus brazos ya van delante del cuerpo, así que su
-        /// antebrazo sigue colgando del codo y no recibe ancla. Sin pares, CharacterRig no tiene nada que copiar.
+        /// Algoritm queda como está (Santiago, 06/10/2026): su antebrazo sigue colgando del codo y no recibe
+        /// ancla, y sigue así desde que sus brazos van detrás de todo el cuerpo (INC-147, 09/10/2026): el
+        /// antebrazo viaja con su brazo y queda detrás con él, sin pasar delante del torso como en la familia.
+        /// Sin pares, CharacterRig no tiene nada que copiar.
         /// </summary>
         [Test]
         public void CharacterRig_INC133_EnAlgoritmElAntebrazoSigueBajoElCodoYSinAncla(
@@ -588,11 +700,17 @@ namespace Game.Scaffolding.Tests
         }
 
         /// <summary>
-        /// En Algoritm los brazos ya van después del torso: golpear no mueve nada, ni al empezar ni al
-        /// terminar. Así su cara (Ojos y Boca) tampoco se ve afectada.
+        /// Algoritm no golpea —su controlador no tiene el estado Strike y ningún asset se lo pide—, pero
+        /// CharacterRig pasa los brazos por ArmLayering aunque el estado no exista y los siete prefabs traen
+        /// Strike en armsInFrontActions. Desde INC-147 (Santiago, 09/10/2026) sus brazos van ANTES del torso, así
+        /// que esa petición sí los mueve: los trae justo después del torso, entre él y la cara. Lo que importa es
+        /// que la ida y vuelta es exacta: al terminar, el orden es el de origen, y mientras tanto las manos nunca
+        /// pasan por encima de la cara (Ojos y Boca siguen después de los brazos). Antes de INC-147 los brazos
+        /// ya iban después del torso y golpear no movía nada. Como CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo,
+        /// FALLA mientras no se haya corrido el modo «orden» del generador sobre los prefabs de Algoritm, y debe pasar justo después.
         /// </summary>
         [Test]
-        public void CharacterRig_INC132_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo(
+        public void CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen(
             [Values("Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
         {
             var copia = UnityEngine.Object.Instantiate(Rig(nombre).gameObject);
@@ -604,10 +722,20 @@ namespace Game.Scaffolding.Tests
                 var capas = new ArmLayering(tronco);
 
                 capas.Apply(true);
-                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: golpear no cambia el orden");
+                Assert.That(OrdenDeDibujo(tronco), Is.Not.EqualTo(inicial), $"{nombre}: con los brazos antes del torso, golpear sí cambia el orden (si no, la prueba no prueba nada)");
+                foreach (var cara in new[] { "Ojos", "Boca" })
+                {
+                    foreach (var brazo in new[] { "BrazoIzq", "BrazoDer" })
+                    {
+                        Assert.That(Orden(tronco, nombre, cara), Is.GreaterThan(Orden(tronco, nombre, brazo)), $"{nombre}: al golpear {brazo} no pasa por encima de {cara}");
+                    }
+                }
 
                 capas.Apply(false);
-                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: terminar de golpear tampoco");
+                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: al terminar de golpear vuelve el orden de origen");
+
+                capas.Apply(false);
+                Assert.That(OrdenDeDibujo(tronco), Is.EqualTo(inicial), $"{nombre}: devolverlo dos veces no lo cambia");
             }
             finally
             {
@@ -710,6 +838,13 @@ namespace Game.Scaffolding.Tests
         {
             var rig = Rig(nombre);
             var huesos = Familia.Contains(nombre) ? HuesosDeLaFamilia : HuesosDeAlgoritm;
+            // INC-134: con cuerpo de perfil, cada clip también gira todos sus huesos. Mientras el prefab no
+            // lo tenga (Algoritm, o antes de la ronda del Editor) la lista es la de siempre.
+            if (rig.transform.Find(Perfil) != null)
+            {
+                huesos = huesos.Concat(HuesosDePerfil).ToArray();
+            }
+
             var sinCurva = new List<string>();
 
             var clips = Clips(rig).ToArray();
@@ -744,7 +879,8 @@ namespace Game.Scaffolding.Tests
                 ? new[] { "Cabeza", "CaraBase" }
                 : new[] { "BrazoIzq", "BrazoDer", "PiernaIzq", "PiernaDer", "Torso" });
 
-            var capas = rig.GetComponentsInChildren<Image>(true).Where(imagen => nuevas.Contains(imagen.name)).ToArray();
+            // Solo el cuerpo de frente: el de perfil (INC-134) repite los nombres Cabeza, CaraBase, Ojos y Boca.
+            var capas = rig.transform.Find(Cuerpo).GetComponentsInChildren<Image>(true).Where(imagen => nuevas.Contains(imagen.name)).ToArray();
             Assert.That(capas.Select(imagen => imagen.name), Is.EquivalentTo(nuevas), $"{nombre}: cada capa nueva es una Image");
             foreach (var imagen in capas.Where(imagen => imagen.sprite == null))
             {
@@ -827,11 +963,58 @@ namespace Game.Scaffolding.Tests
             Assert.That(cara, Is.Not.Null, $"{nombre} lleva CharacterFace en la raíz");
 
             var serializada = new SerializedObject(cara);
-            var ojos = rig.GetComponentsInChildren<Image>(true).Single(imagen => imagen.name == "Ojos");
-            var boca = rig.GetComponentsInChildren<Image>(true).Single(imagen => imagen.name == "Boca");
+            // Las del cuerpo de frente: el de perfil (INC-134) tiene las suyas, con los mismos nombres.
+            var frente = rig.transform.Find(Cuerpo);
+            var ojos = frente.GetComponentsInChildren<Image>(true).Single(imagen => imagen.name == "Ojos");
+            var boca = frente.GetComponentsInChildren<Image>(true).Single(imagen => imagen.name == "Boca");
 
             Assert.That(serializada.FindProperty("eyes").objectReferenceValue, Is.EqualTo(ojos), $"{nombre}: eyes es su capa de ojos");
             Assert.That(serializada.FindProperty("mouth").objectReferenceValue, Is.EqualTo(boca), $"{nombre}: mouth es su capa de boca");
+        }
+
+        /// <summary>
+        /// La familia lleva un segundo cuerpo, dibujado de perfil (Santiago, 09/10/2026, INC-134):
+        /// <c>Lienzo/Perfil</c>, hermano de <c>Cuerpo</c> y dibujado justo después, con todos los nodos del
+        /// contrato, el torso con su sprite (es lo que CharacterRig toma por «llegó el arte de perfil») y la cara
+        /// de perfil cableada en CharacterFace. FALLA mientras no se haya corrido el modo «perfil» del
+        /// generador (BuildRigsFinal.cs.txt) sobre los prefabs, y debe pasar justo después.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC134_LaFamiliaTieneCuerpoDePerfilConArte(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var rig = Rig(nombre);
+            foreach (var ruta in NodosDePerfil)
+            {
+                Assert.That(rig.transform.Find(ruta), Is.Not.Null, $"{nombre}: existe {ruta}");
+            }
+
+            var cuerpo = rig.transform.Find(Cuerpo);
+            var perfil = rig.transform.Find(Perfil);
+            Assert.That(perfil.parent, Is.SameAs(cuerpo.parent), $"{nombre}: Perfil y Cuerpo son hermanos, bajo el lienzo");
+            Assert.That(perfil.GetSiblingIndex(), Is.EqualTo(cuerpo.GetSiblingIndex() + 1), $"{nombre}: Perfil se dibuja justo después de Cuerpo");
+
+            var tronco = rig.transform.Find(TroncoDePerfil);
+            var indices = OrdenDeDibujoDelPerfil.Select(hijo => Orden(tronco, nombre, hijo)).ToArray();
+            Assert.That(indices, Is.Ordered.Ascending, $"{nombre}: lo lejano y las piernas al fondo, luego el torso, la cabeza y el brazo cercano delante ({string.Join(", ", OrdenDeDibujoDelPerfil)})");
+
+            var torso = rig.transform.Find(TroncoDePerfil + "/Torso").GetComponent<Image>();
+            Assert.That(torso, Is.Not.Null, $"{nombre}: el torso de perfil es una Image");
+            Assert.That(torso.sprite, Is.Not.Null, $"{nombre}: el torso de perfil tiene su sprite: es lo que dice que el arte llegó");
+            Assert.That(rig.HasProfile, Is.True, $"{nombre}: CharacterRig reconoce el cuerpo de perfil");
+
+            // Como en el frente (DA131_UnaCapaSinSpriteNoSeDibuja): una Image sin sprite pinta un recuadro blanco.
+            foreach (var imagen in perfil.GetComponentsInChildren<Image>(true).Where(imagen => imagen.sprite == null))
+            {
+                Assert.That(imagen.enabled, Is.False, $"{nombre}: {imagen.name} del perfil no tiene sprite y no se dibuja");
+            }
+
+            var cara = new SerializedObject(rig.GetComponent<CharacterFace>());
+            var ojos = rig.transform.Find(TroncoDePerfil + "/Cuello/Cabeza/Ojos").GetComponent<Image>();
+            var boca = rig.transform.Find(TroncoDePerfil + "/Cuello/Cabeza/Boca").GetComponent<Image>();
+            Assert.That(cara.FindProperty("profileEyes").objectReferenceValue, Is.EqualTo(ojos), $"{nombre}: profileEyes es la capa de ojos del perfil");
+            Assert.That(cara.FindProperty("profileMouth").objectReferenceValue, Is.EqualTo(boca), $"{nombre}: profileMouth es la capa de boca del perfil");
+            Assert.That(cara.FindProperty("profileFaceSet").objectReferenceValue, Is.Not.Null, $"{nombre}: profileFaceSet es la cara de perfil");
         }
 
         private static CharacterRig Rig(string nombre)

@@ -257,5 +257,150 @@ namespace Game.Scaffolding.Tests
 
             Assert.That(new ActorBeat(0, ActorAction.Idle).SetsEmotion, Is.False, "por defecto un paso no fija expresión");
         }
+
+        // ---- INC-134: hacia dónde mira de perfil ----
+        //
+        // FacesLeftAt decide solo el lado (true = izquierda); si el personaje va de perfil lo decide la
+        // acción. Orden: el Facing explícito del paso que rige, el desplazamiento de la línea, el último
+        // anterior, el primero posterior y, sin ninguno, hacia el centro de la ilustración.
+
+        private static readonly Vector2 AlaDerecha = new Vector2(0.60f, 0.45f);
+        // Desde AlaDerecha: sube mucho y avanza poco a la derecha (arriba manda, aunque el horizontal diría derecha)...
+        private static readonly Vector2 Arriba = new Vector2(0.65f, 0.80f);
+
+        // ...y desde Arriba: baja mucho y retrocede poco a la izquierda (abajo manda, aunque el horizontal diría izquierda).
+        private static readonly Vector2 Abajo = new Vector2(0.60f, 0.30f);
+
+        [Test]
+        public void ActorTimeline_INC134_ElRumboExplicitoDelPasoMandaSobreElDesplazamiento()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(1, ActorAction.Walk).MovingTo(Fondo, 2f).WithFacing(ActorFacing.Right),
+                new ActorBeat(4, ActorAction.Walk).MovingTo(AlaDerecha, 2f).WithFacing(ActorFacing.Left));
+
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 1), Is.False, "camina a la izquierda pero el guion lo fija a la derecha");
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 4), Is.True, "camina a la derecha pero el guion lo fija a la izquierda");
+            Assert.That(ActorTimeline.ExplicitFacingAt(sut, 0), Is.Null, "antes del primer paso nada está fijado");
+            Assert.That(ActorTimeline.ExplicitFacingAt(sut, 2), Is.False, "una línea sin paso mantiene el rumbo del paso que rige");
+        }
+
+        [Test]
+        public void ActorTimeline_INC134_ElRumboFijadoRigeUnSoloPasoYElSiguienteVuelveAAuto()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(1, ActorAction.Kneel).WithFacing(ActorFacing.Left),
+                new ActorBeat(3, ActorAction.Walk).MovingTo(AlaDerecha, 2f));
+
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 2), Is.True, "arrodillado, mirando a donde se le dijo");
+            Assert.That(ActorTimeline.ExplicitFacingAt(sut, 3), Is.Null, "el paso nuevo no declara rumbo: Auto");
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 3), Is.False, "camina a la derecha y mira a la derecha, no hereda el rumbo fijado");
+        }
+
+        [Test]
+        public void ActorTimeline_INC134_SinRumboExplicitoMiraHaciaDondeSeDesplazaElPasoDeLaLinea()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(1, ActorAction.Walk).MovingTo(Fondo, 2f),          // a la izquierda y un poco abajo
+                new ActorBeat(3, ActorAction.Walk).MovingTo(AlaDerecha, 2f),     // a la derecha
+                new ActorBeat(5, ActorAction.Walk).MovingTo(Arriba, 2f),         // sube: el eje vertical es el dominante
+                new ActorBeat(7, ActorAction.Walk).MovingTo(Abajo, 2f));         // baja: el eje vertical es el dominante
+
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 1), Is.True, "a la izquierda");
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 3), Is.False, "a la derecha");
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 5), Is.True, "hacia arriba mira a la izquierda aunque avance un poco a la derecha");
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 7), Is.False, "hacia abajo mira a la derecha aunque retroceda un poco a la izquierda");
+        }
+
+        [Test]
+        public void ActorTimeline_INC134_UnDesplazamientoMinimoNoDecideElRumbo()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(1, ActorAction.Walk).MovingTo(AlaDerecha, 2f),
+                new ActorBeat(3, ActorAction.Walk).MovingTo(AlaDerecha + new Vector2(-0.005f, 0f), 1f)); // 5 milésimas: no se ve
+
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 3), Is.False, "el paso de la línea mide menos de 0,01: vale el último rumbo visible");
+        }
+
+        [Test]
+        public void ActorTimeline_INC134_SinDesplazamientoEnLaLineaMiraHaciaDondeSeDesplazoAntes()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(1, ActorAction.Walk).MovingTo(Fondo, 2f),
+                new ActorBeat(2, ActorAction.Walk).MovingTo(AlaDerecha, 2f),
+                new ActorBeat(4, ActorAction.Kneel));
+
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 4), Is.False, "arrodillado tras caminar a la derecha: mira a la derecha (el último, no el primero)");
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 6), Is.False, "una línea sin paso lo mantiene");
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 2), Is.False, "y en la línea del paso, el suyo");
+        }
+
+        /// <summary>El rumbo fijado a mano de un paso con movimiento pesa más que su desplazamiento también cuando lo heredan las líneas de alrededor.</summary>
+        [Test]
+        public void ActorTimeline_INC134_ElRumboFijadoDeUnPasoAnteriorOPosteriorPesaMasQueSuDesplazamiento()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(1, ActorAction.Walk).MovingTo(AlaDerecha, 2f).WithFacing(ActorFacing.Left),
+                new ActorBeat(3, ActorAction.Kneel));
+
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 3), Is.True, "tras caminar a la derecha con rumbo fijado a la izquierda, arrodillado mira a la izquierda");
+
+            var antes = Personaje(ActorAction.Idle,
+                new ActorBeat(0, ActorAction.Kneel),
+                new ActorBeat(2, ActorAction.Walk).MovingTo(AlaDerecha, 2f).WithFacing(ActorFacing.Left));
+
+            Assert.That(ActorTimeline.FacesLeftAt(antes, 0), Is.True, "y quien espera antes de ese paso ya mira al lado fijado, no al del desplazamiento");
+        }
+
+        [Test]
+        public void ActorTimeline_INC134_SinDesplazamientoPreviosMiraHaciaDondeSeDesplazaDespues()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(1, ActorAction.Kneel),
+                new ActorBeat(4, ActorAction.Walk).MovingTo(Fondo, 2f),
+                new ActorBeat(6, ActorAction.Walk).MovingTo(AlaDerecha, 2f));
+
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 1), Is.True, "espera antes de partir y ya mira hacia donde va: el PRIMER desplazamiento posterior, a la izquierda");
+            Assert.That(ActorTimeline.FacesLeftAt(sut, 0), Is.True, "también antes de su primer paso");
+        }
+
+        [Test]
+        public void ActorTimeline_INC134_SinNingunDesplazamientoMiraHaciaElCentroDeLaIlustracion()
+        {
+            var aLaIzquierda = new NarrativeProp(null, new Vector2(0.20f, 0.45f), 0.3f)
+                .WithActor(null, ActorAction.Idle, new ActorBeat(1, ActorAction.Kneel));
+            var aLaDerecha = new NarrativeProp(null, new Vector2(0.80f, 0.45f), 0.3f)
+                .WithActor(null, ActorAction.Idle, new ActorBeat(1, ActorAction.Kneel));
+            var enElCentro = new NarrativeProp(null, new Vector2(0.50f, 0.45f), 0.3f).WithActor(null, ActorAction.Idle);
+
+            Assert.That(ActorTimeline.FacesLeftAt(aLaIzquierda, 1), Is.False, "a la izquierda de la imagen mira a la derecha, hacia el centro");
+            Assert.That(ActorTimeline.FacesLeftAt(aLaDerecha, 1), Is.True, "a la derecha mira a la izquierda");
+            Assert.That(ActorTimeline.FacesLeftAt(enElCentro, 0), Is.True, "justo en el centro (x = 0,5) manda la izquierda, sin pasos de por medio");
+        }
+
+        [Test]
+        public void ActorTimeline_INC134_ElPasoEncadenadoMiraHaciaDondeVaSalvoQueNoDecidaNada()
+        {
+            var haciaLaDerecha = new ActorBeat(2, ActorAction.Walk).MovingTo(AlaDerecha, 2f);
+            var fijado = new ActorBeat(2, ActorAction.Walk).MovingTo(AlaDerecha, 2f).WithFacing(ActorFacing.Left);
+            var enElSitio = new ActorBeat(2, ActorAction.Walk).MovingTo(Entrada + new Vector2(0.002f, 0f), 2f);
+
+            Assert.That(ActorTimeline.FacesLeftOfStep(haciaLaDerecha, Entrada, fallback: true), Is.False, "su desplazamiento, desde donde sale");
+            Assert.That(ActorTimeline.FacesLeftOfStep(haciaLaDerecha, new Vector2(0.9f, 0.45f), fallback: false), Is.True,
+                "sale de donde llegó, que no es donde el paso decía empezar: desde la derecha va hacia la izquierda");
+            Assert.That(ActorTimeline.FacesLeftOfStep(fijado, Entrada, fallback: false), Is.True, "el explícito manda");
+            Assert.That(ActorTimeline.FacesLeftOfStep(enElSitio, Entrada, fallback: true), Is.True, "si no decide nada, conserva el lado");
+            Assert.That(ActorTimeline.FacesLeftOfStep(null, Entrada, fallback: true), Is.True, "sin paso, tampoco");
+        }
+
+        /// <summary>Un asset anterior a INC-134 no declara el campo: Auto, y el resto del paso queda igual.</summary>
+        [Test]
+        public void ActorBeat_INC134_PorDefectoElRumboEsAuto()
+        {
+            var paso = new ActorBeat(0, ActorAction.Walk).MovingTo(Fondo, 1f, ActorAction.Kneel);
+
+            Assert.That(paso.Facing, Is.EqualTo(ActorFacing.Auto));
+            Assert.That(paso.WithFacing(ActorFacing.Right).Facing, Is.EqualTo(ActorFacing.Right));
+            Assert.That(paso.Moves && paso.Arrival == ActorAction.Kneel, Is.True, "fijar el rumbo no toca lo demás");
+        }
     }
 }

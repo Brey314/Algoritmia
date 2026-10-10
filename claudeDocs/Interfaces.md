@@ -33,16 +33,20 @@ y no es un olvido:** CP-02 la prohíbe, junto con el límite de intentos y la pe
 | 11 | Nivel 3 · recolección en la orilla | `Level3_River.unity` | RF-35..RF-39 | ✓ `RiverSceneController`, contenido en `N3_RiverLevelConfig.asset` |
 | 12 | Nivel 3 · ensamblaje sobre el río | `Level3_River.unity` | RF-40..RF-43 | ✓ `AssemblyPanelController`, contenido en `N3_RaftAssemblyContent.asset` |
 | 13 | Resumen de fin de nivel | `LevelSummary.unity` (una para los tres niveles) | RF-12, RF-17, RF-45 | ✓ `LevelSummaryController` y `LevelSummaryComposer`; textos en un `LevelSummaryMessages` por nivel (`LevelSummaryMessages`, `N2_ResumenNivel`, `N3_ResumenNivel`) |
-| 14 | Créditos | `Credits.unity` | RF-08, CT-09, PG-07 | ✓ `CreditsController` |
+| 14 | Créditos | `Credits.unity` | RF-08, CT-09, PG-07 | ✓ `CreditsController`; Algoritm saluda con `Wave` sin tarjeta detrás (INC-142) |
 | 15 | Informe docente | `TeacherReport.unity` | RF-46 | ✓ `TeacherReportController` e `IndicatorTableView` (Slice 4); rótulos en `Data/Reporting/ReportContent.asset` |
 | 16 | Confirmación de borrado | superposición en `TeacherReport.unity` y en la selección de perfil (`MainMenu.unity`) | RF-47, RNF-11, CU-12 | ✓ `EraseConfirmationDialog` (informe) y panel de borrado de `ProfileSelectController` |
 | 17 | Transiciones | entre escenas | RF-05, RNF-04 | ✓ fundido a negro de `SceneLoader` (0,4 s por mitad, tiempo sin escalar, pintado con `OnGUI`) al pasar entre narrativa y mecánica o entre dos narrativas; la regla está en `GameFlowRunner.FadesBetween` y los menús cortan en seco. La cortinilla y el barrido de Algoritm de `TR-05` y `TR-09` (`S02`) no están en el juego |
 
 ### 1.1 Qué lleva cada una
 
-**2 · Pantalla de inicio.** Título del juego (`GameTitleConfig`), el lema «Piensa el orden, enciende el fuego», la figura de Algoritm en fuego, botón primario de jugar,
-secundarios de créditos y de «Progreso del equipo» —el acceso del docente al informe (RF-46),
-que lleva a `TeacherReport`—, salir. Nada más: RF-01 pide una pantalla de inicio, no un menú de
+**2 · Pantalla de inicio.** Título del juego (`GameTitleConfig`), en blanco con contorno carbón de
+4 px y **encima** de la tarjeta, que lleva solo el lema «Piensa el orden, enciende el fuego»;
+botón primario de jugar, secundarios de créditos y de «Progreso del equipo» —el acceso del docente
+al informe (RF-46), que lleva a `TeacherReport`—, salir. Título, tarjeta y botones forman un bloque
+centrado en vertical. A la derecha, una portada cuadrada: la mitad izquierda del bosque del Nivel 2
+con Papá, Mamá, el Niño, la Niña y Algoritm en fuego en reposo, desfasados para no respirar al
+unísono (`FramedIllustration`, `CharacterRig.idlePhase`, INC-143). Nada más: RF-01 pide una pantalla de inicio, no un menú de
 opciones. «Salir» no cierra de inmediato: abre una confirmación breve que informa que lo logrado
 ya está guardado, con «Quedarme» (vuelve al menú sin tocar nada) y «Cerrar el juego» (guarda el
 perfil activo y cierra, en ese orden); si la carpeta `Datos/` no admite escritura, la confirmación
@@ -56,16 +60,19 @@ dato personal que RNF-08 y RNF-10 no quieren en disco.
 
 **4 · Menú de niveles.** Tres entradas con desbloqueo progresivo: un nivel se desbloquea cuando el
 anterior está completado —todas sus fases confirmadas—, aunque un cierre inesperado haya impedido
-llegar a su resumen (RF-03, RNF-14, INC-116). El bloqueo se comunica por
-**dos canales**: el candado `ui_lock.png` con la palabra «Bloqueado» y el estado deshabilitado
-(RNF-19); el nivel bloqueado no responde al clic. Nunca solo por color. Un nivel completado
+llega a su resumen (RF-03, RNF-14, INC-116). Cada tarjeta lleva su ilustración en una ventana de
+444 × 250 px (el Nivel 2, el bosque encuadrado a la izquierda del lienzo; el laberinto ya no).
+El bloqueo se comunica por **dos canales**: el candado `ui_lock.png` abajo a la izquierda de la
+imagen, con la palabra «Bloqueado» centrada en la franja entre la imagen y el botón, y el estado
+deshabilitado (RNF-19); el nivel bloqueado no responde al clic. Nunca solo por color. Un nivel completado
 —todas sus fases confirmadas— lleva la marca «Completado» con un icono de visto, también por
 dos canales y sin cifras (HU-14 paso 7, HU-05, CP-03); sigue desbloqueado y se puede volver a jugar.
 
-**5 · Escena narrativa.** Cuadro de diálogo en el cuarto inferior de la pantalla (§10.3), sin
-cola: retrato y nombre del hablante, el texto, botón de continuar y botón de omitir —este último
-**solo en escenas ya vistas** (RF-06)—. Máximo dos líneas por cuadro y doce palabras por línea
-(§11.4).
+**5 · Escena narrativa.** Cuadro de diálogo de 1400 × 216 px en el cuarto inferior de la pantalla
+(§10.3), sin cola: retrato y nombre del hablante, el texto a 30 px en carbón oscuro, botón de
+continuar y botón de omitir —este último **solo en escenas ya vistas** (RF-06)—. Hasta tres
+renglones por cuadro (§11.4, INC-138). Las fogatas llevan un halo que respira (`FireGlow`,
+INC-139), y en la 3.3 la cámara acompaña a la balsa.
 
 **6 · Pausa.** Está arriba a la derecha en las cinco escenas jugables y permanece toda la fase,
 como el botón de pista y la tablilla de mensajes (regla 6 de §3).
@@ -99,7 +106,9 @@ canal** (RNF-19).
 **8–10 · Nivel 2.** Fase 1: objetos del bosque, contador de acopio, iconos de aceptado y
 devuelto. Fase 2: siete piezas —la séptima es la cuerda— y el panel de ensamblaje. Fase 3: tablero cenital, editor con los
 tres bloques de instrucción —que se distinguen **por forma**, criterio literal de RNF-19— y el
-botón «Ejecutar», de clic simple (`PG-04`).
+botón «Ejecutar», de clic simple (`PG-04`). En la fase 3 todo lo que rodea al tablero es un solo
+ámbar `#E8A33D`; el entorno y la tarjeta del editor llevan el mismo marco redondeado de 8 px y la
+zona donde se suelta la secuencia es marfil sombra (INC-137).
 
 **11–12 · Nivel 3.** La orilla en un plano fijo con perspectiva por profundidad, a ×1,4: el río y
 el pie de la cascada a la derecha. Mamá, la familia —detrás de la zona de construcción—, los ocho
@@ -128,6 +137,9 @@ ajustar», RF-12) y dos botones: «Volver al menú de niveles» y «Continuar»,
 **sin intentos, sin errores, sin pasos, sin tiempo y sin puntaje** (CP-03, RF-17, RF-45); esas
 cifras existen, pero solo en el informe docente. Los textos viven en un asset por nivel —`LevelSummaryMessages.asset` (Nivel 1), `N2_ResumenNivel.asset` y `N3_ResumenNivel.asset`— y la escena es una sola, `LevelSummary.unity`; el del Nivel 3 declara además la escena final a la que sale «Continuar» (INC-39).
 
+**14 · Créditos.** Los textos de reconocimiento (CT-09, RNF-23) en una tarjeta marfil con barra de
+desplazamiento (INC-80), y a la derecha Algoritm en fuego, sin tarjeta detrás, saludando en bucle con `Wave` (INC-142).
+
 **15 · Informe docente.** El único sitio del juego donde hay números (RF-46): intentos, errores,
 pasos y tiempo, con su iconografía propia (`D1`).
 
@@ -143,18 +155,19 @@ De `Direccion_de_Arte.md` §10.2, que es la fuente:
 | Botón primario | Piedra redondeada | `#E8A33D`, borde `#3A1E18`, sombra plana inferior de 6 px |
 | Botón secundario | Piedra clara | `#E0D4C0`, borde `#6B5248` |
 | Lista de tareas (solo Nivel 3) | Tablilla de piedra clara | `#F7EFE2` sin borde; tarea pendiente, círculo liso `#6B5247`; cumplida, círculo verde con visto `#336638` |
-| Icono de pista | Algoritm en pequeño | `#E8A33D`; pulso lento de escala continuo solo en el Nivel 1 (`ui_pulso_pista`); no cambia tras los fallos |
+| Icono de pista | Algoritm en pequeño | `#E8A33D`, aro `#E2571F` (`#A0330D` en el laberinto); pulso lento de escala continuo solo en el Nivel 1 (`ui_pulso_pista`); no cambia tras los fallos |
 | Marco de inventario | Panel liso color arena (`ui_panel`) | `#C7A87C`; casillas cuadradas `#E0D4C0` en rejilla de 2×2 |
 
 **Neutros de interfaz** (§4.3): marfil `#F7EFE2` · marfil sombra `#E0D4C0` · carbón `#3A1E18` ·
-carbón suave `#6B5248` · éxito `#5FA842` · atención `#E8A33D`.
+carbón oscuro `#1F100C` (solo el texto del diálogo y el nombre del hablante) · carbón suave
+`#6B5248` · éxito `#5FA842` · atención `#E8A33D`; y `#A0330D`, solo el aro de la pista del laberinto.
 
 **Tipografía** (§11): Baloo 2 para títulos, contadores, el nombre del hablante y la tablilla del
 guía de los niveles 2 y 3; Nunito para el diálogo, el cuerpo, la instrucción del Nivel 1 y las
 cifras del informe docente. Las dos SIL OFL 1.1 y con soporte de `ñ`, tildes y `¿ ¡`. Tamaños en el
-juego, a 1920×1080: diálogo a 26 px y texto de lectura desde 26 px; bajan de ahí el nombre del
-hablante, el rótulo «Algoritm» del resumen, la etiqueta del laberinto y el «Aún no» del taller
-(22 px) y la instrucción del Nivel 1 (24 px).
+juego, a 1920×1080: diálogo y nombre del hablante a 30 px, el título del juego a 112 px y texto de
+lectura desde 26 px; bajan de ahí el rótulo «Algoritm» del resumen, la etiqueta del laberinto y el
+«Aún no» del taller (22 px) y la instrucción del Nivel 1 (24 px).
 
 ---
 
@@ -201,7 +214,9 @@ Especificación que se pega en el generador. Los bloques marcados **(crítico)**
 rompe con más frecuencia y los que hay que verificar pieza a pieza.
 
 **ESTILO.** Ilustración vectorial 2D, animación cartoon clásica americana de los años 40–50
-(*golden age* / *rubber hose*). Personaje de cuerpo completo, vista frontal, centrado.
+(*golden age* / *rubber hose*). Personaje de cuerpo completo, vista frontal, centrado. (Desde INC-134 la familia tiene además un
+cuerpo de perfil para cuando se mueve, que el artista dibuja aparte; este prompt describe la vista
+frontal, la de reposo. Reglas del perfil: `Direccion_de_Arte.md` §13.4.)
 
 **LÍNEA.** Contorno limpio de grosor variable en marrón muy oscuro `#3A1E18`, más grueso en la
 silueta exterior y más fino en los detalles internos. Sin líneas de arrugas, sin líneas de
@@ -292,16 +307,29 @@ error en entorno seguro que fundamenta el enfoque de Aprendizaje Basado en Juego
 expresiones —neutra, alegría, sorpresa, preocupación, concentración y sueño—, parpadeo y cuatro
 bocas del habla, como capas de ojos y boca sobre la cabeza. La lista, el límite (ninguna de
 tristeza, enfado ni derrota) y los nombres de archivo están en `Direccion_de_Arte.md` §7.3 y §13.1.
+El parpadeo es de **dos cuadros**, ojos abiertos y ojos cerrados (INC-135); hoy solo parpadea el
+perfil, porque los ojos cerrados de frente están pedidos al artista.
 
 ### 4.3 Algoritm no sigue esta especificación
 
-El guía tiene su propio contrato (§7.6) y **no es un humano estilizado**: es una llama con cara,
-brazos y piernas de palo, manos abiertas color piel y una franja de cinco colores en la base;
-sin nariz ni cejas, con dos ojos redondos grandes y contorno café oscuro. Conserva el mismo
-cuerpo en los tres niveles y cambia de material —fuego, madera y agua, en los prefabs
-`Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota`—; madera y agua son la llama recoloreada,
-provisionales hasta que el arte definitivo sustituya el archivo. Cambia solo entre dos
-secuencias encadenadas de los puentes, nunca a la vista dentro de una escena jugable.
+El guía tiene su propio contrato (§7.6) y **no es un humano estilizado**. Desde el 09/10/2026
+(INC-136) su diseño oficial es el que entregó el artista: un solo personaje con **tres siluetas**
+—una llama de tres lenguas con el núcleo amarillo en degradado (fuego), un disco de madera con
+anillos y una gota con brillos—, con brazos y piernas gruesos del color del material (la misma
+silueta en las tres formas), manos y pies ovalados del mismo color —ya no color piel—, contorno
+negro `#000000` y una **pantaloneta de cuadros** (verde, naranja y granate según la forma) que
+sustituye a la franja de cinco colores. Lleva sin nariz ni cejas dos ojos redondos y una sonrisa
+cerrada, pero **esa cara es provisional**: el artista aún no entrega la del diseño nuevo, y hasta
+entonces son los ojos y la boca del sprite anterior, sin parpadeo ni habla. Es el mismo personaje en
+los tres niveles y cambia de material y de silueta —en los prefabs `Algoritm_Fuego`,
+`Algoritm_Rueda` y `Algoritm_Gota`—. Se dibuja por partes: siete piezas por forma, con la pierna
+entera y sin rodilla (INC-136, que sustituye al corte provisional de nueve piezas de INC-140), y
+tiene el saludo `Wave` (INC-141). Cambia solo entre dos secuencias encadenadas de los puentes,
+nunca a la vista dentro de una escena jugable.
+
+Por eso los bloques **COLOR**, **SOMBRAS** y **MANOS** del prompt de §4 **no se le pasan al
+generador para Algoritm**: su cuerpo lleva degradados y brillos, su contorno es negro y sus manos
+son del color del material. El prompt describe a la familia.
 
 ---
 

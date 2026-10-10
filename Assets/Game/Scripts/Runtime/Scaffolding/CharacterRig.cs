@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game.Scaffolding
 {
@@ -19,6 +20,16 @@ namespace Game.Scaffolding
     /// (<see cref="Stage"/>) se escala para llenar la casilla del personaje, y un balanceo mide lo
     /// mismo en un niño lejano que en Papá de cerca. La escala del lienzo la pone este componente y
     /// ningún clip la anima.
+    ///
+    /// **Dos cuerpos, un solo personaje (Santiago, 09/10/2026, INC-134).** La familia lleva, junto al
+    /// cuerpo de frente (<c>Lienzo/Cuerpo</c>), un segundo cuerpo dibujado de perfil
+    /// (<c>Lienzo/Perfil</c>). Cuál se ve lo decide la acción (<see cref="ActionView"/>): de perfil al
+    /// recorrer o trabajar el entorno, de frente en todo lo demás; el corte es seco. Los dos cuerpos
+    /// los anima el mismo Animator, con las mismas acciones. El perfil está dibujado mirando a la
+    /// derecha y para mirar a la izquierda se voltea el lienzo (<see cref="Mirrored"/>), **solo en
+    /// perfil**: de frente nunca se espeja por el rumbo. Un rig sin cuerpo de perfil utilizable
+    /// (Algoritm, o un personaje cuyo arte de perfil todavía no llegó) ignora todo esto y se queda de
+    /// frente (<see cref="HasProfile"/>).
     /// </remarks>
     [RequireComponent(typeof(RectTransform))]
     public class CharacterRig : MonoBehaviour
@@ -31,6 +42,19 @@ namespace Game.Scaffolding
 
         /// <summary>Dónde está Tronco, el padre de torso y brazos, contando desde el lienzo (<see cref="Stage"/>).</summary>
         private const string TrunkPath = "Cuerpo/Tronco";
+
+        /// <summary>El cuerpo de frente, contando desde el lienzo. Se busca por ruta, como <see cref="TrunkPath"/>: el prefab no lo serializa.</summary>
+        private const string FrontBodyPath = "Cuerpo";
+
+        /// <summary>El cuerpo de perfil, contando desde el lienzo (INC-134).</summary>
+        private const string ProfileBodyPath = "Perfil";
+
+        /// <summary>
+        /// El torso del perfil, contando desde <see cref="ProfileBodyPath"/>. Su sprite es lo que dice que el
+        /// arte de perfil llegó: un prefab con los nodos de perfil pero sin dibujo seguiría caminando de
+        /// frente, y no se volvería invisible a media escena.
+        /// </summary>
+        private const string ProfileTorsoPath = "Tronco/Torso";
 
         private static readonly int IdleState = Animator.StringToHash(nameof(ActorAction.Idle));
 
@@ -56,14 +80,28 @@ namespace Game.Scaffolding
         // a otra acción vuelven a su sitio. El valor por defecto vale para los siete prefabs sin editarlos:
         // si el campo no está serializado en el prefab, Unity conserva el del inicializador. Ojo: en cuanto
         // un prefab se vuelve a guardar desde el Editor (Inspector, el generador) el campo queda escrito con
-        // el valor de ese momento, y un cambio posterior del inicializador ya no lo alcanza. Algoritm no se
-        // ve afectado: sus brazos ya van delante del cuerpo.
+        // el valor de ese momento, y un cambio posterior del inicializador ya no lo alcanza. En Algoritm
+        // (INC-147, 09/10/2026) los brazos van detrás de todo el cuerpo, así que la regla también los alcanzaría;
+        // en el juego no se da, porque el guía no golpea ni su controlador tiene el estado Strike.
         [SerializeField]
-        [Tooltip("Acciones durante las que los brazos se dibujan DELANTE del torso, para que se vea el choque de las manos delante del pecho. Al terminarlas vuelven a su sitio. Vacío = nunca. En Algoritm no cambia nada: sus brazos ya van delante del cuerpo.")]
+        [Tooltip("Acciones durante las que los brazos se dibujan DELANTE del torso, para que se vea el choque de las manos delante del pecho. Al terminarlas vuelven a su sitio. Vacío = nunca. Algoritm, cuyos brazos van detrás de todo el cuerpo (INC-147), no golpea: en el juego nada se lo pide.")]
         private ActorAction[] armsInFrontActions = { ActorAction.Strike };
+
+        // Decisión de Santiago (08/10/2026, D9): la portada del menú pone a los cinco personajes en Idle, y con
+        // el mismo arranque respirarían al unísono. La fase solo vale para Idle: cualquier otra acción es un
+        // gesto que empieza en su primer cuadro.
+        [SerializeField]
+        [Range(0f, 1f)]
+        [Tooltip("Dónde del ciclo arranca el reposo (Idle), en fracción de su duración: 0 = en su primer cuadro. Personajes que se ven juntos en reposo —la portada del menú— llevan fases distintas para no respirar al unísono. Solo afecta al Idle; el gesto de cualquier otra acción empieza siempre en su primer cuadro.")]
+        private float idlePhase;
 
         private Vector2 _fittedSize = new Vector2(-1f, -1f);
         private bool _mirrored;
+        private CharacterView _view = CharacterView.Front;
+        private RectTransform _bodiesFor;
+        private Transform _frontBody;
+        private Transform _profileBody;
+        private Image _profileTorso;
         private bool _started;
         private CancellationTokenSource _returning;
         private CharacterFace _face;
@@ -74,6 +112,9 @@ namespace Game.Scaffolding
 
         /// <summary>La última acción pedida.</summary>
         public ActorAction Current { get; private set; } = ActorAction.Idle;
+
+        /// <summary>Dónde del ciclo arranca el reposo, de 0 a 1 (ver el campo <c>idlePhase</c>).</summary>
+        public float IdlePhase => idlePhase;
 
         /// <summary>
         /// La emoción que el guion fija para este personaje (<see cref="ActorBeat.SetsEmotion"/>);
@@ -112,8 +153,31 @@ namespace Game.Scaffolding
         public RectTransform Stage => stage;
 
         /// <summary>
-        /// Si se dibuja en espejo. Voltea el lienzo y no la raíz: en el río la escala de la raíz la
-        /// pone la profundidad (<c>RiverSceneController</c>) y la vigila una prueba.
+        /// Si el personaje tiene un cuerpo de perfil utilizable (INC-134): existen <c>Lienzo/Cuerpo</c> y
+        /// <c>Lienzo/Perfil</c> y el torso del perfil (<c>Perfil/Tronco/Torso</c>) tiene su sprite. Sin
+        /// eso el personaje se queda de frente en cualquier acción. Se evalúa al pedirlo, no se cachea:
+        /// el arte de perfil puede llegar después de crear el rig.
+        /// </summary>
+        public bool HasProfile
+        {
+            get
+            {
+                ResolveBodies();
+                return _frontBody != null && _profileBody != null && _profileTorso != null && _profileTorso.sprite != null;
+            }
+        }
+
+        /// <summary>
+        /// Desde dónde se ve ahora al personaje (INC-134). Es de frente salvo que tenga perfil
+        /// (<see cref="HasProfile"/>) y su acción en curso sea de perfil (<see cref="ActionView"/>).
+        /// </summary>
+        public CharacterView View => _view;
+
+        /// <summary>
+        /// Si mira a la izquierda: hacia dónde da la cara cuando se ve de perfil. Voltea el lienzo y no
+        /// la raíz: en el río la escala de la raíz la pone la profundidad (<c>RiverSceneController</c>) y
+        /// la vigila una prueba. **Solo se aplica en perfil** (INC-134): de frente el personaje se dibuja
+        /// siempre igual y el valor solo se recuerda, para que al pasar a perfil mire al lado que tocaba.
         /// </summary>
         public bool Mirrored
         {
@@ -125,10 +189,15 @@ namespace Game.Scaffolding
             }
         }
 
-        private void Awake() => Fit(true);
+        private void Awake()
+        {
+            ShowView(Current);
+            Fit(true);
+        }
 
         private void OnEnable()
         {
+            ShowView(Current); // un prefab guardado con los dos cuerpos encendidos no los enseña a la vez
             Fit(true);
             PushToFace();
             if (animator != null && animator.runtimeAnimatorController != null && animator.isActiveAndEnabled)
@@ -230,6 +299,8 @@ namespace Game.Scaffolding
             }
 
             Current = action;
+            // La vista (frente o perfil) sigue a la acción como las capas y la cara: aunque no haya Animator.
+            ShowView(action);
             // Las capas de los brazos y la cara siguen a la acción aunque no haya Animator que la ejecute.
             // El cambio de capa es seco, al empezar la acción, y no espera al fundido de BlendSeconds: al
             // entrar en Strike los brazos ya van delante mientras suben al pecho (cruzan delante del torso
@@ -252,7 +323,7 @@ namespace Game.Scaffolding
             if (!_started || immediate)
             {
                 _started = true;
-                animator.Play(state, 0, 0f);
+                animator.Play(state, 0, state == IdleState ? idlePhase : 0f);
                 animator.Update(0f);
             }
             else
@@ -282,6 +353,59 @@ namespace Game.Scaffolding
             }
 
             _armLayering.Apply(inFront);
+        }
+
+        /// <summary>
+        /// Enciende el cuerpo que toca a <paramref name="action"/> y apaga el otro (INC-134): corte seco, sin
+        /// fundido, porque los dos cuerpos se animan a la vez y cada uno ya está en la pose de la acción. Sin
+        /// perfil utilizable la vista es de frente: enciende el cuerpo de frente y apaga el de perfil, si existe.
+        /// Al cambiar de vista se vuelve a ajustar el lienzo, que solo se voltea en perfil.
+        /// </summary>
+        private void ShowView(ActorAction action)
+        {
+            var hasProfile = HasProfile;
+            var view = hasProfile ? ActionView.For(action) : CharacterView.Front;
+            // Siempre, y no solo al cambiar: SetActive con el mismo valor no cuesta nada, y así el primer cuadro
+            // apaga el cuerpo que el prefab haya dejado encendido. Sin perfil utilizable (Perfil existe pero su
+            // torso no tiene sprite, o el arte se quitó mientras se veía de perfil) el de perfil se APAGA y el de
+            // frente se ENCIENDE: si no, los dos se dibujarían a la vez o el personaje quedaría invisible.
+            if (_frontBody != null)
+            {
+                _frontBody.gameObject.SetActive(view == CharacterView.Front);
+            }
+
+            if (_profileBody != null)
+            {
+                _profileBody.gameObject.SetActive(view == CharacterView.Profile);
+            }
+
+            if (view == _view)
+            {
+                return;
+            }
+
+            _view = view;
+            Fit(true); // el espejo depende de la vista
+        }
+
+        /// <summary>
+        /// Busca por ruta los dos cuerpos y el torso del perfil, como <see cref="SyncLimbs"/> con Tronco. Se
+        /// da por hecho cuando ya están los tres; si falta alguno se reintenta en cada llamada (una búsqueda
+        /// de un hijo por nombre es barata): así el arte que llega después, o un lienzo asignado tarde, se
+        /// encuentra. Sin lienzo no hay dónde buscar.
+        /// </summary>
+        private void ResolveBodies()
+        {
+            if (_bodiesFor == stage && _frontBody != null && _profileBody != null && _profileTorso != null)
+            {
+                return;
+            }
+
+            _bodiesFor = stage;
+            _frontBody = stage != null ? stage.Find(FrontBodyPath) : null;
+            _profileBody = stage != null ? stage.Find(ProfileBodyPath) : null;
+            var torso = _profileBody != null ? _profileBody.Find(ProfileTorsoPath) : null;
+            _profileTorso = torso != null ? torso.GetComponent<Image>() : null;
         }
 
         /// <summary>Le empuja a la cara opcional la emoción vigente y si habla.</summary>
@@ -336,7 +460,10 @@ namespace Game.Scaffolding
 
             _fittedSize = size;
             var scale = Mathf.Min(size.x, size.y) / CanvasUnits;
-            stage.localScale = new Vector3(_mirrored ? -scale : scale, scale, 1f);
+            // INC-134: el perfil está dibujado mirando a la derecha y se voltea para mirar a la izquierda; el
+            // frente no se espeja nunca por el rumbo (Santiago, 09/10/2026), aunque _mirrored lo recuerde.
+            var flip = _mirrored && _view == CharacterView.Profile;
+            stage.localScale = new Vector3(flip ? -scale : scale, scale, 1f);
         }
     }
 }

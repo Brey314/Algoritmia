@@ -30,6 +30,17 @@ diálogo, y el botón de ayuda con la forma de Algoritm, listo para sustituir el
 > a la espera del arte final de Santiago. Lo registra el
 > [Anexo C](#anexo-c--rig-articulado-y-caras-para-el-arte-final-05102026). La verificación en el
 > Editor está pendiente.
+>
+> **09/10/2026:** llegó el arte de perfil de Papá, Mamá, la Niña y el Niño y el diseño nuevo de Algoritm.
+> La familia se ve de perfil al recorrer o trabajar el entorno, hacia donde se mueve; el parpadeo es de
+> dos cuadros; y Algoritm, con su diseño final, se dibuja en siete piezas por forma (INC-134 a INC-136).
+> Lo registra el apartado
+> [C.13](#c13-vista-de-perfil-rumbo-parpadeo-de-dos-cuadros-y-el-algoritm-final-inc-134-a-inc-136-09102026).
+> Las dos rondas del Editor están hechas (la 2, también el 09/10/2026).
+>
+> **09/10/2026 (INC-147):** los brazos de Algoritm se dibujan detrás de todo el cuerpo, decisión de
+> Santiago. Lo registra el apartado [C.14](#c14-los-brazos-de-algoritm-detrás-de-todo-el-cuerpo-inc-147-09102026);
+> su ronda del Editor se hizo ese día (`ca62b9a`).
 
 ## Qué entró
 
@@ -462,7 +473,8 @@ segmento (`AntebrazoX`, `AntepiernaX`, `Cabeza`) cuelga de ellos, así que girar
 segmento. `Sombra` y `Estela` (B.2) no se tocan.
 
 **Algoritm** (`Algoritm_Fuego`, `Algoritm_Rueda`, `Algoritm_Gota`). Hoy `Lienzo/Cuerpo` es una sola
-`Image`, y **sigue siendo lo visible**. Cuelga de `Cuerpo` la misma jerarquía, **sin `Cuello` ni
+`Image`, y **sigue siendo lo visible** *(08/10/2026: ya no; las nueve piezas provisionales están
+encendidas y `Cuerpo` apagado, ver C.12)*. Cuelga de `Cuerpo` la misma jerarquía, **sin `Cuello` ni
 `Cabeza`**, porque la cara va en el propio cuerpo de la llama:
 
 ```
@@ -557,7 +569,7 @@ la copia: el `.txt` es lo que queda versionado.
 |---|---|
 | `"nodos"` | Abre los siete prefabs con `LoadPrefabContents`, **añade** los nodos de la tabla que falten y el `CharacterFace`, y guarda con `SaveAsPrefabAsset`. Idempotente: si un nodo existe no lo toca, y nunca borra ni recrea uno. Todo nodo nuevo nace con la `Image` apagada y sin sprite |
 | `"sprites"` | Para cuando llegue el arte. Asigna por nombre los PNG que existan, aplica el rect y el pivote de la tabla (también a las partes que ya existían), enciende las `Image` y crea `<Art>/<Carpeta>/Expresiones/char_<x>_cara.asset` (un `CharacterFaceSet`; desde `63ed2fc` y `64e4b37` vive en `Expresiones/`, y un asset de la raíz se mueve con `MoveAsset`, mismo GUID) asignado al `CharacterFace`. En Algoritm apaga la `Image` de `Cuerpo` cuando torso, brazos y piernas ya están. Lo que no existe queda apagado y se anota en el log |
-| `"orden"` | Desde INC-132 (C.9). Reordena con `SetSiblingIndex` los hijos de `Tronco` según `orden_tronco` de la tabla: familia con los brazos detrás del torso y delante de la cabeza; Algoritm con los brazos delante del cuerpo y la cara encima. No crea ni borra nodos: los fileID no cambian |
+| `"orden"` | Desde INC-132 (C.9). Reordena con `SetSiblingIndex` los hijos de `Tronco` según `orden_tronco` de la tabla: familia con los brazos detrás del torso y delante de la cabeza; Algoritm, hasta INC-147, con los brazos delante del cuerpo y la cara encima, y desde INC-147 (C.14) con los brazos detrás de todo el cuerpo. No crea ni borra nodos: los fileID no cambian |
 | `"clips"` | Reescribe en sitio las curvas de los 84 `.anim` de la familia y los 9 de Algoritm (C.6), **aplicando `clips_personajes.json`** (C.9): el modo ya no contiene coreografía. Se niega si faltan los nodos: exige haber corrido «nodos» |
 | `"todo"` · `"estado"` | «Nodos», «sprites», «orden» y «clips», en ese orden · solo informa (nodos completos, `CharacterFace` sí o no, segmentado sí o no), sin escribir |
 
@@ -627,7 +639,8 @@ máxima de 0,00002 (C.9). Lo que sigue describe el contenido, no quién lo calcu
   y el alfa; añaden piernas que cuelgan con 3 cuadros de retraso (juntas arriba, abiertas abajo, y
   las rodillas devuelven lo que abre el muslo), brazos que suben un poco con 4 cuadros de retraso y
   gestos de brazos y codos en señalar, celebrar y ánimo. En `hablar` el gesto lo lleva el **tronco**,
-  porque no tiene cuello. Con el sprite entero de hoy, **lo visible no cambia**.
+  porque no tiene cuello. Con el sprite entero de hoy, **lo visible no cambia** *(desde el 08/10/2026
+  Algoritm se dibuja por partes y tiene diez clips, el décimo `saludar`: ver C.12)*.
 - **CP-02**: el ánimo es un puño arriba con un bombeo y nunca un gesto de desánimo;
   `Sleep` queda sentado y recostado, no tumbado, porque con los ojos abiertos se leería como caído.
 
@@ -674,9 +687,9 @@ Todo en `Game.Scaffolding`, salvo el último punto (`Game.UI`).
   progresivo, así que «habla» dura hasta que se avanza la línea. Una acotación no tiene hablante y
   no mueve ninguna boca.
 
-**Lo que este trabajo no hace** (sigue pendiente; ver `Plan-Personajes-Finales.md`): los perfiles
-(`CharacterOrientation`/`Facing`), el retrato animado del cuadro de diálogo, y poblar emociones
-explícitas en los 18 `N*_*.asset`.
+**Lo que este trabajo no hace** (sigue pendiente; ver `Plan-Personajes-Finales.md`): el retrato animado
+del cuadro de diálogo, y poblar emociones explícitas en los 18 `N*_*.asset`. *(Los perfiles, que esta
+sección daba por pendientes, se abordaron el 09/10/2026: C.13.)*
 
 ### C.8 Pruebas nuevas
 
@@ -726,9 +739,9 @@ regla definitiva.)
   origen) desde `CharacterRig.Apply`, según el campo serializado `armsInFrontActions = { Strike }`; el
   inicializador del campo vale para los prefabs que no lo serializan (los tres de Algoritm sí lo
   serializan, con ese valor, al guardarse). El cambio de capa es seco al empezar la acción: no espera
-  el fundido de 0,18 s. Si falta un nodo, avisa y no mueve nada. En Algoritm no mueve nada, porque sus
-  brazos ya van delante del cuerpo.
-- **Algoritm: manos sobre la cara.** `orden_tronco` = `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`.
+  el fundido de 0,18 s. Si falta un nodo, avisa y no mueve nada. En Algoritm no movía nada, porque sus
+  brazos ya iban delante del cuerpo (hasta INC-147; ver C.14).
+- **Algoritm: manos sobre la cara (hasta INC-147, C.14).** `orden_tronco` = `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer`.
   La coreografía y `pose_preview.py` impiden que una mano entre en la caja de ojos y boca (ampliada un
   30 %, con al menos el 99,5 % libre).
 - **Coreografía de Strike.** Choque delante del pecho con brazo partido; con el brazo de una pieza del
@@ -785,9 +798,9 @@ informe y composite; (2) con `--aplicar`; (3) la sesión local copia `BuildRigsF
 prefab y `.anim`, y borra el andamiaje.
 
 **Pruebas nuevas:** `CharacterRig_INC132_LosBrazosSeDibujanDetrasDelTorsoYDelanteDeLaCabeza` (los cuatro
-de la familia) `CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara` (las tres formas, antes `…DelanteDelCuerpoYLaCaraEncima`)
+de la familia) `CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara` (las tres formas, antes `…DelanteDelCuerpoYLaCaraEncima`; hoy `CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo`, C.14)
 y, del 06/10, `CharacterRig_INC132_AlGolpearLosBrazosPasanDelanteDelTorso`,
-`…_AlTerminarElGolpeLosBrazosVuelvenDetrasDelTorso`, `…_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo`,
+`…_AlTerminarElGolpeLosBrazosVuelvenDetrasDelTorso`, `…_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo` (hoy `CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen`, C.14),
 `…_SoloElGolpePoneLosBrazosDelante` y `…_SiFaltaUnNodoElGolpeAvisaYNoMueveNada`.
 
 **Cambia una prueba existente:** `CharacterRig_DA131_LaFamiliaTieneCodosRodillasYCuello` deja de
@@ -806,7 +819,7 @@ Niña 21, Niño 19); `Game.Scaffolding.Tests` 215/215 y suite completa en un sol
 omitida preexistente, 1 fallo: `RiverLevel_RNF05`, 2199 MB con el Editor abierto todo el día; recién
 abierto mide 1533 MB reservados y 1072 asignados, y `Game.Levels.River.PlayMode.Tests` pasa 57/57).
 `suite2.ps1` no pudo correr esta ronda: el segundo Editor murió dos veces por memoria al abrirse.
-**Ronda de `8cdd4c5` (Strike delante, manos de Algoritm sobre la cara):** la sesión local corrió `orden`
+**Ronda de `8cdd4c5` (Strike delante, manos de Algoritm sobre la cara, hasta INC-147):** la sesión local corrió `orden`
 y `clips`; cambiaron 3 prefabs de Algoritm (orden de `Tronco` y el campo serializado
 `armsInFrontActions`), 4 `.anim` de golpear y se generó el `.meta` de `ArmLayering.cs`; fileIDs,
 `m_Script`, `m_Controller` y `m_Sprite` intactos en los siete. `Game.Scaffolding.Tests` 234/234 y suite
@@ -828,7 +841,7 @@ Rama `feat/personajes-animados`, de `63ed2fc` a `433603f`. Lo que sigue se verif
 - `ef37dd9` (INC-133): decisión de Santiago del 06/10/2026. En la familia el húmero se dibuja detrás del torso y el antebrazo delante del torso, de la cara y de las piernas. Como uGUI pinta por orden de jerarquía, `AntebrazoX` (mismo objeto y fileID) pasa a hijo de `Tronco`, al final, y sigue a un nodo vacío `AnclaAntebrazoX` que se deja bajo `CodoX` con la pose local anterior del antebrazo. `LimbFollower` (C# plano, `Game.Scaffolding`) compone `BrazoX`, `CodoX` y el ancla respecto de `Tronco` y escribe la pose local del antebrazo; `CharacterRig` descubre los pares por nombre y los sincroniza tras `Play` + `Update(0)` y en `LateUpdate`. No hay campos serializados nuevos y los clips no cambian, porque no animan el antebrazo. Los personajes sin anclas (arte provisional, Algoritm) no se tocan. `ArmLayering` conserva su lógica: al golpear sigue poniendo el húmero justo tras `Torso`, todavía detrás de los antebrazos. El modo `"orden"` crea las anclas y mueve los antebrazos cuando `orden_tronco` los lista, sin reconstruir nada.
 - `233f2e5`: caras de los cuatro por registro. Los lienzos de 1300×1500 de la entrega están registrados entre sí, así que `preparar_expresion.py --registrada` coloca `Ojos`, `Boca` y `CaraBase` con la misma transformación con que `preparar_arte_final.py` colocó las partes de ese personaje (guardada como `registro` en `arte_final.json`), en lugar de la heurística de escala. El Niño coincide con la foto de Santiago dentro del 0,6 % de la altura (ojos de 295 px de ancho en vez de 188; brazos 20 a 25 px hacia adentro, como en la entrega). Se sustituyeron en su sitio 12 PNG de `Expresiones/` (mismos nombres, `.meta` y GUID). `orden_tronco` de la familia lista los antebrazos al final (Papá: `BrazoIzq`, `BrazoDer`, `Torso`, `Cuello`, antebrazos). `pose_preview.py` mide aparte la visibilidad del húmero (40 %) y la del antebrazo (85 %). El cuello de los personajes con melena o barba gira a la altura de la barbilla. `Strike` mantiene las manos dentro del ancho de hombros y el choque sobre la cintura; los gestos cerca de la cabeza rodean la cara. Se reconocen las piezas `pies_*`.
 
-**Disposición del arte.** Cada personaje queda en `Assets/Game/Art/Characters/<Carpeta>/` con `Frontal/` (partes `char_<x>_parte_*.png`), `Expresiones/` (ojos, bocas, `char_<x>_cara_base.png` y `char_<x>_cara.asset`) y `Perfil/` (vacía, con `.gitkeep`, hasta que haya arte). Los retratos, los reposos de Algoritm y `Animations/` siguen en la raíz de la carpeta. Los originales de entrega viven en `claudeDocs/tasks/Personajes/entregas/<fecha>/`.
+**Disposición del arte.** Cada personaje queda en `Assets/Game/Art/Characters/<Carpeta>/` con `Frontal/` (partes `char_<x>_parte_*.png`), `Expresiones/` (ojos, bocas, `char_<x>_cara_base.png` y `char_<x>_cara.asset`) y `Perfil/` (vacía, con `.gitkeep`, hasta que haya arte; desde el 09/10/2026 recibe el de perfil de la familia, C.13). Los retratos, los reposos de Algoritm y `Animations/` siguen en la raíz de la carpeta. Los originales de entrega viven en `claudeDocs/tasks/Personajes/entregas/<fecha>/`.
 
 **Corridas**
 
@@ -875,3 +888,313 @@ Rama `feat/personajes-animados`, de `6ed4d23` a `28337c0`. Lo que sigue se verif
 **Capturas** (`claudeDocs/tasks/Personajes/capturas/2026-10-06b/`, en LFS): `01_reposo_cuatro_zoom.png` y `01_reposo_escena_completa.png` (línea 6 de la escena 2.2 del Nivel 2: el Niño y Mamá con los brazos caídos y sin hueco en el hombro; Papá con las manos en la cintura y la Niña con los brazos en alto son los gestos de esa línea), `02_gestos_cabeza_L05_cuatro_zoom.png` y `02_gestos_cabeza_L05_escena_completa.png` (línea 5: el Niño con las manos junto a la cara, la Niña con los brazos en alto, Mamá señalando), `03_mama_hablando.png` y `04_nina_hablando.png`. No hay captura del Editor de un `Observe` o un `Celebrate` con la mano en la frente, ni del choque de `Strike`.
 
 **Puntos abiertos.** Falta el arte final de Algoritm. El brazo del Niño queda de 25 a 33 px corto de la sien. No hay captura del Editor de los gestos sobre la frente ni del choque de `Strike`: ambos se comprobaron solo en `pose_preview.py`. `RiverLevel_RNF05` falla en el Editor de larga duración (2353 MB aquí): conviene reiniciar el Editor antes de la suite. Peso y memoria del arte nuevo no se han medido en un ejecutable.
+
+### C.12 El codo de Papá y Algoritm por partes con `Wave` (08/10/2026)
+
+Rama `feat/personajes-animados`, ronda de ajustes de diseño del 08/10/2026
+(`claudeDocs/tasks/Ajustes-Diseno-2026-10-08/`; decisiones D13, D14, D16, D12 y D20 de su `brief.md`).
+Commits: `a938f9a` (Papá), `bd8b802` (Algoritm y créditos), integrados con el carril de perfil en el
+merge `eb9be13`. Las cifras de abajo salen de los partes de las etapas 1 y 4a y de `git show` de
+cada commit. Es el registro de lo hecho; el estado vigente está en C.2 a C.11 con las notas de
+remisión, en `Direccion_de_Arte.md` §7.6 y §13 y en CLAUDE.md.
+
+**Papá: el húmero ya no asoma por el codo (D14, D16).** Santiago vio que, al mover el antebrazo de
+Papá, se veía parte del húmero. El arte final de Papá trae el húmero con una punta clara y sin
+contorno que se pasa de su extremo redondo, con el antebrazo solapado encima: la distancia entre el
+extremo del húmero y el casquete del antebrazo era de 42 px a la izquierda y 21 px a la derecha (en
+Mamá, Niña y Niño, de 1 a 8 px). El pivote del codo quedó en el extremo del húmero, a 40,0 y 20,9 px
+del casquete, y al doblar el codo la punta salía como un bulto sin contorno. `codo.py`, nuevo, sube el
+húmero y baja el antebrazo a lo largo de su eje hasta dejar el punto más lejano 4 px dentro del
+casquete, sin mover el pivote del hombro y sin tocar ningún PNG. Resultado, en px del lienzo de 1024:
+
+| Dato | Antes | Después |
+|---|---|---|
+| `BrazoIzq.rect` (húmero izquierdo) | [296, 457, 478, 612] | [311, 445, 493, 600] (sube 19,2) |
+| `CodoIzq.rect` (antebrazo izquierdo) | [178, 543, 376, 718] | [150, 567, 348, 742] (baja 37,4) |
+| `CodoDer.rect` (antebrazo derecho) | [637, 542, 835, 717] | [665, 566, 863, 741] (baja 37,4) |
+| `BrazoDer.rect` (húmero derecho) | [537, 457, 700, 601] | igual |
+| Holguras `CodoIzq` / `CodoDer` | 42,0 / 20,9 | 14,2 / 16,1 |
+| Húmero que asoma (`asoma_codo`, tope 15) | 52,6 / 33,4 | −3,2 / +1,0 |
+
+Los dos antebrazos bajan lo mismo para que los brazos queden simétricos. Efectos que Santiago
+aprobó (D16): los brazos de Papá miden unos 37 px más (4 % de su alto) y el choque de `Strike`
+baja de y = 549 a y = 595, con tope en la cintura a 616, con los codos más abiertos. `Idle` con las
+manos en la cadera, `Push`, `Hug` y `Observe` también cambian algo; el reposo no (15° de hombro,
+6° de codo). `preparar_arte_final.py` corre ahora `codo.py` justo después de `hombro.py`, y
+`pose_preview.py` gana la comprobación (j) del codo (`ASOMA_MAX_CODO = 15`). En el motor, el modo
+`sprites` de `BuildRigsFinal` cambió 15 líneas de `Papa.prefab` (anclas y pivotes de siete
+`RectTransform`, ningún fileID) y `clips` reescribió los 21 `.anim` de Papá; los clips de los otros
+cuatro personajes no cambian. Corridas: `pose_preview.py` pasa en 119 filas (111 clips más 8 codos),
+`CharacterRig_` 142/142 y `Game.Scaffolding.Tests` 278/278 en EditMode.
+
+**Algoritm se dibuja por partes con arte provisional (D13).** Decisión de Santiago: sus brazos y
+piernas se mueven en todas sus escenas sin esperar al arte final. Las tres formas comparten
+geometría, así que se cortaron las tres: nueve piezas por forma (`char_algoritm_<forma>_parte_torso`,
+`_brazo_{izq,der}`, `_antebrazo_{izq,der}`, `_pierna_{izq,der}` y `_antepierna_{izq,der}`), 27 PNG
+en `Assets/Game/Art/Characters/Algoritm/Frontal/`. Los genera
+`pose_preview.py --exporta-maqueta` con `maqueta.piezas_guia`, que corta por la forma del dibujo y
+no por rectángulos (un rectángulo se llevaba un trozo del contorno del vientre en cada hombro y
+cadera y dejaba escalones en el codo y la rodilla): el cuerpo es lo que sobrevive a una apertura
+con disco de 16 px, lo libre dentro de la zona de cada extremidad es de ella, cada extremidad se
+parte en el codo o la rodilla con un plano perpendicular al eje y la pieza de arriba lleva una
+rótula del radio del palo. Se corta a la resolución del sprite (768) y las piezas sumadas
+reproducen el sprite con 0,002 % de píxeles distintos. Pesan 908,6 KB en disco y 3,63 MiB como
+textura sin comprimir para las tres formas (sin medir aún en un ejecutable; RNF-06 tenía 21 MB de
+margen; medido el 09/10/2026 en C.13: con el arte final el paquete llegó a 499,3 MB y INC-146 lo bajó a 420,6 MB). Los puntos de articulación se midieron sobre el alfa de los palos (27 px de ancho): el
+hombro estaba 17 px por encima del palo y pasó de (292, 612) y (735, 612) a (287, 629) y (736, 630),
+y el codo, de (228, 688) y (798, 684) a (224, 693) y (800, 693). `articulaciones.py` regeneró
+`rig_articulaciones.json` (solo cambian las tres entradas de Algoritm). En el Editor, `BuildRigsFinal`
+corrió `sprites`, `orden` y `clips` solo sobre Algoritm, con una copia efímera filtrada para no
+volver a guardar los prefabs de la familia: nueve piezas aplicadas por forma y `Cuerpo` apagado,
+`orden` sin cambios y 10 clips reescritos. Cada prefab de Algoritm conserva sus 69 objetos y
+ningún fileID cambia. `Ojos` y `Boca` siguen apagados y sin sprite, porque la cara está pintada en
+el torso: encenderlos habría puesto ojos sobre ojos.
+
+**`Wave`, el saludo de Algoritm (D12).** `ActorAction.Wave = 22`, al final del enum para no mover
+los números que guardan los assets; el enum pasa de 22 a 23 acciones (0 a 22) y
+`ActionEmotion.For(Wave)` es `Happy`. El clip `char_algoritm_anim_saludar.anim` (4,8 s, bucle,
+11 curvas) lo escribe `coreografia.guia_wave` y lo crean, junto con el estado `Wave` de
+`char_algoritm.controller`, un script de Editor efímero y el modo `clips`: ese modo no crea clips ni
+estados. Es un solo brazo, el derecho de pantalla: sube 94° en 0,55 s, se mece con 4 vaivenes de
+0,7 s (codo 27° ± 16°), baja en 0,6 s y descansa unos 0,9 s, con el cuerpo flotando todo el clip. El
+parámetro que manda es la cara: `pose_preview.py` exige libre el 99,5 % de la caja de ojos y boca
+ampliada un 30 %, y con 94° y 27 ± 16 queda libre el 100 % en las tres formas. Algoritm pasa a
+10 clips (94 en total bajo `Characters`: 21 por miembro de la familia y 10 de Algoritm). `Wave` es
+solo del guía: a un miembro de la familia le caería a `Idle`.
+
+**Créditos (D12).** `Credits.unity` pierde `Fondo`, `Marco`, `Sombra` y la imagen vacía
+`AlgoritmSaluda`; el rig `Algoritm_Fuego(Creditos)` cuelga directo de `AlgoritmPanel` y llena su
+ancho de 520 px, centrado en vertical. `CreditsController.guide` (un `CharacterRig`) recibe
+`Play(ActorAction.Wave)` en `Start`, escrito como `if (guide != null)` y no con `?.`, que se salta la
+comprobación de nulo de Unity. La portada del menú principal también usa los cinco rigs
+(`CharacterRig.idlePhase`, etapa 4b): es la escena que más personajes lleva a la vez.
+
+**Pruebas.** `CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga` (3 formas),
+`CharacterRig_DA133_CadaPersonajeTieneUnEstadoPorAccion` con `Wave` en los tres guías,
+`FacialEmotion` con `Wave` a `Happy`, `Credits_RF08_AlgoritmSaludaOcupandoElLugarDeLaTarjetaSinElla`
+(PlayMode) y la autoprueba de `pose_preview.py` con el caso de que las piezas suman el sprite. En
+EditMode, `CharacterRig` 145/145, `FacialEmotion` 30/30 y `Game.Scaffolding.Tests` 296/296; en
+`pose_preview.py`, 10/10 clips por forma de Algoritm y 21/21 por miembro de la familia.
+
+**Pendientes para el arte final de Algoritm (D20).** Santiago decidió no corregir ahora dos defectos
+menores de las piezas provisionales; se revisan con el arte que llegue. El corte en nueve piezas es del
+arte provisional y lo sustituirá la ingesta del diseño nuevo de Algoritm (INC-136) que hace el carril de
+perfil; si ese diseño no solapa piezas o cambia el hombro, los defectos pueden desaparecer solos:
+
+1. **Anillos en los fundidos.** En `Appear`, `Vanish` y `Hidden` las rótulas se ven más oscuras
+   unos 0,3 s, porque el alfa del `CanvasGroup` de `Lienzo` multiplica cada `Image` por separado y
+   donde dos piezas se solapan el color se oscurece. Con 35 % de alfa quedan anillos oscuros en
+   codos, rodillas, hombros y caderas (`capturas/04a-algoritm-creditos/limite-conocido-vanish-alfa-035.png`).
+   Es inherente a las piezas solapadas; la familia y su arte final también las solapan.
+2. **Talón en el hombro girado.** La rótula copia el contorno del vientre, más claro que el palo, y al
+   levantar el brazo asoma un bulto claro de unos 12 px del lienzo, visible ampliando ×6; a escala
+   normal pasa por la articulación.
+
+Quedan además `Ojos` y `Boca` apagados hasta que el arte separe la cara, y `pose_preview.py` sigue
+dibujando a Algoritm con la maqueta de su sprite entero y no con los PNG de `Frontal/`: hay que
+enseñarle a leerlos. El orden de trabajo y los límites están en
+`Ajustes-Diseno-2026-10-08/notas-04a-algoritm-creditos.md` (§9 y §10). La entrega de arte de Algoritm
+del 09/10/2026 la ingiere el carril de perfil (`545127e` guarda los originales en
+`entregas/2026-10-09/Algoritm/`), no esta ronda: el corte en nueve piezas sale del arte provisional
+`_reposo` (decisión D22). El prompt para meter el arte final está en
+`claudeDocs/tasks/Personajes/Prompt-Arte-Final-Algoritm.md`.
+
+*Nota (09/10/2026): el corte en nueve piezas y los dos defectos de D20 los sustituye la ingesta del arte
+final de Algoritm, en siete piezas por forma (C.13, INC-136).*
+
+### C.13 Vista de perfil, rumbo, parpadeo de dos cuadros y el Algoritm final (INC-134 a INC-136, 09/10/2026)
+
+Rama `feat/personajes-animados`, de `ce89320` (el merge de `main`) a `64f3dd1`. Lo que sigue se verificó contra `git show` de cada commit y contra los archivos del árbol, salvo lo marcado como no verificado. El runtime y las herramientas se escribieron en la nube, sin Unity; la ronda 1 del Editor la corrió la sesión local de Santiago. Es el registro de lo hecho; el estado vigente está en `Direccion_de_Arte.md` §7.3, §7.6 y §13.4 y en CLAUDE.md.
+
+> **Verificación en el Editor: rondas 1 y 2 hechas.** Con la ronda 1 (`9966bcb`) los cuatro prefabs de la familia tienen `Lienzo/Perfil`, y `Game.Scaffolding.Tests` pasa 351/351 y `NarrativeScene_` 107/107 en PlayMode. `2cd8a75` cambió después el orden de dibujo del perfil y metió el arte final de Algoritm; la ronda 2 (09/10/2026, `f20b271`) lo aplicó a los prefabs y corrió la suite completa: EditMode 710 de 711 (1 omitida), PlayMode 417/417. Falta, de lo verificable, el build con la medida de RNF-06: ver «Ronda 2 del Editor».
+
+**Decisiones de Santiago Benavides Rey (09/10/2026).** Las tres abren INC propio.
+
+1. **INC-134, perfil al moverse.** Se ve de perfil quien camina, corre, carga, empuja, recoge, se arrodilla o sopla; en todo lo demás, de frente, incluida `Wave`. Lo decide la acción y no el desplazamiento. Mira a la izquierda si va a la izquierda o hacia arriba y a la derecha si va a la derecha o hacia abajo; en una diagonal manda el eje dominante y en un empate, el horizontal. En las narrativas el lado lo decide cada paso (`ActorTimeline.FacesLeftAt`, combinado con el volteo de la casilla); en el río, Mamá sigue las flechas, también las verticales; en el fuego, Papá mira el montón; en el bosque, la Niña mira la caja. El frente nunca se espeja por el rumbo y un rig sin torso de perfil con sprite se queda de frente. Levanta el «ciclo único que se voltea» de `Direccion_de_Arte.md` §13.3.
+2. **INC-135, parpadeo de dos cuadros.** La entrega trae ojos abiertos y ojos cerrados, sin párpado a medias; `CharacterFaceSet.Eyes(Half)` cae al cuadro cerrado. Acota §7.3, que pedía tres. Solo parpadea el perfil: faltan los ojos cerrados de frente, pedidos al artista.
+3. **INC-136, Algoritm nuevo.** El diseño de la entrega del 09/10/2026 —llama, disco de madera y gota, con pantaloneta de cuadros— es el oficial. Siete piezas por forma, con la pierna entera y sin rodilla; escala que conserva la altura de hoy; cara provisional del sprite anterior hasta que el artista entregue la suya. Sustituye al corte provisional en nueve piezas de INC-140. El guion radicado **no se toca** sin otra autorización de Santiago.
+
+Y las decisiones de ingesta de la misma fecha: (a) el ancla horizontal del corte frente↔perfil es la **cadera** (x = 512 del lienzo del rig); (b) el rastro casi blanco del ojo abierto bajo los párpados cerrados **se limpia solo**; (c) la mano lejana de la Niña, que faltaba, **se pide al artista y no se sintetiza**: la entregó el mismo día y entró en `3a0f6ad`, así que la Niña entra de perfil con la pieza real. Y dos correcciones suyas, con el trabajo ya avanzado: (d) **las piernas van siempre detrás del torso** en el perfil —el primer orden dibujaba la pierna cercana delante—, y (e) el arte final de Algoritm **se aplica ya**, sin esperar a la ronda de arreglos.
+
+**Por commit**
+
+| Commit | Qué entró |
+|---|---|
+| `3efa765` | Entrega original del 09/10/2026 en `claudeDocs/tasks/Personajes/entregas/2026-10-09/` (48 PNG en LFS, fuera de `Assets`): diez piezas de perfil por personaje y dos caras de perfil, ojos abiertos y cerrados. Los cuatro miran a la izquierda; la Niña no traía `mano_atras` y el Niño trae las piezas en una carpeta `Perfil/Niño/` anidada. |
+| `910c0f0` | El runtime de INC-134 e INC-135 y sus pruebas: 21 archivos, +1624 −33. Ver «El runtime». |
+| `a2d32e2` | `INVENTARIO.md` de la entrega y su `hoja_contacto.png`: papel, recuadro y destino de cada pieza, hacia dónde mira, articulaciones estimadas y memoria. |
+| `3a0f6ad` | `mano_atras_niña.png` (el antebrazo con la mano lejano de la Niña), entregado por el artista. |
+| `545127e` | Entrega original de Algoritm del 09/10/2026 (21 PNG en LFS): `Fuego/`, `Rueda/` y `Gota/` con siete piezas cada una. |
+| `57fbc58` | `Algoritm/INVENTARIO.md` y su hoja de contacto: piezas, articulaciones, escala (opciones A y B), memoria y lo que hay que pedir al artista. |
+| `123785e` | `Wave` entra en la tabla de vistas (de frente): `ActionView_INC134_LaTablaCubreTodasLasAcciones` pasa a 23 acciones; `.meta` de los `.cs` nuevos. Lo subió la sesión de arreglos al integrar. |
+| `beb1cfe` | Las herramientas de perfil (`preparar_perfil.py`, nuevo, y los modos de perfil de las demás) y los 55 PNG de `Perfil/` que escribió `preparar_perfil.py`. |
+| `9966bcb` | Ronda 1 del Editor (sesión local): `BuildRigsFinal` en `estado → perfil → sprites → clips → estado` sobre `e506c82`. `Lienzo/Perfil` en Papa, Mama, Nina y Nino con solo fileID nuevos (82 a 148 bloques, ninguno perdido o cambiado), sprites y capas de cara de perfil cableados, los sets `char_<x>_perfil_cara.asset`, los 84 clips de la familia reescritos y los `.meta` de los 55 PNG. En Algoritm solo aparecen campos nuevos con valor por defecto; sus clips no cambian. |
+| `2cd8a75` | La corrección de las piernas (`ORDEN_TRONCO_PERFIL`, la prueba del orden de dibujo, la hoja de `preparar_perfil.py`) y el Algoritm final: `preparar_algoritm.py`, nuevo, con 21 PNG sustituidos en su sitio, seis `antepierna` borradas, la cara provisional en `Expresiones/` y los tres `_reposo` rehechos; el modo `sprites` de `BuildRigsFinal` vacía y apaga el sprite de un nodo sin arte. |
+| `64f3dd1` | Merge con `origin` (`9966bcb`). |
+
+**El runtime (`910c0f0`).** Todo en `Game.Scaffolding` salvo los controladores.
+
+- `ActionView` (C# plano, tabla de una línea por acción, como `ActionEmotion`) y el enum `CharacterView { Front = 0, Profile = 1 }`. Perfil: `Walk`, `Run`, `Carry`, `Push`, `PickUp`, `Kneel` y `Blow`; frente: las otras quince acciones de `ActorAction`, `Wave` incluida desde `123785e`. `coreografia.py` lee esa misma tabla del `.cs` (`ACCIONES_PERFIL`), así que no pueden desincronizarse.
+- `CharacterRig`: `HasProfile` (existen `Lienzo/Cuerpo` y `Lienzo/Perfil` y el torso de perfil, `Perfil/Tronco/Torso`, tiene sprite; se evalúa al pedirlo, no se cachea) y `View`. `ShowView` enciende un cuerpo y apaga el otro al empezar cada acción, con corte seco, y **siempre**, para que un prefab guardado con los dos encendidos no los enseñe a la vez. Los cuerpos se buscan **por ruta**, como `Tronco`: no hay campo serializado de perfil. `Mirrored` conserva su sentido («mira a la izquierda») pero `Fit` solo voltea el lienzo en perfil. `ArmLayering` y `LimbFollower` siguen ligados al `Tronco` frontal y no cambian.
+- `Heading.FacesLeft(Vector2)` devuelve `bool?` (nulo con un vector nulo: no decide nada) y `Heading.FacesLeftToward(fromX, toX, fallback)` es la variante para quien encara un objeto.
+- Narrativas: `ActorFacing { Auto = 0, Left, Right }` y el campo `ActorBeat.Facing`, añadido **al final** de los serializados (los 18 assets no se reescriben: sin el campo vale `Auto`). `ActorTimeline.FacesLeftAt(prop, línea)` decide en este orden: el `Facing` explícito; el desplazamiento del paso si mide al menos 0,01; el rumbo del paso anterior; el del siguiente; hacia el centro de la ilustración. `FacesLeftOfStep` hace lo mismo para el paso encadenado (`PendingStep`). `NarrativeSceneController` asigna `rig.Mirrored = facesLeft ^ prop.Mirrored`, para no espejar el perfil dos veces con el volteo de la casilla.
+- Mecánicas: `RiverSceneController` usa `Heading.FacesLeft(direction)` siempre que haya movimiento; `FirePanelController.FaceTheFire` pone a Papá de cara al montón antes de recoger, soplar y arrodillarse; `ForestSceneController.FaceCargo` pone a la Niña de cara a la caja y la gira si la caja cruza al otro lado mientras la arrastra.
+- `CharacterFace` gana `profileEyes`, `profileMouth` y `profileFaceSet`. **Un solo `BlinkClock` y un solo `MouthFlap`** mueven las dos caras y se actualizan en cada cuadro aunque solo se vea una, de modo que el parpadeo no salta ni se reinicia al cambiar de vista. Una cara sin set o sin sprite se apaga sola sin afectar a la otra.
+- `CharacterFaceSet.Eyes(Half)` devuelve `EyesBlinkHalf` si existe y, si no, `EyesBlinkClosed` (INC-135). El cuadro cerrado se ve así los 0,12 s completos y no los 0,04 s del tercio central.
+
+**Orden de dibujo del perfil.** Todo cuelga de `Lienzo/Perfil/Tronco`, con el pivote en la cadera cercana. De atrás adelante: `BrazoLejano/CodoLejano/AntebrazoLejano`, `PiernaLejana/RodillaLejana/AntepiernaLejana`, `PiernaCercana/RodillaCercana/AntepiernaCercana`, `Torso`, `Cuello/Cabeza/{CaraBase, Ojos, Boca}` y `BrazoCercano/CodoCercano/AntebrazoCercano`. **Las dos piernas, detrás del torso**; el brazo cercano y la cara, delante. `Perfil` es hermano de `Cuerpo` y va justo detrás; de frente las piernas ya iban antes de `Tronco`. Esto corrige `Plan-Personajes-Finales.md` §4.3, que ponía la pierna cercana delante del torso. En el Editor, el modo `perfil` reordena los hijos existentes con `SetSiblingIndex`: solo cambia `m_Children` de `Tronco`, ningún fileID.
+
+**Las herramientas** (`claudeDocs/tasks/Personajes/herramientas/`). Cada una conserva su `--autoprueba`.
+
+| Herramienta | Qué hace con el perfil y con Algoritm |
+|---|---|
+| `preparar_perfil.py` (nuevo) | Entrada del arte de perfil: reconoce las piezas por nombre con tolerancia (sin tildes ni `ñ`, partido por `_` y espacios, recorre subcarpetas, tolera erratas), decide cercana o lejana por el nombre y lo comprueba con el tono (lejana = un solo tono de sombra `#DE9563`; cercana = piel `#FFC69F`), detecta hacia dónde mira y **espeja** si mira a la izquierda, limpia el alfa, normaliza a 870 px con la coronilla en y = 77 y la cadera cercana en x = 512, mide hombro, codo, rodilla, cadera y cuello sobre el alfa y escribe solo en `Perfil/`. |
+| `preparar_algoritm.py` (nuevo) | Entrada del arte final de Algoritm: reconoce las siete piezas por forma, exige los tres directorios y 1300 × 1500 en todas, comprueba que las extremidades son la misma silueta en las tres formas (XOR del alfa = 0), las lleva al lienzo del rig con una sola transformación y mide hombro, codo, cadera, rodilla (punto medio del palo visible) y cintura. Con `--aplicar` sustituye en su sitio las 21 partes, borra las seis `antepierna` con su `.meta`, saca la cara provisional del `_reposo` anterior, actualiza `arte_final.json` y `rig_articulaciones.json`, regenera `clips_personajes.json` y corre `coreografia.py --valida`. Con `--reposo` rehace en su sitio los tres `_reposo`. |
+| `preparar_expresion.py` | `--vista perfil`: la cara de perfil entra por registro (`perfil.registro`) con su caja aparte, `registro.cara_perfil`, y se separa con `separa_perfil()` (rubor = píxeles rosados; boca = la mayor componente oscura en el 30 % inferior; ojos = el resto), no con `separa()`, que supone un rostro de frente. Alias `abiertos` = `neutra` y `cerrados` = `parpadeo_cerrado`. Sin `--vista perfil` rechaza las imágenes de perfil. |
+| `preparar_arte_final.py` | **Rechaza** las entregas de perfil (salida 2, remite a `preparar_perfil.py`) y conserva la entrada `perfil` y `registro.cara_perfil` al reescribir la de frente. |
+| `articulaciones.py` y `rig_articulaciones.json` | Clave `perfil` por personaje: 15 nodos, `partes` y `orden_tronco` (`ORDEN_TRONCO_PERFIL`; `ordena_hijos()` lleva cualquier tabla al orden con las piernas detrás), todo colgado de un `Tronco` con el pivote en la cadera. Las entradas `algoritm_<forma>` de `arte_final.json` se vuelcan tal cual, en lugar de las fórmulas provisionales. |
+| `coreografia.py` y `clips_personajes.json` | Coreografía de perfil de las siete acciones (piernas que oscilan con la rodilla doblada en el balanceo, brazos a contrafase, tronco inclinado con las piernas compensando, *squash and stretch* ≤ 15 %), con una cinemática (`GeoPerfil`) que planta los pies y lleva las manos por cinemática inversa. **Los doce huesos de perfil quedan fijos en reposo en todos los clips de frente**, para que ninguno caiga a la pose en T, y los de frente no cambian en ningún clip. `--valida` recorre cada clip con esa cinemática. |
+| `prefabs.py` | Lee el cuerpo de perfil y resuelve por nombre los `char_<x>_perfil_*` en `Perfil/`. |
+| `BuildRigsFinal.cs.txt` | Modo `perfil` (solo **añade** `Lienzo/Perfil` y sus nodos, justo detrás de `Cuerpo` y apagado; crea o reutiliza `char_<x>_perfil_cara.asset` y cablea `profileEyes`, `profileMouth` y `profileFaceSet`; reordena lo existente); `sprites` y `clips` reconocen las rutas de perfil, y `clips` **se niega** a escribir un personaje cuyo prefab no tenga `Lienzo/Perfil`; `sprites` vacía y apaga el sprite de un nodo sin arte (la `AntepiernaX` de Algoritm) y enciende `Ojos` y `Boca` de Algoritm con la cara provisional, cableando su `CharacterFaceSet`; `estado` informa del cuerpo de perfil. El orden con arte de perfil es `estado → perfil → sprites → clips → estado`. |
+| `OrganizarArtePersonajes.cs.txt` | `_perfil_` manda sobre `_ojos_`, `_boca_` y `_parte_`: todo lo de perfil va a `Perfil/`. |
+
+**Las dos herramientas nuevas por línea de comandos**
+
+```
+python3 claudeDocs/tasks/Personajes/herramientas/preparar_perfil.py <id> <carpeta_entrega>             # informe y composite
+python3 claudeDocs/tasks/Personajes/herramientas/preparar_perfil.py <id> <carpeta_entrega> --aplicar   # escribe PNG y tablas
+python3 claudeDocs/tasks/Personajes/herramientas/preparar_perfil.py --autoprueba
+python3 claudeDocs/tasks/Personajes/herramientas/preparar_perfil.py --hoja <png>                       # hoja de verificación del repo
+#   <id> = papa | mama | nina | nino      <carpeta_entrega> = p. ej. entregas/2026-10-09/Nino (con Perfil/ y Expresiones/)
+#   --cadera borde|capsula          dónde gira el muslo (por defecto, el borde de arriba)
+#   --ancla cadera|torso            el x = 512 del lienzo (por defecto, la cadera cercana: decisión de Santiago)
+#   --mira auto|izquierda|derecha   hacia dónde mira la entrega (por defecto se detecta)
+#   --sintetiza-lejana              solo si falta una pieza lejana; APAGADO por defecto (--no-sintetiza-lejana)
+#   --limpia-cerrados               (por defecto) limpia el rastro del ojo abierto; --no-limpia-cerrados lo apaga
+#   --sin-caras                     no corre el paso de las caras (imprime las órdenes)
+#   --salida <carpeta>              dónde dejar el composite del informe
+
+python3 claudeDocs/tasks/Personajes/herramientas/preparar_algoritm.py <carpeta_algoritm>               # informe y composite
+python3 claudeDocs/tasks/Personajes/herramientas/preparar_algoritm.py <carpeta_algoritm> --aplicar     # escribe partes, cara provisional y tablas
+python3 claudeDocs/tasks/Personajes/herramientas/preparar_algoritm.py --reposo                         # rehace en su sitio los tres _reposo
+python3 claudeDocs/tasks/Personajes/herramientas/preparar_algoritm.py --autoprueba
+#   <carpeta_algoritm> = la de la entrega, con Fuego/, Rueda/ y Gota/ (p. ej. entregas/2026-10-09/Algoritm)
+#   --rehaz-cara    extrae de nuevo la cara provisional del _reposo del repo, aunque ya esté escrita
+#   --cintura Y     el y (lienzo de la entrega) del pivote de Tronco, en vez de CINTURA_SOBRE_BASE px sobre la base del torso
+#   --salida <carpeta>   dónde dejar el composite del informe
+```
+
+`preparar_perfil.py --aplicar` escribe **solo** en `Assets/Game/Art/Characters/<Carpeta>/Perfil/` los diez PNG `char_<x>_perfil_{torso,cabeza,brazo_*,antebrazo_*,pierna_*,antepierna_*}`, guarda la clave `perfil` del personaje en `arte_final.json` sin tocar la de frente, corre `articulaciones.py` y `coreografia.py --valida` y después el paso de las caras. Nunca escribe en `Frontal/` ni en `Expresiones/`, ni escribe `.meta`. Si falta una pieza se detiene, nombra el archivo y no escribe nada de ese personaje. Las caras salen como `Perfil/char_<x>_perfil_{ojos_neutra,ojos_parpadeo_cerrado,boca_0,cara_base}` (Papá no tiene `cara_base`: no hay rubor). `preparar_algoritm.py --aplicar` se corre antes que `--reposo`, y ambos antes del modo `sprites`; **nunca escribe `.meta`**.
+
+**Medidas del perfil.** Lienzo del rig de 1024, origen arriba a la izquierda, figura de y = 77 a y = 947 **mirando a la derecha**, cadera cercana en x = 512. «Cercano» es el lado que mira al espectador. Son las de `arte_final.json` tras `preparar_perfil.py`.
+
+| Personaje | Escala de la entrega | Cadera (`Tronco`) | Hombro cercano | Codo cercano | Rodilla cercana | Cuello |
+|---|---:|---|---|---|---|---|
+| Papá | 0,612676 | (512, 632) | (498, 514) | (491, 632) | (502, 802) | (491, 387) |
+| Mamá | 0,625899 | (512, 665) | (506, 555) | (500, 646) | (502, 816) | (498, 492) |
+| Niña | 0,598349 | (512, 684) | (510, 541) | (504, 644) | (504, 826) | (514, 478) |
+| Niño | 0,614407 | (512, 709) | (494, 569) | (490, 650) | (501, 842) | (502, 506) |
+
+Las piezas se solapan en los extremos redondos; la holgura entre los centros, en px, es de 18,9 en el codo cercano de Papá (22,2 el lejano) y 15,0 en su rodilla, 10,5 y 2,3 en Mamá, 3,0 y 2,4 en la Niña y 1,8 y 5,7 en el Niño.
+
+**Medidas de Algoritm** (las tres formas comparten estas articulaciones, en px del lienzo de 1024). Escala «opción A» `s = 982/1289 = 0,76183`, con `x' = 0,761831·x + 29,714` y `y' = 0,761831·y − 12,521` desde el lienzo de 1300 × 1500: la coronilla del Fuego queda en y = 21, los pies en y = 1003 y el eje del cuerpo en x = 512. Hombros (323, 596) y (704, 598); codos (230, 700) y (805, 697); caderas (413, 837) y (535, 845); cintura, el pivote de `Tronco`, (512, 753). La Rueda y la Gota quedan más bajas, de 818 y 878 px. `Cuerpo` se apaga cuando `Torso`, `BrazoIzq`/`BrazoDer` y `PiernaIzq`/`PiernaDer` tienen sprite; `RodillaX` queda como pivote vacío en el punto medio del palo visible y `AntepiernaX` sin imagen. `IsSegmented` sigue en «no», y a Algoritm le da igual (no tiene `Kneel` ni `Sleep`). La cara provisional va centrada en el cuerpo de cada forma, a la altura relativa a la que estaba en el sprite anterior, y se marca `cara_provisional` en las tres entradas de `arte_final.json`.
+
+**Memoria (RNF-06).** El perfil son 55 PNG (13 de Papá y 14 de cada uno de los otros tres), RGBA sin comprimir y sin mipmaps: **≈ 8,5 MB** (el cálculo sobre los PNG ya normalizados dio 8,14 MB; el inventario de la entrega estimaba 8,68 sin la mano de la Niña). Las 21 piezas de Algoritm suman **6,9 MB** (estimado), y descontado el corte provisional que sustituyen, **≈ 3,4 MB netos**. **Estas cifras eran estimadas; el peso se midió después en un ejecutable (09/10/2026, abajo).** El margen de 21 MB (479,0 MB) es el de rc2, del 01/10/2026, anterior al arte frontal final; perfil y Algoritm lo consumen en unos 12 MB y los ojos cerrados de frente que faltan, unos 1,2 MB, lo reducirán más. Si el build se pasa de 500 MB, la salida propuesta es un tope de 1024 px para `Characters/**`, como hizo INC-130 con el fuego, y **se pregunta antes de aplicarla**.
+
+**Pruebas nuevas** (33 métodos en `910c0f0`, más los cambios de `123785e` y `2cd8a75`)
+
+- INC-134, EditMode: `ActionView_INC134_LaTablaCubreTodasLasAcciones`, `ActionView_INC134_LosGestosHaciaElEstudianteVanDeFrente`, `Heading_INC134_IzquierdaYArribaMiranALaIzquierdaDerechaYAbajoALaDerecha`, `Heading_INC134_UnVectorNuloNoDecideNada`, `Heading_INC134_EncararUnObjetivoMiraHaciaSuLado`, `CharacterRig_INC134_AlMoverseMuestraElPerfilYEnReposoElFrente`, `CharacterRig_INC134_LaVistaLaDecideLaAccionYNoElDesplazamiento`, `CharacterRig_INC134_SinCuerpoDePerfilSiempreDeFrente`, `CharacterRig_INC134_SinArteDePerfilSiempreDeFrente`, `CharacterRig_INC134_SinLienzoNoLanza`, `CharacterRig_INC134_ElEspejoSoloVolteaElPerfil`, `CharacterRig_INC134_ElLadoNoCambiaElTamanoDelLienzo`, `CharacterRig_INC134_LaFamiliaTieneCuerpoDePerfilConArte` (un caso por miembro de la familia; comprueba también el orden de dibujo con las piernas detrás del torso y falla si el prefab no tiene el cuerpo de perfil), `CharacterFace_INC134_ElPerfilParpadeaAlCompasDelFrente`, `CharacterFace_INC134_SinCaraDePerfilLaDeFrenteSigueYLaDePerfilNoSeDibuja`, `ActorBeat_INC134_PorDefectoElRumboEsAuto` y nueve `ActorTimeline_INC134_*` (`…ElRumboExplicitoDelPasoMandaSobreElDesplazamiento`, `…ElRumboFijadoRigeUnSoloPasoYElSiguienteVuelveAAuto`, `…SinRumboExplicitoMiraHaciaDondeSeDesplazaElPasoDeLaLinea`, `…UnDesplazamientoMinimoNoDecideElRumbo`, `…SinDesplazamientoEnLaLineaMiraHaciaDondeSeDesplazoAntes`, `…ElRumboFijadoDeUnPasoAnteriorOPosteriorPesaMasQueSuDesplazamiento`, `…SinDesplazamientoPreviosMiraHaciaDondeSeDesplazaDespues`, `…SinNingunDesplazamientoMiraHaciaElCentroDeLaIlustracion`, `…ElPasoEncadenadoMiraHaciaDondeVaSalvoQueNoDecidaNada`).
+- INC-135, EditMode: `CharacterFaceSet_INC135_SinCuadroMedioElParpadeoUsaElCerrado` y `CharacterFaceSet_INC135_ConCuadroMedioSigueSiendoElMedioYSinNingunoNoSeInventaNada`.
+- INC-136, EditMode: `CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga` (3 formas) pasa a exigir las siete piezas, la `AntepiernaX` sin sprite y apagada, y `Ojos` y `Boca` con la cara provisional de la forma; **falla hasta que corra el modo `sprites` sobre los prefabs de Algoritm**.
+- PlayMode: `NarrativeScene_INC134_QuienSeDesplazaVaDePerfilHaciaDondeCamina` (18 casos, uno por secuencia), `RiverScene_INC134_MamaVaDePerfilAlCaminarYDeFrenteAlSoltarLaFlecha`, `FireLevel_INC134_PapaMiraAlMontonAlRecoger`, `FireLevel_INC134_PapaMiraAlMontonAlSoplarYAlArrodillarse`, `FireLevel_INC134_PapaGolpeaDeFrenteSinEspejo` y `ForestScene_INC134_LaNinaMiraALaCajaMientrasLaEmpujaYSeGiraSiLaCajaCruza`. Las que dependen de `HasProfile` usan `Assume.That`: sin perfil en el prefab se **omiten**, no se aprueban.
+- **Cambia una prueba existente, a propósito:** `RiverScene_DA133_MamaCaminaMientrasSeSostieneUnaFlechaYReposaAlSoltarla` recorre ahora las cuatro flechas y exige `Mirrored` a la izquierda con ← y ↑ y a la derecha con → y ↓.
+
+**Corridas**
+
+| Corrida | Alcance | Resultado |
+|---|---|---|
+| Fuera del Editor | `--autoprueba` de `preparar_perfil.py`, `articulaciones.py`, `preparar_arte_final.py`, `preparar_expresion.py` y `preparar_algoritm.py`; `coreografia.py --valida` | pasan (según los mensajes de `beb1cfe` y `2cd8a75`; error máximo de las articulaciones recuperadas: 1,5 px en el cuello) |
+| `eb9be13`, Editor, antes de generar los prefabs | suite integrada, 1128 corridas | EditMode 706/711 (los 4 rojos esperados, `CharacterRig_INC134_LaFamiliaTieneCuerpoDePerfilConArte`, y 1 omitida por entorno); PlayMode 416/417 (1 inconclusa, `RiverScene_INC134_…`, por el `Assume`) |
+| `9966bcb`, Editor | `Game.Scaffolding.Tests` | 351/351 |
+| `9966bcb`, Editor | `tests-play NarrativeScene_` | 107/107 |
+| `64f3dd1`, Editor (ronda 2) | modos `estado → perfil → sprites → clips → estado`; comparación de los prefabs objeto por objeto | ningún fileID perdido ni cambiado |
+| Árbol de la ronda 2, Editor | `Game.Scaffolding.Tests` | 348/351: las 3 rojas, `CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga`, una por forma (ver «Ronda 2 del Editor») |
+| Árbol de la ronda 2, Editor | `tests-play`: `NarrativeScene_` 107/107, `RiverScene_` 23/23, `Fire` 76/76, `Forest` 40/40, `Credits` 6/6, `MainMenu` 19/19 y `Personajes_DA133_CapturaCadaMecanicaConSusPersonajes` 5/5 | pasan |
+| `b4aed0e`, Editor | `estado` sin referencias a sprites borrados en los siete prefabs; `sprites` idempotente; `Game.Scaffolding.Tests` | siete prefabs byte a byte iguales al repetir; 351/351 |
+| `b4aed0e`, Editor | `suite2.ps1`, 23,9 min | EditMode 711 (710 pasan, 0 fallan, 1 omitida); PlayMode 417/417; cobertura 1128/1128 |
+
+**Ronda 2 del Editor (hecha, 09/10/2026).** Sesión local en el equipo de Santiago, sobre `64f3dd1`. Quedó como sigue; lo que falta va marcado.
+
+- [x] `git pull` de la rama y `editor.ps1 recompile`.
+- [x] Modos `estado → perfil → sprites → clips → estado` de `BuildRigsFinal` (sin `nodos` ni `orden`). `perfil` reordenó `Perfil/Tronco` en Papá, Mamá, Niña y Niño: las dos piernas quedan detrás del torso y solo cambia el orden de hermanos. `sprites` aplicó el arte final de Algoritm en los tres prefabs, con siete piezas por forma y la cara provisional (`Ojos`, `Boca` y `char_algoritm_<forma>_cara.asset` en `CharacterFace.faceSet`).
+- [x] Comparación objeto por objeto contra `HEAD`: ningún fileID perdido ni cambiado.
+- [x] Pruebas. `Game.Scaffolding.Tests` dio primero 348/351 (ver abajo); tras la corrección, 351/351. PlayMode: `NarrativeScene_` 107/107, `RiverScene_` 23/23, `Fire` 76/76, `Forest` 40/40, `Credits` 6/6 y `MainMenu` 19/19.
+- [x] Suite completa con `suite2.ps1` (23,9 min), sobre `b4aed0e`: EditMode 711 (710 pasan, 0 fallan, 1 omitida), PlayMode 417/417, cobertura 1128/1128.
+- [x] Capturas en `claudeDocs/tasks/Personajes/capturas/2026-10-09/` (`0212469`): 144, de ellas 139 líneas narrativas de `NarrativeScene_RF05_CapturaCadaLineaConLosPersonajes` y las 5 mecánicas de `Personajes_DA133_CapturaCadaMecanicaConSusPersonajes` (5/5). Van en JPEG de calidad 90 a resolución completa (26,7 MB); los PNG originales, 183 MB, quedaron fuera del repositorio para no inflar el LFS. No hay capturas de los créditos ni del menú: sus grupos de PlayMode pasan.
+- [x] Revisión de una muestra de las capturas (orquestador). De perfil al recoger y al arrodillarse, mirando hacia su lado y con las piernas detrás del torso (`Personajes_N1_Hallazgo_L16`, Papá arrodillado; `Personajes_N2_PuenteI_Bosque_L01`, Mamá, Niña y Niño recogiendo). De frente en reposo en las cinco mecánicas. Algoritm con el diseño final y la cara provisional en sus tres formas (`Personajes_N1_AparicionGuia_L07`, llama; `Personajes_N2_Escena21_Bosque_L01`, disco; `Personajes_N3_Escena31_Llegada_L02`, gota), sin los anillos de las rótulas de D20 porque la pierna es entera. **Límites:** la prueba captura cada línea cuando su movimiento ya terminó, así que no hay captura de una caminata a mitad de paso (el perfil al caminar lo cubre `NarrativeScene_INC134_QuienSeDesplazaVaDePerfilHaciaDondeCamina`); el talón claro del hombro girado (D20) no se ve en reposo y **sigue sin comprobarse**; una captura fija no muestra el parpadeo.
+- [x] Compilar el ejecutable y medir el peso con `oe4.ps1 Tamano` (RNF-06). Build con `editor.ps1 exec build` (sesión local, 09/10/2026) sobre `0212469`: **499 314 282 bytes = 499,3 MB (476,2 MiB)**, frente al tope de 500 MB, con 0,7 MB de margen y +20,3 MB sobre rc2 (479,0 MB). El informe del build: texturas 342,5 MB (95,9 %); `Characters/` suma 35,8 MB (`Frontal/` 13,5 MB en 61 archivos, `Perfil/` 8,2 MB en 59, `Expresiones/` 3,7 MB en 25 y el resto 10,4 MB en 107). El tope no se pasó, así que no hubo que preguntar por el de 1024 px a `Characters/**`: lo más pesado eran cinco props del N1 a 2000 × 2000 (15,3 MB cada uno), y **Santiago decidió (09/10/2026) dejarlos en 256 × 256** (INC-146, `83fd986` y reimport en `4062ae3`). Un build nuevo sobre `4062ae3` pesa **420 561 594 bytes = 420,6 MB (401,1 MiB)**, 78,7 MB menos, con 79,4 MB de margen. Capturas de comprobación en `claudeDocs/tasks/Personajes/capturas/2026-10-09-props256/` (la mecánica de la cueva, `N1_NacimientoDelFuego` L00 a L16 y `N1_Hallazgo` L15 y L16): sin diferencia apreciable frente a `2026-10-09/`, tampoco en los montones. `ArtImport_` 4/4 y PlayMode `Fire` 76/76. Los dos builds son medidas, no candidatos: rc2 sigue siendo el candidato del OE4.
+- [ ] Medir RNF-04 (carga) y RNF-05 (memoria) en un ejecutable. **Pendiente:** el arnés exige el Editor cerrado y jugar el ejecutable; queda para el próximo candidato del carril OE4.
+- [x] Commit de lo generado: `f20b271`, con los siete prefabs y `Algoritm/Expresiones/` (los `.meta` de las seis caras y los tres `_cara.asset`). El andamiaje de `Assets/Editor/` se borró.
+
+**Las tres correcciones del generador.** Las 3 pruebas rojas de `Game.Scaffolding.Tests` eran `CharacterRig_DA131_AlgoritmSeDibujaPorPartesYSuSpriteEnteroSeApaga` (una por forma): la `AntepiernaX` conservaba la referencia al PNG borrado de la antepierna.
+
+1. `ad4fd58`: limpiar la referencia por la propiedad serializada. No compiló en Unity 6.5, porque `SerializedProperty.objectReferenceInstanceIDValue` es obsoleto con error en favor de `EntityId`.
+2. `24ce278`: detectarla por el «nulo falso» de `Image.sprite`. Dio falsos positivos: en el Editor, todo campo `UnityEngine.Object` serializado y sin asignar es también un nulo falso, así que marcó las antepiernas ya limpias y el `CaraBase` de perfil de Papá, vacío a propósito porque no lleva rubor.
+3. `b4aed0e`: la referencia rota se busca en el YAML del prefab, como un GUID de `m_Sprite` que `AssetDatabase.GUIDToAssetPath` no resuelve; la prueba DA131 usa el `==` de Unity y comprueba el archivo.
+
+*Lección (09/10/2026).* En Unity 6.5, `== null` y `Image.sprite` devuelven el «nulo falso» tanto para una referencia rota como para un campo serializado sin asignar, y `objectReferenceInstanceIDValue` ya no compila: para saber si un prefab apunta a un sprite borrado se lee el archivo, no el objeto en memoria.
+
+**Puntos abiertos.**
+
+- **Ojos cerrados de frente** de los cuatro, en el lienzo del 06/10/2026: sin ellos el frente no parpadea (INC-135). Pedidos al artista.
+- **La cara de Algoritm** (`ojos_neutra`, `ojos_parpadeo_cerrado` y `boca_0` como mínimo, sobre el lienzo de 1300 × 1500): hasta entonces, la del sprite anterior, marcada `cara_provisional` y sin parpadeo ni habla. Pedida al artista.
+- **El riesgo del Nivel 2:** el disco de madera se parece a la sección de un tronco y está cerca del acento `#C79A5E`; sin cara se lee como un prop. Hay que verlo en la captura del bosque.
+- **Los tonos de piel y el contorno negro** del arte final no son los de `Direccion_de_Arte.md` §4.1; decisión de Santiago.
+- **Los radicados** que describen el diseño anterior de Algoritm (guion §1.1.1, las notas de las dos escenas puente, el trabajo de grado) esperan su autorización; `Interfaces.md` §4.3 y la dirección de sonido §6.1, que también lo describían, se revisaron en `1e2fb6a`.
+- **Peso y memoria** del arte de perfil y de Algoritm: el peso (RNF-06) está medido, 499,3 MB y, con INC-146, 420,6 MB (ver la casilla de la ronda 2); **la carga (RNF-04) y la memoria (RNF-05) siguen sin medir** en un ejecutable y quedan para el próximo candidato del OE4. Tampoco incluye los ojos cerrados de frente que faltan.
+- **La republicación en Word del OE3**: sus fuentes (`claudeDocs/entregables/OE3/src/`, Anexo F apartado 2.13 y tablas) ya nombran INC-134 a INC-136 desde `1e2fb6a`, pero los `.docx` publicados todavía no.
+- Siguen sin ejecutarse el retrato animado del cuadro de diálogo y las emociones de las 18 narrativas.
+
+### C.14 Los brazos de Algoritm, detrás de todo el cuerpo (INC-147, 09/10/2026)
+
+Commit `a44ca96` (rama `feat/personajes-animados`, sobre `d89e5fb`). Lo que sigue se verificó contra `git show a44ca96` y contra los archivos del árbol.
+
+**La decisión de Santiago (09/10/2026).** Los brazos de Algoritm se dibujan **detrás de todo el cuerpo**: eligió «Detrás de todo el cuerpo» frente a «sobre el cuerpo, bajo la cara». El orden bajo `Lienzo/Cuerpo/Tronco`, de atrás adelante, pasa de `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer` (INC-132, 05/10/2026, «las manos encima de la cara») a `BrazoIzq`, `BrazoDer`, `Torso`, `Ojos`, `Boca`. **Revierte para el guía la cláusula de Algoritm de INC-132** (C.9); la regla de la familia no cambia (INC-132 e INC-133: húmero detrás del torso, antebrazo delante, los brazos delante solo mientras golpean con `ArmLayering`).
+
+**Qué entró en `a44ca96`** (15 archivos, +178 −89):
+
+| Archivo | Qué cambió |
+|---|---|
+| `articulaciones.py` y `rig_articulaciones.json` | `ORDEN_TRONCO_GUIA` y la clave `orden_tronco` de las tres formas llevan el orden nuevo. |
+| `BuildRigsFinal.cs.txt` | Solo comentarios: el modo `orden` ya reordenaba los hijos de `Tronco` según `orden_tronco` con `SetSiblingIndex` (sin tocar fileIDs), así que aplicará el orden nuevo a los tres prefabs sin cambiar su código. |
+| `preparar_algoritm.py` | Compone los `_reposo` desde ese orden y reescribió `char_algoritm_n1_fuego_reposo.png`, `char_algoritm_n2_rueda_reposo.png` y `char_algoritm_n3_gota_reposo.png` en su sitio (mismos nombres y GUID, 768 × 768, mismo alfa): solo cambian los casquetes de los hombros, que ya no se pintan sobre el cuerpo. |
+| `preparar_arte_final.py` | Corrige `_mismos_pixeles` (ver la lección). |
+| `pose_preview.py` | La prueba mide el antebrazo del guía (al menos el 85 %) y el húmero (al menos el 30 %) como los de la familia (INC-133); la medida de la cara se conserva y da el 100 % en las tres formas. `EXCEPCIONES_BRAZO` registra tres excepciones, todas de `algoritm_rueda` (abajo). |
+| `coreografia.py` y `prefabs.py` | Solo comentarios. |
+| `ArmLayering.cs`, `CharacterRig.cs`, `LimbFollower.cs` | Solo comentarios: el runtime no cambia. |
+| `CharacterRigTests.cs` | Dos pruebas renombradas y reescritas (abajo). |
+
+**Las excepciones de la rueda.** Con el brazo en alto, el húmero desaparece detrás del disco de madera, que es ancho, y solo se ven el antebrazo y la mano. `EXCEPCIONES_BRAZO` deja de estar vacía: `Celebrate` (antebrazo 81,5 %, húmero 1,4 %), `Encourage` (77,8 % y 3,8 %) y `Wave` (48,2 % y 3,7 %), con pisos de 75, 75 y 45 % para el antebrazo y de 0 % para el húmero. Se acepta como consecuencia de la decisión de Santiago; la mano se sigue leyendo. Las formas de fuego y de gota cumplen los umbrales sin excepción.
+
+**Pruebas** (`Game.Scaffolding.Tests`, `CharacterRigTests.cs`).
+
+| Prueba | Antes | Qué comprueba |
+|---|---|---|
+| `CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo` (las tres formas) | `CharacterRig_INC132_AlgoritmPintaLasManosEncimaDeLaCara` | `BrazoIzq` y `BrazoDer` van antes de `Torso`, y `Ojos` y `Boca` después. |
+| `CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen` (las tres formas) | `CharacterRig_INC132_EnAlgoritmElGolpeNoCambiaElOrdenDeDibujo` | Algoritm no tiene el estado `Strike`, pero `armsInFrontActions` lo incluye en los siete prefabs; con los brazos antes del torso, `ArmLayering` sí los movería. La prueba comprueba que cambia el orden al golpear, que las manos nunca pasan por encima de la cara, que al terminar vuelve el orden de origen y que devolverlo dos veces no lo cambia. |
+
+Las dos fallaban hasta correr el modo `orden` sobre los prefabs de Algoritm (estaban escritas para pasar justo después); pasan desde `ca62b9a` (abajo). `CharacterRig_INC133_EnAlgoritmElAntebrazoSigueBajoElCodoYSinAncla` no cambia, solo su comentario.
+
+*Lección (09/10/2026).* En Pillow 12, `getbbox()` sobre una imagen RGBA solo mira el alfa. `_mismos_pixeles` (`preparar_arte_final.py`, que usan los preparadores para decidir si una imagen cambió) comparaba con él, así que dos imágenes con el mismo alfa y distinto color parecían iguales y los `_reposo` rehechos con los brazos detrás del cuerpo no se habrían escrito. Ahora se compara canal por canal. Una comparación de imágenes que debe notar un cambio de color no puede apoyarse en `getbbox()` de RGBA.
+
+**Ronda del Editor del modo `orden` (hecha, 09/10/2026, `ca62b9a`).** Sesión local en el equipo de Santiago, sobre `a44ca96`. Quedó como sigue.
+
+- [x] Modo `estado` antes de empezar: «NO cumple la tabla» en los tres prefabs de Algoritm; la familia ya estaba en orden.
+- [x] Modo `orden` de `BuildRigsFinal`: reordenó `Tronco` en `Algoritm_Fuego`, `Algoritm_Rueda` y `Algoritm_Gota` de `Torso`, `Ojos`, `Boca`, `BrazoIzq`, `BrazoDer` a `BrazoIzq`, `BrazoDer`, `Torso`, `Ojos`, `Boca`. Modo `estado` después: «cumple la tabla».
+- [x] Comparación objeto por objeto contra `HEAD`. Familia: ningún cambio. Algoritm, en las tres formas: 69 → 69 bloques, ningún fileID añadido, perdido ni cambiado; cambia solo el orden de `m_Children` del `Transform` de `Tronco`. Los `.meta` de los tres `_reposo` no cambiaron.
+- [x] Pruebas. `Game.Scaffolding.Tests` 351/351, con `CharacterRig_INC147_LosBrazosDeAlgoritmVanDetrasDeTodoElCuerpo` y `CharacterRig_INC147_EnAlgoritmGolpearVuelveAlOrdenDeOrigen` (las tres formas, en verde). PlayMode: `Credits` 6/6, `MainMenu` 19/19 y `NarrativeScene_` 107/107. No se corrió `suite2.ps1`: solo cambió el orden de los hijos de tres prefabs y tres PNG.
+- [x] Capturas en `claudeDocs/tasks/Personajes/capturas/2026-10-09-algoritm-brazos/`: 26 (JPEG de calidad 90, 4,83 MB), `N1_AparicionGuia` L00 a L10, `N2_Escena21_Bosque` L00 a L06 y `N3_Escena31_Llegada` L00 a L07.
+- [x] Revisión visual de las 26 capturas (orquestador). En las tres formas los brazos salen por detrás del cuerpo y ninguna mano tapa la cara.
+- [x] Commit de lo generado: `ca62b9a`, con los tres prefabs y las 26 capturas.
+
+**Corrección de `pose_preview.py` (`0220b74`, 09/10/2026, INC-134).** Desde `9966bcb`, cuando el cuerpo de perfil entró en los prefabs, la prueba dibujaba a la familia con **los dos cuerpos a la vez** (`Lienzo/Cuerpo` y `Lienzo/Perfil`), y medía capas del cuerpo que el motor mantiene apagado. De ahí salían 74 filas de la familia y 6 casos de la autoprueba en rojo: eran un fallo de la herramienta, no de los clips ni de los prefabs, y no deben leerse como fallos preexistentes del arte. `Personaje` construye ahora una vista por cuerpo y elige una por acción desde `ActionView.cs`, como el motor (un rig sin arte de perfil, Algoritm, se queda de frente). Las acciones de perfil se miden con los nodos del perfil: brazo cercano, cara, codo y rodilla por rotación, suelo y velocidad; el brazo lejano solo se informa, y la comprobación de que no se tapen los dos ojos se omite de perfil. Corrida completa: 0 fallos (antes 74); autoprueba: 0 (antes 6). La Figura F.2 del Anexo F se redibujó con el cuerpo frontal solo (`f290c0a`).
