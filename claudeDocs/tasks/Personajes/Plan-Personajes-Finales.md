@@ -110,9 +110,26 @@
 > se hizo ese mismo día (`ca62b9a`: solo cambió el orden de los hermanos de `Tronco`, ningún fileID;
 > `Game.Scaffolding.Tests` 351/351 y 26 capturas del guía revisadas). Detalle en `Personajes-Resultados.md`, C.14.
 >
-> **Siguen pendientes:** la medida de RNF-04 y RNF-05 en un ejecutable (próximo candidato del OE4); los ojos cerrados de frente;
-> la cara de Algoritm; el retrato animado del cuadro de diálogo (4.1) y poblar emociones en los 18
-> `N*_*.asset`.
+> **Actualización del 10/10/2026 (INC-148 a INC-150).** Este plan no se reescribe; esta nota fija lo que
+> cambió. Detalle en `Personajes-Resultados.md`, C.15. **La Fase 4.1 (emociones en las narrativas y retrato
+> animado) está hecha.** Con la entrega de expresiones de Sofía (D11-11, `636467a`): (1) cada línea de las 18
+> `N*_*.asset` lleva la expresión del guion (`ActorBeat.SetsEmotion`/`Emotion`, y
+> `DialogueLine.SetsVoiceEmotion`/`VoiceEmotion` para las voces fuera de escena), desde la tabla
+> `herramientas/emociones_narrativas.json` que aplica `emociones_narrativas.py`; (2) el retrato de la
+> tarjeta del diálogo es una base sin cara (`char_<x>_retrato_base.png`, 256²) con los ojos y la boca del
+> hablante encima, que parpadea y mueve la boca (`CharacterRig.PortraitBase`/`PortraitFace`, `PortraitLook`,
+> `Arte/Cara` armada en tiempo de ejecución), con encuadre «cabeza y hombros, igual para todos»; difiere de
+> §5.3 en que no hay máquina de escribir, así que la boca se mueve hasta que el estudiante avanza; (3) el
+> frente de la familia parpadea con los ojos cerrados nuevos y Algoritm tiene su cara final, compartida por
+> las tres formas; (4) el artista entregó **una sola boca de hablar**, no las cuatro de §5.2: con ella la
+> boca alterna abierta y cerrada (`MouthFlap.CycleFor`); (5) **no llegaron la alegría ni el sueño**: `Happy`
+> se ve con la cara neutra y `Sleeping` con los ojos cerrados; (6) las caras y los retratos entran recortados
+> y a 256 px como máximo (INC-149); (7) el efecto espejo junto a la fogata se corrigió como dato (INC-150:
+> `Facing: Left` en `N1_NacimientoDelFuego` y `N2_Escena25_Cierre`). La ronda del Editor es ⟦ronda del Editor⟧.
+>
+> **Siguen pendientes:** la medida de RNF-04 y RNF-05 en un ejecutable (próximo candidato del OE4); del
+> artista, la alegría y el sueño de los cinco personajes y una neutra nueva de la Niña y del Niño; y los
+> radicados que describen la cara de Algoritm y el retrato fijo, que esperan la autorización de Santiago.
 
 ---
 

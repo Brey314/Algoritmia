@@ -49,8 +49,11 @@ visibles a 1080p; limpiarlas exige retocar píxeles opacos a mano: **pendiente d
 cada `.png` conservando el nombre**; si cambia la silueta, hay que rehacer el prefab, porque el
 tamaño y el pivote de cada parte viven en él.
 
-Retratos: solo existe `neutra`, un recorte de la cabeza de 320², que es el que usa el cuadro de
-diálogo. **Con el arte actual es la única cara del juego**: la emoción la lleva el cuerpo con las
+Retratos: hasta el 09/10/2026 solo existía `neutra`, un recorte de la cabeza de 320², que usaba el
+cuadro de diálogo y era la única cara del juego. Desde el 10/10/2026 (INC-148) el cuadro usa una
+**base sin cara** por personaje (`char_<x>_retrato_base.png`, 256²) con los ojos y la boca del hablante
+encima, y `char_<x>_retrato_neutra.png` (256², reescrito en su sitio) queda como retrato fijo de respaldo.
+Donde el guion no fija una cara, la emoción la lleva el cuerpo con las
 acciones del rig (§7.3). **No hay tristeza ni enfado**: tras un intento sin éxito el personaje hace
 «ánimo» (`Encourage`, CP-02). **No existen saltar, caer, aterrizar ni derrota** (CT-06, RNF-02, CP-02).
 
@@ -66,10 +69,15 @@ los nombres `frente_` de `Plan-Personajes-Finales.md` §4.2. El estado de cada a
 |---|---|
 | ○ Cabeza (separada del torso) | `parte_cabeza` |
 | ○ Antebrazo y antepierna (el segundo tramo) | `parte_antebrazo_izq`, `parte_antebrazo_der`, `parte_antepierna_izq`, `parte_antepierna_der` |
-| ○ Ojos, uno por expresión | `ojos_neutra`, `ojos_alegria`, `ojos_sorpresa`, `ojos_preocupacion`, `ojos_concentracion`, `ojos_sueno` |
-| ○ Ojos al parpadear | `ojos_parpadeo_cerrado` (el cuadro de ojos cerrados; falta **de frente**, y el parpadeo es de dos cuadros, INC-135) y `ojos_parpadeo_medio`, opcional |
-| ○ Boca al hablar | `boca_0` (cerrada, también el reposo de `neutra` y `sueno`), `boca_a`, `boca_e`, `boca_u` |
-| ○ Boca de reposo por expresión | `boca_alegria`, `boca_sorpresa`, `boca_preocupacion`, `boca_concentracion` |
+| ✓ Ojos, uno por expresión | `ojos_neutra`, `ojos_sorpresa`, `ojos_preocupacion`, `ojos_concentracion` (entregados el 10/10/2026, INC-148) |
+| ○ Ojos, uno por expresión | `ojos_alegria` y `ojos_sueno`: **no llegaron**; `Happy` se ve con la cara neutra y `Sleeping` con `ojos_parpadeo_cerrado` |
+| ✓ Ojos al parpadear | `ojos_parpadeo_cerrado` (el cuadro de ojos cerrados, entregado de frente el 10/10/2026; el parpadeo es de dos cuadros, INC-135). `ojos_parpadeo_medio` sigue opcional (○) |
+| ✓ Boca al hablar | `boca_0` (cerrada, también el reposo de `neutra`) y `boca_a` (la única boca de hablar que entregó el artista; con ella sola la boca alterna abierta y cerrada, `MouthFlap.CycleFor`) |
+| ○ Boca al hablar | `boca_e`, `boca_u`: no se pidieron mientras haya una sola boca; si llegan, el ciclo vuelve a ser A, E, U y cerrada |
+| ✓ Boca de reposo por expresión | `boca_sorpresa`, `boca_preocupacion`, `boca_concentracion` |
+| ○ Boca de reposo por expresión | `boca_alegria` (no llegó) |
+| ✓ Cara base | `cara_base` (nariz y rubor, en `Expresiones/`; Algoritm no la tiene, su rubor va con los ojos) |
+| ✓ Retrato de la tarjeta (en la raíz de la carpeta del personaje) | `retrato_base` (cabeza y hombros sin cara, 256²) y `retrato_neutra` (retrato fijo de respaldo, 256², mismo GUID que el de siempre) |
 
 Las seis expresiones son las de `Direccion_de_Arte.md` §7.3 y **ninguna es de tristeza, enfado ni
 derrota** (CP-02). Desde el 06/10/2026 cada personaje se reparte en subcarpetas (apartado
@@ -93,7 +101,8 @@ controlador `char_<x>.controller` está al lado.
 | ✓ `char_algoritm_n1_fuego_reposo.png` | Diseño final (INC-136, 09/10/2026): la **llama** de tres lenguas con núcleo amarillo en degradado, recortada a cuadrado de 768². Se **rehizo en su sitio** (mismo nombre y GUID) a partir de las siete piezas y de la cara provisional; antes era la llama del 24/09/2026 con franja de colores |
 | ✓ `char_algoritm_n2_rueda_reposo.png` | Diseño final: el **disco de madera** con anillos. Rehecho en su sitio, como el de arriba; antes era el fuego recoloreado en madera |
 | ✓ `char_algoritm_n3_gota_reposo.png` | Diseño final: la **gota** con brillos. Rehecha en su sitio; antes era el fuego recoloreado en agua |
-| ○ `_girando`, `_atenuado`, `char_algoritm_n*_retrato_*` | `S15`/`S03b`. Hoy el retrato del guía **es** el sprite de su forma |
+| ✓ `char_algoritm_{fuego,rueda,gota}_retrato_base.png` | INC-148 (10/10/2026): la base sin cara de la tarjeta del diálogo, 256², con el encuadre «cabeza y hombros, igual para todos» (desde la punta de la forma hasta el mentón); la cara compartida va encima. El retrato fijo de respaldo es el `_reposo` |
+| ○ `_girando`, `_atenuado` | `S15`/`S03b` |
 
 **Arte final (09/10/2026, INC-136):** siete piezas por forma, de la entrega del 09/10/2026
 (`claudeDocs/tasks/Personajes/entregas/2026-10-09/Algoritm/{Fuego,Rueda,Gota}`, 21 PNG sobre un lienzo
@@ -113,16 +122,16 @@ de las cinco mecánicas y es el retrato del guía. Sin cabeza ni cuello:
 | ✓ Torso (el cuerpo y la pantaloneta de cuadros, sin extremidades) | `parte_torso` |
 | ✓ Brazos | `parte_brazo_izq`, `parte_brazo_der` (húmero), `parte_antebrazo_izq`, `parte_antebrazo_der` (antebrazo con la mano) |
 | ✓ Piernas **enteras**, con el pie | `parte_pierna_izq`, `parte_pierna_der` |
-| ◐ Cara **provisional** (en `Expresiones/`) | `ojos_neutra`, `boca_0`: los ojos y la boca del sprite anterior, centrados en el torso nuevo; marcados `cara_provisional` en `arte_final.json`, a la resolución del sprite de hoy |
-| ○ Resto de la cara (lo espera del artista) | `ojos_parpadeo_cerrado` (sin él Algoritm **no parpadea**); `ojos_alegria`, `ojos_sorpresa`, `ojos_preocupacion`, `ojos_concentracion`, `ojos_sueno`; `boca_a`, `boca_e`, `boca_u` y `boca_alegria`, `boca_sorpresa`, `boca_preocupacion`, `boca_concentracion`; todo sobre el lienzo de 1300 × 1500 |
+| ✓ Cara **final, compartida por las tres formas** (en `Algoritm/Expresiones/`, sin el nombre de la forma; INC-148, 10/10/2026) | `char_algoritm_ojos_{neutra,concentracion,preocupacion,sorpresa,parpadeo_cerrado}` y `char_algoritm_boca_{0,a,concentracion,preocupacion,sorpresa}`: 10 PNG recortados a la caja común de la cara y a 256 px como máximo (INC-149). Los tres `char_algoritm_<forma>_cara.asset` conservan su GUID y se reapuntan a ella en la ronda del Editor |
+| — ~~Cara **provisional** anterior~~ | ~~`char_algoritm_<forma>_ojos_neutra.png` y `char_algoritm_<forma>_boca_0.png`~~ (seis PNG, los ojos y la boca del sprite anterior): sin uso desde el 10/10/2026 y borrados con `AssetDatabase.DeleteAsset` en la ronda del Editor ⟦ronda del Editor⟧ |
+| ○ Resto de la cara (lo espera del artista) | `ojos_alegria`, `ojos_sueno` y `boca_alegria`; `boca_e` y `boca_u`, mientras haya una sola boca de hablar |
 
 `izq` y `der` son los de la pantalla (`BrazoDer` del rig es la derecha de pantalla), y las
 extremidades son la **misma silueta** en las tres formas, recoloreadas. Las seis
 `parte_antepierna_{izq,der}` se **borraron** con su `.meta`: la pierna no tiene muslo ni rodilla; en el
 rig la pierna va en `PiernaX` y `RodillaX` y `AntepiernaX` son pivotes sin imagen (`BuildRigsFinal`, modo
 `sprites`, vacía y apaga el sprite de un nodo sin arte). Las siete piezas pesan 6,9 MB de textura sin comprimir para las tres formas (estimado,
-sin medir aún en un ejecutable). Cuando el artista entregue la cara se sustituyen los PNG con el
-mismo nombre y se corre `sprites`; las dos cosas que los PNG provisionales no resolvían (los anillos de
+sin medir aún en un ejecutable). La cara final entró el 10/10/2026 (arriba); las dos cosas que los PNG provisionales no resolvían (los anillos de
 las rótulas en los fundidos y el talón del hombro girado) se revisan con este arte en las capturas de la
 ronda 2 del Editor. La guía para pedir el arte final está en
 `claudeDocs/tasks/Personajes/Prompt-Arte-Final-Algoritm.md`.
@@ -146,16 +155,18 @@ ronda 2 del Editor. La guía para pedir el arte final está en
 | ✓ Piernas | `pierna_cercana`, `pierna_lejana` (muslo), `antepierna_cercana`, `antepierna_lejana` (pierna y pie) |
 | ✓ Cara de perfil | `cara_base` (el rubor; Papá no la tiene), `ojos_neutra`, `ojos_parpadeo_cerrado`, `boca_0` |
 
-La cara de perfil es de **dos cuadros** de ojos, abiertos y cerrados, sin cuadro medio (`ojos_parpadeo_medio` queda opcional, INC-135). El frente de la familia **no tiene aún ojos cerrados**: `Expresiones/char_<x>_ojos_parpadeo_cerrado` está `○`, pedido al artista, y hasta entonces solo parpadea el perfil. Memoria de los 55 PNG: ≈ 8,5 MB sin comprimir, sin medir en un ejecutable. El orden de dibujo y la nomenclatura están en `Direccion_de_Arte.md` §13.4.
+La cara de perfil es de **dos cuadros** de ojos, abiertos y cerrados, sin cuadro medio (`ojos_parpadeo_medio` queda opcional, INC-135). Los ojos cerrados de frente (`Expresiones/char_<x>_ojos_parpadeo_cerrado`) llegaron el 10/10/2026 y desde entonces el frente de la familia parpadea también (INC-148); el perfil se rehízo ese día a 256 px como máximo, con el mismo dibujo (INC-149). Memoria de los 55 PNG: ≈ 8,5 MB sin comprimir, sin medir en un ejecutable. El orden de dibujo y la nomenclatura están en `Direccion_de_Arte.md` §13.4.
 
-Siguen en la raíz de la carpeta del personaje los retratos `char_<x>_retrato_neutra.png`, el cenital de Mamá, los reposos de Algoritm y `Animations/`. Los originales de cada entrega, sin tocar y fuera de `Assets`, viven en `claudeDocs/tasks/Personajes/entregas/<fecha>/` (la del 06/10/2026 trae Papá, Mamá, Niña y Niño, 45 PNG). Las tablas de abajo nombran los archivos sin la subcarpeta.
+**Entrega del 10/10/2026 (D11-11, INC-148 e INC-149).** Los originales (45 PNG de 1300 × 1500: seis expresiones de frente por personaje, la neutra de perfil abierta y cerrada, y el personaje entero para la tarjeta) están en `claudeDocs/tasks/Personajes/entregas/2026-10-10/` (`636467a`), con su `INVENTARIO.md`, la hoja de contacto, `hoja_caras.png` y `hoja_retratos.png`. Lo que llegó se reparte así: `Expresiones/char_<x>_{ojos_*,boca_*}` y `char_<x>_cara_base` (la cara de frente, recortada a la **unión** de las cajas de todas las expresiones del personaje y a 256 px como máximo), `Perfil/` (las mismas capas de perfil, reescritas a 256 px) y, en la raíz de la carpeta, `char_<x>_retrato_base.png` y `char_<x>_retrato_neutra.png` (256 × 256). Las escribe `preparar_expresion.py` (modo `--entrega`) y `preparar_retrato.py`. **No llegaron la alegría ni el sueño.** La neutra de frente de la familia es idéntica a la del 06/10/2026; la de la Niña (iris naranja y rubor) y la del Niño (cejas) no concuerdan con sus otras cinco expresiones, y se pedirá una nueva.
+
+Siguen en la raíz de la carpeta del personaje los retratos `char_<x>_retrato_base.png` y `char_<x>_retrato_neutra.png`, el cenital de Mamá, los reposos de Algoritm y `Animations/`. Los originales de cada entrega, sin tocar y fuera de `Assets`, viven en `claudeDocs/tasks/Personajes/entregas/<fecha>/` (la del 06/10/2026 trae Papá, Mamá, Niña y Niño, 45 PNG). Las tablas de abajo nombran los archivos sin la subcarpeta.
 
 | Carpeta | Partes (✓) | Retrato (✓) | Prefab |
 |---|---|---|---|
-| `Father/` — Papá, jugable en el N1 | `char_papa_parte_*.png` | `char_papa_retrato_neutra.png` | `Papa` |
-| `Mother/` — Mamá, jugable en el N3 | `char_mama_parte_*.png` | `char_mama_retrato_neutra.png` | `Mama` |
-| `Girl/` — la Niña, jugable en el N2 | `char_nina_parte_*.png` | `char_nina_retrato_neutra.png` | `Nina` (habla también como «NIÑOS») |
-| `Boy/` — el Niño, acompaña | `char_nino_parte_*.png` | `char_nino_retrato_neutra.png` | `Nino` (habla también como «NIÑOS») |
+| `Father/` — Papá, jugable en el N1 | `char_papa_parte_*.png` | `char_papa_retrato_base.png`, `char_papa_retrato_neutra.png` | `Papa` |
+| `Mother/` — Mamá, jugable en el N3 | `char_mama_parte_*.png` | `char_mama_retrato_base.png`, `char_mama_retrato_neutra.png` | `Mama` |
+| `Girl/` — la Niña, jugable en el N2 | `char_nina_parte_*.png` | `char_nina_retrato_base.png`, `char_nina_retrato_neutra.png` | `Nina` (habla también como «NIÑOS») |
+| `Boy/` — el Niño, acompaña | `char_nino_parte_*.png` | `char_nino_retrato_base.png`, `char_nino_retrato_neutra.png` | `Nino` (habla también como «NIÑOS») |
 
 `Mother/char_mama_cenital.png` (R07, provisional) **ya no se ve**: en el río, `Personaje_Mama`
 lleva dentro el rig frontal de Mamá y su `Image` raíz queda de reserva. Los clips
@@ -171,9 +182,13 @@ recomponen.
 `Assets/Game/Art/`: **sin comprimir** y `maxTextureSize` 4096. No es un gusto: comprimida, la
 ilustración plana enseña la rejilla de bloques de 4×4 —se ve en la pared de la cueva, y el Nivel 1
 la multiplica por la capa de oscuridad, que amplifica el error— y corre los colores.
-`ArtImport_RNF23_…` lo vigila, y la memoria se mide sobre el ejecutable (RNF-05). Las excepciones son dos, las dos por el peso del paquete (RNF-06): los cuadros de
+`ArtImport_RNF23_…` lo vigila, y la memoria se mide sobre el ejecutable (RNF-05). Las excepciones son tres: dos por el peso del paquete (RNF-06), los cuadros de
 `Props/Fire/Animations/`, a 1024 px (INC-130, más abajo), y los cinco props pequeños de `Props/Fire/`,
-a 256 px (INC-146, abajo).
+a 256 px (INC-146, abajo); y la tercera, por decisión de Santiago sobre la entrega del 10/10/2026
+(INC-149), las caras y los retratos de los personajes —`Characters/*/Expresiones/*`, los ojos, las bocas
+y la cara base de `Perfil/`, y `char_*_retrato_*`—, a 256 px, también sin comprimir. Las partes del
+cuerpo y los `_reposo` siguen a 4096. La regla es un patrón de ruta (`CharacterFacePaths`) y la vigila
+`ArtImport_RNF06_LasCarasYLosRetratosDeLosPersonajesSeImportanA256SinComprimir`.
 Un archivo nuevo entra ya bien: **sustituir la imagen basta**, la escala la calcula
 `IllustrationFraming` con el tamaño real del sprite.
 

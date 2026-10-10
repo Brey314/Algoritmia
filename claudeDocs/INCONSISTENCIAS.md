@@ -14,7 +14,7 @@ los dos tienen su conversión en `docs/md/`. Las citas por sección de este docu
 con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
 (control de cambios).
 
-**Verificación vigente: 09/10/2026, rev. 23.** La rev. 14 (29/09/2026) contrastó todos los
+**Verificación vigente: 10/10/2026, rev. 24.** La rev. 14 (29/09/2026) contrastó todos los
 documentos —los `.docx` de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago,
 **todos los hallazgos están cerrados**: ante un conflicto gana el juego y se edita el documento; lo
 que solo pide el documento se implementa en el juego; lo que solo tiene el juego se añade al
@@ -50,7 +50,12 @@ Santiago por el peso del paquete (RNF-06): el ejecutable con el arte final medí
 props pequeños del Nivel 1 entran a 256 px, con lo que el paquete baja a 420,6 MB. La rev. 23
 (09/10/2026) registra y cierra **INC-147**, otra decisión de Santiago: los brazos de Algoritm se dibujan
 detrás de todo su cuerpo y no con las manos sobre la cara, lo que revierte para el guía la cláusula de
-INC-132 (la regla de la familia no cambia). Siguen abiertos
+INC-132 (la regla de la familia no cambia). La rev. 24 (10/10/2026) registra y cierra **INC-148** a
+**INC-150**, tres decisiones de Santiago con la entrega de expresiones de Sofía (tarjeta D11-11): cada
+línea de las 18 narrativas se dice con la expresión del guion y la tarjeta del cuadro de diálogo pasa del
+retrato fijo a una cara animada, con lo que el frente de la familia ya parpadea y Algoritm tiene cara
+final (INC-148); el arte de caras y retratos entra recortado y a 256 px como máximo (INC-149), y quien
+trabaja junto al fuego lo mira (INC-150, el efecto espejo). Siguen abiertos
 solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
 **pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
@@ -91,7 +96,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 
 ---
 
-## Resumen — estado a 09/10/2026 (rev. 23)
+## Resumen — estado a 10/10/2026 (rev. 24)
 
 | ID | Hallazgo | Documentos | Estado |
 |---|---|---|---|
@@ -223,6 +228,9 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-145 | La cámara de la 3.3 acompaña a la balsa; el encuadre fijo la dejaba salir del cuadro | Personajes-Resultados, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
 | INC-146 | Los cinco props del N1 entran a 256 px: el paquete con el arte final medía 499,3 MB contra el tope de 500 MB de RNF-06 | Dirección de arte, Inventario de arte, CLAUDE.md | **Cerrado** (09/10/2026) |
 | INC-147 | Los brazos de Algoritm se dibujan detrás de todo el cuerpo; INC-132 los pintaba delante, con las manos sobre la cara | Dirección de arte, Plan de personajes finales, Personajes-Resultados, Anexo F del OE3, CLAUDE.md, juego | **Cerrado** (09/10/2026) |
+| INC-148 | Cada línea se dice con la expresión del guion y la tarjeta del diálogo es una cara animada que parpadea y habla; la dirección de arte (§10.3) daba un retrato neutro fijo | Dirección de arte, Interfaces, Inventario de arte, Plan de personajes finales, Personajes-Resultados, Anexo F del OE3, CLAUDE.md, juego | **Cerrado** (10/10/2026), salvo los radicados |
+| INC-149 | Las caras y los retratos de los personajes entran recortados y a 256 px como máximo, sin comprimir | Dirección de arte (§15.2), Inventario de arte, Anexo E del OE3, CLAUDE.md, juego | **Cerrado** (10/10/2026) |
+| INC-150 | Papá, Mamá y la Niña se arrodillaban junto a la fogata de espaldas a ella; el rumbo se fija en los datos | Personajes-Resultados, Anexo F del OE3, juego | **Cerrado** (10/10/2026) |
 
 ---
 
@@ -1851,6 +1859,9 @@ llevan las acciones del rig (`Celebrate`, `Surprise`, `Observe`, `Encourage`…)
 *Nota (05/10/2026): esta decisión vale para el **arte actual**. Para el arte final la levanta
 INC-131: seis expresiones, parpadeo y habla.*
 
+*Nota (10/10/2026): el retrato neutro fijo del cuadro de diálogo deja de ser la tarjeta: INC-148 la
+anima con la expresión de cada línea. El `char_<x>_retrato_neutra.png` queda como respaldo.*
+
 ### INC-109 · Los personajes no tenían sombra de contacto — cerrado (29/09/2026)
 
 **El conflicto.** La dirección de arte e Interfaces fijan una elipse hija del personaje al 25 %, y
@@ -2488,6 +2499,9 @@ pasa a «Cuadro de diálogo» y lo describe; §11.4 · Interfaces: §1.1, punto 
 
 **Nota (08/10/2026).** El cuadro mide hoy 1400 × 216 px y su texto es `#1F100C` a 30 px (INC-138).
 
+**Nota (10/10/2026).** El retrato del cuadro ya no es una imagen fija: es una base sin cara con la cara del
+hablante encima, que cambia de expresión por línea, parpadea y mueve la boca (INC-148).
+
 ### INC-130 · El paquete de entrega superaba los 500 MB por los cuadros del fuego y del humo del Nivel 1 — cerrado (01/10/2026)
 
 **El conflicto.** RNF-06 limita el ejecutable y sus recursos a 500 MB, y con la regla de importación
@@ -2813,6 +2827,9 @@ día llega, vuelve a ser el cuadro medio. `preparar_expresion.py` acepta `abiert
 `neutra` y `parpadeo_cerrado`. **Hoy solo parpadea el perfil:** no hay ojos cerrados de frente en la entrega
 (ni en `Assets/`) y el frente no parpadeará hasta que llegue `Expresiones/char_<x>_ojos_parpadeo_cerrado`,
 que se pidió al artista. Algoritm tampoco parpadea mientras lleve la cara provisional (INC-136).
+
+*Nota (10/10/2026): la entrega de Sofía trae los ojos cerrados de frente de los cuatro personajes y la
+cara final de Algoritm. El frente parpadea de dos cuadros y Algoritm también (INC-148).*
 
 **Regla.** Decisión de Santiago. **Acota** §7.3 y el segundo cuadro de INC-131: el parpadeo de tres cuadros
 vale solo mientras exista el cuadro medio. Mantiene CP-02 (el parpadeo no es una expresión) y el ciclo de
@@ -3280,6 +3297,183 @@ brazos salen por detrás del cuerpo y ninguna mano tapa la cara. Después, `0220
 `9966bcb`: las 74 filas y los 6 casos de autoprueba en rojo eran de la herramienta (ahora 0 y 0), no de
 los clips ni de los prefabs (`Personajes-Resultados.md`, C.14).
 
+### INC-148 · Cada línea habla con la expresión del guion y la tarjeta del diálogo es animada — cerrado (10/10/2026), salvo los radicados
+
+**El conflicto.** El 10/10/2026 Sofía Valentina Giraldo Segovia entregó (tarjeta D11-11, commit `636467a`,
+inventario en `b163afd`) el resto de las expresiones de frente. Con ella caducan tres frases de los
+documentos: «el frente no parpadea» (INC-135), «Algoritm lleva la cara provisional y no parpadea»
+(INC-136) y «el retrato del cuadro de diálogo es la cara neutra» (INC-129, INC-108). Ningún asset narrativo
+usaba además `ActorBeat.SetsEmotion`: la cara de un personaje salía de la acción que hacía, no de lo que el
+guion dice en cada línea.
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §7.3 («Hoy solo parpadea el perfil», las
+capas de cara apagadas «hasta que llegue ese arte»), §7.6 («La cara es provisional», Algoritm sin parpadeo)
+y §10.3 (retrato de 128 px, `char_<x>_retrato_neutra.png`); `Interfaces.md` §4.2; `Inventario.md`
+(expresiones pendientes y retrato); `Personajes-Resultados.md` y `Plan-Personajes-Finales.md` (Fase 4.1,
+«el retrato animado y las emociones en las narrativas siguen sin ejecutar»); INC-135, INC-136 y los
+pendientes del carril de personajes de este documento (ojos cerrados de frente y cara de Algoritm).
+
+**Qué traía la entrega.** Por personaje, de frente: neutra, concentración (`Focused`), preocupación
+(`Worried`), sorpresa (`Surprised`), **una sola boca de hablar** (abierta) y los **ojos cerrados**; la
+neutra de la familia es idéntica a la del 06/10/2026 y las caras de perfil se reenviaron idénticas a las
+del 09/10/2026. Algoritm trae las mismas seis en **una sola cara para sus tres formas**. Cada personaje
+trae además su cuerpo entero para la tarjeta (`Dialogos/`). **No trae alegría (`Happy`) ni sueño
+(`Sleeping`).** Al revisar la neutra, las herramientas notaron que la de la Niña tiene el iris naranja y
+un rubor que sus otras cinco expresiones no tienen, y que las cejas del Niño difieren un poco: conviene
+pedir una neutra nueva de los dos.
+
+**Decisión de Santiago (10/10/2026).** «Usa cada expresión según el guion» y, para la tarjeta, la opción
+«Expresión, parpadeo y boca»:
+
+1. **Cada línea de las 18 narrativas lleva la expresión del guion.** Una tabla propia
+   (`claudeDocs/tasks/Personajes/herramientas/emociones_narrativas.json`, 189 emociones y 4 voces fuera de
+   escena) se aplica con `emociones_narrativas.py` en `ActorBeat.SetsEmotion`/`Emotion` y, para las voces
+   que no están en escena, en los campos nuevos `DialogueLine.SetsVoiceEmotion`/`VoiceEmotion`. Solo se usan
+   `Neutral`, `Happy`, `Surprised`, `Worried`, `Focused` y `Sleeping`. `Happy` se marca en los datos donde
+   el guion lo pide y se ve con la cara neutra hasta que llegue la alegría; `Sleeping` usa los ojos
+   cerrados.
+2. **La tarjeta es animada.** Una base sin cara por personaje (`char_<x>_retrato_base.png`, 256 × 256) y,
+   encima, los ojos y la boca del hablante (`CharacterRig.PortraitFace` es su recuadro). La tarjeta muestra
+   la expresión que el guion fija en esa línea, parpadea y mueve la boca mientras la línea está en pantalla.
+   No hay máquina de escribir: el texto sale entero y la boca se mueve hasta que el estudiante avanza,
+   como la del personaje en escena.
+3. **Encuadre «cabeza y hombros, igual para todos».** La cabeza ocupa 0,62 del lado, con 0,07 de aire
+   arriba; los niños salen tan grandes como los adultos y Algoritm se encuadra desde la punta de su forma
+   hasta el mentón. Para la familia, `char_<x>_retrato_neutra.png` se reescribió en su sitio (mismo GUID)
+   con el mismo encuadre y la cara neutra nueva, y queda como respaldo fijo.
+4. **Algoritm tiene su cara final**, compartida: `Algoritm/Expresiones/char_algoritm_{ojos_*,boca_*}.png`
+   (10 texturas en lugar de las 30 que habrían sido tres por forma). Sustituye la cara provisional; los
+   tres `_reposo` se rehicieron con ella (mismo nombre y GUID). Los tres `char_algoritm_<forma>_cara.asset`
+   conservan su GUID y se reapuntan a la cara compartida, con `cara_provisional` en falso, en la ronda del
+   Editor, que borra además los seis PNG de la cara provisional.
+5. **Con una sola boca de hablar**, la boca alterna abierta y cerrada cada `FlapSeconds` (`MouthFlap.CycleFor`);
+   el ciclo A, E, U, cerrada se conserva para un set con tres bocas.
+6. **El frente de la familia parpadea** con los ojos cerrados nuevos, de dos cuadros: queda completo INC-135.
+
+**Regla.** Decisión de Santiago: corrige el juego y levanta cuatro cosas del documento. §10.3 deja de
+describir un retrato neutro fijo; la «cara provisional» de §7.6 desaparece; «hoy solo parpadea el perfil»
+(§7.3 e INC-135) caduca, y los dos pendientes del carril de personajes (ojos cerrados de frente y cara de
+Algoritm) se cierran. **Mantiene CP-02:** no existe una cara de tristeza, enfado ni derrota; `Worried` es
+duda, y ninguna narrativa cierra con alguien preocupado después de un fallo (en la 3.2 nadie queda en
+`Worried` al cerrar, y una prueba lo vigila). Los textos radicados del guion que describen el
+retrato o la cara de Algoritm quedan sin editar hasta que Santiago autorice cada cambio.
+
+**Corrección aplicada (10/10/2026).** Código (commit `146f4f3`, rama `feat/personajes-animados`):
+`PortraitLook` (nuevo, C# plano: decide si la tarjeta es animada o cae al retrato fijo),
+`CharacterFace.FaceSet`/`Bind`, `CharacterFaceSet.Eyes(Sleeping)` (cae a `EyesSleeping`, luego a
+`EyesBlinkClosed` y luego a `EyesNeutral`), `MouthFlap.CycleFor`, `CharacterRig.PortraitBase`/`PortraitFace`/
+`FaceSet` (campos nuevos al final), `ActorTimeline.EmotionOf` (la emoción de la línea viene de los datos y
+no del estado del rig), `DialogueLine.SetsVoiceEmotion`/`VoiceEmotion` y `NarrativeSceneController`, que
+arma `Arte/Cara` (con `Ojos`, `Boca` y `CharacterFace`) en tiempo de ejecución como ya hace con la capa de
+oscuridad, sin editar la escena. Datos y herramientas (commits `ce92c0f` y `cc938e9`): `emociones_narrativas.json`
+y `.py` (modos `--valida`, `--aplicar` y `--autoprueba`), `preparar_expresion.py` (modo por lotes
+`--entrega`, con una caja común por personaje), `preparar_retrato.py` (nuevo: comprueba el registro, borra
+la cara pintada, hornea la nariz y el rubor en `cara_base`, recorta y escribe la base y el retrato fijo),
+`preparar_algoritm.py --reposo`, `articulaciones.py` y `BuildRigsFinal.cs.txt` (modo `retrato`); los PNG de
+`Characters/*/Expresiones/`, de `Perfil/` y los 18 `N*_*.asset`. Documentos: este hallazgo · INC-129,
+INC-135 e INC-108 (notas) · Dirección de arte: §7.3, §7.6, §10.3 y la lista de §17 · Interfaces: §4.2 ·
+Inventario de arte · `Personajes-Resultados.md` (C.15) · Plan de personajes finales (nota fechada) · CLAUDE.md ·
+Anexo F del OE3 y capítulos 9, 10 y 12.
+
+**Pruebas.** EditMode:
+`CharacterFaceSet_INC148_DormidoSinSusOjosUsaLosCerradosDelParpadeo`,
+`MouthFlap_INC148_ConSoloLaBocaAbiertaAlternaAbiertaYCerrada`,
+`CharacterFace_INC148_HablandoConSoloLaBocaAbiertaAlternaCadaFlapSeconds`,
+`CharacterFace_INC148_CambiarDeSetCambiaLaCaraYSusRelojes`,
+`PortraitLook_INC148_SinBaseOSinCaraCaeAlRetratoFijo`, `PortraitLook_INC148_ConBaseYCaraEsAnimado`,
+`ActorTimeline_INC148_LaEmocionDelRetratoEsLaDelGuionYSiNoLaDeSuAccion`,
+`CharacterRig_INC148_CadaPersonajeTieneRetratoAnimadoConLaCaraDentro` (los siete prefabs),
+`CharacterFace_INC148_LasTresFormasDeAlgoritmCompartenLaCara`, `CharacterRig_INC135_LaFamiliaParpadeaDeFrente`
+y, sobre las narrativas, `NarrativeSequence_INC148_CadaLineaHabladaLlevaLaEmocionDelGuion`,
+`…_SoloLasVocesFueraDeEscenaDeclaranEmocionEnLaLinea`, `…_QuienFijaUnaEmocionLaFijaEnSusPasosSiguientes`,
+`…_UnPasoQueSoloFijaLaEmocionNoInterrumpeNiGira` y `…_LasEmocionesDelGuionEnLineasClave` (casos anclados al
+texto del guion). PlayMode: `NarrativeScene_INC148_ElRetratoTieneLaCaraLaEmocionYLaBocaDeQuienHabla`, y
+`NarrativeScene_RF05_ElRetratoEsElDeQuienHablaYNoHayEnLasAcotaciones` ajustada para aceptar
+`PortraitBase` o `Portrait`. `MouthFlap_DA73_ConLasTresBocasSigueElCicloAEUCerrada` conserva el ciclo
+clásico. Las pruebas que decían «solo parpadea el perfil» o «Algoritm sin parpadeo» se revisaron: el
+cambio de conducta es deliberado.
+
+**Verificación en el Editor.** ⟦ronda del Editor⟧ (prefabs de los siete personajes con `PortraitBase`/
+`PortraitFace` y sus sets de cara, comparados objeto por objeto contra `HEAD`; pruebas de EditMode y PlayMode;
+suite completa; capturas de las líneas y de la tarjeta de cada hablante).
+
+### INC-149 · Las caras y los retratos de los personajes entran recortados y a 256 px — cerrado (10/10/2026)
+
+**El conflicto.** Las caras de frente llegaban en el lienzo de 1300 × 1500 de las partes del cuerpo y las
+caras de frente de hoy llegan hasta 512 px. El paquete pesaba 420,6 MB tras
+INC-146, con 79,4 MB de margen sobre el tope de 500 MB de RNF-06, y esta entrega suma unas 14 capas de cara
+por personaje de la familia, 10 en Algoritm y los retratos.
+
+**Qué decían los documentos.** `Direccion_de_Arte.md` §15.2 (todo `Art/` sin comprimir y a 4096, con las
+excepciones de INC-130 e INC-146); `Inventario.md`, párrafo «Cómo entran»; `CLAUDE.md`, «Cómo entra una
+imagen» («Dos excepciones»); `ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir`.
+
+**Qué hace el juego.** Ojos, boca y base de una cara comparten un solo recuadro en cada prefab (en
+`Papa.prefab`, 245 × 220), dimensionado desde la tabla de articulaciones y no desde cada sprite. Por eso
+«recortado» significa la **unión** de las cajas de todas las expresiones de ese personaje: cada capa se
+recorta a la caja común más 3 px y se reduce con una escala única, de modo que bajar a 256 px no mueve nada
+en pantalla. Según el inventario del 10/10/2026, las cajas unión de frente son: Papá 454–819 × 305–599,
+Mamá 379–875 × 438–715, Niña 425–884 × 384–669, Niño 446–837 × 540–812 y Algoritm 338–914 × 373–861.
+
+**Decisión de Santiago (10/10/2026):** «todo el arte de esta entrega, al importarse, recortado y como máximo
+256×256». Entran a **256 px de lado máximo y sin comprimir** (por el mismo motivo que INC-130 e INC-146: el
+comprimido enseña la rejilla de 4×4):
+
+- las expresiones de frente de los cinco personajes (`Characters/*/Expresiones/*`, que incluye la cara base y
+  la cara compartida de Algoritm);
+- los ojos, las bocas y la cara base de perfil (`char_<x>_perfil_ojos_*`, `_perfil_boca_*` y
+  `_perfil_cara_base`);
+- los retratos de la tarjeta (`char_<x>_retrato_base.png` y `char_<x>_retrato_neutra.png`), cuadrados de
+  256 × 256.
+
+**Quedan fuera** las partes del cuerpo (`Frontal/` y el cuerpo de `Perfil/`) y los tres `_reposo` de
+Algoritm, que siguen a 4096.
+
+**Regla.** Decisión de Santiago: corrige el juego; RNF-06 no cambia. La excepción es un patrón de ruta y no
+una lista, porque la alegría y el sueño llegarán expresión a expresión y deben entrar a 256 sin tocar la
+regla. Es la tercera excepción al tope de 4096 de INC-128, después de INC-130 e INC-146.
+
+**Corrección aplicada (10/10/2026).** Código (commit `146f4f3`): `ArtImportRules` lleva
+`CharacterFacePaths` (expresión regular sobre la ruta) y `CharacterFacesMaxTextureSize` = 256, sin
+comprimir. Arte (commit `cc938e9`): los PNG se escriben ya recortados y a 256 con `preparar_expresion.py` y
+`preparar_retrato.py`. Documentos: Dirección de arte (§15.2) · Inventario de arte · CLAUDE.md («Cómo entra
+una imagen») · INC-128, INC-130 e INC-146 (notas) · Anexo E del OE3 y capítulos 9, 10 y 12.
+**Pruebas:** `ArtImport_RNF06_LasCarasYLosRetratosDeLosPersonajesSeImportanA256SinComprimir`, nueva, en
+`ArtImportTest`; `ArtImport_RNF23_LasIlustracionesEntranSinComprimirYSinReducir` salta esas rutas como
+salta las del fuego y las de los cinco props. El inventario estimó el peor caso en unos 20 MB de texturas
+nuevas, frente a los 79,4 MB de margen.
+
+**Medida.** ⟦ronda del Editor⟧ (peso del build con el arte de esta entrega frente al tope de 500 MB de
+RNF-06; RNF-04 y RNF-05 siguen sin medirse en un ejecutable).
+
+### INC-150 · Quien trabaja junto al fuego lo mira (efecto espejo) — cerrado (10/10/2026)
+
+**El conflicto.** En `N1_NacimientoDelFuego` Papá aparecía arrodillado junto a la fogata de espaldas a ella,
+en las líneas 0 a 4 y 8 a 11. Las capturas L02 y L08 del 09/10/2026 lo muestran. El mismo defecto estaba en
+`N2_Escena25_Cierre`: Mamá en las líneas 0 a 5 y la Niña en las 0 a 1.
+
+**Qué decían los documentos.** Ninguno: es un defecto de datos. INC-134 (09/10/2026) hizo que la familia
+se vea de perfil al trabajar y fijó que el lado lo da `Heading.FacesLeft`, que las narrativas piden por paso
+con `ActorTimeline.FacesLeftAt`.
+
+**Qué hacía el juego.** Cuando un paso no declara `Facing`, `FacesLeftAt` cae a su última regla, «hacia el
+centro de la ilustración» (`Position.x ≥ 0,5` mira a la derecha). La llama de esa escena está en x 0,215 y
+Papá quedaba mirando a la derecha, de espaldas a ella. Según el recuento de la prueba, eran
+17 instancias de línea con un personaje de espaldas al fuego.
+
+**Decisión de Santiago (10/10/2026):** «aplica efecto espejo». Se corrige **como dato**, sin tocar la regla:
+`Facing: Left` en los pasos de esas líneas, más un paso nuevo en la línea 0 de Papá (`Kneel`, `Facing: Left`).
+En `N2_Escena25_Cierre`, `Left` para Mamá en las líneas 0 (`PickUp`) y 2 (`Kneel`) y para la Niña en la 0
+(`Kneel`). Los pasos los escribe `emociones_narrativas.py` desde la lista `rumbos` de su tabla.
+
+**Regla.** Decisión de Santiago: corrige el juego. No cambia la regla de `FacesLeftAt`, que es correcta para
+quien camina o se sitúa sin un objetivo.
+
+**Corrección aplicada (10/10/2026).** Datos (commit `cc938e9`): `N1_NacimientoDelFuego.asset` y
+`N2_Escena25_Cierre.asset`. **Prueba:** `NarrativeSequence_INC150_QuienTrabajaJuntoAlFuegoLoMira`, que antes
+fallaba en 17 instancias de línea y ahora en ninguna. **Verificación en el Editor:** ⟦ronda del Editor⟧
+(capturas de las dos escenas).
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -3348,26 +3542,39 @@ anteriores: hacen falta un corte con duración en `AudioManager` (`Game.Audio`),
 `SilenceCut` (`Game.Scaffolding`) y partir esa línea de `N3_EscenaFinal`, como explica §5. Es del
 carril de sonido, que lleva Santiago desde el acta D08.
 
-**Pendientes del carril de personajes (09/10/2026).** Dependen de cosas que el juego no zanja o de un
-build nuevo: (1) el artista debe entregar los **ojos cerrados de frente** de Papá, Mamá, la
-Niña y el Niño (en el lienzo del 06/10/2026, `Expresiones/char_<x>_ojos_parpadeo_cerrado`); sin ellos el
-frente no parpadea (INC-135); (2) debe entregar la **cara de Algoritm** —`ojos_neutra`,
-`ojos_parpadeo_cerrado` y `boca_0` como mínimo, sobre el lienzo de 1300 × 1500—; hasta entonces lleva la cara
-provisional del sprite anterior y no parpadea (INC-136); (3) la **autorización de Santiago para editar los
-radicados** que describen el diseño anterior de Algoritm (guion §1.1.1, las notas de las dos escenas puente
-y la descripción del guía del trabajo de grado); (4) los tonos de piel y el contorno que trae el arte final
-(`#FFC69F`, `#DE9563` y trazo negro) no son los de `Direccion_de_Arte.md` §4.1 (`#F2D3BC`, `#D9AF95` y
-`#3A1E18`): hay que decidir si se corrige §4.1 o se pide otro tono; (5) **RNF-04 y RNF-05 en un ejecutable nuevo**; la **medición de RNF-06** ya se hizo (09/10/2026, INC-146):
-el margen de 21 MB era el de rc2 (01/10/2026) y el arte frontal final, el perfil y Algoritm lo dejaron en
-0,7 MB (499,3 MB); con los cinco props del N1 a 256 px el paquete pesa 420,6 MB, con 79,4 MB de margen. Las
-medidas de carga y de memoria exigen el Editor cerrado y jugar el ejecutable, y quedan para el próximo
-candidato del carril OE4, junto con los ojos cerrados de frente que faltan; y (6) la
-republicación en Word del OE3: sus fuentes ya nombran INC-134 a INC-136 (Anexo F, apartado 2.13, `1e2fb6a`),
-pero los `.docx` publicados todavía no.
+**Pendientes del carril de personajes (10/10/2026).** Dependen de cosas que el juego no zanja o de un
+build nuevo: (1) ~~los ojos cerrados de frente~~ y (2) ~~la cara de Algoritm~~ llegaron el 10/10/2026 y se
+cerraron con INC-148; el artista debe entregar ahora la **alegría** (`Happy`) y el **sueño** (`Sleeping`) de
+los cinco personajes: mientras no lleguen, `Happy` se ve con la cara neutra y `Sleeping` con los ojos
+cerrados, y conviene pedir una **neutra nueva de la Niña y del Niño**, cuya neutra de frente no concuerda
+con sus otras cinco expresiones (iris naranja y rubor en la Niña, cejas en el Niño); (3) la **autorización de
+Santiago para editar los radicados** que describen el diseño anterior de Algoritm y la cara neutra fija
+(guion §1.1.1, las notas de las dos escenas puente, la descripción del guía y del retrato del trabajo de
+grado), con las parejas propuestas en `claudeDocs/entregables/tools/pares/`; (4) los tonos de piel y el
+contorno que trae el arte final (`#FFC69F`, `#DE9563` y trazo negro) no son los de `Direccion_de_Arte.md`
+§4.1 (`#F2D3BC`, `#D9AF95` y `#3A1E18`): hay que decidir si se corrige §4.1 o se pide otro tono; (5)
+**RNF-04 y RNF-05 en un ejecutable nuevo**; la **medición de RNF-06** se hizo el 09/10/2026 (INC-146: 420,6
+MB, con 79,4 MB de margen) y se repite con el arte de INC-148 e INC-149 (⟦ronda del Editor⟧). Las medidas de
+carga y de memoria exigen el Editor cerrado y jugar el ejecutable, y quedan para el próximo candidato del
+carril OE4; y (6) la republicación en Word del OE3: sus fuentes ya nombran INC-134 a INC-136 (Anexo F,
+apartado 2.13, `1e2fb6a`) y, desde el 10/10/2026, INC-148 a INC-150, pero los `.docx` publicados todavía
+no.
 
 ---
 
 ## Historial de revisiones
+
+- **rev. 24 (10/10/2026)** — Decisiones de Santiago con la entrega de expresiones de Sofía (tarjeta D11-11).
+  Se registran y cierran **INC-148** (cada línea de las 18 narrativas con la expresión del guion, tarjeta
+  del diálogo animada con parpadeo y boca, frente de la familia parpadeando y cara final de Algoritm; levanta
+  el retrato neutro fijo de §10.3 y cierra los dos pendientes de ojos cerrados de frente y cara de
+  Algoritm), **INC-149** (caras y retratos recortados y a 256 px como máximo: tercera excepción al tope de
+  4096) e **INC-150** (el efecto espejo en la fogata de `N1_NacimientoDelFuego` y de `N2_Escena25_Cierre`). La entrega entró en `636467a`
+  y su inventario en `b163afd`; la tabla de emociones, en `ce92c0f`; el runtime y las pruebas, en `146f4f3`,
+  y el arte, las herramientas y los datos aplicados, en `cc938e9`. La ronda del Editor: ⟦ronda del Editor⟧.
+  La alegría y el sueño no vienen en la entrega y siguen pendientes del artista. Los radicados que
+  describen el diseño anterior de Algoritm y el retrato fijo **no se editan** sin la autorización de
+  Santiago. Mantiene CP-02: no hay cara de tristeza, enfado ni derrota.
 
 - **rev. 23 (09/10/2026)** — Decisión de Santiago sobre el orden de dibujo del guía. Se registra y cierra
   **INC-147**: los brazos de Algoritm se dibujan detrás de todo el cuerpo (`BrazoIzq`, `BrazoDer`, `Torso`,

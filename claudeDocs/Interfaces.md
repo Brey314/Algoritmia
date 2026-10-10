@@ -69,7 +69,8 @@ deshabilitado (RNF-19); el nivel bloqueado no responde al clic. Nunca solo por c
 dos canales y sin cifras (HU-14 paso 7, HU-05, CP-03); sigue desbloqueado y se puede volver a jugar.
 
 **5 · Escena narrativa.** Cuadro de diálogo de 1400 × 216 px en el cuarto inferior de la pantalla
-(§10.3), sin cola: retrato y nombre del hablante, el texto a 30 px en carbón oscuro, botón de
+(§10.3), sin cola: retrato animado y nombre del hablante (el retrato es una cara con la expresión de
+la línea que parpadea y mueve la boca, INC-148), el texto a 30 px en carbón oscuro, botón de
 continuar y botón de omitir —este último **solo en escenas ya vistas** (RF-06)—. Hasta tres
 renglones por cuadro (§11.4, INC-138). Las fogatas llevan un halo que respira (`FireGlow`,
 INC-139), y en la 3.3 la cámara acompaña a la balsa.
@@ -260,8 +261,8 @@ muñeca. Pies grandes y redondeados, descalzos, con los dedos apenas insinuados.
 **ROSTRO.** Ojos grandes y redondos con mucha esclerótica blanca, pupila circular negra y un
 brillo puntual blanco; párpado superior en curva alta y abierta, nunca caído ni rasgado. Cejas
 gruesas, cortas y curvas, siempre separadas. Nariz pequeña de botón. Boca en sonrisa
-cerrada y suave, sin dientes a la vista: es la cara `neutra`, la única del arte actual (§4.2; el
-arte final trae seis, INC-131).
+cerrada y suave, sin dientes a la vista: es la cara `neutra`. El arte final trae seis expresiones, de
+las que llegaron cuatro con la entrega del 10/10/2026 (§4.2, INC-131 e INC-148).
 
 **POSE.** A-pose de producción (§7.5): brazos extendidos hacia los lados y hacia abajo formando
 unos 45° con el torso, **completamente separados del cuerpo**, con fondo visible entre cada
@@ -294,9 +295,9 @@ que tienen paletas muy distintas.
 
 ### 4.2 Expresiones
 
-**Arte actual.** Una sola cara por personaje, la `neutra`: la del torso del rig y la del retrato
-del cuadro de diálogo (`char_<x>_retrato_neutra.png`). La emoción la lleva el cuerpo, con un clip del rig por acción (`ActorAction`, §7.3): `Encourage` (ánimo, puño
-arriba), `Celebrate`, `Surprise`, `Observe`, `Point`, `Talk`…
+**Arte anterior (hasta el 09/10/2026).** Una sola cara por personaje, la `neutra`: la del torso del rig
+y la del retrato del cuadro de diálogo (`char_<x>_retrato_neutra.png`). La emoción la llevaba el cuerpo, con un clip del rig por acción (`ActorAction`, §7.3): `Encourage` (ánimo, puño
+arriba), `Celebrate`, `Surprise`, `Observe`, `Point`, `Talk`… y sigue llevándola donde el guion no fija una cara.
 
 **No existen la tristeza ni el enfado**, ni un gesto de derrota. Tras un intento sin éxito el
 personaje hace `Encourage` y nunca otra cosa. La decisión no es estética — sostiene el ensayo y
@@ -307,8 +308,17 @@ error en entorno seguro que fundamenta el enfoque de Aprendizaje Basado en Juego
 expresiones —neutra, alegría, sorpresa, preocupación, concentración y sueño—, parpadeo y cuatro
 bocas del habla, como capas de ojos y boca sobre la cabeza. La lista, el límite (ninguna de
 tristeza, enfado ni derrota) y los nombres de archivo están en `Direccion_de_Arte.md` §7.3 y §13.1.
-El parpadeo es de **dos cuadros**, ojos abiertos y ojos cerrados (INC-135); hoy solo parpadea el
-perfil, porque los ojos cerrados de frente están pedidos al artista.
+El parpadeo es de **dos cuadros**, ojos abiertos y ojos cerrados (INC-135).
+
+**Entrega del 10/10/2026 (decisión de Santiago, INC-148).** Llegaron, de frente y para los cinco
+personajes, la neutra, la concentración, la preocupación, la sorpresa, una sola boca de hablar y los
+ojos cerrados: el frente de la familia y Algoritm ya parpadean. **Faltan la alegría y el sueño**: lo
+alegre se marca `Happy` en los datos y se ve con la cara neutra, y el sueño se ve con los ojos cerrados.
+El guion fija la expresión de cada línea de las 18 narrativas, y **el retrato del cuadro de diálogo es
+una cara animada**: una base de cabeza y hombros sin cara (`char_<x>_retrato_base.png`) con los ojos y la
+boca del hablante encima, que cambia de expresión por línea, parpadea y mueve la boca mientras la línea
+está en pantalla (`Direccion_de_Arte.md` §10.3). `char_<x>_retrato_neutra.png` queda como retrato fijo de
+respaldo.
 
 ### 4.3 Algoritm no sigue esta especificación
 
@@ -318,9 +328,9 @@ El guía tiene su propio contrato (§7.6) y **no es un humano estilizado**. Desd
 anillos y una gota con brillos—, con brazos y piernas gruesos del color del material (la misma
 silueta en las tres formas), manos y pies ovalados del mismo color —ya no color piel—, contorno
 negro `#000000` y una **pantaloneta de cuadros** (verde, naranja y granate según la forma) que
-sustituye a la franja de cinco colores. Lleva sin nariz ni cejas dos ojos redondos y una sonrisa
-cerrada, pero **esa cara es provisional**: el artista aún no entrega la del diseño nuevo, y hasta
-entonces son los ojos y la boca del sprite anterior, sin parpadeo ni habla. Es el mismo personaje en
+sustituye a la franja de cinco colores. Su cara es la **final** desde el 10/10/2026
+(INC-148): una sola para las tres formas, con las mismas seis expresiones de §4.2 menos la alegría y el
+sueño, parpadeo y una boca de hablar; sustituye a los ojos y la boca del sprite anterior. Es el mismo personaje en
 los tres niveles y cambia de material y de silueta —en los prefabs `Algoritm_Fuego`,
 `Algoritm_Rueda` y `Algoritm_Gota`—. Se dibuja por partes: siete piezas por forma, con la pierna
 entera y sin rodilla (INC-136, que sustituye al corte provisional de nueve piezas de INC-140), y
@@ -352,6 +362,6 @@ está en `claudeDocs/tasks/Slice 1/plan.md`:
 Los tres apuntaban a lo mismo: esta especificación describía una cara más expresiva que la
 `neutra` de §7.3. **Lo resolvió el arte entregado** (24/09/2026): ojos redondos con esclerótica
 y brillo y cejas curvas, como pide esta especificación, y boca en sonrisa cerrada sin dientes,
-como la `neutra` de §7.3. Es la única cara del juego (§4.2), así que no hay variantes `alegre`
-ni `animo` a las que reservar la otra. §7.3 se actualizó con esa cara; el prompt `A2` de
+como la `neutra` de §7.3. Hasta el arte final (§4.2, INC-131 e INC-148) fue la única cara del juego,
+así que no había variantes `alegre` ni `animo` a las que reservar la otra. §7.3 se actualizó con esa cara; el prompt `A2` de
 `claudeDocs/tasks/Slice 1/plan.md` queda superado y no se edita (los `plan.md` no se reescriben).

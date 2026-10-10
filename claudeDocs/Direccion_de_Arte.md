@@ -339,10 +339,11 @@ al personaje de inmediato.
 
 ### 7.3 Expresión y emoción
 
-**Arte actual (provisional).** Cada personaje tiene **una sola cara, la neutra**, la del torso del
+**Arte anterior (hasta el 09/10/2026).** Cada personaje tenía **una sola cara, la neutra**, la del torso del
 rig y la del retrato del cuadro de diálogo (`char_<x>_retrato_neutra.png`): cejas separadas y algo
 curvas, ojos abiertos y redondos con brillo, sonrisa cerrada suave sin dientes. La emoción la lleva
-el cuerpo, con un clip del rig por acción (§13.3, `ActorAction`):
+el cuerpo, con un clip del rig por acción (§13.3, `ActorAction`), y sigue llevándola donde el guion no
+fija una cara:
 
 | Emoción | Acción del rig | Uso en juego |
 | --- | --- | --- |
@@ -371,19 +372,35 @@ cambiar esta sección:
 
 Además, ojos abiertos y cerrados para el **parpadeo** (cada 3,5 ± 1,2 s, 0,12 s; se apaga al
 dormir) y cuatro bocas del **habla**: cerrada, A, E y U, que ciclan mientras el personaje dice su
-línea. Los nombres están en el Inventario de arte y en §13.1. Hasta que llegue ese arte las capas
-van apagadas y el juego muestra la cara única de arriba: **todo lo de este párrafo es provisional
-hasta entonces**.
+línea. Los nombres están en el Inventario de arte y en §13.1. Parte de ese arte llegó el 10/10/2026
+y está encendida en el juego; lo que falta se dice en los dos párrafos siguientes.
+
+**Expresiones entregadas, las que faltan y el habla con una sola boca (decisión de Santiago,
+10/10/2026, INC-148).** Sofía Valentina Giraldo Segovia entregó, de frente y para Papá, Mamá, la Niña,
+el Niño y Algoritm: neutra (`ojos_neutra`, `boca_0`), concentración (`Focused`), preocupación
+(`Worried`), sorpresa (`Surprised`), **una sola boca de hablar** (`boca_a`, abierta) y los ojos
+cerrados (`ojos_parpadeo_cerrado`). **No entregó alegría (`Happy`) ni sueño (`Sleeping`).** Mientras
+no lleguen, los momentos alegres se marcan `Happy` en los datos y se ven con la cara neutra, y
+`Sleeping` se ve con los ojos cerrados (`CharacterFaceSet.Eyes(Sleeping)` cae a `EyesSleeping`, luego
+a `EyesBlinkClosed` y luego a `EyesNeutral`). Con una sola boca de hablar, la boca alterna abierta y
+cerrada cada `FlapSeconds` (`MouthFlap.CycleFor`); el ciclo A, E, U y cerrada de arriba se conserva
+por si llegan las otras dos. La neutra de frente de la familia es idéntica a la del 06/10/2026, y la
+de la Niña (iris naranja y rubor) y la del Niño (cejas) no concuerdan del todo con sus otras cinco
+expresiones: se pedirá una nueva. El guion decide la expresión de cada línea de las 18 narrativas
+(`ActorBeat.SetsEmotion`, y `DialogueLine.SetsVoiceEmotion` para las voces fuera de escena; la tabla
+está en `claudeDocs/tasks/Personajes/herramientas/emociones_narrativas.json`). Las capas de cara de
+cada personaje se recortan a la unión de las cajas de todas sus expresiones, de modo que ojos, boca
+y base comparten un solo recuadro, y entran a 256 px como máximo (§15.2, INC-149).
 
 **El parpadeo es de dos cuadros, no de tres (decisión de Santiago, 09/10/2026, INC-135).** Este
 apartado pedía «ojos a medio cerrar y cerrados»; el arte de perfil trae solo **ojos abiertos**
 (`ojos_neutra`) y **ojos cerrados** (`ojos_parpadeo_cerrado`). Cuando no hay cuadro medio
 (`ojos_parpadeo_medio`, que queda opcional), `CharacterFaceSet.Eyes(Half)` devuelve el cerrado, y el
 parpadeo enseña los ojos cerrados sus 0,12 s completos; si algún día llega el cuadro medio, vuelve a
-ser de tres. **Hoy solo parpadea el perfil:** la entrega no trae ojos cerrados **de frente** (se
-pidieron al artista, `Expresiones/char_<x>_ojos_parpadeo_cerrado`) y, hasta que lleguen, el frente
-no parpadea. Algoritm tampoco, mientras lleve la cara provisional (§7.6). El parpadeo no es una
-expresión y no cambia la regla de la tristeza.
+ser de tres. **Desde el 10/10/2026 parpadean también el frente de la familia y Algoritm:** la entrega
+trae los ojos cerrados de frente (`Expresiones/char_<x>_ojos_parpadeo_cerrado`) y la cara de Algoritm
+(§7.6); antes solo parpadeaba el perfil. El parpadeo no es una expresión y no cambia la regla de la
+tristeza.
 
 **Regla sobre la tristeza y el enfado:** no existen, ni en la cara ni en el cuerpo, y **el arte
 final no las añade**. Un intento fallido nunca produce un gesto negativo en los personajes; produce
@@ -445,7 +462,7 @@ Si uno solo de estos rasgos cambia, deja de leerse como el mismo personaje:
 | --- | --- |
 | Cuerpo | Tres siluetas, una por material (tabla siguiente): una llama de tres lenguas, un disco de madera con anillos y una gota con brillos. Es el mismo personaje; lo que cambia es la forma del cuerpo |
 | Tamaño | Pequeño frente a la familia. En las narrativas su `NarrativeProp.Size` está entre un tercio y dos quintos del de Papá y Mamá (0,12 frente a 0,313 y 0,34 en `N1_AparicionGuia`), y es menor cuando aparece en la fogata (0,07 en `N1_NacimientoDelFuego`). La opción de escala A del arte final conserva la altura que tenía la llama en pantalla: ningún `Size` cambió |
-| Cara | Dos ojos redondos y una sonrisa cerrada, sin nariz ni cejas. **Provisional:** el artista aún no entrega la cara del diseño nuevo; hasta entonces lleva los ojos (crema con iris café) y la boca del sprite anterior, centrados en el cuerpo de cada forma |
+| Cara | Dos ojos y una boca sobre el cuerpo. **Cara final** entregada el 10/10/2026 (INC-148): una sola para las tres formas, con neutra, concentración, preocupación, sorpresa, boca de hablar y ojos cerrados; faltan alegría y sueño (§7.3) |
 | Extremidades | Brazos y piernas gruesos, **la misma silueta en las tres formas** y del color del material (`#FF9122` en el fuego, `#5B4134` en la madera y `#6ED6FB` en el agua); manos y pies son óvalos del mismo color, ya no color piel. Sin accesorios |
 | Pantaloneta | De cuadros, en la cintura, con un color por forma: verde `#277D4A` con cuadros amarillos (fuego), naranja `#FEAA40` con cuadros rojos (madera) y granate `#A13C4F` con cuadros rosa (agua). Sustituye a la franja de cinco bandas |
 | Cuerpo con volumen | Degradados y brillos dentro de la silueta: el núcleo amarillo de la llama, los anillos del disco, los brillos de la gota (excepción de §2.2) |
@@ -461,7 +478,7 @@ Si uno solo de estos rasgos cambia, deja de leerse como el mismo personaje:
 | 3 · El Río | **Agua** | `Algoritm_Gota` · `char_algoritm_n3_gota_reposo.png` | Gota con brillos | Arte final. 878 px del lienzo del rig |
 
 **Los `_reposo` se rehicieron en su sitio.** Los tres (768²) se ensamblaron a partir de las siete
-piezas y de la cara provisional, con el mismo nombre y el mismo GUID, de modo que el retrato, el botón de ayuda, las
+piezas y de la cara provisional y, el 10/10/2026, se rehicieron con la cara final (INC-148), siempre con el mismo nombre y el mismo GUID, de modo que el retrato fijo, el botón de ayuda, las
 cinco escenas y los dieciséis assets narrativos que los referencian muestran ya el diseño nuevo sin tocarlos.
 `forms.py`, que recoloreaba la llama del Nivel 1 para dar un guía distinto por nivel, ya no interviene.
 
@@ -483,7 +500,7 @@ obligatorias; la segunda depende de la entrega del artista y debe revisarse en l
 
 1. **Nunca se posa.** Flota siempre por encima de la línea de los objetos del reto, y no
    entra en la zona de ensamblaje.
-2. **Tiene cara.** Ningún prop del juego tiene ojos ni boca. Hoy la cara es la provisional.
+2. **Tiene cara.** Ningún prop del juego tiene ojos ni boca. Desde el 10/10/2026 la cara es la final (INC-148).
 3. **Pulsa.** El pulso de escala de la pista (§10.2) es suyo y de nada más.
 
 #### Nomenclatura
@@ -509,7 +526,6 @@ char_algoritm_<forma>_parte_torso.png                (el cuerpo y la pantaloneta
 char_algoritm_<forma>_parte_brazo_{izq,der}.png      (húmero)
 char_algoritm_<forma>_parte_antebrazo_{izq,der}.png  (antebrazo con la mano)
 char_algoritm_<forma>_parte_pierna_{izq,der}.png     (la pierna ENTERA, con el pie)
-char_algoritm_<forma>_ojos_neutra.png · char_algoritm_<forma>_boca_0.png    (cara PROVISIONAL, en Expresiones/)
 ```
 
 Se borraron las seis `parte_antepierna_*`: la pierna llega entera, sin muslo ni rodilla. En el
@@ -517,8 +533,24 @@ rig, la pierna va en `PiernaX`, y `RodillaX` y `AntepiernaX` quedan como pivotes
 curvas de rodilla de los clips siguen y no mueven nada); si algún día se quiere rodilla, la dibuja el
 artista. Sin cabeza ni cuello: la cara va sobre el cuerpo, en las capas `Ojos` y `Boca`. `Cuerpo`
 (el sprite entero) queda apagado. Los tres `_reposo` se rehicieron con el diseño nuevo (arriba) y se
-conservan como retrato y como icono del botón de ayuda. «Rueda» y «gota» nombran el nivel y también
+conservan como retrato fijo de respaldo y como icono del botón de ayuda. «Rueda» y «gota» nombran el nivel y también
 la silueta.
+
+**Cara final, compartida por las tres formas (10/10/2026, INC-148).** Vive en
+`Algoritm/Expresiones/`, sin el nombre de la forma:
+
+```
+char_algoritm_ojos_{neutra,concentracion,preocupacion,sorpresa,parpadeo_cerrado}.png
+char_algoritm_boca_{0,a,concentracion,preocupacion,sorpresa}.png
+```
+
+Son 10 texturas en lugar de las 30 que habrían sido tres por forma. Los tres
+`char_algoritm_<forma>_cara.asset` conservan su GUID y se reapuntan a ellas, con `cara_provisional` en
+falso, y los seis PNG de la cara provisional anterior (`char_algoritm_<forma>_ojos_neutra.png` y
+`char_algoritm_<forma>_boca_0.png`) se borran, en la ronda del Editor: ⟦ronda del Editor⟧. El rubor de
+los cachetes va con los ojos, porque el rig de Algoritm no tiene `CaraBase`. Para la tarjeta del
+diálogo, cada forma tiene su base sin cara, `char_algoritm_{fuego,rueda,gota}_retrato_base.png`
+(§10.3).
 
 **Orden de dibujo: los brazos, detrás de todo el cuerpo (decisión de Santiago, 09/10/2026, INC-147).**
 Bajo `Lienzo/Cuerpo/Tronco` los hijos van, de atrás adelante, `BrazoIzq`, `BrazoDer`, `Torso`, `Ojos`,
@@ -528,13 +560,12 @@ familia no cambia. Los tres `_reposo` se compusieron con ese orden: solo difiere
 los casquetes de los hombros. Consecuencia aceptada: con el brazo en alto, el húmero de la forma de
 madera queda tapado por el disco y solo se ven el antebrazo y la mano.
 
-**La cara es provisional.** El artista no entregó ojos ni boca, y un guía sin cara es un prop (condición 2
-de arriba). Los ojos y la boca se tomaron del sprite anterior y se marcaron `cara_provisional` en
-`arte_final.json`; se ven de otra mano (llevan contorno café). Como no hay cuadro de ojos cerrados,
-**Algoritm no parpadea ni mueve la boca todavía** (§7.3). Cuando el artista entregue `ojos_neutra`,
-`ojos_parpadeo_cerrado` y `boca_0` sobre el lienzo de 1300 × 1500 (las expresiones restantes de §7.3,
-con el prefijo `char_algoritm_<forma>_`, son lo siguiente), se sustituyen los PNG con el mismo nombre y
-se corre el modo `sprites`. La regla de no tristeza, enfado ni derrota de §7.3 rige para esa cara.
+**La cara es la final (10/10/2026, INC-148).** Hasta el 09/10/2026 el guía llevaba los ojos y la boca del
+sprite anterior, marcados `cara_provisional` en `arte_final.json`, y no parpadeaba ni movía la boca. La
+entrega del 10/10/2026 trae su cara sobre el lienzo de 1300 × 1500: **una sola para las tres formas**,
+porque los tres registros son idénticos. Algoritm parpadea con `ojos_parpadeo_cerrado`, mueve la boca con
+`boca_a` y cambia de expresión según el guion, igual que la familia (§7.3); le faltan alegría y sueño. La
+regla de no tristeza, enfado ni derrota de §7.3 rige para esa cara.
 
 **Los dos defectos del 08/10/2026** (decisión D20 del brief de esa ronda) eran de las rótulas de las
 piezas provisionales: los anillos oscuros en los fundidos (`Appear`, `Vanish`, `Hidden`) y el talón
@@ -905,9 +936,23 @@ El diálogo se lee en un cuadro con retrato, no en un globo con cola (INC-129). 
 1400 × 216 px centrada abajo, a 16 px del borde (su cima queda a 232 px de 1080; el cuarto inferior acaba en 270), con
 relleno marfil `#F7EFE2` en un marco `#C4A882` y una sombra plana inferior de 6 px, sin
 degradado. A la izquierda, centrado en vertical, lleva el retrato del hablante en un recuadro de
-128 px (`char_<x>_retrato_neutra.png`, o la forma de Algoritm de su nivel). A su derecha van el nombre
-del hablante y el texto (§11.3). Abajo a la derecha quedan «Continuar», botón primario de
+128 px. A su derecha van el nombre del hablante y el texto (§11.3). Abajo a la derecha quedan «Continuar», botón primario de
 260 × 76, y «Omitir», secundario de 200 × 76, que solo aparece en escenas ya vistas (RF-06).
+
+**El retrato es una cara animada (decisión de Santiago, 10/10/2026, INC-148).** Antes era la imagen
+fija `char_<x>_retrato_neutra.png` (o el `_reposo` de la forma de Algoritm). Ahora es una **base de
+cabeza y hombros sin cara** (`char_<x>_retrato_base.png`, 256 × 256; para Algoritm, la de su forma:
+`char_algoritm_{fuego,rueda,gota}_retrato_base.png`) con los **ojos y la boca del hablante encima**
+(`CharacterRig.PortraitBase` es la base y `PortraitFace` el recuadro de la cara dentro de ella). La cara
+muestra la expresión que el guion fija en esa línea (§7.3), parpadea y mueve la boca mientras la línea
+está en pantalla. No hay máquina de escribir —el texto sale entero—, así que la boca se mueve hasta que
+el estudiante avanza, como la del personaje en escena. El encuadre es **«cabeza y hombros, igual para
+todos»**: la cabeza ocupa 0,62 del lado, con 0,07 de aire arriba; los niños salen tan grandes como los
+adultos y Algoritm se encuadra desde la punta de su forma hasta el mentón. La cara se arma en tiempo de
+ejecución (`Arte/Cara`, en `NarrativeSceneController`); `Narrative.unity` no cambia. Si un hablante no
+tiene base, cara o set de cara, el cuadro cae al retrato fijo (`PortraitLook`), de modo que ninguna
+línea se queda sin retrato; `char_<x>_retrato_neutra.png` se reescribió el mismo día, en su sitio, con
+ese encuadre y la cara neutra nueva.
 
 No tiene cola: quién habla lo dicen el retrato y el nombre, y no una flecha hacia un personaje
 que la cámara puede dejar fuera de cuadro. Lo que el texto nombra se ve por encima del cuadro
@@ -1234,7 +1279,7 @@ Son los ajustes que aplica el proyecto (INC-128):
 | Filter Mode | Bilinear |
 | Generate Mip Maps | Desactivado |
 | Compression | Sin comprimir (`ArtImportRules`) |
-| Max Size | 4096 (`ArtImportRules`): las panorámicas llegan a 3840 y no se reducen. Dos excepciones, por el peso del paquete (RNF-06): los cuadros de `Props/Fire/Animations/` entran a 1024 (INC-130) y cinco props del Nivel 1 (`prop_n1_pedernal`, `_silex`, `_hoja`, `_monton_hojas` y `_monton_hojas_cenital`) entran a 256 (INC-146) |
+| Max Size | 4096 (`ArtImportRules`): las panorámicas llegan a 3840 y no se reducen. Tres excepciones: por el peso del paquete (RNF-06), los cuadros de `Props/Fire/Animations/` entran a 1024 (INC-130) y cinco props del Nivel 1 (`prop_n1_pedernal`, `_silex`, `_hoja`, `_monton_hojas` y `_monton_hojas_cenital`) entran a 256 (INC-146); y, por decisión de Santiago sobre la entrega del 10/10/2026, las caras y los retratos de los personajes entran a 256 (INC-149) |
 | Read/Write | Desactivado, salvo en las ocho piezas y siluetas de la balsa del Nivel 3: el panel prueba su alfa al agarrar y al soltar |
 | Generate Physics Shape | El valor de fábrica, sin efecto: todo es uGUI y no hay colisionadores |
 
@@ -1269,12 +1314,27 @@ diferencia apreciable. La excepción es una lista explícita de cinco rutas (`Ar
 `SmallPropPaths`) y no la carpeta `Props/Fire/`; el resto de `Art/` sigue a 4096. Lo vigila
 `ArtImport_RNF06_LosCincoPropsDelN1SeImportanA256SinComprimir`, y con ella el build pesa 420,6 MB.
 
+**Excepción: las caras y los retratos de los personajes a 256 px (INC-149).** Decisión de Santiago
+(10/10/2026): «todo el arte de esta entrega, al importarse, recortado y como máximo 256×256». Entran a
+**256 px de lado máximo y sin comprimir** las expresiones de frente (`Characters/*/Expresiones/*`, con la
+cara base y la cara compartida de Algoritm), los ojos, las bocas y la cara base de perfil
+(`char_<x>_perfil_ojos_*`, `_perfil_boca_*` y `_perfil_cara_base`) y los retratos (`char_<x>_retrato_base`
+y `char_<x>_retrato_neutra`, cuadrados de 256 × 256). Cada capa se recorta a la unión de las cajas de
+todas las expresiones de su personaje, más 3 px, y se reduce con una sola escala por personaje: ojos,
+boca y base comparten un recuadro en el prefab, así que bajar a 256 px no mueve nada en pantalla.
+Quedan a 4096 las partes del cuerpo (`Frontal/` y el cuerpo de `Perfil/`) y los tres `_reposo` de
+Algoritm. La regla es un patrón de ruta (`ArtImportRules`, `CharacterFacePaths`) y no una lista, porque
+la alegría y el sueño llegarán expresión a expresión. Lo vigila
+`ArtImport_RNF06_LasCarasYLosRetratosDeLosPersonajesSeImportanA256SinComprimir`. Peso del build con esta
+entrega: ⟦ronda del Editor⟧.
+
 **Halo de croma.** Los sprites que salen de un fondo verde puro se limpian de halo verde en el
 borde. El 01/10/2026 se limpiaron siete PNG —los tres `char_algoritm_n?_*_reposo` y los cuatro
 retratos `char_*_retrato_neutra`— tocando solo píxeles semitransparentes, con el alfa idéntico al del
 original. Quedan unas 12 o 13 motas verdes opacas (α ≥ 200) en las puntas del pelo de los retratos de
 Niña y Papá y de Algoritm, visibles a 1080p: limpiarlas obliga a retocar píxeles opacos, y queda
-pendiente del carril de arte.
+pendiente del carril de arte. Los cuatro `char_*_retrato_neutra` de la familia se rehicieron el
+10/10/2026 desde la entrega nueva (INC-148) y esa cuenta de motas no se volvió a medir en ellos.
 
 **Doce PNG siguen en `Multiple`.** Son `Environments/Narrative/env_enlace_n2.png` y once de
 `Props/Wheel/`: `prop_n2_tronco_a`, `prop_n2_piedra_a`…`_d`, `prop_n2_planta_a`…`_c` y
@@ -1303,6 +1363,7 @@ sub-sprite se ajusta desde el motor conservando su `spriteID`, como se hizo con 
 [categoria]_[sujeto]_[variante]_[estado].png
 
 char_nino_retrato_neutra.png
+char_nino_retrato_base.png
 char_mama_cenital.png
 char_papa_parte_brazo_der.png
 char_papa_parte_antebrazo_der.png
@@ -1465,7 +1526,10 @@ Aplicar a cada pieza antes de darla por buena e importarla a Unity.
 - [ ] Silueta distinguible de los otros tres personajes en negro sólido
 - [ ] Arte final: las diez partes (§13.1) con el codo y la rodilla donde dice la tabla de articulaciones; Algoritm, sin cabeza ni cuello
 - [ ] Arte final: las seis expresiones (§7.3) con ojos y bocas por sus nombres; ninguna es de tristeza, enfado ni derrota, y `Worried` no tiene lágrimas ni comisuras caídas
-- [ ] Parpadeo: ojos abiertos (`ojos_neutra`) y ojos cerrados (`ojos_parpadeo_cerrado`); el cuadro medio es opcional (§7.3, INC-135)
+- [ ] Parpadeo: ojos abiertos (`ojos_neutra`) y ojos cerrados (`ojos_parpadeo_cerrado`), de frente y de perfil; el cuadro medio es opcional (§7.3, INC-135)
+- [ ] Expresiones de frente (§7.3, INC-148): neutra, concentración, preocupación y sorpresa más una boca de hablar y los ojos cerrados, registradas sobre el lienzo de 1300 × 1500 y recortadas a la caja común del personaje; alegría y sueño siguen pendientes del artista
+- [ ] Tarjeta del diálogo (§10.3, INC-148): una base sin cara de 256 × 256 con el mismo encuadre de cabeza y hombros para los siete retratos; la cara no va pintada en ella
+- [ ] Caras y retratos a 256 px como máximo y sin comprimir (§15.2, INC-149)
 - [ ] Perfil de la familia (§13.4): las diez piezas `char_<x>_perfil_*` y la cara de perfil, dibujadas mirando a la derecha o entregadas mirando a la izquierda para espejar, registradas sobre el mismo lienzo; las dos piernas detrás del torso
 - [ ] Algoritm, orden de dibujo (§7.6, INC-147): los brazos detrás de todo el cuerpo y las manos nunca sobre la cara
 - [ ] Algoritm, arte final (§7.6): siete piezas por forma sobre un lienzo común registrado, con la pierna entera y sin rodilla; las extremidades, la misma silueta en las tres formas; cara aparte (ojos abiertos, ojos cerrados y boca), no pintada en el torso
