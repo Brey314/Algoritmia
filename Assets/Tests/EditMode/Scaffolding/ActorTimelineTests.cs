@@ -258,6 +258,47 @@ namespace Game.Scaffolding.Tests
             Assert.That(new ActorBeat(0, ActorAction.Idle).SetsEmotion, Is.False, "por defecto un paso no fija expresión");
         }
 
+        /// <summary>
+        /// La expresión de la tarjeta del diálogo es la del personaje en la escena (INC-148): la que el guion fija
+        /// en esa línea y, si ningún paso la fija, la de la acción que hace durante ella. Decir la línea (Talk) no
+        /// cambia la cara: el gesto de hablar es neutro.
+        /// </summary>
+        [Test]
+        public void ActorTimeline_INC148_LaEmocionDelRetratoEsLaDelGuionYSiNoLaDeSuAccion()
+        {
+            var delGuion = Personaje(ActorAction.Idle,
+                new ActorBeat(0, ActorAction.Celebrate).WithEmotion(FacialEmotion.Worried),
+                new ActorBeat(3, ActorAction.Kneel).WithEmotion(FacialEmotion.Happy));
+
+            Assert.That(ActorTimeline.EmotionOf(delGuion, 0, speaking: true), Is.EqualTo(FacialEmotion.Worried),
+                "el guion manda sobre la acción: Celebrate sería Happy y aquí el guion pide Worried");
+            Assert.That(ActorTimeline.EmotionOf(delGuion, 2, speaking: false), Is.EqualTo(FacialEmotion.Worried), "y se mantiene entre pasos");
+            Assert.That(ActorTimeline.EmotionOf(delGuion, 3, speaking: true), Is.EqualTo(FacialEmotion.Happy), "hasta que otro paso la cambia");
+            Assert.That(ActorTimeline.EmotionOf(delGuion, 3, speaking: true), Is.EqualTo(ActorTimeline.EmotionAt(delGuion, 3)),
+                "con guion es exactamente EmotionAt");
+
+            var porAccion = Personaje(ActorAction.Idle,
+                new ActorBeat(1, ActorAction.Celebrate),
+                new ActorBeat(3, ActorAction.Kneel),
+                new ActorBeat(5, ActorAction.Walk).MovingTo(Fondo, 2f, ActorAction.Point));
+
+            Assert.That(ActorTimeline.EmotionOf(porAccion, 0, speaking: true), Is.EqualTo(FacialEmotion.Neutral), "de pie y hablando: el gesto de hablar es neutro");
+            Assert.That(ActorTimeline.EmotionOf(porAccion, 0, speaking: false), Is.EqualTo(FacialEmotion.Neutral));
+            Assert.That(ActorTimeline.EmotionOf(porAccion, 1, speaking: true), Is.EqualTo(FacialEmotion.Happy), "celebra: alegre");
+            Assert.That(ActorTimeline.EmotionOf(porAccion, 2, speaking: true), Is.EqualTo(FacialEmotion.Happy), "y lo que mantiene entre pasos");
+            Assert.That(ActorTimeline.EmotionOf(porAccion, 3, speaking: true), Is.EqualTo(FacialEmotion.Focused), "arrodillado: concentrado");
+            Assert.That(ActorTimeline.EmotionOf(porAccion, 5, speaking: true), Is.EqualTo(FacialEmotion.Neutral), "mientras camina, la de caminar");
+            Assert.That(ActorTimeline.EmotionOf(porAccion, 6, speaking: true), Is.EqualTo(FacialEmotion.Neutral), "y al llegar la de lo que hace allí (señalar)");
+
+            // Es la misma cara que le pone el rig a la escena: cue.Emotion y, si es nulo, la de cue.During.
+            for (var linea = 0; linea < 8; linea++)
+            {
+                var cue = ActorTimeline.Cue(porAccion, linea, speaking: true);
+                Assert.That(ActorTimeline.EmotionOf(porAccion, linea, speaking: true),
+                    Is.EqualTo(cue.Emotion ?? ActionEmotion.For(cue.During)), $"línea {linea}: la del rig");
+            }
+        }
+
         // ---- INC-134: hacia dónde mira de perfil ----
         //
         // FacesLeftAt decide solo el lado (true = izquierda); si el personaje va de perfil lo decide la

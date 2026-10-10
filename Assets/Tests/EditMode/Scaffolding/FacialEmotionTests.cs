@@ -126,5 +126,59 @@ namespace Game.Scaffolding.Tests
             Assert.That(sut.Tick(0.01f, speaking: false), Is.EqualTo(MouthShape.Rest), "al callar cierra en seco");
             Assert.That(sut.Tick(0f, speaking: true), Is.EqualTo(MouthShape.A), "la próxima vez empieza por el principio");
         }
+
+        /// <summary>
+        /// Con las tres bocas del habla el ciclo es el de siempre, A, E, U y cerrada, lo pida el constructor
+        /// clásico o <see cref="MouthFlap.CycleFor"/>: el arte provisional y los sets de tres bocas no cambian.
+        /// </summary>
+        [Test]
+        public void MouthFlap_DA73_ConLasTresBocasSigueElCicloAEUCerrada()
+        {
+            var ciclo = MouthFlap.CycleFor(hasA: true, hasE: true, hasU: true);
+            Assert.That(ciclo, Is.EqualTo(new[] { MouthShape.A, MouthShape.E, MouthShape.U, MouthShape.Closed }));
+
+            var sut = new MouthFlap(0.1f, ciclo);
+            Assert.That(sut.Tick(0.5f, speaking: false), Is.EqualTo(MouthShape.Rest));
+            Assert.That(sut.Tick(0f, speaking: true), Is.EqualTo(MouthShape.A), "abre en cuanto empieza a hablar");
+            Assert.That(sut.Tick(0.11f, speaking: true), Is.EqualTo(MouthShape.E));
+            Assert.That(sut.Tick(0.1f, speaking: true), Is.EqualTo(MouthShape.U));
+            Assert.That(sut.Tick(0.1f, speaking: true), Is.EqualTo(MouthShape.Closed));
+            Assert.That(sut.Tick(0.1f, speaking: true), Is.EqualTo(MouthShape.A), "y el ciclo vuelve a empezar");
+
+            // Las bocas que faltan se saltan, pero el orden A, E, U se conserva y la cerrada siempre va al final.
+            Assert.That(MouthFlap.CycleFor(true, false, true), Is.EqualTo(new[] { MouthShape.A, MouthShape.U, MouthShape.Closed }));
+            Assert.That(MouthFlap.CycleFor(false, true, false), Is.EqualTo(new[] { MouthShape.E, MouthShape.Closed }));
+            Assert.That(MouthFlap.CycleFor(false, false, true), Is.EqualTo(new[] { MouthShape.U, MouthShape.Closed }));
+
+            // Sin ninguna, el ciclo clásico: CharacterFace cae al reposo en las formas que el set no tiene, como siempre.
+            Assert.That(MouthFlap.CycleFor(false, false, false),
+                Is.EqualTo(new[] { MouthShape.A, MouthShape.E, MouthShape.U, MouthShape.Closed }));
+
+            // Un ciclo vacío o nulo tampoco rompe el aleteo: usa el clásico.
+            Assert.That(new MouthFlap(0.1f, null).Tick(0f, speaking: true), Is.EqualTo(MouthShape.A));
+            Assert.That(new MouthFlap(0.1f, new MouthShape[0]).Tick(0f, speaking: true), Is.EqualTo(MouthShape.A));
+        }
+
+        /// <summary>
+        /// El arte final trae una sola boca de hablar, la A (INC-148, 10/10/2026): el ciclo es A y cerrada, y la
+        /// boca alterna abierta y cerrada cada <c>flapSeconds</c> en lugar de pasar por formas que no existen.
+        /// </summary>
+        [Test]
+        public void MouthFlap_INC148_ConSoloLaBocaAbiertaAlternaAbiertaYCerrada()
+        {
+            var ciclo = MouthFlap.CycleFor(hasA: true, hasE: false, hasU: false);
+            Assert.That(ciclo, Is.EqualTo(new[] { MouthShape.A, MouthShape.Closed }));
+
+            var sut = new MouthFlap(0.1f, ciclo);
+            Assert.That(sut.Tick(0.5f, speaking: false), Is.EqualTo(MouthShape.Rest));
+            Assert.That(sut.Tick(0f, speaking: true), Is.EqualTo(MouthShape.A), "abre en cuanto empieza a hablar");
+            Assert.That(sut.Tick(0.05f, speaking: true), Is.EqualTo(MouthShape.A));
+            Assert.That(sut.Tick(0.06f, speaking: true), Is.EqualTo(MouthShape.Closed), "a los 0,1 s se cierra");
+            Assert.That(sut.Tick(0.1f, speaking: true), Is.EqualTo(MouthShape.A), "y vuelve a abrir");
+            Assert.That(sut.Tick(0.1f, speaking: true), Is.EqualTo(MouthShape.Closed), "alternan sin pasar por E ni U");
+
+            Assert.That(sut.Tick(0.01f, speaking: false), Is.EqualTo(MouthShape.Rest), "al callar cierra en seco");
+            Assert.That(sut.Tick(0f, speaking: true), Is.EqualTo(MouthShape.A), "la próxima vez empieza por el principio");
+        }
     }
 }

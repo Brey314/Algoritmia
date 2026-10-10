@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEditor;
 
 namespace Game.EditorTools
@@ -22,7 +23,8 @@ namespace Game.EditorTools
     /// valores de fábrica (2048, comprimido) y nadie lo nota hasta verlo en pantalla. Aquí la regla
     /// se aplica sola, incluido el reimport.
     ///
-    /// **Dos excepciones, las dos por el peso del paquete (RNF-06).**
+    /// **Tres excepciones: las dos primeras por el peso del paquete (RNF-06) y la tercera por decisión de
+    /// Santiago sobre una entrega de arte.**
     ///
     /// *Los cuadros del fuego y el humo del N1* (<c>Art/Props/Fire/Animations/</c>). Son 67 PNG (134
     /// entradas del BuildReport) de hasta 2144×2108 y sin comprimir pesaban 533 MB, con lo que el
@@ -48,6 +50,19 @@ namespace Game.EditorTools
     /// <c>Art/Props/Fire/</c> guarda también las animaciones (que tienen su tope) y lo que llegue
     /// después, que debe entrar a 4096. Cambiar el tope o añadir un prop a la lista es cambiar
     /// <c>SmallPropPaths</c> y <c>ArtImport_RNF06_…</c>.
+    ///
+    /// *Las caras y los retratos de los personajes* (INC-149, **decisión de Santiago, 10/10/2026**: «todo el
+    /// arte de esta entrega, al importarse, recortado y como máximo 256×256»). Son las expresiones de frente
+    /// (<c>Characters/*/Expresiones/*</c>, que incluye la cara base y las tres caras de Algoritm), los ojos y las
+    /// bocas de perfil (<c>Perfil/char_*_perfil_ojos_*</c>, <c>_perfil_boca_*</c>) y la cara base de perfil
+    /// (<c>_perfil_cara_base</c>), y los retratos de la tarjeta del diálogo (<c>char_*_retrato_*</c>, que es la
+    /// base sin cara y el retrato fijo de respaldo). Cada cara llena un recuadro propio, recortado a la unión de
+    /// sus expresiones, y el retrato entra cuadrado en una tarjeta pequeña (118 px de lado en el cuadro de
+    /// diálogo): a 256 se ve igual. También **sin comprimir**. Las **partes del cuerpo** (<c>Frontal/</c>, el
+    /// cuerpo de <c>Perfil/</c>) y los <c>_reposo</c> de Algoritm quedan fuera: siguen a 4096. La regla es un
+    /// patrón de ruta (<see cref="CharacterFacePaths"/>) y no una lista, porque el arte final llega expresión a
+    /// expresión (la alegría y el sueño todavía no están). Cambiar el tope o el patrón es cambiar
+    /// <c>CharacterFacesMaxTextureSize</c> o <c>CharacterFacePaths</c> y <c>ArtImport_RNF06_…</c>.
     ///
     /// **Ojo:** esto pisa lo que se toque a mano en el Inspector para estos dos campos. Cambiar la
     /// regla es cambiar este archivo. Un cambio de tope no reimporta solo lo que ya está en el
@@ -82,6 +97,18 @@ namespace Game.EditorTools
             ArtRoot + "Props/Fire/prop_n1_monton_hojas_cenital.png",
         };
 
+        /// <summary>Tope de las caras y los retratos de los personajes (INC-149, ver la nota de la clase).</summary>
+        private const int CharacterFacesMaxTextureSize = 256;
+
+        /// <summary>
+        /// Las rutas de las caras y los retratos de los personajes que entran a
+        /// <see cref="CharacterFacesMaxTextureSize"/> (INC-149): las expresiones de frente, los ojos, las bocas y la
+        /// cara base de perfil, y los retratos. Las partes del cuerpo y los <c>_reposo</c> no coinciden.
+        /// </summary>
+        private static readonly Regex CharacterFacePaths = new Regex(
+            @"^Assets/Game/Art/Characters/[^/]+/(Expresiones/[^/]+|Perfil/char_[a-z_]+_perfil_(ojos|boca)_[a-z0-9_]+|Perfil/char_[a-z_]+_perfil_cara_base|char_[a-z_]+_retrato_[a-z0-9_]+)\.png$",
+            RegexOptions.CultureInvariant);
+
         private void OnPreprocessTexture()
         {
             if (!assetPath.StartsWith(ArtRoot, StringComparison.Ordinal))
@@ -101,7 +128,12 @@ namespace Game.EditorTools
                 return FireFramesMaxTextureSize;
             }
 
-            return SmallPropPaths.Contains(path) ? SmallPropsMaxTextureSize : MaxTextureSize;
+            if (SmallPropPaths.Contains(path))
+            {
+                return SmallPropsMaxTextureSize;
+            }
+
+            return CharacterFacePaths.IsMatch(path) ? CharacterFacesMaxTextureSize : MaxTextureSize;
         }
     }
 }

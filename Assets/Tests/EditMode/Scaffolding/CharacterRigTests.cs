@@ -310,9 +310,10 @@ namespace Game.Scaffolding.Tests
         /// recoloreada, INC-52) y están encendidas; la Image de Cuerpo —el sprite entero— se apaga: si siguiera encendida se vería doble, y el brazo que se mueve
         /// dejaría su copia quieta detrás. La pierna no está partida: la AntepiernaX (bajo la RodillaX, que sigue existiendo para los clips) no lleva sprite y está
         /// apagada —sin referencia rota a un PNG borrado, que pintaría un recuadro blanco—. En el Editor un sprite sin asignar es también un nulo falso, igual que la
-        /// referencia rota, así que ésta se comprueba en el archivo del prefab (ningún GUID de m_Sprite sin asset) y no con Is.Null. La entrega no trae cara: Ojos y
-        /// Boca llevan la cara PROVISIONAL sacada del sprite de hoy (char_algoritm_&lt;forma&gt;_ojos_neutra y _boca_0, en Expresiones/). Con el arte del artista se
-        /// sustituyen los PNG con el mismo nombre.
+        /// referencia rota, así que ésta se comprueba en el archivo del prefab (ningún GUID de m_Sprite sin asset) y no con Is.Null. Ojos y Boca se dibujan con la cara
+        /// final de Algoritm (INC-148, 10/10/2026: la entrega del 10/10 trae UNA cara para las tres formas, que sustituye a la provisional sacada del sprite de
+        /// antes): sus sprites son char_algoritm_ojos_* y char_algoritm_boca_*; que la cara sea la misma en las tres formas lo comprueba
+        /// <c>CharacterFace_INC148_LasTresFormasDeAlgoritmCompartenLaCara</c>.
         /// FALLA mientras no se haya corrido el modo «sprites» del generador (BuildRigsFinal.cs.txt) sobre los prefabs de Algoritm, y debe pasar justo después.
         /// </summary>
         [Test]
@@ -357,12 +358,15 @@ namespace Game.Scaffolding.Tests
             Assert.That(rotas, Is.Empty, $"{nombre}: ninguna Image guarda la referencia a un sprite que ya no existe (un PNG borrado)");
 
             Assert.That(rig.transform.Find(Cuerpo).GetComponent<Image>().enabled, Is.False, $"{nombre}: el sprite entero de Cuerpo se apaga");
-            var caras = new[] { ("Ojos", "ojos_neutra"), ("Boca", "boca_0") };
-            foreach (var (cara, sprite) in caras)
+            // INC-148: la cara es una sola para las tres formas, así que el nombre del sprite ya no lleva la forma (antes, con la
+            // cara provisional recoloreada, era char_algoritm_<forma>_ojos_neutra). Sirve la provisional o la final: lo que no
+            // puede quedar es una capa de cara sin dibujo.
+            foreach (var cara in new[] { "Ojos", "Boca" })
             {
                 var imagen = rig.transform.Find($"{Tronco}/{cara}").GetComponent<Image>();
-                Assert.That(imagen.enabled && imagen.sprite != null, Is.True, $"{nombre}: {cara} se dibuja con la cara provisional");
-                Assert.That(imagen.sprite.name, Is.EqualTo($"char_algoritm_{forma}_{sprite}"), $"{nombre}: {cara} lleva la cara de la forma {forma}");
+                Assert.That(imagen.enabled && imagen.sprite != null, Is.True, $"{nombre}: {cara} se dibuja con la cara de Algoritm");
+                Assert.That(imagen.sprite.name, Does.StartWith("char_algoritm_"), $"{nombre}: {cara} lleva un sprite de Algoritm");
+                Assert.That(imagen.sprite.name, Does.Contain($"_{cara.ToLowerInvariant()}_"), $"{nombre}: y es de la capa {cara}");
             }
         }
 
@@ -1015,6 +1019,108 @@ namespace Game.Scaffolding.Tests
             Assert.That(cara.FindProperty("profileEyes").objectReferenceValue, Is.EqualTo(ojos), $"{nombre}: profileEyes es la capa de ojos del perfil");
             Assert.That(cara.FindProperty("profileMouth").objectReferenceValue, Is.EqualTo(boca), $"{nombre}: profileMouth es la capa de boca del perfil");
             Assert.That(cara.FindProperty("profileFaceSet").objectReferenceValue, Is.Not.Null, $"{nombre}: profileFaceSet es la cara de perfil");
+        }
+
+        // ---- INC-148 (10/10/2026): tarjeta animada del cuadro de diálogo, cara final de Algoritm y parpadeo de frente ----
+
+        /// <summary>El tope de lado, en píxeles, de la base de la tarjeta (INC-149: todo el arte de la entrega del 10/10 entra a 256 como máximo).</summary>
+        private const int LadoMaximoDeLaBase = 256;
+
+        /// <summary>
+        /// Cada personaje lleva la base de su tarjeta (el personaje sin cara, cuadrado, de 256 px como mucho), el
+        /// recuadro de la cara dentro de ella (normalizado, de tamaño positivo y dentro del cuadro unidad) y un set
+        /// de cara con los ojos neutros, los ojos cerrados del parpadeo y la boca de hablar. Con eso la tarjeta es
+        /// animada (<see cref="PortraitLook"/>); sin cualquiera de las tres cae al retrato fijo.
+        /// FALLA mientras la ronda del Editor no haya escrito PortraitBase y PortraitFace en los siete prefabs (modo
+        /// «retrato» del generador), y debe pasar justo después.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC148_CadaPersonajeTieneRetratoAnimadoConLaCaraDentro(
+            [Values("Papa", "Mama", "Nina", "Nino", "Algoritm_Fuego", "Algoritm_Rueda", "Algoritm_Gota")] string nombre)
+        {
+            var rig = Rig(nombre);
+
+            // El == de Unity: un sprite cuyo archivo se borró es un nulo falso que Is.Null no ve.
+            Assert.That(rig.PortraitBase == null, Is.False, $"{nombre}: tiene la base sin cara de su tarjeta (PortraitBase)");
+            var ruta = AssetDatabase.GetAssetPath(rig.PortraitBase);
+            Assert.That(ruta, Does.Contain("_retrato_base"), $"{nombre}: la base es char_<x>_retrato_base ({ruta})");
+            var importador = AssetImporter.GetAtPath(ruta) as TextureImporter;
+            Assert.That(importador, Is.Not.Null, $"{nombre}: la base es una textura importada");
+            importador.GetSourceTextureWidthAndHeight(out var ancho, out var alto);
+            Assert.That(ancho, Is.EqualTo(alto), $"{nombre}: la base es cuadrada ({ancho}×{alto})");
+            Assert.That(ancho, Is.LessThanOrEqualTo(LadoMaximoDeLaBase), $"{nombre}: la base se entrega a {LadoMaximoDeLaBase} px como máximo ({ancho}×{alto})");
+            Assert.That(rig.PortraitBase.rect.width, Is.EqualTo(rig.PortraitBase.rect.height), $"{nombre}: el sprite de la base es cuadrado");
+
+            var cara = rig.PortraitFace;
+            Assert.That(cara.width, Is.GreaterThan(0f), $"{nombre}: el recuadro de la cara tiene ancho");
+            Assert.That(cara.height, Is.GreaterThan(0f), $"{nombre}: el recuadro de la cara tiene alto");
+            Assert.That(cara.xMin, Is.GreaterThanOrEqualTo(0f), $"{nombre}: la cara no se sale por la izquierda de la base");
+            Assert.That(cara.yMin, Is.GreaterThanOrEqualTo(0f), $"{nombre}: ni por abajo");
+            Assert.That(cara.xMax, Is.LessThanOrEqualTo(1f + 0.0001f), $"{nombre}: ni por la derecha");
+            Assert.That(cara.yMax, Is.LessThanOrEqualTo(1f + 0.0001f), $"{nombre}: ni por arriba");
+
+            var set = rig.FaceSet;
+            Assert.That(set == null, Is.False, $"{nombre}: su CharacterFace lleva un set de cara");
+            Assert.That(set.EyesNeutral == null, Is.False, $"{nombre}: el set trae los ojos neutros");
+            Assert.That(set.EyesBlinkClosed == null, Is.False, $"{nombre}: el set trae los ojos cerrados (el parpadeo y el sueño)");
+            Assert.That(set.MouthA == null, Is.False, $"{nombre}: el set trae la boca de hablar");
+
+            var look = PortraitLook.Of(rig.PortraitBase, rig.PortraitFace, rig.FaceSet, rig.Portrait);
+            Assert.That(look.Animated, Is.True, $"{nombre}: con todo eso la tarjeta es animada");
+        }
+
+        /// <summary>
+        /// La cara de Algoritm es una sola para sus tres formas (INC-148: la entrega del 10/10 trae una cara
+        /// compartida; ya no hay una recoloreada por forma): los tres sets de cara apuntan a los mismos sprites, así
+        /// que son 11 texturas y no 33. Cada forma conserva su propio asset de set (su GUID), solo comparten el arte.
+        /// FALLA mientras la ronda del Editor no haya apuntado los tres sets a la cara compartida.
+        /// </summary>
+        [Test]
+        public void CharacterFace_INC148_LasTresFormasDeAlgoritmCompartenLaCara()
+        {
+            var sets = Guia.Select(forma => Rig(forma).FaceSet).ToArray();
+            for (var i = 0; i < Guia.Length; i++)
+            {
+                Assert.That(sets[i] == null, Is.False, $"{Guia[i]}: lleva un set de cara");
+                Assert.That(sets[i].EyesNeutral == null, Is.False, $"{Guia[i]}: el set trae los ojos neutros");
+            }
+
+            Assert.That(sets.Select(set => set.EyesNeutral).Distinct().Count(), Is.EqualTo(1),
+                "los ojos neutros son el mismo sprite en las tres formas");
+
+            var campos = new[]
+            {
+                "EyesNeutral", "EyesHappy", "EyesSurprised", "EyesWorried", "EyesFocused", "EyesSleeping", "EyesBlinkHalf", "EyesBlinkClosed",
+                "MouthClosed", "MouthA", "MouthE", "MouthU", "MouthHappy", "MouthSurprised", "MouthWorried", "MouthFocused",
+            };
+            foreach (var campo in campos)
+            {
+                var sprites = sets
+                    .Select(set => new SerializedObject(set).FindProperty($"<{campo}>k__BackingField").objectReferenceValue)
+                    .ToArray();
+                var rutas = sprites.Select(sprite => sprite == null ? "(vacío)" : $"{AssetDatabase.GetAssetPath(sprite)}#{sprite.name}").Distinct().ToArray();
+                Assert.That(rutas, Has.Length.EqualTo(1), $"{campo}: las tres formas usan el mismo sprite ({string.Join(" | ", rutas)})");
+            }
+        }
+
+        /// <summary>
+        /// La familia parpadea de frente (INC-135, que INC-148 cumple con el arte: la entrega del 10/10 trae los
+        /// primeros ojos cerrados de frente). Cada set de frente tiene los ojos abiertos y los cerrados, y sus dos
+        /// fases del parpadeo (cerrado y medio, que cae al cerrado) resuelven un sprite: antes solo parpadeaba el perfil.
+        /// FALLA mientras los cuatro sets de frente no tengan EyesBlinkClosed.
+        /// </summary>
+        [Test]
+        public void CharacterRig_INC135_LaFamiliaParpadeaDeFrente(
+            [Values("Papa", "Mama", "Nina", "Nino")] string nombre)
+        {
+            var set = Rig(nombre).FaceSet;
+
+            Assert.That(set == null, Is.False, $"{nombre}: su CharacterFace lleva el set de frente");
+            Assert.That(set.EyesNeutral == null, Is.False, $"{nombre}: ojos abiertos");
+            Assert.That(set.EyesBlinkClosed == null, Is.False, $"{nombre}: ojos cerrados de frente");
+            Assert.That(set.Eyes(BlinkPhase.Closed, FacialEmotion.Neutral) == null, Is.False, $"{nombre}: el parpadeo cerrado tiene sprite");
+            Assert.That(set.Eyes(BlinkPhase.Half, FacialEmotion.Neutral) == null, Is.False, $"{nombre}: y el cuadro medio cae al cerrado, no a nada");
+            Assert.That(set.Eyes(FacialEmotion.Sleeping) == null, Is.False, $"{nombre}: dormir usa unos ojos cerrados");
         }
 
         private static CharacterRig Rig(string nombre)

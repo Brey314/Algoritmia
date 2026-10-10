@@ -75,6 +75,21 @@ namespace Game.Scaffolding
             return emotion;
         }
 
+        /// <summary>
+        /// La expresión con la que se ve al personaje en la línea: la que el guion fija
+        /// (<see cref="EmotionAt"/>) o, si ningún paso la fija, la de la acción que hace durante la línea
+        /// (<see cref="ActionEmotion"/>, con <see cref="Cue"/>). Es la misma que le pone al rig la escena
+        /// narrativa (<c>cue.Emotion</c>, y si es <c>null</c> la de <c>cue.During</c>), resuelta desde los
+        /// datos y no desde el estado del rig, así que la tarjeta del cuadro de diálogo (INC-148) muestra al
+        /// hablante con la misma cara que el personaje en la escena.
+        /// </summary>
+        /// <param name="speaking">Si la línea la dice este personaje: de pie y quieto gesticula (Talk), cuya emoción es la neutra.</param>
+        public static FacialEmotion EmotionOf(NarrativeProp prop, int line, bool speaking)
+        {
+            var scripted = EmotionAt(prop, line);
+            return scripted.HasValue ? scripted.Value : ActionEmotion.For(Cue(prop, line, speaking).During);
+        }
+
         /// <summary>Dónde está el personaje al empezar la línea: el destino del último paso con movimiento anterior a ella.</summary>
         public static Vector2 PositionBefore(NarrativeProp prop, int line)
         {
@@ -315,8 +330,12 @@ namespace Game.Scaffolding
             }
         }
 
-        /// <summary>Lo que el personaje mantiene al llegar a la línea: lo que dejó el último paso anterior, o su salida.</summary>
-        private static ActorAction HeldBefore(NarrativeProp prop, int line)
+        /// <summary>
+        /// Lo que el personaje mantiene al llegar a la línea: lo que dejó el último paso anterior, o su salida.
+        /// Interno y no privado para que las pruebas de datos reconozcan el paso que solo fija la expresión
+        /// (INC-148): el que repite esta acción, sin moverse.
+        /// </summary>
+        internal static ActorAction HeldBefore(NarrativeProp prop, int line)
         {
             var held = prop.ActorStart;
             var latest = -1;

@@ -466,5 +466,190 @@ namespace Game.Scaffolding.Tests
             Assert.That(rig.Emotion, Is.EqualTo(FacialEmotion.Happy));
             Assert.That(rig.Speaking, Is.True);
         }
+
+        // ---- INC-148 (10/10/2026): el arte final trae una sola boca de hablar, ojos cerrados de frente y ni sueño ni alegría ----
+
+        /// <summary>
+        /// El arte final no trae ojos de sueño: dormir es tener los ojos cerrados, y los cerrados del parpadeo
+        /// ya están. Sin ojos de sueño, Sleeping usa los del parpadeo y solo después los neutros; con ojos de
+        /// sueño, esos mandan (el arte provisional y los sets de antes no cambian). El respaldo no es del
+        /// parpadeo: dormido no parpadea y los ojos se quedan cerrados.
+        /// </summary>
+        [Test]
+        public void CharacterFaceSet_INC148_DormidoSinSusOjosUsaLosCerradosDelParpadeo()
+        {
+            var conSueno = SetCon("EyesNeutral", "EyesSleeping", "EyesBlinkClosed");
+            Assert.That(conSueno.Eyes(FacialEmotion.Sleeping), Is.SameAs(_sprites["EyesSleeping"]), "con ojos de sueño, esos mandan");
+
+            var sinSueno = SetCon("EyesNeutral", "EyesBlinkClosed");
+            Assert.That(sinSueno.Eyes(FacialEmotion.Sleeping), Is.SameAs(_sprites["EyesBlinkClosed"]),
+                "sin ojos de sueño, los cerrados del parpadeo: dormir es tener los ojos cerrados");
+            Assert.That(sinSueno.Eyes(FacialEmotion.Neutral), Is.SameAs(_sprites["EyesNeutral"]), "y despierto no cambia nada");
+
+            var soloNeutros = SetCon("EyesNeutral");
+            Assert.That(soloNeutros.Eyes(FacialEmotion.Sleeping), Is.SameAs(_sprites["EyesNeutral"]),
+                "sin ojos cerrados de ninguna clase, el último respaldo sigue siendo la neutra");
+
+            var vacio = ScriptableObject.CreateInstance<CharacterFaceSet>();
+            _creados.Add(vacio);
+            Assert.That(vacio.Eyes(FacialEmotion.Sleeping) == null, Is.True, "y sin nada no se inventa un sprite");
+
+            // En la cara: dormido pone los cerrados y no parpadea (un parpadeo encima los abriría un instante).
+            var ojos = Capa("Ojos");
+            var cara = Cara(ojos, Capa("Boca"), sinSueno);
+            var cerrados = sinSueno.Eyes(FacialEmotion.Sleeping);
+            cara.Emotion = FacialEmotion.Sleeping;
+            for (var i = 0; i < 20; i++)
+            {
+                cara.Step(0.5f);
+                Assert.That(ojos.sprite, Is.SameAs(cerrados), $"a los {(i + 1) * 0.5f} s sigue con los ojos cerrados");
+            }
+        }
+
+        /// <summary>
+        /// Con una sola boca de hablar (la A del arte final) el aleteo alterna esa boca y la cerrada cada
+        /// <c>FlapSeconds</c>, sin pasar por las formas E y U que el set no tiene (caerían al reposo y la boca
+        /// se vería quieta la mitad del tiempo).
+        /// </summary>
+        [Test]
+        public void CharacterFace_INC148_HablandoConSoloLaBocaAbiertaAlternaCadaFlapSeconds()
+        {
+            var boca = Capa("Boca");
+            var cara = Cara(Capa("Ojos"), boca, SetCon("EyesNeutral", "MouthClosed", "MouthA"));
+            Assert.That(boca.sprite, Is.SameAs(_sprites["MouthClosed"]), "callado, la cerrada");
+
+            cara.Speaking = true;
+            Assert.That(boca.sprite, Is.SameAs(_sprites["MouthA"]), "abre en cuanto empieza a hablar");
+            cara.Step(0.05f);
+            Assert.That(boca.sprite, Is.SameAs(_sprites["MouthA"]), "y sigue abierta hasta cumplir FlapSeconds (0,09 s)");
+            cara.Step(0.05f);
+            Assert.That(boca.sprite, Is.SameAs(_sprites["MouthClosed"]), "luego se cierra, sin pasar por E ni U que no existen");
+            cara.Step(0.1f);
+            Assert.That(boca.sprite, Is.SameAs(_sprites["MouthA"]), "y vuelve a abrir");
+            cara.Step(0.1f);
+            Assert.That(boca.sprite, Is.SameAs(_sprites["MouthClosed"]), "alternan, siempre las mismas dos");
+
+            cara.Speaking = false;
+            Assert.That(boca.sprite, Is.SameAs(_sprites["MouthClosed"]), "al callar, el reposo");
+        }
+
+        /// <summary>
+        /// La tarjeta del diálogo es una sola cara que presta el set de quien habla: cambiar el set cambia los
+        /// sprites al instante y rehace los relojes con las bocas del set nuevo (el aleteo recomienza con su ciclo,
+        /// el parpadeo cuenta desde cero). Asignar el mismo set no toca nada: el parpadeo no salta entre dos líneas
+        /// del mismo hablante.
+        /// </summary>
+        [Test]
+        public void CharacterFace_INC148_CambiarDeSetCambiaLaCaraYSusRelojes()
+        {
+            var primero = SetCon("EyesNeutral", "EyesBlinkClosed", "MouthClosed", "MouthA", "MouthE", "MouthU");
+            var delPrimero = new Dictionary<string, Sprite>(_sprites);
+            var segundo = SetCon("EyesNeutral", "EyesBlinkClosed", "MouthClosed", "MouthA"); // una sola boca de hablar
+            var delSegundo = new Dictionary<string, Sprite>(_sprites);
+            Assert.That(delSegundo["EyesNeutral"], Is.Not.SameAs(delPrimero["EyesNeutral"]), "cada set lleva sus propios sprites (si no, la prueba no distingue las caras)");
+
+            var ojos = Capa("Ojos");
+            var boca = Capa("Boca");
+            var cara = Cara(ojos, boca, primero);
+            Assert.That(cara.FaceSet, Is.SameAs(primero));
+            Assert.That(ojos.sprite, Is.SameAs(delPrimero["EyesNeutral"]));
+
+            cara.Speaking = true;
+            cara.Step(3f);        // casi nada del parpadeo (a los 3,5 s)
+            cara.Step(0.1f);
+            Assert.That(boca.sprite, Is.SameAs(delPrimero["MouthU"]), "el primer set cicla A, E, U: a los 3,1 s va en la U");
+
+            cara.FaceSet = segundo;
+
+            Assert.That(cara.FaceSet, Is.SameAs(segundo));
+            Assert.That(ojos.sprite, Is.SameAs(delSegundo["EyesNeutral"]), "los ojos del set nuevo, al instante");
+            Assert.That(boca.sprite, Is.SameAs(delSegundo["MouthA"]), "el aleteo recomienza con la boca del set nuevo");
+            cara.Step(0.1f);
+            Assert.That(boca.sprite, Is.SameAs(delSegundo["MouthClosed"]), "y con SU ciclo: A y cerrada, no la U que seguía");
+
+            // El parpadeo del set nuevo cuenta desde cero: con el reloj viejo (3,1 s) ya habría parpadeado.
+            cara.Step(3.3f);
+            Assert.That(ojos.sprite, Is.SameAs(delSegundo["EyesNeutral"]), "3,4 s después del cambio todavía no toca");
+            cara.Step(0.15f);
+            Assert.That(ojos.sprite, Is.SameAs(delSegundo["EyesBlinkClosed"]), "y a los 3,5 s parpadea, con los ojos cerrados del set nuevo");
+
+            // Asignar el mismo set no reinicia nada.
+            cara.Step(0.2f); // abre de nuevo; el siguiente parpadeo está a ~3,5 s
+            cara.Step(3.3f);
+            cara.FaceSet = segundo;
+            cara.Step(0.3f);
+            Assert.That(ojos.sprite, Is.SameAs(delSegundo["EyesBlinkClosed"]), "el mismo set no reinicia el reloj: parpadea a su hora");
+        }
+
+        // ---- INC-148: la base y la cara de la tarjeta animada del cuadro de diálogo ----
+
+        /// <summary>
+        /// La tarjeta cae al retrato fijo en cuanto le falta algo con qué ser animada: la base, el set, los ojos
+        /// neutros del set o un recuadro de cara que quepa en la base. Ninguna línea se queda sin retrato.
+        /// </summary>
+        [Test]
+        public void PortraitLook_INC148_SinBaseOSinCaraCaeAlRetratoFijo()
+        {
+            var set = SetCon("EyesNeutral", "MouthClosed");
+            var sinOjos = SetCon("MouthClosed", "MouthA");
+            var baseSprite = NuevoSprite("Base");
+            var fijo = NuevoSprite("Fijo");
+            var cara = new Rect(0.3f, 0.5f, 0.4f, 0.3f);
+
+            var sinBase = PortraitLook.Of(null, cara, set, fijo);
+            Assert.That(sinBase.Animated, Is.False, "sin base no hay dónde pintar la cara");
+            Assert.That(sinBase.Art, Is.SameAs(fijo), "el retrato fijo de siempre");
+            Assert.That(sinBase.Set == null, Is.True, "y no arrastra un set que no se usa");
+
+            var sinSet = PortraitLook.Of(baseSprite, cara, null, fijo);
+            Assert.That(sinSet.Animated, Is.False, "una base sin cara con qué pintarla sería un personaje sin cara");
+            Assert.That(sinSet.Art, Is.SameAs(fijo));
+
+            var sinOjosNeutros = PortraitLook.Of(baseSprite, cara, sinOjos, fijo);
+            Assert.That(sinOjosNeutros.Animated, Is.False, "sin los ojos neutros la cara no se puede dibujar en ninguna emoción");
+            Assert.That(sinOjosNeutros.Art, Is.SameAs(fijo));
+
+            var invalidas = new[]
+            {
+                (new Rect(0.3f, 0.5f, 0f, 0.3f), "sin ancho"),
+                (new Rect(0.3f, 0.5f, 0.4f, 0f), "sin alto"),
+                (new Rect(0.3f, 0.5f, -0.2f, 0.3f), "de ancho negativo"),
+                (new Rect(-0.1f, 0.5f, 0.4f, 0.3f), "se sale por la izquierda"),
+                (new Rect(0.3f, -0.1f, 0.4f, 0.3f), "se sale por abajo"),
+                (new Rect(0.8f, 0.5f, 0.4f, 0.3f), "se sale por la derecha"),
+                (new Rect(0.3f, 0.8f, 0.4f, 0.3f), "se sale por arriba"),
+            };
+            foreach (var (rect, motivo) in invalidas)
+            {
+                var look = PortraitLook.Of(baseSprite, rect, set, fijo);
+                Assert.That(look.Animated, Is.False, $"una cara {motivo} no cabe en la base");
+                Assert.That(look.Art, Is.SameAs(fijo), $"una cara {motivo}: retrato fijo");
+            }
+
+            var nada = PortraitLook.Of(null, default, null, null);
+            Assert.That(nada.Animated, Is.False);
+            Assert.That(nada.Art == null, Is.True, "sin base ni retrato fijo no hay tarjeta: el cuadro de diálogo la oculta");
+        }
+
+        [Test]
+        public void PortraitLook_INC148_ConBaseYCaraEsAnimado()
+        {
+            var set = SetCon("EyesNeutral");
+            var baseSprite = NuevoSprite("Base");
+            var fijo = NuevoSprite("Fijo");
+            var cara = new Rect(0.3f, 0.5f, 0.4f, 0.3f);
+
+            var look = PortraitLook.Of(baseSprite, cara, set, fijo);
+
+            Assert.That(look.Animated, Is.True);
+            Assert.That(look.Art, Is.SameAs(baseSprite), "la tarjeta es la base sin cara, no el retrato fijo");
+            Assert.That(look.Face, Is.EqualTo(cara), "el recuadro de la cara tal como lo declara el personaje");
+            Assert.That(look.Set, Is.SameAs(set));
+
+            // La base entera es una cara válida (sin margen) y también la que termina exactamente en el borde.
+            Assert.That(PortraitLook.Of(baseSprite, new Rect(0f, 0f, 1f, 1f), set, fijo).Animated, Is.True, "la cara puede llenar la base");
+            Assert.That(PortraitLook.Of(baseSprite, new Rect(0.25f, 0.5f, 0.75f, 0.5f), set, null).Animated, Is.True,
+                "y puede tocar el borde: el retrato fijo ni se necesita");
+        }
     }
 }

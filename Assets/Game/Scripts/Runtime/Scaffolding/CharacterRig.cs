@@ -95,6 +95,17 @@ namespace Game.Scaffolding
         [Tooltip("Dónde del ciclo arranca el reposo (Idle), en fracción de su duración: 0 = en su primer cuadro. Personajes que se ven juntos en reposo —la portada del menú— llevan fases distintas para no respirar al unísono. Solo afecta al Idle; el gesto de cualquier otra acción empieza siempre en su primer cuadro.")]
         private float idlePhase;
 
+        // INC-148 (10/10/2026): van AL FINAL de los campos serializados. Los siete prefabs se guardaron sin ellos y
+        // Unity deserializa lo que falta con el valor por defecto (sin sprite y rectángulo vacío): hasta que la ronda
+        // del Editor los escribe, la tarjeta del diálogo sigue con el retrato fijo (Portrait).
+        [field: SerializeField]
+        [field: Tooltip("Base de la tarjeta animada del cuadro de diálogo: el personaje SIN cara, cuadrado y de 256 px como mucho (char_<x>_retrato_base). La cara se pinta encima con la expresión de la línea (PortraitFace). Vacío = la tarjeta usa el retrato fijo (Portrait).")]
+        public Sprite PortraitBase { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("Dónde va la cara dentro de PortraitBase, normalizado: (x, y) es la esquina inferior izquierda y (width, height) el tamaño, ambos entre 0 y 1 sobre la base. Con el origen abajo a la izquierda coincide con los anclajes de uGUI (anchorMin = (x, y), anchorMax = (x + width, y + height)). Los ojos y la boca comparten este mismo recuadro.")]
+        public Rect PortraitFace { get; private set; }
+
         private Vector2 _fittedSize = new Vector2(-1f, -1f);
         private bool _mirrored;
         private CharacterView _view = CharacterView.Front;
@@ -115,6 +126,21 @@ namespace Game.Scaffolding
 
         /// <summary>Dónde del ciclo arranca el reposo, de 0 a 1 (ver el campo <c>idlePhase</c>).</summary>
         public float IdlePhase => idlePhase;
+
+        /// <summary>
+        /// El set de la cara de frente de este personaje, el de su <see cref="CharacterFace"/>; <c>null</c> si
+        /// no tiene cara. Es de donde la tarjeta del diálogo (INC-148) toma los ojos y la boca de quien habla.
+        /// No se guarda en el rig: se lee del componente al pedirlo, así que sirve también sobre el prefab
+        /// sin instanciar.
+        /// </summary>
+        public CharacterFaceSet FaceSet
+        {
+            get
+            {
+                var face = _face != null ? _face : GetComponent<CharacterFace>();
+                return face != null ? face.FaceSet : null;
+            }
+        }
 
         /// <summary>
         /// La emoción que el guion fija para este personaje (<see cref="ActorBeat.SetsEmotion"/>);

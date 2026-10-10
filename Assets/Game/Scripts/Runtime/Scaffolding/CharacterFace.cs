@@ -31,6 +31,12 @@ namespace Game.Scaffolding
     /// vista, que es lo que pasaría si cada cara llevara el suyo. Los tiempos salen del set de frente
     /// y, si ese falta, del de perfil. Cada cara cae a «sin dibujar» por su cuenta: la de perfil sin set o
     /// sin sprite se apaga igual que la de frente, y no afecta a la otra.
+    ///
+    /// **La tarjeta del cuadro de diálogo también lleva una (INC-148, 10/10/2026).** Es una cara armada en
+    /// tiempo de ejecución por <c>NarrativeSceneController</c> (<see cref="Bind"/>) que presta el set de
+    /// quien habla en cada línea (<see cref="FaceSet"/>), con la expresión del guion, y parpadea y mueve la
+    /// boca mientras la línea está en pantalla igual que el rig. Con una sola boca de hablar en el set, el
+    /// aleteo alterna esa boca y la cerrada (<see cref="MouthFlap.CycleFor"/>).
     /// </remarks>
     public sealed class CharacterFace : MonoBehaviour
     {
@@ -65,6 +71,40 @@ namespace Game.Scaffolding
         private MouthFlap _flap;
         private FacialEmotion _emotion = FacialEmotion.Neutral;
         private bool _speaking;
+
+        /// <summary>
+        /// El set de la cara de frente: sus sprites y los tiempos del parpadeo y del habla. Asignar otro
+        /// rehace los relojes con los tiempos y las bocas del set nuevo y redibuja al instante (INC-148): es
+        /// lo que hace la tarjeta del cuadro de diálogo, que es una sola cara y presta la de quien habla
+        /// en cada línea. El mismo set de antes no toca nada, así que el parpadeo no salta entre dos líneas
+        /// del mismo hablante.
+        /// </summary>
+        public CharacterFaceSet FaceSet
+        {
+            get => faceSet;
+            set
+            {
+                if (faceSet == value)
+                {
+                    return;
+                }
+
+                faceSet = value;
+                Step(0f); // EnsureClocks ve el set nuevo y rehace el parpadeo y el aleteo
+            }
+        }
+
+        /// <summary>
+        /// Conecta las dos capas de una cara armada en tiempo de ejecución (la de la tarjeta del diálogo,
+        /// INC-148), que no pasa por un prefab con ellas serializadas. Las capas de perfil no cambian.
+        /// Las capas sin sprite quedan apagadas hasta que haya un set con qué dibujarlas.
+        /// </summary>
+        public void Bind(Image eyesImage, Image mouthImage)
+        {
+            eyes = eyesImage;
+            mouth = mouthImage;
+            Step(0f);
+        }
 
         /// <summary>La emoción puesta. Cambiarla cambia los ojos y la boca de reposo al instante.</summary>
         public FacialEmotion Emotion
@@ -190,7 +230,10 @@ namespace Game.Scaffolding
             _clocksFor = clockSet;
             _blink = new BlinkClock(clockSet.BlinkInterval, clockSet.BlinkJitter, clockSet.BlinkSeconds,
                 _random ?? (() => UnityEngine.Random.value));
-            _flap = new MouthFlap(clockSet.FlapSeconds);
+            // El ciclo sale de las bocas que trae el set (INC-148): el arte final trae una sola boca de hablar y
+            // con ella la boca alterna abierta y cerrada, en vez de pasar por formas que no existen.
+            _flap = new MouthFlap(clockSet.FlapSeconds,
+                MouthFlap.CycleFor(clockSet.MouthA != null, clockSet.MouthE != null, clockSet.MouthU != null));
         }
 
         private static void Show(Image image, Sprite sprite)

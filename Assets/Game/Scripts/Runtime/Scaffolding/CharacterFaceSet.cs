@@ -49,7 +49,7 @@ namespace Game.Scaffolding
         public Sprite EyesFocused { get; private set; }
 
         [field: SerializeField]
-        [field: Tooltip("Ojos de la emoción Sleeping: cerrados, con pestañas hacia abajo. Mientras duerme no hay parpadeo.")]
+        [field: Tooltip("Ojos de la emoción Sleeping: cerrados, con pestañas hacia abajo. Mientras duerme no hay parpadeo. Opcional: si se deja vacío (el arte final no trae sueño), duerme con los ojos cerrados del parpadeo.")]
         public Sprite EyesSleeping { get; private set; }
 
         [field: SerializeField]
@@ -113,7 +113,10 @@ namespace Game.Scaffolding
         public float FlapSeconds { get; private set; } = 0.09f;
 
         /// <summary>
-        /// Los ojos de la emoción; si el set no los trae, los de Neutral; si tampoco, <c>null</c>.
+        /// Los ojos de la emoción; si el set no los trae, los de Neutral; si tampoco, <c>null</c>. Los de
+        /// Sleeping caen primero a los ojos cerrados del parpadeo (<see cref="EyesBlinkClosed"/>) y solo
+        /// después a los de Neutral: dormir es tener los ojos cerrados, y unos ojos abiertos en un personaje
+        /// dormido dirían lo contrario (INC-148).
         /// </summary>
         public Sprite Eyes(FacialEmotion emotion)
         {
@@ -123,7 +126,7 @@ namespace Game.Scaffolding
                 case FacialEmotion.Surprised: return OrNeutral(EyesSurprised, EyesNeutral);
                 case FacialEmotion.Worried: return OrNeutral(EyesWorried, EyesNeutral);
                 case FacialEmotion.Focused: return OrNeutral(EyesFocused, EyesNeutral);
-                case FacialEmotion.Sleeping: return OrNeutral(EyesSleeping, EyesNeutral);
+                case FacialEmotion.Sleeping: return OrNeutral(EyesSleeping, OrNeutral(EyesBlinkClosed, EyesNeutral));
                 default: return EyesNeutral;
             }
         }
