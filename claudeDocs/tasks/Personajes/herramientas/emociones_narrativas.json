@@ -1,0 +1,638 @@
+{
+  "version": 1,
+  "nota": "Emociones de la cara por línea, según el guion (INC-148). Cada entrada es un cambio que dura hasta la siguiente del mismo personaje.",
+  "secuencias": {
+    "N1_Apertura": {
+      "lineas": {
+        "0": {
+          "texto": "Noche helada, sin luna. La",
+          "papa": "Worried",
+          "mama": "Worried",
+          "nina": "Worried",
+          "nino": "Worried",
+          "_razon": "guion 1.3.1: noche helada, la familia camina a la intemperie entre sonidos extraños"
+        },
+        "1": {
+          "texto": "Se escuchan animales y",
+          "nino": "Surprised",
+          "_razon": "guion 1.3.1: «se escuchan animales y sonidos extraños»; el niño se sobresalta (su paso Surprise)"
+        },
+        "2": {
+          "texto": "Algo se acerca entre la",
+          "nino": "Worried",
+          "_razon": "guion 1.3.1: «algo se acerca entre la maleza», corren a la cueva; el miedo sigue hasta «Solo oscuridad»"
+        }
+      }
+    },
+    "N1_AparicionGuia": {
+      "lineas": {
+        "0": {
+          "texto": "En la oscuridad total, un",
+          "papa": "Worried",
+          "mama": "Worried",
+          "nina": "Worried",
+          "nino": "Worried",
+          "algoritm": "Happy",
+          "_razon": "guion 1.4.1: en la oscuridad total aparece el destello; la familia aún tiene miedo (Algoritm dice «No tengan miedo»); el guía nace feliz"
+        },
+        "4": {
+          "texto": "La niña abre mucho los",
+          "nina": "Surprised",
+          "nino": "Surprised",
+          "_razon": "guion 1.4.1: «La niña abre mucho los ojos. El niño suelta un «¡Oh!»»"
+        },
+        "5": {
+          "texto": "Mamá y papá se miran sin",
+          "papa": "Surprised",
+          "mama": "Surprised",
+          "_razon": "guion 1.4.1: «Mamá y papá se miran sin poder creerlo»"
+        },
+        "6": {
+          "texto": "Algoritm gira en el aire",
+          "nino": "Happy",
+          "_razon": "guion 1.4.1: Algoritm gira «como un trompo feliz»; el niño celebra"
+        },
+        "7": {
+          "texto": "Avanza despacio hacia el",
+          "papa": "Neutral",
+          "mama": "Neutral",
+          "nina": "Neutral",
+          "_razon": "guion 1.4.1: siguen al guía hacia el fondo, ya sin miedo, atentos"
+        },
+        "8": {
+          "texto": "¿Ven esa piedra gris? Eso",
+          "algoritm": "Neutral",
+          "_razon": "guion 1.4.1: el guía explica qué es el sílex y el pedernal, señalando"
+        },
+        "9": {
+          "texto": "Son piedras muy",
+          "algoritm": "Happy",
+          "_razon": "guion 1.4.1: «¡pero ya van a descubrir por qué!», en tono de juego"
+        }
+      }
+    },
+    "N1_Hallazgo": {
+      "lineas": {
+        "0": {
+          "texto": "¿Se fue?",
+          "papa": "Neutral",
+          "mama": "Neutral",
+          "nina": "Worried",
+          "nino": "Neutral",
+          "_razon": "guion 1.4.2: «¿Se fue?», la niña inquieta en la oscuridad; papá responde con calma"
+        },
+        "2": {
+          "texto": "El niño se arrodilla y",
+          "nino": "Focused",
+          "_razon": "guion 1.4.2: el niño se arrodilla y busca a tientas las piedras"
+        },
+        "4": {
+          "texto": "La niña las toca también",
+          "nina": "Focused",
+          "_razon": "guion 1.4.2: la niña pasa los dedos por el sílex y las golpea «como si les preguntara algo»"
+        },
+        "6": {
+          "texto": "¡CLIC! Un destello",
+          "papa": "Surprised",
+          "mama": "Surprised",
+          "nina": "Surprised",
+          "nino": "Surprised",
+          "_razon": "guion 1.4.2: ¡CLIC!, el destello: «todos lo sienten»"
+        },
+        "7": {
+          "texto": "¿Lo viste?",
+          "mama": "Neutral",
+          "_razon": "guion 1.4.2: pasa el sobresalto (su paso Idle)"
+        },
+        "8": {
+          "texto": "¡Sí! ¡Otra vez, otra vez!",
+          "nino": "Happy",
+          "_razon": "guion 1.4.2: «¡Sí! ¡Otra vez, otra vez!», entusiasmo"
+        },
+        "9": {
+          "texto": "Papá, que ha estado",
+          "papa": "Focused",
+          "nina": "Neutral",
+          "_razon": "guion 1.4.2: papá, que escuchaba en silencio, se pone de pie despacio y toma la palabra"
+        },
+        "10": {
+          "texto": "Esperen. Estas piedras",
+          "papa": "Worried",
+          "_razon": "guion 1.4.2: «Estas piedras pueden ser peligrosas si no sabemos usarlas bien»"
+        },
+        "11": {
+          "texto": "Ustedes dos quédense con",
+          "papa": "Focused",
+          "nino": "Neutral",
+          "_razon": "guion 1.4.2: «Yo lo intento»: decisión firme; los niños retroceden con mamá"
+        },
+        "12": {
+          "texto": "El niño quiere protestar",
+          "mama": "Happy",
+          "nino": "Worried",
+          "_razon": "guion 1.4.2: el niño quiere protestar (no hay cara de enojo: Worried) y mamá lo toma del hombro con suavidad"
+        },
+        "13": {
+          "texto": "Papá sabe lo que hace.",
+          "nino": "Neutral",
+          "_razon": "guion 1.4.2: «Papá sabe lo que hace»: el niño se calma"
+        },
+        "14": {
+          "texto": "Papá se arrodilla en el",
+          "mama": "Neutral",
+          "_razon": "guion 1.4.2: mamá mira a papá amontonar las hojas, confiada"
+        }
+      },
+      "voces": {
+        "16": {
+          "texto": "Tienes las piedras y tienes",
+          "emocion": "Neutral",
+          "_razon": "guion 1.4.2: el guía (fuera de escena) describe lo que papá tiene; no resuelve (CP-06)"
+        },
+        "17": {
+          "texto": "Lo que no sabes todavía es",
+          "emocion": "Neutral",
+          "_razon": "guion 1.4.2: «¿Desde dónde vas a intentarlo?»: pregunta orientadora"
+        }
+      }
+    },
+    "N1_NacimientoDelFuego": {
+      "lineas": {
+        "0": {
+          "texto": "Una llama naranja y dorada",
+          "papa": "Surprised",
+          "mama": "Surprised",
+          "nina": "Surprised",
+          "nino": "Surprised",
+          "_razon": "guion 1.4.4: la llama crece y la cueva se llena de luz; papá «se queda quieto... con las manos temblorosas»"
+        },
+        "3": {
+          "texto": "¡PAPÁAAA! ¡LO LOGRASTE!",
+          "nina": "Happy",
+          "nino": "Happy",
+          "_razon": "guion 1.4.4: «¡PAPÁAAA! ¡LO LOGRASTE!»"
+        },
+        "4": {
+          "texto": "Los niños salen corriendo y",
+          "mama": "Happy",
+          "_razon": "guion 1.4.4: mamá llega «riendo y llorando al mismo tiempo»"
+        },
+        "5": {
+          "texto": "Papá los abraza a todos",
+          "papa": "Happy",
+          "_razon": "guion 1.4.4: papá los abraza a todos"
+        },
+        "8": {
+          "texto": "En el corazón de las llamas",
+          "papa": "Surprised",
+          "mama": "Surprised",
+          "nina": "Surprised",
+          "nino": "Surprised",
+          "algoritm": "Happy",
+          "_razon": "guion 1.4.4: aparece una silueta en el corazón de las llamas; Algoritm «brillando más que nunca»"
+        },
+        "10": {
+          "texto": "¿Ven? Yo no traje la luz",
+          "papa": "Happy",
+          "mama": "Happy",
+          "nina": "Happy",
+          "nino": "Happy",
+          "_razon": "guion 1.4.4: «El resto lo hizo papá»: vuelve la alegría"
+        },
+        "13": {
+          "texto": "Y algo más. La primera vez",
+          "algoritm": "Neutral",
+          "_razon": "guion 1.4.4: el guía explica qué hizo papá y nombra la habilidad (iterar)"
+        },
+        "16": {
+          "texto": "Esa noche la familia duerme",
+          "papa": "Sleeping",
+          "mama": "Sleeping",
+          "nina": "Sleeping",
+          "nino": "Sleeping",
+          "_razon": "guion 1.4.4: «Esa noche la familia duerme caliente y unida»"
+        }
+      },
+      "rumbos": {
+        "papa": {
+          "0": "Left",
+          "8": "Left"
+        }
+      }
+    },
+    "N2_PuenteI": {
+      "lineas": {
+        "0": {
+          "texto": "Amanece. La familia sale de",
+          "papa": "Neutral",
+          "mama": "Neutral",
+          "nina": "Neutral",
+          "nino": "Neutral",
+          "algoritm": "Neutral",
+          "_razon": "guion 1.5: amanece y la familia sale de la cueva; el guía plantea el problema (su único paso es Appear, así que esta cara dura toda la secuencia)"
+        },
+        "2": {
+          "texto": "Comida.",
+          "mama": "Focused",
+          "nino": "Happy",
+          "_razon": "guion 1.5: «Comida.» (mamá da con la respuesta); el niño celebra"
+        }
+      }
+    },
+    "N2_PuenteI_Bosque": {
+      "lineas": {
+        "0": {
+          "texto": "La familia sale a recolectar.",
+          "papa": "Neutral",
+          "mama": "Neutral",
+          "nina": "Neutral",
+          "nino": "Neutral",
+          "_razon": "guion 1.5: la familia sale a recolectar"
+        },
+        "1": {
+          "texto": "Papá carga grandes troncos",
+          "papa": "Focused",
+          "mama": "Focused",
+          "nina": "Focused",
+          "nino": "Focused",
+          "_razon": "guion 1.5: papá carga grandes troncos; mamá y los niños recogen alimentos"
+        },
+        "2": {
+          "texto": "Al momento de regresar",
+          "mama": "Worried",
+          "nina": "Worried",
+          "nino": "Worried",
+          "_razon": "guion 1.5: «aparece un problema nuevo» al regresar"
+        },
+        "3": {
+          "texto": "Han recolectado mucho, pero",
+          "papa": "Worried",
+          "_razon": "guion 1.5: «Esto pesa demasiado... no puedo llevarlo todo» (su empuje de L3 dura hasta el final: no hay paso posterior donde cambiarla)"
+        },
+        "5": {
+          "texto": "¡Yo puedo arrastrarlo!",
+          "nino": "Happy",
+          "_razon": "guion 1.5: «¡Yo puedo arrastrarlo!», con ánimo"
+        },
+        "6": {
+          "texto": "Lo intenta. Las cosas se",
+          "nina": "Focused",
+          "nino": "Focused",
+          "_razon": "guion 1.5: «Lo intenta»: esfuerzo; la niña observa"
+        },
+        "7": {
+          "texto": "Algo no está funcionando",
+          "mama": "Focused",
+          "nino": "Focused",
+          "_razon": "guion 1.5: «Algo no está funcionando... debemos mirar mejor»: de la inquietud a pensar"
+        },
+        "8": {
+          "texto": "¿Y si el problema no es la",
+          "algoritm": "Happy",
+          "_razon": "guion 1.5: el guía aparece cuando la niña hace la pregunta correcta (la forma, no la fuerza)"
+        }
+      }
+    },
+    "N2_Escena21_Bosque": {
+      "lineas": {
+        "0": {
+          "texto": "Bosque. Objetos dispersos",
+          "papa": "Neutral",
+          "mama": "Neutral",
+          "nina": "Neutral",
+          "nino": "Neutral",
+          "algoritm": "Neutral",
+          "_razon": "guion 1.6.1.1: bosque, objetos dispersos; el guía indica qué observar"
+        },
+        "1": {
+          "texto": "A un lado, la caja de",
+          "papa": "Focused",
+          "_razon": "guion 1.6.1.1: la caja de alimentos que la familia no logra mover"
+        },
+        "2": {
+          "texto": "Observen bien. No todo lo",
+          "papa": "Neutral",
+          "_razon": "papá deja de empujar y escucha al guía (su paso Idle)"
+        },
+        "3": {
+          "texto": "Miren... algunas cosas se",
+          "mama": "Focused",
+          "_razon": "guion 1.6.1.1: «algunas cosas se mueven más fácil que otras»: observación"
+        },
+        "4": {
+          "texto": "Voy a probar todas.",
+          "nina": "Focused",
+          "nino": "Happy",
+          "_razon": "guion 1.6.1.1: «Voy a probar todas», con ganas; la niña observa"
+        },
+        "5": {
+          "texto": "Solo debemos fijarnos en lo",
+          "nino": "Focused",
+          "_razon": "guion 1.6.1.1: el niño prueba un objeto; la niña: «Solo debemos fijarnos en lo que realmente funciona»"
+        }
+      }
+    },
+    "N2_Escena22_ElPatron": {
+      "lineas": {
+        "0": {
+          "texto": "La caja rueda sobre los",
+          "papa": "Neutral",
+          "mama": "Neutral",
+          "nina": "Happy",
+          "nino": "Neutral",
+          "algoritm": "Happy",
+          "_razon": "guion 1.6.1.3: «La caja rueda sobre los troncos y avanza sin esfuerzo»; el guía gira contento y luego elogia el patrón"
+        },
+        "1": {
+          "texto": "¡Este tronco rueda!",
+          "nina": "Focused",
+          "nino": "Happy",
+          "_razon": "guion 1.6.1.3: «¡Este tronco rueda!»; la niña observa"
+        },
+        "2": {
+          "texto": "Pero esa piedra no...",
+          "papa": "Focused",
+          "_razon": "guion 1.6.1.3: «Pero esa piedra no...»: compara, desconcertado"
+        },
+        "3": {
+          "texto": "¿Qué diferencia hay?",
+          "mama": "Focused",
+          "_razon": "guion 1.6.1.3: «¿Qué diferencia hay?»"
+        },
+        "4": {
+          "texto": "Los que ruedan... son",
+          "nina": "Surprised",
+          "_razon": "guion 1.6.1.3: «Los que ruedan... son redondos»: el descubrimiento"
+        },
+        "5": {
+          "texto": "Acabas de encontrar un patrón.",
+          "mama": "Happy",
+          "nina": "Happy",
+          "nino": "Happy",
+          "_razon": "guion 1.6.1.3: «Acabas de encontrar un patrón»: celebran"
+        }
+      }
+    },
+    "N2_Escena23_Construccion": {
+      "lineas": {
+        "0": {
+          "texto": "Si hacemos algo redondo",
+          "papa": "Focused",
+          "mama": "Neutral",
+          "nina": "Focused",
+          "nino": "Neutral",
+          "algoritm": "Neutral",
+          "_razon": "guion 1.6.2.1: «Si hacemos algo redondo... podemos usarlo» / «Construyamos uno»: idea y decisión; el guía da las instrucciones con calma"
+        },
+        "2": {
+          "texto": "¡Probemos!",
+          "nino": "Happy",
+          "_razon": "guion 1.6.2.1: «¡Probemos!»"
+        },
+        "3": {
+          "texto": "Paso a paso... podemos",
+          "mama": "Focused",
+          "_razon": "guion 1.6.2.1: «Paso a paso... podemos lograrlo»"
+        }
+      }
+    },
+    "N2_Escena24_Regreso": {
+      "lineas": {
+        "0": {
+          "texto": "Ahora tienen la carretilla",
+          "papa": "Neutral",
+          "mama": "Neutral",
+          "nina": "Neutral",
+          "nino": "Neutral",
+          "algoritm": "Neutral",
+          "_razon": "guion 1.6.3.1: atardece; el guía plantea qué hacer primero y qué después"
+        },
+        "2": {
+          "texto": "Empujar...",
+          "papa": "Focused",
+          "_razon": "guion 1.6.3.1: «Empujar...»: piensan en voz alta el orden de los pasos"
+        },
+        "3": {
+          "texto": "Girar...",
+          "nino": "Focused",
+          "_razon": "guion 1.6.3.1: «Girar...»"
+        },
+        "4": {
+          "texto": "Evitar la piedra...",
+          "mama": "Focused",
+          "_razon": "guion 1.6.3.1: «Evitar la piedra...»"
+        },
+        "5": {
+          "texto": "Si ordenamos bien los",
+          "nina": "Focused",
+          "_razon": "guion 1.6.3.1: «Si ordenamos bien los pasos... funcionará mejor»"
+        }
+      }
+    },
+    "N2_Escena25_Cierre": {
+      "lineas": {
+        "0": {
+          "texto": "La familia está en su",
+          "papa": "Happy",
+          "mama": "Happy",
+          "nina": "Happy",
+          "nino": "Happy",
+          "_razon": "guion 1.6.4: de noche, en el refugio alrededor del fuego, preparando alimentos con la carretilla cargada"
+        },
+        "2": {
+          "texto": "Las grandes ideas nacen",
+          "algoritm": "Happy",
+          "_razon": "guion 1.6.4: el guía elogia: «hicieron girar su pensamiento» y nombra abstraer y algoritmo"
+        }
+      },
+      "rumbos": {
+        "mama": {
+          "0": "Left",
+          "2": "Left"
+        },
+        "nina": {
+          "0": "Left"
+        }
+      }
+    },
+    "N3_PuenteII": {
+      "lineas": {
+        "0": {
+          "texto": "La familia celebra en el",
+          "papa": "Happy",
+          "mama": "Happy",
+          "nina": "Happy",
+          "nino": "Happy",
+          "algoritm": "Happy",
+          "_razon": "guion 1.7: «la familia celebra en el refugio»; «¡Lo lograron!»"
+        },
+        "1": {
+          "texto": "¡Lo lograron! La rueda los",
+          "nina": "Neutral",
+          "_razon": "guion 1.7: «Pero hay algo que deben saber...»: la niña atiende (después pregunta «¿Qué es eso?»)"
+        }
+      }
+    },
+    "N3_PuenteII_Horizonte": {
+      "lineas": {
+        "2": {
+          "texto": "Otros como ustedes. Más",
+          "algoritm": "Happy",
+          "_razon": "guion 1.7: «Un lugar donde ya saben cultivar, construir y vivir juntos»"
+        },
+        "4": {
+          "texto": "El camino existe… pero hay",
+          "algoritm": "Worried",
+          "_razon": "guion 1.7: «El camino existe... pero hay un problema» (en N3_PuenteII_Rio pasa a Focused: «Hay que pensar de nuevo»)"
+        }
+      },
+      "voces": {
+        "1": {
+          "texto": "¿Qué es eso?",
+          "emocion": "Surprised",
+          "_razon": "guion 1.7: «¿Qué es eso?», ante las fogatas lejanas"
+        },
+        "3": {
+          "texto": "¿Podemos llegar?",
+          "emocion": "Neutral",
+          "_razon": "guion 1.7: «¿Podemos llegar?», pregunta esperanzada"
+        }
+      }
+    },
+    "N3_PuenteII_Rio": {
+      "lineas": {
+        "0": {
+          "texto": "La familia avanza con la",
+          "papa": "Surprised",
+          "mama": "Surprised",
+          "nina": "Surprised",
+          "nino": "Surprised",
+          "_razon": "guion 1.7: «El camino se corta abruptamente. Frente a ellos: el río»"
+        },
+        "1": {
+          "texto": "¡La carretilla no sirve aquí!",
+          "nino": "Worried",
+          "_razon": "guion 1.7: «¡La carretilla no sirve aquí!»"
+        },
+        "2": {
+          "texto": "Necesitamos cruzar primero.",
+          "mama": "Focused",
+          "_razon": "guion 1.7: «Necesitamos cruzar primero»"
+        },
+        "3": {
+          "texto": "Exacto. La rueda los trajo",
+          "nino": "Surprised",
+          "algoritm": "Focused",
+          "_razon": "guion 1.7: aparece el guía en forma de gota: «Hay que pensar de nuevo»"
+        }
+      }
+    },
+    "N3_Escena31_Llegada": {
+      "lineas": {
+        "0": {
+          "texto": "¡Alto, viajeros! Este río",
+          "papa": "Neutral",
+          "mama": "Neutral",
+          "nina": "Neutral",
+          "nino": "Surprised",
+          "algoritm": "Neutral",
+          "_razon": "guion 1.8.1: «¡Alto, viajeros!»; el guía plantea descomponer el problema"
+        },
+        "1": {
+          "texto": "Primero, descompongamos el",
+          "nina": "Focused",
+          "_razon": "guion 1.8.1: «¿cuántas cosas necesitamos para cruzar?»: la niña piensa"
+        },
+        "2": {
+          "texto": "¡Mmm… llegar al otro lado!",
+          "nino": "Focused",
+          "_razon": "guion 1.8.1: «¡Mmm... llegar al otro lado!»: el niño piensa en voz alta"
+        },
+        "6": {
+          "texto": "¿Dónde están? En el bosque",
+          "papa": "Happy",
+          "mama": "Happy",
+          "nina": "Happy",
+          "nino": "Happy",
+          "algoritm": "Happy",
+          "_razon": "guion 1.8.1: «¡Ya tenemos nuestra lista!»"
+        },
+        "7": {
+          "texto": "En pantalla aparece la",
+          "mama": "Focused",
+          "_razon": "guion 1.8.1: aparece la lista de tareas; mamá, que la recorrerá en la mecánica, se dispone a empezar"
+        }
+      }
+    },
+    "N3_Escena32_PrimerIntento": {
+      "lineas": {
+        "0": {
+          "texto": "La familia empuja la balsa",
+          "papa": "Focused",
+          "mama": "Focused",
+          "nina": "Focused",
+          "nino": "Focused",
+          "_razon": "guion 1.8.4.1: «La familia empuja la balsa al agua y sube»"
+        },
+        "1": {
+          "texto": "¡Vamos!",
+          "papa": "Happy",
+          "nino": "Happy",
+          "_razon": "guion 1.8.4.1: «¡Vamos!»"
+        },
+        "2": {
+          "texto": "La balsa gira y se hunde",
+          "papa": "Surprised",
+          "mama": "Surprised",
+          "nina": "Surprised",
+          "nino": "Surprised",
+          "_razon": "guion 1.8.4.1: «La balsa gira y se hunde por un lado. La familia cae al agua»"
+        },
+        "3": {
+          "texto": "¡Algo está mal!",
+          "mama": "Worried",
+          "_razon": "guion 1.8.4.1: «¡Algo está mal!» (momentáneo)"
+        },
+        "4": {
+          "texto": "No pasa nada. Esto se llama",
+          "papa": "Focused",
+          "mama": "Focused",
+          "nina": "Focused",
+          "nino": "Focused",
+          "algoritm": "Happy",
+          "_razon": "guion 1.8.4.1: «No pasa nada. Esto se llama depurar... ¿Qué salió mal?»: la familia se anima a buscar la falla (CP-02: nadie queda en Worried)"
+        }
+      }
+    },
+    "N3_Escena33_Cruce": {
+      "lineas": {
+        "0": {
+          "texto": "La familia sube a la balsa",
+          "papa": "Happy",
+          "mama": "Happy",
+          "nina": "Happy",
+          "nino": "Happy",
+          "_razon": "guion 1.8.5: «Esta vez flota con estabilidad. La vela se llena de viento»"
+        },
+        "4": {
+          "texto": "Lo lograron porque pensaron",
+          "algoritm": "Happy",
+          "_razon": "guion 1.8.5: «Lo lograron porque pensaron como exploradores inteligentes»"
+        }
+      }
+    },
+    "N3_EscenaFinal": {
+      "lineas": {
+        "0": {
+          "texto": "La familia camina hacia las",
+          "papa": "Happy",
+          "mama": "Happy",
+          "nina": "Happy",
+          "nino": "Happy",
+          "algoritm": "Happy",
+          "_razon": "guion 1.9: la familia camina hacia las fogatas; el guía recapitula los tres problemas y se despide («eso ya lo llevan puesto»)"
+        }
+      }
+    }
+  }
+}
