@@ -20,3 +20,17 @@ Assets/Game/Audio/**
 # quedan. Los PNG se nombran por caso (PF-RF10-03_lista.png) y el caso esta en casos.md.
 claudeDocs/tasks/OE4/evidencias/**/*.png
 claudeDocs/tasks/OE4/evidencias/**/*.txt
+
+# Mismo caso que OE4/evidencias: capturas del Editor para verificar una ronda de
+# trabajo (personajes animados, ronda de ajustes de diseño del 08/10/2026) y el
+# arte de perfil/expresiones que entrega la colaboradora antes de importarlo. Lo
+# que dicen ya esta en el *-Resultados.md o el INVENTARIO.md de al lado; serian
+# cientos de subagentes de vision por un --update (660+ imagenes solo en estas
+# tres carpetas, 10/10/2026 — las de Personajes/capturas son .jpg, no .png).
+claudeDocs/tasks/Personajes/capturas/**/*.png
+claudeDocs/tasks/Personajes/capturas/**/*.jpg
+claudeDocs/tasks/Personajes/entregas/**/*.png
+claudeDocs/tasks/Personajes/entregas/**/*.jpg
+claudeDocs/tasks/Ajustes-Diseno-2026-10-08/capturas/**/*.png
+claudeDocs/tasks/Ajustes-Diseno-2026-10-08/capturas/**/*.jpg
+claudeDocs/tasks/Ajustes-Diseno-2026-10-08/capturas/**/*.txt

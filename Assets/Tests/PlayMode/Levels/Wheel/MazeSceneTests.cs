@@ -298,7 +298,7 @@ namespace Game.Levels.Wheel.Tests
 
         /// <summary>
         /// El entorno lleva el mismo contorno que la tarjeta de la secuencia (decisión de Santiago,
-        /// 08/10/2026): #C4A882, <c>ui_boton</c> en nueve partes y 8 px de grosor, y sin cortes en
+        /// 10/10/2026, que lo separa del fondo #C4A882): #6A5A44, <c>ui_boton</c> en nueve partes y 8 px de grosor, y sin cortes en
         /// las esquinas. Los 8 px son del lienzo y no se escalan con la ilustración —por eso el
         /// entorno ya no lleva un <c>Outline</c>, que sí se escala—, y las esquinas se cierran así:
         /// en la tarjeta el <c>Fondo</c> es otro <c>ui_boton</c> con los arcos concéntricos con los
@@ -317,7 +317,7 @@ namespace Game.Levels.Wheel.Tests
 
             const float grosor = 8f;
             var escala = maze.Environment.canvas.rootCanvas.scaleFactor;
-            var contorno = new Color(0.769f, 0.659f, 0.510f); // #C4A882
+            var contorno = new Color(0.41568628f, 0.35294118f, 0.26666668f); // #6A5A44
             var relleno = maze.SequenceViewport.parent.GetComponent<Image>(); // Panel_Secuencia/Fondo
             var tarjeta = relleno.transform.parent.GetComponent<Image>(); // Panel_Secuencia
             var marco = maze.EnvironmentFrame;
@@ -325,7 +325,7 @@ namespace Game.Levels.Wheel.Tests
             // Los dos son el mismo contorno: color, sprite y nueve partes.
             foreach (var (nombre, imagen) in new[] { ("la tarjeta", tarjeta), ("el marco del entorno", marco) })
             {
-                Assert.That(imagen.color, Is.EqualTo(contorno).Using(ColorEqualityComparer.Instance), $"{nombre}: contorno #C4A882");
+                Assert.That(imagen.color, Is.EqualTo(contorno).Using(ColorEqualityComparer.Instance), $"{nombre}: contorno #6A5A44");
                 Assert.That(imagen.sprite.name, Is.EqualTo("ui_boton"), $"{nombre}: lleva ui_boton");
                 Assert.That(imagen.type, Is.EqualTo(Image.Type.Sliced), $"{nombre}: en nueve partes, con las esquinas redondeadas");
             }
@@ -394,7 +394,7 @@ namespace Game.Levels.Wheel.Tests
 
         /// <summary>
         /// La salida no se marca con un cuadro de color —se lee en el entorno, en el hueco del
-        /// seto—; el fondo de la pantalla es uno solo, el ámbar #E8A33D (decisión de Santiago,
+        /// seto—; el fondo de la pantalla es uno solo, el ámbar #C4A882 (decisión de Santiago,
         /// 08/10/2026): el panel que rodea al entorno se pinta con el <c>BackdropColor</c> del asset,
         /// y <c>Fondo_Escena</c>, que va detrás de la tarjeta, lo comparte (lo vigila
         /// <c>MazeSceneDataTests</c>); y el entorno lleva su contraste y saturación en una copia del
@@ -415,7 +415,7 @@ namespace Game.Levels.Wheel.Tests
             Assert.That(panel.color.r, Is.EqualTo(layout.BackdropColor.r).Within(0.002f), "el panel es el color de fondo del asset");
             Assert.That(panel.color.g, Is.EqualTo(layout.BackdropColor.g).Within(0.002f));
             Assert.That(panel.color.b, Is.EqualTo(layout.BackdropColor.b).Within(0.002f));
-            Assert.That(panel.color, Is.EqualTo(new Color(0.910f, 0.639f, 0.239f)).Using(ColorEqualityComparer.Instance), "ámbar #E8A33D");
+            Assert.That(panel.color, Is.EqualTo(new Color(0.769f, 0.659f, 0.510f)).Using(ColorEqualityComparer.Instance), "ámbar #C4A882");
 
             Assert.That(maze.Environment.material, Is.Not.SameAs(layout.EnvironmentMaterial), "una copia por escena");
             Assert.That(maze.Environment.material.GetFloat("_Contrast"), Is.EqualTo(layout.Contrast), "con el contraste del asset");

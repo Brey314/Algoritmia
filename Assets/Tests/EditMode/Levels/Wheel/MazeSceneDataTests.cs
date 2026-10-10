@@ -51,7 +51,7 @@ namespace Game.Levels.Wheel.Tests
                 var delAsset = ColorUtility.ToHtmlStringRGBA(controlador.Layout.BackdropColor);
 
                 Assert.That(fondoEscena, Is.EqualTo(delAsset), "Fondo_Escena y MazeLayout.BackdropColor son el mismo color");
-                Assert.That(delAsset, Is.EqualTo("E8A33DFF"), "ámbar de atención #E8A33D");
+                Assert.That(delAsset, Is.EqualTo("C4A882FF"), "ámbar de atención #C4A882");
             });
         }
 
