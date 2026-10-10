@@ -14,20 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.CharacterFaceSet
   <EyesNeutral>k__BackingField: {fileID: 21300000, guid: 0c63491e67a50734f963ac81f059fcf5, type: 3}
   <EyesHappy>k__BackingField: {fileID: 0}
-  <EyesSurprised>k__BackingField: {fileID: 0}
-  <EyesWorried>k__BackingField: {fileID: 0}
-  <EyesFocused>k__BackingField: {fileID: 0}
+  <EyesSurprised>k__BackingField: {fileID: 21300000, guid: fecb9dd073aa4dc4e922490860b54312, type: 3}
+  <EyesWorried>k__BackingField: {fileID: 21300000, guid: 2da0522fdf7c7c947809373aff1a141f, type: 3}
+  <EyesFocused>k__BackingField: {fileID: 21300000, guid: 69c710fe8ff850747975607a130c3287, type: 3}
   <EyesSleeping>k__BackingField: {fileID: 0}
   <EyesBlinkHalf>k__BackingField: {fileID: 0}
-  <EyesBlinkClosed>k__BackingField: {fileID: 0}
+  <EyesBlinkClosed>k__BackingField: {fileID: 21300000, guid: 51bd2de6266b3324983d30716122a753, type: 3}
   <MouthClosed>k__BackingField: {fileID: 21300000, guid: 2a6e48fb05cd44348b452908801813b4, type: 3}
-  <MouthA>k__BackingField: {fileID: 0}
+  <MouthA>k__BackingField: {fileID: 21300000, guid: f4c54ceed8fd4f343af04f95be6d62c7, type: 3}
   <MouthE>k__BackingField: {fileID: 0}
   <MouthU>k__BackingField: {fileID: 0}
   <MouthHappy>k__BackingField: {fileID: 0}
-  <MouthSurprised>k__BackingField: {fileID: 0}
-  <MouthWorried>k__BackingField: {fileID: 0}
-  <MouthFocused>k__BackingField: {fileID: 0}
+  <MouthSurprised>k__BackingField: {fileID: 21300000, guid: c2d2ed8a577414e45b854edc55fd2619, type: 3}
+  <MouthWorried>k__BackingField: {fileID: 21300000, guid: 49274623a9606d74b9c4fbb7b5d8c36b, type: 3}
+  <MouthFocused>k__BackingField: {fileID: 21300000, guid: 9dc9de4b0a7fec142a9dcfa9d35a0a7d, type: 3}
   <BlinkInterval>k__BackingField: 3.5
   <BlinkJitter>k__BackingField: 1.2
   <BlinkSeconds>k__BackingField: 0.12
