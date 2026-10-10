@@ -3396,9 +3396,17 @@ texto del guion). PlayMode: `NarrativeScene_INC148_ElRetratoTieneLaCaraLaEmocion
 clásico. Las pruebas que decían «solo parpadea el perfil» o «Algoritm sin parpadeo» se revisaron: el
 cambio de conducta es deliberado.
 
-**Verificación en el Editor.** ⟦ronda del Editor⟧ (prefabs de los siete personajes con `PortraitBase`/
-`PortraitFace` y sus sets de cara, comparados objeto por objeto contra `HEAD`; pruebas de EditMode y PlayMode;
-suite completa; capturas de las líneas y de la tarjeta de cada hablante).
+**Verificación en el Editor (`23d7e8c`, 10/10/2026).** Los siete prefabs, con `PortraitBase`/`PortraitFace`
+y sus sets de cara, se compararon objeto por objeto contra `HEAD`: 148 bloques en cada uno de los cuatro de la
+familia y 69 en cada forma de Algoritm, ninguno añadido ni perdido, y solo cambian valores. Cada personaje tiene
+10 de las 16 casillas de la cara; faltan la alegría, el sueño, el cuadro de medio parpadeo y las bocas E y U.
+La suite completa (`suite2.ps1`, dos Editores, 25,9 min) dio 748 de 749 pruebas de EditMode, con una omitida,
+y 417 de 418 de PlayMode; la única que falló, `RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos`,
+midió un salto por cuadro de 0,056 frente al tope de 0,05 mientras los dos Editores se disputaban la CPU, y
+sola pasa (1/1, 12,6 s). Es una dependencia de esa prueba del tiempo de cuadro, no una regresión: ni su
+código ni su animación cambiaron. Las capturas de las líneas y de las cinco mecánicas están en
+`claudeDocs/tasks/Personajes/capturas/2026-10-10/` (144) y se revisaron: Papá se arrodilla mirando la llama en
+N1 1.3 y Mamá en N2 2.5, y las expresiones siguen el guion.
 
 ### INC-149 · Las caras y los retratos de los personajes entran recortados y a 256 px — cerrado (10/10/2026)
 
@@ -3446,8 +3454,10 @@ una imagen») · INC-128, INC-130 e INC-146 (notas) · Anexo E del OE3 y capítu
 salta las del fuego y las de los cinco props. El inventario estimó el peor caso en unos 20 MB de texturas
 nuevas, frente a los 79,4 MB de margen.
 
-**Medida.** ⟦ronda del Editor⟧ (peso del build con el arte de esta entrega frente al tope de 500 MB de
-RNF-06; RNF-04 y RNF-05 siguen sin medirse en un ejecutable).
+**Medida.** Un build de `exec build` sobre `8602c79`, medido con `oe4.ps1 Tamano` (10/10/2026), pesa 426,6 MB
+(426 633 082 bytes, sin `*_DoNotShip` ni `Datos`): 6,0 MB más que los 420,6 MB del 09/10/2026 y 73,4 MB de
+margen frente al tope de 500 MB de RNF-06. No es un candidato del OE4; RNF-04 y RNF-05 siguen sin medirse en
+un ejecutable.
 
 ### INC-150 · Quien trabaja junto al fuego lo mira (efecto espejo) — cerrado (10/10/2026)
 
@@ -3474,8 +3484,9 @@ quien camina o se sitúa sin un objetivo.
 
 **Corrección aplicada (10/10/2026).** Datos (commit `cc938e9`): `N1_NacimientoDelFuego.asset` y
 `N2_Escena25_Cierre.asset`. **Prueba:** `NarrativeSequence_INC150_QuienTrabajaJuntoAlFuegoLoMira`, que antes
-fallaba en 17 instancias de línea y ahora en ninguna. **Verificación en el Editor:** ⟦ronda del Editor⟧
-(capturas de las dos escenas).
+fallaba en 17 instancias de línea y ahora en ninguna. **Verificación en el Editor (`23d7e8c`):** en las capturas de
+`claudeDocs/tasks/Personajes/capturas/2026-10-10/` Papá se arrodilla mirando la llama en N1 1.3 (L02 y L03) y
+Mamá en N2 2.5 (L02).
 
 ## Residuos y puntos abiertos
 
@@ -3557,7 +3568,7 @@ grado), con las parejas propuestas en `claudeDocs/entregables/tools/pares/`; (4)
 contorno que trae el arte final (`#FFC69F`, `#DE9563` y trazo negro) no son los de `Direccion_de_Arte.md`
 §4.1 (`#F2D3BC`, `#D9AF95` y `#3A1E18`): hay que decidir si se corrige §4.1 o se pide otro tono; (5)
 **RNF-04 y RNF-05 en un ejecutable nuevo**; la **medición de RNF-06** se hizo el 09/10/2026 (INC-146: 420,6
-MB, con 79,4 MB de margen) y se repite con el arte de INC-148 e INC-149 (⟦ronda del Editor⟧). Las medidas de
+MB, con 79,4 MB de margen) y se repitió el 10/10/2026 con el arte de INC-148 e INC-149 (426,6 MB, con 73,4 MB de margen). Las medidas de
 carga y de memoria exigen el Editor cerrado y jugar el ejecutable, y quedan para el próximo candidato del
 carril OE4; y (6) la republicación en Word del OE3: sus fuentes ya nombran INC-134 a INC-136 (Anexo F,
 apartado 2.13, `1e2fb6a`) y, desde el 10/10/2026, INC-148 a INC-150, pero los `.docx` publicados todavía
@@ -3573,8 +3584,10 @@ no.
   el retrato neutro fijo de §10.3 y cierra los dos pendientes de ojos cerrados de frente y cara de
   Algoritm), **INC-149** (caras y retratos recortados y a 256 px como máximo: tercera excepción al tope de
   4096) e **INC-150** (el efecto espejo en la fogata de `N1_NacimientoDelFuego` y de `N2_Escena25_Cierre`). La entrega entró en `636467a`
-  y su inventario en `b163afd`; la tabla de emociones, en `ce92c0f`; el runtime y las pruebas, en `146f4f3`,
-  y el arte, las herramientas y los datos aplicados, en `cc938e9`. La ronda del Editor: ⟦ronda del Editor⟧.
+  y su inventario en `b163afd`; la tabla de emociones, en `ce92c0f`; el runtime y las pruebas, en `146f4f3`;
+  el arte, las herramientas y los datos aplicados, en `cc938e9`, y la ronda del Editor, en `23d7e8c`.
+  Santiago pidió después recortar los brazos de la familia en la tarjeta del diálogo (`292b108`); Algoritm
+  conserva el encuadre abierto. Sus seis PNG de cara provisional salieron del repositorio en `8602c79`.
   La alegría y el sueño no vienen en la entrega y siguen pendientes del artista. Los radicados que
   describen el diseño anterior de Algoritm y el retrato fijo **no se editan** sin la autorización de
   Santiago. Mantiene CP-02: no hay cara de tristeza, enfado ni derrota.

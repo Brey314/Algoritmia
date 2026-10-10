@@ -123,7 +123,7 @@ de las cinco mecánicas y es el retrato del guía. Sin cabeza ni cuello:
 | ✓ Brazos | `parte_brazo_izq`, `parte_brazo_der` (húmero), `parte_antebrazo_izq`, `parte_antebrazo_der` (antebrazo con la mano) |
 | ✓ Piernas **enteras**, con el pie | `parte_pierna_izq`, `parte_pierna_der` |
 | ✓ Cara **final, compartida por las tres formas** (en `Algoritm/Expresiones/`, sin el nombre de la forma; INC-148, 10/10/2026) | `char_algoritm_ojos_{neutra,concentracion,preocupacion,sorpresa,parpadeo_cerrado}` y `char_algoritm_boca_{0,a,concentracion,preocupacion,sorpresa}`: 10 PNG recortados a la caja común de la cara y a 256 px como máximo (INC-149). Los tres `char_algoritm_<forma>_cara.asset` conservan su GUID y se reapuntan a ella en la ronda del Editor |
-| — ~~Cara **provisional** anterior~~ | ~~`char_algoritm_<forma>_ojos_neutra.png` y `char_algoritm_<forma>_boca_0.png`~~ (seis PNG, los ojos y la boca del sprite anterior): sin uso desde el 10/10/2026 y borrados con `AssetDatabase.DeleteAsset` en la ronda del Editor ⟦ronda del Editor⟧ |
+| — ~~Cara **provisional** anterior~~ | ~~`char_algoritm_<forma>_ojos_neutra.png` y `char_algoritm_<forma>_boca_0.png`~~ (seis PNG, los ojos y la boca del sprite anterior): sin uso desde el 10/10/2026 y borrados con `AssetDatabase.DeleteAsset` en la ronda del Editor del 10/10/2026 y fuera del repositorio desde `8602c79` |
 | ○ Resto de la cara (lo espera del artista) | `ojos_alegria`, `ojos_sueno` y `boca_alegria`; `boca_e` y `boca_u`, mientras haya una sola boca de hablar |
 
 `izq` y `der` son los de la pantalla (`BrazoDer` del rig es la derecha de pantalla), y las

@@ -125,7 +125,9 @@
 > boca alterna abierta y cerrada (`MouthFlap.CycleFor`); (5) **no llegaron la alegría ni el sueño**: `Happy`
 > se ve con la cara neutra y `Sleeping` con los ojos cerrados; (6) las caras y los retratos entran recortados
 > y a 256 px como máximo (INC-149); (7) el efecto espejo junto a la fogata se corrigió como dato (INC-150:
-> `Facing: Left` en `N1_NacimientoDelFuego` y `N2_Escena25_Cierre`). La ronda del Editor es ⟦ronda del Editor⟧.
+> `Facing: Left` en `N1_NacimientoDelFuego` y `N2_Escena25_Cierre`). La ronda del Editor se hizo ese día (`23d7e8c`; detalle en
+> `Personajes-Resultados.md`, C.15): los siete prefabs sin un fileID nuevo ni perdido, la suite completa en verde
+> salvo una prueba que depende del tiempo de cuadro, 144 capturas revisadas y un build de 426,6 MB.
 >
 > **Siguen pendientes:** la medida de RNF-04 y RNF-05 en un ejecutable (próximo candidato del OE4); del
 > artista, la alegría y el sueño de los cinco personajes y una neutra nueva de la Niña y del Niño; y los

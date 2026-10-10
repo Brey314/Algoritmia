@@ -547,7 +547,9 @@ char_algoritm_boca_{0,a,concentracion,preocupacion,sorpresa}.png
 Son 10 texturas en lugar de las 30 que habrían sido tres por forma. Los tres
 `char_algoritm_<forma>_cara.asset` conservan su GUID y se reapuntan a ellas, con `cara_provisional` en
 falso, y los seis PNG de la cara provisional anterior (`char_algoritm_<forma>_ojos_neutra.png` y
-`char_algoritm_<forma>_boca_0.png`) se borran, en la ronda del Editor: ⟦ronda del Editor⟧. El rubor de
+`char_algoritm_<forma>_boca_0.png`) se borraron en la ronda del Editor del 10/10/2026 (`AssetDatabase.DeleteAsset`, tras comprobar que ningún
+asset referenciaba sus GUID) y salieron del repositorio en `8602c79`, porque un `git lfs pull` posterior los
+devolvió al árbol. El rubor de
 los cachetes va con los ojos, porque el rig de Algoritm no tiene `CaraBase`. Para la tarjeta del
 diálogo, cada forma tiene su base sin cara, `char_algoritm_{fuego,rueda,gota}_retrato_base.png`
 (§10.3).
@@ -1327,8 +1329,9 @@ boca y base comparten un recuadro en el prefab, así que bajar a 256 px no mueve
 Quedan a 4096 las partes del cuerpo (`Frontal/` y el cuerpo de `Perfil/`) y los tres `_reposo` de
 Algoritm. La regla es un patrón de ruta (`ArtImportRules`, `CharacterFacePaths`) y no una lista, porque
 la alegría y el sueño llegarán expresión a expresión. Lo vigila
-`ArtImport_RNF06_LasCarasYLosRetratosDeLosPersonajesSeImportanA256SinComprimir`. Peso del build con esta
-entrega: ⟦ronda del Editor⟧.
+`ArtImport_RNF06_LasCarasYLosRetratosDeLosPersonajesSeImportanA256SinComprimir`. El build con esta
+entrega pesa 426,6 MB (`8602c79`, 10/10/2026; `oe4.ps1 Tamano`), 6,0 MB más que los 420,6 MB del 09/10/2026 y
+con 73,4 MB de margen frente al tope de 500 MB.
 
 **Halo de croma.** Los sprites que salen de un fondo verde puro se limpian de halo verde en el
 borde. El 01/10/2026 se limpiaron siete PNG —los tres `char_algoritm_n?_*_reposo` y los cuatro

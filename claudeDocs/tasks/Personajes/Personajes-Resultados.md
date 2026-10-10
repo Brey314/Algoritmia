@@ -47,7 +47,10 @@ diálogo, y el botón de ayuda con la forma de Algoritm, listo para sustituir el
 > parpadea y habla, el frente de la familia parpadea, Algoritm tiene su cara final, las caras y los retratos
 > entran a 256 px como máximo y quien trabaja junto al fuego lo mira. Lo registra el apartado
 > [C.15](#c15-expresiones-según-el-guion-tarjeta-del-diálogo-animada-caras-a-256-px-y-el-efecto-espejo-en-la-fogata-inc-148-a-inc-150-10102026).
-> La ronda del Editor es ⟦ronda del Editor⟧.
+> La ronda del Editor se hizo ese día en la sesión local de Santiago (`23d7e8c`): los siete prefabs sin un
+> fileID nuevo ni perdido, la suite completa en verde salvo una prueba que depende del tiempo de cuadro, 144
+> capturas revisadas y un build de 426,6 MB. Después Santiago pidió que la tarjeta de la familia fuera un
+> primer plano sin brazos (`292b108`).
 
 ## Qué entró
 
@@ -1209,7 +1212,7 @@ Las dos fallaban hasta correr el modo `orden` sobre los prefabs de Algoritm (est
 
 ### C.15 Expresiones según el guion, tarjeta del diálogo animada, caras a 256 px y el efecto espejo en la fogata (INC-148 a INC-150, 10/10/2026)
 
-Rama `feat/personajes-animados`, de `2c0f18b` a `cc938e9`. Lo que sigue se verificó contra `git show` de cada commit y contra los archivos del árbol, salvo lo marcado como no verificado. El runtime, las pruebas y las herramientas se escribieron en la nube, sin Unity; la ronda del Editor la corre la sesión local de Santiago y sus cifras van como ⟦ronda del Editor⟧ hasta que termine. Es el registro de lo hecho; el estado vigente está en `Direccion_de_Arte.md` §7.3, §7.6, §10.3 y §15.2 y en CLAUDE.md.
+Rama `feat/personajes-animados`, de `2c0f18b` a `8602c79`. Lo que sigue se verificó contra `git show` de cada commit y contra los archivos del árbol, salvo lo marcado como no verificado. El runtime, las pruebas y las herramientas se escribieron en la nube, sin Unity; la ronda del Editor (`23d7e8c`) la corrió la sesión local de Santiago, y sus cifras están en «Ronda del Editor». Es el registro de lo hecho; el estado vigente está en `Direccion_de_Arte.md` §7.3, §7.6, §10.3 y §15.2 y en CLAUDE.md.
 
 **Decisiones de Santiago Benavides Rey (10/10/2026).** Las tres abren INC propio.
 
@@ -1239,6 +1242,9 @@ Los nombres irregulares (`exoresion_…_papa`, `expresion_perfil _neutra…niña
 | `ce92c0f` | `herramientas/emociones_narrativas.json`: las emociones de la cara por línea, sacadas del guion (`Solucion_OE2_Diseno_final.docx`, §1.3 a §1.6, leído con python-docx), con 189 emociones y 4 voces fuera de escena, más los rumbos del efecto espejo. |
 | `146f4f3` | El runtime y sus pruebas: 16 archivos, +1226 −34. Ver «El runtime» y «Pruebas». |
 | `cc938e9` | El arte a 256 px (caras, perfil, retratos y los tres `_reposo` de Algoritm), las herramientas y las 18 narrativas con las emociones y los rumbos aplicados: 112 archivos, +4628 −292. |
+| `292b108` | Los retratos de la familia pasan a primer plano y sin brazos, por una petición de Santiago al ver las tarjetas: «en los diálogos recorta los brazos, que quede en un primer plano el personaje». Sobre Algoritm dijo «cuando es Algoritm quien habla, como está actualmente está bien», así que conserva el encuadre abierto con brazos. |
+| `23d7e8c` | La ronda del Editor: prefabs, clips y capturas generados (ver «Ronda del Editor»). |
+| `8602c79` | Quita del repositorio los seis PNG de la cara provisional de Algoritm. |
 
 **El runtime** (`Assets/Game/Scripts/Runtime/`, `146f4f3`).
 
@@ -1286,14 +1292,15 @@ Los nombres irregulares (`exoresion_…_papa`, `expresion_perfil _neutra…niña
 | `ArtImport_RNF06_LasCarasYLosRetratosDeLosPersonajesSeImportanA256SinComprimir` | La tercera excepción; la prueba de RNF-23 omite esas rutas. |
 | `NarrativeScene_INC148_ElRetratoTieneLaCaraLaEmocionYLaBocaDeQuienHabla` (PlayMode) | El set, la emoción, que la boca cambia en 0,3 s, que una acotación oculta la tarjeta y que `Leave` la calla. `NarrativeScene_RF05_ElRetratoEsElDeQuienHablaYNoHayEnLasAcotaciones` se ajustó para aceptar `PortraitBase` o `Portrait`. |
 
-**Ronda del Editor (sesión local de Santiago).** Estado: ⟦ronda del Editor⟧.
+**Ronda del Editor (sesión local de Santiago, 10/10/2026, `23d7e8c`).** Hecha. Los pasos y lo medido:
 
-- [ ] `pull`, `recompile`, copiar `BuildRigsFinal`.
-- [ ] Modos `estado`, `sprites`, `retrato` y `estado`, más `clips` si cambiaron. Los tres `char_algoritm_<forma>_cara.asset` se reapuntan a la cara compartida y se borran, con `AssetDatabase.DeleteAsset`, los seis PNG de la cara provisional de Algoritm.
-- [ ] Comparación de prefabs objeto por objeto contra `HEAD`: solo valores (recuadro y sprites de la cara, `PortraitBase`, `PortraitFace`, sets de cara), ningún fileID nuevo ni perdido. Resultado: ⟦ronda del Editor⟧.
-- [ ] Pruebas: `Game.Scaffolding.Tests`, `Game.Architecture.Tests`, PlayMode `NarrativeScene_`, `MainMenu`, `Credits`, `Fire`, `Forest` y `RiverScene_`, y la suite completa (`suite2.ps1`). Resultado: ⟦ronda del Editor⟧.
-- [ ] Capturas en `claudeDocs/tasks/Personajes/capturas/2026-10-10/` (las 139 líneas, las cinco mecánicas y la tarjeta de cada hablante). Cantidad y revisión: ⟦ronda del Editor⟧.
-- [ ] Build con la medida de RNF-06 (420,6 MB el 09/10/2026, 79,4 MB de margen). Resultado: ⟦ronda del Editor⟧.
+- [x] `pull`, `recompile` y copia de `BuildRigsFinal`. La recompilación dio 0 errores.
+- [x] Modos `estado`, `sprites`, `retrato`, `clips` y `estado`. Los tres `char_algoritm_<forma>_cara.asset` se reapuntaron a la cara compartida y los seis PNG de la cara provisional de Algoritm se borraron con `AssetDatabase.DeleteAsset`, después de comprobar que ningún asset referenciaba sus GUID. Un `git lfs pull` posterior los devolvió al árbol de trabajo, así que se quitaron del repositorio en `8602c79`; siguen sin referencia. Tras `292b108` se forzó la reimportación de los 86 PNG de caras y retratos y se repitió `retrato → estado`. Hizo falta porque la primera importación de `char_nino_retrato_neutra.png` conservó la regla anterior (2048, comprimida): Unity la importó antes de recargar el nuevo `ArtImportRules`. Los cuatro prefabs de la familia reescribieron `PortraitFace`; los tres de Algoritm ya estaban al día.
+- [x] Comparación de prefabs objeto por objeto contra `HEAD`. Papá, Mamá, la Niña y el Niño tienen 148 bloques cada uno y las tres formas de Algoritm, 69; no se añadió ni se perdió ninguno y `m_Script` y `m_Controller` no cambian. Solo cambian valores: los `RectTransform` de `Ojos`, `Boca` y `CaraBase` (de frente y de perfil), los sprites de `Ojos` y `Boca` de Algoritm, que ahora apuntan a la cara final compartida, y los campos nuevos `PortraitBase` y `PortraitFace`. Seis clips cambiaron solo en centésimas de grado: `char_nino_anim_idle`, `char_nino_anim_observar`, `char_papa_anim_observar`, `char_nina_anim_observar`, `char_mama_anim_idle` y `char_mama_anim_observar`. Los siete personajes tienen 10 de las 16 casillas de cara llenas (ojos neutros, de concentración, de preocupación y de sorpresa; ojos cerrados; boca cerrada `boca_0`; boca abierta `boca_a`; y las bocas de concentración, preocupación y sorpresa). Quedan vacías la alegría, el sueño, el cuadro de medio parpadeo y las bocas E y U. `PortraitBase` y `PortraitFace` coinciden con la tabla en los siete, y ningún PNG de cara o retrato pasa de 256 px.
+- [x] Pruebas por grupos: `Game.Scaffolding.Tests` 387 de 387; `Game.Architecture.Tests` 25 de 25 tras la reimportación (24 de 25 antes, por el límite de 256 px de `char_nino_retrato_neutra`); PlayMode `NarrativeScene_` 108 de 108, `MainMenu` 19 de 19, `Credits` 6 de 6, `Fire` 76 de 76, `Forest` 40 de 40 y `RiverScene_` 23 de 23.
+- [x] Suite completa con `suite2.ps1` (dos Editores, 25,9 min, 1167 pruebas listadas, cada una corrida una vez). EditMode: 748 de 749 pasan, 1 omitida (`ProfileEraser_INC34_SobreDiscoRealCubreLosDosEscenariosDeAlmacenamiento`, la omisión de entorno de siempre) y 0 fallos. PlayMode: 417 de 418 pasan y falla `RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos`, que midió un salto por cuadro de 0,056 frente al tope de 0,05 en el pulso «completado» de la balsa mientras los dos Editores se disputaban la CPU. Ni ese código ni ese asset cambiaron, y corrida sola la prueba pasa (1 de 1, 12,6 s). Se registra como una dependencia de la prueba del tiempo de cuadro y no como una regresión.
+- [x] Capturas en `claudeDocs/tasks/Personajes/capturas/2026-10-10/`: 144 (139 líneas de narrativa y las 5 mecánicas), JPEG de calidad 90, 26,7 MB. Claude las revisó: Papá se arrodilla mirando la llama en N1 1.3 (L02 y L03) y Mamá en N2 2.5 (L02); las expresiones siguen el guion (en la apertura del N1, L01, la familia está preocupada y el Niño sorprendido); la tarjeta de la familia es un primer plano sin brazos y la de Algoritm conserva su encuadre abierto.
+- [x] Build con la medida de RNF-06. `exec build` sobre `8602c79`, medido con `oe4.ps1 Tamano`: 426,6 MB (406,9 MiB; 426 633 082 bytes) sin `*_DoNotShip` ni `Datos`, 6,0 MB más que los 420,6 MB del 09/10/2026 y con 73,4 MB de margen frente al tope de 500 MB. No es un candidato del OE4 (sigue siéndolo rc2, de 479,0 MB), y RNF-04 y RNF-05 siguen sin medirse en un ejecutable.
 
 **Abierto.**
 
@@ -1301,3 +1308,4 @@ Los nombres irregulares (`exoresion_…_papa`, `expresion_perfil _neutra…niña
 - Si llegan `boca_e` y `boca_u`, el ciclo del habla vuelve a ser A, E, U y cerrada sin tocar código.
 - La autorización de Santiago para editar los radicados que describen la cara de Algoritm y el retrato fijo (`claudeDocs/entregables/tools/pares/tg_expresiones_10oct.json`).
 - La medida de RNF-04 y RNF-05 en un ejecutable (próximo candidato del OE4).
+- `Level2_Maze.unity` apareció modificada en el árbol local (`RectTransform`, un redondeo de color y un espacio sobrante en un nombre) y quedó fuera de los commits a la espera de la respuesta de Santiago.
