@@ -1,0 +1,28 @@
+119 literales de 3+ palabras en codigo de runtime (sin Reporting/informe)
+oraciones > 20 palabras: 0
+--- muestra (primeros 25)
+Assets\Game\Scripts\Runtime\Core\PerformanceIndicators.cs 54 | intentos={Attempts} corregidos={CorrectedErrors} pasos={StepsUsed} segundos={ResolutionSeconds}
+Assets\Game\Scripts\Runtime\Core\PhaseId.cs 44 | El nivel {level} tiene {PhaseCountOf(level)} fase(s).
+Assets\Game\Scripts\Runtime\Core\SceneLoader.cs 151 | RNF-04: «{sceneName}» cargó en {LastLoadSeconds:0.000} s
+Assets\Game\Scripts\Runtime\Levels\Fire\FireLevelConfig.cs 13 | Algoritm/Configuración del nivel fuego
+Assets\Game\Scripts\Runtime\Levels\Fire\FireMessages.cs 10 | Algoritm/Mensajes del nivel fuego
+Assets\Game\Scripts\Runtime\Levels\Fire\FirePanelController.cs 102 | asignar: el resto del nivel sigue jugable sin ella.
+Assets\Game\Scripts\Runtime\Levels\Fire\FirePanelController.cs 936 | «Level1_Cave» se abrió sin pasar por «Boot»: no hay perfil activo, no se 
+Assets\Game\Scripts\Runtime\Levels\Fire\FirePanelController.cs 937 | avanza a la escena de cierre.
+Assets\Game\Scripts\Runtime\Levels\Fire\FireSounds.cs 16 | Algoritm/Sonidos del nivel fuego
+Assets\Game\Scripts\Runtime\Levels\River\AssemblyPanelController.cs 642 | «{gameObject.scene.name}» se abrió sin pasar por «Boot»: no hay 
+Assets\Game\Scripts\Runtime\Levels\River\AssemblyPanelController.cs 643 | {nameof(GameFlowRunner)}, así que el ensamblaje no navega a «{sequenceId}».
+Assets\Game\Scripts\Runtime\Levels\River\InventoryView.cs 83 | Marca_{index + 1}
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 19 | Algoritm/Ensamblaje del Nivel 3
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 99 | Puesto. Cuando toda esta parte esté, pulsa el botón.
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 103 | La pieza vuelve al inventario.
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 107 | Cayó fuera de la balsa: la pieza vuelve al inventario.
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 111 | Ese espacio ya tiene algo. Busca uno vacío.
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 115 | Algo de esta parte no encaja. Mira lo marcado: ¿esa pieza va ahí?
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 119 | La base quedó firme. Ahora hay que sujetarla para que no se abra.
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 123 | La balsa ya no se abre. Falta lo que atrapa el viento.
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 127 | La balsa se volteó. Mira el espacio marcado: ¿qué debería ir ahí?
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 131 | La balsa se hundió: todavía no está terminada. ¿Qué parte falta armar?
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 135 | La balsa flota derecha. ¡A cruzar!
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 150 | revisa lo marcado
+Assets\Game\Scripts\Runtime\Levels\River\RaftAssemblyContent.cs 153 | se hunde: revisa

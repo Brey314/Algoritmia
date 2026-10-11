@@ -1,0 +1,21 @@
+PF-RNF17-01: git log --no-merges HEAD(f49ccc9) -- Assets/ ; commits = 122
+  tarjeta: 9 (7.4 %)
+  marcador <id>: 4 (3.3 %)
+  sin tarjeta: 109 (89.3 %)
+  de los sin tarjeta, citan otro identificador de trazabilidad (INC-nn, Rnn, Wnn, Tnn, Fase, Slice): 82 ; sin ningun identificador: 27
+--- con tarjeta Dnn-n/Onn-n:
+  a540618 feat(cierre): N1–N3 corregidos, candidato rc2 verificado sobre el ejecutable, tableros cerrados y OE3 vigente (tarjetas:
+  ccf77e6 feat(n3): sonido del Nivel 3 y plano de la recolección con el río asomando (tarjeta: D08-2)
+  f801186 feat(n1-n3): humo animado sobre cada fuego de las narrativas (D08-2)
+  13e2986 docs(slice-3): resultados del carril de arte y sonido, archivo por archivo (D05-2/D07-2)
+  d7ace67 feat(nivel-2): el nivel transcurre en un día con fundidos; laberinto con cuadrícula, contraste, barra de desplazamiento 
+  03675b9 feat(nivel-2): sonidos del nivel, piedras visibles y refugio con fuego en la 2.5 y el puente II (D05-2)
+  8ec5120 feat(nivel-1): quemado radial del montón, montón mayor y aparición aleatoria fuera de la interfaz (D07-2)
+  aca7acc feat(nivel-1): piezas giradas al azar, montones de hojas, gesto al tomar y fuego animado (D07-2)
+  2cbe287 feat(nivel-1): integración de audio según dirección y sprites definitivos parciales (D05-2/D07-2)
+--- marcador <id> sin tarjeta resuelta:
+  44fd479 feat(n2-n3): props definitivos del N2 reducidos y balsa del N3 recompuesta en 3/4 (tarjeta: <id>)
+  d3a6cc9 feat(n3): hoguera animada en el horizonte del puente II y en la escena final (tarjeta: <id>)
+  1d5ce58 feat(n2): caja vacía que se desliza sobre los troncos, cuerda en el taller y arbustos que llenan su casilla (tarjeta: <i
+  b38c00b feat(n2): troncos que ruedan como cilindros envueltos en una sola textura (tarjeta: <id>)
+desde 02/09: commits 120 con tarjeta 9

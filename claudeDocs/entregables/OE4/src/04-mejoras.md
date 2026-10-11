@@ -1,19 +1,93 @@
 # 4. OPORTUNIDADES DE MEJORA PARA TRABAJOS FUTUROS
 
-El objetivo pide identificar oportunidades de mejora, no solo contar casos aprobados. Este capítulo recoge lo que la evaluación dejó abierto y no se corrigió dentro del OE4, cada punto con su origen y su causa. Entran cuatro clases de hallazgo: los defectos Menores que Santiago decidió no corregir, las observaciones de casos aprobados, los puntos abiertos del guion que exigen observar a estudiantes y los riesgos que quedaron sin medir en un ejecutable.
+El objetivo pide identificar oportunidades de mejora, no solo contar casos aprobados. Este capítulo recoge lo que la pasada rc3 dejó abierto, cada punto con su origen y su causa, agrupado por el tema donde habría que trabajar. Entran cuatro clases de hallazgo: los defectos Menores y las Observaciones de la Tabla 3.6, que siguen abiertos hasta que Santiago haga el triaje; los casos que aprobaron con una reserva; las fallas del propio instrumento de evaluación, y lo que el método no pudo observar. Cada fila trae el tipo de arreglo que propuso quien probó; la decisión de corregir, registrar un INC o dejarlo como trabajo futuro es de Santiago.
 
-## 4.1 Defectos y observaciones que quedaron abiertos
+## 4.1 Interfaz
 
-**Tabla 4.1.** Oportunidades de mejora que salen de los casos.
+**Tabla 4.1.** Oportunidades de mejora de la interfaz.
 
-| Oportunidad | Origen (caso, defecto u observación) | Qué ve el estudiante o el docente | Decisión |
+| Oportunidad | Origen | Qué ve el estudiante o el docente | Tipo propuesto |
 |---|---|---|---|
-| PENDIENTE-PASADA | PENDIENTE-PASADA | PENDIENTE-PASADA | PENDIENTE-PASADA |
+| Dar a la cabecera del informe docente una altura propia para los iconos y ensanchar «Volver al menú» para que no parta su texto | DEF-RC3-05 (Menor), `PF-RNF03-01` | El docente ve los iconos de dos columnas cruzando el texto y los de otras dos sueltos y pequeños; las cifras se leen | Código (disposición) o arte |
+| Acortar la instrucción del bosque en `N2_Guia.asset` o subir la altura de su tablilla, para que quepan las tres líneas | DEF-RC3-10 (Menor), `PF-RNF03-01` | El estudiante lee «qué pasa.» colgando sobre el borde inferior de la tarjeta; las tablillas del taller, el laberinto y el río sí caben | Código, escena o texto |
+| Ensanchar el botón «Eliminar datos» (o acortar su rótulo) y dar más aire a la ruta de respaldo del diálogo de salida | DEF-RC3-11 (Observación), `PF-RF47-02` | El docente ve «Eliminar / datos» en dos líneas; la ruta de respaldo queda a unos 8 px de los botones | Disposición |
+| Sustituir el círculo con el texto «Algoritm» del resumen de nivel por el arte final del guía | DEF-RC3-01 (Observación), `PF-RF45-01` | El estudiante ve, al terminar el Nivel 1, un círculo naranja que parece un rótulo de trabajo | Decisión de Santiago (documento o arte) |
 
-## 4.2 Lo que la evaluación con personas debe resolver
+Las pruebas automáticas que nombran RNF-03 pasaron en la suite del 10/10/2026 (34 de 34 resultados) y las capturas del ejecutable mostraron igualmente los dos desbordes de la Tabla 4.1. Esas pruebas no cubren la tablilla del bosque ni la cabecera del informe; si la suite ha de vigilarlas, hay que añadirlas.
 
-PENDIENTE-PASADA: los puntos PG-05 y PG-06 y las comprobaciones de la hoja HUM que no se cerraron, cada uno con la razón (apartado 5.2).
+## 4.2 Flujo del juego
 
-## 4.3 Límites de la evaluación
+**Tabla 4.2.** Oportunidades de mejora del flujo del juego.
 
-PENDIENTE-PASADA: lo que el método no pudo observar (por ejemplo, un solo equipo en las mediciones de rendimiento mientras no entre el equipo 2) y cómo afecta la lectura de los resultados.
+| Oportunidad | Origen | Qué ve el estudiante | Tipo propuesto |
+|---|---|---|---|
+| Ignorar la entrada unos 300 ms después de cargar el resumen de nivel, para que un doble clic en «Omitir» no pulse «Volver al menú de niveles» | DEF-RC3-09 (Menor), `PF-RF45-05` (F) | Con un doble clic rápido al final del Nivel 1 el estudiante cae en el menú sin ver el resumen (2 de 3 intentos); el progreso no se pierde | Código |
+| Fijar la distribución de las siete piezas del Nivel 1 si la evaluación con estudiantes necesita partidas comparables; hoy es aleatoria en cada entrada | DEF-RC3-04 (Observación), `PF-RF14-01` | Nada: es una decisión de diseño. Cambia lo que se puede comparar entre dos estudiantes | Decisión de Santiago |
+| Confirmar que es intencional la forma de Algoritm en las secuencias puente: llama en `N2_PuenteI`, disco en `N3_PuenteII` y `N3_PuenteII_Horizonte`, gota desde `N3_PuenteII_Rio` | DEF-RC3-08 (Observación), `PF-RF05-04` | El estudiante ve al guía con la forma del nivel que acaba de terminar | Decisión de Santiago o documento |
+| Decidir si el gesto del Niño en reposo, con la mano a la sien tapando parte de un ojo, se acepta como excepción (`CARA_TAPADA`) o se corrige en el arte | DEF-RC3-03 (Observación), `PF-RF05-05` | Un ojo parcialmente tapado en la portada y en la cueva | Documento o arte |
+
+## 4.3 Arte y paquete del ejecutable
+
+**Tabla 4.3.** Oportunidades de mejora del arte y del paquete.
+
+| Oportunidad | Origen | Qué ve el estudiante o el equipo | Tipo propuesto |
+|---|---|---|---|
+| Limpiar el halo de croma de las 9 caras de la familia con `arte_check.py halo --apply`, con copia de respaldo | DEF-RC3-I03 (Menor) | Casi nada a 1080p: 15 a 51 píxeles con alfa de 10 a 25 sobre 255; rc2 tenía 0, y las caras entraron entre el 05 y el 10/10/2026 | Arte, con decisión de Santiago |
+| Quitar del paquete `DirectML.dll`, `D3D12/` y los módulos de red de Unity que nada del juego llama, o dejar documentado por qué se conservan | Observación de S-INSP sobre `PF-RNF10-01` | Bajaría el peso (la carpeta `D3D12` pesa 4,5 MiB) y reduciría código de red que el juego no usa, algo que RNF-10 no pide | Proyecto |
+| Medir el tamaño del paquete en cada entrega de arte y no solo en el candidato | `PF-RNF06-01`: 426,6 MB, margen de 73,4 MB; las texturas son el 95 % de los activos de usuario | rc2 estuvo a 21 MB del tope (479,0 MB) y bajó a 426,6 MB solo por `INC-146`; la próxima entrega de arte vuelve a gastar ese margen | Proceso |
+| Decidir si el residuo del motor en `HKCU` (`unity.*`, `unity_connect.*`, `Screenmanager*`) se acepta o se limpia | DEF-RC2-01, decisión D-RC2-01; persiste en rc3 | Un colegio que revise el registro lo encontrará aunque el perfil se haya borrado | Decisión de Santiago |
+
+## 4.4 Código y trazabilidad
+
+**Tabla 4.4.** Oportunidades de mejora del código y de la trazabilidad.
+
+| Oportunidad | Origen | Qué cuesta hoy | Tipo propuesto |
+|---|---|---|---|
+| Renombrar a inglés los identificadores de `ForestSceneController` (20, como `Apartar`, `EnPantalla`, `SueloUnitario`), de `WorkshopSceneController` (`EnPantalla`, `esquinas`) y de `MazeSceneController` (`desborda`), por ejemplo `EnPantalla` a `ToScreenRect` | DEF-RC3-I01 (Menor), `PF-RNF15-01` (F): 3 de 10 clases de la muestra | RNF-15 pide una nomenclatura uniforme en inglés; las otras siete clases de la muestra la cumplen. El cambio no afecta al juego | Estilo de código |
+| Exigir la tarjeta del Kanban en el mensaje de cada commit, con una plantilla o un hook de `commit-msg` que rechace el marcador `(tarjeta: <id>)` sin resolver | DEF-RC3-I02 (Menor), `PF-RNF17-01` (F): 9 de 122 commits con tarjeta (7,4 %), 4 con el marcador sin resolver, 109 sin tarjeta (82 citan INC, R, W o T) | RNF-17 y CT-11 piden trazar cada commit de código a su tarjeta. Corregirlo en lo ya hecho exigiría reescribir la historia | Proceso |
+| Hacer que las pruebas de arquitectura toleren un nivel ausente: `Architecture_RNF15_CadaModuloDeclaraSuAssemblyDeRuntimeYDePruebas`, `Architecture_RNF15_ElNombreDelAssemblyCoincideConSuRutaBajoScripts`, `Architecture_RNF16_NingunAssemblyDeNivelReferenciaAOtroNivel`, `Architecture_RNF16_RetirarUnNivelNoAfectaALosOtrosDos` y `Traceability_CT10_TodoRFTieneAlMenosUnaPruebaQueLoNombra` | DEF-RC3-12 (Observación), `PF-RNF16-01`: sin `Levels/Wheel` fallan en EditMode 6 de 663 y sin `Levels/Fire` 6 de 696 | Hoy exigen los tres assemblies y todos los RF, no detectan acoplamiento; con ellas tolerantes, RNF-16 podría afirmar cero fallos de acoplamiento | Prueba |
+| Fijar la resolución de `unity test` en lote: 15 pruebas de River, Wheel y UI (RNF-03, RNF-19, RNF-20, RNF-21) fallan a 640 × 480 también en la copia completa y pasan con `editor.ps1` a 1920 × 1080 | `PF-RNF16-01`, `S-RNF/rnf16/resumen.md` | Un fallo de entorno se lee como fallo del juego; `NORMA-PRUEBAS.md` ya manda la vía de `editor.ps1` | Herramienta |
+| Correr la suite completa, o al menos `Maze` en PlayMode, sobre el HEAD que se entregue | DEF-RC3-I04 (Menor): la suite corrió sobre `292b108` y no sobre `f49ccc9` | Las 78 líneas de `Level2_Maze.unity` reserializadas en `f49ccc9` no tienen una corrida propia | Proceso |
+| Revisar si `RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos` puede medir sin depender de la carga del equipo | La prueba falló una vez (salto de cuadro de 0,056 frente a 0,05 con dos Editores en paralelo) y pasa sola | Un falso rojo en la suite distribuida obliga a repetirla | Prueba |
+
+## 4.5 Instrumento y proceso de evaluación
+
+**Tabla 4.5.** Oportunidades de mejora del instrumento de evaluación.
+
+| Oportunidad | Origen | Qué cuesta hoy | Tipo propuesto |
+|---|---|---|---|
+| Arreglar `Restaurar-Registro` en `oe4.ps1`: sale con código 2 («The type of the value object did not match the specified RegistryValueKind», línea 1502) y no repone los valores cambiados, solo borra los nuevos | Sesiones S-INI, S-N3, S-N2R, S-PAU, S-OMI, S-PER y S-DOC | Los valores que cambia Unity (sesión y pantalla) no se reponen; hubo que reimportar la clave del reproductor desde una copia hecha antes | Herramienta |
+| Poner en marcha la ráfaga de capturas antes de la acción: la primera captura llega con unos 1,3 s de retraso | Sesiones S-N1, S-OMI y S-PAU | No hay cuadro de la ignición, del primer cuadro del acercamiento de la cueva ni de la pausa a mitad del recorrido del laberinto (se tomó a unos 0,3 s de pulsar «Ejecutar») | Herramienta |
+| Desactivar la superposición de NVIDIA en el equipo de pruebas | Aviso «Presione Alt+Z…» en `PF-RF01-01_1.png` y `PF-RF06-01_1a.png` | Cae unos segundos sobre la esquina superior derecha tras el arranque y puede tapar un control en una captura | Entorno |
+| Reescribir la portada de `PF-RF01-03`: panel ámbar a la izquierda con título, lema y botones, bosque con los cinco personajes a la derecha | DEF-RC3-02 | El caso describe un título «sobre una tarjeta más baja» que el juego ya no tiene | `casos.md` |
+| No prometer coordenadas de las piezas en `PF-RF14-01`: pedir leer la pantalla antes de arrastrar | DEF-RC3-04 | Las coordenadas del caso no valen, y los pasos 7 y 8 se rehicieron leyendo la pantalla | `casos.md` |
+| En el paso 21 de `PF-RF44-01`, pedir los clics hasta la línea 4 y fotografiar entonces | DEF-RC3-06 | Con un clic por segundo la última línea y «a mitad del río» no coinciden nunca | `casos.md` |
+| Admitir ±1 en los colores medidos por píxel de `PF-RF30-02` | DEF-RC3-07 | Quien compare píxeles puede dar por defecto un redondeo de color que no se ve | `casos.md` |
+| Decir qué forma de Algoritm lleva cada secuencia puente en `PF-RF05-04`, y contemplar el gesto del Niño en el criterio de `PF-RF05-05` | DEF-RC3-08 y DEF-RC3-03 | Los criterios de esos casos no describen lo que el juego hace | `casos.md` |
+| Listar las cinco pruebas de arquitectura como esperadas en `PF-RNF16-01`, o dejarlas de listar si se corrigen | DEF-RC3-12 | El caso solo admite fallos de pruebas que cargan una escena por nombre | `casos.md` |
+| Reformular la advertencia de riesgo de `PF-RF21-02`: la narrativa de cierre entra a unos 1,3 s tras «Soplar», no a los 3,5 s que cita el caso, y el máximo de luz tras el cuarto golpe efectivo no se pudo medir | Observación de S-OMI, sin id propio | El caso no se puede comprobar como está escrito | `casos.md` |
+| Decidir si Claude ejecuta los dos recorridos completos del arnés de `PF-RNF13-01` antes del de Santiago | Tabla 3.4 | El caso está en PS y sus dos recorridos del arnés, planeados, no se corrieron | Decisión de Santiago |
+
+## 4.6 Lo que la evaluación con personas debe resolver
+
+Diez casos esperan a Santiago (apartado 3.1) y las dos observaciones con estudiantes siguen abiertas. PG-05 y PG-06 del guion exigen observar a niños de grado cuarto jugando, y esa sesión necesita el consentimiento informado de los acudientes de RNF-12; el apartado 5.1 dice en qué estado está. Las comprobaciones de la hoja HUM que no tienen resultado tienen todas la misma causa: necesitan los sentidos de una persona o un equipo que el arnés no tiene.
+
+Un segundo equipo (H3, `PF-RNF07-02`) fija si la carpeta portable corre sin instalar y da la segunda medida de carga y memoria de RNF-04 y RNF-05. Un equipo sin tarjeta gráfica dedicada (H5, `PF-CT02-01`) comprueba la restricción CT-02. El modo avión (H4, `PF-RNF08-01`) comprueba RNF-08 con la red cortada. Los tres casos de sonido (H6, H7 y H12, `PF-SON-01` a `PF-SON-03`) son de oído: el arnés no mide el sonido. Las comprobaciones de vista (H9 y H10) cubren el cruce de la escena 3.3 con lectura rápida y la recolección del Nivel 3 con el plano abierto, y H11 comprueba «Probar balsa» con la base completa. La de mano (H13) cubre tres cosas que el arnés enmascara: el clic tras cargar una escena sin mover el puntero, la papelera del laberinto y la octava fila del informe. El recorrido con cronómetro (H8, `PF-RNF13-01`) contrasta la referencia de 20 a 40 minutos del OE1. Quedan además tres confirmaciones documentales: el formato de consentimiento (`PF-RNF12-01`), la confirmación de contenido (`PF-RNF22-01`) y las autorizaciones de la Familia Anonaky y de la colaboradora de arte (`PF-RNF23-01`).
+
+Si la sesión con estudiantes no se hace, `PF-RNF12-01` se declara NA con esa justificación escrita y PG-05 y PG-06 pasan a ser trabajo futuro, cada uno con su causa: sin observar a niños jugando no hay dato sobre si el cambio de controles confunde ni sobre si los valores del Nivel 1 son adecuados.
+
+## 4.7 Límites de la evaluación
+
+**Tabla 4.6.** Lo que el método no pudo observar y cómo afecta la lectura de los resultados.
+
+| Límite | Efecto sobre la lectura |
+|---|---|
+| Un solo equipo en las mediciones de RNF-04, RNF-05 y RNF-06 | Los valores de carga y memoria valen para el equipo 1 (Ryzen 5 7600X, 32 GB, RTX 5070 Ti); un equipo modesto puede dar más. El tamaño del paquete no depende del equipo |
+| La línea `RNF-04` de `SceneLoader` mide la carga, no el primer cuadro visible; el muestreo de red empieza unos 2 a 8 s después del arranque y no ve conexiones de menos de 2 s | RNF-04 y RNF-10 son cotas del comportamiento, no una medida exhaustiva; `globalgamemanagers` sin `unity3d.com` cubre el arranque |
+| RNF-18 se probó en un ejecutable de la copia desechable y no con el Editor abierto y en Play | «Sin recompilación» no es observable con `unity build`; el caso aprueba como variante |
+| RNF-16 se probó con `unity test` en copias sin un nivel | El caso aprueba con la desviación de DEF-RC3-12; 15 pruebas de River, Wheel y UI fallan igual en la copia completa por la resolución del lote |
+| Los mensajes de las fotos se leyeron a 0,5 a 0,9 s de cada acción | El límite de 1 s de RF-11 se juzga por ese margen y no por un cronómetro |
+| La suite no corrió sobre el contenido exacto de rc3 | Entre `23d7e8c` y rc3 no cambió ningún `.cs`; la reserialización de `Level2_Maze.unity` queda sin corrida propia (DEF-RC3-I04) |
+| El sonido no lo mide el arnés | Los tres casos `SON` quedan en PS y el indicador de sonidos sin calcular |
+| La pausa del laberinto se tomó a unos 0,3 s de pulsar «Ejecutar», no a mitad del recorrido | La carretilla ya se movía y siguió tras «Reanudar»; la parada a mitad del recorrido no tiene captura |
+| Los dos recorridos del arnés de `PF-RNF13-01` no se ejecutaron | No hay duración medida del juego entero con un perfil nuevo; solo la del Nivel 1 en S-N1 |

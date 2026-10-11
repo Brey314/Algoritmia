@@ -1,0 +1,43 @@
+== GameFlow Core/GameFlow.cs | <summary> en la clase: True | miembros analizados: 12 | fuera de convencion: 1 | palabras en espanol (lista corta): []
+   summary: /// <summary> /// La máquina de estados del juego. C# plano y sin dependencias de Unity a propósito: así se /// prueba entera en EditMode, sin escena y sin frames, que es lo que hace verificable el /// recorrido completo del Golden Path (RNF-13). /// </summary
+   !! (17, 'field', 'private', 'Allowed', '')
+== GameFlowRunner Core/GameFlowRunner.cs | <summary> en la clase: True | miembros analizados: 22 | fuera de convencion: 2 | palabras en espanol (lista corta): []
+   summary: /// <summary> /// Adaptador entre <see cref="GameFlow"/> y las escenas de Unity. /// </summary> /// <remarks> /// No decide nada: pregunta a <see cref="GameFlow"/> si la transición es legal y, si lo es, /// traduce el estado resultante a una escena. Toda regla
+   !! (23, 'field', 'private', 'Scenes', '')
+   !! (44, 'field', 'private', 'PlayingScenes', '')
+== SaveStore Core/SaveStore.cs | <summary> en la clase: True | miembros analizados: 13 | fuera de convencion: 0 | palabras en espanol (lista corta): []
+   summary: /// <summary> /// Guardado local del perfil: un archivo JSON por perfil (RF-04, RNF-14). /// </summary> /// <remarks> /// La carpeta buena es <c>Datos/</c> junto al ejecutable y no /// <c>Application.persistentDataPath</c>: esa escribe en <c>%AppData%\LocalLow
+== PlayerProfile Core/PlayerProfile.cs | <summary> en la clase: True | miembros analizados: 16 | fuera de convencion: 0 | palabras en espanol (lista corta): []
+   summary: /// <summary> /// Perfil del estudiante: nombre o alias, progreso de avance y los cuatro indicadores por /// fase. La lista es cerrada (RNF-09, OE1 §3.6.1 nota 5) y esto es todo lo que se persiste. /// </summary> /// <remarks> /// No hay campo de puntaje, y no
+== FirePanelController Levels/Fire/FirePanelController.cs | <summary> en la clase: True | miembros analizados: 117 | fuera de convencion: 4 | palabras en espanol (lista corta): []
+   summary: /// <summary> /// El panel de encendido del Nivel 1 (RF-14, guion §4.3.1), en dos fases (Fase 6, 15/09/2026): /// **reunir** —arrastrar hojas, sílex y pedernal al círculo del centro; «Pista» dibuja el /// círculo— y **encender** —la cámara se acerca, las hojas
+   !! (218, 'prop', 'private', 'piece', '')
+   !! (253, 'field', 'private', 'Floor', '')
+   !! (362, 'method', 'private', 'Piece_PickedUp', '')
+   !! (371, 'method', 'private', 'Piece_Dropped', '')
+== ForestSceneController Levels/Wheel/ForestSceneController.cs | <summary> en la clase: True | miembros analizados: 98 | fuera de convencion: 3 | palabras en espanol (lista corta): []
+   summary: /// <summary> /// La escena de la fase 1 del Nivel 2 — el bosque (RF-22, RF-23, RF-24, RF-13). Reparte los /// objetos por el suelo, traduce cada clic a <see cref="PatternSelection"/> y pinta lo que la /// regla devuelve. /// </summary> /// <remarks> /// Adapt
+   !! (154, 'field', 'private', 'Phase1', '')
+   !! (429, 'field', 'private', 'SueloUnitario', '')
+   !! (644, 'field', 'private', 'UiCamera', '')
+== WorkshopSceneController Levels/Wheel/WorkshopSceneController.cs | <summary> en la clase: True | miembros analizados: 77 | fuera de convencion: 2 | palabras en espanol (lista corta): []
+   summary: /// <summary> /// La escena de la fase 2 del Nivel 2 — el área de trabajo (RF-27, RF-28, RF-29). Reparte las /// piezas sobre el entorno, traduce clic, botón y clic sostenido a /// <see cref="AssemblySequence"/> y pinta lo que la regla devuelve. /// </summary>
+   !! (129, 'field', 'private', 'Phase2', '')
+   !! (745, 'field', 'private', 'UiCamera', '')
+== MazeSceneController Levels/Wheel/MazeSceneController.cs | <summary> en la clase: True | miembros analizados: 158 | fuera de convencion: 7 | palabras en espanol (lista corta): []
+   summary: /// <summary> /// La escena de la fase 3 del Nivel 2 — el laberinto (RF-30..RF-34). Pantalla dividida /// según el **mockup 10 · Nivel 2 · laberinto · bloques encajables**: a la izquierda el claro /// en vista superior con la carretilla, el refugio y los obstá
+   !! (170, 'field', 'private', 'Phase3', '')
+   !! (172, 'field', 'private', 'BlockKinds', '')
+   !! (514, 'field', 'private', 'ContrastId', '')
+   !! (515, 'field', 'private', 'SaturationId', '')
+   !! (859, 'field', 'private', 'ScrollMax', '')
+   !! (862, 'field', 'private', 'Page', '')
+   !! (1435, 'field', 'private', 'UiCamera', '')
+== AssemblyPanelController Levels/River/AssemblyPanelController.cs | <summary> en la clase: True | miembros analizados: 83 | fuera de convencion: 3 | palabras en espanol (lista corta): []
+   summary: /// <summary> /// El panel de ensamblaje en escena (RF-40..RF-43, HU-12, HU-13): la balsa compuesta espacio /// a espacio sobre el río, los arrastres desde el inventario con clic sostenido, los botones /// «Listo» y «Probar balsa», el resaltado del espacio inc
+   !! (117, 'field', 'private', 's_firstFailure', '')
+   !! (118, 'method', 'private', 'static', '')
+   !! (119, 'field', 'private', 's_indicators', '')
+== NarrativeSceneController UI/NarrativeSceneController.cs | <summary> en la clase: True | miembros analizados: 79 | fuera de convencion: 0 | palabras en espanol (lista corta): []
+   summary: /// <summary> /// La **única** escena narrativa (RF-05, RF-06). Recibe qué secuencia reproducir por su /// identificador —el que <see cref="GameFlow.NarrativeSequenceId"/> guardó al entrar— y la /// resuelve contra la lista de secuencias del proyecto. /// </su
+total miembros 675

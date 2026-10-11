@@ -1,0 +1,268 @@
+[
+ {
+  "despues_de": "Los veredictos son los de rc3. El objetivo tenía dos indicadores (Tabla 12), una eficacia de 90 % o más en botones, sonidos y saltos de nivel y los RF de prioridad Alta implementados, y se añade la cobertura de CT-10 como condición de partida.",
+  "titulo": "Metas del cuarto objetivo y resultado obtenido",
+  "modelo": "Metas del tercer objetivo y resultado obtenido",
+  "anchos": [
+   30,
+   25,
+   45
+  ],
+  "filas": [
+   [
+    "Indicador",
+    "Meta",
+    "Resultado"
+   ],
+   [
+    "Eficacia de las pruebas funcionales",
+    "90 % o más",
+    "96,8 % (122 de 126 casos con veredicto)"
+   ],
+   [
+    "Eficacia en las etiquetas NAV, BOT y SON",
+    "90 % o más en cada una",
+    "NAV 94,1 % y BOT 100 %; SON sin calcular, con sus 3 casos de oído pendientes [Pendiente: resultado de H6, H7 y H12]"
+   ],
+   [
+    "RF de prioridad Alta implementados",
+    "45 de 45",
+    "45 de 45, sin defecto Bloqueante ni Mayor"
+   ],
+   [
+    "Requerimientos con al menos un caso de prueba (CT-10)",
+    "47 RF y 23 RNF",
+    "47 de 47 RF y 23 de 23 RNF, con 136 casos"
+   ]
+  ],
+  "fuente": "Fuente: elaboración propia a partir de la pasada de pruebas sobre rc3 (Anexo G)."
+ },
+ {
+  "despues_de": "De los 136 casos, 122 terminaron en P, 4 en F y 10 quedaron pendientes de Santiago Benavides Rey, sin PD, B ni NA (Tabla 13). Los fallidos son PF-RF45-05, de la sesión de omisión, y PF-RNF03-01, PF-RNF15-01 y PF-RNF17-01, de la de inspecciones; las demás sesiones aprobaron todos sus casos.",
+  "titulo": "Veredictos de rc3 por sesión",
+  "modelo": "Metas del tercer objetivo y resultado obtenido",
+  "anchos": [
+   58,
+   12,
+   30
+  ],
+  "filas": [
+   [
+    "Sesión",
+    "Casos",
+    "Veredictos (P · F · pendientes)"
+   ],
+   [
+    "S-INI, inicio, perfiles, créditos y salida",
+    "14",
+    "14 · 0 · 0"
+   ],
+   [
+    "S-N1, Nivel 1 completo",
+    "25",
+    "25 · 0 · 0"
+   ],
+   [
+    "S-N2A, bosque",
+    "10",
+    "10 · 0 · 0"
+   ],
+   [
+    "S-N2B, taller",
+    "4",
+    "4 · 0 · 0"
+   ],
+   [
+    "S-N2C, laberinto y cierre del Nivel 2",
+    "10",
+    "10 · 0 · 0"
+   ],
+   [
+    "S-N3, Nivel 3 y cierre del juego",
+    "20",
+    "20 · 0 · 0"
+   ],
+   [
+    "S-PAU, pausa y reinicio",
+    "4",
+    "4 · 0 · 0"
+   ],
+   [
+    "S-OMI, omisión, rejuego y casos negativos",
+    "8",
+    "7 · 1 · 0"
+   ],
+   [
+    "S-PER, persistencia y cierre forzado",
+    "7",
+    "7 · 0 · 0"
+   ],
+   [
+    "S-DOC, informe docente y borrado",
+    "9",
+    "9 · 0 · 0"
+   ],
+   [
+    "S-RNF, medidas sobre el ejecutable",
+    "6",
+    "5 · 0 · 1"
+   ],
+   [
+    "S-INSP, inspecciones y accesibilidad",
+    "13",
+    "7 · 3 · 3"
+   ],
+   [
+    "S-HUM, pruebas con personas y en otros equipos",
+    "6",
+    "0 · 0 · 6"
+   ],
+   [
+    "Total",
+    "136",
+    "122 · 4 · 10"
+   ]
+  ],
+  "fuente": "Fuente: elaboración propia a partir del catálogo de casos y de la pasada sobre rc3 (Anexo G). La matriz de casos por requerimiento está en el Anexo A del documento del OE4 (Anexo_A_Matriz_casos.docx), que se entrega dentro del Anexo G."
+ },
+ {
+  "despues_de": "Los tres presupuestos duros se miden sobre el ejecutable (Tabla 14). La carga sale de la línea RNF-04 del Player.log y mide la carga, no el primer cuadro visible; la peor fue la de una escena narrativa, con 0,268 s, las demás cargaron en 0,13 s o menos y el arranque, de Boot al menú, tarda cerca de 3,4 s. La memoria privada máxima fue de 1094 MiB, en la cueva del Nivel 1, y la de trabajo de 438 MiB, sobre 4 213 muestras de todas las sesiones. En RNF-10, 4 516 muestras de red tomadas cada 2 s no registraron ninguna conexión TCP ni UDP del proceso, y el ejecutable no nombra los servidores de Unity. Las cifras de rc2 no se heredan, porque el arte de perfil, las caras y los retratos entraron después.",
+  "titulo": "Presupuestos de rendimiento y de paquete en rc3",
+  "modelo": "Presupuestos de rendimiento y estado de su medición",
+  "anchos": [
+   22,
+   12,
+   33,
+   33
+  ],
+  "filas": [
+   [
+    "Requerimiento",
+    "Límite",
+    "rc2 (01/10/2026)",
+    "rc3 (10/10/2026)"
+   ],
+   [
+    "RNF-04, carga de escena",
+    "10 s",
+    "0,78 s en la carga más lenta",
+    "0,268 s en la carga más lenta"
+   ],
+   [
+    "RNF-05, memoria",
+    "2 GB",
+    "Máximos de 426 MiB de memoria de trabajo y 1125 MiB de memoria privada",
+    "Máximos de 438 MiB de memoria de trabajo y 1094 MiB de memoria privada"
+   ],
+   [
+    "RNF-06, tamaño del paquete",
+    "500 MB",
+    "479,0 MB",
+    "426,6 MB, con 73,4 MB de margen"
+   ],
+   [
+    "CT-02, equipo sin tarjeta gráfica dedicada",
+    "Ejecutar sin GPU dedicada",
+    "Sin medir",
+    "Sin medir [Pendiente: equipo y resultado de la comprobación H5]"
+   ]
+  ],
+  "fuente": "Fuente: elaboración propia a partir de la pasada de pruebas (Anexo G) y de la Tabla 11 de este trabajo."
+ },
+ {
+  "despues_de": "La pasada sobre rc3 registró 16 hallazgos, 7 Menores y 9 observaciones, ninguno Bloqueante ni Mayor y todos abiertos a la espera del triaje de Santiago Benavides Rey. De los Menores, tres tocan el juego: los iconos del informe docente montados sobre el texto de las cabeceras (DEF-RC3-05), la instrucción del bosque que se sale de su tablilla (DEF-RC3-10) y un doble clic en «Omitir» que lleva al menú de niveles sin mostrar el resumen, sin perder el progreso (DEF-RC3-09). Los otros cuatro vienen de la inspección: identificadores en español (DEF-RC3-I01), commits sin tarjeta (DEF-RC3-I02), un halo de croma en nueve imágenes de caras (DEF-RC3-I03) y una suite que no corrió sobre el contenido exacto de rc3 (DEF-RC3-I04). Las nueve observaciones no incumplen ningún criterio: cuatro piden corregir el documento de casos, tres esperan una decisión de arte o de diseño, una es de disposición y una atañe a las pruebas de arquitectura.",
+  "titulo": "Defectos hallados por severidad y estado al cierre de la pasada sobre rc3",
+  "modelo": "Resultado de la suite de pruebas del 1 de octubre de 2026",
+  "anchos": [
+   20,
+   20,
+   20,
+   20,
+   20
+  ],
+  "filas": [
+   [
+    "Severidad",
+    "Hallados en rc1",
+    "Hallados en rc2",
+    "Hallados en rc3",
+    "Abiertos al cierre"
+   ],
+   [
+    "Bloqueante",
+    "0",
+    "0",
+    "0",
+    "0"
+   ],
+   [
+    "Mayor",
+    "4",
+    "0",
+    "0",
+    "0"
+   ],
+   [
+    "Menor",
+    "5",
+    "1 (DEF-RC2-01)",
+    "7",
+    "8"
+   ]
+  ],
+  "fuente": "Fuente: elaboración propia a partir del registro de defectos (Anexo G); no incluye las nueve observaciones de rc3."
+ },
+ {
+  "despues_de": "Dos tipos de prueba quedan fuera del arnés: las que necesitan niños de grado cuarto jugando y las que necesitan los sentidos de una persona o un segundo equipo (Tabla 16). Son diez casos y dos puntos del guion, PG-05 y PG-06. La sesión con estudiantes los cierra con la técnica Thinking Aloud que la metodología Árcade asigna a esta fase [6], previo consentimiento informado de los acudientes según la Ley 1581 de 2012 [35] (RNF-12; el formato en blanco es el Anexo F). La muestra es no probabilística (apartado 5.3) y la sesión verifica que la interfaz se entienda y la ruta principal se complete, sin medir el efecto del juego. La sesión se hará después de esta entrega y sus resultados llenarán los espacios de la Tabla 16; mientras tanto PG-05, PG-06 y el consentimiento quedan pendientes y no pasan a trabajos futuros.",
+  "titulo": "Comprobaciones pendientes de Santiago Benavides Rey al 10 de octubre de 2026 y espacio para sus resultados",
+  "modelo": "Metas del tercer objetivo y resultado obtenido",
+  "anchos": [
+   34,
+   24,
+   42
+  ],
+  "filas": [
+   [
+    "Comprobación",
+    "Casos y hoja",
+    "Resultado"
+   ],
+   [
+    "Estudiantes jugando: cambio de controles y valores del Nivel 1",
+    "PG-05 y PG-06, H1 y H2",
+    "[Pendiente: estudiantes del Colegio El Libertador IED, fecha, sede y resultado observado]"
+   ],
+   [
+    "Consentimiento informado y asentimiento",
+    "PF-RNF12-01, Anexo F",
+    "[Pendiente: visto bueno del colegio y número de estudiantes con ambos documentos firmados]"
+   ],
+   [
+    "Recorrido completo con cronómetro",
+    "PF-RNF13-01, H8",
+    "[Pendiente: duración e incidencias frente a la referencia de 20 a 40 min]"
+   ],
+   [
+    "Segundo equipo y equipo sin tarjeta gráfica dedicada",
+    "PF-RNF07-02 y PF-CT02-01, H3 y H5",
+    "[Pendiente: equipos, cargas y memoria]"
+   ],
+   [
+    "Ejecución con el adaptador de red deshabilitado",
+    "PF-RNF08-01, H4",
+    "[Pendiente: resultado con el adaptador de red deshabilitado]; el arnés no vio conexiones en 4 516 muestras"
+   ],
+   [
+    "Sonido, vista y mano",
+    "PF-SON-01 a PF-SON-03, H6 a H7 y H9 a H13",
+    "[Pendiente: piezas que suenan y piezas que no, y resultado de cada comprobación]"
+   ],
+   [
+    "Contenido y autorizaciones",
+    "PF-RNF22-01 y PF-RNF23-01",
+    "Inspección hecha; [Pendiente: confirmación del contenido y soporte escrito de la Familia Anonaky y de la colaboradora de arte]"
+   ]
+  ],
+  "fuente": "Fuente: elaboración propia a partir de la hoja de comprobaciones humanas (Anexo G)."
+ }
+]

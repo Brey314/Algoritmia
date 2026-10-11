@@ -1,7 +1,7 @@
 """Lee el catálogo de casos PF-* (claudeDocs/tasks/OE4/casos.md) y los veredictos de la pasada
 (src/veredictos-rc3.csv) y escribe las tablas que el documento no debe contar a mano.
 
-Veredictos: P, PD, F, B, NA. Sin veredicto, o sin archivo, cada celda queda en PENDIENTE-CIFRA y la
+Veredictos: P, PD, F, B, NA, y los dos de trabajo NE (no ejecutado, de Claude) y PS (pendiente de Santiago, HUM); NE y PS no entran en la eficacia. Sin veredicto, o sin archivo, cada celda queda en PENDIENTE-CIFRA y la
 guarda de build.py impide publicar. El CSV es «caso,veredicto» (líneas con # se ignoran).
 """
 import csv
@@ -15,7 +15,7 @@ CASOS = ROOT / "claudeDocs" / "tasks" / "OE4" / "casos.md"
 OE1 = ROOT / "docs" / "md" / "Solución OE1_Requerimientos.md"
 VEREDICTOS = HERE.parent / "src" / "veredictos-rc3.csv"
 PENDING = "PENDIENTE-CIFRA"
-VERDICTS = ("P", "PD", "F", "B", "NA")
+VERDICTS = ("P", "PD", "F", "B", "NA", "NE", "PS")  # NE no ejecutado (de Claude) · PS pendiente de Santiago (HUM)
 LABELS = ("NAV", "BOT", "SON", "RETO", "DAT", "RNF")
 HEADER = re.compile(r"^## (S-[A-Z0-9]+) · (.+?) — (.+?) · (.+)$")
 ROW = re.compile(r"^\| (PF-[A-Z0-9]+-\d\d) \|")
@@ -53,6 +53,8 @@ def verdicts(cases):
     if VEREDICTOS.exists():
         for row in csv.reader(l for l in VEREDICTOS.read_text(encoding="utf-8").splitlines()
                               if l.strip() and not l.startswith("#")):
+            if row[0] == "caso":  # cabecera
+                continue
             if row[0] not in known or row[1] not in VERDICTS:
                 raise SystemExit(f"{VEREDICTOS.name}: fila no válida {row}")
             found[row[0]] = row[1]
@@ -60,7 +62,7 @@ def verdicts(cases):
 
 
 def pct(done, total):
-    return f"{100 * done / total:.1f} %".replace(".", ",") if total else PENDING
+    return f"{100 * done / total:.1f} %".replace(".", ",") if total else "sin calcular"  # todos los casos en PS/NE: no hay denominador
 
 
 def table(header, rows):

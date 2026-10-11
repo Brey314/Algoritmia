@@ -1,0 +1,21 @@
+# arte_check.py rnf20 --file cajas-rnf20-extra.txt --crops vistas/recortes_rnf20_extra   (extras: otras superficies de texto del N1, N2 y N3)
+
+N1 instrucción (con Soplar atenuado) ; FirePanel_RNF19_SoplarAtenuado.png ; 0.2865,0.0852,0.7135,0.1222
+N1 botón Soplar atenuado ; FirePanel_RNF19_SoplarAtenuado.png ; 0.3958,0.8796,0.4521,0.9167
+N1 botón Golpear ; FirePanel_RNF19_SoplarAtenuado.png ; 0.5563,0.8796,0.6224,0.9167
+N1 rótulo Fuerza del golpe ; FirePanel_RNF19_SoplarAtenuado.png ; 0.8766,0.2361,0.9792,0.2639
+N1 rótulo Lejos ; FirePanel_RNF19_SoplarAtenuado.png ; 0.3255,0.7824,0.3646,0.8074
+N3 lista: tarea hecha ; RiverLevel_RNF19_ColocacionIncorrecta.png ; 0.0760,0.0833,0.1938,0.1167
+N3 lista: tarea pendiente ; RiverLevel_RNF19_ColocacionIncorrecta.png ; 0.0760,0.1870,0.2073,0.2204
+N3 mensaje de ayuda ; RiverLevel_RNF19_ColocacionIncorrecta.png ; 0.4062,0.0870,0.7422,0.1593
+N3 botón Listo ; RiverLevel_RNF19_ColocacionIncorrecta.png ; 0.4792,0.9000,0.5198,0.9333
+N2 bosque: mensaje ; WheelLevel_RNF19_Bosque_ObjetoNoValido.png ; 0.0927,0.0833,0.4870,0.1648
+N2 bosque: contador de troncos ; WheelLevel_RNF19_Bosque_ObjetoNoValido.png ; 0.0458,0.7556,0.2167,0.7870
+N2 laberinto: instrucción ; Maze_01_reposo.png ; 0.1328,0.0509,0.6328,0.1185
+N2 laberinto: Tu secuencia ; Maze_01_reposo.png ; 0.6917,0.0759,0.8031,0.1093
+N2 laberinto: Ejecutar ; Maze_01_reposo.png ; 0.7917,0.8759,0.8625,0.9130
+# --- segundas señales que no son texto (mínimo 3:1, WCAG 1.4.11): el icono se mide contra lo que tiene detrás
+C8 icono de alerta sobre la casilla incorrecta ; RiverLevel_RNF19_ColocacionIncorrecta.png ; 0.3984,0.4278,0.4469,0.5074 ; 3
+A9 candado del botón Soplar atenuado ; FirePanel_RNF19_SoplarAtenuado.png ; 0.3453,0.8824,0.3630,0.9167 ; 3
+C5 visto de la tarea hecha ; RiverLevel_RNF19_ColocacionIncorrecta.png ; 0.0505,0.0880,0.0661,0.1157 ; 3
+B2 aviso de piedra con esquinas ; WheelLevel_RNF19_Bosque_ObjetoNoValido.png ; 0.0458,0.0926,0.0833,0.1556 ; 3

@@ -1,0 +1,79 @@
+Mono path[0] = 'D:/User/Desktop/Algoritmia prueba/Algoritmia_Data/Managed'
+Mono config path = 'D:/User/Desktop/Algoritmia prueba/MonoBleedingEdge/etc'
+CodeReloadManager initialized
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+[Subsystems] Discovering subsystems at path D:/User/Desktop/Algoritmia prueba/Algoritmia_Data/UnitySubsystems
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 5070 Ti
+[D3D12 Device Filter] Driver Version: 32.0.16.1692
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 15995 MB
+[D3D12 Device Filter] Processor Count: 12
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 5070 Ti (ID=0x2c05)
+    Vendor:          NVIDIA
+    VRAM:            15995 MB
+    App VRAM Budget: 15227 MB
+    Driver:          32.0.16.1692
+Begin MonoManager ReloadAssembly
+- Finished resetting the current domain, in  0.023 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+Using Windows.Gaming.Input
+UnloadTime: 0.739100 ms
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.294500 ms
+RNF-04: «MainMenu» cargó en 0.114 s
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 4764.
+Total: 1.503500 ms (FindLiveObjects: 0.166700 ms CreateObjectMapping: 0.103200 ms MarkObjects: 1.222600 ms  DeleteObjects: 0.009000 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 4.095400 ms
+RNF-04: «LevelSelect» cargó en 0.030 s
+Unloading 463 unused Assets to reduce memory usage. Loaded Objects now: 3498.
+Total: 1.315400 ms (FindLiveObjects: 0.133200 ms CreateObjectMapping: 0.086400 ms MarkObjects: 0.771900 ms  DeleteObjects: 0.323800 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.475000 ms
+RNF-04: «Narrative» cargó en 0.254 s
+Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 4788.
+Total: 1.539600 ms (FindLiveObjects: 0.172600 ms CreateObjectMapping: 0.120500 ms MarkObjects: 1.208700 ms  DeleteObjects: 0.037700 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.058400 ms
+RNF-04: «Narrative» cargó en 0.013 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4803.
+Total: 1.220100 ms (FindLiveObjects: 0.148000 ms CreateObjectMapping: 0.111700 ms MarkObjects: 0.946600 ms  DeleteObjects: 0.013800 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.906500 ms
+RNF-04: «Narrative» cargó en 0.013 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4803.
+Total: 1.291600 ms (FindLiveObjects: 0.142500 ms CreateObjectMapping: 0.109300 ms MarkObjects: 1.029000 ms  DeleteObjects: 0.010600 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.871500 ms
+RNF-04: «Level1_Cave» cargó en 0.033 s
+Unloading 1008 unused Assets to reduce memory usage. Loaded Objects now: 4859.
+Total: 2.158100 ms (FindLiveObjects: 0.183700 ms CreateObjectMapping: 0.173200 ms MarkObjects: 1.477800 ms  DeleteObjects: 0.323100 ms)
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+CodeReloadManager destroyed
+GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+[d3d12] Unreleased non-evictable resource 000001F75E764780 (size 4096 B, lastUsedFence 9)

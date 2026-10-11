@@ -1,0 +1,46 @@
+## asmdef (Assets/**/*.asmdef)
+Game.EditorTools -> UnityEditor.TestRunner,Unity.InputSystem,UnityEngine.UI | plat ['Editor']
+Game.Audio -> Game.Core | plat []
+Game.Core ->  | plat []
+Game.Levels.Fire -> Game.Core,Game.Scaffolding,Game.Audio,UnityEngine.UI | plat []
+Game.Levels.River -> Game.Core,Game.Scaffolding,Game.Audio,UnityEngine.UI | plat []
+Game.Levels.Wheel -> Game.Core,Game.Scaffolding,Game.Audio,UnityEngine.UI,Unity.InputSystem | plat []
+Game.Reporting -> Game.Core | plat []
+Game.Scaffolding -> Game.Core,UnityEngine.UI | plat []
+Game.UI -> Game.Core,Game.Scaffolding,Game.Audio,Game.Reporting,UnityEngine.UI | plat []
+Game.Architecture.Tests -> UnityEngine.TestRunner,UnityEditor.TestRunner | plat ['Editor']
+Game.Audio.Tests -> Game.Audio,UnityEngine.TestRunner,UnityEditor.TestRunner | plat ['Editor']
+Game.Content.Tests -> Game.Core,Game.Scaffolding,Game.Levels.Fire,Game.Levels.Wheel,Game.Levels.River,Game.UI,UnityEngine.TestRunner,UnityEditor.TestRunner | plat ['Editor']
+Game.Core.Tests -> Game.Core,UnityEngine.TestRunner,UnityEditor.TestRunner | plat ['Editor']
+Game.EditorTools.Tests -> Game.EditorTools,UnityEngine.TestRunner,UnityEditor.TestRunner | plat ['Editor']
+Game.Levels.Fire.Tests -> Game.Levels.Fire,Game.Core,Game.Scaffolding,UnityEngine.TestRunner,UnityEditor.TestRunner | plat ['Editor']
+Game.Levels.River.Tests -> Game.Levels.River,Game.Scaffolding,Game.Core,UnityEngine.TestRunner,UnityEditor.TestRunner | plat ['Editor']
+Game.Levels.Wheel.Tests -> Game.Levels.Wheel,Game.Scaffolding,Game.Core,UnityEngine.UI,UnityEngine.TestRunner,UnityEditor.TestRunner | plat ['Editor']
+Game.Reporting.Tests -> Game.Core,Game.Core.Tests,Game.Reporting,UnityEngine.TestRunner,UnityEditor.TestRunner | plat ['Editor']
+Game.Scaffolding.Tests -> Game.Core,Game.Scaffolding,UnityEngine.UI,UnityEngine.TestRunner,UnityEditor.TestRunner | plat ['Editor']
+Game.UI.Tests -> Game.UI,Game.Core,Game.Scaffolding,Game.Reporting,UnityEngine.UI,UnityEngine.TestRunner,UnityEditor.TestRunner | plat ['Editor']
+Game.Audio.PlayMode.Tests -> Game.Audio,UnityEngine.TestRunner,UnityEditor.TestRunner | plat []
+Game.Core.PlayMode.Tests -> Game.Core,Unity.InputSystem,UnityEngine.UI,UnityEngine.TestRunner,UnityEditor.TestRunner | plat []
+Game.Levels.Fire.PlayMode.Tests -> Game.Levels.Fire,Game.Core,Game.Scaffolding,Game.Audio,UnityEngine.UI,Unity.InputSystem,UnityEngine.TestRunner,UnityEditor.TestRunner | plat []
+Game.Levels.River.PlayMode.Tests -> Game.Levels.River,Game.Scaffolding,Game.Audio,Game.Core,UnityEngine.UI,UnityEngine.TestRunner,UnityEditor.TestRunner | plat []
+Game.Levels.Wheel.PlayMode.Tests -> Game.Levels.Wheel,Game.Scaffolding,Game.Audio,Game.Core,UnityEngine.UI,UnityEngine.TestRunner,UnityEditor.TestRunner | plat []
+Game.UI.PlayMode.Tests -> Game.UI,Game.Scaffolding,Game.Audio,Game.Core,Game.Reporting,UnityEngine.UI,UnityEngine.TestRunner,UnityEditor.TestRunner | plat []
+
+## cross-level namespace refs in production code
+-- Fire code mentioning Game.Levels.Wheel:
+none
+-- Fire code mentioning Game.Levels.River:
+none
+-- Wheel code mentioning Game.Levels.Fire:
+none
+-- Wheel code mentioning Game.Levels.River:
+none
+-- River code mentioning Game.Levels.Fire:
+none
+-- River code mentioning Game.Levels.Wheel:
+none
+-- Reporting mentions of other Game.* namespaces:
+using Game.Core
+-- Core mentions of other Game.* namespaces:
+-- Scaffolding using Game.*:
+using Game.Core

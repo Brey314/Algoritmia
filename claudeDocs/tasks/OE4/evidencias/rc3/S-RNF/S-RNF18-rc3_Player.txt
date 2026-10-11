@@ -1,0 +1,79 @@
+Mono path[0] = 'C:/Users/benab/AppData/Local/Temp/Algoritmia-B18/Algoritmia_Data/Managed'
+Mono config path = 'C:/Users/benab/AppData/Local/Temp/Algoritmia-B18/MonoBleedingEdge/etc'
+CodeReloadManager initialized
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+[Subsystems] Discovering subsystems at path C:/Users/benab/AppData/Local/Temp/Algoritmia-B18/Algoritmia_Data/UnitySubsystems
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 5070 Ti
+[D3D12 Device Filter] Driver Version: 32.0.16.1692
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 15995 MB
+[D3D12 Device Filter] Processor Count: 12
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 5070 Ti (ID=0x2c05)
+    Vendor:          NVIDIA
+    VRAM:            15995 MB
+    App VRAM Budget: 15227 MB
+    Driver:          32.0.16.1692
+Begin MonoManager ReloadAssembly
+- Finished resetting the current domain, in  0.145 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+Using Windows.Gaming.Input
+UnloadTime: 0.886600 ms
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.303700 ms
+RNF-04: «MainMenu» cargó en 0.142 s
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 4764.
+Total: 1.297500 ms (FindLiveObjects: 0.175800 ms CreateObjectMapping: 0.097500 ms MarkObjects: 1.014200 ms  DeleteObjects: 0.008100 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 3.408300 ms
+RNF-04: «LevelSelect» cargó en 0.042 s
+Unloading 463 unused Assets to reduce memory usage. Loaded Objects now: 3498.
+Total: 1.229900 ms (FindLiveObjects: 0.133400 ms CreateObjectMapping: 0.085900 ms MarkObjects: 0.708700 ms  DeleteObjects: 0.301900 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.407700 ms
+RNF-04: «Narrative» cargó en 0.310 s
+Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 4788.
+Total: 1.074100 ms (FindLiveObjects: 0.135200 ms CreateObjectMapping: 0.094900 ms MarkObjects: 0.813700 ms  DeleteObjects: 0.030200 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.956500 ms
+RNF-04: «Narrative» cargó en 0.013 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4803.
+Total: 1.091600 ms (FindLiveObjects: 0.143200 ms CreateObjectMapping: 0.101500 ms MarkObjects: 0.836900 ms  DeleteObjects: 0.009900 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.960900 ms
+RNF-04: «Narrative» cargó en 0.013 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4803.
+Total: 1.270600 ms (FindLiveObjects: 0.157300 ms CreateObjectMapping: 0.108200 ms MarkObjects: 0.993500 ms  DeleteObjects: 0.011500 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.606100 ms
+RNF-04: «Level1_Cave» cargó en 0.049 s
+Unloading 1008 unused Assets to reduce memory usage. Loaded Objects now: 4859.
+Total: 1.599000 ms (FindLiveObjects: 0.196400 ms CreateObjectMapping: 0.130200 ms MarkObjects: 0.968100 ms  DeleteObjects: 0.304100 ms)
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+CodeReloadManager destroyed
+GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+[d3d12] Unreleased non-evictable resource 0000027F673A8430 (size 4096 B, lastUsedFence 9)

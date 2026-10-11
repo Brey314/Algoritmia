@@ -16,10 +16,10 @@ El trabajo de grado fija dos indicadores para este objetivo. La eficacia de las 
 
 ## 1.3 Qué cubre este documento y qué no
 
-El documento cubre la evaluación funcional hecha sobre el ejecutable del candidato rc3: {{N_CASOS}} casos de prueba, agrupados en {{N_SESIONES}} sesiones, con los veredictos de cada uno, las mediciones de carga, memoria y tamaño del paquete, y los defectos hallados. El capítulo 2 explica el método, el capítulo 3 da los resultados, el capítulo 4 las oportunidades de mejora, el capítulo 5 lo que depende de personas ajenas al equipo de desarrollo y el capítulo 6 las conclusiones. El Anexo A relaciona cada caso con el requerimiento que prueba y con su veredicto.
+El documento cubre la evaluación funcional hecha sobre el ejecutable del candidato rc3: {{N_CASOS}} casos de prueba, agrupados en {{N_SESIONES}} sesiones, con el veredicto de los 126 que se pudieron cerrar sin una persona ajena al arnés (los otros 10 esperan a Santiago), las mediciones de carga, memoria y tamaño del paquete, y los defectos hallados. El capítulo 2 explica el método, el capítulo 3 da los resultados, el capítulo 4 las oportunidades de mejora, el capítulo 5 lo que depende de personas ajenas al equipo de desarrollo y el capítulo 6 las conclusiones. El Anexo A relaciona cada caso con el requerimiento que prueba y con su veredicto.
 
 No cubre la evaluación con estudiantes de grado cuarto. Los puntos abiertos PG-05 (el cambio de esquema de control entre el Nivel 1 y el Nivel 2 no genera confusión) y PG-06 (los valores del Nivel 1 son propuestas, no valores validados) piden observar a niños jugando, y esa observación necesita el consentimiento informado de los acudientes que exige RNF-12. El capítulo 5 deja registrado en qué estado está esa sesión. Tampoco repite la suite de pruebas automatizadas del OE3: la suite es evidencia de apoyo en la matriz del Anexo A y no cuenta en los indicadores.
 
 ## 1.4 Corte del documento
 
-Las cifras de este documento corresponden al candidato rc3 y a la pasada de pruebas hecha el PENDIENTE-CIFRA. Las pasadas sobre rc1 y rc2 (ambas del 01/10/2026) fueron previas, y se citan solo como historia de las correcciones en el apartado 3.6.
+Las cifras de este documento corresponden al candidato rc3 y a la pasada de pruebas hecha el 10/10/2026. Las pasadas sobre rc1 y rc2 (ambas del 01/10/2026) fueron previas; sus veredictos no se heredan, porque el juego cambió en 108 commits entre rc2 y rc3, y se citan solo como historia de las correcciones en el apartado 3.6.

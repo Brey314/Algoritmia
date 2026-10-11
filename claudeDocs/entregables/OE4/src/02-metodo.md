@@ -30,7 +30,7 @@ Tres reglas gobiernan las sesiones EXE y evitan que un veredicto se invente. Se 
 
 ## 2.4 Veredictos
 
-**Tabla 2.3.** Veredictos de un caso y cómo cuentan en el primer indicador.
+**Tabla 2.3.** Veredictos de un caso, marca de trabajo PS y cómo cuentan en el primer indicador.
 
 | Veredicto | Cuándo | Cuenta como |
 |---|---|---|
@@ -39,29 +39,30 @@ Tres reglas gobiernan las sesiones EXE y evitan que un veredicto se invente. Se 
 | F, fallido | Algún resultado esperado no se observa; se abre un defecto | No aprobado |
 | B, bloqueado | No se pudo ejecutar por precondición o entorno; si lo bloquea un defecto del juego, es F | Fuera del denominador |
 | NA, no aplica | Lo que el propio requerimiento deja fuera de un prototipo sin usuarios (RNF-12) | Fuera del denominador |
+| PS, pendiente de Santiago | El caso lo ejecuta la hoja HUM, o falta un documento o una confirmación suya. No es un veredicto | Fuera del denominador |
 
-Durante la pasada un caso puede estar a medias o sin ejecutar. Son estados de trabajo y no veredictos: al cierre cada uno de los {{N_CASOS}} casos tiene uno de los cinco de la Tabla 2.3, y cada B restante se justifica por escrito. Un F pasa a PD solo si el triaje registra un INC con la decisión de Santiago, y la reclasificación se ve en la columna de la versión final sin reescribir la primera pasada.
+Durante la pasada un caso puede estar a medias o sin ejecutar. Son estados de trabajo y no veredictos: NE (no ejecutado por el ejecutor automático) y PS (la fila de la Tabla 2.3). Al cierre de la pasada rc3 ningún caso está en B, NA ni NE, y diez están en PS (Tabla 3.1); cada uno de los otros 126 tiene uno de los veredictos de la tabla. Un F pasa a PD solo si el triaje registra un INC con la decisión de Santiago, y la reclasificación se ve en la columna de la versión final sin reescribir la primera pasada.
 
 ## 2.5 Indicadores
 
-**Eficacia de las pruebas funcionales.** Se calcula como (P + PD) / (P + PD + F) × 100 sobre los {{N_CASOS}} casos, con meta de 90 % o más. Se publica el valor global y el de cada etiqueta, porque el indicador nombra botones, sonidos y saltos de nivel y un promedio global podría ocultar una etiqueta por debajo de la meta.
+La eficacia de las pruebas funcionales se calcula como (P + PD) / (P + PD + F) × 100 sobre los casos con veredicto de los {{N_CASOS}} del catálogo, con meta de 90 % o más. Los casos en PS quedan fuera del cálculo, y el apartado 3.3 dice cuánto cambiaría el valor si fallaran. Se publica el valor global y el de cada etiqueta, porque el indicador nombra botones, sonidos y saltos de nivel y un promedio global podría ocultar una etiqueta por debajo de la meta.
 
-**Cumplimiento de requerimientos de prioridad Alta.** Son 45 RF de prioridad Alta; RF-06 es de prioridad Media y RF-21 de prioridad Baja, según el OE1. Un RF de prioridad Alta cuenta como implementado si ninguno de sus casos termina en F con severidad Bloqueante o Mayor. Un F Menor, como un rótulo o un criterio secundario de una historia, resta en la eficacia pero no niega que el RF exista.
+El cumplimiento de requerimientos de prioridad Alta se mide sobre 45 RF de prioridad Alta; RF-06 es de prioridad Media y RF-21 de prioridad Baja, según el OE1. Un RF de prioridad Alta cuenta como implementado si ninguno de sus casos termina en F con severidad Bloqueante o Mayor. Un F Menor, como un rótulo o un criterio secundario de una historia, resta en la eficacia pero no niega que el RF exista.
 
 ## 2.6 El candidato rc3
 
-El objeto de prueba es el ejecutable portable compilado para Windows de 64 bits con Unity 6000.5.10f1 (Mono, sin development build), con las 12 escenas del juego y `Boot` como primera. Los candidatos rc1 y rc2 se compilaron el 01/10/2026 sin etiqueta ni commit, desde el árbol de trabajo de la rama, por decisión de Santiago de hacer un único commit al final. Como el árbol sigue cambiando, la procedencia de cada candidato se identifica con el HEAD sobre el que se compiló, la huella de `git diff HEAD`, la lista de archivos sin seguimiento y la huella del contenido de la carpeta del build. Cada sesión sobre el ejecutable empieza comprobando el SHA-256 de `Algoritmia.exe`; si no coincide con el registrado, la sesión no cuenta. El `.exe` es solo el lanzador, así que lo que distingue un candidato de otro es la huella del contenido de `Algoritmia_Data`.
+El objeto de prueba es el ejecutable portable compilado para Windows de 64 bits con Unity 6000.5.10f1 (Mono, sin development build), con las 12 escenas del juego y `Boot` como primera. Los candidatos rc1 y rc2 se compilaron el 01/10/2026 sin etiqueta ni commit, desde el árbol de trabajo de la rama, por decisión de Santiago de hacer un único commit al final. Como el árbol sigue cambiando, la procedencia de cada candidato se identifica con el HEAD sobre el que se compiló, la huella de `git diff HEAD`, la lista de archivos sin seguimiento y la huella del contenido de la carpeta del build. Cada sesión sobre el ejecutable empieza comprobando el SHA-256 de `Algoritmia.exe`; si no coincide con el registrado, la sesión no cuenta. El `.exe` es solo el lanzador, así que lo que distingue un candidato de otro es la huella del contenido de `Algoritmia_Data`. A diferencia de rc1 y rc2, rc3 se compiló con el árbol limpio sobre el commit `f49ccc9` (`git status --short` y `git diff HEAD` vacíos antes y después del build); sigue sin etiqueta, porque la etiqueta la decide Santiago (tarjeta T01 del carril OE4).
 
-**Tabla 2.4.** Procedencia del candidato rc3.
+**Tabla 2.4.** Procedencia del candidato rc3 (fuente: `claudeDocs/tasks/OE4/evidencias/build-rc3.md`).
 
 | Dato | Valor |
 |---|---|
-| Fecha y hora del build | PENDIENTE-CIFRA |
-| Rama y HEAD | PENDIENTE-CIFRA |
-| Huella de `git diff HEAD` | PENDIENTE-CIFRA |
-| SHA-256 de `Algoritmia.exe` | PENDIENTE-CIFRA |
-| Huella del contenido de la carpeta | PENDIENTE-CIFRA |
-| Número de escenas en el build | PENDIENTE-CIFRA |
+| Fecha y hora del build | 10/10/2026, de 17:24:53 a 17:26:31 (reloj local); `unity build`, 1 min 39 s |
+| Rama y HEAD | `feat/personajes-animados`, `f49ccc9cebc246c77975bccec88812391e249716` |
+| Huella de `git diff HEAD` | Vacía (0 bytes) antes y después del build; `git status --short` vacío |
+| SHA-256 de `Algoritmia.exe` | `6cd16edfbe85284eb69cd2efe1170aa1cffdf0dbdb309c3269e2f8454811adab` (el mismo de rc1 y rc2) |
+| Huella del contenido de la carpeta | `Algoritmia_Data`: `b8e30db6821b0107005f9eafba8a628e4a3d0a1bcf36b52a8e7c91875e291446`. Carpeta entregable, 253 archivos: `616128366bf1fe15fcc604d14322ec98898c395f5ab435cbb02d589ad776bb9f`, sin cambios tras las sesiones |
+| Número de escenas en el build | 12, con `Boot` primera; 0 errores `error CS` en `build.log` |
 | Equipo 1 | AMD Ryzen 5 7600X, 32 GB de RAM, NVIDIA GeForce RTX 5070 Ti de 16 GB, Windows 11 Home Single Language de 64 bits, monitor de 1920 × 1080 al 125 % (el mismo de las pasadas sobre rc1 y rc2) |
 | Condiciones | Editor de Unity cerrado en las sesiones que miden carga o memoria; nada más abierto |
 

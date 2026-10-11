@@ -43,4 +43,4 @@ La hoja HUM reúne las 13 comprobaciones que ejecuta Santiago. Cada una trae su 
 | H12 | Oído, lo que suena pieza por pieza | `PF-SON-01` a `PF-SON-03` | [Pendiente: piezas que suenan y piezas que no] |
 | H13 | Mano, lo que el arnés no ve: el clic tras cargar una escena, la papelera del laberinto y la octava fila del informe | `PF-RNF02-01`, `PF-RF34-01`, `PF-RF46-01` | [Pendiente: Santiago] |
 
-Los veredictos de los casos con ejecutor HUM entran a la Tabla 3.1 y al Anexo A cuando Santiago entrega la hoja. Mientras tanto esos casos no tienen veredicto y el documento no se publica con cifras sobre ellos.
+Los veredictos de los casos con ejecutor HUM entran a la Tabla 3.1 y al Anexo A cuando Santiago entrega la hoja. Mientras tanto esos casos figuran como PS (apartado 2.4), quedan fuera del cálculo de la eficacia y el documento no da cifras sobre ellos; los diez que esperan a Santiago están en el apartado 3.1.
