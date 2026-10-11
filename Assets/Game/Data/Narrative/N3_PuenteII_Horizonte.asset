@@ -165,12 +165,27 @@ MonoBehaviour:
       <Destination>k__BackingField: {x: 0.615, y: 0.665}
       <Seconds>k__BackingField: 1.2
       <Arrival>k__BackingField: 12
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 1
+      <Facing>k__BackingField: 0
     - <Line>k__BackingField: 3
       <Action>k__BackingField: 0
       <Moves>k__BackingField: 0
       <Destination>k__BackingField: {x: 0, y: 0}
       <Seconds>k__BackingField: 0
       <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 1
+      <Facing>k__BackingField: 0
+    - <Line>k__BackingField: 4
+      <Action>k__BackingField: 0
+      <Moves>k__BackingField: 0
+      <Destination>k__BackingField: {x: 0, y: 0}
+      <Seconds>k__BackingField: 0
+      <Arrival>k__BackingField: 0
+      <SetsEmotion>k__BackingField: 1
+      <Emotion>k__BackingField: 3
+      <Facing>k__BackingField: 0
   <IsReflectiveClosing>k__BackingField: 0
   <EndsInCredits>k__BackingField: 0
   <NextPhase>k__BackingField: 0
@@ -187,6 +202,8 @@ MonoBehaviour:
     <Sound>k__BackingField: {fileID: 0}
     <Ambient>k__BackingField: {fileID: 0}
     <Silence>k__BackingField: 0
+    <SetsVoiceEmotion>k__BackingField: 1
+    <VoiceEmotion>k__BackingField: 2
   - <Speaker>k__BackingField: ALGORITM
     <Text>k__BackingField: "Otros como ustedes. M\xE1s adelante. Un lugar donde ya
       saben cultivar, construir y vivir juntos."
@@ -198,6 +215,8 @@ MonoBehaviour:
     <Sound>k__BackingField: {fileID: 0}
     <Ambient>k__BackingField: {fileID: 0}
     <Silence>k__BackingField: 0
+    <SetsVoiceEmotion>k__BackingField: 1
+    <VoiceEmotion>k__BackingField: 0
   - <Speaker>k__BackingField: ALGORITM
     <Text>k__BackingField: "El camino existe\u2026 pero hay un problema."
     <Sound>k__BackingField: {fileID: 0}

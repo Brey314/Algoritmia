@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7e51bcb39a70d34aa8488d375e1a925, type: 3}
   m_Name: char_algoritm_fuego_cara
   m_EditorClassIdentifier: Game.Scaffolding::Game.Scaffolding.CharacterFaceSet
-  <EyesNeutral>k__BackingField: {fileID: 21300000, guid: 9d327542b38fd1c44950b1b4f01ee72a, type: 3}
+  <EyesNeutral>k__BackingField: {fileID: 21300000, guid: 5477dc866a6ba844c8e59ea69b1920b9, type: 3}
   <EyesHappy>k__BackingField: {fileID: 0}
-  <EyesSurprised>k__BackingField: {fileID: 0}
-  <EyesWorried>k__BackingField: {fileID: 0}
-  <EyesFocused>k__BackingField: {fileID: 0}
+  <EyesSurprised>k__BackingField: {fileID: 21300000, guid: 525ce5f3d67cfc2439450a6042e6f717, type: 3}
+  <EyesWorried>k__BackingField: {fileID: 21300000, guid: 2118ed4574db8054e8563a665fae88db, type: 3}
+  <EyesFocused>k__BackingField: {fileID: 21300000, guid: ae99f4e56376a3343b807045d7339280, type: 3}
   <EyesSleeping>k__BackingField: {fileID: 0}
   <EyesBlinkHalf>k__BackingField: {fileID: 0}
-  <EyesBlinkClosed>k__BackingField: {fileID: 0}
-  <MouthClosed>k__BackingField: {fileID: 21300000, guid: 4f240e570c039ff4b848ffd9bd685840, type: 3}
-  <MouthA>k__BackingField: {fileID: 0}
+  <EyesBlinkClosed>k__BackingField: {fileID: 21300000, guid: 2980b329d3b3a68438d6375655e458d6, type: 3}
+  <MouthClosed>k__BackingField: {fileID: 21300000, guid: 692ab44e6ae548540a0f840d7b9e647e, type: 3}
+  <MouthA>k__BackingField: {fileID: 21300000, guid: f88338b7f8c440a44864ae718ed55a95, type: 3}
   <MouthE>k__BackingField: {fileID: 0}
   <MouthU>k__BackingField: {fileID: 0}
   <MouthHappy>k__BackingField: {fileID: 0}
-  <MouthSurprised>k__BackingField: {fileID: 0}
-  <MouthWorried>k__BackingField: {fileID: 0}
-  <MouthFocused>k__BackingField: {fileID: 0}
+  <MouthSurprised>k__BackingField: {fileID: 21300000, guid: faff6b5701b269546a93a881c60ba9bc, type: 3}
+  <MouthWorried>k__BackingField: {fileID: 21300000, guid: c4f3a740e5b7d9c498c6245c5d527946, type: 3}
+  <MouthFocused>k__BackingField: {fileID: 21300000, guid: 5464ddca70f94fa479044a8dfe9440ef, type: 3}
   <BlinkInterval>k__BackingField: 3.5
   <BlinkJitter>k__BackingField: 1.2
   <BlinkSeconds>k__BackingField: 0.12

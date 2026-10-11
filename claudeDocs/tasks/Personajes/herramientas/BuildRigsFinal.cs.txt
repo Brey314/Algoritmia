@@ -3,9 +3,11 @@
 // vuelca en sus clips la coreografía que genera coreografia.py.
 //
 // QUÉ ES. Hijo de BuildRigs.cs.txt (que armó los prefabs de cinco partes), pero NUNCA los
-// reconstruye: solo AÑADE nodos, reordena hermanos y reescribe curvas. Cinco modos, más dos de apoyo
+// reconstruye: solo AÑADE nodos, reordena hermanos, reescribe curvas y escribe valores. Seis modos, más dos de apoyo
 // (desde INC-134, 09/10/2026, «perfil»; el orden cuando llega el arte de perfil es
-//  estado → perfil → sprites → clips → estado, y «orden» solo si cambió el orden de Tronco de frente):
+//  estado → perfil → sprites → clips → estado, y «orden» solo si cambió el orden de Tronco de frente.
+//  DESDE INC-148 (10/10/2026), «retrato»: la ronda de las caras nuevas y del retrato animado de la tarjeta del diálogo es
+//  estado → sprites → retrato → clips → estado   («clips» porque la caja de la cara cambió y con ella los gestos junto a la cabeza; «nodos», «perfil» y «orden» ya están):
 //   "nodos"   añade a los 7 prefabs (Papa, Mama, Nina, Nino, Algoritm_Fuego/Rueda/Gota) lo que la
 //             tabla rig_articulaciones.json pide y falta, y el componente CharacterFace. Idempotente:
 //             si un nodo existe no lo toca ni lo mueve (un antebrazo que «orden» ya soltó del codo y
@@ -44,12 +46,24 @@
 //             conservar una referencia rota; el modo la vacía y la apaga: en el Editor Image.sprite da un nulo falso
 //             tanto para una referencia a un PNG borrado como para un sprite vacío, y su setter no limpia la rota, así que
 //             se detecta en el archivo del prefab (BrokenSpriteGuids: un GUID de m_Sprite sin asset) y se vacía por la
-//             propiedad serializada m_Sprite; cuenta como cambio, aunque la Image ya estuviera apagada). En Algoritm la cara provisional
-//             (char_algoritm_<forma>_ojos_neutra y _boca_0, en Expresiones/) enciende Ojos y Boca y crea o
-//             actualiza Expresiones/char_algoritm_<forma>_cara.asset, que cablea en CharacterFace.faceSet
-//             (EyesNeutral y MouthClosed; sin cuadro de ojos cerrados no parpadea). Con el prefab
+//             propiedad serializada m_Sprite; cuenta como cambio, aunque la Image ya estuviera apagada). En Algoritm la cara
+//             (los nodos Ojos y Boca de la tabla, en Expresiones/) las enciende y crea o
+//             actualiza Expresiones/char_algoritm_<forma>_cara.asset, que cablea en CharacterFace.faceSet.
+//             INC-148: la cara FINAL de Algoritm es UNA para sus tres formas (char_algoritm_ojos_neutra, _ojos_concentracion, _ojos_preocupacion, _ojos_sorpresa,
+//             _ojos_parpadeo_cerrado, _boca_0, _boca_concentracion, _boca_preocupacion, _boca_sorpresa y _boca_a, sin el nombre de la forma): la tabla trae
+//             «prefijo_cara» y cada ranura de FaceNames se busca PRIMERO con ese prefijo y, si no está, con el de la forma (FindFaceSprite). El orden importa mientras los PNG
+//             provisionales por forma sigan en disco (se borran al final de la ronda, con su .meta): buscar primero el de la forma pondría la cara vieja en el set. Los
+//             tres _cara.asset conservan su GUID: solo cambian sus sprites. La familia llena además las ranuras nuevas (concentración, preocupación, sorpresa, el parpadeo de frente
+//             y la boca de hablar). Con el prefab
 //             en «perfil», hace lo mismo con el cuerpo de perfil: asigna char_<x>_perfil_* por nombre exacto,
 //             recoloca cada nodo con su rect y su punto y rellena Perfil/char_<x>_perfil_cara.asset con los cuadros de cara que existan.
+//   "retrato" (INC-148) la tarjeta del cuadro de diálogo es ANIMADA (parpadea y mueve la boca): una base sin cara (char_<x>_retrato_base, 256 x 256) y, encima, los ojos y la
+//             boca del set de la cara del propio personaje, en un rect normalizado de la base. Por cada uno de los siete prefabs (Papa, Mama, Nina, Nino, Algoritm_Fuego,
+//             Algoritm_Rueda, Algoritm_Gota) lo abre con LoadPrefabContents, busca el CharacterRig y escribe, por SerializedObject, <PortraitBase>k__BackingField (el Sprite
+//             «retrato.base» de la tabla, pasado a Sprite Single si hace falta) y <PortraitFace>k__BackingField (el Rect «retrato.cara» = [x, y, ancho, alto] con el origen ABAJO a la
+//             izquierda), y lo guarda con SaveAsPrefabAsset. SOLO cambian VALORES: no se añade ni se quita ningún objeto y ningún fileID se mueve. Si CharacterRig aún no tiene esos
+//             campos (el código del motor sin compilar) o falta el PNG, lo dice y se salta ese personaje. Idempotente. La tabla (rig_articulaciones.json, clave «retrato» de
+//             cada personaje) la escribe articulaciones.py desde arte_final.json, que rellena preparar_retrato.py.
 //   "orden"   coloca los hijos de Lienzo/Cuerpo/Tronco en el orden de dibujo que fija «orden_tronco»
 //             en la tabla: en la familia los húmeros (BrazoIzq, BrazoDer) DETRÁS del torso y los
 //             antebrazos DELANTE del torso, de la cara y de las piernas (p. ej. Cuello, BrazoIzq, BrazoDer,
@@ -87,12 +101,14 @@
 //             propiedades que de frente: localEulerAnglesRaw.z, m_AnchoredPosition y m_LocalScale): se escriben como las demás, pero
 //             si el prefab de un personaje aún no tiene Lienzo/Perfil el modo SE NIEGA a escribir los clips de ese personaje
 //             y dice que corra «perfil» antes (unas curvas colgadas dejarían a medias CharacterRig_DA131_TodaCurvaApuntaAUnaParteQueExiste).
-//   "todo"    nodos → perfil → sprites → orden → clips.      "estado"  solo informa, no escribe nada
+//   "todo"    nodos → perfil → sprites → retrato → orden → clips.      "estado"  solo informa, no escribe nada
 //             (incluye el orden de dibujo actual de Tronco en cada prefab y, si la tabla suelta los
 //             antebrazos del codo, dónde está cada uno y si tiene ancla; y, por personaje, el estado del cuerpo de perfil:
 //             si Lienzo/Perfil existe y su activación, los nodos que están, las Image con sprite y encendidas, el cableado
 //             de CharacterFace.profileEyes/profileMouth/profileFaceSet, el _cara.asset de perfil y el orden de Perfil/Tronco;
-//             y las referencias a sprites borrados que guarda el archivo del prefab: «REFERENCIA A SPRITE BORRADO: n (guid …)», que «sprites» vacía).
+//             y las referencias a sprites borrados que guarda el archivo del prefab: «REFERENCIA A SPRITE BORRADO: n (guid …)», que «sprites» vacía;
+//             y, desde INC-148, por personaje: cuántas de las 16 ranuras de su set de cara tienen sprite (y cuáles están vacías teniendo PNG), los valores de PortraitBase y
+//             PortraitFace y si coinciden con la tabla, y los PNG de cara o de retrato de su carpeta que miden más de 256 px —INC-149—, leídos de su cabecera).
 //
 // DÓNDE VIVE LA COREOGRAFÍA. Ya NO está en este archivo: la escribe herramientas/coreografia.py y la
 // entrega como herramientas/clips_personajes.json, con las curvas ya calculadas de cada clip (ruta,
@@ -129,6 +145,7 @@
 //      «perfil» (INC-134) necesita el CharacterFace de «nodos» y tiene que ir ANTES de «clips», que trae curvas de perfil.
 //      «sprites» corre bien antes o después de «orden»: encuentra el antebrazo en el codo o en Tronco.
 //      Con el cuerpo de perfil, la ronda del Editor es  estado → perfil → sprites → clips → estado  (los de frente ya están).
+//      Con las caras nuevas y el retrato animado (INC-148), es  estado → sprites → retrato → clips → estado.
 //      Devuelve el log como texto. «clips» lee herramientas/clips_personajes.json: correr antes
 //      coreografia.py. Los modos «perfil» y «sprites» necesitan el código del motor de INC-134 compilado
 //      (CharacterFace.profileEyes/profileMouth/profileFaceSet); si no, avisan y no cablean.
@@ -211,6 +228,16 @@ public static class ClaudeBuildRigsFinal
 
         /// <summary>true si este Personaje es el cuerpo de perfil de otro (lo que cuelga de «perfil»), no un prefab propio.</summary>
         public bool isProfile;
+
+        /// <summary>
+        /// «prefijo_cara» (opcional, INC-148): el prefijo de la cara COMPARTIDA de un personaje cuyas formas comparten sprites de cara (Algoritm: «char_algoritm», o sea
+        /// char_algoritm_ojos_neutra, sin el nombre de la forma). null = cada prefab usa el suyo (<see cref="prefijo"/>).
+        /// </summary>
+        public string prefijoCara;
+
+        /// <summary>«retrato» (opcional, INC-148): el sprite de la base del retrato animado (char_&lt;x&gt;_retrato_base) y el rect de la cara sobre él, [x, y, ancho, alto] normalizados con el origen ABAJO a la izquierda. null = la tabla no lo trae.</summary>
+        public string retratoBase;
+        public float[] retratoCara;
     }
 
     /// <summary>
@@ -329,6 +356,17 @@ public static class ClaudeBuildRigsFinal
         if (d.TryGetValue("perfil", out perfilRaw) && perfilRaw != null)
         {
             p.perfil = ToPerfil(perfilRaw, p);
+        }
+
+        p.prefijoCara = Str(d, "prefijo_cara", ctx, false);
+
+        object retratoRaw;
+        if (d.TryGetValue("retrato", out retratoRaw) && retratoRaw != null)
+        {
+            var rctx = ctx + ", retrato";
+            var r = AsObject(retratoRaw, rctx);
+            p.retratoBase = Str(r, "base", rctx, true);
+            p.retratoCara = Numbers(r, "cara", rctx, 4, true);
         }
 
         return p;
@@ -1079,6 +1117,9 @@ public static class ClaudeBuildRigsFinal
                 case "sprites":
                     foreach (var p in tabla.personajes) ApplySprites(p, log);
                     break;
+                case "retrato":
+                    foreach (var p in tabla.personajes) ApplyPortrait(p, log);
+                    break;
                 case "orden":
                     ApplyOrderAll(tabla, log);
                     break;
@@ -1089,6 +1130,7 @@ public static class ClaudeBuildRigsFinal
                     foreach (var p in tabla.personajes) AddNodes(p, log);
                     foreach (var p in tabla.personajes) AddProfile(p, log);
                     foreach (var p in tabla.personajes) ApplySprites(p, log);
+                    foreach (var p in tabla.personajes) ApplyPortrait(p, log);
                     ApplyOrderAll(tabla, log);
                     WriteClips(tabla, log);
                     break;
@@ -1096,7 +1138,7 @@ public static class ClaudeBuildRigsFinal
                     foreach (var p in tabla.personajes) Report(p, log);
                     break;
                 default:
-                    log.Add("modo desconocido «" + mode + "»: nodos | perfil | sprites | orden | clips | todo | estado");
+                    log.Add("modo desconocido «" + mode + "»: nodos | perfil | sprites | retrato | orden | clips | todo | estado");
                     break;
             }
 
@@ -2011,13 +2053,30 @@ public static class ClaudeBuildRigsFinal
         return set;
     }
 
+    /// <summary>
+    /// El sprite de una ranura de la cara (sufijo «ojos_neutra», «boca_a»…) de un personaje (INC-148). Si la tabla declara «prefijo_cara» (Algoritm: las tres formas comparten UNA cara,
+    /// char_algoritm_ojos_neutra, sin el nombre de la forma) se busca PRIMERO con ese prefijo y, si no esta, con el de la forma (char_algoritm_fuego_ojos_neutra); sin «prefijo_cara»,
+    /// solo con el de la forma, como siempre. El orden es ese y no el inverso a proposito: mientras los PNG provisionales por forma siguen en disco (se borran al final de la ronda, con su
+    /// .meta) buscar primero el de la forma pondria la cara VIEJA en EyesNeutral y MouthClosed y, al borrarla, dejaria el set con referencias rotas. null si no existe de ninguna de las dos.
+    /// </summary>
+    private static Sprite FindFaceSprite(Personaje c, string sufijo, List<string> log)
+    {
+        if (!string.IsNullOrEmpty(c.prefijoCara))
+        {
+            var shared = FindSprite(c.carpeta, c.prefijoCara + "_" + sufijo, log);
+            if (shared != null) return shared;
+        }
+
+        return FindSprite(c.carpeta, c.prefijo + "_" + sufijo, log);
+    }
+
     /// <summary>Crea o actualiza &lt;carpeta&gt;/Expresiones/&lt;prefijo&gt;_cara.asset con los sprites de cara que existan y lo asigna a faceSet.</summary>
     private static bool ApplyFaceSet(GameObject root, Personaje c, List<string> done, List<string> log)
     {
         var found = new Dictionary<string, Sprite>();
         foreach (var pair in FaceNames)
         {
-            var sprite = FindSprite(c.carpeta, c.prefijo + "_" + pair[1], log);
+            var sprite = FindFaceSprite(c, pair[1], log);
             if (sprite != null) found[pair[0]] = sprite;
         }
 
@@ -2058,6 +2117,83 @@ public static class ClaudeBuildRigsFinal
 
         done.Add(c.prefijo + "_cara.asset (" + found.Count + " sprites)");
         return changed;
+    }
+
+    // ---------------------------------------------------------------- modo «retrato» (INC-148)
+    //
+    // La tarjeta del cuadro de diálogo es ANIMADA: una base sin cara (char_<x>_retrato_base, 256 x 256) y, encima, los sprites de ojos y boca del propio set de la cara del
+    // personaje, puestos en un rect normalizado de la base. Este modo escribe, por SerializedObject, los dos campos que CharacterRig guarda al final de sus campos
+    // serializados: PortraitBase (el Sprite) y PortraitFace (el Rect, con el origen ABAJO a la izquierda: coincide con los anclajes de uGUI). Solo cambian VALORES: ningún objeto
+    // se añade ni se quita y ningún fileID se mueve. Si el código del motor aún no está compilado (no existe la propiedad) lo dice y se salta ese personaje.
+
+    private static bool NearRect(Rect a, Rect b)
+    {
+        return Mathf.Abs(a.x - b.x) < 1e-5f && Mathf.Abs(a.y - b.y) < 1e-5f && Mathf.Abs(a.width - b.width) < 1e-5f && Mathf.Abs(a.height - b.height) < 1e-5f;
+    }
+
+    /// <summary>
+    /// Escribe CharacterRig.PortraitBase y PortraitFace del prefab de «c» con lo que dice «retrato» de la tabla (rig_articulaciones.json: lo escribe articulaciones.py desde
+    /// arte_final.json, que rellena preparar_retrato.py). Idempotente: solo guarda el prefab si algo cambia.
+    /// </summary>
+    private static void ApplyPortrait(Personaje c, List<string> log)
+    {
+        if (string.IsNullOrEmpty(c.retratoBase) || c.retratoCara == null)
+        {
+            log.Add("AVISO " + c.prefab + ": la tabla no trae «retrato» (correr preparar_retrato.py --aplicar y articulaciones.py); se salta");
+            return;
+        }
+
+        var sprite = FindSprite(c.carpeta, c.retratoBase, log); // la pasa a Sprite Single si hace falta
+        if (sprite == null)
+        {
+            log.Add("AVISO " + c.prefab + ": no encuentro el PNG «" + c.retratoBase + "» en " + Art + "/" + c.carpeta + "; se salta");
+            return;
+        }
+
+        var path = PrefabPath(c);
+        var root = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var rig = root.GetComponent<CharacterRig>();
+            if (rig == null)
+            {
+                log.Add("AVISO " + c.prefab + ": no tiene CharacterRig; se salta");
+                return;
+            }
+
+            var so = new SerializedObject(rig);
+            var baseProp = so.FindProperty("<PortraitBase>k__BackingField");
+            var faceProp = so.FindProperty("<PortraitFace>k__BackingField");
+            if (baseProp == null || faceProp == null)
+            {
+                log.Add("AVISO " + c.prefab + ": CharacterRig no tiene PortraitBase / PortraitFace (el código del motor de INC-148, sin compilar): no se escribe nada");
+                return;
+            }
+
+            var rect = new Rect(c.retratoCara[0], c.retratoCara[1], c.retratoCara[2], c.retratoCara[3]);
+            var changed = false;
+            if (baseProp.objectReferenceValue != sprite)
+            {
+                baseProp.objectReferenceValue = sprite;
+                changed = true;
+            }
+
+            if (!NearRect(faceProp.rectValue, rect))
+            {
+                faceProp.rectValue = rect;
+                changed = true;
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            if (changed) PrefabUtility.SaveAsPrefabAsset(root, path);
+            log.Add(c.prefab + ": retrato " + (changed ? "escrito" : "ya estaba") + " (PortraitBase " + sprite.name + ", PortraitFace x " + rect.x.ToString("0.#####", System.Globalization.CultureInfo.InvariantCulture)
+                + " y " + rect.y.ToString("0.#####", System.Globalization.CultureInfo.InvariantCulture) + " ancho " + rect.width.ToString("0.#####", System.Globalization.CultureInfo.InvariantCulture)
+                + " alto " + rect.height.ToString("0.#####", System.Globalization.CultureInfo.InvariantCulture) + ")");
+        }
+        finally
+        {
+            PrefabUtility.UnloadPrefabContents(root);
+        }
     }
 
     // ---------------------------------------------------------------- modo «orden»
@@ -2392,6 +2528,127 @@ public static class ClaudeBuildRigsFinal
             + " | CharacterFace " + (face == null ? "no" : "sí") + " | segmentado " + (IsSegmented(root.transform) ? "sí" : "no")
             + " | " + FaceSetState(c) + " | " + OrderState(root.transform, c) + " | " + LimbState(root.transform, c) + " | " + BrokenSpriteState(PrefabPath(c)));
         log.Add(c.prefab + " (perfil) " + ProfileState(root, c));
+        log.Add(c.prefab + " (cara y retrato, INC-148) " + FaceSlotsState(root, c) + " | " + PortraitState(root, c) + " | " + OversizeState(c));
+    }
+
+    /// <summary>
+    /// Las ranuras del set de la cara de frente de este prefab (CharacterFace.faceSet) que tienen sprite, de las 16 de FaceNames, y cuáles faltan de las que la tabla puede llenar
+    /// (la que tiene su PNG). Solo lee, por SerializedObject. No lanza.
+    /// </summary>
+    private static string FaceSlotsState(GameObject root, Personaje c)
+    {
+        try
+        {
+            var face = root.GetComponent<CharacterFace>();
+            if (face == null) return "sin CharacterFace";
+            var set = new SerializedObject(face).FindProperty("faceSet");
+            if (set == null || set.objectReferenceValue == null) return "faceSet sin asignar";
+            var so = new SerializedObject(set.objectReferenceValue);
+            var filled = new List<string>();
+            var emptyWithPng = new List<string>();
+            foreach (var pair in FaceNames)
+            {
+                var prop = so.FindProperty("<" + pair[0] + ">k__BackingField");
+                var has = prop != null && prop.objectReferenceValue != null;
+                if (has)
+                {
+                    filled.Add(pair[0]);
+                }
+                else if (HasFacePng(c, pair[1]))
+                {
+                    emptyWithPng.Add(pair[0]);
+                }
+            }
+
+            return "faceSet " + set.objectReferenceValue.name + ": " + filled.Count + "/" + FaceNames.Length + " ranuras (" + string.Join(", ", filled.ToArray()) + ")"
+                + (emptyWithPng.Count > 0 ? "; VACÍAS CON PNG (correr «sprites»): " + string.Join(", ", emptyWithPng.ToArray()) : "");
+        }
+        catch (Exception e)
+        {
+            return "ranuras de la cara: no se pudo leer (" + e.Message + ")";
+        }
+    }
+
+    /// <summary>¿Hay un PNG de cara con ese sufijo, con el prefijo compartido (si la tabla lo declara) o con el de la forma? Solo mira el disco.</summary>
+    private static bool HasFacePng(Personaje c, string sufijo)
+    {
+        var folder = Path.GetFullPath(Path.Combine(Application.dataPath, "..", Art + "/" + c.carpeta));
+        if (!Directory.Exists(folder)) return false;
+        var names = new List<string>();
+        if (!string.IsNullOrEmpty(c.prefijoCara)) names.Add(c.prefijoCara + "_" + sufijo + ".png");
+        names.Add(c.prefijo + "_" + sufijo + ".png");
+        foreach (var name in names)
+        {
+            if (Directory.GetFiles(folder, name, SearchOption.AllDirectories).Length > 0) return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>CharacterRig.PortraitBase y PortraitFace del prefab (por SerializedObject; «no existen» si el código del motor de INC-148 aún no compiló). No lanza.</summary>
+    private static string PortraitState(GameObject root, Personaje c)
+    {
+        try
+        {
+            var rig = root.GetComponent<CharacterRig>();
+            if (rig == null) return "sin CharacterRig";
+            var so = new SerializedObject(rig);
+            var baseProp = so.FindProperty("<PortraitBase>k__BackingField");
+            var faceProp = so.FindProperty("<PortraitFace>k__BackingField");
+            if (baseProp == null || faceProp == null) return "CharacterRig sin PortraitBase / PortraitFace (el código de INC-148 sin compilar)";
+            var r = faceProp.rectValue;
+            var inv = System.Globalization.CultureInfo.InvariantCulture;
+            var esperado = c.retratoCara == null ? "la tabla no trae retrato" : (NearRect(r, new Rect(c.retratoCara[0], c.retratoCara[1], c.retratoCara[2], c.retratoCara[3])) ? "coincide con la tabla" : "DIFIERE de la tabla (correr «retrato»)");
+            return "PortraitBase " + (baseProp.objectReferenceValue == null ? "VACÍO" : baseProp.objectReferenceValue.name) + ", PortraitFace (" + r.x.ToString("0.#####", inv) + ", " + r.y.ToString("0.#####", inv)
+                + ", " + r.width.ToString("0.#####", inv) + ", " + r.height.ToString("0.#####", inv) + ") " + esperado;
+        }
+        catch (Exception e)
+        {
+            return "retrato: no se pudo leer (" + e.Message + ")";
+        }
+    }
+
+    /// <summary>
+    /// Los PNG de cara (ojos, boca y cara base, de frente y de perfil) y de retrato de la carpeta del personaje que miden más de 256 px de lado (INC-149): la entrega del 10/10 entra
+    /// recortada y a 256 como máximo (las partes del cuerpo y los _reposo no cuentan). Lee solo la cabecera de cada PNG (IHDR), sin importarlo. No lanza.
+    /// </summary>
+    private static string OversizeState(Personaje c)
+    {
+        try
+        {
+            var folder = Path.GetFullPath(Path.Combine(Application.dataPath, "..", Art + "/" + c.carpeta));
+            if (!Directory.Exists(folder)) return "sin carpeta de arte";
+            var big = new List<string>();
+            var count = 0;
+            foreach (var file in Directory.GetFiles(folder, "*.png", SearchOption.AllDirectories))
+            {
+                var name = Path.GetFileNameWithoutExtension(file);
+                if (!(name.Contains("_ojos_") || name.Contains("_boca_") || name.Contains("_cara_base") || name.Contains("_retrato_"))) continue;
+                count++;
+                int w, h;
+                if (PngSize(file, out w, out h) && (w > 256 || h > 256)) big.Add(name + " " + w + "x" + h);
+            }
+
+            return big.Count == 0 ? "caras y retratos <= 256 px (" + count + " PNG)" : "EXCEDEN 256 px: " + string.Join(", ", big.ToArray());
+        }
+        catch (Exception e)
+        {
+            return "tamaños: no se pudo leer (" + e.Message + ")";
+        }
+    }
+
+    /// <summary>El ancho y el alto de un PNG, de su cabecera IHDR (bytes 16 a 23, big-endian). false si no es un PNG legible.</summary>
+    private static bool PngSize(string path, out int width, out int height)
+    {
+        width = height = 0;
+        using (var fs = File.OpenRead(path))
+        {
+            var head = new byte[24];
+            if (fs.Read(head, 0, 24) < 24 || head[1] != (byte)'P' || head[2] != (byte)'N' || head[3] != (byte)'G') return false;
+            width = (head[16] << 24) | (head[17] << 16) | (head[18] << 8) | head[19];
+            height = (head[20] << 24) | (head[21] << 16) | (head[22] << 8) | head[23];
+            return true;
+        }
     }
 
     /// <summary>

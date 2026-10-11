@@ -1270,12 +1270,106 @@ namespace Game.UI.Tests
 
                 Assert.That(controller.PortraitFrame.activeSelf, Is.True, $"L{linea}: habla {hablante} y se ve su retrato");
                 Assert.That(controller.Portrait.sprite, Is.Not.Null, $"L{linea}: el retrato de {hablante} tiene sprite");
-                var enEscena = controller.Actors.Where(actor => actor.Rig.Speaks(hablante)).Select(actor => actor.Rig.Portrait).ToArray();
+                // INC-148: la tarjeta es la base sin cara del personaje (la cara se pinta encima) y, mientras no la tenga,
+                // el retrato fijo de siempre.
+                var enEscena = controller.Actors.Where(actor => actor.Rig.Speaks(hablante))
+                    .Select(actor => actor.Rig.PortraitBase != null ? actor.Rig.PortraitBase : actor.Rig.Portrait).ToArray();
                 if (enEscena.Length > 0)
                 {
                     Assert.That(enEscena, Has.Member(controller.Portrait.sprite), $"L{linea}: es el retrato de {hablante}, que está en escena");
                 }
             }
+        }
+
+        /// <summary>
+        /// La tarjeta del cuadro de diálogo es el hablante con la expresión de su línea, y parpadea y mueve la boca
+        /// mientras la línea está en pantalla, que es hasta que se avanza (INC-148, decisión de Santiago,
+        /// 10/10/2026). Recorre el nacimiento del fuego: en cada línea hablada la cara de la tarjeta lleva el set del
+        /// hablante, la expresión que el guion le fija (<see cref="ActorTimeline.EmotionOf"/>), habla, y su boca
+        /// cambia de sprite en menos de 0,3 s; en una acotación la tarjeta se oculta y se calla; y al salir de la
+        /// escena nadie sigue hablando.
+        /// FALLA mientras los prefabs no lleven PortraitBase y PortraitFace (ronda del Editor) y el guion no declare
+        /// las expresiones.
+        /// </summary>
+        [Test]
+        [Timeout(60000)]
+        public async Task NarrativeScene_INC148_ElRetratoTieneLaCaraLaEmocionYLaBocaDeQuienHabla()
+        {
+            const string id = "N1_NacimientoDelFuego";
+            var (controller, _) = await OpenNarrative(id, LevelId.Fire);
+            var secuencia = SequenceNamed(controller, id);
+            var habladas = 0;
+
+            for (var linea = 0; linea < secuencia.Lines.Length; linea++)
+            {
+                if (linea > 0)
+                {
+                    Click(controller.AdvanceButton);
+                }
+
+                var dicha = secuencia.Lines[linea];
+                var cara = controller.PortraitFace;
+                Assert.That(cara == null, Is.False, $"L{linea}: la tarjeta tiene su cara (Arte/Cara), armada al arrancar la escena");
+
+                if (dicha.IsStageDirection)
+                {
+                    Assert.That(controller.PortraitFrame.activeSelf, Is.False, $"L{linea}: una acotación no lleva tarjeta");
+                    Assert.That(cara.gameObject.activeSelf, Is.False, $"L{linea}: ni su cara");
+                    Assert.That(cara.Speaking, Is.False, $"L{linea}: y nadie habla en una acotación");
+                    continue;
+                }
+
+                var enEscena = controller.Actors.Where(actor => actor.Rig.Speaks(dicha.Speaker)).ToArray();
+                Assert.That(enEscena, Is.Not.Empty, $"L{linea}: «{dicha.Speaker}» está en esta escena");
+                var hablante = enEscena[0];
+                habladas++;
+
+                Assert.That(controller.PortraitFrame.activeSelf, Is.True, $"L{linea}: habla {dicha.Speaker} y se ve su tarjeta");
+                Assert.That(hablante.Rig.PortraitBase == null, Is.False, $"L{linea}: {hablante.Prop.Actor.name} tiene la base de su tarjeta");
+                Assert.That(controller.Portrait.sprite, Is.SameAs(hablante.Rig.PortraitBase), $"L{linea}: la tarjeta es la base sin cara del hablante");
+                Assert.That(cara.gameObject.activeSelf, Is.True, $"L{linea}: con su cara encima");
+                Assert.That(cara.FaceSet, Is.SameAs(hablante.Rig.FaceSet), $"L{linea}: la cara es la del hablante");
+                Assert.That(cara.Emotion, Is.EqualTo(ActorTimeline.EmotionOf(hablante.Prop, linea, true)),
+                    $"L{linea}: la expresión del guion para {hablante.Prop.Actor.name}");
+                Assert.That(cara.Speaking, Is.True, $"L{linea}: la boca habla mientras la línea está en pantalla");
+
+                var recuadro = (RectTransform)cara.transform;
+                Assert.That(recuadro.anchorMin, Is.EqualTo(hablante.Rig.PortraitFace.min), $"L{linea}: la cara va donde dice PortraitFace");
+                Assert.That(recuadro.anchorMax, Is.EqualTo(hablante.Rig.PortraitFace.max));
+
+                // La boca cambia de sprite en menos de 0,3 s (con una sola boca de hablar, abierta y cerrada cada 0,09 s).
+                var boca = recuadro.Find("Boca").GetComponent<Image>();
+                var vistas = new System.Collections.Generic.HashSet<Sprite> { boca.sprite };
+                var inicio = Time.realtimeSinceStartup;
+                while (Time.realtimeSinceStartup - inicio < 0.3f)
+                {
+                    await Awaitable.NextFrameAsync();
+                    vistas.Add(boca.sprite);
+                }
+
+                Assert.That(vistas.Count, Is.GreaterThan(1), $"L{linea}: la boca de {hablante.Prop.Actor.name} se movió en 0,3 s");
+            }
+
+            Assert.That(habladas, Is.GreaterThan(0), "la escena tiene líneas dichas por personajes en escena");
+
+            // Salir de la escena con una línea hablada en pantalla —aquí omitiéndola, que es posible porque ya se vio—
+            // calla la boca de la tarjeta, como la de los personajes: ninguna queda abierta.
+            var (otra, _) = await OpenNarrative(id, LevelId.Wheel, new PhaseId(LevelId.Fire, 1));
+            var primeraHablada = Array.FindIndex(secuencia.Lines, candidata => !candidata.IsStageDirection);
+            for (var linea = 0; linea < primeraHablada; linea++)
+            {
+                Click(otra.AdvanceButton);
+            }
+
+            var tarjeta = otra.PortraitFace;
+            Assert.That(tarjeta == null, Is.False, "la segunda visita también arma su tarjeta");
+            Assert.That(tarjeta.Speaking, Is.True, "antes de salir, la tarjeta habla");
+            Assert.That(otra.SkipButton.gameObject.activeInHierarchy, Is.True, "la escena ya se vio y se puede omitir");
+
+            Click(otra.SkipButton);
+
+            Assert.That(tarjeta.Speaking, Is.False, "al salir de la escena la tarjeta calla");
+            Assert.That(otra.Actors.Any(actor => actor.Rig.Speaking), Is.False, "y los personajes también");
         }
 
         /// <summary>

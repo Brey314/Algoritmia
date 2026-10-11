@@ -122,7 +122,7 @@ Se corre al terminar cada sesión, después de `Residuos`, que necesita ver la c
   resultado de la anterior.
 - **El Nudge.** Antes de pulsar, el arnés mueve el cursor un píxel y lo devuelve: tras cargar una escena, su
   `EventSystem` no sabe dónde está el puntero hasta que el ratón se mueve, y en el spike se perdieron 12 clics en el
-  mismo punto (11 seguidos y uno suelto; `../evidencias/S-SPIKE/S-SPIKE_registro_de_pasos.md`, paso 16). **El Nudge esconde ese riesgo** (un niño con *touchpad* que toca sin deslizar): lo comprueba
+  mismo punto (11 seguidos y uno suelto; `evidencias/S-SPIKE/S-SPIKE_registro_de_pasos.md`, paso 16, en el historial de git hasta 4e78f47). **El Nudge esconde ese riesgo** (un niño con *touchpad* que toca sin deslizar): lo comprueba
   Santiago a mano (`../Hoja-HUM.md`, H13).
 - **Un solo manejador.** Un mutex rechaza con salida 3 una segunda llamada que maneje el juego mientras otra sigue en
   curso.

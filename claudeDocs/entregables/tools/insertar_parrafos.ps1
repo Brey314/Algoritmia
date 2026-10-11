@@ -5,7 +5,11 @@
 
 .DESCRIPTION
   Formato del .json (UTF-8): una lista de objetos
-    [ {"despues_de": "texto completo del parrafo ancla", "texto": "parrafo nuevo", "como": "texto completo del parrafo modelo (opcional)"} ]
+    [ {"despues_de": "texto completo del parrafo ancla", "texto": "parrafo nuevo", "como": "texto completo del parrafo modelo (opcional)",
+       "ocurrencia": 1, "como_ocurrencia": 2} ]
+  "ocurrencia" y "como_ocurrencia" (opcionales) sirven cuando el ancla o el modelo aparece mas de una vez en el documento
+  (por ejemplo un renglon repetido en la lista de anexos y en su seccion): se usa la N-esima aparicion, en orden del documento.
+  Con "ocurrencia" la entrada se da por hecha si el parrafo que sigue al ancla ya dice el texto nuevo, en vez de si el texto esta en cualquier parte.
   El parrafo nuevo toma el estilo y el formato de parrafo y de caracter del modelo ("como"; por omision, el ancla).
   Los anclas se buscan por texto normalizado completo (sin distinguir mayusculas), cuerpo y celdas; cada uno
   debe aparecer exactamente una vez. Las entradas se aplican en orden, asi que una puede anclarse en el
@@ -69,15 +73,23 @@ try {
   foreach ($it in $items) {
     $n++
     $nuevoN = Normalize-Text $it.texto
-    if ((Find-Para $doc $nuevoN).Count -ge 1) { Write-Host "  entrada ${n}: ya esta, se salta"; continue }
     $anc = Find-Para $doc (Normalize-Text $it.despues_de)
+    if ($it.ocurrencia) {
+      $k = [int]$it.ocurrencia
+      if ($anc.Count -lt $k) { throw "entrada ${n}: el ancla aparece $($anc.Count) veces (se pidio la ocurrencia $k)" }
+      $anc = @($anc[$k - 1])
+      $sig = $anc[0].Next(1)
+      if ($null -ne $sig -and [string]::Equals((Normalize-Text $sig.Range.Text), $nuevoN, [System.StringComparison]::OrdinalIgnoreCase)) { Write-Host "  entrada ${n}: ya esta, se salta"; continue }
+    } elseif ((Find-Para $doc $nuevoN).Count -ge 1) { Write-Host "  entrada ${n}: ya esta, se salta"; continue }
     if ($DryRun -and $anc.Count -eq 0 -and ($items | Where-Object { (Normalize-Text $_.texto) -eq (Normalize-Text $it.despues_de) })) { Write-Host "  entrada ${n}: se ancla en una entrada anterior (no se comprueba en -DryRun)"; continue }
     if ($anc.Count -ne 1) { throw "entrada ${n}: el ancla aparece $($anc.Count) veces (se esperaba 1): [$($it.despues_de.Substring(0, [Math]::Min(60, $it.despues_de.Length)))]" }
     $modelo = $anc[0]
     if ($it.como) {
       $m = Find-Para $doc (Normalize-Text $it.como)
-      if ($m.Count -ne 1) { throw "entrada ${n}: el modelo aparece $($m.Count) veces" }
-      $modelo = $m[0]
+      $km = if ($it.como_ocurrencia) { [int]$it.como_ocurrencia } else { 1 }
+      if ($m.Count -ne 1 -and -not $it.como_ocurrencia) { throw "entrada ${n}: el modelo aparece $($m.Count) veces" }
+      if ($m.Count -lt $km) { throw "entrada ${n}: el modelo aparece $($m.Count) veces (se pidio la ocurrencia $km)" }
+      $modelo = $m[$km - 1]
     }
     $est = [string]$modelo.Style.NameLocal
     $mr = $modelo.Range
@@ -97,7 +109,8 @@ try {
     $r.Font = $mr.Characters.Item(1).Font.Duplicate
     $r.Font.Bold = 0; $r.Font.Italic = 0
     $got = Normalize-Text $nuevo.Range.Text
-    if ($got -cne $nuevoN) { throw "entrada ${n}: quedo distinto de lo pedido" }
+    # -ne (sin distinguir mayusculas): con el estilo en MAYUSCULAS (AllCaps, p. ej. Titulo 2) Range.Text devuelve el texto ya en mayusculas
+    if ($got -ne $nuevoN) { throw "entrada ${n}: quedo distinto de lo pedido" }
   }
   if (-not $DryRun) {
     if (-not $NoActualizarIndices) {

@@ -1,0 +1,18 @@
+scripts runtime con guid: 155
+--- por escena/prefab/asset de datos: modulos de nivel cuyos scripts referencia
+Data/Fire/N1_Config.asset -> ['Level.Fire']
+Data/Fire/N1_Mensajes.asset -> ['Level.Fire']
+Data/Fire/N1_Sonidos.asset -> ['Level.Fire']
+Data/River/N3_RaftAssemblyContent.asset -> ['Level.River']
+Data/River/N3_RiverLevelConfig.asset -> ['Level.River']
+Data/River/N3_Sonidos.asset -> ['Level.River']
+Data/Wheel/N2_AssemblyContent.asset -> ['Level.Wheel']
+Data/Wheel/N2_MazeLayout.asset -> ['Level.Wheel']
+Data/Wheel/N2_Sonidos.asset -> ['Level.Wheel']
+Data/Wheel/N2_WheelLevelConfig.asset -> ['Level.Wheel']
+Scenes/Level1_Cave.unity -> ['Level.Fire']
+Scenes/Level2_Forest.unity -> ['Level.Wheel']
+Scenes/Level2_Maze.unity -> ['Level.Wheel']
+Scenes/Level2_Workshop.unity -> ['Level.Wheel']
+Scenes/Level3_River.unity -> ['Level.River']
+archivos que referencian scripts de MAS de un nivel: ninguno

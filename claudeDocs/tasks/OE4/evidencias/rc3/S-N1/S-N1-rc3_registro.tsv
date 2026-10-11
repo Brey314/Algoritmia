@@ -1,0 +1,93 @@
+2026-10-10 22:33:25.147Z	1	Mono path[0] = 'C:/Dev/Algoritmia/Build/Algoritmia/Algoritmia_Data/Managed'
+2026-10-10 22:33:25.147Z	1	Mono config path = 'C:/Dev/Algoritmia/Build/Algoritmia/MonoBleedingEdge/etc'
+2026-10-10 22:33:25.147Z	1	CodeReloadManager initialized
+2026-10-10 22:33:25.147Z	1	Input System module state changed to: Initialized.
+2026-10-10 22:33:25.147Z	1	[Physics::Module] Initialized fallback backend.
+2026-10-10 22:33:25.147Z	1	[Physics::Module] Id: 0xdecafbad
+2026-10-10 22:33:25.147Z	1	Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+2026-10-10 22:33:25.147Z	1	[Subsystems] Discovering subsystems at path C:/Dev/Algoritmia/Build/Algoritmia/Algoritmia_Data/UnitySubsystems
+2026-10-10 22:33:25.147Z	1	[D3D12 Device Filter] Vendor Name: NVIDIA
+2026-10-10 22:33:25.147Z	1	[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 5070 Ti
+2026-10-10 22:33:25.147Z	1	[D3D12 Device Filter] Driver Version: 32.0.16.1692
+2026-10-10 22:33:25.147Z	1	[D3D12 Device Filter] Feature Level: 12.2
+2026-10-10 22:33:25.147Z	1	[D3D12 Device Filter] Graphics Memory: 15995 MB
+2026-10-10 22:33:25.147Z	1	[D3D12 Device Filter] Processor Count: 12
+2026-10-10 22:33:25.147Z	1	[D3D12 Device Filter] Device Type: Discrete
+2026-10-10 22:33:25.147Z	1	GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+2026-10-10 22:33:25.147Z	1	d3d12: failed to query info queue interface (0x80004002).
+2026-10-10 22:33:25.147Z	1	Direct3D:
+2026-10-10 22:33:25.147Z	1	    Version:         Direct3D 12 [level 12.2]
+2026-10-10 22:33:25.147Z	1	    Renderer:        NVIDIA GeForce RTX 5070 Ti (ID=0x2c05)
+2026-10-10 22:33:25.147Z	1	    Vendor:          NVIDIA
+2026-10-10 22:33:25.147Z	1	    VRAM:            15995 MB
+2026-10-10 22:33:25.147Z	1	    App VRAM Budget: 15227 MB
+2026-10-10 22:33:25.147Z	1	    Driver:          32.0.16.1692
+2026-10-10 22:33:25.147Z	1	Begin MonoManager ReloadAssembly
+2026-10-10 22:33:25.147Z	1	- Finished resetting the current domain, in  0.023 seconds
+2026-10-10 22:33:25.147Z	1	[Physics::Module] Selected backend.
+2026-10-10 22:33:25.147Z	1	[Physics::Module] Name: PhysX
+2026-10-10 22:33:25.147Z	1	[Physics::Module] Id: 0xf2b8ea05
+2026-10-10 22:33:25.147Z	1	[Physics::Module] SDK Version: 4.1.2
+2026-10-10 22:33:25.147Z	1	[Physics::Module] Integration Version: 1.0.0
+2026-10-10 22:33:25.147Z	1	[Physics::Module] Threading Mode: Multi-Threaded
+2026-10-10 22:33:25.147Z	1	<RI> Initializing input.
+2026-10-10 22:33:25.147Z	1	Using Windows.Gaming.Input
+2026-10-10 22:33:25.147Z	1	UnloadTime: 1.081200 ms
+2026-10-10 22:33:25.147Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-10-10 22:33:25.147Z	1	UnloadTime: 0.223600 ms
+2026-10-10 22:33:25.147Z	1	RNF-04: «MainMenu» cargó en 0.123 s
+2026-10-10 22:33:25.147Z	1	Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 4764.
+2026-10-10 22:33:25.147Z	1	Total: 1.055700 ms (FindLiveObjects: 0.154100 ms CreateObjectMapping: 0.084500 ms MarkObjects: 0.809000 ms  DeleteObjects: 0.006500 ms)
+2026-10-10 22:33:32.959Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-10-10 22:33:32.959Z	1	UnloadTime: 4.232400 ms
+2026-10-10 22:33:32.959Z	1	RNF-04: «LevelSelect» cargó en 0.029 s
+2026-10-10 22:33:32.959Z	1	Unloading 463 unused Assets to reduce memory usage. Loaded Objects now: 3498.
+2026-10-10 22:33:32.959Z	1	Total: 1.806400 ms (FindLiveObjects: 0.137200 ms CreateObjectMapping: 0.090500 ms MarkObjects: 0.790900 ms  DeleteObjects: 0.787600 ms)
+2026-10-10 22:33:32.959Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-10-10 22:33:33.221Z	1	UnloadTime: 0.385800 ms
+2026-10-10 22:33:33.221Z	1	RNF-04: «Narrative» cargó en 0.268 s
+2026-10-10 22:33:33.221Z	1	Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 4788.
+2026-10-10 22:33:33.221Z	1	Total: 1.085100 ms (FindLiveObjects: 0.148900 ms CreateObjectMapping: 0.105300 ms MarkObjects: 0.798200 ms  DeleteObjects: 0.032600 ms)
+2026-10-10 22:34:26.761Z	1	Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+2026-10-10 22:34:26.761Z	1	UnloadTime: 1.213100 ms
+2026-10-10 22:34:26.761Z	1	RNF-04: «Narrative» cargó en 0.013 s
+2026-10-10 22:34:26.761Z	1	Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4803.
+2026-10-10 22:34:26.761Z	1	Total: 1.171200 ms (FindLiveObjects: 0.156300 ms CreateObjectMapping: 0.127700 ms MarkObjects: 0.876000 ms  DeleteObjects: 0.011100 ms)
+2026-10-10 22:35:33.941Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-10-10 22:35:33.941Z	1	UnloadTime: 0.884200 ms
+2026-10-10 22:35:33.941Z	1	RNF-04: «Narrative» cargó en 0.013 s
+2026-10-10 22:35:33.941Z	1	Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4803.
+2026-10-10 22:35:33.941Z	1	Total: 1.114000 ms (FindLiveObjects: 0.143300 ms CreateObjectMapping: 0.103300 ms MarkObjects: 0.857600 ms  DeleteObjects: 0.009600 ms)
+2026-10-10 22:37:57.109Z	1	Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+2026-10-10 22:37:57.109Z	1	UnloadTime: 0.916300 ms
+2026-10-10 22:37:57.109Z	1	RNF-04: «Level1_Cave» cargó en 0.038 s
+2026-10-10 22:37:57.109Z	1	Unloading 1008 unused Assets to reduce memory usage. Loaded Objects now: 4859.
+2026-10-10 22:37:57.109Z	1	Total: 2.181500 ms (FindLiveObjects: 0.334400 ms CreateObjectMapping: 0.343900 ms MarkObjects: 1.099600 ms  DeleteObjects: 0.403600 ms)
+2026-10-10 22:42:25.593Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-10-10 22:42:25.593Z	1	UnloadTime: 1.536100 ms
+2026-10-10 22:42:25.593Z	1	RNF-04: «Narrative» cargó en 0.130 s
+2026-10-10 22:42:25.593Z	1	Unloading 74 unused Assets to reduce memory usage. Loaded Objects now: 4811.
+2026-10-10 22:42:25.593Z	1	Total: 1.281800 ms (FindLiveObjects: 0.140800 ms CreateObjectMapping: 0.102300 ms MarkObjects: 0.955600 ms  DeleteObjects: 0.082900 ms)
+2026-10-10 22:44:06.255Z	1	Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-10-10 22:44:06.255Z	1	UnloadTime: 0.686200 ms
+2026-10-10 22:44:06.255Z	1	RNF-04: «LevelSummary» cargó en 0.013 s
+2026-10-10 22:44:06.255Z	1	Unloading 1480 unused Assets to reduce memory usage. Loaded Objects now: 3405.
+2026-10-10 22:44:06.255Z	1	Total: 1.850100 ms (FindLiveObjects: 0.169400 ms CreateObjectMapping: 0.102800 ms MarkObjects: 1.011800 ms  DeleteObjects: 0.565900 ms)
+2026-10-10 22:44:24.341Z	1	Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-10-10 22:44:24.341Z	1	UnloadTime: 0.344400 ms
+2026-10-10 22:44:24.341Z	1	RNF-04: «LevelSelect» cargó en 0.028 s
+2026-10-10 22:44:24.341Z	1	Unloading 12 unused Assets to reduce memory usage. Loaded Objects now: 3521.
+2026-10-10 22:44:24.341Z	1	Total: 1.115300 ms (FindLiveObjects: 0.114600 ms CreateObjectMapping: 0.070000 ms MarkObjects: 0.904100 ms  DeleteObjects: 0.026500 ms)
+2026-10-10 22:44:58.772Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-10-10 22:44:59.036Z	1	UnloadTime: 0.336400 ms
+2026-10-10 22:44:59.036Z	1	RNF-04: «Narrative» cargó en 0.233 s
+2026-10-10 22:44:59.036Z	1	Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 4808.
+2026-10-10 22:44:59.036Z	1	Total: 1.636100 ms (FindLiveObjects: 0.148900 ms CreateObjectMapping: 0.112000 ms MarkObjects: 1.340600 ms  DeleteObjects: 0.034400 ms)
+2026-10-10 22:45:16.194Z	1	[Physics::Module] Cleanup current backend.
+2026-10-10 22:45:16.194Z	1	[Physics::Module] Id: 0xf2b8ea05
+2026-10-10 22:45:16.194Z	1	Input System module state changed to: ShutdownInProgress.
+2026-10-10 22:45:16.194Z	1	Input Polling Thread exited.
+2026-10-10 22:45:16.194Z	1	Input System module state changed to: Shutdown.
+2026-10-10 22:45:16.194Z	1	CodeReloadManager destroyed
+2026-10-10 22:45:16.194Z	1	GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-10-10 22:45:16.194Z	1	[d3d12] Unreleased non-evictable resource 0000024D5810B350 (size 4096 B, lastUsedFence 9)

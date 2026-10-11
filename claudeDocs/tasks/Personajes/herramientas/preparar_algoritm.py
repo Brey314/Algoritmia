@@ -42,8 +42,16 @@
 #      Ojos, Boca y orden_tronco se conservan: personaje_guia() de articulaciones.py los vuelca tal cual), regenera rig_articulaciones.json, regenera
 #      clips_personajes.json y corre coreografia.py --valida. NUNCA escribe .meta.
 #   6. --reposo reescribe EN SU SITIO (mismo nombre y mismo GUID) los tres char_algoritm_n1_fuego_reposo.png, n2_rueda y n3_gota (768x768) con el diseno nuevo
-#      ensamblado en reposo y la cara provisional, al mismo encuadre que tenian (el lienzo de 1024 a 0,75). Los referencian 3 prefabs (el retrato del guia), 5
+#      ensamblado en reposo y la cara (la final compartida desde INC-148; antes, la provisional), al mismo encuadre que tenian (el lienzo de 1024 a 0,75). Los referencian 3 prefabs (el retrato del guia), 5
 #      escenas y 16 assets narrativos, asi que el nombre y el GUID no pueden cambiar. Se corre DESPUES de --aplicar.
+#
+# CARA FINAL (INC-148, 10/10/2026). La entrega del 10/10 SI trae la cara de Algoritm: una sola serie de seis expresiones para las tres formas. La escribe
+# preparar_expresion.py --entrega <Algoritm/Expresiones> (Algoritm/Expresiones/char_algoritm_{ojos_*,boca_*}.png, sin el nombre de la forma; los nodos Ojos y Boca de las tres
+# entradas con el mismo rect; «cara_provisional»: false y «prefijo_cara»: «char_algoritm» en arte_final.json). DESDE ENTONCES esta herramienta NUNCA vuelve a la provisional: una entrada
+# con cara_provisional false conserva sus nodos Ojos y Boca (nombres compartidos y rect), registro.cara (la caja de la cara, lista de cuatro enteros), prefijo_cara y retrato; no escribe
+# los PNG provisionales por forma; --rehaz-cara se niega; y --reposo ensambla el _reposo con la cara FINAL (la neutra: ojos_neutra y boca_0 compartidas). Los PNG provisionales
+# char_algoritm_<forma>_ojos_neutra y _boca_0 se quedan en disco hasta que el Editor los borre con su .meta; ninguna tabla los nombra ya. Lo que sigue (CARA PROVISIONAL) describe
+# lo que paso antes, y sigue valiendo si arte_final.json no trae la marca de la cara final.
 #
 # CARA PROVISIONAL. La entrega no trae ojos ni boca, y un guia sin cara es un prop (DA §7.6, condicion 2). Se saca la cara del _reposo de HOY de cada forma
 # (el de bd8b802, 768x768): los OJOS son los dos aros de contorno cafe con todo lo que encierran (la esclera, el iris), y la BOCA es la sonrisa (el trazo
@@ -662,13 +670,19 @@ def composite(formas, entradas, caras, ruta):
     for clave, nombre, _ in FORMAS:
         nodos = entradas[clave]["nodos"]
         sprites = {"char_algoritm_%s_%s" % (clave, NOMBRE_C4[k]): pz.norm for k, pz in formas[clave].piezas.items()}
-        sprites["char_algoritm_%s_ojos_neutra" % clave] = caras[clave].ojos
-        sprites["char_algoritm_%s_boca_0" % clave] = caras[clave].boca
+        final = getattr(caras[clave], "final", False)
+        for n in nodos:   # la cara va por el nombre que le da el nodo: el de la forma (provisional) o el compartido (final, INC-148, leida del repo)
+            if n["nombre"] in ("Ojos", "Boca"):
+                if final:
+                    ruta_png = P._png_de("Algoritm", n["sprite"])
+                    sprites[n["sprite"]] = Image.open(ruta_png).convert("RGBA") if ruta_png else None
+                else:
+                    sprites[n["sprite"]] = caras[clave].ojos if n["nombre"] == "Ojos" else caras[clave].boca
         im = Image.new("RGBA", (LIENZO // 2, LIENZO // 2), (236, 232, 222, 255))
         im.alpha_composite(ensambla(nodos, sprites.get, escala=0.5))
         d = ImageDraw.Draw(im)
         d.rectangle([0, 0, im.width, 14], fill=(255, 255, 255, 230))
-        d.text((4, 2), "algoritm_%s: reposo (cara provisional)" % clave, fill=(30, 30, 30, 255))
+        d.text((4, 2), "algoritm_%s: reposo (cara %s)" % (clave, "final" if final else "provisional"), fill=(30, 30, 30, 255))
         for n in nodos:
             color = next((c for k, c in colores.items() if n["nombre"].startswith(k)), None)
             if color is not None:
@@ -717,11 +731,14 @@ def informe(formas, tr, j, holguras, avisos, errores, caras):
     print("holguras de los codos (px de la entrega entre los dos tapones): %s" % holguras)
     for clave, nombre, _ in FORMAS:
         c = caras[clave]
-        print("cara provisional de %s: ojos %dx%d px, boca %dx%d px (a la resolucion del sprite)" % (nombre, c.ojos.size[0], c.ojos.size[1], c.boca.size[0], c.boca.size[1]))
+        if getattr(c, "final", False):
+            print("cara FINAL de %s (INC-148): %s en Ojos y Boca, caja %s; no se escribe desde aqui" % (nombre, c.prefijo, c.caja))
+        else:
+            print("cara provisional de %s: ojos %dx%d px, boca %dx%d px (a la resolucion del sprite)" % (nombre, c.ojos.size[0], c.ojos.size[1], c.boca.size[0], c.boca.size[1]))
     mb = 0.0
     for clave, _, _ in FORMAS:
         mb += sum(pz.norm.size[0] * pz.norm.size[1] * 4 for pz in formas[clave].piezas.values()) / 1e6
-    mb_cara = sum((c.ojos.size[0] * c.ojos.size[1] + c.boca.size[0] * c.boca.size[1]) * 4 for c in caras.values()) / 1e6
+    mb_cara = sum((c.ojos.size[0] * c.ojos.size[1] + c.boca.size[0] * c.boca.size[1]) * 4 for c in caras.values() if c.ojos is not None) / 1e6
     print("\ntextura sin comprimir: %.2f MB las 21 partes + %.2f MB la cara provisional (las seis antepiernas que se borran pesaban 0,14 MB; el margen del paquete, RNF-06, es de unos 21 MB)" % (mb, mb_cara))
     for a in avisos:
         print("AVISO", a)
@@ -744,18 +761,44 @@ def sobrantes():
     return out
 
 
+def cara_final(previo):
+    """
+    ¿La entrada de arte_final.json ya lleva la cara FINAL (INC-148)? Si: «cara_provisional» es false (explicito: no basta con que falte) y trae «prefijo_cara». Con la cara final esta
+    herramienta no vuelve a la provisional bajo ningun camino (aplica, cara_de, --rehaz-cara, --reposo).
+    """
+    return bool(previo) and previo.get("cara_provisional") is False and bool(previo.get("prefijo_cara"))
+
+
+def cara_de_la_entrada(previo):
+    """
+    SimpleNamespace(final=True, ...) con lo de la cara final de una entrada: los nodos Ojos y Boca (sprite, rect, punto), registro.cara (la caja), prefijo_cara y el retrato; los PNG
+    se leen del repo (los nombres compartidos). Sin ojos ni boca: la cara final no se vuelve a escribir desde aqui.
+    """
+    nodos = {n["nombre"]: n for n in previo["nodos"] if n["nombre"] in ("Ojos", "Boca")}
+    return SimpleNamespace(final=True, ojos=None, boca=None, nodos=nodos, caja=list(previo["registro"]["cara"]), prefijo=previo["prefijo_cara"], retrato=previo.get("retrato"),
+                           sobre_ancha=None, desde=None, errores=[], reutilizada=True)
+
+
 def carga_cara_escrita(clave, previo):
     """La cara provisional que ya esta escrita (los dos PNG de Expresiones/ y los numeros de colocacion de arte_final.json), o None."""
     reg = (previo or {}).get("registro", {}).get("cara")
     o, b = (P._png_de("Algoritm", "char_algoritm_%s_%s" % (clave, n)) for n in ("ojos_neutra", "boca_0"))
-    if not (previo and previo.get("cara_provisional") and reg and o and b):
+    if not (previo and previo.get("cara_provisional") and isinstance(reg, dict) and o and b):
         return None
     return SimpleNamespace(ojos=Image.open(o).convert("RGBA"), boca=Image.open(b).convert("RGBA"), sobre_ancha=reg["sobre_ancha"], desde=list(reg["desde"]),
                            errores=[], reutilizada=True)
 
 
 def cara_de(clave, nombre_reposo, previo, rehacer):
-    """La cara provisional de una forma: la escrita (si no se pide rehacerla) o la extraida del _reposo de hoy del repo."""
+    """
+    La cara de una forma: la FINAL si la entrada ya la lleva (cara_final: nunca la provisional; --rehaz-cara se niega porque extraeria del _reposo la cara provisional vieja),
+    la provisional escrita (si no se pide rehacerla) o la extraida del _reposo de hoy del repo.
+    """
+    if cara_final(previo):
+        c = cara_de_la_entrada(previo)
+        if rehacer:
+            c.errores.append("la cara de Algoritm ya es la FINAL (INC-148): --rehaz-cara la sustituiria por la provisional del _reposo; no se hace")
+        return c
     if not rehacer:
         c = carga_cara_escrita(clave, previo)
         if c is not None:
@@ -789,10 +832,15 @@ def aplica(formas, tr, j, holguras, eje, caras, json_ruta=None, escribe_tablas=T
     """
     print("\n== Aplicando al repo ==")
     log = []
+    personajes = A.cargar_arte_final() if json_ruta is None else A.cargar_arte_final(json_ruta)
+    # GUARDA (INC-148): una entrada con la cara FINAL no vuelve a la provisional, llegue lo que llegue en «caras»
+    finales = {clave for clave, _, _ in FORMAS if cara_final(personajes.get("algoritm_" + clave))}
     for clave, _, _ in FORMAS:
         for k, pz in formas[clave].piezas.items():
             escribe_png(ruta_parte(clave, k), pz.norm, log)
-        if not getattr(caras[clave], "reutilizada", False):
+        if clave in finales:
+            log.append("  cara FINAL de %s (INC-148): no se escribe la provisional, sus nodos Ojos y Boca y registro.cara se conservan" % clave)
+        elif not getattr(caras[clave], "reutilizada", False):
             escribe_png(os.path.join(EXPRESIONES, "char_algoritm_%s_ojos_neutra.png" % clave), caras[clave].ojos, log)
             escribe_png(os.path.join(EXPRESIONES, "char_algoritm_%s_boca_0.png" % clave), caras[clave].boca, log)
         else:
@@ -803,8 +851,22 @@ def aplica(formas, tr, j, holguras, eje, caras, json_ruta=None, escribe_tablas=T
                 os.remove(r)
                 log.append("  borra     %s" % os.path.relpath(r, P.RAIZ))
     print("\n".join(log))
-    personajes = A.cargar_arte_final() if json_ruta is None else A.cargar_arte_final(json_ruta)
     for clave, _, _ in FORMAS:
+        previo = personajes.get("algoritm_" + clave)
+        if clave in finales:
+            fin = cara_de_la_entrada(previo)
+            rect_ojos, rect_boca = list(fin.nodos["Ojos"]["rect"]), list(fin.nodos["Boca"]["rect"])
+            entrada = entrada_de(clave, formas[clave], j, holguras, tr, eje, (rect_ojos, rect_boca), {})
+            for n in entrada["nodos"]:   # los nodos de la cara y su registro son los de la cara final, no los provisionales que nodos_de() propone
+                if n["nombre"] in fin.nodos:
+                    n["sprite"], n["rect"], n["punto"] = fin.nodos[n["nombre"]]["sprite"], list(fin.nodos[n["nombre"]]["rect"]), list(fin.nodos[n["nombre"]]["punto"])
+            entrada["registro"]["cara"] = list(fin.caja)
+            entrada["cara_provisional"] = False
+            entrada["prefijo_cara"] = fin.prefijo
+            if fin.retrato:
+                entrada["retrato"] = fin.retrato
+            personajes["algoritm_" + clave] = entrada
+            continue
         cara = caras[clave]
         rect_ojos, rect_boca = coloca_cara(formas[clave].piezas[("torso", None)], tr, cara)
         info = {"fuente": "reposo de hoy (bd8b802), provisional", "sobre_ancha": cara.sobre_ancha, "desde": list(cara.desde),
@@ -869,6 +931,15 @@ def reposo(json_ruta=None):
         if not entrada:
             print("ERROR no hay entrada algoritm_%s en arte_final.json: corre antes --aplicar" % clave)
             return 1
+        if cara_final(entrada):
+            # GUARDA (INC-148): con la cara final marcada, Ojos y Boca tienen que nombrar la cara COMPARTIDA; si una tabla a medias nombrara la provisional, el _reposo
+            # volveria a ensenar la cara vieja (esa es justo la regresion que esta guarda impide)
+            malos = [n["nombre"] + " = " + str(n.get("sprite")) for n in entrada["nodos"] if n["nombre"] in ("Ojos", "Boca")
+                     and not str(n.get("sprite", "")).startswith(entrada["prefijo_cara"] + "_" + {"Ojos": "ojos_", "Boca": "boca_"}[n["nombre"]])]
+            if malos:
+                print("ERROR algoritm_%s dice cara final (%s) pero sus nodos nombran otra: %s: el _reposo volveria a la cara provisional; corre preparar_expresion.py --entrega" % (
+                    clave, entrada["prefijo_cara"], ", ".join(malos)))
+                return 1
         faltan = [n["sprite"] for n in entrada["nodos"] if n.get("sprite") and P._png_de("Algoritm", n["sprite"]) is None]
         if faltan:
             print("ERROR faltan los PNG de %s: %s (corre antes --aplicar)" % (clave, ", ".join(faltan)))
@@ -1174,6 +1245,15 @@ def autoprueba():
                 f.write("guid: aaaa")
             copia = os.path.join(tmp2, "arte_final.json")
             shutil.copyfile(A.ARTE_FINAL_JSON, copia)
+            # el arte_final.json de verdad ya lleva la cara FINAL (INC-148): la copia vuelve a ser «de antes», con la cara provisional, para las pruebas de siempre; la guarda de la
+            # cara final se prueba mas abajo con otra copia
+            antes_copia = A.cargar_arte_final(copia)
+            for c_ in ("fuego", "rueda", "gota"):
+                if "algoritm_" + c_ in antes_copia:
+                    antes_copia["algoritm_" + c_]["cara_provisional"] = True
+                    antes_copia["algoritm_" + c_].pop("prefijo_cara", None)
+                    antes_copia["algoritm_" + c_].pop("retrato", None)
+            A.guardar_arte_final(antes_copia, copia)
             antes_repo = open(A.ARTE_FINAL_JSON, "rb").read()
             reposos_repo = {p: open(os.path.join(P.PERSONAJES_ARTE, "Algoritm", "char_algoritm_%s_reposo.png" % p), "rb").read() for _, _, p in FORMAS if os.path.isfile(os.path.join(P.PERSONAJES_ARTE, "Algoritm", "char_algoritm_%s_reposo.png" % p))}
             with EnArte(base):
@@ -1206,6 +1286,56 @@ def autoprueba():
                 with contextlib.redirect_stdout(io.StringIO()) as buf:
                     reposo(copia)
                 caso("y es idempotente: la segunda vez dice «igual» y no reescribe", buf.getvalue().count("igual") == 3)
+                # --- INC-148: la GUARDA de la cara final. Una copia donde las tres entradas ya llevan la cara final (nombres compartidos, rect, caja, prefijo_cara, retrato)
+                expr = os.path.join(alg, "Expresiones")
+                final = A.cargar_arte_final(copia)
+                rect_f = {"Ojos": [300, 400, 700, 500], "Boca": [300, 500, 700, 600]}   # (la cara real comparte rect; aqui van separados para ver cada una)
+                for c_, _, _ in FORMAS:
+                    e_ = final["algoritm_" + c_]
+                    e_["cara_provisional"], e_["prefijo_cara"] = False, "char_algoritm"
+                    e_["registro"]["cara"] = [100, 200, 500, 600]
+                    e_["retrato"] = {"base": "char_algoritm_%s_retrato_base" % c_, "cara": [0.25, 0.3, 0.5, 0.4]}
+                    for n_ in e_["nodos"]:
+                        if n_["nombre"] in rect_f:
+                            n_["sprite"] = "char_algoritm_ojos_neutra" if n_["nombre"] == "Ojos" else "char_algoritm_boca_0"
+                            n_["rect"], n_["punto"] = list(rect_f[n_["nombre"]]), [500, 500]
+                A.guardar_arte_final(final, copia)
+                for nombre_ in ("ojos_neutra", "boca_0"):   # la cara compartida de la copia: un rectangulo azul liso y otro rojo liso
+                    Image.new("RGBA", (40, 20), (0, 0, 255, 255) if nombre_ == "ojos_neutra" else (255, 0, 0, 255)).save(os.path.join(expr, "char_algoritm_%s.png" % nombre_))
+                for c_, _, _ in FORMAS:   # y las provisionales por forma que ya no deben volver
+                    for nombre_ in ("ojos_neutra", "boca_0"):
+                        ruta_ = os.path.join(expr, "char_algoritm_%s_%s.png" % (c_, nombre_))
+                        if os.path.isfile(ruta_):
+                            os.remove(ruta_)
+                caras3 = {c_: cara_de(c_, parte_, final["algoritm_" + c_], False) for c_, _, parte_ in FORMAS}
+                caso("INC-148: con la cara final la entrada no extrae la provisional del _reposo: cara_de devuelve la final (nodos, caja y prefijo)",
+                     all(getattr(c3, "final", False) and c3.ojos is None and c3.caja == [100, 200, 500, 600] and c3.prefijo == "char_algoritm" for c3 in caras3.values()))
+                caso("INC-148: --rehaz-cara se niega con la cara final (extraeria la provisional vieja)",
+                     all(cara_de(c_, parte_, final["algoritm_" + c_], True).errores for c_, _, parte_ in FORMAS))
+                with contextlib.redirect_stdout(io.StringIO()):
+                    fallos = aplica(formas, tr, j, holguras, eje, caras2, json_ruta=copia, escribe_tablas=False)   # caras2 es la PROVISIONAL: la guarda manda sobre lo que llegue
+                otra = A.cargar_arte_final(copia)
+                caso("INC-148: aplicar de nuevo NO restaura la cara provisional (nodos compartidos, rect, caja, prefijo_cara, retrato y cara_provisional false se conservan)",
+                     fallos == 0 and all(otra["algoritm_" + c_]["cara_provisional"] is False and otra["algoritm_" + c_]["prefijo_cara"] == "char_algoritm"
+                                         and otra["algoritm_" + c_]["registro"]["cara"] == [100, 200, 500, 600] and otra["algoritm_" + c_]["retrato"] == final["algoritm_" + c_]["retrato"]
+                                         and {n_["nombre"]: (n_["sprite"], n_["rect"]) for n_ in otra["algoritm_" + c_]["nodos"] if n_["nombre"] in rect_f}
+                                         == {"Ojos": ("char_algoritm_ojos_neutra", rect_f["Ojos"]), "Boca": ("char_algoritm_boca_0", rect_f["Boca"])} for c_, _, _ in FORMAS))
+                caso("INC-148: y no vuelve a escribir los PNG provisionales por forma",
+                     not [f for f in os.listdir(expr) if any(f == "char_algoritm_%s_%s.png" % (c_, n_) for c_, _, _ in FORMAS for n_ in ("ojos_neutra", "boca_0"))])
+                with contextlib.redirect_stdout(io.StringIO()):
+                    codigo = reposo(copia)
+                rep_f = Image.open(os.path.join(alg, "char_algoritm_n1_fuego_reposo.png")).convert("RGBA")
+                oj, bo = (int(round(500 * K_SPRITE)), int(round(450 * K_SPRITE))), (int(round(500 * K_SPRITE)), int(round(550 * K_SPRITE)))   # el centro de cada rect de la cara, en el _reposo
+                caso("INC-148: --reposo ensambla la cara FINAL (donde van los ojos compartidos hay azul y en la boca, rojo; no lo de la provisional)",
+                     codigo == 0 and rep_f.getpixel(oj)[:3] == (0, 0, 255) and rep_f.getpixel(bo)[:3] == (255, 0, 0), "%s %s" % (rep_f.getpixel(oj), rep_f.getpixel(bo)))
+                roto_ = A.cargar_arte_final(copia)
+                for n_ in roto_["algoritm_fuego"]["nodos"]:
+                    if n_["nombre"] == "Ojos":
+                        n_["sprite"] = "char_algoritm_fuego_ojos_neutra"
+                A.guardar_arte_final(roto_, copia)
+                with contextlib.redirect_stdout(io.StringIO()) as buf_:
+                    codigo = reposo(copia)
+                caso("INC-148: una tabla que dice cara final pero nombra la provisional hace fallar --reposo (no restaura la cara vieja)", codigo == 1 and "cara final" in buf_.getvalue())
                 os.remove(partes[0])
                 with contextlib.redirect_stdout(io.StringIO()):
                     codigo = reposo(copia)
@@ -1283,8 +1413,8 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="Del arte final de Algoritm (INC-136) a las medidas del rig (ver la cabecera del script).")
     ap.add_argument("entrega", nargs="?", help="carpeta de la entrega, con Fuego/, Rueda/ y Gota/")
     ap.add_argument("--aplicar", action="store_true", help="escribe las partes, la cara provisional, arte_final.json y regenera las tablas")
-    ap.add_argument("--reposo", action="store_true", help="reescribe en su sitio los tres char_algoritm_n*_reposo.png con el diseno nuevo y la cara provisional")
-    ap.add_argument("--rehaz-cara", action="store_true", help="extrae de nuevo la cara provisional del _reposo del repo aunque ya este escrita")
+    ap.add_argument("--reposo", action="store_true", help="reescribe en su sitio los tres char_algoritm_n*_reposo.png con el diseno nuevo y la cara vigente (la final compartida desde INC-148)")
+    ap.add_argument("--rehaz-cara", action="store_true", help="extrae de nuevo la cara provisional del _reposo del repo aunque ya este escrita (se niega con la cara final)")
     ap.add_argument("--cintura", type=float, help="y (lienzo de la entrega) del pivote de Tronco")
     ap.add_argument("--salida", default=os.path.join(tempfile.gettempdir(), "algoritmia_algoritm"), help="donde dejar el composite del informe")
     ap.add_argument("--autoprueba", action="store_true", help="comprueba la herramienta con una entrega sintetica")
@@ -1315,20 +1445,29 @@ def main(argv=None):
         caras[clave] = cara_de(clave, parte, previos.get("algoritm_" + clave), a.rehaz_cara)
         if caras[clave].errores:
             for e in caras[clave].errores:
-                errores.append("cara provisional de %s: %s" % (nombre, e))
+                errores.append("cara de %s: %s" % (nombre, e))
     if errores:
         informe(formas, tr, j, holguras, avisos, errores, None)
         return 2
     informe(formas, tr, j, holguras, avisos, errores, caras)
     entradas = {}
     for clave, _, _ in FORMAS:
+        if getattr(caras[clave], "final", False):   # la cara final: los rect y los nombres de sus nodos, tal cual
+            ro, rb = caras[clave].nodos["Ojos"]["rect"], caras[clave].nodos["Boca"]["rect"]
+            nodos = nodos_de(clave, formas[clave], j, tr, ro, rb)
+            for n in nodos:
+                if n["nombre"] in caras[clave].nodos:
+                    n["sprite"] = caras[clave].nodos[n["nombre"]]["sprite"]
+            entradas[clave] = {"nodos": nodos}
+            continue
         ro, rb = coloca_cara(formas[clave].piezas[("torso", None)], tr, caras[clave])
         entradas[clave] = {"nodos": nodos_de(clave, formas[clave], j, tr, ro, rb)}
     ruta = os.path.join(a.salida, "algoritm_informe.png")
     composite(formas, entradas, caras, ruta)
     print("\ncomposite: %s" % ruta)
     if not a.aplicar:
-        print("\nescribiria (con --aplicar): las 21 partes en Frontal/, la cara provisional en Expresiones/, arte_final.json (tres entradas), y borraria las seis antepiernas:")
+        print("\nescribiria (con --aplicar): las 21 partes en Frontal/, %s, arte_final.json (tres entradas), y borraria las seis antepiernas:" % (
+            "la cara FINAL no se toca (INC-148)" if all(getattr(c, "final", False) for c in caras.values()) else "la cara provisional en Expresiones/"))
         for r in sobrantes():
             print("  borra     %s" % os.path.relpath(r, P.RAIZ))
         return 0

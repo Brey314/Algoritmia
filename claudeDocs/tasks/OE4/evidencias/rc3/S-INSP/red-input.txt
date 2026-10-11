@@ -1,0 +1,97 @@
+## RNF-08/10 red en codigo de runtime (Assets/Game/Scripts/Runtime), patrones de red/servicios/analitica
+ninguna coincidencia
+
+## cadenas http(s):// y www. en runtime
+ninguna coincidencia
+
+## CT-06: uso real de la clase Input legada o teclado/gamepad (se descartan comentarios con grep -v '///\|//')
+ninguna coincidencia
+
+## usos de Mouse.current (solo clic y posicion?)
+      3 mouse.position.ReadValue
+
+## ScrollRect en runtime
+
+## ProjectSettings: activeInputHandler (1=nuevo, 0=viejo, 2=ambos)
+691:  activeInputHandler: 1
+
+## .inputactions: vinculaciones de teclado
+Assets/Game/Input.meta
+
+Assets/Game/Input:
+ControlesJugables.inputactions
+ControlesJugables.inputactions.meta
+Assets/Settings/InputSystem_Actions.inputactions
+Assets/Game/Input/ControlesJugables.inputactions:58:                    "path": "<Pointer>/position",
+Assets/Game/Input/ControlesJugables.inputactions:69:                    "path": "<Mouse>/leftButton",
+Assets/Game/Input/ControlesJugables.inputactions:80:                    "path": "<Touchscreen>/primaryTouch/tap",
+Assets/Game/Input/ControlesJugables.inputactions:91:                    "path": "<Pen>/tip",
+Assets/Game/Input/ControlesJugables.inputactions:102:                    "path": "<Mouse>/rightButton",
+Assets/Game/Input/ControlesJugables.inputactions:113:                    "path": "<Mouse>/middleButton",
+Assets/Settings/InputSystem_Actions.inputactions:94:                    "path": "<Gamepad>/leftStick",
+Assets/Settings/InputSystem_Actions.inputactions:116:                    "path": "<Keyboard>/w",
+Assets/Settings/InputSystem_Actions.inputactions:127:                    "path": "<Keyboard>/upArrow",
+Assets/Settings/InputSystem_Actions.inputactions:138:                    "path": "<Keyboard>/s",
+Assets/Settings/InputSystem_Actions.inputactions:149:                    "path": "<Keyboard>/downArrow",
+Assets/Settings/InputSystem_Actions.inputactions:160:                    "path": "<Keyboard>/a",
+Assets/Settings/InputSystem_Actions.inputactions:171:                    "path": "<Keyboard>/leftArrow",
+Assets/Settings/InputSystem_Actions.inputactions:182:                    "path": "<Keyboard>/d",
+Assets/Settings/InputSystem_Actions.inputactions:193:                    "path": "<Keyboard>/rightArrow",
+Assets/Settings/InputSystem_Actions.inputactions:204:                    "path": "<XRController>/{Primary2DAxis}",
+Assets/Settings/InputSystem_Actions.inputactions:215:                    "path": "<Joystick>/stick",
+Assets/Settings/InputSystem_Actions.inputactions:226:                    "path": "<Gamepad>/rightStick",
+Assets/Settings/InputSystem_Actions.inputactions:237:                    "path": "<Pointer>/delta",
+Assets/Settings/InputSystem_Actions.inputactions:248:                    "path": "<Joystick>/{Hatswitch}",
+Assets/Settings/InputSystem_Actions.inputactions:259:                    "path": "<Gamepad>/buttonWest",
+Assets/Settings/InputSystem_Actions.inputactions:270:                    "path": "<Mouse>/leftButton",
+Assets/Settings/InputSystem_Actions.inputactions:281:                    "path": "<Touchscreen>/primaryTouch/tap",
+Assets/Settings/InputSystem_Actions.inputactions:292:                    "path": "<Joystick>/trigger",
+Assets/Settings/InputSystem_Actions.inputactions:303:                    "path": "<XRController>/{PrimaryAction}",
+Assets/Settings/InputSystem_Actions.inputactions:314:                    "path": "<Keyboard>/enter",
+Assets/Settings/InputSystem_Actions.inputactions:325:                    "path": "<Keyboard>/2",
+Assets/Settings/InputSystem_Actions.inputactions:336:                    "path": "<Gamepad>/dpad/right",
+Assets/Settings/InputSystem_Actions.inputactions:347:                    "path": "<Keyboard>/leftShift",
+Assets/Settings/InputSystem_Actions.inputactions:358:                    "path": "<Gamepad>/leftStickPress",
+Assets/Settings/InputSystem_Actions.inputactions:369:                    "path": "<XRController>/trigger",
+Assets/Settings/InputSystem_Actions.inputactions:380:                    "path": "<Keyboard>/space",
+Assets/Settings/InputSystem_Actions.inputactions:391:                    "path": "<Gamepad>/buttonSouth",
+Assets/Settings/InputSystem_Actions.inputactions:402:                    "path": "<XRController>/secondaryButton",
+Assets/Settings/InputSystem_Actions.inputactions:413:                    "path": "<Keyboard>/1",
+Assets/Settings/InputSystem_Actions.inputactions:424:                    "path": "<Gamepad>/dpad/left",
+Assets/Settings/InputSystem_Actions.inputactions:435:                    "path": "<Keyboard>/e",
+Assets/Settings/InputSystem_Actions.inputactions:446:                    "path": "<Gamepad>/buttonNorth",
+Assets/Settings/InputSystem_Actions.inputactions:457:                    "path": "<Gamepad>/buttonEast",
+Assets/Settings/InputSystem_Actions.inputactions:468:                    "path": "<Keyboard>/c",
+Assets/Settings/InputSystem_Actions.inputactions:588:                    "path": "<Gamepad>/leftStick/up",
+Assets/Settings/InputSystem_Actions.inputactions:599:                    "path": "<Gamepad>/rightStick/up",
+Assets/Settings/InputSystem_Actions.inputactions:610:                    "path": "<Gamepad>/leftStick/down",
+Assets/Settings/InputSystem_Actions.inputactions:621:                    "path": "<Gamepad>/rightStick/down",
+Assets/Settings/InputSystem_Actions.inputactions:632:                    "path": "<Gamepad>/leftStick/left",
+Assets/Settings/InputSystem_Actions.inputactions:643:                    "path": "<Gamepad>/rightStick/left",
+Assets/Settings/InputSystem_Actions.inputactions:654:                    "path": "<Gamepad>/leftStick/right",
+Assets/Settings/InputSystem_Actions.inputactions:665:                    "path": "<Gamepad>/rightStick/right",
+Assets/Settings/InputSystem_Actions.inputactions:676:                    "path": "<Gamepad>/dpad",
+Assets/Settings/InputSystem_Actions.inputactions:698:                    "path": "<Joystick>/stick/up",
+Assets/Settings/InputSystem_Actions.inputactions:709:                    "path": "<Joystick>/stick/down",
+Assets/Settings/InputSystem_Actions.inputactions:720:                    "path": "<Joystick>/stick/left",
+Assets/Settings/InputSystem_Actions.inputactions:731:                    "path": "<Joystick>/stick/right",
+Assets/Settings/InputSystem_Actions.inputactions:753:                    "path": "<Keyboard>/w",
+Assets/Settings/InputSystem_Actions.inputactions:764:                    "path": "<Keyboard>/upArrow",
+Assets/Settings/InputSystem_Actions.inputactions:775:                    "path": "<Keyboard>/s",
+Assets/Settings/InputSystem_Actions.inputactions:786:                    "path": "<Keyboard>/downArrow",
+Assets/Settings/InputSystem_Actions.inputactions:797:                    "path": "<Keyboard>/a",
+Assets/Settings/InputSystem_Actions.inputactions:808:                    "path": "<Keyboard>/leftArrow",
+Assets/Settings/InputSystem_Actions.inputactions:819:                    "path": "<Keyboard>/d",
+Assets/Settings/InputSystem_Actions.inputactions:830:                    "path": "<Keyboard>/rightArrow",
+Assets/Settings/InputSystem_Actions.inputactions:863:                    "path": "<Mouse>/position",
+Assets/Settings/InputSystem_Actions.inputactions:874:                    "path": "<Pen>/position",
+Assets/Settings/InputSystem_Actions.inputactions:885:                    "path": "<Touchscreen>/touch*/position",
+Assets/Settings/InputSystem_Actions.inputactions:896:                    "path": "<Mouse>/leftButton",
+Assets/Settings/InputSystem_Actions.inputactions:907:                    "path": "<Pen>/tip",
+Assets/Settings/InputSystem_Actions.inputactions:918:                    "path": "<Touchscreen>/touch*/press",
+Assets/Settings/InputSystem_Actions.inputactions:929:                    "path": "<XRController>/trigger",
+Assets/Settings/InputSystem_Actions.inputactions:940:                    "path": "<Mouse>/scroll",
+Assets/Settings/InputSystem_Actions.inputactions:951:                    "path": "<Mouse>/rightButton",
+Assets/Settings/InputSystem_Actions.inputactions:962:                    "path": "<Mouse>/middleButton",
+Assets/Settings/InputSystem_Actions.inputactions:973:                    "path": "<XRController>/devicePosition",
+Assets/Settings/InputSystem_Actions.inputactions:984:                    "path": "<XRController>/deviceRotation",

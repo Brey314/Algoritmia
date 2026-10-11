@@ -1,0 +1,168 @@
+## escrituras a disco en runtime
+Assets/Game/Scripts/Runtime/Core/DiskFileSystem.cs:20:                Directory.CreateDirectory(directory);
+Assets/Game/Scripts/Runtime/Core/DiskFileSystem.cs:25:                File.WriteAllText(probe, string.Empty);
+Assets/Game/Scripts/Runtime/Core/DiskFileSystem.cs:41:        public void WriteAllText(string path, string contents)
+Assets/Game/Scripts/Runtime/Core/DiskFileSystem.cs:46:                File.WriteAllText(temp, contents);
+Assets/Game/Scripts/Runtime/Core/IFileSystem.cs:13:        void WriteAllText(string path, string contents);
+Assets/Game/Scripts/Runtime/Core/SaveStore.cs:54:            _fileSystem.WriteAllText(PathOf(profile.Name), JsonUtility.ToJson(profile));
+
+## PlayerProfile campos serializados (JsonUtility):
+    /// No hay campo de puntaje, y no es un olvido: CP-03 lo prohíbe y RF-17 prohíbe cifras en la
+    /// retroalimentación. La razón es pedagógica, no técnica — sin esta nota, una futura
+    /// «mejora» reintroduce el marcador.
+    /// </remarks>
+    [Serializable]
+    public class PlayerProfile
+    {
+        // Los nombres de estos campos son las claves del JSON guardado, que se revisa a mano
+        // contra la lista cerrada de RNF-09: por eso van sin guion bajo, al contrario que el
+        // resto de campos privados del proyecto.
+        [SerializeField] private string name;
+        [SerializeField] private int reachedLevel;
+        [SerializeField] private List<PhaseRecord> phases = new List<PhaseRecord>();
+
+        /// <summary>Nombre o alias. Único dato personal que se pide (RF-02).</summary>
+        public string Name => name;
+
+        /// <summary>Nivel más avanzado que el perfil tiene habilitado (RF-03).</summary>
+        public LevelId ReachedLevel => (LevelId)reachedLevel;
+
+        /// <summary>Fases ya confirmadas, en el orden en que se confirmaron (RF-04).</summary>
+        public IReadOnlyList<PhaseId> ConfirmedPhases => phases
+            .Select(record => new PhaseId((LevelId)record.level, record.phase))
+            .ToArray();
+
+        /// <summary>Requerido por <c>JsonUtility</c>; para crear un perfil se usa <see cref="Create"/>.</summary>
+        private PlayerProfile()
+## PhaseRecord: level, phase, attempts, correctedErrors, stepsUsed, resolutionSeconds
+
+## ProjectSettings / servicios
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!310 &1
+UnityConnectSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 1
+  m_Enabled: 0
+  m_TestMode: 0
+  m_EventOldUrl: https://api.uca.cloud.unity3d.com/v1/events
+  m_EventUrl: https://cdp.cloud.unity3d.com/v1/events
+  m_ConfigUrl: https://config.uca.cloud.unity3d.com
+  m_DashboardUrl: https://dashboard.unity3d.com
+  m_TestInitMode: 0
+  InsightsSettings:
+    m_EngineDiagnosticsEnabled: 0
+    m_Enabled: 0
+  CrashReportingSettings:
+    serializedVersion: 2
+    m_EventUrl: https://perf-events.cloud.unity3d.com
+    m_EnableCloudDiagnosticsReporting: 0
+    m_LogBufferSize: 10
+    m_CaptureEditorExceptions: 1
+  UnityPurchasingSettings:
+    m_Enabled: 0
+    m_TestMode: 0
+  UnityAnalyticsSettings:
+    m_Enabled: 0
+    m_TestMode: 0
+    m_InitializeOnStartup: 1
+    m_PackageRequiringCoreStatsPresent: 0
+  UnityAdsSettings:
+    m_Enabled: 0
+    m_InitializeOnStartup: 1
+    m_TestMode: 0
+    m_IosGameId: 
+    m_AndroidGameId: 
+    m_GameIds: {}
+    m_GameId: 
+  PerformanceReportingSettings:
+    m_Enabled: 0
+594:  scriptingDefineSymbols:
+595-    Standalone: APP_UI_EDITOR_ONLY;SENTIS_ANALYTICS_ENABLED
+596-  additionalCompilerArguments: {}
+597-  platformArchitecture: {}
+598-  scriptingBackend:
+599-    Android: 1
+600-  il2cppCompilerConfiguration: {}
+601-  il2cppCodeGeneration: {}
+602-  il2cppLTOMode: {}
+97:  submitAnalytics: 0
+331:  enableInternalProfiler: 0
+333:  enableCrashReportAPI: 0
+700:  cloudEnabled: 0
+
+## Paquete rc3 (Build/Algoritmia, solo lectura, 10/10/2026): presencia de DirectML.dll, D3D12/ y modulos con red
+-rwxr-xr-x 1 benab 197609  4725304 Oct 10 17:26 Build/Algoritmia/D3D12/D3D12Core.dll
+-rwxr-xr-x 1 benab 197609 14021152 Oct 10 17:26 Build/Algoritmia/DirectML.dll
+globalgamemanagers: apariciones de 'unity3d.com':
+0
+Managed con red/analitica (modulos estandar de Unity, ningun codigo del juego los llama):
+System.Net.Http.dll
+UnityEngine.ShaderVariantAnalyticsModule.dll
+UnityEngine.UnityAnalyticsCommonModule.dll
+UnityEngine.UnityAnalyticsModule.dll
+UnityEngine.UnityWebRequestAssetBundleModule.dll
+UnityEngine.UnityWebRequestAudioModule.dll
+UnityEngine.UnityWebRequestModule.dll
+UnityEngine.UnityWebRequestTextureModule.dll
+UnityEngine.UnityWebRequestWWWModule.dll
+Game.*.dll en Managed:
+Game.Audio.dll
+Game.Core.dll
+Game.Levels.Fire.dll
+Game.Levels.River.dll
+Game.Levels.Wheel.dll
+Game.Reporting.dll
+Game.Scaffolding.dll
+Game.UI.dll
+codigo del juego que referencia esos tipos: (ver red-input.txt: ninguna coincidencia)
+
+## Referencias en los Game.*.dll compilados de rc3 (conteo de apariciones de la cadena en los metadatos)
+Game.Audio.dll UnityWebRequest 0
+Game.Audio.dll System.Net 0
+Game.Audio.dll UnityEngine.Analytics 0
+Game.Audio.dll Unity.Services 0
+Game.Audio.dll Application.OpenURL 0
+Game.Audio.dll OpenURL 0
+Game.Core.dll UnityWebRequest 0
+Game.Core.dll System.Net 0
+Game.Core.dll UnityEngine.Analytics 0
+Game.Core.dll Unity.Services 0
+Game.Core.dll Application.OpenURL 0
+Game.Core.dll OpenURL 0
+Game.Levels.Fire.dll UnityWebRequest 0
+Game.Levels.Fire.dll System.Net 0
+Game.Levels.Fire.dll UnityEngine.Analytics 0
+Game.Levels.Fire.dll Unity.Services 0
+Game.Levels.Fire.dll Application.OpenURL 0
+Game.Levels.Fire.dll OpenURL 0
+Game.Levels.River.dll UnityWebRequest 0
+Game.Levels.River.dll System.Net 0
+Game.Levels.River.dll UnityEngine.Analytics 0
+Game.Levels.River.dll Unity.Services 0
+Game.Levels.River.dll Application.OpenURL 0
+Game.Levels.River.dll OpenURL 0
+Game.Levels.Wheel.dll UnityWebRequest 0
+Game.Levels.Wheel.dll System.Net 0
+Game.Levels.Wheel.dll UnityEngine.Analytics 0
+Game.Levels.Wheel.dll Unity.Services 0
+Game.Levels.Wheel.dll Application.OpenURL 0
+Game.Levels.Wheel.dll OpenURL 0
+Game.Reporting.dll UnityWebRequest 0
+Game.Reporting.dll System.Net 0
+Game.Reporting.dll UnityEngine.Analytics 0
+Game.Reporting.dll Unity.Services 0
+Game.Reporting.dll Application.OpenURL 0
+Game.Reporting.dll OpenURL 0
+Game.Scaffolding.dll UnityWebRequest 0
+Game.Scaffolding.dll System.Net 0
+Game.Scaffolding.dll UnityEngine.Analytics 0
+Game.Scaffolding.dll Unity.Services 0
+Game.Scaffolding.dll Application.OpenURL 0
+Game.Scaffolding.dll OpenURL 0
+Game.UI.dll UnityWebRequest 0
+Game.UI.dll System.Net 0
+Game.UI.dll UnityEngine.Analytics 0
+Game.UI.dll Unity.Services 0
+Game.UI.dll Application.OpenURL 0
+Game.UI.dll OpenURL 0

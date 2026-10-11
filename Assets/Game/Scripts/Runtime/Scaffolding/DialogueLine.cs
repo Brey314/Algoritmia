@@ -34,6 +34,16 @@ namespace Game.Scaffolding
         [field: Tooltip("Silencio del guion que dispara esta línea (Dirección de sonido §5): corte seco de la música —queda el ambiente— o de todo. Ninguno por defecto.")]
         public SilenceCut Silence { get; private set; }
 
+        // INC-148: van AL FINAL de los campos serializados. Los 18 assets narrativos se escribieron sin ellos y Unity
+        // deserializa lo que falta con el valor del inicializador (sin marcar): ninguna línea cambia ni se reescribe.
+        [field: SerializeField]
+        [field: Tooltip("Si la línea fija la expresión con la que se ve su retrato en la tarjeta del cuadro de diálogo. SOLO para las voces cuyo hablante no está en escena (la voz fuera de cuadro): quien está en escena lleva la expresión que le fija su paso (Beats), y ahí esta casilla no cuenta. Sin marcar, la voz fuera de escena se ve con la cara neutra.")]
+        public bool SetsVoiceEmotion { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("La expresión del retrato de la voz fuera de escena en esta línea. Solo cuenta si «Sets Voice Emotion» está marcado. No hay expresión de derrota ni de tristeza (CP-02).")]
+        public FacialEmotion VoiceEmotion { get; private set; } = FacialEmotion.Neutral;
+
         public DialogueLine(string speaker, string text)
         {
             Speaker = speaker;

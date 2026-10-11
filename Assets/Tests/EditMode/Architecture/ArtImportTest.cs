@@ -36,6 +36,27 @@ namespace Game.Architecture.Tests
             "Assets/Game/Art/Props/Fire/prop_n1_monton_hojas_cenital.png",
         };
 
+        // Tercera excepción: las caras y los retratos de los personajes (INC-149, decisión de Santiago, 10/10/2026:
+        // «todo el arte de esta entrega, al importarse, recortado y como máximo 256×256»). El patrón se repite aquí a
+        // propósito, igual que las rutas de arriba: este assembly no referencia ningún Game.* y la prueba no debe heredar
+        // la regla del código que vigila. Las partes del cuerpo y los _reposo quedan fuera.
+        private const string CharactersRoot = "Assets/Game/Art/Characters";
+        private const int CharacterFacesMaxSize = 256;
+        private static readonly Regex CharacterFacePaths = new Regex(
+            @"^Assets/Game/Art/Characters/[^/]+/(Expresiones/[^/]+|Perfil/char_[a-z_]+_perfil_(ojos|boca)_[a-z0-9_]+|Perfil/char_[a-z_]+_perfil_cara_base|char_[a-z_]+_retrato_[a-z0-9_]+)\.png$");
+
+        /// <summary>Las bases sin cara de la tarjeta del diálogo: una por personaje, y la de Algoritm una por forma (INC-148).</summary>
+        private static readonly string[] PortraitBasePaths =
+        {
+            "Assets/Game/Art/Characters/Father/char_papa_retrato_base.png",
+            "Assets/Game/Art/Characters/Mother/char_mama_retrato_base.png",
+            "Assets/Game/Art/Characters/Girl/char_nina_retrato_base.png",
+            "Assets/Game/Art/Characters/Boy/char_nino_retrato_base.png",
+            "Assets/Game/Art/Characters/Algoritm/char_algoritm_fuego_retrato_base.png",
+            "Assets/Game/Art/Characters/Algoritm/char_algoritm_rueda_retrato_base.png",
+            "Assets/Game/Art/Characters/Algoritm/char_algoritm_gota_retrato_base.png",
+        };
+
         /// <summary>
         /// Sin comprimir y a su resolución: el arte es plano, de degradados largos, y el Nivel 1
         /// lo multiplica por la capa de oscuridad. Comprimido se ve la rejilla de bloques de 4×4 y
@@ -59,7 +80,7 @@ namespace Game.Architecture.Tests
                 Assert.That(importer.textureCompression,
                     Is.EqualTo(TextureImporterCompression.Uncompressed),
                     $"{path} entra comprimida");
-                if (path.StartsWith(FireFramesRoot) || SmallPropPaths.Contains(path))
+                if (path.StartsWith(FireFramesRoot) || SmallPropPaths.Contains(path) || CharacterFacePaths.IsMatch(path))
                 {
                     continue; // las excepciones tienen su propia prueba, que exige el tope exacto
                 }
@@ -113,6 +134,51 @@ namespace Game.Architecture.Tests
                 Assert.That(importer.textureCompression,
                     Is.EqualTo(TextureImporterCompression.Uncompressed),
                     $"{path} entra comprimida");
+            }
+        }
+
+        /// <summary>
+        /// INC-149 (decisión de Santiago, 10/10/2026): las caras y los retratos de los personajes entran recortados y a
+        /// 256 px como máximo, sin comprimir. Son las expresiones de frente, los ojos, las bocas y la cara base de
+        /// perfil, y los retratos de la tarjeta del diálogo; las partes del cuerpo y los reposos de Algoritm quedan
+        /// fuera. La regla recorta la textura importada (<c>maxTextureSize</c>), pero lo que se entrega también tiene
+        /// que venir recortado: la fuente no pasa de 256 por lado. Y existen las siete bases de la tarjeta animada
+        /// (INC-148), cuadradas.
+        /// FALLA mientras las herramientas no hayan escrito los PNG de la entrega a 256 y las siete bases.
+        /// </summary>
+        [Test]
+        public void ArtImport_RNF06_LasCarasYLosRetratosDeLosPersonajesSeImportanA256SinComprimir()
+        {
+            var caras = AssetDatabase.FindAssets("t:Texture2D", new[] { CharactersRoot })
+                .Select(AssetDatabase.GUIDToAssetPath)
+                .Where(path => Path.GetExtension(path) == ".png" && CharacterFacePaths.IsMatch(path))
+                .ToArray();
+
+            Assert.That(caras, Is.Not.Empty, $"«{CharactersRoot}» tiene caras y retratos que revisar");
+
+            foreach (var path in caras)
+            {
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+
+                Assert.That(importer, Is.Not.Null, $"{path}: no hay importador de textura");
+                Assert.That(importer.maxTextureSize, Is.EqualTo(CharacterFacesMaxSize), $"{path}: tope de textura");
+                Assert.That(importer.textureCompression,
+                    Is.EqualTo(TextureImporterCompression.Uncompressed),
+                    $"{path} entra comprimida");
+
+                importer.GetSourceTextureWidthAndHeight(out var width, out var height);
+                Assert.That(Mathf.Max(width, height), Is.LessThanOrEqualTo(CharacterFacesMaxSize),
+                    $"{path} se entrega a {width}×{height}: la entrega va recortada y a {CharacterFacesMaxSize} px como máximo");
+            }
+
+            foreach (var path in PortraitBasePaths)
+            {
+                var importer = AssetImporter.GetAtPath(path) as TextureImporter;
+
+                Assert.That(importer, Is.Not.Null, $"{path}: no existe la base sin cara de la tarjeta (¿se generó con preparar_retrato.py?)");
+                Assert.That(CharacterFacePaths.IsMatch(path), Is.True, $"{path}: la regla de importación alcanza la base");
+                importer.GetSourceTextureWidthAndHeight(out var width, out var height);
+                Assert.That(width, Is.EqualTo(height), $"{path}: la base es cuadrada ({width}×{height})");
             }
         }
 

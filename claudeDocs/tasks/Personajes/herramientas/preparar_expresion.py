@@ -4,12 +4,20 @@
 #     python3 claudeDocs/tasks/Personajes/herramientas/preparar_expresion.py <id> <emocion> <imagen>            # informe y composites
 #     python3 claudeDocs/tasks/Personajes/herramientas/preparar_expresion.py <id> <emocion> <imagen> --aplicar  # escribe
 #     python3 claudeDocs/tasks/Personajes/herramientas/preparar_expresion.py <id> abiertos <imagen> --vista perfil   # (INC-134) la cara del cuerpo de perfil
+#     python3 claudeDocs/tasks/Personajes/herramientas/preparar_expresion.py --entrega <carpeta Expresiones> [<id>]            # (INC-148) el LOTE de una entrega: informe y composites
+#     python3 claudeDocs/tasks/Personajes/herramientas/preparar_expresion.py --entrega <carpeta Expresiones> [<id>] --aplicar  # escribe todas las capas, de frente y de perfil
 #     python3 claudeDocs/tasks/Personajes/herramientas/preparar_expresion.py --autoprueba                       # se prueba solo
 #         <id> = nino (el que ya tiene cabeza propia: papa, mama y nina cuando entreguen su arte final)
 #         <emocion> = neutra | alegria | sorpresa | preocupacion | concentracion | sueno | parpadeo_medio | parpadeo_cerrado
 #                     (y las bocas de hablar: boca_a | boca_e | boca_u, que solo escriben la boca). ALIAS (09/10/2026, la entrega nueva llama a las
 #                     expresiones «ojos abiertos» y «ojos cerrados»): abiertos = neutra y cerrados = parpadeo_cerrado (tambien abierto y cerrado).
+#                     ALIAS DE LA ENTREGA DEL 10/10/2026 (INC-148; los nombres de archivo de Sofia): neutro = neutra, concentrado = concentracion, preocupado =
+#                     preocupacion, neutro_boca_abierta = boca_a (la UNICA boca de hablar de esta entrega) y neutro_ojos_cerrados = parpadeo_cerrado (el primer
+#                     cierre de ojos DE FRENTE: el frente ya puede parpadear). En el modo por lote (--entrega) los nombres se casan por FICHAS NFKD-ASCII, no por el
+#                     nombre exacto (clasifica_expresion): «boca» + «abierta» (con o sin la errata «nuetro»), «ojos» + «cerrados», «concentr…», «preocup…»,
+#                     «sorpres…», «neutr…»; «perfil» en cualquier sitio la manda a la vista de perfil.
 #                     El parpadeo es de DOS cuadros (INC-135): ojos_neutra (abiertos) y ojos_parpadeo_cerrado; el cuadro medio ya no hace falta.
+#         <id> = ademas «algoritm» (solo con --entrega): UNA cara para las tres formas del guia, ver EL LOTE.
 #         --vista frente|perfil   (INC-134, 09/10/2026) frente = lo de siempre. perfil = la cara del cuerpo de PERFIL: escribe en
 #                       Assets/Game/Art/Characters/<Carpeta>/Perfil/ char_<id>_perfil_ojos_<...>, char_<id>_perfil_boca_<...> y
 #                       char_<id>_perfil_cara_base, y anota el rect en los nodos CaraBase, Ojos y Boca de la entrada «perfil» de arte_final.json. Solo por
@@ -40,7 +48,10 @@
 #                       (ojos | boca | nariz | rubor | nada); se puede repetir
 #         --base        reescribe tambien char_<x>_cara_base (por defecto solo si aun no existe)
 #         --reubica     recalcula el rect comun aunque la cara ya este puesta (por defecto, las emociones siguientes lo heredan)
-#         --max-lado N  la imagen se reduce a N px de lado mayor si es mas grande (512): nada depende de que sean 256
+#         --max-lado N  la imagen se reduce a N px de lado mayor si es mas grande (256 desde INC-149, 10/10/2026, decision de Santiago: todo lo que entra de la
+#                       entrega del 10/10 queda RECORTADO y a 256 px como maximo; antes 512): nada depende de que sean 256
+#         --entrega CARPETA   (INC-148) el LOTE: procesa de una vez TODAS las expresiones de la carpeta de un personaje (Papa/Expresiones, Algoritm/Expresiones…), de
+#                       frente y de perfil, con UNA caja comun y UNA escala. Ver EL LOTE. Con --vista frente|perfil se limita a una de las dos
 #         --salida DIR  donde dejar los composites del informe (por defecto, el tmp)
 #
 # QUE HACE. Santiago entrega cada expresion como UNA imagen de cara completa con fondo transparente (cejas, ojos, nariz, boca y
@@ -80,6 +91,28 @@
 # casi vacios por capa y a 512 de lado la cara quedaria a 160 px. Con la caja la textura mide ~350x270 y no cambia de tamano entre emociones
 # (RNF-06: cada capa sin comprimir pesa 0,3-0,4 MB; ~13 capas por personaje).
 #
+# EL LOTE (--entrega, INC-148 e INC-149, 10/10/2026). La entrega de Sofia trae SEIS expresiones de frente por personaje (neutro, concentrado, preocupado, sorpresa, la
+# boca de hablar y los ojos cerrados) mas el perfil abierto y cerrado, y Santiago pide que todo lo que entra a Assets/ quede RECORTADO y a 256 px como maximo. Ojos, boca y
+# base de la cara comparten UN solo rect en el rig (un Image estira el sprite a su rect), asi que «recortado» no es recortar cada sprite a lo suyo: es la caja UNION de
+# todas las expresiones del personaje. El lote:
+#   1. clasifica cada archivo por fichas (clasifica_expresion), separa la vista de frente de la de perfil y exige la neutra de cada vista que procese;
+#   2. la caja comun es la UNION de las cajas de alfa >= 12 de todas las expresiones de esa vista (UMBRAL_CAJA: por debajo hay halos sueltos casi invisibles, p. ej. la
+#      Nina en x ~ 73) mas MARGEN_UNION (3 px del lienzo de la entrega), recortada a la cabeza pero sin cortar nunca lo pintado; se guarda en registro.cara (frente) o
+#      registro.cara_perfil, como siempre, y es la que heredan las expresiones sueltas de despues;
+#   3. UNA escala para todas las capas: la de las partes (1 texel por px del lienzo del rig) con el tope de --max-lado (256). El rect del rig es la caja mapeada con la
+#      transformacion del registro, asi que bajar los sprites a 256 no mueve nada: solo la caja nueva (mas ajustada que la de MARGEN_CARA) cambia el rect;
+#   4. escribe, en este orden: la neutra (ojos_neutra, boca_0 y cara_base), concentracion, preocupacion y sorpresa (ojos y la boca de reposo propia), parpadeo_cerrado (solo
+#      los ojos) y boca_a (solo la boca); comprueba que la capa de cada expresion mas la base de la neutra reproducen la imagen entregada (el «residuo» del informe).
+#   Con el perfil (--vista perfil, o ambas vistas si no se dice) la caja es la union del par abierto y cerrado, espejado si el registro lo pide, y la cerrada pasa por
+#   limpia_cerrados como siempre.
+#   «algoritm» (INC-136, 09/10/2026; la cara final, INC-148): UNA cara compartida por las tres formas. La entrega trae una sola serie de seis caras para Fuego, Rueda y Gota,
+#   en el mismo lienzo y con el mismo registro (escala, tx y ty de las tres entradas «algoritm_<forma>» de arte_final.json: si difieren, el lote se niega). El rig de Algoritm
+#   NO tiene CaraBase, asi que la nariz y el rubor (los cachetes) van en la capa de OJOS (nariz + rubor + ojos de separa()) y la boca aparte; se escriben
+#   Algoritm/Expresiones/char_algoritm_{ojos_<emocion>,boca_<emocion>}.png SIN el nombre de la forma (11 texturas en vez de 33), los nodos Ojos y Boca de las tres
+#   entradas reciben el mismo rect y los nombres compartidos, «cara_provisional» pasa a false y se anota «prefijo_cara»: «char_algoritm», que articulaciones.py lleva a
+#   rig_articulaciones.json para que BuildRigsFinal (FaceNames) encuentre los nombres compartidos. Los PNG provisionales por forma (char_algoritm_<forma>_ojos_neutra y
+#   _boca_0) se quedan en disco: se borran despues en el Editor, con su .meta.
+#
 # POR QUE (modo heuristica) no se recorta ni se cuenta con 256: la imagen puede llegar mas grande (un original); el tamano solo sale de --max-lado, y
 # todo lo que se mide (areas, cajas, umbrales) es relativo a la caja de lo que hay en la imagen.
 
@@ -94,6 +127,7 @@ import sys
 import tempfile
 import unicodedata
 from collections import Counter
+from types import SimpleNamespace
 
 try:
     from PIL import Image, ImageChops, ImageDraw, ImageFilter, ImageOps
@@ -127,8 +161,19 @@ EMOCIONES = {
 # Lo que la entrega nueva (09/10/2026) llama «ojos abiertos» y «ojos cerrados»: los dos cuadros del parpadeo (INC-135). Y las bocas de hablar,
 # con la letra sola.
 ALIAS_EMOCION = {"abiertos": "neutra", "abierto": "neutra", "cerrados": "parpadeo_cerrado", "cerrado": "parpadeo_cerrado",
-                 "a": "boca_a", "e": "boca_e", "u": "boca_u"}
+                 "a": "boca_a", "e": "boca_e", "u": "boca_u",
+                 # la entrega del 10/10/2026 (INC-148): los nombres de archivo de Sofia sin el personaje
+                 "neutro": "neutra", "concentrado": "concentracion", "preocupado": "preocupacion",
+                 "neutro_boca_abierta": "boca_a", "boca_abierta": "boca_a", "neutro_ojos_cerrados": "parpadeo_cerrado", "ojos_cerrados": "parpadeo_cerrado"}
 VISTAS = ("frente", "perfil")
+GUIA = "algoritm"               # id del lote del guia (INC-148): UNA cara compartida por sus tres formas; no es una clave de prefabs.PERSONAJES
+FORMAS_GUIA = ("fuego", "rueda", "gota")
+CARPETA_GUIA = "Algoritm"
+UMBRAL_CAJA = 12                # el lote (INC-148): alfa desde el que un pixel cuenta para la caja union (por debajo, halos sueltos casi invisibles)
+MARGEN_UNION = 3                # px del lienzo de la entrega que se le dan a la caja union de la cara
+MAX_LADO = 256                  # INC-149: toda cara y todo retrato que entra a Assets/ mide 256 px como maximo
+# el orden en que el lote escribe las expresiones (la neutra fija la base; la boca de hablar va al final)
+ORDEN_LOTE = ("neutra", "alegria", "concentracion", "preocupacion", "sorpresa", "sueno", "parpadeo_cerrado", "boca_a")
 CAPAS = ("ojos", "boca", "nariz", "rubor")
 CODIGO = {"ojos": 1, "boca": 2, "nariz": 3, "rubor": 4, "nada": 0}
 NOMBRE_CODIGO = {v: k for k, v in CODIGO.items()}
@@ -288,10 +333,24 @@ class Separacion:
         self.tamano = (0, 0)
 
 
-def separa(im, correcciones=()):
+def guia_de(neutra):
+    """
+    La guia que la neutra de un personaje con base (CaraBase) le da a la separacion de sus demas expresiones (INC-148): el eje y el ancho de la cara, la linea que separa los
+    ojos de la boca (a mitad entre el borde de abajo de los ojos y el de arriba de la boca de la neutra) y la caja de la nariz. Sin guia, separa() adivina la boca como la
+    componente oscura mas ancha de la franja central, y con la boca pequena de la sorpresa o la del habla toma la nariz por boca y el interior rosado de la boca por rubor.
+    """
+    ojos, boca, nariz = neutra.resumen["ojos"]["caja"], neutra.resumen["boca"]["caja"], neutra.resumen["nariz"]["caja"]
+    if ojos is None or boca is None:
+        raise ValueError("la neutra no tiene ojos y boca separados: no puedo guiar la separacion de las demas expresiones")
+    return SimpleNamespace(eje=neutra.eje, ancho=neutra.caja[2] - neutra.caja[0], y_corte=(ojos[3] + boca[1]) / 2.0, nariz=nariz, y_ojos=ojos[3])
+
+
+def separa(im, correcciones=(), guia=None):
     """
     Separa la cara de «im» (RGBA) en ojos (con cejas), boca, nariz y rubor. «correcciones» es [(capa, (x0, y0, x1, y1))] en pixeles
     de la imagen: todo pixel no transparente dentro de la caja pasa a esa capa («nada» lo borra). Devuelve una Separacion.
+    Con «guia» (guia_de(la neutra de ese personaje), para sus demas expresiones, que comparten recorte con ella): el eje, el ancho de la cara y la boca salen de la neutra
+    —la boca es lo que cae en la franja central bajo la linea de los ojos— y la nariz es lo que cae en su caja; nariz y rubor son la base, que escribe la neutra.
     """
     im = im.convert("RGBA")
     w, h = im.size
@@ -305,6 +364,8 @@ def separa(im, correcciones=()):
     res.caja = caja
     W, H = caja[2] - caja[0], caja[3] - caja[1]
     eje = (caja[0] + caja[2]) / 2.0
+    if guia is not None:
+        eje, W = guia.eje, guia.ancho
     res.eje = eje
     d = max(1, int(round(0.006 * max(W, H))))
 
@@ -330,7 +391,9 @@ def separa(im, correcciones=()):
     # --- lo oscuro: las rayitas dentro de una mancha son del rubor
     sueltos = []
     for c in comp_o.values():
-        dentro = next((p for p in parches if c.dentro_de(p.caja, 2 * d) and c.ancho <= p.ancho + 4 * d and c.alto <= p.alto + 4 * d), None)
+        # (con guia: una rayita del rubor cae bajo los ojos; el parpado cerrado, que roza la mancha, esta encima de esa linea y es de los ojos)
+        dentro = next((p for p in parches if c.dentro_de(p.caja, 2 * d) and c.ancho <= p.ancho + 4 * d and c.alto <= p.alto + 4 * d
+                       and (guia is None or c.cy >= guia.y_ojos)), None)
         if dentro is not None:
             c.capa = "rubor"
         else:
@@ -338,13 +401,16 @@ def separa(im, correcciones=()):
 
     # --- boca: la mas ancha de la franja central, por debajo de la mitad de la cara; nariz: lo pequeño entre los ojos y ella
     en_centro = [c for c in sueltos if abs(c.cx - eje) <= centro]
-    bajas = [c for c in en_centro if c.cy >= caja[1] + 0.45 * H]
+    bajas = [c for c in en_centro if c.cy >= (guia.y_corte if guia is not None else caja[1] + 0.45 * H)]
     boca = max(bajas, key=lambda c: c.ancho) if bajas else None
     if boca is None:
         res.avisos.append("no encuentro la boca (una componente oscura en la franja central por debajo de la mitad); usa --asigna boca:x0,y0,x1,y1")
     else:
         boca.capa = "boca"
-        nariz = [c for c in en_centro if c is not boca and c.cy < boca.cy and c.cy > caja[1] + 0.25 * H and c.area < 0.5 * boca.area]
+        if guia is not None:   # la nariz es lo que cae en la caja de la nariz de la neutra (no «lo pequeno entre los ojos y la boca»: la boca puede ser mas pequena que ella)
+            nariz = [c for c in en_centro if c is not boca and guia.nariz is not None and c.dentro_de(guia.nariz, 2 * d)]
+        else:
+            nariz = [c for c in en_centro if c is not boca and c.cy < boca.cy and c.cy > caja[1] + 0.25 * H and c.area < 0.5 * boca.area]
         for c in nariz:
             c.capa = "nariz"
         if not nariz:
@@ -732,9 +798,14 @@ def prefijo_de(pid, vista="frente"):
     return "char_%s_perfil" % pid if vista == "perfil" else "char_%s" % pid
 
 
+def carpeta_arte_de(pid):
+    """La carpeta de arte de un personaje (Father, Mother, Girl, Boy) o, para el guia («algoritm»: las tres formas juntas), Algoritm."""
+    return CARPETA_GUIA if pid == GUIA else P.PERSONAJES[pid][1]
+
+
 def carpeta_destino(pid, vista="frente"):
     """Donde escribe --aplicar la cara de esa vista: Expresiones/ (frente) o Perfil/ (perfil) de la carpeta del personaje. Lo mismo que dice P.subcarpeta_de por el nombre."""
-    return os.path.join(P.PERSONAJES_ARTE, P.PERSONAJES[pid][1], "Perfil" if vista == "perfil" else "Expresiones")
+    return os.path.join(P.PERSONAJES_ARTE, carpeta_arte_de(pid), "Perfil" if vista == "perfil" else "Expresiones")
 
 
 def capas_de(pid, emocion, vista="frente", con_base=True):
@@ -961,7 +1032,7 @@ def prepara_registrada(entrada, registro, args, vista="frente", limpia=False):
     res = (separa_perfil if vista == "perfil" else separa)(recorte, parsea_asigna(args.asigna))
     res.limpieza = limpieza
     s = registro["escala"]
-    k = min(1.0, args.densidad * s, float(args.max_lado) / max(recorte.size))
+    k = min(1.0, args.densidad * s if args.densidad else 1.0, float(args.max_lado) / max(recorte.size))   # --densidad 0 = sin tope por densidad (antes daba k = 0: una textura de 1 px)
     res.capas_salida = {c: reduce_a(v, k) for c, v in res.capas.items()}
     col = Colocacion()
     col.rect = F.caja_a_lienzo(registro, caja)
@@ -1192,6 +1263,409 @@ def aplica(pid, emocion, res, col, args, hay_base, vista="frente"):
     return fallos
 
 
+# ============================================================================ 5b. el LOTE de una entrega (--entrega, INC-148, INC-149)
+#
+# Ver «EL LOTE» en la cabecera. Aqui: clasificar los archivos por fichas, la caja UNION, la separacion de cada expresion con UNA escala, el informe (con el «residuo»,
+# la prueba de que la capa de cada expresion mas la base de la neutra reproducen la imagen entregada), los composites y --aplicar.
+
+RESIDUO_TOL = 40      # diferencia (por canal, sobre un gris) a partir de la cual un pixel del compuesto ya no es el de la imagen entregada
+RESIDUO_MAX = 0.004   # fraccion del area de la cara que puede quedar fuera de la separacion antes de avisar (nariz o rubor que cambian de una expresion a otra)
+
+
+def fichas(nombre):
+    """Las fichas de un nombre de archivo: palabras de solo letras, en minusculas y sin tildes (NFKD-ASCII), sin la extension ni la carpeta."""
+    return re.findall(r"[a-z]+", pliega(os.path.splitext(os.path.basename(nombre))[0]))
+
+
+def _con(fs, prefijo):
+    return any(f.startswith(prefijo) for f in fs)
+
+
+def clasifica_expresion(archivo):
+    """
+    (vista, emocion) de un archivo de expresion por sus FICHAS, o None si no se reconoce. «perfil» en cualquier sitio manda a la vista de perfil. Orden de las
+    pruebas (la mas especifica primero: «neutro_boca_abierta» tambien trae «neutro»): boca + abierta -> boca_a (con o sin la errata «nuetro»), ojos + cerrados ->
+    parpadeo_cerrado, concentr… -> concentracion, preocup… -> preocupacion, sorpres… -> sorpresa, alegr… -> alegria, suen… -> sueno, neutr… -> neutra.
+    «abiertos» solo (sin «boca»), como en la entrega de perfil del 09/10, es la neutra.
+    """
+    fs = fichas(archivo)
+    vista = "perfil" if _con(fs, "perfil") else "frente"
+    if _con(fs, "boca") and _con(fs, "abiert"):
+        return vista, "boca_a"
+    if _con(fs, "ojo") and _con(fs, "cerrad"):
+        return vista, "parpadeo_cerrado"
+    for prefijo, emocion in (("concentr", "concentracion"), ("preocup", "preocupacion"), ("sorpres", "sorpresa"), ("alegr", "alegria"), ("suen", "sueno"),
+                             ("neutr", "neutra"), ("abiert", "neutra")):
+        if _con(fs, prefijo):
+            return vista, emocion
+    return None
+
+
+def pid_de_ruta(ruta):
+    """El id de personaje que dice la ruta (la carpeta mas cercana que, plegada, sea papa, mama, nina, nino o algoritm): «Papa/Expresiones» -> papa. None si ninguna."""
+    ids = list(P.FAMILIA) + [GUIA]
+    for parte in reversed(os.path.abspath(ruta).replace("\\", "/").split("/")):
+        if pliega(parte) in ids:
+            return pliega(parte)
+    return None
+
+
+def lee_lote(carpeta):
+    """({(vista, emocion): ruta}, errores): clasifica cada PNG de la carpeta (no recursivo). Un archivo que no se reconoce o dos que son la misma expresion son errores."""
+    por, errores = {}, []
+    for f in sorted(os.listdir(carpeta)):
+        if not f.lower().endswith(".png"):
+            continue
+        c = clasifica_expresion(f)
+        if c is None:
+            errores.append("no reconozco la expresion de «%s» (neutro, concentrado, preocupado, sorpresa, boca abierta u ojos cerrados)" % f)
+        elif c in por:
+            errores.append("«%s» y «%s» son la misma expresion (%s, %s)" % (os.path.basename(por[c]), f, c[0], c[1]))
+        else:
+            por[c] = os.path.join(carpeta, f)
+    return por, errores
+
+
+def caja_alfa(im, umbral=UMBRAL_CAJA):
+    """La caja (x0, y0, x1, y1; x1 e y1 exclusivos) de los pixeles con alfa >= umbral, o None."""
+    return im.getchannel("A").point(lambda v: 255 if v >= umbral else 0).getbbox()
+
+
+def caja_union(cajas, lienzo, cabeza=None, margen=MARGEN_UNION):
+    """
+    (caja, contenido, avisos): la union de las cajas mas «margen» px, recortada a «cabeza» (o al lienzo) en lo que le anade el margen, pero SIN cortar nunca lo
+    pintado: si algo de las expresiones se sale de la cabeza, la caja lo conserva y avisa (preparar_expresion nunca recorta arte).
+    """
+    contenido = (min(c[0] for c in cajas), min(c[1] for c in cajas), max(c[2] for c in cajas), max(c[3] for c in cajas))
+    lim = list(cabeza) if cabeza else [0, 0, lienzo[0], lienzo[1]]
+    caja = [min(contenido[0], max(lim[0], contenido[0] - margen)), min(contenido[1], max(lim[1], contenido[1] - margen)),
+            max(contenido[2], min(lim[2], contenido[2] + margen)), max(contenido[3], min(lim[3], contenido[3] + margen))]
+    caja = [max(0, caja[0]), max(0, caja[1]), min(lienzo[0], caja[2]), min(lienzo[1], caja[3])]
+    avisos = []
+    if cabeza and (contenido[0] < lim[0] or contenido[1] < lim[1] or contenido[2] > lim[2] or contenido[3] > lim[3]):
+        avisos.append("lo pintado %s se sale de la cabeza %s: la caja lo conserva (no se corta arte)" % (list(contenido), lim))
+    return caja, contenido, avisos
+
+
+def registro_guia():
+    """
+    El registro de la cara de Algoritm: UNO para las tres formas. Sale de arte_final.json y se REFUSA si las tres entradas «algoritm_<forma>» no comparten
+    lienzo, escala, tx y ty (una sola caja de cara vale para las tres solo si el lienzo registrado es el mismo). Devuelve (registro, origen, errores).
+    """
+    personajes = A.cargar_arte_final()
+    entradas = {f: personajes.get("algoritm_" + f) for f in FORMAS_GUIA}
+    faltan = [f for f, e in entradas.items() if not e or not e.get("registro")]
+    if faltan:
+        return None, "", ["no hay entrada algoritm_%s con registro en arte_final.json: primero preparar_algoritm.py <carpeta> --aplicar" % ", algoritm_".join(faltan)]
+    regs = {f: {"lienzo": list(e["registro"]["lienzo"]), "escala": round(e["registro"]["escala"], 6), "tx": round(e["registro"]["tx"], 3), "ty": round(e["registro"]["ty"], 3)}
+            for f, e in entradas.items()}
+    if any(r != regs["fuego"] for r in regs.values()):
+        return None, "", ["las tres formas de Algoritm no comparten registro (%s): una sola cara no vale para las tres" % "; ".join("%s %s" % (f, r) for f, r in regs.items())]
+    return dict(regs["fuego"]), "arte_final.json (algoritm_fuego|rueda|gota: el mismo registro)", []
+
+
+def capa_de_codigos(im, res, codigos):
+    """La capa RGBA de «im» con solo los pixeles de esas clases de la separacion (1 ojos, 2 boca, 3 nariz, 4 rubor): para unir nariz y rubor a los ojos en Algoritm."""
+    alfa = im.convert("RGBA").getchannel("A")
+    mascara = res.clases.point(lambda v, cs=tuple(codigos): 255 if v in cs else 0)
+    out = im.convert("RGBA").copy()
+    out.putalpha(ImageChops.multiply(alfa, mascara))
+    return out
+
+
+def residuo(recorte, capas, base=None):
+    """
+    Cuantos pixeles del recorte NO reproduce la composicion «base + ojos + boca» (cada una una capa RGBA del mismo tamano, o None), comparados sobre un gris con una
+    tolerancia de RESIDUO_TOL por canal. Con «base» = la de la neutra mide si la nariz y el rubor de una expresion distinta de la neutra son los mismos.
+    """
+    comp = Image.new("RGBA", recorte.size, (0, 0, 0, 0))
+    for im in (base, capas.get("ojos"), capas.get("boca")):
+        if im is not None:
+            comp.alpha_composite(im)
+    gris = Image.new("RGBA", recorte.size, (128, 128, 128, 255))
+    a, b = gris.copy(), gris.copy()
+    a.alpha_composite(comp)
+    b.alpha_composite(recorte)
+    r, g, bl = ImageChops.difference(a.convert("RGB"), b.convert("RGB")).split()
+    d = ImageChops.lighter(ImageChops.lighter(r, g), bl).point(lambda v: 255 if v > RESIDUO_TOL else 0)
+    return d.histogram()[255]
+
+
+def prepara_lote(pid, vista, por, args):
+    """
+    El lote de UNA vista de un personaje: SimpleNamespace(pid, vista, registro, origen, caja, contenido, rect, k, entrada, salida, emociones, archivos, avisos). Hace todo
+    menos escribir: la caja union, la separacion de cada expresion (con la limpieza de la cerrada de perfil), las capas a UNA escala y el residuo. Lanza ValueError.
+    """
+    guia = pid == GUIA
+    if guia:
+        registro, origen, errores = registro_guia()
+    elif vista == "perfil":
+        registro, origen, errores = registro_perfil(pid)
+    else:
+        registro, origen, errores = registro_de(pid)
+    if registro is None or errores:
+        raise ValueError("; ".join(errores) or "%s no tiene registro (preparar_arte_final.py lo escribe)" % pid)
+    archivos = {emo: ruta for (v, emo), ruta in por.items() if v == vista}
+    if "neutra" not in archivos:
+        raise ValueError("la vista de %s no trae la neutra (neutro / abiertos): fija la base de la cara" % vista)
+    if vista == "perfil":
+        sobra = sorted(set(archivos) - {"neutra", "parpadeo_cerrado"})
+        if sobra:
+            raise ValueError("el perfil solo tiene la cara abierta y la cerrada (INC-134), y la entrega trae ademas %s" % ", ".join(sobra))
+    orden = [e for e in ORDEN_LOTE if e in archivos]
+    imagenes = {}
+    for emo in orden:
+        im = Image.open(archivos[emo]).convert("RGBA")
+        if registro.get("espejo"):
+            im = ImageOps.mirror(im)
+        if list(im.size) != list(registro["lienzo"]):
+            raise ValueError("%s mide %dx%d y el lienzo registrado %dx%d: no es una expresion registrada" % (
+                os.path.basename(archivos[emo]), im.width, im.height, registro["lienzo"][0], registro["lienzo"][1]))
+        imagenes[emo] = im
+    cajas = {}
+    for emo, im in imagenes.items():
+        cajas[emo] = caja_alfa(im)
+        if cajas[emo] is None:
+            raise ValueError("%s esta vacia (todo su alfa es menor de %d)" % (os.path.basename(archivos[emo]), UMBRAL_CAJA))
+    caja, contenido, avisos = caja_union(list(cajas.values()), registro["lienzo"], registro.get("cabeza"))
+    rect = F.caja_a_lienzo(registro, caja)
+    recortes = {emo: im.crop(tuple(caja)) for emo, im in imagenes.items()}
+    emociones, limpiezas = {}, {}
+    for emo in orden:
+        rec = recortes[emo]
+        # la cara de ojos CERRADOS trae el rastro casi blanco del ojo abierto (Papa 174 px, Mama 291, Nina 249; el perfil, desde el 09/10): se limpia (--limpia-cerrados,
+        # por defecto). El guia NO: sus dientes son casi blancos y legitimos.
+        if emo == "parpadeo_cerrado" and not guia and getattr(args, "limpia_cerrados", True):
+            rec, nb, nh = limpia_cerrados(rec)
+            recortes[emo] = rec
+            limpiezas[emo] = (nb, nh)
+        if vista == "perfil":
+            res = separa_perfil(rec)
+        elif emo != "neutra" and not guia:
+            res = separa(rec, guia=guia_de(emociones["neutra"]))
+        else:
+            res = separa(rec)
+        res.capas_plenas = ({"ojos": capa_de_codigos(rec, res, (1, 3, 4)), "boca": res.capas["boca"], "base": None} if guia else dict(res.capas))
+        emociones[emo] = res
+    w, h = recortes["neutra"].size
+    s = registro["escala"]
+    k = min(1.0, args.densidad * s if args.densidad else 1.0, float(args.max_lado) / max(w, h))
+    for emo, res in emociones.items():
+        res.capas_salida = {c: reduce_a(v, k) for c, v in res.capas_plenas.items() if v is not None}
+        res.residuo = residuo(recortes[emo], res.capas_plenas, (res if emo == "neutra" else emociones["neutra"]).capas_plenas.get("base"))
+    area = float(max(1, w * h))
+    for emo, res in emociones.items():
+        if res.residuo > RESIDUO_MAX * area:
+            causa = ("la nariz o el rubor de esta expresion no son los de la neutra (la neutra del 06/10 y esta expresion no se dibujaron con el mismo rubor, o el color del iris): "
+                     "se usa la base de la neutra" if (not guia and vista == "frente") else "revisa la separacion (--asigna)")
+            avisos.append("%s: %d px de la imagen entregada no salen de la composicion de capas (%.2f %% del area de la cara): %s" % (emo, res.residuo, 100.0 * res.residuo / area, causa))
+        for a_ in res.avisos:
+            texto = "%s: %s" % (emo, a_)
+            if guia and ("nariz" in a_ or "componente grande" in a_):
+                continue   # Algoritm no tiene nariz, y el cachete de la derecha (contorno + rosa) es la «componente grande» que cae abajo: va a los ojos, como debe
+            if vista == "perfil" and "no hay rubor" in a_ and emo != "neutra":
+                continue   # la cerrada de perfil no repite el rubor
+            avisos.append(texto)
+    for emo, (nb, nh) in limpiezas.items():
+        emociones[emo].limpieza = (nb, nh)
+    return SimpleNamespace(pid=pid, vista=vista, registro=registro, origen=origen, caja=caja, contenido=contenido, rect=rect, k=k, entrada=(w, h),
+                           salida=emociones["neutra"].capas_salida["ojos"].size, emociones=emociones, orden=orden, archivos=archivos, avisos=avisos,
+                           recortes=recortes)
+
+
+def capas_lote(lote, emocion):
+    """[(clave, nombre del sprite, imagen)] que el lote escribe para esa expresion: la neutra, ojos + boca + base (el guia, sin base: va en los ojos); las demas, lo que cambian."""
+    res = lote.emociones[emocion]
+    out = []
+    for clave, sprite in capas_de(lote.pid, emocion, lote.vista, con_base=(emocion == "neutra" and lote.pid != GUIA)):
+        im = res.capas_salida.get(clave)
+        if im is None or (lote.vista == "perfil" and im.getchannel("A").getbbox() is None):
+            continue
+        out.append((clave, sprite, im))
+    return out
+
+
+def informe_lote(lote):
+    print("\n== %s / vista de %s%s" % (lote.pid, lote.vista, " (espejada: la entrega de perfil mira a la izquierda)" if lote.registro.get("espejo") else ""))
+    print("  registro %s: x' = %.6f x + %.3f, y' = %.6f y + %.3f; lienzo %dx%d" % (lote.origen, lote.registro["escala"], lote.registro["tx"], lote.registro["escala"],
+                                                                            lote.registro["ty"], lote.registro["lienzo"][0], lote.registro["lienzo"][1]))
+    print("  caja UNION de la cara (alfa >= %d, %d px de margen): %s  (lo pintado %s) = %dx%d px" % (UMBRAL_CAJA, MARGEN_UNION, lote.caja, list(lote.contenido), lote.entrada[0], lote.entrada[1]))
+    print("  textura %dx%d (x %.3f; %.2f texeles por px del lienzo del rig, tope --max-lado)  rect del rig %s" % (
+        lote.salida[0], lote.salida[1], lote.k, lote.k / lote.registro["escala"], lote.rect))
+    total = 0
+    for emo in lote.orden:
+        res = lote.emociones[emo]
+        capas = capas_lote(lote, emo)
+        total += sum(im.width * im.height * 4 for _, _, im in capas)
+        extra = "  limpieza: %d casi blancos y %d de halo" % res.limpieza if getattr(res, "limpieza", None) else ""
+        print("  %-17s %-44s %s  residuo %d px%s" % (emo, os.path.basename(lote.archivos[emo]), ", ".join("%s %dx%d" % (sp.split("char_")[-1], im.width, im.height) for _, sp, im in capas),
+                                                      res.residuo, extra))
+    grande = [sp for emo in lote.orden for _, sp, im in capas_lote(lote, emo) if max(im.size) > MAX_LADO]
+    print("  memoria sin comprimir: %.2f MB; %s" % (total / 1e6, "TODO <= %d px" % MAX_LADO if not grande else "HAY CAPAS DE MAS DE %d px: %s" % (MAX_LADO, ", ".join(grande))))
+    for a in lote.avisos:
+        print("  AVISO", a)
+
+
+def _base_del_composite(lote):
+    """(imagen, rect) de lo que hay debajo de la cara: la cabeza (de frente o de perfil) o, en el guia, el torso de Fuego; None si esa pieza aun no esta en el repo."""
+    carpeta = carpeta_arte_de(lote.pid)
+    entrada = A.cargar_arte_final()
+    if lote.pid == GUIA:
+        nombre, nodos = "char_algoritm_fuego_parte_torso", entrada.get("algoritm_fuego", {}).get("nodos", [])
+        nodo = next((n for n in nodos if n["nombre"] == "Torso"), None)
+    elif lote.vista == "perfil":
+        nombre, nodos = "char_%s_perfil_cabeza" % lote.pid, entrada.get(lote.pid, {}).get("perfil", {}).get("nodos", [])
+        nodo = next((n for n in nodos if n["nombre"] == "Cuello"), None)
+    else:
+        nombre, nodos = "char_%s_parte_cabeza" % lote.pid, entrada.get(lote.pid, {}).get("nodos", [])
+        nodo = next((n for n in nodos if n["nombre"] == "Cuello"), None)
+    png = P._png_de(carpeta, nombre)
+    if png is None or nodo is None or not nodo.get("rect"):
+        return None
+    return Image.open(png).convert("RGBA"), tuple(nodo["rect"])
+
+
+def composite_lote(lote, salida):
+    """
+    El composite del informe del lote: cada expresion (ojos, boca y base de la neutra) sobre la cabeza (o el torso de Algoritm), una al lado de otra, con el rect del
+    rig del lote. Las expresiones que solo cambian los ojos o la boca llevan la otra capa de la neutra. Devuelve la ruta o None si no hay con que componer.
+    """
+    base = _base_del_composite(lote)
+    if base is None:
+        return None
+    imagen, rect_base = base
+    os.makedirs(salida, exist_ok=True)
+    cab = SimpleNamespace(imagen=imagen, rect=rect_base)
+    neutra = lote.emociones["neutra"].capas_salida
+    vacia = Image.new("RGBA", (1, 1), (0, 0, 0, 0))
+    paneles = []
+    for emo in lote.orden:
+        mias = lote.emociones[emo].capas_salida
+        capas = {"base": (neutra.get("base", vacia), lote.rect), "ojos": (mias.get("ojos", neutra["ojos"]), lote.rect), "boca": (mias.get("boca", neutra["boca"]), lote.rect)}
+        p = compone_cabeza(cab, capas).convert("RGBA")
+        _rotulo(p, "%s %s" % (lote.pid, emo))
+        paneles.append(p.convert("RGB"))
+    hoja = Image.new("RGB", (sum(p.width for p in paneles), paneles[0].height), FONDO[:3])
+    x = 0
+    for p in paneles:
+        hoja.paste(p, (x, 0))
+        x += p.width
+    ruta = os.path.join(salida, "%s_%s_lote.png" % (lote.pid, lote.vista))
+    hoja.save(ruta)
+    return ruta
+
+
+def actualiza_tabla_guia(rect, caja):
+    """
+    Las tres entradas «algoritm_<forma>» de arte_final.json con la cara FINAL compartida: Ojos y Boca llevan el mismo rect y el punto en su centro, los nombres
+    compartidos (char_algoritm_ojos_neutra y char_algoritm_boca_0, sin la forma), registro.cara pasa a ser la caja del lienzo de la entrega (lista de cuatro enteros,
+    como en la familia: antes era el diccionario de la cara provisional), «cara_provisional» a false y se anota «prefijo_cara»: char_algoritm. El rig de Algoritm no
+    tiene CaraBase.
+    """
+    personajes = A.cargar_arte_final()
+    centro = [(rect[0] + rect[2]) // 2, (rect[1] + rect[3]) // 2]
+    for f in FORMAS_GUIA:
+        e = personajes["algoritm_" + f]
+        for n in e["nodos"]:
+            if n["nombre"] in ("Ojos", "Boca"):
+                n["rect"], n["punto"] = list(rect), list(centro)
+                n["sprite"] = "char_algoritm_ojos_neutra" if n["nombre"] == "Ojos" else "char_algoritm_boca_0"
+        e["registro"]["cara"] = [int(v) for v in caja]
+        e["cara_provisional"] = False
+        e["prefijo_cara"] = "char_algoritm"
+    A.guardar_arte_final(personajes)
+
+
+def aplica_lote(lotes, args):
+    """Escribe las capas de cada lote, anota la tabla y corre articulaciones, coreografia y pose_preview una vez. Devuelve cuantos pasos fallaron."""
+    print("\n== Aplicando al repo ==")
+    for lote in lotes:
+        carpeta = carpeta_destino(lote.pid, lote.vista)
+        os.makedirs(carpeta, exist_ok=True)
+        for emo in lote.orden:
+            for _, sprite, im in capas_lote(lote, emo):
+                ruta = os.path.join(carpeta, sprite + ".png")
+                existia = os.path.isfile(ruta)
+                if existia and F._mismos_pixeles(ruta, im):
+                    print("  igual     %s" % os.path.relpath(ruta, P.RAIZ))
+                    continue
+                im.save(ruta)
+                print("  %s %s  %dx%d" % ("sustituye" if existia else "nuevo    ", os.path.relpath(ruta, P.RAIZ), im.width, im.height))
+        if lote.pid == GUIA:
+            actualiza_tabla_guia(lote.rect, lote.caja)
+            print("  arte_final.json: Ojos y Boca de las tres formas con el rect %s, registro.cara %s, cara_provisional false, prefijo_cara char_algoritm" % (lote.rect, lote.caja))
+        else:
+            actualiza_tabla(lote.pid, lote.rect, cara=lote.caja, vista=lote.vista)
+            print("  arte_final.json: rect %s en CaraBase, Ojos y Boca de %s%s y %s %s" % (lote.rect, lote.pid, " (perfil)" if lote.vista == "perfil" else "",
+                                                                                          "registro.cara_perfil" if lote.vista == "perfil" else "registro.cara", lote.caja))
+    py = sys.executable
+    fallos = 0
+    fallos += 1 if corre([py, os.path.join(AQUI, "articulaciones.py")], "articulaciones") else 0
+    fallos += 1 if corre([py, os.path.join(AQUI, "coreografia.py"), "--valida"], "coreografia") else 0
+    ids = ["algoritm_" + f for f in FORMAS_GUIA] if any(l.pid == GUIA for l in lotes) else sorted({l.pid for l in lotes})
+    fallos += 1 if corre([py, os.path.join(AQUI, "pose_preview.py"), "--solo"] + ids + ["--salida", args.salida, "--sin-hojas"], "pose_preview") else 0
+    print("\n%s" % ("TODO EN VERDE" if not fallos else "%d pasos fallaron: revisa antes de entregar" % fallos))
+    print(bloque_local_lote(lotes))
+    return fallos
+
+
+def bloque_local_lote(lotes):
+    ids = sorted({l.pid for l in lotes})
+    return """
+==================== Sesion local (Santiago), con el Editor abierto ====================
+ 0. git pull   (trae las caras ≤ 256 px, arte_final.json y rig_articulaciones.json)
+ 1. Copiar el generador y recompilar:
+      Copy-Item claudeDocs/tasks/Personajes/herramientas/BuildRigsFinal.cs.txt Assets/Editor/ClaudeBuildRigsFinal.cs
+      pwsh -NoProfile -File claudeDocs/tasks/OE4/herramientas/editor.ps1 recompile
+ 2. Por coplay execute_script, EN ESTE ORDEN:
+      ClaudeBuildRigsFinal.Execute("estado")     // antes
+      ClaudeBuildRigsFinal.Execute("sprites")    // las caras nuevas: sprites, rect comun y los _cara.asset (%(ids)s)
+      ClaudeBuildRigsFinal.Execute("retrato")    // PortraitBase y PortraitFace (si ya corrio preparar_retrato.py --aplicar)
+      ClaudeBuildRigsFinal.Execute("estado")     // despues
+ 3. git diff -U0 Assets/Game/Prefabs/Characters   (no debe QUITAR lineas «--- !u!»)
+========================================================================================
+""" % {"ids": ", ".join(ids)}
+
+
+def main_lote(a):
+    """--entrega: el lote de una carpeta de expresiones. Devuelve el codigo de salida."""
+    if not os.path.isdir(a.entrega):
+        print("ERROR no existe la carpeta %s" % a.entrega)
+        return 2
+    pid = a.id or pid_de_ruta(a.entrega)
+    if pid is None or (pid != GUIA and pid not in P.FAMILIA):
+        print("ERROR no se de quien es la carpeta %s: pasa el id (papa, mama, nina, nino o algoritm)" % a.entrega)
+        return 2
+    por, errores = lee_lote(a.entrega)
+    for e in errores:
+        print("ERROR", e)
+    if errores:
+        return 2
+    vistas = [a.vista] if a.vista_dada else (["frente"] if pid == GUIA else ["frente", "perfil"])
+    if pid == GUIA and "perfil" in vistas:
+        print("ERROR Algoritm no tiene perfil")
+        return 2
+    if pid == GUIA and any(v == "perfil" for v, _ in por):
+        print("ERROR la carpeta de Algoritm trae una expresion de perfil: Algoritm no tiene perfil")
+        return 2
+    print("== %s: %d expresiones en %s" % (pid, len(por), a.entrega))
+    lotes = []
+    for vista in vistas:
+        try:
+            lote = prepara_lote(pid, vista, por, a)
+        except ValueError as e:
+            print("ERROR %s / %s: %s" % (pid, vista, e))
+            return 2
+        informe_lote(lote)
+        ruta = composite_lote(lote, a.salida)
+        print("  composite: %s" % ruta if ruta else "  (sin composite: aun no esta la cabeza o el torso en el repo)")
+        lotes.append(lote)
+    if not a.aplicar:
+        print("\n(sin --aplicar: no se escribio nada)")
+        return 0
+    return 1 if aplica_lote(lotes, a) else 0
+
+
 # ============================================================================ 6. la autoprueba
 
 
@@ -1323,6 +1797,7 @@ def autoprueba():
     malos += autoprueba_registrada()
     malos += autoprueba_perfil()
     malos += autoprueba_perfil_cara()
+    malos += autoprueba_lote()
     print("la herramienta recupera lo conocido" if not malos else "%d casos mal" % malos)
     return 1 if malos else 0
 
@@ -1525,6 +2000,178 @@ def autoprueba_perfil():
     return malos
 
 
+def autoprueba_lote():
+    """
+    EL LOTE (INC-148, INC-149): (1) los alias y la clasificacion por fichas con los nombres REALES de la entrega del 10/10 (la errata «nuetro», el espacio perdido de «boca_ abierta», «exoresion»,
+    la enie); (2) la carpeta dice el personaje y un archivo que no se reconoce o que repite una expresion es un error; (3) la caja UNION con alfa >= 12 (un halo suelto de alfa 8 no la
+    ensancha) mas 3 px, recortada a la cabeza sin cortar lo pintado; (4) con una entrega sintetica en el lienzo de las partes: UNA caja y UNA escala para todas las capas, ninguna de mas de
+    --max-lado, el rect del rig es la caja mapeada, la neutra escribe ojos, boca y base, la cerrada solo ojos y la boca de hablar solo boca, y las capas reproducen cada imagen; (5) el guia
+    («algoritm»): una cara para las tres formas con la nariz y el rubor en los ojos, sin CaraBase, con nombres sin forma, y el lote se niega si las tres formas no comparten registro, y
+    actualiza_tabla_guia deja los nodos, la caja y las marcas (cara_provisional false y prefijo_cara) sobre una COPIA de arte_final.json.
+    """
+    import shutil
+    malos = 0
+
+    def caso(nombre, ok, detalle=""):
+        nonlocal malos
+        malos += 0 if ok else 1
+        print("%-46s %s" % (nombre, "bien" if ok else "FALLA " + detalle))
+
+    # --- (1) alias y fichas
+    caso("lote: alias neutro, concentrado, preocupado, neutro_boca_abierta y neutro_ojos_cerrados",
+         ALIAS_EMOCION["neutro"] == "neutra" and ALIAS_EMOCION["concentrado"] == "concentracion" and ALIAS_EMOCION["preocupado"] == "preocupacion"
+         and ALIAS_EMOCION["neutro_boca_abierta"] == "boca_a" and ALIAS_EMOCION["neutro_ojos_cerrados"] == "parpadeo_cerrado" and all(v in EMOCIONES for v in ALIAS_EMOCION.values()))
+    reales = {"expresion_papa_neutro.png": ("frente", "neutra"), "papa_concentrado.png": ("frente", "concentracion"), "papa_preocupado.png": ("frente", "preocupacion"),
+              "papa_sorpresa.png": ("frente", "sorpresa"), "papa_neutro_boca_ abierta.png": ("frente", "boca_a"), "papa_neutro_ojos_cerrados.png": ("frente", "parpadeo_cerrado"),
+              "algoritm_nuetro_boca_abierta.png": ("frente", "boca_a"), "algoritm_neutro_ojos_cerrados.png": ("frente", "parpadeo_cerrado"), "expresion_neutra_algoritm.png": ("frente", "neutra"),
+              "niña_neutro_boca_abierta.png": ("frente", "boca_a"), "expresion_niño_neutro.png": ("frente", "neutra"),
+              "exoresion_neutra_perfil_papa.png": ("perfil", "neutra"), "expresion_neutra_ojos_cerrados_perfil_papa.png": ("perfil", "parpadeo_cerrado"),
+              "expresion_perfil _neutra_ojos_cerrados_niña.png": ("perfil", "parpadeo_cerrado"), "expresion_perfil_neutro_niño.png": ("perfil", "neutra"), "expresion_ojos_cerrados_perfil_niño.png": ("perfil", "parpadeo_cerrado")}
+    malas = {k: clasifica_expresion(k) for k, v in reales.items() if clasifica_expresion(k) != v}
+    caso("lote: clasifica los 16 nombres reales (errata «nuetro», «boca_ abierta», «exoresion», «ñ», perfil)", not malas, str(malas))
+    caso("lote: un nombre que no es una expresion no se reconoce", clasifica_expresion("foto_de_la_familia.png") is None and clasifica_expresion("dialogo_papa.png") is None)
+    caso("lote: pid_de_ruta (Papá, Mamá, Niña, Niño, Algoritm) por la carpeta",
+         [pid_de_ruta(r) for r in ("x/Papá/Expresiones", "x/Mamá/Expresiones", "x/Niña/Expresiones", "x/Niño/Expresiones", "x/Algoritm/Expresiones", "x/Otra/Expresiones")] == ["papa", "mama", "nina", "nino", GUIA, None])
+    with tempfile.TemporaryDirectory() as tmp:
+        for n in ("expresion_papa_neutro.png", "papa_neutro_ojos_cerrados.png", "papa_sorpresa.png", "sorpresa_papa_otra.png", "foto.png"):
+            Image.new("RGBA", (2, 2)).save(os.path.join(tmp, n))
+        por, errores = lee_lote(tmp)
+        caso("lote: dos archivos que son la misma expresion y uno que no se reconoce son errores, y los demas se clasifican",
+             len(errores) == 2 and any("misma expresion" in e for e in errores) and any("foto.png" in e for e in errores) and set(por) == {("frente", "neutra"), ("frente", "parpadeo_cerrado"), ("frente", "sorpresa")})
+    # --- (3) la caja union
+    halo = Image.new("RGBA", (200, 200), (0, 0, 0, 0))
+    halo.putpixel((190, 190), (0, 0, 0, 8))          # un halo suelto (alfa < 12): no cuenta
+    halo.putpixel((60, 70), (0, 0, 0, 255))
+    caso("lote: caja_alfa ignora un halo de alfa 8 (la Nina, x ~ 73) y cuenta lo de alfa >= 12", caja_alfa(halo) == (60, 70, 61, 71) and caja_alfa(Image.new("RGBA", (5, 5))) is None)
+    caja, contenido, avisos = caja_union([(10, 20, 100, 80), (5, 30, 120, 70)], (1300, 1500), [3, 0, 500, 500])
+    caso("lote: caja_union = la union (5, 20, 120, 80) mas 3 px, sin pasar de la cabeza", contenido == (5, 20, 120, 80) and caja == [3, 17, 123, 83] and avisos == [], "%s %s" % (caja, avisos))
+    caja, contenido, avisos = caja_union([(1, 20, 100, 80)], (1300, 1500), [3, 0, 500, 500])
+    caso("lote: si lo pintado se sale de la cabeza la caja lo conserva (no corta arte) y avisa", caja[0] == 1 and caja[2] == 103 and len(avisos) == 1, "%s %s" % (caja, avisos))
+    # --- (4) una entrega sintetica en el lienzo de las partes
+    with tempfile.TemporaryDirectory() as tmp:
+        F.entrega_sintetica(tmp)
+        res_f = F.procesa(tmp, "nino")
+        if res_f.errores:
+            print("%-46s %s" % ("lote: la entrega sintetica no se procesa", "FALLA"))
+            return malos + 1
+        reg = dict(res_f.registro)
+        reg.pop("cara", None)
+        cab = reg["cabeza"]
+        base_cara, _ = cara_sintetica(3)
+        base_cara = base_cara.resize((base_cara.width // 2, base_cara.height // 2), Image.LANCZOS)   # 384 x 384
+        pos = ((cab[0] + cab[2]) // 2 - base_cara.width // 2, cab[1] + int(0.62 * (cab[3] - cab[1])) - base_cara.height // 2)
+
+        def variante(cerrados=False, boca_grande=False):
+            im = base_cara.copy()
+            if cerrados:   # los dos ojos pasan a una raya
+                d = ImageDraw.Draw(im)
+                for cx in (105, 282):
+                    im.paste(Image.new("RGBA", (130, 90), (0, 0, 0, 0)), (cx - 65, 110))
+                    d.line([cx - 40, 150, cx + 40, 150], fill=(0, 0, 0, 255), width=5)
+            if boca_grande:
+                ImageDraw.Draw(im).ellipse([115, 275, 255, 340], fill=(180, 30, 50, 255), outline=(0, 0, 0, 255), width=3)
+            lienzo = Image.new("RGBA", tuple(reg["lienzo"]), (0, 0, 0, 0))
+            lienzo.alpha_composite(im, pos)
+            return lienzo
+
+        carpeta = os.path.join(tmp, "Nino", "Expresiones")
+        os.makedirs(carpeta)
+        variante().save(os.path.join(carpeta, "expresion_nino_neutro.png"))
+        variante(cerrados=True).save(os.path.join(carpeta, "nino_neutro_ojos_cerrados.png"))
+        variante(boca_grande=True).save(os.path.join(carpeta, "nino_neutro_boca_abierta.png"))
+        previo = (registro_de, registro_perfil, registro_guia)
+        globals()["registro_de"] = lambda pid, carpeta_frente=None: (dict(reg), "sintetico", [])
+        try:
+            por, errores = lee_lote(carpeta)
+            caso("lote: la carpeta sintetica se clasifica (neutra, cerrados, boca abierta) sin errores", not errores and len(por) == 3, str(errores))
+            args = SimpleNamespace(densidad=DENSIDAD, max_lado=MAX_LADO, limpia_cerrados=True, asigna=None, reubica=False)
+            lote = prepara_lote("nino", "frente", por, args)
+            tam = {emo: {c: im.size for c, im in lote.emociones[emo].capas_salida.items()} for emo in lote.orden}
+            todos = {sz for d_ in tam.values() for sz in d_.values()}
+            caso("lote: UNA escala y UNA caja para todas las capas (todas del mismo tamano) y ninguna de mas de %d px" % MAX_LADO, len(todos) == 1 and max(next(iter(todos))) <= MAX_LADO, str(todos))
+            union_a = tuple(min(v) if i < 2 else max(v) for i, v in enumerate(zip(*[caja_alfa(Image.open(r)) for r in por.values()])))
+            caso("lote: la caja es la union de lo pintado de las tres mas %d px" % MARGEN_UNION,
+                 tuple(lote.contenido) == union_a and lote.caja == [union_a[0] - MARGEN_UNION, union_a[1] - MARGEN_UNION, union_a[2] + MARGEN_UNION, union_a[3] + MARGEN_UNION], "%s %s" % (lote.caja, union_a))
+            caso("lote: el rect del rig es la caja mapeada con la transformacion de las partes", lote.rect == F.caja_a_lienzo(reg, lote.caja))
+            nombres = {emo: [sp for _, sp, _ in capas_lote(lote, emo)] for emo in lote.orden}
+            caso("lote: la neutra escribe ojos_neutra, boca_0 y cara_base; la cerrada solo los ojos; la boca de hablar solo la boca",
+                 nombres["neutra"] == ["char_nino_ojos_neutra", "char_nino_boca_0", "char_nino_cara_base"] and nombres["parpadeo_cerrado"] == ["char_nino_ojos_parpadeo_cerrado"]
+                 and nombres["boca_a"] == ["char_nino_boca_a"])
+            caso("lote: el orden de escritura es neutra, luego la cerrada y al final la boca de hablar", lote.orden == ["neutra", "parpadeo_cerrado", "boca_a"], str(lote.orden))
+            caso("lote: cada imagen se reproduce con sus capas mas la base de la neutra (residuo < %.1f %% del area)" % (100 * RESIDUO_MAX),
+                 all(lote.emociones[e].residuo < RESIDUO_MAX * lote.entrada[0] * lote.entrada[1] for e in lote.orden), str({e: lote.emociones[e].residuo for e in lote.orden}))
+            ab = lote.emociones["boca_a"].capas_plenas
+            caso("lote: la boca grande (guiada por la neutra) es de la capa de BOCA y no de los ojos ni de la base", ab["boca"].getchannel("A").getbbox() is not None
+                 and ab["boca"].getchannel("A").getbbox()[3] > lote.emociones["neutra"].capas_plenas["boca"].getchannel("A").getbbox()[3] and ab["ojos"].getchannel("A").crop((0, int(0.8 * ab["ojos"].height), ab["ojos"].width, ab["ojos"].height)).getbbox() is None)
+            args.max_lado = 100
+            lote100 = prepara_lote("nino", "frente", por, args)
+            caso("lote: con --max-lado 100 todas las capas bajan a <= 100 px con la misma escala", max(lote100.salida) <= 100 and lote100.k < lote.k and lote100.rect == lote.rect, "%s %s" % (lote100.salida, lote.salida))
+            # --- (5) el guia: una cara para las tres formas
+            reg_guia = dict(reg)
+            reg_guia.pop("cabeza", None)
+            falso = {}
+            for forma in FORMAS_GUIA:
+                falso["algoritm_" + forma] = {"nodos": [{"nombre": "Ojos", "tipo": "imagen", "padre": "Lienzo/Cuerpo/Tronco", "punto": [1, 1], "imagen": "Ojos", "sprite": "char_algoritm_%s_ojos_neutra" % forma, "rect": [0, 0, 2, 2]},
+                                                         {"nombre": "Boca", "tipo": "imagen", "padre": "Lienzo/Cuerpo/Tronco", "punto": [1, 1], "imagen": "Boca", "sprite": "char_algoritm_%s_boca_0" % forma, "rect": [0, 0, 2, 2]}],
+                                              "partes": [], "holguras": {}, "registro": {k: reg_guia[k] for k in ("lienzo", "escala", "tx", "ty")}, "cara_provisional": True}
+            original = (A.cargar_arte_final, A.guardar_arte_final)
+            ruta_tabla = os.path.join(tmp, "arte_final_copia.json")
+            shutil.copy(A.ARTE_FINAL_JSON, ruta_tabla)
+            with open(ruta_tabla, encoding="utf-8") as f:
+                doc = json.load(f)
+            doc["personajes"].update(falso)
+            with open(ruta_tabla, "w", encoding="utf-8") as f:
+                json.dump(doc, f)
+            with open(A.ARTE_FINAL_JSON, "rb") as f:
+                bytes_antes = f.read()
+            A.cargar_arte_final = lambda ruta=ruta_tabla: original[0](ruta)
+            A.guardar_arte_final = lambda personajes, ruta=ruta_tabla: original[1](personajes, ruta)
+            try:
+                r, _, errs = registro_guia()
+                caso("lote: registro_guia: las tres formas comparten registro", r is not None and not errs and r["escala"] == reg["escala"], str(errs))
+                doc["personajes"]["algoritm_rueda"]["registro"]["escala"] = round(reg["escala"] * 1.01, 6)
+                with open(ruta_tabla, "w", encoding="utf-8") as f:
+                    json.dump(doc, f)
+                r, _, errs = registro_guia()
+                caso("lote: si las tres formas no comparten registro el lote se NIEGA", r is None and any("no comparten registro" in e for e in errs), str(errs))
+                doc["personajes"]["algoritm_rueda"]["registro"]["escala"] = reg["escala"]
+                with open(ruta_tabla, "w", encoding="utf-8") as f:
+                    json.dump(doc, f)
+                carpeta_g = os.path.join(tmp, "Algoritm", "Expresiones")
+                os.makedirs(carpeta_g)
+                variante().save(os.path.join(carpeta_g, "expresion_neutra_algoritm.png"))
+                variante(cerrados=True).save(os.path.join(carpeta_g, "algoritm_neutro_ojos_cerrados.png"))
+                variante(boca_grande=True).save(os.path.join(carpeta_g, "algoritm_nuetro_boca_abierta.png"))
+                por_g, _ = lee_lote(carpeta_g)
+                args.max_lado = MAX_LADO
+                lg = prepara_lote(GUIA, "frente", por_g, args)
+                nombres_g = {emo: [sp for _, sp, _ in capas_lote(lg, emo)] for emo in lg.orden}
+                caso("lote: el guia escribe nombres SIN forma y sin cara_base (char_algoritm_ojos_neutra, char_algoritm_boca_0…)",
+                     nombres_g["neutra"] == ["char_algoritm_ojos_neutra", "char_algoritm_boca_0"] and nombres_g["parpadeo_cerrado"] == ["char_algoritm_ojos_parpadeo_cerrado"]
+                     and nombres_g["boca_a"] == ["char_algoritm_boca_a"], str(nombres_g))
+                plenas = lg.emociones["neutra"].capas_plenas
+                # el rubor de la cara sintetica (un ovalo rosa centrado en x = 63, y = 243 de la imagen de 384) y su nariz (un arco entre x 177 y 210, y 207 y 228)
+                en = lambda capa, x, y: plenas[capa].getpixel((pos[0] + x - lg.caja[0], pos[1] + y - lg.caja[1]))[3]
+                nariz_caja = (pos[0] + 177 - lg.caja[0], pos[1] + 205 - lg.caja[1], pos[0] + 211 - lg.caja[0], pos[1] + 230 - lg.caja[1])
+                hay_nariz = plenas["ojos"].getchannel("A").crop(nariz_caja).point(lambda v: 255 if v > 100 else 0).getbbox() is not None
+                caso("lote: en el guia el rubor y la nariz van en la capa de OJOS y no hay capa de base (Algoritm no tiene CaraBase)",
+                     plenas["base"] is None and "base" not in lg.emociones["neutra"].capas_salida and en("ojos", 63, 243) > 40 and hay_nariz and en("boca", 63, 243) == 0,
+                     "%s %s" % (en("ojos", 63, 243), hay_nariz))
+                actualiza_tabla_guia([10, 20, 110, 90], [1, 2, 3, 4])
+                t = A.cargar_arte_final()
+                ok = all(t["algoritm_" + f]["cara_provisional"] is False and t["algoritm_" + f]["prefijo_cara"] == "char_algoritm" and t["algoritm_" + f]["registro"]["cara"] == [1, 2, 3, 4] and
+                         {n["nombre"]: (n["sprite"], n["rect"], n["punto"]) for n in t["algoritm_" + f]["nodos"]} == {"Ojos": ("char_algoritm_ojos_neutra", [10, 20, 110, 90], [60, 55]),
+                                                                                                                      "Boca": ("char_algoritm_boca_0", [10, 20, 110, 90], [60, 55])} for f in FORMAS_GUIA)
+                caso("lote: actualiza_tabla_guia: mismo rect y nombres compartidos en las tres, caja, cara_provisional false y prefijo_cara", ok)
+            finally:
+                A.cargar_arte_final, A.guardar_arte_final = original
+            with open(A.ARTE_FINAL_JSON, "rb") as f:
+                caso("lote: arte_final.json de verdad sin tocar", f.read() == bytes_antes)
+        finally:
+            globals()["registro_de"], globals()["registro_perfil"], globals()["registro_guia"] = previo
+    return malos
+
+
 def cara_perfil_sintetica(k=1, con_rubor=True):
     """
     Una cara de PERFIL sintetica (como las de la entrega del 09/10/2026) en un lienzo de 256k, MIRANDO A LA DERECHA: una ceja, un ojo (blanco, iris) o su
@@ -1680,7 +2327,7 @@ def parsea_asigna(textos):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description="De una imagen de cara completa a las capas CaraBase, Ojos y Boca del rig")
-    ap.add_argument("id", nargs="?", help="personaje: nino, papa, mama o nina")
+    ap.add_argument("id", nargs="?", help="personaje: nino, papa, mama o nina (con --entrega, tambien algoritm: una cara para sus tres formas; si falta, sale de la ruta)")
     ap.add_argument("emocion", nargs="?", help="|".join(EMOCIONES) + " (alias: abiertos = neutra, cerrados = parpadeo_cerrado)")
     ap.add_argument("imagen", nargs="?", help="PNG de la cara completa, fondo transparente")
     ap.add_argument("--registrada", nargs="?", const=True, default=False, metavar="CARPETA_FRENTE",
@@ -1695,17 +2342,24 @@ def main(argv=None):
     ap.add_argument("--base", action="store_true", help="reescribe tambien char_<x>_cara_base")
     ap.add_argument("--reubica", action="store_true", help="recalcula el rect comun (heuristica) o la caja comun de la cara (registrada) aunque ya este puesta")
     ap.add_argument("--asigna", action="append", metavar="CAPA:X0,Y0,X1,Y1", help="corrige a mano: lo que cae en esa caja (px de la imagen) pasa a esa capa")
-    ap.add_argument("--vista", choices=VISTAS, default="frente",
+    ap.add_argument("--vista", choices=VISTAS, default=None,
                     help="frente (por defecto) o perfil (INC-134): la cara del cuerpo de perfil, que se escribe en Perfil/ como char_<id>_perfil_* y se coloca por registro; "
-                         "la caja de su cara se guarda aparte, en registro.cara_perfil de arte_final.json")
+                         "la caja de su cara se guarda aparte, en registro.cara_perfil de arte_final.json. Con --entrega, sin --vista se procesan las dos")
+    ap.add_argument("--entrega", metavar="CARPETA",
+                    help="(INC-148) el LOTE: todas las expresiones de la carpeta de un personaje (p. ej. entregas/2026-10-10/Papa/Expresiones; para el guia, Algoritm/Expresiones), "
+                         "con UNA caja union y UNA escala; sin --aplicar solo informa")
     ap.add_argument("--limpia-cerrados", action=argparse.BooleanOptionalAction, default=True,
                     help="(vista perfil, emocion parpadeo_cerrado) quitar el rastro casi blanco del ojo abierto y su halo; por defecto si (Santiago, 09/10/2026)")
-    ap.add_argument("--max-lado", type=int, default=512)
+    ap.add_argument("--max-lado", type=int, default=MAX_LADO, help="lado mayor maximo de cada capa (256, INC-149)")
     ap.add_argument("--salida", default=os.path.join(tempfile.gettempdir(), "algoritmia_expresion"))
     ap.add_argument("--autoprueba", action="store_true")
     a = ap.parse_args(argv)
+    a.vista_dada = a.vista is not None
+    a.vista = a.vista or "frente"
     if a.autoprueba:
         return autoprueba()
+    if a.entrega:
+        return main_lote(a)
     if not (a.id and a.emocion and a.imagen):
         ap.error("hace falta <id> <emocion> <imagen> (o --autoprueba)")
     emocion = ALIAS_EMOCION.get(a.emocion, a.emocion)   # abiertos = neutra, cerrados = parpadeo_cerrado; a, e y u = las bocas del habla

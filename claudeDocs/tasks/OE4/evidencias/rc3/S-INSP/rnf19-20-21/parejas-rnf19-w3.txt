@@ -1,0 +1,13 @@
+# arte_check.py rnf19 --file parejas-rnf19-w3.txt   (revisión W3, 01/10/2026)
+# Re-apunta las cajas de B8 y C8 de parejas-rnf19.txt, que se trazaron el 30/09 sobre la línea base de W0:
+# - B8: el laberinto sortea los obstáculos en cada partida (Maze_01_reposo y Personajes_Mecanica_Level2_Maze traen
+#   tableros distintos), así que la caja «seto interior» de W0 cae hoy sobre una franja de camino y otra de seto.
+#   Aquí se apunta a una casilla de seto y a una de camino del Maze_01_reposo vigente.
+# - C8: W2 corrió la balsa del ensamblaje de x 0,5 a 0,58 y cambió el plano (lectura B, INC-118); las casillas 1 y 5
+#   de W0 caen hoy sobre la orilla y la familia. Aquí se apunta a la casilla 1 (arriba a la izquierda, la que lleva la
+#   alerta) y a la 5 (abajo a la derecha) de las capturas vigentes.
+B8 seto interior/camino ; Maze_01_reposo.png@0.2161,0.3519,0.2474,0.4148 ; Maze_01_reposo.png@0.2500,0.2315,0.2813,0.2870
+B8 seto del borde/camino ; Maze_01_reposo.png@0.1562,0.1852,0.5208,0.2176 ; Maze_01_reposo.png@0.2500,0.2315,0.2813,0.2870
+C8 vacío/correcto (casilla 5) ; AssemblyPanel_HU12_Base.png@0.6200,0.6480,0.7470,0.8330 ; RiverLevel_RNF19_ColocacionIncorrecta.png@0.6200,0.6480,0.7470,0.8330
+C8 vacío/incorrecto (casilla 1) ; AssemblyPanel_HU12_Base.png@0.5080,0.5350,0.6350,0.7200 ; RiverLevel_RNF19_ColocacionIncorrecta.png@0.5080,0.5350,0.6350,0.7200
+C8 incorrecto/correcto ; RiverLevel_RNF19_ColocacionIncorrecta.png@0.5080,0.5350,0.6350,0.7200 ; RiverLevel_RNF19_ColocacionIncorrecta.png@0.6200,0.6480,0.7470,0.8330

@@ -1,0 +1,88 @@
+## CP-02: GameOver / Defeat / Lose / Fail state en enums y tipos
+Assets/Game/Scripts/Runtime/Scaffolding/ActorBeat.cs:47:        [field: Tooltip("La expresión que pone desde esta línea hasta que otro paso la cambie. Solo cuenta si «Sets Emotion» está marcado. No hay expresión de derrota ni de tristeza (CP-02).")]
+Assets/Game/Scripts/Runtime/Scaffolding/DialogueLine.cs:44:        [field: Tooltip("La expresión del retrato de la voz fuera de escena en esta línea. Solo cuenta si «Sets Voice Emotion» está marcado. No hay expresión de derrota ni de tristeza (CP-02).")]
+
+## En comentarios (referencia: guardas pedagogicas)
+Assets/Game/Scripts/Runtime/Audio/AudioManager.cs:26:    /// punitivo (§2.1, CP-02). Quien añada aquí un «PlayError» reintroduce el pitido de derrota
+Assets/Game/Scripts/Runtime/Core/GameState.cs:9:    /// No hay <c>GameOver</c> ni equivalente, y no es un olvido: CP-02 prohíbe la pantalla de
+Assets/Game/Scripts/Runtime/Core/GameState.cs:10:    /// derrota, el límite de intentos y la penalización. La razón es pedagógica, no técnica —
+Assets/Game/Scripts/Runtime/Core/GameState.cs:11:    /// el error es material de trabajo, no un final. Añadir aquí un estado de derrota rompe el
+Assets/Game/Scripts/Runtime/Levels/Fire/FireAttempt.cs:62:            // hay tope de intentos ni contador de derrota (RF-18): _consecutiveFailures solo crece
+Assets/Game/Scripts/Runtime/Levels/Fire/FireAttempt.cs:64:            // derrota que el proyecto prohíbe.
+Assets/Game/Scripts/Runtime/Levels/Fire/FirePanelController.cs:573:            // encimadas, y nada más—, nunca a pitido de error ni a acorde de derrota (Dirección de
+Assets/Game/Scripts/Runtime/Levels/Fire/FirePanelController.cs:610:            // pantalla de derrota en pequeño (Dirección de arte §7.3, CP-02).
+
+## enum GameState / GameStateId
+Assets/Game/Scripts/Runtime/Core/GameState.cs:14:    public enum GameState
+Assets/Game/Scripts/Runtime/Core/GameState.cs-15-    {
+Assets/Game/Scripts/Runtime/Core/GameState.cs-16-        Boot,
+Assets/Game/Scripts/Runtime/Core/GameState.cs-17-        MainMenu,
+Assets/Game/Scripts/Runtime/Core/GameState.cs-18-        ProfileSelect,
+Assets/Game/Scripts/Runtime/Core/GameState.cs-19-        LevelSelect,
+Assets/Game/Scripts/Runtime/Core/GameState.cs-20-        Narrative,
+Assets/Game/Scripts/Runtime/Core/GameState.cs-21-        Playing,
+Assets/Game/Scripts/Runtime/Core/GameState.cs-22-        LevelSummary,
+Assets/Game/Scripts/Runtime/Core/GameState.cs-23-        Credits,
+Assets/Game/Scripts/Runtime/Core/GameState.cs-24-
+Assets/Game/Scripts/Runtime/Core/GameState.cs-25-        /// <summary>RF-46: el informe docente.</summary>
+Assets/Game/Scripts/Runtime/Core/GameState.cs-26-        TeacherReport
+
+## CP-03: score/puntaje en runtime (codigo)
+Assets/Game/Scripts/Runtime/Levels/River/AssemblyPanelController.cs:596:                _indicators.PauseOpened(); // La escena 3.2 no suma tiempo de resolución (§3.6.1 nota 1).
+Assets/Game/Scripts/Runtime/Scaffolding/GuideTrail.cs:29:        [field: Tooltip("Distancia mínima, en unidades del lienzo, entre dos puntos de la estela.")]
+Assets/Game/Scripts/Runtime/Scaffolding/GuideTrail.cs:71:            Render(_path.Points, space);
+Assets/Game/Scripts/Runtime/Scaffolding/GuideTrail.cs:74:        private void Render(IReadOnlyList<TrailPoint> points, RectTransform space)
+Assets/Game/Scripts/Runtime/Scaffolding/GuideTrail.cs:76:            for (var i = 0; i < points.Count; i++)
+Assets/Game/Scripts/Runtime/Scaffolding/GuideTrail.cs:81:                dot.rectTransform.position = space.TransformPoint(points[i].Position);
+Assets/Game/Scripts/Runtime/Scaffolding/GuideTrail.cs:82:                dot.rectTransform.localScale = Vector3.one * points[i].Scale;
+Assets/Game/Scripts/Runtime/Scaffolding/GuideTrail.cs:83:                dot.color = new Color(DotColor.r, DotColor.g, DotColor.b, points[i].Alpha);
+Assets/Game/Scripts/Runtime/Scaffolding/GuideTrail.cs:87:            for (var i = points.Count; i < _dots.Count; i++)
+Assets/Game/Scripts/Runtime/Scaffolding/RollingLog.cs:265:            var points = 2 * (half + 1);
+Assets/Game/Scripts/Runtime/Scaffolding/RollingLog.cs:266:            for (var i = 0; i < points; i++)
+Assets/Game/Scripts/Runtime/Scaffolding/RollingLog.cs:278:            for (var i = 0; i < points; i++)
+Assets/Game/Scripts/Runtime/Scaffolding/RollingLog.cs:281:                var next = center + 1 + 2 * ((i + 1) % points);
+Assets/Game/Scripts/Runtime/Scaffolding/TrailPath.cs:85:        public IReadOnlyList<TrailPoint> Points
+Assets/Game/Scripts/Runtime/Scaffolding/TrailPath.cs:95:                var points = new TrailPoint[count];
+Assets/Game/Scripts/Runtime/Scaffolding/TrailPath.cs:99:                    points[i] = new TrailPoint(_samples[i], t, t);
+Assets/Game/Scripts/Runtime/Scaffolding/TrailPath.cs:102:                return points;
+Assets/Game/Scripts/Runtime/UI/LevelSummaryController.cs:28:        [Tooltip("Título de la tablilla: la línea de apertura del resumen, sin los dos puntos.")]
+
+## campos del PlayerProfile / JSON persistido
+AssemblyInfo.cs
+AssemblyInfo.cs.meta
+DiskFileSystem.cs
+DiskFileSystem.cs.meta
+Game.Core.asmdef
+Game.Core.asmdef.meta
+GameFlow.cs
+GameFlow.cs.meta
+GameFlowRunner.cs
+GameFlowRunner.cs.meta
+GameState.cs
+GameState.cs.meta
+IFileSystem.cs
+IFileSystem.cs.meta
+ILevelReporter.cs
+ILevelReporter.cs.meta
+IProfileSaver.cs
+IProfileSaver.cs.meta
+LevelId.cs
+LevelId.cs.meta
+LevelUnlockPolicy.cs
+LevelUnlockPolicy.cs.meta
+PauseMenuPolicy.cs
+PauseMenuPolicy.cs.meta
+PerformanceIndicators.cs
+PerformanceIndicators.cs.meta
+PhaseId.cs
+PhaseId.cs.meta
+PlayerProfile.cs
+PlayerProfile.cs.meta
+ProfileCreationResult.cs
+ProfileCreationResult.cs.meta
+ProfileSession.cs
+ProfileSession.cs.meta
+SaveStore.cs
+SaveStore.cs.meta
+SceneLoader.cs
+SceneLoader.cs.meta

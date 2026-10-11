@@ -597,6 +597,269 @@ namespace Game.Scaffolding.Tests
             }
         }
 
+        // --- INC-148 / INC-150: las expresiones del guion y el rumbo de quien trabaja junto al fuego -----------
+
+        /// <summary>
+        /// Los pasos que repiten la acción que ya se mantenía, sin moverse, y que NO son un paso que solo fija la
+        /// expresión: el guion los escribió para cortar algo. Papá deja de empujar la caja en la línea 2 de la 2.1 —el
+        /// paso Idle interrumpe el empuje en curso— y ese corte es el gesto del guion, no un añadido de la cara.
+        /// </summary>
+        private static readonly (string Secuencia, string Personaje, int Linea)[] PasosPropiosDelGuion =
+        {
+            ("N2_Escena21_Bosque", "Papa", 2),
+        };
+
+        /// <summary>Los objetos de la secuencia que son personajes (llevan un rig).</summary>
+        private static IEnumerable<NarrativeProp> Personajes(NarrativeSequence sequence) =>
+            sequence.Props.Where(prop => prop != null && prop.Actor != null);
+
+        /// <summary>Si quien dice la línea está pintado en la escena: entonces su retrato lleva la expresión de sus pasos, no la de la línea.</summary>
+        private static bool EstaEnEscena(NarrativeSequence sequence, string hablante) =>
+            Personajes(sequence).Any(prop => prop.Actor.Speaks(hablante));
+
+        /// <summary>
+        /// Cada línea que dice un personaje en escena lleva su expresión del guion (INC-148): el paso del personaje
+        /// la fija en esa línea o antes. La tarjeta del diálogo y el personaje muestran esa cara; sin ella, la tarjeta
+        /// caería a la expresión de la acción (<see cref="ActionEmotion"/>) y la línea se vería sin la intención que
+        /// el guion le da. Solo hay expresiones de duda, atención, sorpresa, concentración o alegría: ninguna de derrota
+        /// ni de tristeza (CP-02).
+        /// </summary>
+        [Test]
+        public void NarrativeSequence_INC148_CadaLineaHabladaLlevaLaEmocionDelGuion()
+        {
+            var habladas = 0;
+            var sinEmocion = new List<string>();
+            foreach (var sequence in TodasLasSecuencias())
+            {
+                for (var linea = 0; linea < sequence.Lines.Length; linea++)
+                {
+                    var dicha = sequence.Lines[linea];
+                    if (dicha.IsStageDirection)
+                    {
+                        continue;
+                    }
+
+                    foreach (var prop in Personajes(sequence).Where(candidato => candidato.Actor.Speaks(dicha.Speaker)))
+                    {
+                        habladas++;
+                        if (ActorTimeline.EmotionAt(prop, linea) == null)
+                        {
+                            sinEmocion.Add($"{sequence.Id} · L{linea} «{dicha.Speaker}»: {prop.Actor.name} no tiene expresión fijada por el guion");
+                        }
+                    }
+                }
+            }
+
+            Assert.That(habladas, Is.GreaterThan(0), "las narrativas tienen líneas dichas por personajes que están en escena");
+            Assert.That(sinEmocion, Is.Empty);
+        }
+
+        /// <summary>
+        /// La expresión de quien está en escena la fija su paso (<see cref="ActorBeat.SetsEmotion"/>); la línea solo
+        /// la declara (<see cref="DialogueLine.SetsVoiceEmotion"/>) cuando la dice una voz que no está pintada, la
+        /// voz fuera de cuadro. En una acotación no hay retrato, y en la línea de alguien en escena la casilla no
+        /// cuenta: sería un segundo sitio donde cambiar la misma cara y confundiría a quien edite el asset (INC-148).
+        /// </summary>
+        [Test]
+        public void NarrativeSequence_INC148_SoloLasVocesFueraDeEscenaDeclaranEmocionEnLaLinea()
+        {
+            var mal = TodasLasSecuencias()
+                .SelectMany(sequence => sequence.Lines.Select((line, indice) => (sequence, line, indice)))
+                .Where(entrada => entrada.line.SetsVoiceEmotion)
+                .Where(entrada => entrada.line.IsStageDirection || EstaEnEscena(entrada.sequence, entrada.line.Speaker))
+                .Select(entrada => entrada.line.IsStageDirection
+                    ? $"{entrada.sequence.Id} · L{entrada.indice}: una acotación no tiene retrato y no declara expresión"
+                    : $"{entrada.sequence.Id} · L{entrada.indice} «{entrada.line.Speaker}»: está en escena, su expresión la fija su paso")
+                .ToArray();
+
+            Assert.That(mal, Is.Empty);
+        }
+
+        /// <summary>
+        /// Quien fija una expresión la fija en todos sus pasos siguientes (INC-148): en los assets, a partir de su
+        /// primera expresión cada paso del personaje lleva la suya. Así cambiar un paso o añadir uno nunca devuelve
+        /// la cara, sin que nadie lo note, a la expresión de la acción.
+        /// </summary>
+        [Test]
+        public void NarrativeSequence_INC148_QuienFijaUnaEmocionLaFijaEnSusPasosSiguientes()
+        {
+            var conExpresion = 0;
+            var mal = new List<string>();
+            foreach (var sequence in TodasLasSecuencias())
+            {
+                foreach (var prop in Personajes(sequence))
+                {
+                    var fijan = prop.Beats.Where(paso => paso != null && paso.SetsEmotion).ToArray();
+                    if (fijan.Length == 0)
+                    {
+                        continue;
+                    }
+
+                    conExpresion++;
+                    var primera = fijan.Min(paso => paso.Line);
+                    mal.AddRange(prop.Beats
+                        .Where(paso => paso != null && paso.Line > primera && !paso.SetsEmotion)
+                        .Select(paso => $"{sequence.Id} · {prop.Actor.name} L{paso.Line} ({paso.Action}): no fija la expresión y ya la fija desde la línea {primera}"));
+                }
+            }
+
+            Assert.That(conExpresion, Is.GreaterThan(0), "el guion ya fija expresiones en los assets");
+            Assert.That(mal, Is.Empty);
+        }
+
+        /// <summary>
+        /// Un paso que solo fija la expresión (no se mueve y repite la acción que ya se mantenía) no cambia nada más
+        /// de lo que se ve (INC-148): no comparte línea con otro paso —manda el último de la lista—, no interrumpe la
+        /// caminata en curso —un paso nuevo hace saltar a quien camina a donde llegaría, salvo a quien termina sus
+        /// pasos— y no hace girar al personaje: el rumbo fijado a mano rige un solo paso
+        /// (<see cref="ActorTimeline.ExplicitFacingAt"/>), así que si había uno vigente el paso nuevo tiene que
+        /// repetirlo. Si no había ninguno, un rumbo explícito es una decisión del guion (INC-150: Papá arrodillado
+        /// mira la llama) y no se discute aquí.
+        /// </summary>
+        [Test]
+        public void NarrativeSequence_INC148_UnPasoQueSoloFijaLaEmocionNoInterrumpeNiGira()
+        {
+            var mal = new List<string>();
+            foreach (var sequence in TodasLasSecuencias())
+            {
+                foreach (var prop in Personajes(sequence))
+                {
+                    foreach (var paso in prop.Beats.Where(candidato => candidato != null && candidato.SetsEmotion && !candidato.Moves
+                                                              && candidato.Action == ActorTimeline.HeldBefore(prop, candidato.Line)))
+                    {
+                        if (PasosPropiosDelGuion.Contains((sequence.Id, prop.Actor.name, paso.Line)))
+                        {
+                            continue;
+                        }
+
+                        var quien = $"{sequence.Id} · {prop.Actor.name} L{paso.Line} ({paso.Action})";
+                        if (prop.Beats.Count(otro => otro != null && otro.Line == paso.Line) > 1)
+                        {
+                            mal.Add($"{quien}: comparte línea con otro paso, y manda el último de la lista");
+                        }
+
+                        if (!prop.FinishesSteps && ActorTimeline.WalkUnderway(prop, paso.Line) != null)
+                        {
+                            mal.Add($"{quien}: cae con una caminata en curso y la interrumpiría");
+                        }
+
+                        // El rumbo fijado a mano que regía justo antes de este paso (sin él en la lista).
+                        var vigente = ActorTimeline.ExplicitFacingAt(SinElPaso(prop, paso), paso.Line);
+                        if (vigente.HasValue && paso.Facing != (vigente.Value ? ActorFacing.Left : ActorFacing.Right))
+                        {
+                            mal.Add($"{quien}: hace girar al personaje; debe repetir el rumbo vigente ({(vigente.Value ? "izquierda" : "derecha")}) y declara {paso.Facing}");
+                        }
+                    }
+                }
+            }
+
+            Assert.That(mal, Is.Empty);
+        }
+
+        /// <summary>Una copia del personaje sin ese paso, para saber qué regía en la escena antes de él.</summary>
+        private static NarrativeProp SinElPaso(NarrativeProp prop, ActorBeat paso) =>
+            new NarrativeProp(null, prop.Position, prop.Size)
+                .WithActor(null, prop.ActorStart, prop.Beats.Where(otro => !ReferenceEquals(otro, paso)).ToArray());
+
+        /// <summary>
+        /// Momentos del guion donde la expresión es inequívoca (INC-148): la familia camina asustada en la apertura
+        /// (guion §1.3.1), los niños abren los ojos al ver a Algoritm y Papá y Mamá se miran sin creerlo (§1.4.1), y
+        /// los niños gritan de alegría cuando Papá hace el fuego (§1.4.3).
+        /// </summary>
+        [TestCase("N1_Apertura", 0, "Papa", FacialEmotion.Worried)]
+        [TestCase("N1_Apertura", 0, "Mama", FacialEmotion.Worried)]
+        [TestCase("N1_Apertura", 0, "Nina", FacialEmotion.Worried)]
+        [TestCase("N1_Apertura", 0, "Nino", FacialEmotion.Worried)]
+        [TestCase("N1_AparicionGuia", 4, "Nina", FacialEmotion.Surprised)]
+        [TestCase("N1_AparicionGuia", 4, "Nino", FacialEmotion.Surprised)]
+        [TestCase("N1_AparicionGuia", 5, "Papa", FacialEmotion.Surprised)]
+        [TestCase("N1_AparicionGuia", 5, "Mama", FacialEmotion.Surprised)]
+        [TestCase("N1_NacimientoDelFuego", 3, "Nina", FacialEmotion.Happy)]
+        [TestCase("N1_NacimientoDelFuego", 3, "Nino", FacialEmotion.Happy)]
+        public void NarrativeSequence_INC148_LasEmocionesDelGuionEnLineasClave(string id, int linea, string personaje, FacialEmotion esperada)
+        {
+            var sequence = TodasLasSecuencias().Single(candidata => candidata.Id == id);
+            var prop = Personajes(sequence).Single(candidato => candidato.Actor.name == personaje);
+
+            Assert.That(ActorTimeline.EmotionAt(prop, linea), Is.EqualTo(esperada),
+                $"{id} L{linea}: «{sequence.Lines[linea].Text}» — {personaje} debe verse {esperada}");
+            Assert.That(ActorTimeline.EmotionOf(prop, linea, speaking: true), Is.EqualTo(esperada), "y es la que ve el retrato");
+        }
+
+        /// <summary>
+        /// En la 3.2, tras el primer intento sin éxito, nadie cierra la escena con la cara de duda: el ánimo es
+        /// alegre o concentrado, nunca el de haber perdido (CP-02, guion §1.8.4). Worried es la duda de quien pregunta
+        /// y espera, y al cerrar la escena el intento ya pasó.
+        /// </summary>
+        [Test]
+        public void NarrativeSequence_CP02_LaEscena32NoCierraConNadieEnWorried()
+        {
+            var sequence = TodasLasSecuencias().Single(candidata => candidata.Id == "N3_Escena32_PrimerIntento");
+            var ultima = sequence.Lines.Length - 1;
+            var personajes = Personajes(sequence).ToArray();
+
+            Assert.That(personajes, Is.Not.Empty, "la 3.2 tiene personajes en escena");
+            foreach (var prop in personajes)
+            {
+                Assert.That(ActorTimeline.EmotionOf(prop, ultima, speaking: false), Is.Not.EqualTo(FacialEmotion.Worried),
+                    $"{prop.Actor.name} cierra la 3.2 (L{ultima}) y no puede quedar en duda: es el ánimo tras el intento (CP-02)");
+            }
+        }
+
+        /// <summary>
+        /// Quien trabaja junto al fuego lo mira (INC-150): si un personaje se arrodilla, sopla o recoge algo a menos
+        /// de 0,15 de ancho de una fogata, mira hacia ella y no hacia el otro lado. Con la regla de antes, sin pasos que
+        /// lo desplacen caía en «hacia el centro de la ilustración» y Papá quedaba arrodillado de espaldas a la llama
+        /// (N1 1.3, líneas 0–4 y 8–11; la 2.5 con Mamá y la Niña). Se mide en cada línea donde la acción vigente es
+        /// una de las tres y el personaje no se mueve en ella.
+        /// </summary>
+        [Test]
+        public void NarrativeSequence_INC150_QuienTrabajaJuntoAlFuegoLoMira()
+        {
+            const float alcance = 0.15f;
+            var gestos = new[] { ActorAction.Kneel, ActorAction.Blow, ActorAction.PickUp };
+            var comprobadas = 0;
+            var deEspaldas = new List<string>();
+            foreach (var sequence in TodasLasSecuencias())
+            {
+                var llamas = sequence.Props.Where(prop => prop != null && prop.Glows).ToArray();
+                if (llamas.Length == 0)
+                {
+                    continue;
+                }
+
+                foreach (var prop in Personajes(sequence))
+                {
+                    for (var linea = 0; linea < sequence.Lines.Length; linea++)
+                    {
+                        var cue = ActorTimeline.Cue(prop, linea, speaking: false);
+                        if (cue.Moves || Array.IndexOf(gestos, cue.During) < 0)
+                        {
+                            continue;
+                        }
+
+                        var x = cue.From.x;
+                        var llama = llamas.OrderBy(candidata => Mathf.Abs(candidata.Position.x - x)).First();
+                        if (Mathf.Abs(llama.Position.x - x) > alcance)
+                        {
+                            continue;
+                        }
+
+                        comprobadas++;
+                        var debeMirarIzquierda = llama.Position.x < x;
+                        if (ActorTimeline.FacesLeftAt(prop, linea) != debeMirarIzquierda)
+                        {
+                            deEspaldas.Add(FormattableString.Invariant(
+                                $"{sequence.Id} · {prop.Actor.name} L{linea} ({cue.During}) en x={x:0.000}: la llama está en x={llama.Position.x:0.000} y mira {(debeMirarIzquierda ? "a la derecha" : "a la izquierda")}"));
+                        }
+                    }
+                }
+            }
+
+            Assert.That(comprobadas, Is.GreaterThan(0), "las narrativas tienen a alguien arrodillado, soplando o recogiendo junto a una fogata");
+            Assert.That(deEspaldas, Is.Empty, "de espaldas al fuego");
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
         private static IEnumerable<NarrativeSequence> TodasLasSecuencias() =>

@@ -1,0 +1,27 @@
+{
+  "mode": "playmode",
+  "filter": "RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos",
+  "filterType": "testName",
+  "startedUtc": "2026-10-10T22:03:00.9427562Z",
+  "finishedUtc": "2026-10-10T22:03:13.4953281Z",
+  "elapsedSec": 12.6,
+  "status": "completed",
+  "error": "",
+  "summary": {
+    "Total": 1,
+    "Passed": 1,
+    "Failed": 0,
+    "Skipped": 0,
+    "Inconclusive": 0
+  },
+  "xml": "C:\\Users\\benab\\AppData\\Local\\Temp\\Algoritmia-editor-runs\\2026-10-10_170300_playmode.xml",
+  "results": [
+    {
+      "FullName": "Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos",
+      "Status": "Passed",
+      "Duration": 4.5964366,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}

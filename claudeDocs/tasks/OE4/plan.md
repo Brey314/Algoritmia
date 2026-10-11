@@ -1,5 +1,10 @@
 # Plan de pruebas funcionales — OE4
 
+> **Nota del 10/10/2026.** La pasada vigente es sobre **rc3**, compilado desde el estado actual de la rama. rc1 y
+> rc2 (01/10/2026) se ejecutaron con este mismo plan y sus resultados y su tablero viven en el commit `4e78f47`.
+> Este plan no se reescribe: donde dice `oe4-rc1` o «rc1» léase el candidato vigente, y los resultados, el tablero
+> y el catálogo (`casos.md`, hoy con 136 casos) se reiniciaron para rc3 (`OE4-Resultados.md`, `todo.md`).
+
 > **Estado:** propuesto el 29/09/2026, pendiente de revisión de Santiago (ver §12).
 > **Qué hay en esta carpeta:** este `plan.md` (estrategia, reglas y decisiones), `casos.md` (el
 > catálogo de casos con su guion paso a paso: el *instrumento de evaluación funcional* del

@@ -92,6 +92,13 @@ namespace Game.UI
         private Image _darkness;
         private Material _darknessInstance;
 
+        /// <summary>
+        /// La cara animada de la tarjeta del cuadro de diálogo (<c>Arte/Cara</c>), armada al arrancar: ojos y
+        /// boca sobre la base sin cara del hablante, con la expresión de su línea (INC-148). <c>null</c> hasta
+        /// <see cref="EnsurePortraitFace"/> y mientras la escena no tenga marco de retrato.
+        /// </summary>
+        private CharacterFace _portraitFace;
+
         /// <summary>Los objetos pintados sobre el entorno, con su declaración: son lo que se anima por línea.</summary>
         private readonly List<(NarrativeProp Prop, RectTransform Rect)> _props =
             new List<(NarrativeProp, RectTransform)>();
@@ -103,6 +110,7 @@ namespace Game.UI
         internal IReadOnlyList<(NarrativeProp Prop, RectTransform Rect, CharacterRig Rig, bool Walking)> Actors =>
             _actors.ConvertAll(actor => (actor.Prop, actor.Rect, actor.Rig, actor.Moving != null));
         internal Image Portrait => portrait;
+        internal CharacterFace PortraitFace => _portraitFace;
         internal GameObject PortraitFrame => portraitFrame;
         internal Text BodyLabel => bodyLabel;
         internal Text SpeakerLabel => speakerLabel;
@@ -166,6 +174,7 @@ namespace Game.UI
             _fade = _cutRemaining > 0f ? 0f : 1f;
             Frame();
             EnsureDarkness();
+            EnsurePortraitFace();
             ApplyLight();
             PlaceProps(_sequence);
             // El ambiente es contenido de la secuencia, como la ilustración: el mismo clip que
@@ -636,6 +645,12 @@ namespace Game.UI
             {
                 actor.Rig.Speaking = false;
             }
+
+            // La cara de la tarjeta habla lo mismo que la del personaje: hasta que se avanza o se sale.
+            if (_portraitFace != null)
+            {
+                _portraitFace.Speaking = false;
+            }
         }
 
         private static void SetAnchor(RectTransform rect, Vector2 position)
@@ -649,26 +664,51 @@ namespace Game.UI
         /// su voz, el de la familia o el de Algoritm con la forma del nivel. Las acotaciones no
         /// llevan hablante ni retrato.
         /// </summary>
-        private void ShowPortrait(DialogueLine line)
+        /// <remarks>
+        /// **La tarjeta es el hablante con la expresión de su línea (INC-148, decisión de Santiago,
+        /// 10/10/2026):** la base sin cara del personaje y, encima, su cara —ojos y boca— con la expresión que el
+        /// guion le fija en esa línea, que parpadea y mueve la boca mientras la línea está en pantalla, que es
+        /// hasta que el estudiante avanza, como la del personaje en la escena (no hay revelado progresivo). Quien
+        /// está en escena toma la expresión de sus pasos (<see cref="ActorTimeline.EmotionOf"/>); una voz fuera de
+        /// escena, la que declara la línea (<see cref="DialogueLine.SetsVoiceEmotion"/>) o la neutra. Si el
+        /// personaje todavía no tiene base o cara (<see cref="PortraitLook"/>), la tarjeta sigue siendo el retrato
+        /// fijo. La expresión nunca es de derrota ni de tristeza (CP-02): el enum no la tiene.
+        /// </remarks>
+        private void ShowPortrait(DialogueLine line, int index)
         {
             if (portraitFrame == null || portrait == null)
             {
                 return;
             }
 
-            var sprite = line.IsStageDirection ? null : PortraitOf(line.Speaker);
-            portraitFrame.SetActive(sprite != null);
-            portrait.sprite = sprite;
+            CharacterRig rig = null;
+            NarrativeProp prop = null;
+            if (!line.IsStageDirection)
+            {
+                (rig, prop) = SpeakerOf(line.Speaker);
+            }
+
+            var look = rig != null
+                ? PortraitLook.Of(rig.PortraitBase, rig.PortraitFace, rig.FaceSet, rig.Portrait)
+                : default;
+            portraitFrame.SetActive(look.Art != null);
+            portrait.sprite = look.Art;
             portrait.color = Color.white;
+            ShowPortraitFace(look, prop, line, index);
         }
 
-        private Sprite PortraitOf(string speaker)
+        /// <summary>
+        /// Quién dice la línea y, si está en la escena, su declaración: primero los personajes en escena, después
+        /// la familia (<c>cast</c>, la voz fuera de cuadro) y por último Algoritm con la forma del nivel. Fuera de
+        /// escena no hay <see cref="NarrativeProp"/> y el rig es el del prefab. Sin hablante conocido, ninguno.
+        /// </summary>
+        private (CharacterRig Rig, NarrativeProp Prop) SpeakerOf(string speaker)
         {
             foreach (var actor in _actors)
             {
-                if (actor.Rig.Speaks(speaker) && actor.Rig.Portrait != null)
+                if (actor.Rig.Speaks(speaker) && (actor.Rig.Portrait != null || actor.Rig.PortraitBase != null))
                 {
-                    return actor.Rig.Portrait;
+                    return (actor.Rig, actor.Prop);
                 }
             }
 
@@ -676,13 +716,105 @@ namespace Game.UI
             {
                 if (rig != null && rig.Speaks(speaker))
                 {
-                    return rig.Portrait;
+                    return (rig, null);
                 }
             }
 
             var level = (int)_sequence.Level - 1;
             var guide = level >= 0 && level < guideByLevel.Length ? guideByLevel[level] : null;
-            return guide != null && guide.Speaks(speaker) ? guide.Portrait : null;
+            if (guide != null && guide.Speaks(speaker))
+            {
+                return (guide, null);
+            }
+
+            return (null, null);
+        }
+
+        /// <summary>
+        /// Pone la cara de la tarjeta para la línea: ancla su recuadro sobre la base, le presta el set del hablante,
+        /// la expresión de la línea y la hace hablar. Si la tarjeta no es animada la apaga y la calla.
+        /// </summary>
+        private void ShowPortraitFace(PortraitLook look, NarrativeProp prop, DialogueLine line, int index)
+        {
+            if (!look.Animated)
+            {
+                if (_portraitFace != null)
+                {
+                    _portraitFace.Speaking = false;
+                    _portraitFace.gameObject.SetActive(false);
+                }
+
+                return;
+            }
+
+            EnsurePortraitFace();
+            if (_portraitFace == null)
+            {
+                return;
+            }
+
+            var rect = (RectTransform)_portraitFace.transform;
+            rect.anchorMin = look.Face.min;
+            rect.anchorMax = look.Face.max;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+            _portraitFace.gameObject.SetActive(true);
+
+            // Un hablante nuevo trae su set y con él relojes nuevos: su parpadeo empieza de cero. El mismo
+            // hablante en la línea siguiente conserva los suyos y no salta.
+            _portraitFace.FaceSet = look.Set;
+            _portraitFace.Emotion = prop != null
+                ? ActorTimeline.EmotionOf(prop, index, true)
+                : line.SetsVoiceEmotion ? line.VoiceEmotion : FacialEmotion.Neutral;
+            _portraitFace.Speaking = true;
+        }
+
+        /// <summary>
+        /// La cara de la tarjeta: <c>Cara</c> bajo la imagen del retrato, con dos <c>Image</c> estiradas —<c>Ojos</c> y
+        /// <c>Boca</c>— y un <see cref="CharacterFace"/> que las gobierna. Se crea al arrancar y no está en la
+        /// escena, como la capa de oscuridad (<see cref="EnsureDarkness"/>): añadirla es código y no una edición
+        /// de la escena. Nace apagada: <see cref="ShowPortraitFace"/> la enciende cuando habla alguien con base y
+        /// cara, y sus capas no se dibujan hasta que haya un set (una <c>Image</c> sin sprite pinta un recuadro
+        /// blanco).
+        /// </summary>
+        /// <remarks>
+        /// Cuelga de la imagen del retrato y no de su marco: su recuadro es una fracción de la base, y la base
+        /// cuadrada llena la imagen. Los anclajes de <c>Cara</c> los pone cada línea; <c>Ojos</c> y <c>Boca</c>
+        /// comparten el recuadro entero, porque el arte de cada cara llena el mismo cuadro.
+        /// </remarks>
+        private void EnsurePortraitFace()
+        {
+            if (_portraitFace != null || portrait == null)
+            {
+                return;
+            }
+
+            var go = new GameObject("Cara", typeof(RectTransform));
+            go.layer = portrait.gameObject.layer;
+            var rect = (RectTransform)go.transform;
+            rect.SetParent(portrait.rectTransform, false);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+
+            var face = go.AddComponent<CharacterFace>();
+            face.Bind(NewFaceLayer("Ojos", rect), NewFaceLayer("Boca", rect));
+            go.SetActive(false);
+            _portraitFace = face;
+        }
+
+        private static Image NewFaceLayer(string layerName, RectTransform parent)
+        {
+            var go = new GameObject(layerName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            go.layer = parent.gameObject.layer;
+            var rect = (RectTransform)go.transform;
+            rect.SetParent(parent, false);
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = rect.offsetMax = Vector2.zero;
+            var image = go.GetComponent<Image>();
+            image.raycastTarget = false;
+            image.preserveAspect = false; // el arte de la cara llena el recuadro entero
+            return image;
         }
 
         /// <summary>
@@ -904,7 +1036,7 @@ namespace Game.UI
             // La acotación —lo que en el guion va en cursiva— no lleva nombre de hablante.
             speakerLabel.gameObject.SetActive(!line.IsStageDirection);
             bodyLabel.text = line.Text;
-            ShowPortrait(line);
+            ShowPortrait(line, Dialogue.Index);
             PlayMotions(Dialogue.Index);
             UpdateSpeaking(line.Speaker);
             PlayActors(Dialogue.Index, line.Speaker);

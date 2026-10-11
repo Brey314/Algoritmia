@@ -16,10 +16,22 @@
 >   (`Hoja-HUM.md`, H6–H8). Si el arnés no pasa el spike, los dos recorridos vuelven a Santiago con
 >   el mismo guion (`plan.md` §5, plan B).
 > - **Los candidatos no llevan etiqueta** (Santiago, 01/10/2026: el commit lo hace Santiago al final).
->   El primero fue rc1 (`evidencias/build-rc1.md`) y el vigente es **rc2** (`evidencias/build-rc2.md`).
+>   Los dos primeros fueron rc1 (`evidencias/build-rc1.md`) y rc2 (`evidencias/build-rc2.md`). *(10/10/2026)
+>   La pasada vigente es sobre **rc3**, compilado desde el estado actual de la rama (`evidencias/build-rc3.md`,
+>   pendiente); rc1 y rc2 viven en el commit `4e78f47`. Los pasos que citan pantallas o textos de rc2 se
+>   contrastan contra rc3 antes de ejecutar (T04).*
 >   El ejecutable se compila desde el árbol de trabajo de la rama, y su procedencia es HEAD (`359365e`),
 >   el SHA-256 de `git diff HEAD` y la lista de archivos; lo que identifica cada build es la huella del
 >   contenido de su carpeta, que anota ese mismo documento.
+> - **Lo que se ve distinto desde el 02/10/2026** (nada de esto cambia un RF; son los casos nuevos
+>   `PF-RF01-03`, `PF-RF05-04..06`, `PF-RF08-02`, `PF-RF10-04`, `PF-RF20-04`, `PF-RF30-02` y `PF-RF35-02`):
+>   la familia se ve **de perfil al moverse** y de frente en lo demás (INC-134); el parpadeo es de dos
+>   cuadros (INC-135); Algoritm tiene diseño final —llama, disco de madera, gota con pantaloneta de
+>   cuadros— con los brazos detrás del cuerpo y un saludo `Wave` en los créditos (INC-136, INC-147); la
+>   tarjeta del diálogo lleva el **retrato animado** del hablante con la expresión que fija el guion en
+>   cada línea de las 18 narrativas (INC-148 a INC-150); y entraron las sombras de los props
+>   (`PropShadow`), el halo de las fogatas (`FireGlow`), el laberinto sin tinte de luz sobre el ámbar
+>   `#C4A882` y la portada del inicio con los cinco personajes en el bosque.
 > - **`Medir-Carga` es el alias de `Esperar-Carga` del arnés.** Devuelve los segundos de la línea
 >   `RNF-04: «<escena>» cargó en N s` que `SceneLoader` deja en `Player.log` desde el 30/09/2026.
 >   `Boot` no deja línea.
@@ -43,23 +55,25 @@
 - Cifras de indicadores: `I/C/P` = intentos / errores corregidos / pasos utilizados.
 - Al terminar cada sesión que cambie perfiles, se copia el JSON final a
   `evidencias/<sesión>_<perfil>.json`: S-DOC lo reutiliza.
-- **Tamaño del catálogo: 127 casos**, uno por cada `PF-*` con fila en la tabla de una sesión. Eran 126
-  hasta el 01/10/2026, cuando entró PF-RF02-06 (S-INI), el caso que propuso la revisión de W5.
+- **Tamaño del catálogo: 136 casos**, uno por cada `PF-*` con fila en la tabla de una sesión. Eran 126
+  hasta el 01/10/2026, cuando entró PF-RF02-06 (S-INI), el caso que propuso la revisión de W5, y 127 con él;
+  el 10/10/2026 entraron nueve más por lo que cambió el juego desde el 02/10 (`PF-RF01-03`, `PF-RF05-04`,
+  `PF-RF05-05`, `PF-RF05-06`, `PF-RF08-02`, `PF-RF10-04`, `PF-RF20-04`, `PF-RF30-02`, `PF-RF35-02`).
 
 ## Índice de cobertura (CT-10)
 
 | Req | Prior. | Casos | | Req | Casos |
 |---|---|---|---|---|---|
-| RF-01 | A | PF-RF01-01, 02 | | RF-35 | PF-RF35-01 |
+| RF-01 | A | PF-RF01-01, 02, 03 | | RF-35 | PF-RF35-01, 02 |
 | RF-02 | A | PF-RF02-01 … 06 | | RF-36 | PF-RF36-01 |
 | RF-03 | A | PF-RF03-01, 02, 03 | | RF-37 | PF-RF37-01 |
 | RF-04 | A | PF-RF04-01, 02, 03 | | RF-38 | PF-RF38-01 |
-| RF-05 | A | PF-RF05-01, 02, 03 | | RF-39 | PF-RF39-01 |
+| RF-05 | A | PF-RF05-01 … 06 | | RF-39 | PF-RF39-01 |
 | RF-06 | M | PF-RF06-01 … 04 | | RF-40 | PF-RF40-01, 02 |
 | RF-07 | A | PF-RF07-01 … 06 | | RF-41 | PF-RF41-01 |
-| RF-08 | A | PF-RF08-01 | | RF-42 | PF-RF42-01, 02 |
+| RF-08 | A | PF-RF08-01, 02 | | RF-42 | PF-RF42-01, 02 |
 | RF-09 | A | PF-RF09-01 … 04 | | RF-43 | PF-RF43-01 |
-| RF-10 | A | PF-RF10-01, 02, 03 | | RF-44 | PF-RF44-01 |
+| RF-10 | A | PF-RF10-01 … 04 | | RF-44 | PF-RF44-01 |
 | RF-11 | A | PF-RF11-01, 02, 03 | | RF-45 | PF-RF45-01 … 05 |
 | RF-12 | A | PF-RF12-01, 02, 03 | | RF-46 | PF-RF46-01, 02, 03 |
 | RF-13 | A | PF-RF13-01 … 05 | | RF-47 | PF-RF47-01, 02, 03 |
@@ -69,7 +83,7 @@
 | RF-17 | A | PF-RF17-01 | | RNF-04 | PF-RNF04-01 |
 | RF-18 | A | PF-RF18-01 | | RNF-05 | PF-RNF05-01 |
 | RF-19 | A | PF-RF19-01, 02 | | RNF-06 | PF-RNF06-01 |
-| RF-20 | A | PF-RF20-01, 02, 03 | | RNF-07 | PF-RNF07-01, 02 |
+| RF-20 | A | PF-RF20-01 … 04 | | RNF-07 | PF-RNF07-01, 02 |
 | RF-21 | B | PF-RF21-01, 02 | | RNF-08 | PF-RNF08-01 |
 | RF-22 | A | PF-RF22-01 | | RNF-09 | PF-RNF09-01 |
 | RF-23 | A | PF-RF23-01 | | RNF-10 | PF-RNF10-01 |
@@ -79,7 +93,7 @@
 | RF-27 | A | PF-RF27-01 | | RNF-14 | PF-RNF14-01 … 05 |
 | RF-28 | A | PF-RF28-01 | | RNF-15 … RNF-23 | PF-RNF15-01 … PF-RNF23-01 |
 | RF-29 | A | PF-RF29-01 | | CT-02 | PF-CT02-01 |
-| RF-30 | A | PF-RF30-01 | | Sonido (KPI) | PF-SON-01, 02, 03 |
+| RF-30 | A | PF-RF30-01, 02 | | Sonido (KPI) | PF-SON-01, 02, 03 |
 | RF-31 | A | PF-RF31-01 | | | |
 | RF-32 | A | PF-RF32-01 | | | |
 | RF-33 | A | PF-RF33-01 | | | |
@@ -104,6 +118,10 @@ Abajo Izquierda Derecha W A S D Rueda` → no debe cambiar nada en pantalla.
    «Créditos», «Progreso del equipo» y «Salir», todos visibles y sin solaparse. Comprobar que no se
    ve ningún rótulo de trabajo ni recuadro vacío en lugar de la ilustración.
    ‹PF-RF01-01, PF-RF01-02›
+   **Portada (desde el 09/10/2026):** el título queda sobre una tarjeta más baja y detrás se ve el bosque
+   con **los cinco personajes** (Papá, Mamá, la Niña, el Niño y Algoritm), de frente, cada uno con su
+   respiración **sin el mismo compás** que los demás (`idlePhase`); ninguno cortado por el borde, ninguno
+   sobre los botones y ninguno de perfil ni espejado. ‹PF-RF01-03›
 3. Teclas de control negativo → nada cambia. ‹PF-RF01-01›
 4. «Créditos» → `Medir-Carga` → «Créditos». Se leen: la rejilla papel/persona;
    «Personajes basados en la Familia Anonaky, de Bibiana Patricia Rey Barrote y Luis Eduardo
@@ -112,7 +130,9 @@ Abajo Izquierda Derecha W A S D Rueda` → no debe cambiar nada en pantalla.
    «Entornos, objetos e interfaz: originales del proyecto, salvo los iconos de pausa.»;
    «Iconos de pausa: Phosphor Icons, licencia MIT.»; «Tipografías Baloo 2 y Nunito bajo
    licencia SIL OFL 1.1.»; ningún enlace. Comprobar que no hay
-   rótulos de trabajo. ‹PF-RF08-01, PF-RF01-02, PF-RNF23-01›
+   rótulos de trabajo. **Algoritm** aparece con su diseño final y **saluda en bucle** (`Wave`) sin
+   tapar la lista; su cuerpo no tiene los brazos delante de la cara. ‹PF-RF08-01, PF-RF08-02, PF-RF01-02,
+   PF-RNF23-01›
 5. Rueda del ratón y un arrastre vertical sobre la lista → anotar si desplaza (observación de
    RNF-02: fuera de las escenas jugables). ‹PF-RNF02-01›
 6. «Volver» → pantalla de inicio. ‹PF-RF08-01›
@@ -163,6 +183,7 @@ Abajo Izquierda Derecha W A S D Rueda` → no debe cambiar nada en pantalla.
 |---|---|---|---|---|
 | PF-RF01-01 | RF-01 · HU-01, HU-18, CU-01 | NAV | 1–3 | Título y los cuatro botones visibles, alcanzables y sin solapes; ninguna tecla hace nada |
 | PF-RF01-02 | RF-01, RF-03, RF-08 · RNF-01, CN-04 | BOT | 2, 4, 13 | Ninguna pantalla de flujo (inicio, créditos, menú de niveles) muestra rótulos de trabajo |
+| PF-RF01-03 | RF-01 · portada del inicio (09/10/2026), INC-136 | NAV | 2 | Detrás del título se ven los cinco personajes en el bosque, enteros, de frente y sin respirar al unísono; ninguno tapa un botón ni se corta. Sin rótulos de trabajo ni recuadros vacíos |
 | PF-RF02-01 | RF-02 · HU-01 FA-01/02, CU-01 4a | DAT | 8–11 y S-N1 paso 1 | Vacío, espacios, duplicado e inválido se rechazan con su mensaje sin crear archivo; el nombre válido crea `Datos/<nombre>.json` con `reachedLevel` 1 y `phases` vacío |
 | PF-RF02-02 | RF-02 · HU-01 | DAT | 13, 21 | Elegir un perfil existente abre el menú de niveles con su progreso exacto |
 | PF-RF02-03 | RF-02, RNF-09 | DAT | 7, 12 | El formulario pide solo el nombre y lo limita a 24 caracteres |
@@ -170,6 +191,7 @@ Abajo Izquierda Derecha W A S D Rueda` → no debe cambiar nada en pantalla.
 | PF-RF03-01 | RF-03 · CU-02 | NAV | 13–14 | Se ven los tres niveles; solo los alcanzados responden; el bloqueado lleva candado y rótulo |
 | PF-RF03-03 | RF-03 · CU-02 2a, HU-14 paso 7 | NAV | 14 | El nivel bloqueado no responde al clic ni carga nada; el completado lleva la marca «Completado» con icono y texto (RNF-19) |
 | PF-RF08-01 | RF-08 · HU-18 FA-02 | NAV | 4, 6 | Reconoce la autoría de personajes y recursos de terceros; sin enlaces; «Volver» regresa |
+| PF-RF08-02 | RF-08 · INC-136, INC-147 | NAV | 4 | Algoritm sale con su diseño final y repite el saludo `Wave` en bucle mientras los créditos están abiertos; «Volver» sigue funcionando con él en pantalla |
 | PF-RF09-01 | RF-09 · HU-18 | DAT | 15 | «Salir» reescribe el perfil activo y cierra la aplicación |
 | PF-RF09-02 | RF-09 · HU-18 paso 3, FA-01 | BOT | 15 | «Salir» pide confirmación informando del guardado; «Quedarme» vuelve al menú sin escribir nada |
 | PF-RF09-03 | RF-09 · HU-18 FA-03 | DAT | 16 | Sin perfil activo, salir no escribe ningún perfil |
@@ -199,6 +221,25 @@ efectivos habilitan «Soplar».
    `N1_Hallazgo` (18), con fundido a negro entre escenas; cada clic trae una línea nueva y ninguna
    escena ofrece «Omitir». Foto de ALGORITM: «Lo que no sabes todavía es cómo. ¿Desde dónde vas a
    intentarlo?». ‹PF-RF05-01, PF-RF06-01, PF-RF10-01›
+   **Qué se ve en toda narrativa de esta y de las demás sesiones** (desde el 02/10/2026; se anota en la
+   primera línea de cada secuencia y en las fotos de las demás, sin pasos aparte):
+   - *Tarjeta del diálogo (INC-148):* junto al nombre, el **retrato animado** de quien habla, con la
+     expresión que el guion fija en esa línea (neutra, concentración, preocupación, sorpresa; los ojos
+     cerrados donde duerme), que **parpadea y mueve la boca** mientras la línea está en pantalla y se
+     detiene al cambiar de línea. Los personajes de la familia salen **en primer plano y sin brazos**;
+     **Algoritm** sale como antes, con sus brazos. La alegría se ve con la cara neutra. El texto sale
+     entero, sin máquina de escribir. Una voz que no está en escena también tiene su retrato.
+     ‹PF-RF05-04›
+   - *Personajes en escena (INC-134, INC-135, INC-147):* la familia se ve **de perfil mientras se mueve**
+     (`Walk`, `Run`, `Carry`, `Push`, `PickUp`, `Kneel`, `Blow`), mirando hacia donde va, y **de frente**
+     en lo demás (hablar, esperar, saludar); el cambio de frente a perfil es **seco**, sin fundido; el
+     frente **nunca está espejado**; el parpadeo es de dos cuadros (abiertos–cerrados). Algoritm se ve de
+     frente en su forma del nivel (**llama** en el N1, **disco de madera** en el N2, **gota con
+     pantaloneta de cuadros** en el N3) con los brazos detrás del cuerpo, nunca sobre la cara.
+     ‹PF-RF05-05, PF-RF10-04›
+   - *Sombras (`PropShadow`):* los objetos y los personajes con anclaje al suelo proyectan una elipse
+     oscura al 25 %; se encoge y se aclara mientras el objeto se alza o rueda y no gira con él; las
+     siluetas y la balsa **no** la llevan. ‹PF-RF05-06›
 4. Último «Continuar» → `Medir-Carga` → `Level1_Cave`; anotar T0. Se ven **solo**: 7 piezas
    regadas (5 montoncitos de hojas, sílex y pedernal), la tablilla «Reúne todas las hojas y las dos
    piedras en el centro de la pantalla.», el botón de pista (círculo con Algoritm, sin texto, arriba
@@ -254,11 +295,14 @@ efectivos habilitan «Soplar».
     montón y la luz sube hasta el máximo en ~3,5 s. El humo sube hasta la corona de la llama, detrás
     de ella, encogiéndose, y pasa por detrás de la tablilla: no asoma por encima de ella ni se corta
     contra el borde de arriba. Tres fotos en ese lapso y una ráfaga de ~10 fps durante 6 s del bucle
-    de la llama (para PF-RNF21-01). Anotar T1 al terminar la subida.
-    ‹PF-RF20-01, PF-RF20-03, PF-RF21-01, PF-RNF21-01›
+    de la llama (para PF-RNF21-01). **Halo (`FireGlow`):** un disco ámbar suave detrás de la llama que
+    «respira» entre 0,95 y 1,05 de escala en ~2 s; su **opacidad no cambia** en la ráfaga (RNF-21) y no
+    lava el montón ni las piedras. Anotar T1 al terminar la subida.
+    ‹PF-RF20-01, PF-RF20-03, PF-RF20-04, PF-RF21-01, PF-RNF21-01›
 22. Fundido a `N1_NacimientoDelFuego` (17 líneas), **sin «Omitir»**; leerla entera; foto de «Eso
-    tiene nombre: se llama iterar. Probar, mirar el resultado y ajustar.».
-    ‹PF-RF05-01, PF-RF06-01, PF-RF12-01›
+    tiene nombre: se llama iterar. Probar, mirar el resultado y ajustar.». En las líneas en que Papá
+    trabaja junto a la fogata se ve **arrodillado y de perfil, mirando la llama** (INC-150), y la llama
+    del cierre lleva su halo. ‹PF-RF05-01, PF-RF05-05, PF-RF06-01, PF-RF12-01›
 23. `LevelSummary`: «Esto es lo que pasó en la cueva», «Descubriste que el fuego necesita chispa y
     aire.», «Probaste golpear con varias fuerzas y desde varios sitios.», «Cuando algo no
     funcionó, cambiaste la fuerza o el sitio y volviste a intentar.» y «Eso se llama probar y
@@ -272,9 +316,13 @@ efectivos habilitan «Soplar».
 | Caso | Req · trazas | Etq | Pasos | Aprueba si |
 |---|---|---|---|---|
 | PF-RF05-01 | RF-05 · HU-02, CU-03 | NAV | 1–3, 22 | Las narrativas del N1 salen en orden, una línea por clic en «Continuar», y solo el botón avanza |
+| PF-RF05-04 | RF-05 · INC-148, INC-149, INC-150 | NAV | 3, 22; S-N2A 1; S-N2B 1; S-N2C 1; S-N3 1 | En toda línea, la tarjeta muestra el retrato animado de quien habla con la expresión del guion; parpadea y mueve la boca mientras se lee y se detiene al avanzar. La familia sale en primer plano y sin brazos; Algoritm, con brazos y como antes. Ninguna línea sin retrato ni con la cara de otro personaje |
+| PF-RF05-05 | RF-05 · INC-134, INC-135, INC-147, INC-150 | NAV | 3, 22; S-N2A 13; S-N3 4–6 | La familia se ve de perfil al moverse y de frente en lo demás, con corte seco; el frente nunca se espeja; quien trabaja junto a la fogata la mira (N1 1.3, N2 2.5); el parpadeo es de dos cuadros. Ningún personaje con la cara tapada por un brazo ni con los dos ojos tapados a la vez |
+| PF-RF05-06 | RF-05 · `PropShadow`, 02/10/2026 | RETO | 3, 22; S-N2A 13 | Los props con anclaje al suelo proyectan su sombra; se encoge y se aclara al levantarse o rodar; no la llevan las siluetas ni la balsa; ninguna sombra flota sobre el fondo ni cambia el significado de la escena |
 | PF-RF06-01 | RF-06 · HU-14 FA-02, INC-28 | BOT | 1, 3, 22 (y los pasos de primera visita de S-N2A, S-N2B, S-N2C y S-N3) | La primera vez ninguna narrativa ofrece «Omitir» |
 | PF-RF07-05 | RF-07 · HU-17 FA-04 | BOT | 1 y toda narrativa | No hay botón de pausa en las narrativas |
 | PF-RF10-01 | RF-10 · HU-02 | RETO | 3, 4, 8 | El guía formula el objetivo con preguntas y lo descompone; la tablilla da la tarea activa |
+| PF-RF10-04 | RF-10, CP-06 · INC-45, INC-136, INC-147 | NAV | 3; S-N2A 1; S-N3 1 | Algoritm aparece con su forma final del nivel —llama (N1), disco de madera (N2), gota con pantaloneta de cuadros (N3)—, de frente, con los brazos detrás del cuerpo y sin las manos sobre la cara; sigue preguntando y descomponiendo, sin resolver |
 | PF-RF11-01 | RF-11 · HU-05 | RETO | 11–21 | Cada acción recibe un mensaje narrativo en < 1 s, sin palabras como «error», «incorrecto» o «mal», y sin interrumpir la partida |
 | PF-RF13-01 | RF-13 · HU-03 | BOT | 6, 9, 13 | La ayuda repite la instrucción vigente sin cambiar nada; al tercer fallo seguido aparece una pista que orienta sin dar la solución |
 | PF-RF14-01 | RF-14 · HU-06, CU-05 | RETO | 4, 7, 8 | Tras reunir aparece el panel con los controles de hipótesis, «Golpear» y el área de resultados; el sílex y el pedernal quedan sobre el montón desde el primer cuadro del acercamiento. |
@@ -285,6 +333,7 @@ efectivos habilitan «Soplar».
 | PF-RF19-01 | RF-19 · HU-07, INC-32 | BOT | 14, 17, 19, 20 | «Soplar» se habilita al tercer golpe efectivo, no antes, y ningún golpe posterior lo vuelve a deshabilitar. Al soplar descansa con los demás mandos, sin candado: eso es PF-RF20-03 |
 | PF-RF19-02 | RF-19 · HU-07 FA-01, FA-02 | BOT | 14 | Pulsar «Soplar» deshabilitado no hace nada: ni mensaje ni cambio, y el candado sigue |
 | PF-RF20-01 | RF-20 · HU-07, CU-05 | RETO | 21–22 | «Soplar» reproduce el nacimiento del fuego —el humo sube a la corona de la llama, detrás de ella y de la tablilla— y lleva a la escena de cierre |
+| PF-RF20-04 | RF-20, RNF-21 · `FireGlow`, 08/10/2026 | RETO | 21–22 | La llama lleva un halo ámbar al 20 % que respira de escala (0,95 a 1,05, ~2 s) y **nunca cambia de opacidad**; no hay destellos ni aros fantasma a plena luz y no lava el montón ni las piedras. Lo mismo en las otras fogatas con llama del juego |
 | PF-RF21-01 | RF-21 (Baja) · HU-07 | RETO | 4, 17–21 | La luz sube por escalones con cada acierto, nunca baja y termina en iluminación completa |
 | PF-RF12-01 | RF-12 · HU-14 | RETO | 22 | El guía nombra la habilidad (iterar) y la relaciona con lo que hizo el jugador |
 | PF-RF45-01 | RF-45 · HU-14 paso 6, INC-26 | DAT | 23 | Resumen narrativo sin dígitos, con las variantes que corresponden a I > 0 y C > 0 |
@@ -329,7 +378,8 @@ efectivos habilitan «Soplar».
 12. `Arrastrar` la caja sobre los troncos → «La caja quedó sobre los troncos. Ahora empújala.»;
     «Empujar» se habilita y el candado desaparece. ‹PF-RF25-01, PF-RF26-01›
 13. «Empujar» → fundido a `N2_Escena22_ElPatron`: la caja rueda sobre los troncos **en la
-    narrativa**. ‹PF-RF26-01›
+    narrativa**; quien empuja se ve de perfil (`Push`) y los troncos ruedan con su sombra.
+    ‹PF-RF26-01, PF-RF05-05, PF-RF05-06›
 14. `Datos/OE4_B.json`: fase `{level 2, phase 1, attempts 3, correctedErrors 1, stepsUsed 0}` y
     un tiempo de (T(«Empujar») − T0) ± 5 s. ‹PF-RF04-02›
 15. «Continuar» hasta `N2_Escena23_Construccion` → sigue S-N2B en el mismo proceso.
@@ -421,6 +471,11 @@ de la secuencia ganadora.
    laberinto en vista superior con cuadrícula dentro del seto; la carretilla en el hueco izquierdo,
    mirando al este; los arbustos; la familia en el hueco derecho (el refugio). A la derecha: «Tu
    secuencia», «Suelta un bloque aquí», el cajón «Bloques» cerrado y «Ejecutar».
+   **Sin tinte de luz:** a diferencia de las narrativas del N2, el laberinto no lleva capa de oscuridad
+   ni tinte; el entorno, la carretilla, el refugio y los obstáculos se ven tal cual viene el arte, sobre
+   un único fondo ámbar `#C4A882` (el mismo detrás del panel del entorno y de la escena), con marco
+   redondeado de 8 px `#6A5A44` alrededor del entorno y de «Tu secuencia»; la zona «Suelta un bloque
+   aquí» es `#E0D4C0`. ‹PF-RF30-02›
    ‹PF-RF30-01, PF-RF31-01, PF-RNF04-01, PF-RF05-02›
 2. Foto y **transcribir el tablero** a una rejilla ASCII 16 × 11 en el registro de la sesión (`#`
    seto, `S` salida, `R` refugio, `X` arbusto). La foto va a evidencias. Es el mapa del paso 12.
@@ -479,6 +534,7 @@ de la secuencia ganadora.
 | Caso | Req · trazas | Etq | Pasos | Aprueba si |
 |---|---|---|---|---|
 | PF-RF30-01 | RF-30 · HU-10, CU-08 | RETO | 1 | Vista superior con carretilla, refugio reconocible y obstáculos. Observación: el refugio no se dibuja (solo el hueco y la familia) |
+| PF-RF30-02 | RF-30 · decisión del 07/10/2026, ajustes del 10/10/2026 | RETO | 1 | El laberinto no está teñido: un solo ámbar `#C4A882` detrás de todo, entorno con marco de 8 px sin recortes, y sin salto de color entre el panel y el fondo. Si el tono cambia entre el panel del entorno y la escena, es F |
 | PF-RF31-01 | RF-31 · HU-10, INC-33 | BOT | 1, 4–6 | Pantalla dividida, bloques de avanzar, retroceder y girar que se arrastran a una secuencia ordenada y se leen respecto de la orientación. La cuenta y el lado se ajustan sobre el bloque colocado (RF-31, INC-55) |
 | PF-RF32-01 | RF-32 · HU-10 FA-01, CU-08 3a | RETO | 3, 6, 14 | «Ejecutar» recorre paso a paso con el bloque en curso resaltado y visible; la secuencia vacía se informa sin moverse |
 | PF-RF33-01 | RF-33 · HU-10, HU-04 FA-02 | RETO | 6 | Ante un obstáculo, la carretilla intenta, regresa a la casilla anterior y el nivel no se reinicia |
@@ -543,12 +599,14 @@ cualquier rechazo (INC-122). N3F1 2/1/1 · N3F2 5/2/2 · N3F3 7/4/3.
    ‹PF-RNF04-01, PF-RF36-01, PF-RF38-01, PF-RF39-01, PF-RF35-01, PF-RF10-03›
 3. Teclas de control negativo → Mamá no se mueve. ‹PF-RNF02-01›
 4. `Sostener` ↓ 300 ms → Mamá baja y se detiene al soltar. `Sostener` ← 3000 ms → llega al borde
-   izquierdo de la orilla y no lo cruza: no pisa el seto ni se mete bajo el inventario.
-   ‹PF-RF35-01›
+   izquierdo de la orilla y no lo cruza: no pisa el seto ni se mete bajo el inventario. Mientras camina, Mamá se ve **de perfil
+   hacia donde va** (izquierda o arriba, a la izquierda; derecha o abajo, a la derecha) y al detenerse
+   vuelve de frente, con corte seco y sin espejo del frente; su sombra la acompaña. ‹PF-RF35-01, PF-RF35-02›
 5. Llevar a Mamá junto a tronco_2, el material más cercano al arranque (desde el arranque no está
    al alcance) → aparece «Recoger»; alejarla → desaparece; volver. ‹PF-RF37-01›
 6. «Recoger» → el tronco sale de la orilla y entra a su casilla (se enciende 1 de sus 5 marcas);
-   «Troncos: al inventario. Mira la lista: ¿qué falta?». ‹PF-RF37-01, PF-RF38-01›
+   «Troncos: al inventario. Mira la lista: ¿qué falta?». Mamá se agacha y recoge de perfil
+   (`PickUp`). ‹PF-RF37-01, PF-RF38-01, PF-RF35-02›
 7. Llevar a Mamá a la zona con ese solo tronco → «Para armar la balsa todavía falta: …», con los
    nombres y sin números, e icono de alerta; no se abre nada. ‹PF-RF39-01, PF-RNF19-01›
 8. Ayuda (gota, arriba a la derecha) → repite la instrucción; el inventario no cambia.
@@ -630,6 +688,7 @@ cualquier rechazo (INC-122). N3F1 2/1/1 · N3F2 5/2/2 · N3F3 7/4/3.
 | PF-RF05-03 | RF-05 · HU-02 | NAV | 1, 17, 21, 24 | Las narrativas del N3 salen en orden, incluida la 3.2 tras el primer fallo de la balsa terminada |
 | PF-RF10-03 | RF-10 · HU-02, HU-11 | RETO | 1, 2 | El guía descompone el objetivo con preguntas y la lista lo materializa |
 | PF-RF35-01 | RF-35 · HU-11, CU-09 | BOT | 2–4 | Mamá se mueve en dos ejes con **cuatro botones en cruceta abajo a la derecha**: avanza mientras se sostiene el clic y se detiene al soltar, dentro de los límites |
+| PF-RF35-02 | RF-35 · INC-134, INC-135 | RETO | 4, 6 | Mamá camina y recoge de perfil, mirando hacia donde se mueve, y se ve de frente al detenerse; el cambio es seco, el frente no se espeja y los botones de la cruceta no cambian ni su sitio ni su comportamiento por ello |
 | PF-RF36-01 | RF-36 · HU-11, INC-30 | RETO | 2, 9, 16, 20 | Cuatro tareas siempre visibles; cada una se marca al completarse, por forma y color, sin cifras |
 | PF-RF37-01 | RF-37 · HU-11, CU-09 | BOT | 5, 6, 9 | «Recoger» aparece solo junto a un material y lo lleva al inventario |
 | PF-RF38-01 | RF-38 · HU-11 FA-01 | RETO | 2, 6, 9 | Inventario visible de cuatro casillas para los ocho objetos; no admite una quinta clase de objeto (RF-38, INC-89) |

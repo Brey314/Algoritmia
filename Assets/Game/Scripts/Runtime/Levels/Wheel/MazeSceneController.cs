@@ -145,8 +145,8 @@ namespace Game.Levels.Wheel
         [SerializeField] private Color softCharcoalColor = new Color(0.42f, 0.32f, 0.28f);
 
         [SerializeField]
-        [Tooltip("Color del marco del entorno: el mismo #C4A882 del contorno de la tarjeta de la secuencia (Dirección de arte §10.2).")]
-        private Color environmentBorderColor = new Color(0.769f, 0.659f, 0.510f);
+        [Tooltip("Color del marco del entorno: el mismo #6A5A44 del contorno de la tarjeta de la secuencia (Dirección de arte §10.2).")]
+        private Color environmentBorderColor = new Color(0.41568628f, 0.35294118f, 0.26666668f);
 
         [SerializeField]
         [Tooltip("Marco del entorno: una Image con ui_boton en nueve partes y sin centro, hermana del entorno y detrás de él. FitEnvironment le da tamaño, grosor y color. Vacío = el entorno sin marco.")]
