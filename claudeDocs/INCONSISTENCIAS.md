@@ -63,8 +63,7 @@ positivo. La rev. 26 (13/10/2026) registra **INC-152** a **INC-160**, nueve hall
 luz del Nivel 1 (INC-152) y la caminata de la familia en la aparición del guía (INC-153), el abrazo y el sueño de
 perfil (INC-154), los troncos del bosque (INC-155), las flechas de «Girar» (INC-156), el vocabulario (INC-157), el
 aviso del botón de ayuda (INC-158), la pausa de cinco botones, que deja sin efecto a INC-49 (INC-159), y el botón
-«Atrás» del diálogo (INC-160). Quedan cerrados **INC-01** a **INC-160**, con una condición: INC-154 está
-registrado y su corrección de código sigue en curso. Las pruebas de EditMode estaban en verde por carril según el
+«Atrás» del diálogo (INC-160). Quedan cerrados **INC-01** a **INC-160**; INC-154 se cerró con el commit `d8ab0f4`. Las pruebas de EditMode estaban en verde por carril según el
 commit `52908f1`; PlayMode, la suite completa y rc4 estaban pendientes. Siguen abiertos los **pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
 (acta D10), lo que deja sin efecto la decisión D1 del 29/09/2026 de darle solo una nota fechada.
@@ -242,7 +241,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-151 | El grupo de la evaluación con estudiantes es de grado quinto y los radicados dicen grado cuarto | Trabajo de grado, OE1, OE2, entregables OE4 y TG, juego | **Cerrado** (13/10/2026), salvo los radicados |
 | INC-152 | El inicio del Nivel 1 se veía demasiado oscuro: las tres narrativas del N1 y la cueva arrancaban con luz de 0,02 a 0,10 | Cámara narrativa N1, juego | **Cerrado** (13/10/2026) |
 | INC-153 | En `N1_AparicionGuia` (línea 7) los pasos de la familia no se desplazaban lo mínimo y no había una guarda de contenido que lo exigiera | Juego | **Cerrado** (13/10/2026) |
-| INC-154 | El abrazo y el sueño de la familia se veían de frente; pasan a verse de perfil | Personajes-Resultados, juego | **Registrado** (13/10/2026), código en curso |
+| INC-154 | El abrazo y el sueño de la familia se veían de frente; pasan a verse de perfil | Personajes-Resultados, juego | **Cerrado** (13/10/2026) |
 | INC-155 | Los troncos del bosque huían del cursor y solo el cuadrado del objeto recibía el clic | Juego | **Cerrado** (13/10/2026) |
 | INC-156 | El lado de «Girar» se dibujaba con una misma punta de flecha girada ±90°; pasa a flechas curvas de Phosphor | Inventario de arte, créditos, juego | **Cerrado** (13/10/2026) |
 | INC-157 | Vocabulario de narrativas y textos del río demasiado difícil para grado quinto | Guion (radicado), juego | **Cerrado** (13/10/2026), salvo el radicado |
@@ -3579,22 +3578,38 @@ dirección (`N2_Escena21_Bosque` y dos en `N2_PuenteI_Bosque`). **Prueba:**
 (`Assets/Tests/EditMode/Scaffolding/NarrativeLocomotionTests.cs`), compilada con `mcs` en la nube y sin correr en el
 Editor al escribir esta entrada. **Pendiente:** mirar el encuadre de la línea 7 con la familia en x 0,18 a 0,22.
 
-### INC-154 · El abrazo y el sueño de la familia se ven de perfil — registrado (13/10/2026), código en curso
+### INC-154 · El abrazo y el sueño de la familia se ven de perfil — cerrado (13/10/2026)
 
 **El conflicto.** `ActionView` (INC-134) decide por la acción si la familia se ve de frente o de perfil. `Hug` y
-`Sleep` se veían de frente. El plan de la sesión del 13/10/2026 (`Plan-Sesion-13-10.md`, P2) los pasa a perfil.
+`Sleep` se veían de frente: los brazos abiertos del abrazo se leían como una T y no como un abrazo, y quien duerme
+no se ve acostado si se le mira de frente.
 
 **Qué decían los documentos.** INC-134 fija la lista de acciones de perfil: `Walk`, `Run`, `Carry`, `Push`, `PickUp`,
 `Kneel` y `Blow`.
 
-**Qué hace el plan.** `Hug` y `Sleep` pasan a `Profile`. En el abrazo (líneas 5 y 12 de `N1_NacimientoDelFuego`) los
-brazos cercano y lejano se cierran hacia adelante y los pasos miran a Papá, en casillas juntas. En el sueño
-(línea 16) el cuerpo de perfil queda acostado a unos ±90° con los ojos cerrados, y los cuatro rodean el fuego sin
-taparlo. Algoritm sigue de frente, porque no tiene torso de perfil.
+**Regla.** Abrazar y dormir no son gestos hacia el estudiante y van de perfil. El guion decide hacia dónde con
+`ActorBeat.Facing`: quien abraza mira a quien abraza, y quien duerme queda con la cabeza hacia el lado contrario
+al que mira su perfil. La lista de acciones de perfil de INC-134 pasa a ser `Walk`, `Run`, `Carry`, `Push`,
+`PickUp`, `Kneel`, `Blow`, `Hug` y `Sleep`. Algoritm sigue de frente, porque no tiene torso de perfil.
 
-**Estado.** Esta entrada recoge el plan y no un diff: el commit de código no la trae. Hay que cotejarla con el
-commit que traiga INC-154 (`ActionView.cs`, `CharacterViewTests.cs`, `coreografia.py`, `clips_personajes.json`, los
-clips `abrazar` y `dormir` y `N1_NacimientoDelFuego.asset`) y ajustar la lista de INC-134 al cerrarlo.
+**Corrección aplicada (13/10/2026, `d8ab0f4`).**
+
+- `ActionView`: `Hug` y `Sleep` devuelven `Profile`.
+- Clips `char_{papa,mama,nina,nino}_anim_{abrazar,dormir}.anim`: se regeneraron solo las curvas de
+  `Lienzo/Perfil` y no se reconstruyó ningún prefab.
+  - En el abrazo los dos brazos van hacia delante, y los adultos bajan las manos hacia los niños.
+  - En el sueño `Lienzo/Perfil` gira a +90°: el cuerpo queda boca arriba y respira en un ciclo de 4 s. A −90°
+    quedaba boca abajo y sin ojos visibles; por eso la cabeza queda opuesta a la mirada.
+- `N1_NacimientoDelFuego`: `Facing` explícito en los abrazos de las líneas 4, 5 y 12. En la línea 16 cada uno
+  camina a su sitio alrededor del fuego y llega dormido, sin taparlo.
+- `N1_Hallazgo`, línea 12: Mamá abraza mirando a la izquierda (`Facing: 1`), hacia el niño.
+- Herramientas: `coreografia.py`, `clips_personajes.json`, `pose_preview.py` y `prefabs.py`. Las vistas previas
+  de las líneas 5, 12 y 16 están en `claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/`.
+
+**Pruebas.** `ActionView_INC154_AbrazarYDormirVanDePerfil`. `ActionView_INC134_LaTablaCubreTodasLasAcciones`
+incluye ahora las dos acciones, y `ActionView_INC134_LosGestosHaciaElEstudianteVanDeFrente` ya no las incluye.
+Según la sesión local, en EditMode pasaron `Character` (220 de 220) y `NarrativeSequence` (34 de 34, con RNF-03),
+y `pose_preview.py` también. **Pendiente:** PlayMode y una captura del motor.
 
 ### INC-155 · Los troncos del bosque: menos empuje, sin huida bajo el cursor y clic sobre todo el cuerpo — cerrado (13/10/2026)
 
@@ -3830,8 +3845,8 @@ no.
 
 - **rev. 26 (13/10/2026)** — Correcciones de la sesión con estudiantes (commits `6d26abb`, `52ecca5` y `52908f1`).
   Se registran **INC-152** (luz del Nivel 1 en las narrativas y la cueva), **INC-153** (caminata de la familia en
-  la aparición del guía y guarda de contenido), **INC-154** (abrazo y sueño de perfil, según el plan; su código sigue
-  en curso y hay que cotejarlo con el commit que lo traiga), **INC-155** (troncos del bosque; la prueba de RF-23
+  la aparición del guía y guarda de contenido), **INC-154** (abrazo y sueño de perfil; cotejado y cerrado con `d8ab0f4`
+  el mismo día), **INC-155** (troncos del bosque; la prueba de RF-23
   pasa a «menor o igual»), **INC-156** (flechas curvas de «Girar»), **INC-157** (vocabulario; el guion radicado
   espera cotejo y autorización), **INC-158** (aviso del botón de ayuda), **INC-159** (pausa de cinco botones, deja
   sin efecto a INC-49 en el número de botones) e **INC-160** (botón «Atrás» del diálogo). Según el commit

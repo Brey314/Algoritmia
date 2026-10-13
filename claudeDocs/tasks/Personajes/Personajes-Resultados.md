@@ -1309,3 +1309,26 @@ Los nombres irregulares (`exoresion_…_papa`, `expresion_perfil _neutra…niña
 - La autorización de Santiago para editar los radicados que describen la cara de Algoritm y el retrato fijo (`claudeDocs/entregables/tools/pares/tg_expresiones_10oct.json`).
 - La medida de RNF-04 y RNF-05 en un ejecutable (próximo candidato del OE4).
 - `Level2_Maze.unity` apareció modificada en el árbol local (`RectTransform`, un redondeo de color y un espacio sobrante en un nombre) y quedó fuera de los commits a la espera de la respuesta de Santiago.
+
+### C.16 El abrazo y el sueño de perfil (INC-154, 13/10/2026)
+
+Rama `ajustes-OE4`, commit `d8ab0f4`. Viene de la sesión con estudiantes del 13/10/2026: de frente, los brazos abiertos del abrazo se leían como una T y no como un abrazo, y quien dormía no se veía acostado. Esta entrada se escribió contra el diff del commit; lo que se cita de pruebas sale de la sesión local.
+
+**Qué cambió.**
+
+- **`ActionView`:** `Hug` y `Sleep` pasan a `Profile`. La lista de acciones de perfil de INC-134 queda en `Walk`, `Run`, `Carry`, `Push`, `PickUp`, `Kneel`, `Blow`, `Hug` y `Sleep`. El guion decide el lado con `ActorBeat.Facing`. Algoritm sigue de frente.
+- **Clips `char_{papa,mama,nina,nino}_anim_{abrazar,dormir}.anim`:** se regeneraron con `coreografia.py` → `clips_personajes.json` y el modo `clips`. Solo cambiaron las curvas de `Lienzo/Perfil` y no se reconstruyó ningún prefab.
+  - **Abrazo:** los dos brazos van hacia delante, y los adultos bajan las manos hacia los niños.
+  - **Dormir:** `Lienzo/Perfil` gira a +90°, boca arriba, con una respiración de 4 s. La cabeza queda opuesta a la mirada, porque a −90° el cuerpo quedaba boca abajo y sin ojos visibles.
+- **Narrativas:**
+  - En `N1_NacimientoDelFuego`, los abrazos de las líneas 4, 5 y 12 tienen `Facing` explícito. En la línea 16 cada uno camina a su sitio alrededor del fuego y llega dormido, sin taparlo.
+  - En `N1_Hallazgo`, línea 12, Mamá abraza mirando a la izquierda (`Facing: 1`), hacia el niño.
+- **Herramientas:** `coreografia.py`, `clips_personajes.json`, `pose_preview.py` y `prefabs.py`. Las vistas previas de `pose_preview.py` de las líneas 5, 12 y 16 están en `capturas/2026-10-13-inc154/`.
+
+**Pruebas.**
+
+- `ActionView_INC154_AbrazarYDormirVanDePerfil` es nueva.
+- `ActionView_INC134_LaTablaCubreTodasLasAcciones` ahora incluye las dos acciones, y `ActionView_INC134_LosGestosHaciaElEstudianteVanDeFrente` ya no.
+- Según la sesión local, en EditMode pasaron `Character` (220 de 220) y `NarrativeSequence` (34 de 34, con RNF-03), y `pose_preview.py` también.
+
+**Abierto.** PlayMode y una captura del motor de las líneas 5, 12 y 16 de `N1_NacimientoDelFuego` y de la línea 12 de `N1_Hallazgo`.
