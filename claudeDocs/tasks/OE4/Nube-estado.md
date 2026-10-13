@@ -96,3 +96,27 @@ Línea 7 de `N1_AparicionGuia`: los cuatro beats Walk llevan `Facing: 1` y la `y
 ### C4
 
 Espera a que este archivo indique el commit del código local.
+
+## Orden de la sesión local (13/10/2026, tarde) — empezar C4 y C5–C6
+
+El código local está en `52908f1` (INC-152 cueva, INC-155, INC-156, INC-158, INC-159, INC-160). Lee su
+diff (`git show --stat 52908f1` y los hunks que necesites) y escribe **solo lo que diga el diff**.
+INC-154 (abrazo y sueño de perfil) sigue en curso en local: escríbelo según el plan
+(`Plan-Sesion-13-10.md`, P2) marcando en `Nube-estado.md` que hay que cotejarlo con el commit que lo traiga.
+PlayMode, suite completa y rc4 aún no se corrieron: no afirmes resultados de PlayMode ni peso de rc4.
+
+- **C4** — como dice `Encargo-Nube.md`: sección de hallazgos y correcciones en el OE4 (`src/`),
+  INC-152 a INC-160 en `INCONSISTENCIAS.md` (INC-159 deja sin efecto INC-49: la pausa pasa de 3 a 5
+  botones; INC-155 relaja `WheelLevelConfig_RF23_…` a «menor o igual»), `claudeDocs/Interfaces.md`
+  (pausa, aviso de ayuda, botón Atrás), la línea de grado de `CLAUDE.md` («grado cuarto» → «grado quinto»).
+  `Assets/Game/Art/Inventario.md` ya trae las flechas: no lo dupliques.
+- **C5** — créditos: «Iconos de pausa: Phosphor Icons, licencia MIT.» pasa a «Iconos de pausa y de giro:
+  Phosphor Icons, licencia MIT.» en `Assets/Game/Data/CreditsContent.asset` y en el valor por defecto de
+  `Assets/Game/Scripts/Runtime/UI/CreditsContent.cs` (INC-156). Si una prueba cita el texto, actualízala.
+- **C6** — corrige la frase que dice que el trabajo de grado habla de grado cuarto en
+  `claudeDocs/entregables/OE4/src/05-estudiantes.md` (~l. 9) y `claudeDocs/entregables/TG/cap9-evaluacion.md`
+  (~l. 156): la tesis pasa entera a grado quinto; **solo** los radicados del OE1 y del OE2 siguen diciendo
+  cuarto (INC-151).
+
+Mismas reglas de identidad (`santivaldiri`, sin coautor) y de archivos vedados que en `Encargo-Nube.md`;
+además no toques `ActionView.cs`, `CharacterViewTests.cs` ni `claudeDocs/tasks/Personajes/herramientas/*`.
