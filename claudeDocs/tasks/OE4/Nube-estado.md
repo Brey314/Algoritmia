@@ -8,7 +8,9 @@ La sesión en la nube actualiza este archivo en cada push: tarea, commit, qué q
 | C1 Vocabulario (INC-157) | hecho, falta cotejo local | `6d26abb` | 22 pares en `tools/pares/guion-inc157.json`, sin cotejar con el guion radicado |
 | C2 Oscuridad y caminata (INC-152, INC-153) | hecho, falta Editor | `52ecca5` | Prueba nueva `NarrativeLocomotionTests`, compilada con `mcs` y sin ejecutar |
 | C3 Resultados en markdown (INC-151) | hecho | `c62a09f` | Formato de consentimiento en `evidencias/consentimiento/` |
-| C4 Hallazgos y correcciones | espera el push del código local | | |
+| C4 Hallazgos y correcciones | hecho, INC-154 condicionado | `f1b689c` | Sobre `52908f1` |
+| C5 Créditos (INC-156) | hecho | `ca51d02` | |
+| C6 Grado quinto en la tesis (INC-151) | hecho | `5f573b7` | |
 
 ## Lo aplicado (13/10/2026)
 
@@ -93,9 +95,27 @@ Línea 7 de `N1_AparicionGuia`: los cuatro beats Walk llevan `Facing: 1` y la `y
   - Hay que regenerar los JSON de `pares/` desde el cap9 (`cap9_a_json.py`).
   - Queda un `[Pendiente]` en `03-resultados.md` (triaje de 16 defectos) y el de la Familia Anonaky en el cap9.
 
-### C4
+### C4 · Hallazgos e INC-152 a INC-160 (sobre `52908f1`)
 
-Espera a que este archivo indique el commit del código local.
+- **Entregable OE4:** `05-estudiantes.md` tiene un apartado 5.3 nuevo con la Tabla 5.4 (diez hallazgos con su corrección); `04-mejoras.md` lleva la referencia cruzada desde 4.6.
+- **`INCONSISTENCIAS.md`:** entradas INC-152 a INC-160, rev. 26, y una nota fechada junto a INC-49, al que INC-159 deja sin efecto. INC-155 anota que `WheelLevelConfig_RF23_…` pasó a `LessThanOrEqualTo`.
+- **`Interfaces.md`:** la pausa con cinco botones y el panel de confirmar salida, el aviso del botón de ayuda, el botón «Atrás» y las flechas de giro.
+- **`CLAUDE.md`:** solo la línea del grado, que pasa a quinto. `Inventario.md` no se tocó.
+- **Para la sesión local:**
+  - **INC-154 se escribió según el plan (P2), no según un diff.** Está como «registrado, código en curso» y las filas de abrazo y sueño de la Tabla 5.4 dicen «según el plan». Hay que cotejarlo con el commit que lo traiga y actualizar la lista de acciones de perfil de INC-134.
+  - **PlayMode, la suite completa y rc4** constan como pendientes; no se afirma el peso de rc4.
+  - **Los casos `PF-RF07-*`** describen la pausa de tres botones de rc3.
+  - **INC-159:** RF-07 y HU-17 radicados siguen con tres rótulos.
+  - **INC-151:** el `.docx` de la tesis pasa entero a «quinto» en local, con Word.
+  - **`Interfaces.md`** sigue citando `#E8A33D` en la fase 3 del N2, donde `CLAUDE.md` dice `#C4A882`. No es de esta tanda y no se tocó.
+
+### C5 · Créditos, `ca51d02`
+
+Además de «Iconos de pausa y de giro: Phosphor Icons, licencia MIT.», la línea anterior pasó a «…salvo los iconos de pausa y de giro.», para que no dé por originales las flechas. Ninguna prueba cita ese texto.
+
+### C6 · Grado, `5f573b7`
+
+`05-estudiantes.md` y `cap9-evaluacion.md` ahora dicen que la tesis pasa entera a grado quinto y que solo los radicados del OE1 y del OE2 siguen en cuarto.
 
 ## Orden de la sesión local (13/10/2026, tarde) — empezar C4 y C5–C6
 
