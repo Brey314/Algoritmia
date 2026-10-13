@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Game.Core;
 using NUnit.Framework;
@@ -161,24 +163,106 @@ namespace Game.UI.Tests
                 "«Reiniciar» re-bloqueó un nivel ya desbloqueado");
         }
 
+        /// <summary>
+        /// HU-17 corregido (INC-49) y ampliado (INC-159, sesión con estudiantes del 13/10/2026): los
+        /// cinco botones, en este orden. «Volver a ver la historia» solo se ofrece si la fase en curso
+        /// tiene escena, así que la prueba entra a la fase 1 del Nivel 1, que sí la tiene.
+        /// </summary>
         [Test]
         [Timeout(20000)]
         [Category("Acceptance")]
-        public async Task PauseMenu_HU17_OfreceExactamenteReanudarReiniciarYVolverAlMenuDeNiveles()
+        public async Task PauseMenu_INC159_OfreceCincoBotonesEnOrden()
         {
-            var pauseMenu = await LoadPauseMenu();
+            var (pauseMenu, _) = await LoadPauseMenuWithProfile(NewProfile());
 
             Click(pauseMenu.PauseButton);
             await Awaitable.NextFrameAsync();
 
-            Assert.That(pauseMenu.ContinueButton.GetComponentInChildren<Text>().text, Is.EqualTo("Reanudar"));
-            Assert.That(pauseMenu.RestartButton.GetComponentInChildren<Text>().text, Is.EqualTo("Reiniciar"));
-            Assert.That(pauseMenu.LevelSelectButton.GetComponentInChildren<Text>().text,
-                Is.EqualTo("Volver al menú de niveles"));
+            var buttons = pauseMenu.BaseButtons.GetComponentsInChildren<Button>(includeInactive: true);
+            Assert.That(buttons.Select(button => button.GetComponentInChildren<Text>().text), Is.EqualTo(new[]
+            {
+                "Reanudar", "Reiniciar", "Volver a ver la historia", "Volver al menú de niveles", "Guardar y salir"
+            }));
+            Assert.That(buttons.Select(button => button.gameObject.activeSelf), Has.All.True,
+                "con una fase que tiene historia, los cinco se ven");
+            Assert.That(buttons[0], Is.SameAs(pauseMenu.ContinueButton));
+            Assert.That(buttons[1], Is.SameAs(pauseMenu.RestartButton));
+            Assert.That(buttons[2], Is.SameAs(pauseMenu.HistoryButton));
+            Assert.That(buttons[3], Is.SameAs(pauseMenu.LevelSelectButton));
+            Assert.That(buttons[4], Is.SameAs(pauseMenu.SaveQuitButton));
+        }
 
-            // HU-17 corregido (INC-49): exactamente esos tres, sin un cuarto botón en el panel base.
-            Assert.That(pauseMenu.BaseButtons.GetComponentsInChildren<Button>(includeInactive: true).Length,
-                Is.EqualTo(3));
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task PauseMenu_INC159_SinFlowNoOfreceVolverAVerLaHistoria()
+        {
+            var pauseMenu = await LoadPauseMenu(); // la escena suelta, sin Boot: no hay fase en curso
+
+            Click(pauseMenu.PauseButton);
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(pauseMenu.HistoryButton.gameObject.activeSelf, Is.False,
+                "sin fase con historia el botón se oculta en vez de quedar mudo");
+            Assert.That(pauseMenu.BaseButtons.GetComponentsInChildren<Button>(includeInactive: false).Length,
+                Is.EqualTo(4));
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task PauseMenu_INC159_VolverAVerLaHistoriaDevuelveElTiempoYEntraALaEscenaDeLaFase()
+        {
+            var profile = NewProfile();
+            var (pauseMenu, runner) = await LoadPauseMenuWithProfile(profile);
+            Click(pauseMenu.PauseButton);
+            await Awaitable.NextFrameAsync();
+            Assert.That(Time.timeScale, Is.EqualTo(0f), "la pausa detiene el tiempo");
+
+            Click(pauseMenu.HistoryButton);
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Narrative));
+            Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N1_Hallazgo"));
+            Assert.That(Time.timeScale, Is.EqualTo(1f), "al salir de la pausa se devuelve el tiempo");
+            Assert.That(pauseMenu.Overlay.activeSelf, Is.False);
+            Assert.That(profile.ConfirmedPhases, Is.Empty, "ver la historia no toca el progreso (RF-41)");
+        }
+
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task PauseMenu_INC159_GuardarYSalirPideConfirmacionYGuardaAntesDeCerrar()
+        {
+            var pauseMenu = await LoadPauseMenu();
+            var order = new List<string>();
+            pauseMenu.Saver = new RecordingSaver(order);
+            pauseMenu.Quit = () => order.Add("quit");
+
+            Click(pauseMenu.PauseButton);
+            await Awaitable.NextFrameAsync();
+            Click(pauseMenu.SaveQuitButton);
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(pauseMenu.QuitConfirmPanel.activeSelf, Is.True, "no apareció la confirmación de «Guardar y salir»");
+            Assert.That(pauseMenu.BaseButtons.activeSelf, Is.False);
+            Assert.That(pauseMenu.QuitPromptLabel.text,
+                Is.EqualTo("¿Quieres salir del juego? Lo que ya terminaste queda guardado."));
+            Assert.That(pauseMenu.ConfirmQuitButton.GetComponentInChildren<Text>().text, Is.EqualTo("Sí, salir"));
+            Assert.That(pauseMenu.CancelQuitButton.GetComponentInChildren<Text>().text, Is.EqualTo("Cancelar"));
+
+            Click(pauseMenu.CancelQuitButton);
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(pauseMenu.QuitConfirmPanel.activeSelf, Is.False, "«Cancelar» cierra la confirmación");
+            Assert.That(pauseMenu.BaseButtons.activeSelf, Is.True, "y devuelve los botones base");
+            Assert.That(order, Is.Empty, "cancelar no guarda ni sale");
+
+            Click(pauseMenu.SaveQuitButton);
+            await Awaitable.NextFrameAsync();
+            Click(pauseMenu.ConfirmQuitButton);
+
+            Assert.That(order, Is.EqualTo(new[] { "save", "quit" }), "primero se guarda, después se sale (RF-09)");
         }
 
         [Test]
@@ -196,6 +280,15 @@ namespace Game.UI.Tests
             await Awaitable.NextFrameAsync();
 
             Assert.That(ButtonWithLabel("Pausa"), Is.Null, "la escena narrativa muestra un botón «Pausa»");
+        }
+
+        private sealed class RecordingSaver : IProfileSaver
+        {
+            private readonly List<string> _order;
+
+            public RecordingSaver(List<string> order) => _order = order;
+
+            public void SaveActive() => _order.Add("save");
         }
 
         // --- helpers -----------------------------------------------------------------------

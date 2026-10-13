@@ -74,6 +74,37 @@ namespace Game.Levels.Wheel.Tests
             });
         }
 
+        /// <summary>
+        /// El lado de «Girar» se dice con la flecha curva que da la vuelta hacia donde giraría la
+        /// carretilla (INC-156): <c>ui_girar_izq</c> y <c>ui_girar_der</c>, dibujadas ya con su
+        /// sentido. Antes eran una misma punta de flecha girada ±90°, y los estudiantes no entendían
+        /// hacia dónde iba el giro (sesión del 13/10/2026). Sin rotación: el sentido lo trae el
+        /// dibujo, y un icono que además se gira se lee al revés.
+        /// </summary>
+        [Test]
+        public void MazeScene_INC156_ElLadoDeGirarSeDibujaConFlechasCurvasSinGirarElIcono()
+        {
+            ConElLaberinto((_, canvas) =>
+            {
+                var lados = canvas.GetComponentsInChildren<Transform>(true)
+                    .Where(lado => lado.name == "Izq" || lado.name == "Der")
+                    .ToArray();
+                Assert.That(lados.Select(lado => lado.name), Is.EquivalentTo(new[] { "Izq", "Der" }),
+                    "«Girar» tiene un botón por lado, en el bloque modelo que clona SpawnBlock");
+
+                foreach (var lado in lados)
+                {
+                    var icono = lado.Find("Icono");
+                    var esperado = lado.name == "Izq" ? "ui_girar_izq" : "ui_girar_der";
+
+                    Assert.That(icono.GetComponent<Image>().sprite.name, Is.EqualTo(esperado),
+                        $"«{lado.name}» lleva la flecha curva de su lado");
+                    Assert.That(icono.localRotation, Is.EqualTo(Quaternion.identity),
+                        $"«{lado.name}»: el icono no se gira");
+                }
+            });
+        }
+
         private static double ContrastRatio(Color a, Color b)
         {
             var lighter = Math.Max(RelativeLuminance(a), RelativeLuminance(b));

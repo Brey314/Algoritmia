@@ -25,11 +25,11 @@ namespace Game.Levels.Fire
         private Material darknessMaterial;
 
         [SerializeField]
-        [Tooltip("Luz sin ningún golpe efectivo y luz al converger: el «fondo» va de la primera a la segunda (§8: 0.10 → 0.30).")]
-        private NarrativeLight darkest = new NarrativeLight(new Vector2(0.5f, 0.5f), 0.30f, 0.10f, new Color(1f, 0.90f, 0.72f));
+        [Tooltip("Luz sin ningún golpe efectivo y luz al converger: el «fondo» va de la primera a la segunda (§8 decía 0.10 → 0.30; subida a 0.22 → 0.35 tras la sesión con estudiantes del 13/10/2026, INC-152: «al inicio del Nivel 1 está muy oscuro»).")]
+        private NarrativeLight darkest = new NarrativeLight(new Vector2(0.5f, 0.5f), 0.30f, 0.22f, new Color(1f, 0.90f, 0.72f));
 
         [SerializeField]
-        private NarrativeLight brightest = new NarrativeLight(new Vector2(0.5f, 0.5f), 0.30f, 0.30f, new Color(1f, 0.90f, 0.72f));
+        private NarrativeLight brightest = new NarrativeLight(new Vector2(0.5f, 0.5f), 0.30f, 0.35f, new Color(1f, 0.90f, 0.72f));
 
         private Material _material;
 
@@ -38,6 +38,7 @@ namespace Game.Levels.Fire
 #if UNITY_INCLUDE_TESTS
         internal Image Background => background;
         internal NarrativeLight Darkest => darkest;
+        internal NarrativeLight Brightest => brightest;
         internal NarrativeLight Current { get; private set; }
 #endif
 

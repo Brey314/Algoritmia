@@ -51,5 +51,100 @@ namespace Game.Core.Tests
             Assert.That(profile.ConfirmedPhases.Count, Is.EqualTo(1),
                 "Restart cambió el número de fases confirmadas");
         }
+
+        // --- INC-159: «Volver a ver la historia» y «Guardar y salir» -------------------------
+
+        private static readonly PhaseNarrative[] Table =
+        {
+            new PhaseNarrative(LevelId.Fire, 1, "N1_Hallazgo"),
+            new PhaseNarrative(LevelId.Wheel, 2, "N2_Escena23_Construccion")
+        };
+
+        private static GameFlowRunner RunnerPlaying(LevelId level, int phase)
+        {
+            var profile = PlayerProfile.Create("Ana", Array.Empty<string>()).Profile;
+            profile.Reach(level);
+            var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
+            runner.Flow.TryGoTo(GameState.MainMenu);
+            runner.Flow.TryGoTo(GameState.ProfileSelect);
+            runner.Flow.TrySelectProfile(profile);
+            runner.Flow.TryStartPlaying(level, phase);
+            return runner;
+        }
+
+        [Test]
+        public void PauseMenuPolicy_INC159_LaFaseEnCursoPresentaLaEscenaDeSuFila()
+        {
+            var runner = RunnerPlaying(LevelId.Wheel, 2);
+
+            Assert.That(PauseMenuPolicy.StoryFor(runner.Flow, Table), Is.EqualTo("N2_Escena23_Construccion"));
+        }
+
+        [Test]
+        public void PauseMenuPolicy_INC159_UnaFaseSinFilaNoOfreceHistoria()
+        {
+            var runner = RunnerPlaying(LevelId.Wheel, 1); // la tabla solo tiene la fase 2 del Nivel 2
+
+            Assert.That(PauseMenuPolicy.StoryFor(runner.Flow, Table), Is.Null,
+                "sin fila el botón se oculta en vez de quedar mudo");
+            Assert.That(PauseMenuPolicy.WatchStory(runner, Table), Is.False);
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Playing), "y el flujo no se movió");
+        }
+
+        [Test]
+        public void PauseMenuPolicy_INC159_FueraDeJugarNoHayHistoria()
+        {
+            var runner = RunnerPlaying(LevelId.Fire, 1);
+            runner.Flow.TryGoTo(GameState.LevelSelect); // PlayingLevel sigue fijo, pero ya no se juega
+
+            Assert.That(PauseMenuPolicy.StoryFor(runner.Flow, Table), Is.Null);
+            Assert.That(PauseMenuPolicy.StoryFor(null, Table), Is.Null);
+            Assert.That(PauseMenuPolicy.StoryFor(runner.Flow, null), Is.Null);
+        }
+
+        [Test]
+        public void PauseMenuPolicy_INC159_VolverAVerLaHistoriaEntraALaNarrativaSinTocarElPerfil()
+        {
+            var runner = RunnerPlaying(LevelId.Fire, 1);
+            var profile = runner.Flow.ActiveProfile;
+            var reached = profile.ReachedLevel;
+
+            var result = PauseMenuPolicy.WatchStory(runner, Table);
+
+            Assert.That(result, Is.True);
+            Assert.That(runner.Flow.Current, Is.EqualTo(GameState.Narrative));
+            Assert.That(runner.Flow.NarrativeSequenceId, Is.EqualTo("N1_Hallazgo"));
+            Assert.That(profile.ReachedLevel, Is.EqualTo(reached), "ver la historia no mueve el progreso (RF-41)");
+            Assert.That(profile.ConfirmedPhases, Is.Empty);
+        }
+
+        [Test]
+        public void PauseMenuPolicy_INC159_GuardarYSalirGuardaAntesDeCerrar()
+        {
+            var order = new System.Collections.Generic.List<string>();
+
+            PauseMenuPolicy.SaveThenQuit(new RecordingSaver(order), () => order.Add("quit"));
+
+            Assert.That(order, Is.EqualTo(new[] { "save", "quit" }), "primero se guarda, después se sale (RF-09)");
+        }
+
+        [Test]
+        public void PauseMenuPolicy_INC159_SalirSinPerfilActivoSigueSaliendo()
+        {
+            var quit = false;
+
+            PauseMenuPolicy.SaveThenQuit(null, () => quit = true);
+
+            Assert.That(quit, Is.True, "sin perfil no hay nada que guardar, pero salir tiene que funcionar");
+        }
+
+        private sealed class RecordingSaver : IProfileSaver
+        {
+            private readonly System.Collections.Generic.List<string> _order;
+
+            public RecordingSaver(System.Collections.Generic.List<string> order) => _order = order;
+
+            public void SaveActive() => _order.Add("save");
+        }
     }
 }

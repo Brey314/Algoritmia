@@ -89,6 +89,78 @@ namespace Game.Scaffolding.Tests
         }
 
         [Test]
+        public void DialogueRunner_INC160_VolverAtrasEnLaPrimeraLineaNoHaceNada()
+        {
+            var sut = new DialogueRunner(TresLineas, alreadySeen: false);
+
+            sut.Back();
+
+            Assert.That(sut.Index, Is.EqualTo(0), "la primera línea es el tope: no cruza a otra secuencia");
+            Assert.That(sut.CanGoBack, Is.False, "y ahí el botón no se ofrece");
+            Assert.That(sut.Current.Text, Is.EqualTo("¡Hola, familia!"));
+        }
+
+        [Test]
+        public void DialogueRunner_INC160_VolverAtrasTrasAvanzarBajaUnaLinea()
+        {
+            var sut = new DialogueRunner(TresLineas, alreadySeen: false);
+            sut.Advance();
+            sut.Advance();
+
+            sut.Back();
+
+            Assert.That(sut.Index, Is.EqualTo(1), "baja una línea");
+            Assert.That(sut.Current.Text, Is.EqualTo("¿Se fue?"), "y la línea en curso es la anterior");
+            Assert.That(sut.CanGoBack, Is.True, "todavía hay una más atrás");
+            Assert.That(sut.Progress, Is.EqualTo(0.5f), "el progreso de la cámara sigue a la línea");
+        }
+
+        [Test]
+        public void DialogueRunner_INC160_VolverAtrasNoReabreUnDialogoTerminado()
+        {
+            var sut = new DialogueRunner(TresLineas, alreadySeen: false);
+            sut.Advance();
+            sut.Advance();
+            sut.Advance();
+
+            sut.Back();
+
+            Assert.That(sut.IsFinished, Is.True, "terminada sigue terminada");
+            Assert.That(sut.Current, Is.Null, "sin línea que releer");
+            Assert.That(sut.CanGoBack, Is.False);
+        }
+
+        [Test]
+        public void DialogueRunner_INC160_VolverAtrasTampocoReabreUnaEscenaOmitida()
+        {
+            var sut = new DialogueRunner(TresLineas, alreadySeen: true);
+            sut.Advance();
+            sut.Skip();
+
+            sut.Back();
+
+            Assert.That(sut.IsFinished, Is.True);
+        }
+
+        [Test]
+        public void DialogueRunner_INC160_UnaLineaYaVistaNoVuelveASerNueva()
+        {
+            var sut = new DialogueRunner(TresLineas, alreadySeen: false);
+            Assert.That(sut.IsNewLine, Is.True, "la primera línea es nueva");
+            sut.Advance();
+            Assert.That(sut.IsNewLine, Is.True, "avanzar a una línea nunca vista es nuevo");
+
+            sut.Back();
+            Assert.That(sut.IsNewLine, Is.False, "releer no repite lo que ya pasó");
+
+            sut.Advance();
+            Assert.That(sut.IsNewLine, Is.False, "volver a avanzar sobre una línea ya vista tampoco");
+
+            sut.Advance();
+            Assert.That(sut.IsNewLine, Is.True, "la primera línea que nunca se vio sí se vive completa");
+        }
+
+        [Test]
         public void DialogueRunner_RF05_ElProgresoVaDeCeroAUnoAlRitmoDeLasLineas()
         {
             var sut = new DialogueRunner(TresLineas, alreadySeen: false);

@@ -13,7 +13,7 @@ namespace Game.Levels.Wheel
     ///
     /// | Categoría | Cómo se consigue |
     /// |---|---|
-    /// | Tronco redondo | <see cref="Push"/> alto y <see cref="Drag"/> bajo: rueda lejos y suave |
+    /// | Tronco redondo | <see cref="Push"/> moderado y <see cref="Drag"/> alto (INC-155: antes alto y bajo, y huía del clic): rueda poco y se frena enseguida, lo justo para que se pueda coger |
     /// | Piedra | <see cref="StepSize"/> mayor que cero: vuelca una esquina y se detiene |
     /// | Herramienta | <see cref="Push"/> mínimo con <see cref="Drag"/> y <see cref="Spring"/> altos: se arrastra un pelo |
     /// | Planta u hoja | <see cref="Lift"/> contra <see cref="Gravity"/>: un arco lento de vuelta al suelo |
@@ -95,6 +95,12 @@ namespace Game.Levels.Wheel
     /// amplitudes pequeñas y ciclos lentos, que es lo que vigila
     /// <c>WheelLevelConfig_RNF21_ElMovimientoAmbientalEsPequenoEnTodasLasCategorias</c>.
     ///
+    /// **Con el cursor sobre el objeto no se aparta** (INC-155): el modelo huye del cursor, y un
+    /// objeto que huye de aquello que lo va a pulsar no se puede coger — la sesión con estudiantes
+    /// del 13/10/2026 lo vio con los troncos. El área de clic la mide quien llama (en píxeles, que
+    /// aquí no existen) y la pasa a <see cref="Step"/>; la regla vale para todas las categorías
+    /// porque pasan por el mismo paso.
+    ///
     /// C# plano y en fracciones del suelo, no en píxeles: se prueba entero en EditMode sin escena
     /// ni frames, y el tacto sale igual en cualquier resolución.
     /// </remarks>
@@ -143,11 +149,18 @@ namespace Game.Levels.Wheel
         public bool IsMoving => Velocity.sqrMagnitude > StillSpeed * StillSpeed;
 
         /// <summary>Avanza un fotograma con el cursor donde esté.</summary>
+        /// <param name="cursor">El cursor, en fracción del suelo.</param>
+        /// <param name="deltaTime">Segundos del fotograma.</param>
+        /// <param name="overObject">
+        /// Si el cursor está dentro del área donde el clic elige el objeto (INC-155): entonces el
+        /// cursor no lo empuja ni lo levanta, ni la piedra vuelca. Lo demás sigue: la resistencia, el
+        /// muelle de vuelta a casa, la gravedad y el aviso de que el cursor entró.
+        /// </param>
         /// <returns>
         /// Si el cursor acaba de entrar en el radio: el momento en que el objeto empieza a
         /// apartarse, que es cuando suena (una vez por acercamiento, no una por fotograma).
         /// </returns>
-        public bool Step(Vector2 cursor, float deltaTime)
+        public bool Step(Vector2 cursor, float deltaTime, bool overObject = false)
         {
             var away = Position - cursor;
             var distance = away.magnitude;
@@ -161,11 +174,13 @@ namespace Game.Levels.Wheel
 
             if (_settings.StepSize > 0f)
             {
-                StepInCorners(entered, direction);
+                StepInCorners(entered && !overObject, direction);
                 return entered;
             }
 
-            if (inside)
+            // Encima del objeto el cursor lo pulsa, no lo aparta: sin esta guarda el tronco se iba
+            // justo cuando el cursor llegaba a él, y el clic caía en el hueco que dejaba (INC-155).
+            if (inside && !overObject)
             {
                 // La fuerza decae con la distancia: el objeto se aparta hasta salir del radio y
                 // ahí deja de sentir el cursor, que es lo que acota el recorrido sin un tope.

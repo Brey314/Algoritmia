@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace Game.Scaffolding
@@ -26,6 +27,9 @@ namespace Game.Scaffolding
         private readonly IReadOnlyList<DialogueLine> _lines;
         private int _index;
 
+        /// <summary>La línea más lejana que ya se mostró: lo que está por detrás de ella se vuelve a leer, no se vuelve a vivir.</summary>
+        private int _furthest;
+
         public DialogueRunner(IReadOnlyList<DialogueLine> lines, bool alreadySeen)
         {
             _lines = lines ?? new DialogueLine[0];
@@ -53,6 +57,13 @@ namespace Game.Scaffolding
         public int Index => _index;
 
         /// <summary>
+        /// Si la línea en curso se muestra por primera vez. Falso al volver atrás (<see cref="Back"/>) y al
+        /// avanzar de nuevo sobre líneas ya vistas: ahí se pinta quieta, sin repetir sonidos ni movimientos,
+        /// para que un objeto movido no se mueva dos veces.
+        /// </summary>
+        public bool IsNewLine { get; private set; } = true;
+
+        /// <summary>
         /// Pasa a la línea siguiente. Devuelve si quedaba alguna: en la última línea devuelve
         /// <c>false</c> y marca la escena como terminada, que es la señal para salir de ella.
         /// </summary>
@@ -70,7 +81,28 @@ namespace Game.Scaffolding
             }
 
             _index++;
+            IsNewLine = _index > _furthest;
+            _furthest = Math.Max(_furthest, _index);
             return true;
+        }
+
+        /// <summary>Si se puede volver a la línea anterior: no en la primera, ni con la escena terminada.</summary>
+        public bool CanGoBack => !IsFinished && _index > 0;
+
+        /// <summary>
+        /// Vuelve a la línea anterior para releerla (INC-160). Es solo lectura: no cruza a la secuencia
+        /// anterior —la primera línea es el tope— y no reabre una escena terminada. Lo que cada línea
+        /// dispara (sonidos, movimientos) no se repite: lo decide quien pinta, con <see cref="IsNewLine"/>.
+        /// </summary>
+        public void Back()
+        {
+            if (!CanGoBack)
+            {
+                return;
+            }
+
+            _index--;
+            IsNewLine = false;
         }
 
         /// <summary>

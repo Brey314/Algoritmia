@@ -433,6 +433,64 @@ namespace Game.Scaffolding.Tests
             Assert.That(ActorTimeline.FacesLeftOfStep(null, Entrada, fallback: true), Is.True, "sin paso, tampoco");
         }
 
+        [Test]
+        public void ActorTimeline_INC160_UnPasoConMovimientoSeVeLlegadoAlReleerlo()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(2, ActorAction.Walk).MovingTo(Fondo, 2.5f, ActorAction.Kneel));
+
+            var cue = ActorTimeline.StillCue(sut, 2, speaking: false);
+
+            Assert.That(cue.Moves, Is.False, "releer no camina");
+            Assert.That(cue.From, Is.EqualTo(Fondo), "empieza donde el paso lo deja");
+            Assert.That(cue.To, Is.EqualTo(Fondo));
+            Assert.That(cue.During, Is.EqualTo(ActorAction.Kneel), "y hace lo que hace al llegar, no el caminar");
+        }
+
+        [Test]
+        public void ActorTimeline_INC160_UnaAccionDeDesplazamientoQuedaDePieAlReleerla()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(2, ActorAction.Carry).MovingTo(Fondo, 2f, ActorAction.Carry));
+
+            var cue = ActorTimeline.StillCue(sut, 2, speaking: false);
+
+            Assert.That(cue.During, Is.EqualTo(ActorAction.Idle), "cargar quieto sería caminar en el sitio");
+        }
+
+        [Test]
+        public void ActorTimeline_INC160_QuienDiceLaLineaGesticulaEnVezDeCaminarEnElSitio()
+        {
+            var sut = Personaje(ActorAction.Walk);
+
+            var cue = ActorTimeline.StillCue(sut, 1, speaking: true);
+
+            Assert.That(cue.During, Is.EqualTo(ActorAction.Talk));
+        }
+
+        [Test]
+        public void ActorTimeline_INC160_UnaLineaSinPasoConservaLoQueMantenia()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(2, ActorAction.Walk).MovingTo(Fondo, 2f, ActorAction.Kneel));
+
+            var cue = ActorTimeline.StillCue(sut, 5, speaking: false);
+
+            Assert.That(cue.To, Is.EqualTo(Fondo), "sigue donde llegó");
+            Assert.That(cue.During, Is.EqualTo(ActorAction.Kneel), "arrodillado sigue arrodillado");
+        }
+
+        [Test]
+        public void ActorTimeline_INC160_ReleerUnaLineaConservaLaExpresionDelGuion()
+        {
+            var sut = Personaje(ActorAction.Idle,
+                new ActorBeat(1, ActorAction.Idle).WithEmotion(FacialEmotion.Surprised));
+
+            var cue = ActorTimeline.StillCue(sut, 1, speaking: false);
+
+            Assert.That(cue.Emotion, Is.EqualTo(FacialEmotion.Surprised));
+        }
+
         /// <summary>Un asset anterior a INC-134 no declara el campo: Auto, y el resto del paso queda igual.</summary>
         [Test]
         public void ActorBeat_INC134_PorDefectoElRumboEsAuto()

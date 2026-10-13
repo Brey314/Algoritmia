@@ -305,7 +305,8 @@ namespace Game.Levels.Wheel
             image.color = Color.white;
             if (forestObject.Category == ForestObjectCategory.RoundLog && config.LogLook != null)
             {
-                RollingLog.Attach(image, config.LogLook);
+                // El clic es del cuerpo que se dibuja y no del cuadrado del objeto (INC-155).
+                RollingLog.Attach(image, config.LogLook, clickable: true);
             }
 
             PropShadow.Attach(button.gameObject, forestObject.Art);
@@ -668,10 +669,15 @@ namespace Game.Levels.Wheel
                     continue;
                 }
 
+                var log = forestObject.Category == ForestObjectCategory.RoundLog
+                    ? button.GetComponentInChildren<RollingLog>()
+                    : null;
+
                 var position = forestObject.FloorPosition;
                 if (nudge != null)
                 {
-                    if (nudge.Step(cursor, deltaTime))
+                    // Con el cursor sobre el área de clic el objeto no se aparta: no huye de la pulsación (INC-155).
+                    if (nudge.Step(cursor, deltaTime, IsOverClickArea(button, log, screenCursor)))
                     {
                         PlayNudge(forestObject.Category);
                     }
@@ -683,8 +689,7 @@ namespace Game.Levels.Wheel
                 var buttonRect = (RectTransform)button.transform;
                 Place(buttonRect, position, forestObject.Mirrored, cursor);
 
-                if (forestObject.Category == ForestObjectCategory.RoundLog &&
-                    button.GetComponentInChildren<RollingLog>() is { } log)
+                if (log != null)
                 {
                     Roll(buttonRect, log, forestObject, position);
                 }
@@ -703,6 +708,17 @@ namespace Game.Levels.Wheel
 
             RustleLeaves(leavesMoving);
         }
+
+        /// <summary>
+        /// Si el cursor está donde un clic elegiría este objeto: el cuerpo del tronco que dibuja
+        /// <see cref="RollingLog"/> y, en los demás, su imagen. Es el mismo criterio con el que el
+        /// <c>GraphicRaycaster</c> decide a quién llega el clic, así que «encima» y «clicable»
+        /// no pueden discrepar. Se mide en local y la escala del objeto (lejanía, realce) va dentro.
+        /// </summary>
+        private bool IsOverClickArea(Button button, RollingLog log, Vector2 screenCursor) =>
+            log != null && log.raycastTarget
+                ? log.IsRaycastLocationValid(screenCursor, UiCamera)
+                : RectTransformUtility.RectangleContainsScreenPoint((RectTransform)button.transform, screenCursor, UiCamera);
 
         /// <summary>
         /// El tronco que el cursor aparta rueda, no se desliza: gira lo que avanza entre su radio,

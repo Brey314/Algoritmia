@@ -37,7 +37,7 @@ namespace Game.Content.Tests
             typeof(LevelSummaryMessages), typeof(NarrativeSequence), typeof(GuideContent),
             typeof(FireMessages), typeof(WheelLevelConfig), typeof(RiverLevelConfig),
             typeof(RaftAssemblyContent), typeof(AssemblyContent), typeof(MazeLayout),
-            typeof(GameTitleConfig)
+            typeof(GameTitleConfig), typeof(PauseMenuContent)
         };
 
         [Test]

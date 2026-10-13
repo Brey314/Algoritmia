@@ -337,6 +337,51 @@ namespace Game.UI.Tests
 
         [Test]
         [Timeout(30000)]
+        public async Task NarrativeScene_INC160_AtrasVuelveALaLineaAnteriorYNoSeOfreceEnLaPrimera()
+        {
+            var (controller, _) = await OpenNarrative("N1_Hallazgo");
+            var primera = controller.BodyLabel.text;
+
+            Assert.That(controller.BackButton, Is.Not.Null, "la escena trae el botón «Atrás»");
+            Assert.That(controller.BackButton.gameObject.activeSelf, Is.False, "en la primera línea no hay a dónde volver");
+
+            Click(controller.AdvanceButton);
+            Assert.That(controller.BackButton.gameObject.activeSelf, Is.True, "desde la segunda línea sí");
+
+            Click(controller.BackButton);
+            Assert.That(controller.Dialogue.Index, Is.EqualTo(0), "baja una línea");
+            Assert.That(controller.BodyLabel.text, Is.EqualTo(primera), "y se relee su texto");
+            Assert.That(controller.BackButton.gameObject.activeSelf, Is.False, "otra vez en la primera");
+        }
+
+        /// <summary>«Atrás» vive en el cuadro sin pisar el nombre, el texto ni los otros botones (INC-160).</summary>
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_INC160_AtrasNoPisaElTextoNiLosOtrosBotonesYQuedaDentroDelCuadro()
+        {
+            var (controller, _) = await OpenNarrative("N1_Hallazgo");
+            Click(controller.AdvanceButton); // en la primera línea el botón está oculto
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            var interior = EnPantalla((RectTransform)controller.BodyLabel.transform.parent); // Cuerpo → Fondo
+            var atras = EnPantalla((RectTransform)controller.BackButton.transform);
+            var texto = EnPantalla(controller.BodyLabel.rectTransform);
+            var nombre = EnPantalla(controller.SpeakerLabel.rectTransform);
+            var omitir = EnPantalla((RectTransform)controller.SkipButton.transform); // su sitio está reservado aunque no se vea
+            var continuar = EnPantalla((RectTransform)controller.AdvanceButton.transform);
+
+            Assert.That(atras.Overlaps(texto), Is.False, "no tapa el texto");
+            Assert.That(atras.Overlaps(nombre), Is.False, "ni el nombre");
+            Assert.That(atras.Overlaps(omitir), Is.False, "ni «Omitir»");
+            Assert.That(atras.Overlaps(continuar), Is.False, "ni «Continuar»");
+            Assert.That(atras.xMin, Is.GreaterThanOrEqualTo(interior.xMin - 0.5f), "no sale por la izquierda del cuadro");
+            Assert.That(atras.yMax, Is.LessThanOrEqualTo(interior.yMax + 0.5f), "ni por arriba");
+            Assert.That(atras.xMax, Is.LessThanOrEqualTo(interior.xMax + 0.5f), "ni por la derecha");
+        }
+
+        [Test]
+        [Timeout(30000)]
         public async Task NarrativeScene_RF10_TerminarLaEscena21EntraAJugarLaFase1DelBosque()
         {
             var (controller, runner) = await OpenNarrative("N2_Escena21_Bosque", LevelId.Wheel);

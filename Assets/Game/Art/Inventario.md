@@ -361,6 +361,7 @@ RF-45) y **sin texto dentro de la imagen**: el texto lo escribe Unity encima.
 | ✓ `ui_panel.png`, `ui_boton.png`, `ui_circulo.png`, `ui_alerta.png`, `ui_papelera.png` | El conjunto genérico de interfaz (T05–T08, 08/09/2026): tablilla, botón, círculo, icono de alerta y papelera, teñidos desde el Inspector. Con él se arman el cuadro de diálogo, el panel del N1, el editor de bloques, el contador y los iconos de estado del N2, la cruceta y las listas del N3, el informe docente y los menús. Aceptado como definitivo por Santiago el 30/09/2026 (acta D10 §5) |
 | ✓ `ui_lock.png` | T07 — candado del menú de niveles y de los botones que todavía no se pueden usar en los niveles 1 y 2, segundo canal de RNF-19 |
 | ✓ `ui_pausa.png`, `ui_reanudar.png`, `ui_reiniciar.png` | Glifos del menú de pausa (mockup 6). **No son arte del proyecto**: son los iconos Phosphor `pause`, `play` y `arrow-counter-clockwise` que usa el mockup, rasterizados a 128 px en blanco y teñidos desde el Inspector — ver la nota de licencia abajo |
+| ✓ `ui_girar_izq.png`, `ui_girar_der.png` | INC-156 (13/10/2026) — la flecha curva del lado de «Girar» en el laberinto (botones `Izq`/`Der` del bloque, sin rotación). **No son arte del proyecto**: son los iconos Phosphor `arrow-arc-left` y `arrow-arc-right` (peso regular, `@phosphor-icons/core@2.1.1`), rasterizados a 128 px en blanco como los glifos de pausa y teñidos desde el Inspector — misma licencia, ver la nota de abajo. No sustituyen a `ui_reiniciar`, que se confundiría con «Reiniciar» |
 | ✓ `ui_flecha.png` | Punta de flecha de los dos botones que desplazan la lista de la secuencia del Nivel 2 (se gira 180° para «bajar») y de la cruceta del Nivel 3 (INC-91). Dibujada para el proyecto |
 | ✓ `ui_pulso_pista.anim` | El pulso de escala 1.0–1.06 del botón de pista del Nivel 1, ciclo de 2,2 s (§12.2); `Animation` legacy, que sí reproduce curvas de escala |
 | — ~~`ui_dialogo_marco.png`, `ui_dialogo_continuar.png`, `ui_dialogo_omitir.png`~~ | `A10` (Slice 1) — no se generan: el cuadro de diálogo (§10.3) se arma con `ui_panel` para el marco y el fondo y `ui_boton` para el retrato, «Continuar» y «Omitir» |
@@ -369,10 +370,10 @@ RF-45) y **sin texto dentro de la imagen**: el texto lo escribe Unity encima.
 | ✓ `ui_ind_intentos_boceto.png`, `_errores_boceto`, `_pasos_boceto`, `_tiempo_boceto` | `D1` (Slice 4) — solo informe docente, RF-46. Boceto dibujado con Pillow el 24/09/2026 y cableado en `TeacherReport.unity`; aceptado como definitivo por Santiago el 30/09/2026 (acta D10 §5) |
 | — ~~`ui_teacherreport_maqueta.png`~~ · ~~`ui_dialogo_eliminar.png`~~ | `D2`, `D3` — maquetas que perdieron su objeto: la pantalla del informe y el diálogo de borrado se construyeron directamente en Unity (`Slice-4-Resultados.md`, decisión 8) |
 
-> **Licencia de los tres glifos de pausa.** Salen de la familia **Phosphor Icons** (MIT), la
+> **Licencia de los glifos de pausa y de giro.** Salen de la familia **Phosphor Icons** (MIT), la
 > misma que dibuja los iconos del mockup. Se acreditan en los créditos con su licencia, como las
 > tipografías (OFL), y «originales del proyecto» ya no los abarca (INC-127). Es el único crédito de
-> Phosphor: solo los iconos de pausa, no el resto de la interfaz (`ui_alerta`, `ui_lock`, `ui_papelera`,
+> Phosphor: los iconos de pausa y, desde INC-156, las dos flechas de giro del laberinto (`ui_girar_izq`, `ui_girar_der`), no el resto de la interfaz (`ui_alerta`, `ui_lock`, `ui_papelera`,
 > `ui_circulo` y `ui_flecha` son del proyecto). Los créditos dicen «Entornos, objetos e interfaz: originales
 > del proyecto, salvo los iconos de pausa.» e «Iconos de pausa: Phosphor Icons, licencia MIT.». La licencia
 > está en `Assets/Game/Art/UI/Common/LICENSE-Phosphor.txt` y el build la copia a `Licencias/`.

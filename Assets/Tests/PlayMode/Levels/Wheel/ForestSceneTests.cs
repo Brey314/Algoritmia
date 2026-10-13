@@ -410,8 +410,16 @@ namespace Game.Levels.Wheel.Tests
             var rect = (RectTransform)tronco.Button.transform;
             var sitio = rect.anchorMin;
 
-            // El cursor se pega al objeto por su izquierda y se queda ahí.
-            var cursor = EnPantalla(rect).center + Vector2.left * 24f;
+            // El cursor se pega al objeto por su izquierda y se queda ahí: pegado, pero **fuera** del
+            // cuerpo del tronco, porque encima el tronco ya no se aparta (INC-155).
+            var cuerpo = tronco.Button.GetComponentInChildren<RollingLog>();
+            var cursor = EnPantalla(rect).center;
+            while (cuerpo.IsRaycastLocationValid(cursor, null))
+            {
+                cursor += Vector2.left * 4f;
+            }
+
+            cursor += Vector2.left * 8f;
             for (var frame = 0; frame < 90; frame++)
             {
                 forest.Nudge(cursor, 1f / 60f);
@@ -504,7 +512,8 @@ namespace Game.Levels.Wheel.Tests
                     ElCursorLejos(forest);
                 }
 
-                forest.Nudge(Aislado(forest, ForestObjectCategory.Plant), 1f / 60f);
+                // Al lado de la hoja y no encima: con el cursor sobre ella ya no vuela (INC-155).
+                forest.Nudge(Aislado(forest, ForestObjectCategory.Plant) + Vector2.right * 120f, 1f / 60f);
                 Assert.That(audio.HeldClip, Is.SameAs(sounds.LeafNudge), "la hoja suena mientras vuela");
 
                 for (var frame = 0; frame < 60 * 6; frame++)

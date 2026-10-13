@@ -210,6 +210,14 @@ namespace Game.UI.Tests
             await Awaitable.NextFrameAsync(); // deja correr FirePanelController.Start()
             await Awaitable.NextFrameAsync();
 
+            // INC-158: con un perfil sin la fase 1 la cueva abre el aviso del botón de ayuda y detiene el
+            // tiempo. Estas pruebas juegan el nivel, no leen el aviso: se cierra como lo haría el estudiante.
+            var aviso = Object.FindAnyObjectByType<HelpButtonIntro>(FindObjectsInactive.Include);
+            if (aviso != null)
+            {
+                aviso.Close();
+            }
+
             new GameObject("TestSceneLoader").AddComponent<SceneLoader>();
 
             return runner;

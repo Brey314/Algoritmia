@@ -193,6 +193,58 @@ namespace Game.Levels.Wheel.Tests
         }
 
         [Test]
+        public void ForestObjectNudge_INC155_ConElCursorSobreElObjetoNoSeApartaNingunaCategoria()
+        {
+            // El tronco huía justo cuando el cursor llegaba a él y el clic caía en el hueco. Es la
+            // misma función para todos: ni el tronco rueda, ni la hoja se levanta, ni la piedra vuelca.
+            foreach (var ajuste in new[] { Rodante(), Voladora(), Angulosa() })
+            {
+                var sut = new ForestObjectNudge(ajuste, Centro, Suelo);
+
+                for (var frame = 0; frame < UnSegundo; frame++)
+                {
+                    sut.Step(CursorPegado, Dt, overObject: true);
+                }
+
+                Assert.That(sut.Offset, Is.EqualTo(Vector2.zero),
+                    $"{ajuste.Category}: con el cursor encima se queda donde está");
+                Assert.That(sut.IsMoving, Is.False, $"{ajuste.Category}: y no se mueve");
+            }
+        }
+
+        [Test]
+        public void ForestObjectNudge_INC155_ElTroncoSigueApartandoseMientrasElCursorSeAcerca()
+        {
+            // La guarda no apaga el efecto: sin cursor encima, el mismo tronco sale rodando. Y si el
+            // cursor lo alcanza, lo suelta: no huye del clic pero tampoco queda a medio camino.
+            var sut = new ForestObjectNudge(Rodante(), Centro, Suelo);
+
+            for (var frame = 0; frame < 10; frame++)
+            {
+                sut.Step(CursorPegado, Dt);
+            }
+
+            var apartado = sut.Offset.x;
+            var velocidad = sut.Velocity.x;
+            for (var frame = 0; frame < 10; frame++)
+            {
+                sut.Step(CursorPegado, Dt, overObject: true);
+            }
+
+            Assert.That(apartado, Is.GreaterThan(0f), "sin el cursor encima se aparta");
+            Assert.That(sut.Velocity.x, Is.LessThan(velocidad), "con el cursor encima ya no gana velocidad: la pierde");
+        }
+
+        [Test]
+        public void ForestObjectNudge_INC155_ConElCursorEncimaSigueAvisandoQueEntro()
+        {
+            // El aviso es el sonido de cada objeto: el cursor lo alcanza aunque ya no lo empuje.
+            var sut = new ForestObjectNudge(Rodante(), Centro, Suelo);
+
+            Assert.That(sut.Step(CursorPegado, Dt, overObject: true), Is.True);
+        }
+
+        [Test]
         public void ForestObjectNudge_CP02_ElCursorLejosNoMueveNiEstorbaANadie()
         {
             var sut = new ForestObjectNudge(Rodante(), Centro, Suelo);
@@ -224,8 +276,8 @@ namespace Game.Levels.Wheel.Tests
 
             Assert.That(ajustes.Where(ajuste => ajuste.Category != ForestObjectCategory.RoundLog)
                     .Select(ajuste => ajuste.Push),
-                Is.All.LessThan(tronco.Push),
-                "solo lo redondo rueda de verdad: es la contraposición que enseña el nivel");
+                Is.All.LessThanOrEqualTo(tronco.Push),
+                "ninguna otra categoría empuja más que el tronco: es la contraposición que enseña el nivel");
             Assert.That(tronco.StepSize, Is.EqualTo(0f),
                 "el tronco no vuelca de esquina en esquina: no las tiene");
             Assert.That(ajustes.First(ajuste => ajuste.Category == ForestObjectCategory.Stone).StepSize,
