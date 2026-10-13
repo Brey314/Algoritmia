@@ -69,8 +69,8 @@ Tabla 12. Metas del cuarto objetivo y resultado obtenido
 
 | Indicador | Meta | Resultado |
 | --- | --- | --- |
-| Eficacia de las pruebas funcionales | 90 % o más | 96,8 % (122 de 126 casos con veredicto) |
-| Eficacia en las etiquetas NAV, BOT y SON | 90 % o más en cada una | NAV 94,1 % y BOT 100 %; SON sin calcular en el corte del 10 de octubre, con sus 3 casos de oído pendientes; H6, H7 y H12 se aprobaron el 13 de octubre (Tabla 16) |
+| Eficacia de las pruebas funcionales | 90 % o más | 97,0 % (128 de 132 casos con veredicto; 96,8 %, 122 de 126, en el corte del 10 de octubre) |
+| Eficacia en las etiquetas NAV, BOT y SON | 90 % o más en cada una | NAV 94,1 %, BOT 100 % y SON 100 % (3 de 3, aprobados por una persona el 13 de octubre; sin calcular en el corte del 10 de octubre) |
 | RF de prioridad Alta implementados | 45 de 45 | 45 de 45, sin defecto Bloqueante ni Mayor |
 | Requerimientos con al menos un caso de prueba (CT-10) | 47 RF y 23 RNF | 47 de 47 RF y 23 de 23 RNF, con 136 casos |
 
@@ -81,7 +81,7 @@ Fuente: elaboración propia a partir de la pasada de pruebas sobre rc3 (Anexo G)
 Antes de la pasada se corrió la suite completa, el 10 de octubre: 1 167 pruebas, con 1 165 aprobadas, una omitida y una fallida. En EditMode pasan 748 de 749 (una omisión por entorno) y en PlayMode 417 de 418; el fallo es RiverLevel_RNF21, sensible al tiempo, que pasa corrida sola. Son 321 pruebas más que las 846 del 1 de octubre (Tabla 10). Se corrió sobre el commit 292b108 y no sobre el contenido exacto de rc3, que solo difiere en una escena reserializada y seis imágenes sin referencias (DEF-RC3-I04). Es evidencia de apoyo y no cuenta en los indicadores, porque los casos se juzgan sobre el ejecutable.
 
 <!-- estilo: Normal -->
-De los 136 casos, 122 terminaron en P, 4 en F y 10 quedaron pendientes de la hoja de comprobaciones humanas, que se ejecutó el 13 de octubre (Tabla 16), sin PD, B ni NA (Tabla 13). Los fallidos son PF-RF45-05, de la sesión de omisión, y PF-RNF03-01, PF-RNF15-01 y PF-RNF17-01, de la de inspecciones; las demás sesiones aprobaron todos sus casos.
+De los 136 casos, 128 terminaron en P, 4 en F y 4 siguen pendientes (PF-RNF12-01, PF-RNF13-01, PF-RNF22-01 y PF-RNF23-01), sin PD, B ni NA (Tabla 13). Seis de los 128 P salen de la hoja de comprobaciones humanas, que se ejecutó el 13 de octubre en una sesión manual sobre rc3 y no con el arnés: PF-RNF07-02 (H3), PF-RNF08-01 (H4), PF-CT02-01 (H5) y PF-SON-01 a PF-SON-03 (H12, con H6 y H7). En el corte del 10 de octubre eran 122 P, 4 F y 10 pendientes. Los fallidos son PF-RF45-05, de la sesión de omisión, y PF-RNF03-01, PF-RNF15-01 y PF-RNF17-01, de la de inspecciones; las demás sesiones aprobaron todos sus casos.
 
 <!-- estilo: Descripción -->
 Tabla 13. Veredictos de rc3 por sesión
@@ -98,16 +98,16 @@ Tabla 13. Veredictos de rc3 por sesión
 | S-OMI, omisión, rejuego y casos negativos | 8 | 7 · 1 · 0 |
 | S-PER, persistencia y cierre forzado | 7 | 7 · 0 · 0 |
 | S-DOC, informe docente y borrado | 9 | 9 · 0 · 0 |
-| S-RNF, medidas sobre el ejecutable | 6 | 5 · 0 · 1 |
+| S-RNF, medidas sobre el ejecutable | 6 | 6 · 0 · 0 |
 | S-INSP, inspecciones y accesibilidad | 13 | 7 · 3 · 3 |
-| S-HUM, pruebas con personas y en otros equipos | 6 | 0 · 0 · 6 |
-| Total | 136 | 122 · 4 · 10 |
+| S-HUM, pruebas con personas y en otros equipos | 6 | 5 · 0 · 1 |
+| Total | 136 | 128 · 4 · 4 |
 
 <!-- estilo: Fuente -->
 Fuente: elaboración propia a partir del catálogo de casos y de la pasada sobre rc3 (Anexo G). La matriz de casos por requerimiento está en el Anexo A del documento del OE4 (Anexo_A_Matriz_casos.docx), que se entrega dentro del Anexo G.
 
 <!-- estilo: Normal -->
-Por etiqueta, NAV alcanza 94,1 % (16 de 17), BOT 100 % (28 de 28), RETO 100 % (37 de 37) y DAT 100 % (30 de 30). SON no se puede calcular, porque sus tres casos son de oído y los hace una persona; RNF queda en 78,6 % (11 de 14) por los tres fallidos de la inspección.
+Por etiqueta, NAV alcanza 94,1 % (16 de 17), BOT 100 % (28 de 28), RETO 100 % (37 de 37) y DAT 100 % (30 de 30). SON queda en 100 % (3 de 3), porque sus tres casos son de oído y los aprobó una persona el 13 de octubre, lo que es un juicio y no una medición; RNF queda en 82,4 % (14 de 17) por los tres fallidos de la inspección, frente a 78,6 % (11 de 14) en el corte del 10 de octubre.
 
 <!-- estilo: Normal -->
 PF-RNF13-01 pide recorrer el juego de la pantalla de inicio a los créditos sin omitir ninguna narrativa. Los dos recorridos del arnés no se repitieron sobre rc3 y la comprobación H8, con cronómetro, dio el 13 de octubre entre 40 y 45 min, hasta 5 min por encima de la referencia de 20 a 40 min del OE1; no se registró la causa. Cada nivel sí se jugó entero en su sesión, con perfiles y semillas distintos: ninguno se bloqueó y el Player.log de todos los lanzamientos quedó sin Exception. La resolución del Nivel 1 con un perfil nuevo duró 225,84 s, y los tres recorridos completos de versiones anteriores, 87, 33 y 16 min (apartado 8.2).
@@ -150,7 +150,7 @@ Tabla 15. Defectos hallados por severidad y estado al cierre de la pasada sobre 
 Fuente: elaboración propia a partir del registro de defectos (Anexo G); no incluye las nueve observaciones de rc3.
 
 <!-- estilo: Normal -->
-Dos tipos de prueba quedan fuera del arnés: las que necesitan niños de grado quinto jugando y las que necesitan los sentidos de una persona o un segundo equipo (Tabla 16). Son diez casos y dos puntos del guion, PG-05 y PG-06. Se ejecutaron el 13 de octubre de 2026 en el Colegio El Libertador IED, sede A, con 4 estudiantes de grado quinto. Un observador miró cómo jugaban; los estudiantes pensaron en voz alta y comunicaron sus inquietudes al observador, la técnica Thinking Aloud que la metodología Árcade asigna a esta fase [6]. La muestra es no probabilística (apartado 5.3) y la sesión verifica que la interfaz se entienda y la ruta principal se complete, sin medir el efecto del juego.
+Dos tipos de prueba quedan fuera del arnés: las que necesitan niños de grado quinto jugando y las que necesitan los sentidos de una persona o un segundo equipo (Tabla 16). Eran diez casos y dos puntos del guion, PG-05 y PG-06. La hoja de comprobaciones humanas se ejecutó el 13 de octubre de 2026 en el Colegio El Libertador IED, sede A, con 4 estudiantes de grado quinto. Un observador miró cómo jugaban; los estudiantes pensaron en voz alta y comunicaron sus inquietudes al observador, la técnica Thinking Aloud que la metodología Árcade asigna a esta fase [6]. La muestra es no probabilística (apartado 5.3) y la sesión verifica que la interfaz se entienda y la ruta principal se complete, sin medir el efecto del juego.
 
 <!-- estilo: Normal -->
 La sesión tuvo dos autorizaciones. El colegio firmó el 17 de septiembre de 2026, por medio de su rector, Richard Maldonado, el Formato de autorización institucional, que permite la participación de estudiantes de grado quinto de primaria dentro de la investigación doctoral de la docente Bibiana Patricia Rey Barrote, contacto del equipo en el colegio, con la condición del consentimiento informado de padres o acudientes. Ese consentimiento, exigido por RNF-12 conforme a la Ley 1581 de 2012 [35], lo firma la madre, el padre o el acudiente que sea representante legal del estudiante. El firmante autoriza que el estudiante participe en una sesión de 20 a 40 minutos y que el juego guarde su perfil, su avance y los cuatro indicadores de cada fase; el perfil lleva un código o un apodo y no el nombre real. El formato prevé el retiro de la autorización en cualquier momento y el borrado de cada perfil con la función Eliminar datos del juego al terminar las pruebas. Los cuatro consentimientos firmados se custodian y no se anexan, porque traen nombres, documentos y firmas de menores y de sus familias; el formato en blanco es el Anexo F. Al terminar la sesión se borraron los perfiles y la carpeta Datos quedó vacía en los equipos. Esa autorización fija el grado de la evaluación: el grupo evaluado es de grado quinto, y este trabajo de grado habla de grado quinto en todo su texto; solo los documentos radicados del OE1 y del OE2 siguen diciendo grado cuarto.
@@ -190,13 +190,13 @@ Fuente: elaboración propia a partir de la hoja de comprobaciones humanas (Anexo
 ## 9.3 Conclusiones del objetivo
 
 <!-- estilo: Normal -->
-De los 136 casos, 122 terminan en P, 4 en F y 10 esperan la consolidación de la hoja de comprobaciones humanas del 13 de octubre. La eficacia es de 96,8 % frente a la meta de 90 %, y los 45 RF de prioridad Alta están implementados, porque ninguno tiene un defecto Bloqueante o Mayor; el único fallido que toca uno de ellos, PF-RF45-05, es Menor. De las etiquetas que el indicador nombra, NAV (94,1 %) y BOT (100 %) superan la meta y SON no se puede calcular hasta que se consoliden los tres casos de oído, aprobados el 13 de octubre (H6, H7 y H12); la más baja es RNF, con 78,6 %, por textos e iconos fuera de su caja (PF-RNF03-01), identificadores en español (PF-RNF15-01) y commits sin tarjeta (PF-RNF17-01). Los dos indicadores se cumplen en lo medido, y el primero queda abierto en su parte de sonido.
+De los 136 casos, 128 terminan en P, 4 en F y 4 siguen pendientes. La eficacia es de 97,0 % (128 de 132) frente a la meta de 90 % (96,8 % en el corte del 10 de octubre), y los 45 RF de prioridad Alta están implementados, porque ninguno tiene un defecto Bloqueante o Mayor; el único fallido que toca uno de ellos, PF-RF45-05, es Menor. De las etiquetas que el indicador nombra, NAV (94,1 %), BOT (100 %) y SON (100 %, tres casos de oído aprobados el 13 de octubre en H6, H7 y H12) superan la meta; la más baja es RNF, con 82,4 %, por textos e iconos fuera de su caja (PF-RNF03-01), identificadores en español (PF-RNF15-01) y commits sin tarjeta (PF-RNF17-01). Los dos indicadores se cumplen; el de sonidos descansa en un juicio de oído y no en una medición.
 
 <!-- estilo: Normal -->
 Evaluar sobre el ejecutable y no sobre el Editor cambió resultados que la suite no podía mostrar. En la primera pasada aparecieron las conexiones de red del reproductor, porque las pruebas leían la configuración del repositorio y no la que queda dentro del ejecutable, y dos defectos del laberinto, porque las pruebas llaman a los controladores en vez de simular el puntero. Sobre rc3, con el arte final, la familia de perfil y las expresiones por línea, todas las sesiones jugables aprobaron y lo que apareció fue de disposición: iconos y textos fuera de su caja y un doble clic en «Omitir».
 
 <!-- estilo: Normal -->
-Lo que la evaluación no pudo observar tiene causa: el arnés no oye, no cronometra a un niño ni cambia de equipo, y PG-05 y PG-06 exigen estudiantes y el consentimiento de sus acudientes. Por eso RNF-07, RNF-08, CT-02, el sonido y la ruta de 20 a 40 min dependían de la sesión del 13 de octubre, que dio PG-05 y PG-06 positivos y aprobó las comprobaciones H1 a H7 y H9 a H12; el recorrido de H8 duró entre 40 y 45 min y H13 no se realizó. Los diez casos quedan fuera del denominador; cuando se consoliden sus veredictos, la eficacia se recalcula con ellos y el indicador de sonidos se cierra con los tres de SON.
+Lo que la evaluación no pudo observar tiene causa: el arnés no oye, no cronometra a un niño ni cambia de equipo, y PG-05 y PG-06 exigen estudiantes y el consentimiento de sus acudientes. Por eso RNF-07, RNF-08, CT-02, el sonido y la ruta de 20 a 40 min dependían de la sesión del 13 de octubre, que dio PG-05 y PG-06 positivos y aprobó las comprobaciones H1 a H7 y H9 a H12; el recorrido de H8 duró entre 40 y 45 min y H13 no se realizó. Seis de los diez casos pasaron a P con esa sesión. Los cuatro que siguen pendientes quedan fuera del denominador: PF-RNF13-01, porque los dos recorridos del arnés sobre rc3 no se ejecutaron y H8 no cubre los tres recorridos que el caso pide; PF-RNF12-01, que ninguna comprobación de la hoja cubre; y PF-RNF22-01 y PF-RNF23-01, que esperan la confirmación del contenido y el soporte escrito de la Familia Anonaky y de la colaboradora de arte. Si los cuatro fallaran, la eficacia sería 94,1 % (128 de 136).
 
 <!-- estilo: Título 3 -->
 ### 9.3.1 Oportunidades de mejora para trabajos futuros

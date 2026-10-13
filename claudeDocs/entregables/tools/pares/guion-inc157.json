@@ -1,13 +1,8 @@
 [
   {
-    "antes": "Noche helada, sin luna. La familia camina a la intemperie.",
-    "despues": "Noche helada, sin luna. La familia camina al aire libre, sin techo.",
-    "nota": "INC-157 (N1_Apertura)"
-  },
-  {
-    "antes": "Se escuchan animales y sonidos extraños. En el horizonte se distingue la silueta de una cueva.",
-    "despues": "Se escuchan animales y sonidos extraños. En el horizonte se distingue la sombra de una cueva.",
-    "nota": "INC-157 (N1_Apertura)"
+    "antes": "Noche helada, sin luna. La familia camina a la intemperie. Se escuchan animales y sonidos extraños. En el horizonte se distingue la silueta de una cueva.",
+    "despues": "Noche helada, sin luna. La familia camina al aire libre, sin techo. Se escuchan animales y sonidos extraños. En el horizonte se distingue la sombra de una cueva.",
+    "nota": "INC-157 (N1_Apertura) / (N1_Apertura)"
   },
   {
     "antes": "Algo se acerca entre la maleza. La familia corre hacia la cueva y entra.",
@@ -15,38 +10,38 @@
     "nota": "INC-157 (N1_Apertura)"
   },
   {
-    "antes": "Algoritm gira en el aire como un trompo feliz, dejando una estela de puntos luminosos.",
-    "despues": "Algoritm gira en el aire como un trompo feliz, dejando un rastro de puntos luminosos.",
+    "antes": "Algoritm gira en el aire como un trompo feliz, dejando una estela de puntos luminosos, y avanza despacio hacia el fondo de la cueva, mirando atrás para asegurarse de que la familia lo sigue.",
+    "despues": "Algoritm gira en el aire como un trompo feliz, dejando un rastro de puntos luminosos, y avanza despacio hacia el fondo de la cueva, mirando atrás para asegurarse de que la familia lo sigue.",
     "nota": "INC-157 (N1_AparicionGuia)"
   },
   {
-    "antes": "Papá se arrodilla en el centro de la cueva, busca a tientas un montón de hojas secas y ramitas finas.",
-    "despues": "Papá se arrodilla en el centro de la cueva, busca a ciegas un montón de hojas secas y ramitas finas.",
+    "antes": "Papá se arrodilla en el centro de la cueva, busca a tientas un montón de hojas secas y ramitas finas, y las amontona con cuidado en el suelo.",
+    "despues": "Papá se arrodilla en el centro de la cueva, busca a ciegas un montón de hojas secas y ramitas finas, y las amontona con cuidado en el suelo.",
     "nota": "INC-157 (N1_Hallazgo)"
   },
   {
-    "antes": "Papá los abraza a todos mientras el fuego crepita.",
-    "despues": "Papá los abraza a todos mientras el fuego chisporrotea.",
+    "antes": "Los niños salen corriendo y se lanzan encima de él. Mamá llega detrás, riendo y llorando al mismo tiempo. Papá los abraza a todos mientras el fuego crepita y la cueva oscura se convierte en el lugar más cálido del mundo.",
+    "despues": "Los niños salen corriendo y se lanzan encima de él. Mamá llega detrás, riendo y llorando al mismo tiempo. Papá los abraza a todos mientras el fuego chisporrotea y la cueva oscura se convierte en el lugar más cálido del mundo.",
     "nota": "INC-157 (N1_NacimientoDelFuego)"
   },
   {
-    "antes": "En el corazón de las llamas aparece una silueta pequeña, con cara, brazos y piernas.",
-    "despues": "En el corazón de las llamas aparece una sombra pequeña, con cara, brazos y piernas.",
+    "antes": "En el corazón de las llamas aparece una silueta pequeña, con cara, brazos y piernas. Es Algoritm, brillando más que nunca, hecho de fuego esta vez.",
+    "despues": "En el corazón de las llamas aparece una sombra pequeña, con cara, brazos y piernas. Es Algoritm, brillando más que nunca, hecho de fuego esta vez.",
     "nota": "INC-157 (N1_NacimientoDelFuego)"
   },
   {
-    "antes": "Bosque. Objetos dispersos por el suelo: piedras irregulares, troncos redondos, plantas, herramientas.",
-    "despues": "Bosque. Objetos regados por el suelo: piedras de formas distintas, troncos redondos, plantas, herramientas.",
+    "antes": "Bosque, por la tarde. Objetos dispersos por el suelo: piedras irregulares, troncos redondos, plantas, herramientas. A un lado, la caja de alimentos que la familia no logra mover.",
+    "despues": "Bosque, por la tarde. Objetos regados por el suelo: piedras de formas distintas, troncos redondos, plantas, herramientas. A un lado, la caja de alimentos que la familia no logra mover.",
     "nota": "INC-157 (N2_Escena21_Bosque)"
   },
   {
-    "antes": "Papá carga grandes troncos para mantener avivado el fuego; mamá, la niña y el niño recogen alimentos.",
-    "despues": "Papá carga grandes troncos para mantener vivo el fuego; mamá, la niña y el niño recogen alimentos.",
+    "antes": "La familia sale a recolectar. Papá carga grandes troncos para mantener avivado el fuego; mamá, la niña y el niño recogen alimentos. Al momento de regresar aparece un problema nuevo: han recolectado mucho, pero no pueden transportarlo hasta el refugio.",
+    "despues": "La familia sale a recolectar. Papá carga grandes troncos para mantener vivo el fuego; mamá, la niña y el niño recogen alimentos. Al momento de regresar aparece un problema nuevo: han recolectado mucho, pero no pueden transportarlo hasta el refugio.",
     "nota": "INC-157 (N2_PuenteI_Bosque)"
   },
   {
-    "antes": "¡Alto, viajeros! Este río no es sencillo. Para cruzarlo necesitamos pensar bien.",
-    "despues": "¡Alto, viajeros! Este río no es fácil. Para cruzarlo necesitamos pensar bien.",
+    "antes": "ALGORITM: ¡Alto, viajeros! Este río no es sencillo. Para cruzarlo necesitamos pensar bien. Primero, descompongamos el problema: ¿cuántas cosas necesitamos para cruzar?",
+    "despues": "ALGORITM: ¡Alto, viajeros! Este río no es fácil. Para cruzarlo necesitamos pensar bien. Primero, descompongamos el problema: ¿cuántas cosas necesitamos para cruzar?",
     "nota": "INC-157 (N3_Escena31_Llegada)"
   },
   {
@@ -65,13 +60,13 @@
     "nota": "INC-157 (N3_Escena33_Cruce)"
   },
   {
-    "antes": "Eso es pensar computacionalmente.",
-    "despues": "Eso es pensar como un algoritmo.",
+    "antes": "ALGORITM: Lo lograron porque pensaron como exploradores inteligentes: primero dividieron el problema en partes pequeñas, y cuando algo falló no se rindieron... lo encontraron y lo arreglaron. Eso es pensar computacionalmente.",
+    "despues": "ALGORITM: Lo lograron porque pensaron como exploradores inteligentes: primero dividieron el problema en partes pequeñas, y cuando algo falló no se rindieron... lo encontraron y lo arreglaron. Eso es pensar como un algoritmo.",
     "nota": "INC-157 (N3_Escena33_Cruce)"
   },
   {
-    "antes": "Algoritm gira una última vez y se apaga suavemente. Fundido a negro.",
-    "despues": "Algoritm gira una última vez y se apaga suavemente. Todo queda en negro.",
+    "antes": "Algoritm gira una última vez y se apaga suavemente. Fundido a negro. Créditos.",
+    "despues": "Algoritm gira una última vez y se apaga suavemente. Todo queda en negro. Créditos.",
     "nota": "INC-157 (N3_EscenaFinal)"
   },
   {
@@ -85,28 +80,13 @@
     "nota": "INC-157 (N3_PuenteII_Rio)"
   },
   {
-    "antes": "La pieza vuelve al inventario.",
-    "despues": "La pieza vuelve a tus materiales.",
-    "nota": "INC-157 (N3_RaftAssemblyContent)"
-  },
-  {
-    "antes": "Cayó fuera de la balsa: la pieza vuelve al inventario.",
-    "despues": "Cayó fuera de la balsa: la pieza vuelve a tus materiales.",
-    "nota": "INC-157 (N3_RaftAssemblyContent)"
-  },
-  {
-    "antes": "{0}: al inventario. Mira la lista: ¿qué falta?",
-    "despues": "{0}: guardado en tus materiales. Mira la lista: ¿qué falta?",
-    "nota": "INC-157 (N3_RiverLevelConfig)"
-  },
-  {
-    "antes": "Elegiste los troncos, el orden de las piezas y el camino casi de inmediato.",
-    "despues": "Elegiste los troncos, el orden de las piezas y el camino casi enseguida.",
-    "nota": "INC-157 (N2_ResumenNivel)"
-  },
-  {
     "antes": "Ensamblar la balsa",
     "despues": "Armar la balsa",
-    "nota": "INC-157 (N3_RiverLevelConfig)"
+    "nota": "INC-157 (N3_RiverLevelConfig), celda de la lista de tareas"
+  },
+  {
+    "antes": "Cada tarea se marca como completada en el momento en que se cumple: las de recolección, cuando su material queda completo en el inventario —los troncos, al recoger el último; las sogas, al recogerlas—; las de construcción, al confirmar la fase correspondiente del panel de ensamblaje: «Ensamblar la balsa», al confirmar el amarre, y «Colocar el mástil y la vela», al confirmar la fase de mástil y vela; confirmar la base no marca ninguna. La tela y el mástil se recogen sin marcar tarea, porque los consume la tarea 4. Una tarea marcada no se desmarca. La lista ocupa una tablilla clara en la esquina superior izquierda: cada tarea pendiente lleva un círculo liso y cada tarea cumplida un círculo verde con marca de verificación, de modo que el cambio se lee por la forma y no solo por el color (RNF-19), y en ella no aparece ninguna cifra. Es la representación visible de la descomposición.",
+    "despues": "Cada tarea se marca como completada en el momento en que se cumple: las de recolección, cuando su material queda completo en el inventario —los troncos, al recoger el último; las sogas, al recogerlas—; las de construcción, al confirmar la fase correspondiente del panel de ensamblaje: «Armar la balsa», al confirmar el amarre, y «Colocar el mástil y la vela», al confirmar la fase de mástil y vela; confirmar la base no marca ninguna. La tela y el mástil se recogen sin marcar tarea, porque los consume la tarea 4. Una tarea marcada no se desmarca. La lista ocupa una tablilla clara en la esquina superior izquierda: cada tarea pendiente lleva un círculo liso y cada tarea cumplida un círculo verde con marca de verificación, de modo que el cambio se lee por la forma y no solo por el color (RNF-19), y en ella no aparece ninguna cifra. Es la representación visible de la descomposición.",
+    "nota": "INC-157 (N3_RiverLevelConfig), tabla de la lista de tareas"
   }
 ]

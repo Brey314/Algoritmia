@@ -94,6 +94,6 @@ Este documento no incluye cifras de carga ni de memoria de los dos equipos del c
 | RNF-16 se probó con `unity test` en copias sin un nivel | El caso aprueba con la desviación de DEF-RC3-12; 15 pruebas de River, Wheel y UI fallan igual en la copia completa por la resolución del lote |
 | Los mensajes de las fotos se leyeron a 0,5 a 0,9 s de cada acción | El límite de 1 s de RF-11 se juzga por ese margen y no por un cronómetro |
 | La suite no corrió sobre el contenido exacto de rc3 | Entre `23d7e8c` y rc3 no cambió ningún `.cs`; la reserialización de `Level2_Maze.unity` queda sin corrida propia (DEF-RC3-I04) |
-| El sonido no lo mide el arnés | Los tres casos `SON` quedan en PS y el indicador de sonidos sin calcular |
+| El sonido no lo mide el arnés | Los tres casos `SON` los aprobó una persona el 13/10/2026 (H12, con H6 y H7); es un juicio de oído sin medición propia |
 | La pausa del laberinto se tomó a unos 0,3 s de pulsar «Ejecutar», no a mitad del recorrido | La carretilla ya se movía y siguió tras «Reanudar»; la parada a mitad del recorrido no tiene captura |
 | Los dos recorridos del arnés de `PF-RNF13-01` no se ejecutaron | No hay duración medida del juego entero con un perfil nuevo; solo la del Nivel 1 en S-N1 |

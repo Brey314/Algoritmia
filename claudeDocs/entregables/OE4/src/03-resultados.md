@@ -12,7 +12,9 @@ En las sesiones de recorridos jugados con el arnés (S-INI a S-DOC) todos los ca
 
 S-INSP concentra los otros tres F, que son de requerimientos no funcionales: `PF-RNF03-01` (DEF-RC3-10 y DEF-RC3-05, dos pantallas con un texto fuera de su tablilla y unos iconos sobre el texto), `PF-RNF15-01` (DEF-RC3-I01, identificadores en español) y `PF-RNF17-01` (DEF-RC3-I02, commits sin tarjeta). Ninguno de los tres cambia lo que el juego hace. Por eso su eficacia, 70,0 % (7 de 10), no dice nada sobre la mecánica.
 
-Diez casos están en PS. Seis son de S-HUM: `PF-RNF13-01`, `PF-SON-01` a `PF-SON-03`, `PF-RNF07-02` y `PF-CT02-01`. Uno es de S-RNF: `PF-RNF08-01`, porque el modo avión se activa a mano. Tres son de S-INSP: `PF-RNF12-01` (el formato de consentimiento informado), `PF-RNF22-01` (la inspección está hecha, con 344 cadenas sin enlaces ni compras y 9 ilustraciones sin violencia, y falta la confirmación) y `PF-RNF23-01` (los créditos y las licencias coinciden con lo esperado, y falta el soporte escrito de la Familia Anonaky y de la colaboradora de arte). No hay casos en B, NA ni NE. Esos diez son el corte del 10/10/2026: la hoja HUM se ejecutó el 13/10/2026 (apartado 5.2) y sus veredictos todavía no están consolidados en esta tabla.
+Cuatro casos están en PS. Uno es de S-HUM: `PF-RNF13-01`, el recorrido completo, porque los dos recorridos del arnés sobre rc3 no se ejecutaron y la comprobación H8 registró la duración (40 a 45 min) pero no cubre por sí sola los tres recorridos que el caso pide (apartado 3.4). Tres son de S-INSP: `PF-RNF12-01` (el formato de consentimiento informado; ninguna comprobación de la hoja HUM lo cubre), `PF-RNF22-01` (la inspección está hecha, con 344 cadenas sin enlaces ni compras y 9 ilustraciones sin violencia, y falta la confirmación) y `PF-RNF23-01` (los créditos y las licencias coinciden con lo esperado, y falta el soporte escrito de la Familia Anonaky y de la colaboradora de arte). No hay casos en B, NA ni NE.
+
+En el corte del 10/10/2026 eran diez los casos en PS (126 con veredicto: 122 P y 4 F, eficacia 96,8 %). Seis pasaron a P el 13/10/2026 con la hoja HUM, en una sesión manual sobre rc3 con 4 estudiantes de grado quinto (apartado 5.2), cada uno con la comprobación que lo cubre y que se registró como «Aprobado»: `PF-RNF07-02` (H3, segundo equipo), `PF-RNF08-01` (H4, sin conexión a internet), `PF-CT02-01` (H5, equipo sin tarjeta gráfica dedicada) y `PF-SON-01` a `PF-SON-03` (H12, con H6 y H7 para `PF-SON-03`). Las comprobaciones H1 y H2 (PG-05 y PG-06) y H9 a H11 no corresponden a ningún caso nuevo, y H13 no se realizó: `PF-RNF02-01`, `PF-RF34-01` y `PF-RF46-01` conservan el P de rc3.
 
 ## 3.2 Veredictos por etiqueta
 
@@ -22,7 +24,7 @@ El indicador de eficacia nombra los botones, los sonidos y los saltos de nivel. 
 
 {{TABLA_RESULTADOS_ETIQUETA}}
 
-NAV tiene 18 casos: 16 en P, 1 en F (`PF-RF45-05`) y 1 en PS (`PF-RNF13-01`, el recorrido completo). BOT cierra los 28 en P. SON no tiene eficacia calculable: sus tres casos son de oído, el arnés no mide el sonido y los hace una persona (comprobaciones H6, H7 y H12 de la hoja HUM). La etiqueta RNF queda en 78,6 % (11 de 14 con veredicto) por los tres F de S-INSP; el indicador no nombra esa etiqueta.
+NAV tiene 18 casos: 16 en P, 1 en F (`PF-RF45-05`) y 1 en PS (`PF-RNF13-01`, el recorrido completo). BOT cierra los 28 en P. SON queda en 100,0 % (3 de 3): sus tres casos son de oído, el arnés no mide el sonido y los aprobó una persona el 13/10/2026 (comprobaciones H12, H6 y H7 de la hoja HUM), así que es un juicio de oído y no una medición. La etiqueta RNF queda en 82,4 % (14 de 17 con veredicto) por los tres F de S-INSP; era 78,6 % (11 de 14) en el corte del 10/10/2026, antes de que H3, H4 y H5 pasaran a P. El indicador no nombra esa etiqueta.
 
 ## 3.3 Indicadores del objetivo
 
@@ -30,11 +32,11 @@ NAV tiene 18 casos: 16 en P, 1 en F (`PF-RF45-05`) y 1 en PS (`PF-RNF13-01`, el 
 
 | Indicador | Meta | Resultado en rc3 |
 |---|---|---|
-| Eficacia de las pruebas funcionales | 90 % o más | 96,8 % = 122 / (122 + 0 + 4), sobre 126 casos con veredicto; 10 casos en PS fuera del cálculo |
-| Eficacia en las etiquetas `NAV`, `BOT` y `SON` | 90 % o más cada una | `NAV` 94,1 % (16 de 17) · `BOT` 100,0 % (28 de 28) · `SON` sin calcular (3 casos en PS) |
+| Eficacia de las pruebas funcionales | 90 % o más | 97,0 % = 128 / (128 + 0 + 4), sobre 132 casos con veredicto; 4 casos en PS fuera del cálculo. En el corte del 10/10/2026 era 96,8 % = 122 / (122 + 0 + 4), sobre 126 |
+| Eficacia en las etiquetas `NAV`, `BOT` y `SON` | 90 % o más cada una | `NAV` 94,1 % (16 de 17) · `BOT` 100,0 % (28 de 28) · `SON` 100,0 % (3 de 3, aprobados en la sesión manual del 13/10/2026; en el corte del 10/10/2026, sin calcular) |
 | RF de prioridad Alta con algún F Bloqueante o Mayor abierto | Ninguno de los 45 | Ninguno: 45 de 45 RF de prioridad Alta sin F Bloqueante ni Mayor. El único F que toca un RF de prioridad Alta es `PF-RF45-05` (RF-45), de severidad Menor |
 
-Los 4 F de la pasada son todos Menores y ninguno de los 16 defectos hallados es Bloqueante ni Mayor (apartado 3.6). El indicador de sonidos no se puede declarar cerrado mientras no se ejecuten los tres casos `SON`. La eficacia global tampoco es definitiva, porque depende de los 10 casos en PS: si los diez fallaran quedaría en 89,7 % (122 de 136), y basta con que uno apruebe para que pase de 90 %.
+Los 4 F de la pasada son todos Menores y ninguno de los 16 defectos hallados es Bloqueante ni Mayor (apartado 3.6). Con la sesión del 13/10/2026 las tres etiquetas que nombra el indicador superan la meta, y la de sonidos se cierra con un juicio de oído de una persona y no con una medición. La eficacia global depende todavía de los 4 casos en PS: si los cuatro fallaran quedaría en 94,1 % (128 de 136) y seguiría sobre el 90 %.
 
 ## 3.4 Recorridos completos del juego
 
@@ -66,7 +68,7 @@ En el desglose del paquete, las texturas pesan 273,1 MB, el 95 % de los activos 
 
 Las otras mediciones sobre el ejecutable dieron lo siguiente (cada caso está en el Anexo A):
 
-- RNF-10, sin conexiones: 0 conexiones TCP ni UDP del proceso en 4.516 muestras de 39 archivos, y 0 apariciones de `unity3d.com` en `globalgamemanagers`. La comprobación H4 (RNF-08, sin conexión a internet) se aprobó el 13/10/2026 (apartado 5.2); `PF-RNF08-01` queda en PS en el corte del 10/10/2026.
+- RNF-10, sin conexiones: 0 conexiones TCP ni UDP del proceso en 4.516 muestras de 39 archivos, y 0 apariciones de `unity3d.com` en `globalgamemanagers`. La comprobación H4 (RNF-08, sin conexión a internet) se aprobó el 13/10/2026 (apartado 5.2); `PF-RNF08-01` pasó a P con ella.
 - RNF-07 y RNF-11, portabilidad y residuos: la copia a una ruta con espacio (`D:\User\Desktop\Algoritmia prueba\`), con usuario estándar y el mismo SHA-256, arranca, crea `Datos/` y llega a `Level1_Cave` en 36 clics. Tras borrar los perfiles de prueba no queda su rastro en la carpeta, en `LocalLow`, en el registro ni en `Player.log`. Fuera de `Datos/` quedan `Player.log` y valores `unity.*`, `unity_connect.*` y `Screenmanager*` en `HKCU`: el residuo del motor ya registrado como DEF-RC2-01 (decisión D-RC2-01), que persiste igual que en rc2.
 - RNF-16, exclusión de un nivel: en una copia desechable sin `Levels/Wheel` el proyecto compila con 0 errores y la suite da EditMode 657/663 y PlayMode 288/316; sin `Levels/Fire`, 690/696 y 329/354. El caso aprueba con una desviación, DEF-RC3-12 (apartado 3.6).
 - RNF-18, parámetros sin recompilar: se cambió `MinimumEffectiveStrikes` a 2 y el texto de una línea en un ejecutable de la copia desechable, con solo dos `.asset` modificados. Aprueba como variante, porque no se probó con el Editor abierto y en Play.

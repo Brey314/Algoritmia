@@ -1,0 +1,137 @@
+[
+ {
+  "antes": "El cuarto objetivo pedía comprobar el funcionamiento del prototipo con pruebas funcionales basadas en los requerimientos del primero e identificar oportunidades de mejora para trabajos futuros. Para cumplirlo se aplicó un catálogo de 136 casos al ejecutable portable de Windows, y no al Editor de Unity, en su tercera versión candidata (rc3, 10 de octubre de 2026). El Anexo G reúne el catálogo completo, los resultados y el registro de cada sesión; la matriz de casos por requerimiento es su Anexo A (Anexo_A_Matriz_casos.docx), que se entrega dentro del Anexo G.",
+  "despues": "El cuarto objetivo pedía comprobar el funcionamiento del prototipo con pruebas funcionales basadas en los requerimientos del primero e identificar oportunidades de mejora para trabajos futuros. Para cumplirlo se aplicó un catálogo de 136 casos al ejecutable portable de Windows, y no al Editor de Unity, en su tercera versión candidata (rc3, 10 de octubre de 2026). El Anexo G reúne el catálogo completo, los resultados y el registro de cada sesión; la matriz de casos por requerimiento es su Anexo A (Anexo_A_Matriz_casos.docx), que se entrega dentro del Anexo G. El 13 de octubre de 2026 se sumó una sesión con 4 estudiantes de grado quinto del Colegio El Libertador IED y la ejecución de la hoja de comprobaciones humanas (apartado 9.2).",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "El principal de los cinco ejecutores previstos, EXE, es un arnés de caja negra en PowerShell (oe4.ps1) que lanza Algoritmia.exe tras comprobar su huella SHA-256 y lo maneja como un jugador: clic, clic sostenido y arrastre en coordenadas relativas a la ventana, y texto solo en el nombre del perfil. No lee el código ni la memoria del juego, así que ve lo mismo que un estudiante, que es lo que define una prueba de caja negra [29], y cada 2 s muestrea la memoria y las conexiones de red del proceso. INSP inspecciona archivos, código e historial de git; SUITE corre la suite automatizada con el Editor cerrado; EDIT abriría el Editor para RNF-18 y no se usó (apartado 9.2); HUM es Santiago Benavides Rey, con una hoja de 13 comprobaciones de la que se registra solo lo que él reporta.",
+  "despues": "El principal de los cinco ejecutores previstos, EXE, es un arnés de caja negra en PowerShell (oe4.ps1) que lanza Algoritmia.exe tras comprobar su huella SHA-256 y lo maneja como un jugador: clic, clic sostenido y arrastre en coordenadas relativas a la ventana, y texto solo en el nombre del perfil. No lee el código ni la memoria del juego, así que ve lo mismo que un estudiante, que es lo que define una prueba de caja negra [29], y cada 2 s muestrea la memoria y las conexiones de red del proceso. INSP inspecciona archivos, código e historial de git; SUITE corre la suite automatizada con el Editor cerrado; EDIT abriría el Editor para RNF-18 y no se usó (apartado 9.2); HUM es una persona con una hoja de 13 comprobaciones, de la que se registra solo lo que reporta.",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "Un caso termina en uno de cinco veredictos: aprobado (P) si se observan todos los resultados esperados de sus pasos; aprobado con desviación documentada (PD) si lo observado sigue la decisión de un hallazgo de consistencia; fallido (F) si alguno no se observa, y se abre un defecto; bloqueado (B) si la precondición o el entorno impidieron ejecutarlo; y no aplica (NA) si el requerimiento lo deja fuera de un prototipo sin usuarios, como RNF-12. B, NA y los casos pendientes de Santiago Benavides Rey (PS) quedan fuera del denominador.",
+  "despues": "Un caso termina en uno de cinco veredictos: aprobado (P) si se observan todos los resultados esperados de sus pasos; aprobado con desviación documentada (PD) si lo observado sigue la decisión de un hallazgo de consistencia; fallido (F) si alguno no se observa, y se abre un defecto; bloqueado (B) si la precondición o el entorno impidieron ejecutarlo; y no aplica (NA) si el requerimiento lo deja fuera de un prototipo sin usuarios, como RNF-12. B, NA y los casos pendientes de una persona (PS) quedan fuera del denominador.",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "La severidad es Bloqueante si el defecto impide terminar la ruta principal, cierra el juego, pierde progreso confirmado o deja un estado sin salida; Mayor si no se cumple un RF o un criterio de aceptación pero el juego sigue; y Menor si toca un texto, el aspecto o un criterio secundario. Lo que se anota sin incumplir ningún criterio es una observación. Los Bloqueantes y Mayores se corrigen dentro del objetivo y los demás los decide Santiago Benavides Rey. Si el juego y un documento radicado discrepan, la evaluación propone un hallazgo nuevo en el registro de inconsistencias y no edita el documento.",
+  "despues": "La severidad es Bloqueante si el defecto impide terminar la ruta principal, cierra el juego, pierde progreso confirmado o deja un estado sin salida; Mayor si no se cumple un RF o un criterio de aceptación pero el juego sigue; y Menor si toca un texto, el aspecto o un criterio secundario. Lo que se anota sin incumplir ningún criterio es una observación. Los Bloqueantes y Mayores se corrigen dentro del objetivo y los demás se deciden en el triaje. Si el juego y un documento radicado discrepan, la evaluación propone un hallazgo nuevo en el registro de inconsistencias y no edita el documento.",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "De los 136 casos, 122 terminaron en P, 4 en F y 10 quedaron pendientes de Santiago Benavides Rey, sin PD, B ni NA (Tabla 13). Los fallidos son PF-RF45-05, de la sesión de omisión, y PF-RNF03-01, PF-RNF15-01 y PF-RNF17-01, de la de inspecciones; las demás sesiones aprobaron todos sus casos.",
+  "despues": "De los 136 casos, 122 terminaron en P, 4 en F y 10 quedaron pendientes de la hoja de comprobaciones humanas, que se ejecutó el 13 de octubre (Tabla 16), sin PD, B ni NA (Tabla 13). Los fallidos son PF-RF45-05, de la sesión de omisión, y PF-RNF03-01, PF-RNF15-01 y PF-RNF17-01, de la de inspecciones; las demás sesiones aprobaron todos sus casos.",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "Por etiqueta, NAV alcanza 94,1 % (16 de 17), BOT 100 % (28 de 28), RETO 100 % (37 de 37) y DAT 100 % (30 de 30). SON no se puede calcular, porque sus tres casos son de oído y los hace Santiago Benavides Rey; RNF queda en 78,6 % (11 de 14) por los tres fallidos de la inspección.",
+  "despues": "Por etiqueta, NAV alcanza 94,1 % (16 de 17), BOT 100 % (28 de 28), RETO 100 % (37 de 37) y DAT 100 % (30 de 30). SON no se puede calcular, porque sus tres casos son de oído y los hace una persona; RNF queda en 78,6 % (11 de 14) por los tres fallidos de la inspección.",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "PF-RNF13-01 pide recorrer el juego de la pantalla de inicio a los créditos sin omitir ninguna narrativa. Los dos recorridos del arnés no se repitieron sobre rc3 y el de Santiago Benavides Rey con cronómetro está pendiente, así que la referencia de 20 a 40 min del OE1 no se contrastó [Pendiente: duración e incidencias de la comprobación H8]. Cada nivel sí se jugó entero en su sesión, con perfiles y semillas distintos: ninguno se bloqueó y el Player.log de todos los lanzamientos quedó sin Exception. La resolución del Nivel 1 con un perfil nuevo duró 225,84 s, y los tres recorridos completos de versiones anteriores, 87, 33 y 16 min (apartado 8.2).",
+  "despues": "PF-RNF13-01 pide recorrer el juego de la pantalla de inicio a los créditos sin omitir ninguna narrativa. Los dos recorridos del arnés no se repitieron sobre rc3 y la comprobación H8, con cronómetro, dio el 13 de octubre entre 40 y 45 min, hasta 5 min por encima de la referencia de 20 a 40 min del OE1; no se registró la causa. Cada nivel sí se jugó entero en su sesión, con perfiles y semillas distintos: ninguno se bloqueó y el Player.log de todos los lanzamientos quedó sin Exception. La resolución del Nivel 1 con un perfil nuevo duró 225,84 s, y los tres recorridos completos de versiones anteriores, 87, 33 y 16 min (apartado 8.2).",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "La pasada sobre rc3 registró 16 hallazgos, 7 Menores y 9 observaciones, ninguno Bloqueante ni Mayor y todos abiertos a la espera del triaje de Santiago Benavides Rey. De los Menores, tres tocan el juego: los iconos del informe docente montados sobre el texto de las cabeceras (DEF-RC3-05), la instrucción del bosque que se sale de su tablilla (DEF-RC3-10) y un doble clic en «Omitir» que lleva al menú de niveles sin mostrar el resumen, sin perder el progreso (DEF-RC3-09). Los otros cuatro vienen de la inspección: identificadores en español (DEF-RC3-I01), commits sin tarjeta (DEF-RC3-I02), un halo de croma en nueve imágenes de caras (DEF-RC3-I03) y una suite que no corrió sobre el contenido exacto de rc3 (DEF-RC3-I04). Las nueve observaciones no incumplen ningún criterio: cuatro piden corregir el documento de casos, tres esperan una decisión de arte o de diseño, una es de disposición y una atañe a las pruebas de arquitectura.",
+  "despues": "La pasada sobre rc3 registró 16 hallazgos, 7 Menores y 9 observaciones, ninguno Bloqueante ni Mayor y todos abiertos a la espera del triaje. De los Menores, tres tocan el juego: los iconos del informe docente montados sobre el texto de las cabeceras (DEF-RC3-05), la instrucción del bosque que se sale de su tablilla (DEF-RC3-10) y un doble clic en «Omitir» que lleva al menú de niveles sin mostrar el resumen, sin perder el progreso (DEF-RC3-09). Los otros cuatro vienen de la inspección: identificadores en español (DEF-RC3-I01), commits sin tarjeta (DEF-RC3-I02), un halo de croma en nueve imágenes de caras (DEF-RC3-I03) y una suite que no corrió sobre el contenido exacto de rc3 (DEF-RC3-I04). Las nueve observaciones no incumplen ningún criterio: cuatro piden corregir el documento de casos, tres esperan una decisión de arte o de diseño, una es de disposición y una atañe a las pruebas de arquitectura.",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "Dos tipos de prueba quedan fuera del arnés: las que necesitan niños de grado cuarto jugando y las que necesitan los sentidos de una persona o un segundo equipo (Tabla 16). Son diez casos y dos puntos del guion, PG-05 y PG-06. La sesión con estudiantes los cierra con la técnica Thinking Aloud que la metodología Árcade asigna a esta fase [6], previo consentimiento informado de los acudientes según la Ley 1581 de 2012 [35] (RNF-12; el formato en blanco es el Anexo F). La muestra es no probabilística (apartado 5.3) y la sesión verifica que la interfaz se entienda y la ruta principal se complete, sin medir el efecto del juego. La sesión se hará después de esta entrega y sus resultados llenarán los espacios de la Tabla 16; mientras tanto PG-05, PG-06 y el consentimiento quedan pendientes y no pasan a trabajos futuros.",
+  "despues": "Dos tipos de prueba quedan fuera del arnés: las que necesitan niños de grado quinto jugando y las que necesitan los sentidos de una persona o un segundo equipo (Tabla 16). Son diez casos y dos puntos del guion, PG-05 y PG-06. Se ejecutaron el 13 de octubre de 2026 en el Colegio El Libertador IED, sede A, con 4 estudiantes de grado quinto. Un observador miró cómo jugaban; los estudiantes pensaron en voz alta y comunicaron sus inquietudes al observador, la técnica Thinking Aloud que la metodología Árcade asigna a esta fase [6]. La muestra es no probabilística (apartado 5.3) y la sesión verifica que la interfaz se entienda y la ruta principal se complete, sin medir el efecto del juego.",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "De los 136 casos, 122 terminan en P, 4 en F y 10 esperan a Santiago Benavides Rey. La eficacia es de 96,8 % frente a la meta de 90 %, y los 45 RF de prioridad Alta están implementados, porque ninguno tiene un defecto Bloqueante o Mayor; el único fallido que toca uno de ellos, PF-RF45-05, es Menor. De las etiquetas que el indicador nombra, NAV (94,1 %) y BOT (100 %) superan la meta y SON no se puede calcular hasta que Santiago Benavides Rey escuche las piezas; la más baja es RNF, con 78,6 %, por textos e iconos fuera de su caja (PF-RNF03-01), identificadores en español (PF-RNF15-01) y commits sin tarjeta (PF-RNF17-01). Los dos indicadores se cumplen en lo medido, y el primero queda abierto en su parte de sonido.",
+  "despues": "De los 136 casos, 122 terminan en P, 4 en F y 10 esperan la consolidación de la hoja de comprobaciones humanas del 13 de octubre. La eficacia es de 96,8 % frente a la meta de 90 %, y los 45 RF de prioridad Alta están implementados, porque ninguno tiene un defecto Bloqueante o Mayor; el único fallido que toca uno de ellos, PF-RF45-05, es Menor. De las etiquetas que el indicador nombra, NAV (94,1 %) y BOT (100 %) superan la meta y SON no se puede calcular hasta que se consoliden los tres casos de oído, aprobados el 13 de octubre (H6, H7 y H12); la más baja es RNF, con 78,6 %, por textos e iconos fuera de su caja (PF-RNF03-01), identificadores en español (PF-RNF15-01) y commits sin tarjeta (PF-RNF17-01). Los dos indicadores se cumplen en lo medido, y el primero queda abierto en su parte de sonido.",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "Lo que la evaluación no pudo observar tiene causa: el arnés no oye, no cronometra a un niño ni cambia de equipo, y PG-05 y PG-06 exigen estudiantes y el consentimiento de sus acudientes. Por eso RNF-07, RNF-08, CT-02, el sonido y la ruta de 20 a 40 min dependen de Santiago Benavides Rey. Los diez casos quedan fuera del denominador; cuando se ejecuten, la eficacia se recalcula con ellos y el indicador de sonidos se cierra con los tres de SON.",
+  "despues": "Lo que la evaluación no pudo observar tiene causa: el arnés no oye, no cronometra a un niño ni cambia de equipo, y PG-05 y PG-06 exigen estudiantes y el consentimiento de sus acudientes. Por eso RNF-07, RNF-08, CT-02, el sonido y la ruta de 20 a 40 min dependían de la sesión del 13 de octubre, que dio PG-05 y PG-06 positivos y aprobó las comprobaciones H1 a H7 y H9 a H12; el recorrido de H8 duró entre 40 y 45 min y H13 no se realizó. Los diez casos quedan fuera del denominador; cuando se consoliden sus veredictos, la eficacia se recalcula con ellos y el indicador de sonidos se cierra con los tres de SON.",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "Los pendientes de la Tabla 16 no son trabajo futuro: se cierran con la sesión con estudiantes y las comprobaciones de Santiago Benavides Rey. Como trabajo futuro quedan el residuo que el motor escribe en el registro de Windows (DEF-RC2-01) y la música, el sonido del diálogo, el ambiente nocturno del Nivel 2 y el silencio de la escena final, del carril de sonido. Cuatro observaciones piden corregir el documento de casos y no el juego (DEF-RC3-02, 04, 06 y 07).",
+  "despues": "De la Tabla 16 pasan a trabajo futuro la comprobación de mano H13, que no se realizó, y la causa de que el recorrido de H8 superara la referencia de 20 a 40 min, que no se registró. Como trabajo futuro quedan también el residuo que el motor escribe en el registro de Windows (DEF-RC2-01) y la música, el sonido del diálogo, el ambiente nocturno del Nivel 2 y el silencio de la escena final, del carril de sonido. Cuatro observaciones piden corregir el documento de casos y no el juego (DEF-RC3-02, 04, 06 y 07).",
+  "nota": "cap. 9, sesión del 13/10/2026"
+ },
+ {
+  "antes": "NAV 94,1 % y BOT 100 %; SON sin calcular, con sus 3 casos de oído pendientes [Pendiente: resultado de H6, H7 y H12]",
+  "despues": "NAV 94,1 % y BOT 100 %; SON sin calcular en el corte del 10 de octubre, con sus 3 casos de oído pendientes; H6, H7 y H12 se aprobaron el 13 de octubre (Tabla 16)",
+  "nota": "celda"
+ },
+ {
+  "antes": "Sin medir [Pendiente: equipo y resultado de la comprobación H5]",
+  "despues": "Sin cifra de carga ni de memoria; la comprobación H5 se aprobó el 13 de octubre en dos equipos sin conexión a internet (Tabla 17)",
+  "nota": "celda"
+ },
+ {
+  "antes": "[Pendiente: estudiantes del Colegio El Libertador IED, fecha, sede y resultado observado]",
+  "despues": "Positivo en ambos, con 4 estudiantes de grado quinto del Colegio El Libertador IED, sede A, el 13 de octubre de 2026",
+  "nota": "celda"
+ },
+ {
+  "antes": "Consentimiento informado y asentimiento",
+  "despues": "Consentimiento informado y autorización institucional",
+  "nota": "celda"
+ },
+ {
+  "antes": "[Pendiente: visto bueno del colegio y número de estudiantes con ambos documentos firmados]",
+  "despues": "Autorización institucional del 17 de septiembre de 2026 y 4 consentimientos firmados, custodiados; constancia de borrado de los perfiles positiva",
+  "nota": "celda"
+ },
+ {
+  "antes": "[Pendiente: duración e incidencias frente a la referencia de 20 a 40 min]",
+  "despues": "Entre 40 y 45 min frente a la referencia de 20 a 40 min; supera el tope en hasta 5 min, sin causa registrada",
+  "nota": "celda"
+ },
+ {
+  "antes": "[Pendiente: equipos, cargas y memoria]",
+  "despues": "Aprobado; los equipos están en la Tabla 17",
+  "nota": "celda"
+ },
+ {
+  "antes": "Ejecución con el adaptador de red deshabilitado",
+  "despues": "Ejecución sin conexión a internet",
+  "nota": "celda"
+ },
+ {
+  "antes": "[Pendiente: resultado con el adaptador de red deshabilitado]; el arnés no vio conexiones en 4 516 muestras",
+  "despues": "Aprobado, con los dos equipos sin conexión; el arnés no vio conexiones en 4 516 muestras",
+  "nota": "celda"
+ },
+ {
+  "antes": "Sonido, vista y mano",
+  "despues": "Sonido y vista",
+  "nota": "celda"
+ },
+ {
+  "antes": "PF-SON-01 a PF-SON-03, H6 a H7 y H9 a H13",
+  "despues": "PF-SON-01 a PF-SON-03, H6, H7 y H9 a H12",
+  "nota": "celda"
+ },
+ {
+  "antes": "[Pendiente: piezas que suenan y piezas que no, y resultado de cada comprobación]",
+  "despues": "Aprobado. H6: el sonido se escucha. H9, H10 y H12: sin comentarios, todo se comprendió. H11: la balsa se hundió, se comprendió por qué, se arregló y finalmente cruzó",
+  "nota": "celda"
+ },
+ {
+  "antes": "Contenido y autorizaciones",
+  "despues": "Mano: el clic tras cargar una escena, la papelera del laberinto y la octava fila del informe",
+  "nota": "celda"
+ },
+ {
+  "antes": "PF-RNF22-01 y PF-RNF23-01",
+  "despues": "PF-RNF02-01, PF-RF34-01 y PF-RF46-01, H13",
+  "nota": "celda"
+ },
+ {
+  "antes": "Inspección hecha; [Pendiente: confirmación del contenido y soporte escrito de la Familia Anonaky y de la colaboradora de arte]",
+  "despues": "No se realizó en la sesión; pasa a trabajo futuro",
+  "nota": "celda"
+ }
+]

@@ -64,7 +64,7 @@ Esos dos equipos no son el equipo 1 de las mediciones sobre rc3 (apartado 2.6), 
 
 **H13, trabajo futuro.** La comprobación de mano se queda sin ejecutar. Cubre lo que el arnés enmascara porque mueve el puntero un píxel antes de cada clic: el clic tras cargar una escena sin mover el puntero (`PF-RNF02-01`), la papelera del laberinto (`PF-RF34-01`) y la octava fila del informe docente (`PF-RF46-01`). Mientras no se haga, esos tres casos conservan el veredicto de rc3.
 
-Los veredictos de la hoja HUM no están incorporados a la Tabla 3.1 ni al Anexo A, que conservan el corte del 10/10/2026 sobre rc3 y dejan en PS los casos con ejecutor HUM (apartado 2.4); sus cifras no se recalcularon con esta sesión.
+Los veredictos de la hoja HUM sí están incorporados a la Tabla 3.1 y al Anexo A, como los de una sesión manual sobre rc3 (no del arnés): H3 cierra `PF-RNF07-02`, H4 cierra `PF-RNF08-01`, H5 cierra `PF-CT02-01` y H12, con H6 y H7, cierra `PF-SON-01` a `PF-SON-03`; los seis pasaron de PS a P. H1 y H2 son puntos del guion y H9 a H11 corroboran casos que ya eran P, así que no cambian ninguna cifra. H8 no cierra `PF-RNF13-01`, que pide además los dos recorridos del arnés, y H13 no se realizó. Con ello la eficacia pasó de 96,8 % (122 de 126) a 97,0 % (128 de 132).
 
 ## 5.3 Hallazgos de la sesión y correcciones aplicadas
 
