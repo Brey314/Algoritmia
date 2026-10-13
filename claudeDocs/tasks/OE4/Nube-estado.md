@@ -12,6 +12,7 @@ La sesión en la nube actualiza este archivo en cada push: tarea, commit, qué q
 | C5 Créditos (INC-156) | hecho | `ca51d02` | |
 | C6 Grado quinto en la tesis (INC-151) | hecho | `5f573b7` | |
 | C7 Cotejo de INC-154 con `d8ab0f4` | hecho | `2681a39` | Falta PlayMode y captura del motor |
+| C8 Cifras en `OE4-Resultados.md` y `todo.md` | hecho | `37fa4e3` | 97,0 % (128/132, 4 PS) |
 
 ## Lo aplicado (13/10/2026)
 
@@ -184,3 +185,17 @@ Lee `claudeDocs/entregables/OE4/src/veredictos-rc3.csv` y `03-resultados.md` par
   anterior) con esas cifras, y marca en `todo.md` lo que la sesión cerró (T19 HUM salvo H13, T20, Checkpoint F
   parcial). No afirmes nada de PlayMode ni de rc4: siguen en curso en local.
 Mismas reglas de identidad y archivos vedados.
+
+### C8 · Cifras de `OE4-Resultados.md` y `todo.md`, `37fa4e3`
+
+- **Comprobación:** las cifras se cotejaron con `veredictos-rc3.csv` (128 P, 4 F, 4 PS) y con `03-resultados.md` de `e9a26fc`. Las del 10/10 salen de `03-resultados.md` en `4dfcf35`.
+- **`OE4-Resultados.md`:** nueva §13, fechada, que no reescribe nada anterior.
+  - Recoge los seis casos que pasaron a P, los cuatro que siguen en PS y H13.
+  - Trae una tabla de antes y después: eficacia 96,8 % → 97,0 %; S-RNF 5·0·1 → 6·0·0; S-HUM 0·0·6 → 5·0·1; RNF 78,6 % → 82,4 %; SON 100 %.
+- **`todo.md`:**
+  - Se marcaron T19 (salvo H13) y T20, cada uno con su nota.
+  - Del checkpoint F solo se marcó la casilla de S-HUM y PG-05/PG-06.
+  - Se añadió una nota fechada.
+  - T21, el checkpoint D y el resto del checkpoint F siguen abiertos.
+- **Para la sesión local:** T20 queda marcado como pide la orden. Su criterio menciona cargas y memoria también en el equipo 2, pero RNF-04 y RNF-05 siguen medidos solo en el equipo 1, y la nota de T20 lo dice. Nada de esto viene de PlayMode ni de rc4.
+
