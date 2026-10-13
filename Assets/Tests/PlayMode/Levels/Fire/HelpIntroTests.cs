@@ -4,6 +4,7 @@ using Game.Core;
 using Game.Scaffolding;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -58,6 +59,33 @@ namespace Game.Levels.Fire.Tests
             Assert.That(Time.timeScale, Is.EqualTo(1f), "se devuelve el tiempo que había");
             Assert.That(helpButton.GetComponent<Canvas>(), Is.Null, "«Pista» deja de tener Canvas propio");
             Assert.That(helpButton.GetComponent<GraphicRaycaster>(), Is.Null);
+        }
+
+        /// <summary>
+        /// «Reiniciar» en la fase 1 recarga la cueva y el aviso vuelve a salir (el perfil sigue sin la
+        /// fase 1); si esa escena se descarga con el aviso abierto, destruir el raycaster desde
+        /// <c>OnDestroy</c> con <c>DestroyImmediate</c> es el error «Destroying object multiple times»
+        /// que Unity lanza al descargar la escena (13/10/2026): ahí el tiempo se devuelve y nada más.
+        /// </summary>
+        [Test]
+        [Timeout(20000)]
+        [Category("Acceptance")]
+        public async Task FireLevel_INC158_UnaEscenaQueSeDescargaConElAvisoAbiertoDevuelveElTiempoSinErrores()
+        {
+            var controller = await FirePanelTests.LoadPanel();
+            controller.HelpIntro.Show("Texto de prueba", "Cerrar");
+            await Awaitable.NextFrameAsync();
+            Assert.That(Time.timeScale, Is.EqualTo(0f), "el aviso detiene el tiempo mientras está abierto");
+
+            var recarga = SceneManager.LoadSceneAsync("Level1_Cave", LoadSceneMode.Single);
+            while (recarga is { isDone: false })
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(Time.timeScale, Is.EqualTo(1f), "descargar la escena con el aviso abierto no deja el tiempo detenido");
         }
 
         [Test]

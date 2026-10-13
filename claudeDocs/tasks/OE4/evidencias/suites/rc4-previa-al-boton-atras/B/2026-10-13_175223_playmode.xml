@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="12" result="Passed" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-13 22:52:24Z" end-time="2026-10-13 22:52:43Z" duration="18,9138339">
+  <test-suite type="TestSuite" id="1507" name="Algoritmia" fullname="Algoritmia" runstate="Runnable" testcasecount="427" result="Passed" start-time="2026-10-13 22:52:24Z" end-time="2026-10-13 22:52:43Z" duration="18.913834" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1026" name="Game.Core.PlayMode.Tests.dll" fullname="C:/Dev/Algoritmia-B/Library/ScriptAssemblies/Game.Core.PlayMode.Tests.dll" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-10-13 22:52:24Z" end-time="2026-10-13 22:52:43Z" duration="18.912046" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="23396" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1027" name="Game" fullname="Game" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-10-13 22:52:24Z" end-time="2026-10-13 22:52:43Z" duration="18.910930" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1028" name="Core" fullname="Game.Core" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-10-13 22:52:24Z" end-time="2026-10-13 22:52:43Z" duration="18.909793" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1029" name="Tests" fullname="Game.Core.Tests" runstate="Runnable" testcasecount="12" result="Passed" start-time="2026-10-13 22:52:24Z" end-time="2026-10-13 22:52:43Z" duration="18.908697" total="12" passed="12" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1010" name="BootFlowTests" fullname="Game.Core.Tests.BootFlowTests" classname="Game.Core.Tests.BootFlowTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-13 22:52:24Z" end-time="2026-10-13 22:52:28Z" duration="4.389223" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1011" name="BootFlow_RF01_ArrancaEnBootYLlegaSoloAMainMenu" fullname="Game.Core.Tests.BootFlowTests.BootFlow_RF01_ArrancaEnBootYLlegaSoloAMainMenu" methodname="BootFlow_RF01_ArrancaEnBootYLlegaSoloAMainMenu" classname="Game.Core.Tests.BootFlowTests" runstate="Runnable" seed="1472667757" result="Passed" start-time="2026-10-13 22:52:24Z" end-time="2026-10-13 22:52:25Z" duration="1.541750" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «MainMenu» cargó en 0.970 s
+]]></output>
+              </test-case>
+              <test-case id="1013" name="GameFlowRunner_RNF16_NoDecideTransicionesLasDelegaEnGameFlow" fullname="Game.Core.Tests.BootFlowTests.GameFlowRunner_RNF16_NoDecideTransicionesLasDelegaEnGameFlow" methodname="GameFlowRunner_RNF16_NoDecideTransicionesLasDelegaEnGameFlow" classname="Game.Core.Tests.BootFlowTests" runstate="Runnable" seed="1310655359" result="Passed" start-time="2026-10-13 22:52:25Z" end-time="2026-10-13 22:52:27Z" duration="1.251022" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «MainMenu» cargó en 0.694 s
+]]></output>
+              </test-case>
+              <test-case id="1012" name="GameFlowRunner_RNF16_NoSeDuplicaAlRecargarEscena" fullname="Game.Core.Tests.BootFlowTests.GameFlowRunner_RNF16_NoSeDuplicaAlRecargarEscena" methodname="GameFlowRunner_RNF16_NoSeDuplicaAlRecargarEscena" classname="Game.Core.Tests.BootFlowTests" runstate="Runnable" seed="1705170901" result="Passed" start-time="2026-10-13 22:52:27Z" end-time="2026-10-13 22:52:28Z" duration="1.594740" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «MainMenu» cargó en 0.632 s
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1014" name="ControlSchemeTests" fullname="Game.Core.Tests.ControlSchemeTests" classname="Game.Core.Tests.ControlSchemeTests" runstate="Runnable" testcasecount="1" result="Passed" start-time="2026-10-13 22:52:28Z" end-time="2026-10-13 22:52:32Z" duration="3.467389" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1015" name="Controls_RNF02_LasCincoEscenasJugablesSoloAceptanClicYClicSostenido" fullname="Game.Core.Tests.ControlSchemeTests.Controls_RNF02_LasCincoEscenasJugablesSoloAceptanClicYClicSostenido" methodname="Controls_RNF02_LasCincoEscenasJugablesSoloAceptanClicYClicSostenido" classname="Game.Core.Tests.ControlSchemeTests" runstate="Runnable" seed="1052833128" result="Passed" start-time="2026-10-13 22:52:28Z" end-time="2026-10-13 22:52:32Z" duration="3.440544" asserts="0">
+                <properties>
+                  <property name="Timeout" value="120000" />
+                  <property name="Category" value="Acceptance" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1016" name="GameFlowRunnerTests" fullname="Game.Core.Tests.GameFlowRunnerTests" classname="Game.Core.Tests.GameFlowRunnerTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-13 22:52:32Z" end-time="2026-10-13 22:52:40Z" duration="7.915588" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1017" name="GameFlowRunner_RF02_SelectProfileFijaElPerfilYEntraALevelSelect" fullname="Game.Core.Tests.GameFlowRunnerTests.GameFlowRunner_RF02_SelectProfileFijaElPerfilYEntraALevelSelect" methodname="GameFlowRunner_RF02_SelectProfileFijaElPerfilYEntraALevelSelect" classname="Game.Core.Tests.GameFlowRunnerTests" runstate="Runnable" seed="5635576" result="Passed" start-time="2026-10-13 22:52:32Z" end-time="2026-10-13 22:52:33Z" duration="1.226539" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «MainMenu» cargó en 0.675 s
+]]></output>
+              </test-case>
+              <test-case id="1019" name="GameFlowRunner_RF22_JugarLaFase1DelNivel2CargaLaEscenaDelBosque" fullname="Game.Core.Tests.GameFlowRunnerTests.GameFlowRunner_RF22_JugarLaFase1DelNivel2CargaLaEscenaDelBosque" methodname="GameFlowRunner_RF22_JugarLaFase1DelNivel2CargaLaEscenaDelBosque" classname="Game.Core.Tests.GameFlowRunnerTests" runstate="Runnable" seed="1235696344" result="Passed" start-time="2026-10-13 22:52:33Z" end-time="2026-10-13 22:52:36Z" duration="2.939948" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «LevelSelect» cargó en 0.476 s
+RNF-04: «MainMenu» cargó en 0.698 s
+RNF-04: «LevelSelect» cargó en 0.491 s
+RNF-04: «Level2_Forest» cargó en 1.201 s
+]]></output>
+              </test-case>
+              <test-case id="1020" name="GameFlowRunner_RNF14_ConLasDosPrimerasFasesConfirmadasEntrarAlNivel2RetomaEnElLaberinto" fullname="Game.Core.Tests.GameFlowRunnerTests.GameFlowRunner_RNF14_ConLasDosPrimerasFasesConfirmadasEntrarAlNivel2RetomaEnElLaberinto" methodname="GameFlowRunner_RNF14_ConLasDosPrimerasFasesConfirmadasEntrarAlNivel2RetomaEnElLaberinto" classname="Game.Core.Tests.GameFlowRunnerTests" runstate="Runnable" seed="367361469" result="Passed" start-time="2026-10-13 22:52:36Z" end-time="2026-10-13 22:52:38Z" duration="2.482974" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «MainMenu» cargó en 0.680 s
+RNF-04: «LevelSelect» cargó en 0.472 s
+RNF-04: «Level2_Maze» cargó en 1.225 s
+]]></output>
+              </test-case>
+              <test-case id="1018" name="GameFlowRunner_RNF16_VolverAlMenuDesdeElPanelDePerfilNoRecargaLaEscena" fullname="Game.Core.Tests.GameFlowRunnerTests.GameFlowRunner_RNF16_VolverAlMenuDesdeElPanelDePerfilNoRecargaLaEscena" methodname="GameFlowRunner_RNF16_VolverAlMenuDesdeElPanelDePerfilNoRecargaLaEscena" classname="Game.Core.Tests.GameFlowRunnerTests" runstate="Runnable" seed="682170249" result="Passed" start-time="2026-10-13 22:52:38Z" end-time="2026-10-13 22:52:40Z" duration="1.262532" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «MainMenu» cargó en 0.690 s
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1021" name="SceneLoaderTests" fullname="Game.Core.Tests.SceneLoaderTests" classname="Game.Core.Tests.SceneLoaderTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-13 22:52:40Z" end-time="2026-10-13 22:52:43Z" duration="3.135180" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1024" name="SceneLoader_RF05_ConFundidoCargaEnNegroYVuelveALaImagen" fullname="Game.Core.Tests.SceneLoaderTests.SceneLoader_RF05_ConFundidoCargaEnNegroYVuelveALaImagen" methodname="SceneLoader_RF05_ConFundidoCargaEnNegroYVuelveALaImagen" classname="Game.Core.Tests.SceneLoaderTests" runstate="Runnable" seed="2108578919" result="Passed" start-time="2026-10-13 22:52:40Z" end-time="2026-10-13 22:52:40Z" duration="0.716511" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «MainMenu» cargó en 0.451 s
+]]></output>
+              </test-case>
+              <test-case id="1025" name="SceneLoader_RF05_SinFundidoNoOscureceNada" fullname="Game.Core.Tests.SceneLoaderTests.SceneLoader_RF05_SinFundidoNoOscureceNada" methodname="SceneLoader_RF05_SinFundidoNoOscureceNada" classname="Game.Core.Tests.SceneLoaderTests" runstate="Runnable" seed="2068457085" result="Passed" start-time="2026-10-13 22:52:40Z" end-time="2026-10-13 22:52:41Z" duration="0.515096" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «MainMenu» cargó en 0.459 s
+]]></output>
+              </test-case>
+              <test-case id="1023" name="SceneLoader_RNF04_CadaCargaDejaSuTiempoEnElRegistro" fullname="Game.Core.Tests.SceneLoaderTests.SceneLoader_RNF04_CadaCargaDejaSuTiempoEnElRegistro" methodname="SceneLoader_RNF04_CadaCargaDejaSuTiempoEnElRegistro" classname="Game.Core.Tests.SceneLoaderTests" runstate="Runnable" seed="1843724190" result="Passed" start-time="2026-10-13 22:52:41Z" end-time="2026-10-13 22:52:42Z" duration="1.066404" asserts="0">
+                <properties>
+                  <property name="Category" value="Acceptance" />
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «MainMenu» cargó en 0.445 s
+RNF-04: «Credits» cargó en 0.544 s
+]]></output>
+              </test-case>
+              <test-case id="1022" name="SceneLoader_RNF04_LastLoadSecondsMideElTiempoRealDeCargaDeLaEscena" fullname="Game.Core.Tests.SceneLoaderTests.SceneLoader_RNF04_LastLoadSecondsMideElTiempoRealDeCargaDeLaEscena" methodname="SceneLoader_RNF04_LastLoadSecondsMideElTiempoRealDeCargaDeLaEscena" classname="Game.Core.Tests.SceneLoaderTests" runstate="Runnable" seed="242279898" result="Passed" start-time="2026-10-13 22:52:42Z" end-time="2026-10-13 22:52:43Z" duration="0.834289" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[RNF-04: «MainMenu» cargó en 0.728 s
+Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

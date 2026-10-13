@@ -91,26 +91,7 @@ namespace Game.Scaffolding
                 return;
             }
 
-            Release();
-            gameObject.SetActive(false);
-            var onClosed = _onClosed;
-            _onClosed = null;
-            onClosed?.Invoke();
-        }
-
-        /// <summary>La escena se descarga con el aviso abierto: el tiempo no puede quedarse detenido.</summary>
-        private void OnDestroy()
-        {
-            if (IsOpen)
-            {
-                Release();
-            }
-        }
-
-        private void Release()
-        {
-            IsOpen = false;
-            Time.timeScale = _timeScaleBefore;
+            Restore();
 
             // Por qué no Destroy a secas: el Canvas se niega a salir mientras el GraphicRaycaster
             // siga pegado a él, y Destroy lo quita hasta el final del cuadro. El raycaster sale
@@ -124,6 +105,30 @@ namespace Game.Scaffolding
             {
                 Destroy(_litCanvas);
             }
+
+            gameObject.SetActive(false);
+            var onClosed = _onClosed;
+            _onClosed = null;
+            onClosed?.Invoke();
+        }
+
+        /// <summary>
+        /// La escena se descarga con el aviso abierto: el tiempo no puede quedarse detenido. Solo se
+        /// devuelve el tiempo: el Canvas y el raycaster del botón salen con la escena, y destruirlos
+        /// aquí con <c>DestroyImmediate</c> es un error de Unity («Destroying object multiple times»).
+        /// </summary>
+        private void OnDestroy()
+        {
+            if (IsOpen)
+            {
+                Restore();
+            }
+        }
+
+        private void Restore()
+        {
+            IsOpen = false;
+            Time.timeScale = _timeScaleBefore;
         }
     }
 }

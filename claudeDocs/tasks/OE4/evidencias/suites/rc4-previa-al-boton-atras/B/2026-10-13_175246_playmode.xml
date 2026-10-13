@@ -1,0 +1,605 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="68" result="Passed" total="68" passed="68" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-13 22:52:51Z" end-time="2026-10-13 22:54:52Z" duration="121,6645669">
+  <test-suite type="TestSuite" id="1509" name="Algoritmia" fullname="Algoritmia" runstate="Runnable" testcasecount="427" result="Passed" start-time="2026-10-13 22:52:51Z" end-time="2026-10-13 22:54:52Z" duration="121.664567" total="68" passed="68" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1103" name="Game.Levels.Fire.PlayMode.Tests.dll" fullname="C:/Dev/Algoritmia-B/Library/ScriptAssemblies/Game.Levels.Fire.PlayMode.Tests.dll" runstate="Runnable" testcasecount="68" result="Passed" start-time="2026-10-13 22:52:51Z" end-time="2026-10-13 22:54:52Z" duration="121.659320" total="68" passed="68" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="23396" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1104" name="Game" fullname="Game" runstate="Runnable" testcasecount="68" result="Passed" start-time="2026-10-13 22:52:51Z" end-time="2026-10-13 22:54:52Z" duration="121.657797" total="68" passed="68" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1105" name="Levels" fullname="Game.Levels" runstate="Runnable" testcasecount="68" result="Passed" start-time="2026-10-13 22:52:51Z" end-time="2026-10-13 22:54:52Z" duration="121.656615" total="68" passed="68" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1106" name="Fire" fullname="Game.Levels.Fire" runstate="Runnable" testcasecount="68" result="Passed" start-time="2026-10-13 22:52:51Z" end-time="2026-10-13 22:54:52Z" duration="121.655275" total="68" passed="68" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1107" name="Tests" fullname="Game.Levels.Fire.Tests" runstate="Runnable" testcasecount="68" result="Passed" start-time="2026-10-13 22:52:51Z" end-time="2026-10-13 22:54:52Z" duration="121.653971" total="68" passed="68" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1030" name="CaveLightingTests" fullname="Game.Levels.Fire.Tests.CaveLightingTests" classname="Game.Levels.Fire.Tests.CaveLightingTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-13 22:52:51Z" end-time="2026-10-13 22:52:56Z" duration="5.774719" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1031" name="FireLevel_RF21_IluminacionSubeUnEscalonPorGolpeEfectivo" fullname="Game.Levels.Fire.Tests.CaveLightingTests.FireLevel_RF21_IluminacionSubeUnEscalonPorGolpeEfectivo" methodname="FireLevel_RF21_IluminacionSubeUnEscalonPorGolpeEfectivo" classname="Game.Levels.Fire.Tests.CaveLightingTests" runstate="Runnable" seed="213043053" result="Passed" start-time="2026-10-13 22:52:51Z" end-time="2026-10-13 22:52:56Z" duration="5.189159" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="Description" value="Tras ejecutar esta prueba, revisar la captura: la cueva luce visiblemente más iluminada tras soplar que durante la convergencia (guion E7, iluminación completa), sin manchas ni zonas oscuras residuales, y el color resultante mantiene la familia de azules fríos del acorde cromático de la escena." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/FireLevel_RF21_IluminacionCompleta.png
+]]></output>
+                </test-case>
+                <test-case id="1032" name="FirePanel_RNF20_ContrasteSuficienteEnElEstadoMasOscuro" fullname="Game.Levels.Fire.Tests.CaveLightingTests.FirePanel_RNF20_ContrasteSuficienteEnElEstadoMasOscuro" methodname="FirePanel_RNF20_ContrasteSuficienteEnElEstadoMasOscuro" classname="Game.Levels.Fire.Tests.CaveLightingTests" runstate="Runnable" seed="701757581" result="Passed" start-time="2026-10-13 22:52:56Z" end-time="2026-10-13 22:52:56Z" duration="0.583592" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="Description" value="Tras ejecutar esta prueba, revisar la captura: el texto de la instrucción se lee con claridad sobre el fondo más oscuro de la cueva, sin necesidad de forzar la vista." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Contraste texto/tablilla en el estado más oscuro: 13,34:1
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/FirePanel_RNF20_EstadoMasOscuro.png
+]]></output>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1033" name="FirePanelTests" fullname="Game.Levels.Fire.Tests.FirePanelTests" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" testcasecount="59" result="Passed" start-time="2026-10-13 22:52:56Z" end-time="2026-10-13 22:54:45Z" duration="108.316946" total="59" passed="59" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1088" name="FireLevel_CP02_TrasUnGolpeSinChispaPapaSeAnimaYNuncaHaceUnGestoDeDerrota" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_CP02_TrasUnGolpeSinChispaPapaSeAnimaYNuncaHaceUnGestoDeDerrota" methodname="FireLevel_CP02_TrasUnGolpeSinChispaPapaSeAnimaYNuncaHaceUnGestoDeDerrota" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="794850119" result="Passed" start-time="2026-10-13 22:52:56Z" end-time="2026-10-13 22:52:59Z" duration="3.072288" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1084" name="FireLevel_DA133_LaFamiliaEsperaAtrasQuietaYElNinoObserva" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_DA133_LaFamiliaEsperaAtrasQuietaYElNinoObserva" methodname="FireLevel_DA133_LaFamiliaEsperaAtrasQuietaYElNinoObserva" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1289882617" result="Passed" start-time="2026-10-13 22:52:59Z" end-time="2026-10-13 22:53:00Z" duration="0.559353" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1085" name="FireLevel_DA133_NingunPersonajeQuedaBajoLaInterfazNiLeQuitaElClic" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_DA133_NingunPersonajeQuedaBajoLaInterfazNiLeQuitaElClic" methodname="FireLevel_DA133_NingunPersonajeQuedaBajoLaInterfazNiLeQuitaElClic" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="916006876" result="Passed" start-time="2026-10-13 22:53:00Z" end-time="2026-10-13 22:53:01Z" duration="1.316932" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1087" name="FireLevel_DA133_PapaGolpeaAlPulsarGolpearYVuelveAlReposo" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_DA133_PapaGolpeaAlPulsarGolpearYVuelveAlReposo" methodname="FireLevel_DA133_PapaGolpeaAlPulsarGolpearYVuelveAlReposo" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="486847036" result="Passed" start-time="2026-10-13 22:53:01Z" end-time="2026-10-13 22:53:03Z" duration="2.013590" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1086" name="FireLevel_DA133_PapaRecogeAlTomarUnaPiezaYVuelveAlReposo" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_DA133_PapaRecogeAlTomarUnaPiezaYVuelveAlReposo" methodname="FireLevel_DA133_PapaRecogeAlTomarUnaPiezaYVuelveAlReposo" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1027208539" result="Passed" start-time="2026-10-13 22:53:03Z" end-time="2026-10-13 22:53:06Z" duration="2.203015" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1089" name="FireLevel_DA133_PapaSoplaYSeQuedaArrodilladoMirandoElFuego" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_DA133_PapaSoplaYSeQuedaArrodilladoMirandoElFuego" methodname="FireLevel_DA133_PapaSoplaYSeQuedaArrodilladoMirandoElFuego" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1197894486" result="Passed" start-time="2026-10-13 22:53:06Z" end-time="2026-10-13 22:53:08Z" duration="2.428969" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1092" name="FireLevel_INC134_PapaGolpeaDeFrenteSinEspejo" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_INC134_PapaGolpeaDeFrenteSinEspejo" methodname="FireLevel_INC134_PapaGolpeaDeFrenteSinEspejo" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1196631815" result="Passed" start-time="2026-10-13 22:53:08Z" end-time="2026-10-13 22:53:09Z" duration="1.363662" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1090" name="FireLevel_INC134_PapaMiraAlMontonAlRecoger" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_INC134_PapaMiraAlMontonAlRecoger" methodname="FireLevel_INC134_PapaMiraAlMontonAlRecoger" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1756322389" result="Passed" start-time="2026-10-13 22:53:09Z" end-time="2026-10-13 22:53:10Z" duration="0.691068" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1091" name="FireLevel_INC134_PapaMiraAlMontonAlSoplarYAlArrodillarse" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_INC134_PapaMiraAlMontonAlSoplarYAlArrodillarse" methodname="FireLevel_INC134_PapaMiraAlMontonAlSoplarYAlArrodillarse" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="285898035" result="Passed" start-time="2026-10-13 22:53:10Z" end-time="2026-10-13 22:53:13Z" duration="2.477718" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1083" name="FireLevel_RF20_AlPrenderElFuegoElHumoNoSobrepasaElBordeDeArribaDeLaTablilla" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_AlPrenderElFuegoElHumoNoSobrepasaElBordeDeArribaDeLaTablilla" methodname="FireLevel_RF20_AlPrenderElFuegoElHumoNoSobrepasaElBordeDeArribaDeLaTablilla" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1644392459" result="Passed" start-time="2026-10-13 22:53:13Z" end-time="2026-10-13 22:53:18Z" duration="4.985567" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Level1_Cave» se abrió sin pasar por «Boot»: no hay perfil activo, no se avanza a la escena de cierre.
+]]></output>
+                </test-case>
+                <test-case id="1081" name="FireLevel_RF20_AlPrenderElFuegoElHumoSubeALaCoronaDeLaLlama" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_AlPrenderElFuegoElHumoSubeALaCoronaDeLaLlama" methodname="FireLevel_RF20_AlPrenderElFuegoElHumoSubeALaCoronaDeLaLlama" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1021535431" result="Passed" start-time="2026-10-13 22:53:18Z" end-time="2026-10-13 22:53:22Z" duration="4.834697" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Level1_Cave» se abrió sin pasar por «Boot»: no hay perfil activo, no se avanza a la escena de cierre.
+]]></output>
+                </test-case>
+                <test-case id="1075" name="FireLevel_RF20_AlSoplarPrendeLaLlamaCenitalSobreElMonton" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_AlSoplarPrendeLaLlamaCenitalSobreElMonton" methodname="FireLevel_RF20_AlSoplarPrendeLaLlamaCenitalSobreElMonton" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1179765732" result="Passed" start-time="2026-10-13 22:53:22Z" end-time="2026-10-13 22:53:24Z" duration="1.322833" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1070" name="FireLevel_RF20_AlTerminarDePrenderElHumoAsomaPorLaCoronaDetrasDeLaLlama" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_AlTerminarDePrenderElHumoAsomaPorLaCoronaDetrasDeLaLlama" methodname="FireLevel_RF20_AlTerminarDePrenderElHumoAsomaPorLaCoronaDetrasDeLaLlama" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1105823550" result="Passed" start-time="2026-10-13 22:53:24Z" end-time="2026-10-13 22:53:29Z" duration="4.871213" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Tras ejecutar esta prueba, revisar la captura: el humo asoma por la punta de la llama, detrás de ella, y no por debajo de su base; la tablilla se ve entera y legible por encima del humo (contraste texto/tablilla, tipografía sin cajas vacías); el humo no aparece cortado de forma extraña en la franja superior." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Level1_Cave» se abrió sin pasar por «Boot»: no hay perfil activo, no se avanza a la escena de cierre.
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/FireLevel_RF20_HumoEnLaCorona.png
+]]></output>
+                </test-case>
+                <test-case id="1080" name="FireLevel_RF20_DuranteElEncendidoLosDeslizantesSeVenAtenuados" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_DuranteElEncendidoLosDeslizantesSeVenAtenuados" methodname="FireLevel_RF20_DuranteElEncendidoLosDeslizantesSeVenAtenuados" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="866760581" result="Passed" start-time="2026-10-13 22:53:29Z" end-time="2026-10-13 22:53:31Z" duration="2.109479" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1079" name="FireLevel_RF20_DuranteElEncendidoLosMandosDelPanelNoResponden" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_DuranteElEncendidoLosMandosDelPanelNoResponden" methodname="FireLevel_RF20_DuranteElEncendidoLosMandosDelPanelNoResponden" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="119072990" result="Passed" start-time="2026-10-13 22:53:31Z" end-time="2026-10-13 22:53:33Z" duration="2.182335" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1076" name="FireLevel_RF20_LaLlamaCenitalEmiteSuHaloSinVelarElMonton" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_LaLlamaCenitalEmiteSuHaloSinVelarElMonton" methodname="FireLevel_RF20_LaLlamaCenitalEmiteSuHaloSinVelarElMonton" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="2049633402" result="Passed" start-time="2026-10-13 22:53:33Z" end-time="2026-10-13 22:53:34Z" duration="1.376940" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1078" name="FireLevel_RF20_SoplarDosVecesCierraElNivelUnaSolaVez" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_SoplarDosVecesCierraElNivelUnaSolaVez" methodname="FireLevel_RF20_SoplarDosVecesCierraElNivelUnaSolaVez" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="186214536" result="Passed" start-time="2026-10-13 22:53:34Z" end-time="2026-10-13 22:53:41Z" duration="6.373499" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1066" name="FireLevel_RF20_SoplarEncadenaAnimacionYEscenaDeCierre" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RF20_SoplarEncadenaAnimacionYEscenaDeCierre" methodname="FireLevel_RF20_SoplarEncadenaAnimacionYEscenaDeCierre" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1200754575" result="Passed" start-time="2026-10-13 22:53:41Z" end-time="2026-10-13 22:53:45Z" duration="4.883187" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1082" name="FireLevel_RNF03_AlPrenderElFuegoLaTablillaQuedaPorEncimaDelHumo" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RNF03_AlPrenderElFuegoLaTablillaQuedaPorEncimaDelHumo" methodname="FireLevel_RNF03_AlPrenderElFuegoLaTablillaQuedaPorEncimaDelHumo" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="834760581" result="Passed" start-time="2026-10-13 22:53:45Z" end-time="2026-10-13 22:53:50Z" duration="4.884614" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Level1_Cave» se abrió sin pasar por «Boot»: no hay perfil activo, no se avanza a la escena de cierre.
+]]></output>
+                </test-case>
+                <test-case id="1067" name="FireLevel_RNF21_SinDestellosDeAltaFrecuencia" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RNF21_SinDestellosDeAltaFrecuencia" methodname="FireLevel_RNF21_SinDestellosDeAltaFrecuencia" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="187050678" result="Passed" start-time="2026-10-13 22:53:50Z" end-time="2026-10-13 22:53:52Z" duration="1.470330" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="Description" value="Tras ejecutar esta prueba, revisar la captura: la transición de color del nacimiento del fuego es una única transición gradual, sin parpadeo ni oscilación (RNF-21)." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/FireLevel_RNF21_ConvergenciaAMitad.png
+]]></output>
+                </test-case>
+                <test-case id="1077" name="FireLevel_RNF21_SoplarDosVecesNoReiniciaElEncendido" fullname="Game.Levels.Fire.Tests.FirePanelTests.FireLevel_RNF21_SoplarDosVecesNoReiniciaElEncendido" methodname="FireLevel_RNF21_SoplarDosVecesNoReiniciaElEncendido" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="2062335528" result="Passed" start-time="2026-10-13 22:53:52Z" end-time="2026-10-13 22:53:57Z" duration="4.896983" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Level1_Cave» se abrió sin pasar por «Boot»: no hay perfil activo, no se avanza a la escena de cierre.
+]]></output>
+                </test-case>
+                <test-case id="1071" name="FirePanel_CT06_LasPiezasSeArrastranConClicSostenidoYNoSalenDelSuelo" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_CT06_LasPiezasSeArrastranConClicSostenidoYNoSalenDelSuelo" methodname="FirePanel_CT06_LasPiezasSeArrastranConClicSostenidoYNoSalenDelSuelo" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="488361993" result="Passed" start-time="2026-10-13 22:53:57Z" end-time="2026-10-13 22:53:57Z" duration="0.593206" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1093" name="FirePanel_DA76_LaPistaMuestraAAlgoritmConSuFormaDeFuego" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_DA76_LaPistaMuestraAAlgoritmConSuFormaDeFuego" methodname="FirePanel_DA76_LaPistaMuestraAAlgoritmConSuFormaDeFuego" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1062638350" result="Passed" start-time="2026-10-13 22:53:57Z" end-time="2026-10-13 22:53:58Z" duration="0.592416" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1035" name="FirePanel_RF13_AlReunirLaPistaDibujaElCirculoConElBordeEnLaMitadDelBotonDeAbajo" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF13_AlReunirLaPistaDibujaElCirculoConElBordeEnLaMitadDelBotonDeAbajo" methodname="FirePanel_RF13_AlReunirLaPistaDibujaElCirculoConElBordeEnLaMitadDelBotonDeAbajo" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="728257756" result="Passed" start-time="2026-10-13 22:53:58Z" end-time="2026-10-13 22:53:59Z" duration="0.610465" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1058" name="FirePanel_RF13_PistaADemandaEscribeLaInstruccionEnElRegistro" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF13_PistaADemandaEscribeLaInstruccionEnElRegistro" methodname="FirePanel_RF13_PistaADemandaEscribeLaInstruccionEnElRegistro" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="791100180" result="Passed" start-time="2026-10-13 22:53:59Z" end-time="2026-10-13 22:53:59Z" duration="0.609648" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1059" name="FirePanel_RF13_TrasTresFallosSeguidosElRegistroSumaLaPista" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF13_TrasTresFallosSeguidosElRegistroSumaLaPista" methodname="FirePanel_RF13_TrasTresFallosSeguidosElRegistroSumaLaPista" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1549068280" result="Passed" start-time="2026-10-13 22:53:59Z" end-time="2026-10-13 22:54:00Z" duration="1.350801" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1034" name="FirePanel_RF14_AlAbrirSoloHayPiezasTablillaYPista" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_AlAbrirSoloHayPiezasTablillaYPista" methodname="FirePanel_RF14_AlAbrirSoloHayPiezasTablillaYPista" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="450329104" result="Passed" start-time="2026-10-13 22:54:00Z" end-time="2026-10-13 22:54:01Z" duration="0.596818" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1040" name="FirePanel_RF14_AlEncenderPresentaLosDosDeslizantesGolpearYSoplar" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_AlEncenderPresentaLosDosDeslizantesGolpearYSoplar" methodname="FirePanel_RF14_AlEncenderPresentaLosDosDeslizantesGolpearYSoplar" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1988994872" result="Passed" start-time="2026-10-13 22:54:01Z" end-time="2026-10-13 22:54:02Z" duration="1.383273" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1036" name="FirePanel_RF14_ConUnaPiezaFueraDelCirculoNoPasaAlEncendido" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_ConUnaPiezaFueraDelCirculoNoPasaAlEncendido" methodname="FirePanel_RF14_ConUnaPiezaFueraDelCirculoNoPasaAlEncendido" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1275122907" result="Passed" start-time="2026-10-13 22:54:02Z" end-time="2026-10-13 22:54:03Z" duration="0.582018" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1039" name="FirePanel_RF14_DuranteElAcercamientoLasPiedrasNuncaQuedanBajoLasHojas" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_DuranteElAcercamientoLasPiedrasNuncaQuedanBajoLasHojas" methodname="FirePanel_RF14_DuranteElAcercamientoLasPiedrasNuncaQuedanBajoLasHojas" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="16359572" result="Passed" start-time="2026-10-13 22:54:03Z" end-time="2026-10-13 22:54:04Z" duration="1.357305" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1073" name="FirePanel_RF14_LasPiezasAparecenAlAzarFueraDeLaInterfazYDelCirculo" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_LasPiezasAparecenAlAzarFueraDeLaInterfazYDelCirculo" methodname="FirePanel_RF14_LasPiezasAparecenAlAzarFueraDeLaInterfazYDelCirculo" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1992064830" result="Passed" start-time="2026-10-13 22:54:04Z" end-time="2026-10-13 22:54:06Z" duration="1.128526" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1072" name="FirePanel_RF14_LasPiezasAparecenGiradasAlAzarYCadaHojaEsUnMonton" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_LasPiezasAparecenGiradasAlAzarYCadaHojaEsUnMonton" methodname="FirePanel_RF14_LasPiezasAparecenGiradasAlAzarYCadaHojaEsUnMonton" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1803431156" result="Passed" start-time="2026-10-13 22:54:06Z" end-time="2026-10-13 22:54:06Z" duration="0.596464" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1038" name="FirePanel_RF14_ReunirTodoDentroDelCirculoAcercaLaCamaraYArmaLaFogata" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF14_ReunirTodoDentroDelCirculoAcercaLaCamaraYArmaLaFogata" methodname="FirePanel_RF14_ReunirTodoDentroDelCirculoAcercaLaCamaraYArmaLaFogata" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="167605486" result="Passed" start-time="2026-10-13 22:54:06Z" end-time="2026-10-13 22:54:08Z" duration="1.384801" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1042" name="FirePanel_RF15_ElDeslizanteDeCercaniaVaDeLaMitadDeSoplarALaMitadDeGolpearYMueveLasPiedras" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF15_ElDeslizanteDeCercaniaVaDeLaMitadDeSoplarALaMitadDeGolpearYMueveLasPiedras" methodname="FirePanel_RF15_ElDeslizanteDeCercaniaVaDeLaMitadDeSoplarALaMitadDeGolpearYMueveLasPiedras" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="241518191" result="Passed" start-time="2026-10-13 22:54:08Z" end-time="2026-10-13 22:54:09Z" duration="1.385824" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1057" name="FirePanel_RF15_ElDeslizanteDeFuerzaTieneDiezMuescasYElAsaCreceYEnrojeceConLaFuerza" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF15_ElDeslizanteDeFuerzaTieneDiezMuescasYElAsaCreceYEnrojeceConLaFuerza" methodname="FirePanel_RF15_ElDeslizanteDeFuerzaTieneDiezMuescasYElAsaCreceYEnrojeceConLaFuerza" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="452821012" result="Passed" start-time="2026-10-13 22:54:09Z" end-time="2026-10-13 22:54:10Z" duration="1.396435" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1043" name="FirePanel_RF15_MoverLaCercaniaNoSubeLasPiedrasSobreLaChispa" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF15_MoverLaCercaniaNoSubeLasPiedrasSobreLaChispa" methodname="FirePanel_RF15_MoverLaCercaniaNoSubeLasPiedrasSobreLaChispa" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1045374066" result="Passed" start-time="2026-10-13 22:54:10Z" end-time="2026-10-13 22:54:12Z" duration="1.398582" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1041" name="FirePanel_RF15_MoverLosDeslizantesNoEjecutaNingunGolpe" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF15_MoverLosDeslizantesNoEjecutaNingunGolpe" methodname="FirePanel_RF15_MoverLosDeslizantesNoEjecutaNingunGolpe" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1218830680" result="Passed" start-time="2026-10-13 22:54:12Z" end-time="2026-10-13 22:54:13Z" duration="1.400054" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1053" name="FirePanel_RF16_ConFuerzaDeMasElRayoPasaDeLasHojasYSeApagaEnElAire" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_ConFuerzaDeMasElRayoPasaDeLasHojasYSeApagaEnElAire" methodname="FirePanel_RF16_ConFuerzaDeMasElRayoPasaDeLasHojasYSeApagaEnElAire" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="695346422" result="Passed" start-time="2026-10-13 22:54:13Z" end-time="2026-10-13 22:54:15Z" duration="1.753255" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1047" name="FirePanel_RF16_ConLasPiedrasSeparadasOEncimadasElGolpeNoPrendeNiPenaliza" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_ConLasPiedrasSeparadasOEncimadasElGolpeNoPrendeNiPenaliza" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-13 22:54:15Z" end-time="2026-10-13 22:54:18Z" duration="2.880218" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                  </properties>
+                  <test-case id="1045" name="FirePanel_RF16_ConLasPiedrasSeparadasOEncimadasElGolpeNoPrendeNiPenaliza(0)" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_ConLasPiedrasSeparadasOEncimadasElGolpeNoPrendeNiPenaliza(0)" methodname="FirePanel_RF16_ConLasPiedrasSeparadasOEncimadasElGolpeNoPrendeNiPenaliza" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1283591835" result="Passed" start-time="2026-10-13 22:54:15Z" end-time="2026-10-13 22:54:16Z" duration="1.437895" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1046" name="FirePanel_RF16_ConLasPiedrasSeparadasOEncimadasElGolpeNoPrendeNiPenaliza(10)" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_ConLasPiedrasSeparadasOEncimadasElGolpeNoPrendeNiPenaliza(10)" methodname="FirePanel_RF16_ConLasPiedrasSeparadasOEncimadasElGolpeNoPrendeNiPenaliza" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1476627911" result="Passed" start-time="2026-10-13 22:54:16Z" end-time="2026-10-13 22:54:18Z" duration="1.440232" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1055" name="FirePanel_RF16_ElBrilloDeLaChispaDuraMasConCadaGolpeEfectivo" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_ElBrilloDeLaChispaDuraMasConCadaGolpeEfectivo" methodname="FirePanel_RF16_ElBrilloDeLaChispaDuraMasConCadaGolpeEfectivo" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="829046063" result="Passed" start-time="2026-10-13 22:54:18Z" end-time="2026-10-13 22:54:20Z" duration="2.014500" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1068" name="FirePanel_RF16_ElRayoDeLaChispaSeVeSobreElMonton" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_ElRayoDeLaChispaSeVeSobreElMonton" methodname="FirePanel_RF16_ElRayoDeLaChispaSeVeSobreElMonton" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="2133510941" result="Passed" start-time="2026-10-13 22:54:20Z" end-time="2026-10-13 22:54:22Z" duration="1.791365" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Tras ejecutar esta prueba, revisar la captura: el rayo de la chispa es un trazo recto y plano (#FFE9A8) que sale del centro, entre las piedras, y entra en las hojas del montón; sin halo, destello ni deformación, y con contraste suficiente contra las hojas (RNF-20)." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/FirePanel_RF16_RayoDeLaChispa.png
+]]></output>
+                </test-case>
+                <test-case id="1044" name="FirePanel_RF16_GolpearEscribeEnElRegistroElMensajeDeLaFuerza" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_GolpearEscribeEnElRegistroElMensajeDeLaFuerza" methodname="FirePanel_RF16_GolpearEscribeEnElRegistroElMensajeDeLaFuerza" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="2120785652" result="Passed" start-time="2026-10-13 22:54:22Z" end-time="2026-10-13 22:54:23Z" duration="1.424485" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1052" name="FirePanel_RF16_LaChispaEsUnRayoDelCentroQueCaeEnLasHojasEnUnaDireccionAlAzar" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_LaChispaEsUnRayoDelCentroQueCaeEnLasHojasEnUnaDireccionAlAzar" methodname="FirePanel_RF16_LaChispaEsUnRayoDelCentroQueCaeEnLasHojasEnUnaDireccionAlAzar" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1686864674" result="Passed" start-time="2026-10-13 22:54:23Z" end-time="2026-10-13 22:54:24Z" duration="1.495476" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1051" name="FirePanel_RF16_LaChispaSoloSeVeCuandoLasPiedrasChocanConFuerza" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF16_LaChispaSoloSeVeCuandoLasPiedrasChocanConFuerza" methodname="FirePanel_RF16_LaChispaSoloSeVeCuandoLasPiedrasChocanConFuerza" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1573133520" result="Passed" start-time="2026-10-13 22:54:24Z" end-time="2026-10-13 22:54:26Z" duration="1.427293" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1063" name="FirePanel_RF17_LaTablillaMuestraElUltimoMensajeSinDesbordarTrasDiezIntentos" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF17_LaTablillaMuestraElUltimoMensajeSinDesbordarTrasDiezIntentos" methodname="FirePanel_RF17_LaTablillaMuestraElUltimoMensajeSinDesbordarTrasDiezIntentos" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="535975217" result="Passed" start-time="2026-10-13 22:54:26Z" end-time="2026-10-13 22:54:27Z" duration="1.385825" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1048" name="FirePanel_RF19_AlConvergerElMontonEmpiezaAHumearYNoDejaDeHacerlo" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_AlConvergerElMontonEmpiezaAHumearYNoDejaDeHacerlo" methodname="FirePanel_RF19_AlConvergerElMontonEmpiezaAHumearYNoDejaDeHacerlo" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="816954771" result="Passed" start-time="2026-10-13 22:54:27Z" end-time="2026-10-13 22:54:29Z" duration="1.386109" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1050" name="FirePanel_RF19_ElHiloDeHumoNaceEnElPuntoDelGolpeYNoEsMasAltoQueMedioMonton" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_ElHiloDeHumoNaceEnElPuntoDelGolpeYNoEsMasAltoQueMedioMonton" methodname="FirePanel_RF19_ElHiloDeHumoNaceEnElPuntoDelGolpeYNoEsMasAltoQueMedioMonton" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="795095479" result="Passed" start-time="2026-10-13 22:54:29Z" end-time="2026-10-13 22:54:30Z" duration="1.433032" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1069" name="FirePanel_RF19_ElHiloDeHumoSeVeFinoYNaceEnElCentroDelMonton" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_ElHiloDeHumoSeVeFinoYNaceEnElCentroDelMonton" methodname="FirePanel_RF19_ElHiloDeHumoSeVeFinoYNaceEnElCentroDelMonton" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1280001542" result="Passed" start-time="2026-10-13 22:54:30Z" end-time="2026-10-13 22:54:33Z" duration="2.635371" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Tras ejecutar esta prueba, revisar la captura: el humo del montón es un hilo fino que nace en el centro, entre las piedras, y sube sobre las hojas; las piedras se ven encima del humo y este encima del montón; la tablilla se lee entera." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/FirePanel_RF19_HiloDeHumo.png
+]]></output>
+                </test-case>
+                <test-case id="1049" name="FirePanel_RF19_ElHumoSeDibujaEncimaDelMontonYDebajoDeLasPiedras" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_ElHumoSeDibujaEncimaDelMontonYDebajoDeLasPiedras" methodname="FirePanel_RF19_ElHumoSeDibujaEncimaDelMontonYDebajoDeLasPiedras" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="717644010" result="Passed" start-time="2026-10-13 22:54:33Z" end-time="2026-10-13 22:54:34Z" duration="1.404544" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1060" name="FirePanel_RF19_SoplarAtenuadoNoRespondeNiRegistraError" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_SoplarAtenuadoNoRespondeNiRegistraError" methodname="FirePanel_RF19_SoplarAtenuadoNoRespondeNiRegistraError" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1531660583" result="Passed" start-time="2026-10-13 22:54:34Z" end-time="2026-10-13 22:54:36Z" duration="1.421128" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1056" name="FirePanel_RF19_SoplarSeHabilitaAlAlcanzarElMinimoDeGolpesEfectivos" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RF19_SoplarSeHabilitaAlAlcanzarElMinimoDeGolpesEfectivos" methodname="FirePanel_RF19_SoplarSeHabilitaAlAlcanzarElMinimoDeGolpesEfectivos" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="985945446" result="Passed" start-time="2026-10-13 22:54:36Z" end-time="2026-10-13 22:54:37Z" duration="1.428904" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1061" name="FirePanel_RNF02_ElMapaDeControlesNoTieneNingunBindingDeTeclado" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF02_ElMapaDeControlesNoTieneNingunBindingDeTeclado" methodname="FirePanel_RNF02_ElMapaDeControlesNoTieneNingunBindingDeTeclado" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1017379972" result="Passed" start-time="2026-10-13 22:54:37Z" end-time="2026-10-13 22:54:38Z" duration="0.654822" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1074" name="FirePanel_RNF02_TomarUnaPiezaLaLevantaYSoltarlaLaPosa" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF02_TomarUnaPiezaLaLevantaYSoltarlaLaPosa" methodname="FirePanel_RNF02_TomarUnaPiezaLaLevantaYSoltarlaLaPosa" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1893165531" result="Passed" start-time="2026-10-13 22:54:38Z" end-time="2026-10-13 22:54:38Z" duration="0.862883" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1062" name="FirePanel_RNF03_LaEscenaNoPresentaListaDeTareas" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF03_LaEscenaNoPresentaListaDeTareas" methodname="FirePanel_RNF03_LaEscenaNoPresentaListaDeTareas" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1455415112" result="Passed" start-time="2026-10-13 22:54:39Z" end-time="2026-10-13 22:54:39Z" duration="0.633864" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1037" name="FirePanel_RNF03_ReuniendoUnaPiezaBajoLaTablillaQuedaEncimaYAlAlcanceDelClic" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF03_ReuniendoUnaPiezaBajoLaTablillaQuedaEncimaYAlAlcanceDelClic" methodname="FirePanel_RNF03_ReuniendoUnaPiezaBajoLaTablillaQuedaEncimaYAlAlcanceDelClic" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1517790223" result="Passed" start-time="2026-10-13 22:54:39Z" end-time="2026-10-13 22:54:40Z" duration="0.607771" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1065" name="FirePanel_RNF19_ElEncendidoSeVeComoElMockupConElCandadoSinRotulo" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF19_ElEncendidoSeVeComoElMockupConElCandadoSinRotulo" methodname="FirePanel_RNF19_ElEncendidoSeVeComoElMockupConElCandadoSinRotulo" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1105221922" result="Passed" start-time="2026-10-13 22:54:40Z" end-time="2026-10-13 22:54:41Z" duration="1.456651" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Tras ejecutar esta prueba, revisar la captura: la cámara está al doble sobre la fogata; se ve el montón de hojas desde arriba con las piedras en el centro; el botón «Soplar» atenuado muestra solo el candado, sin rótulo; el deslizante de cercanía va de la mitad de «Soplar» a la mitad de «Golpear»; el contraste de la tablilla y de los controles es suficiente (≥ 4.5:1, RNF-20)." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/FirePanel_RNF19_SoplarAtenuado.png
+]]></output>
+                </test-case>
+                <test-case id="1064" name="FirePanel_RNF19_SoplarAtenuadoSeDistinguePorElCandadoAdemasDelColorYSinRotuloAunNo" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF19_SoplarAtenuadoSeDistinguePorElCandadoAdemasDelColorYSinRotuloAunNo" methodname="FirePanel_RNF19_SoplarAtenuadoSeDistinguePorElCandadoAdemasDelColorYSinRotuloAunNo" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1779836508" result="Passed" start-time="2026-10-13 22:54:41Z" end-time="2026-10-13 22:54:43Z" duration="1.434846" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1054" name="FirePanel_RNF21_ElRayoDeLaChispaHaceUnSoloBarridoSinVolver" fullname="Game.Levels.Fire.Tests.FirePanelTests.FirePanel_RNF21_ElRayoDeLaChispaHaceUnSoloBarridoSinVolver" methodname="FirePanel_RNF21_ElRayoDeLaChispaHaceUnSoloBarridoSinVolver" classname="Game.Levels.Fire.Tests.FirePanelTests" runstate="Runnable" seed="1886194265" result="Passed" start-time="2026-10-13 22:54:43Z" end-time="2026-10-13 22:54:45Z" duration="2.089889" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1094" name="FireSoundsTests" fullname="Game.Levels.Fire.Tests.FireSoundsTests" classname="Game.Levels.Fire.Tests.FireSoundsTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-13 22:54:45Z" end-time="2026-10-13 22:54:49Z" duration="4.212626" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1095" name="FirePanel_CP02_SeparadasNoSuenanEnContactoSuenanAPiedraYSoloElEfectivoAnadeLaChispa" fullname="Game.Levels.Fire.Tests.FireSoundsTests.FirePanel_CP02_SeparadasNoSuenanEnContactoSuenanAPiedraYSoloElEfectivoAnadeLaChispa" methodname="FirePanel_CP02_SeparadasNoSuenanEnContactoSuenanAPiedraYSoloElEfectivoAnadeLaChispa" classname="Game.Levels.Fire.Tests.FireSoundsTests" runstate="Runnable" seed="1564374790" result="Passed" start-time="2026-10-13 22:54:45Z" end-time="2026-10-13 22:54:46Z" duration="1.432472" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1097" name="FirePanel_RF14_UnaHojaSuenaMientrasSeArrastraYReunirTodoSuenaAlPasarAlEncendido" fullname="Game.Levels.Fire.Tests.FireSoundsTests.FirePanel_RF14_UnaHojaSuenaMientrasSeArrastraYReunirTodoSuenaAlPasarAlEncendido" methodname="FirePanel_RF14_UnaHojaSuenaMientrasSeArrastraYReunirTodoSuenaAlPasarAlEncendido" classname="Game.Levels.Fire.Tests.FireSoundsTests" runstate="Runnable" seed="156813882" result="Passed" start-time="2026-10-13 22:54:46Z" end-time="2026-10-13 22:54:47Z" duration="1.326582" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1096" name="FirePanel_RF20_SoplarSuenaYLaHogueraEntraSobreLaCueva" fullname="Game.Levels.Fire.Tests.FireSoundsTests.FirePanel_RF20_SoplarSuenaYLaHogueraEntraSobreLaCueva" methodname="FirePanel_RF20_SoplarSuenaYLaHogueraEntraSobreLaCueva" classname="Game.Levels.Fire.Tests.FireSoundsTests" runstate="Runnable" seed="370144703" result="Passed" start-time="2026-10-13 22:54:47Z" end-time="2026-10-13 22:54:49Z" duration="1.450998" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1098" name="HelpIntroTests" fullname="Game.Levels.Fire.Tests.HelpIntroTests" classname="Game.Levels.Fire.Tests.HelpIntroTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-13 22:54:49Z" end-time="2026-10-13 22:54:52Z" duration="3.347741" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1099" name="FireLevel_INC158_ElAvisoDetieneElTiempoIluminaLaAyudaYAlCerrarTodoVuelve" fullname="Game.Levels.Fire.Tests.HelpIntroTests.FireLevel_INC158_ElAvisoDetieneElTiempoIluminaLaAyudaYAlCerrarTodoVuelve" methodname="FireLevel_INC158_ElAvisoDetieneElTiempoIluminaLaAyudaYAlCerrarTodoVuelve" classname="Game.Levels.Fire.Tests.HelpIntroTests" runstate="Runnable" seed="1670035862" result="Passed" start-time="2026-10-13 22:54:49Z" end-time="2026-10-13 22:54:50Z" duration="0.589349" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1100" name="FireLevel_INC158_UnaEscenaQueSeDescargaConElAvisoAbiertoDevuelveElTiempoSinErrores" fullname="Game.Levels.Fire.Tests.HelpIntroTests.FireLevel_INC158_UnaEscenaQueSeDescargaConElAvisoAbiertoDevuelveElTiempoSinErrores" methodname="FireLevel_INC158_UnaEscenaQueSeDescargaConElAvisoAbiertoDevuelveElTiempoSinErrores" classname="Game.Levels.Fire.Tests.HelpIntroTests" runstate="Runnable" seed="2119249964" result="Passed" start-time="2026-10-13 22:54:50Z" end-time="2026-10-13 22:54:51Z" duration="1.087183" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1101" name="FireLevel_INC158_UnPerfilNuevoVeElAvisoAlAbrirLaCuevaYElRatoDeLecturaNoCuentaComoResolucion" fullname="Game.Levels.Fire.Tests.HelpIntroTests.FireLevel_INC158_UnPerfilNuevoVeElAvisoAlAbrirLaCuevaYElRatoDeLecturaNoCuentaComoResolucion" methodname="FireLevel_INC158_UnPerfilNuevoVeElAvisoAlAbrirLaCuevaYElRatoDeLecturaNoCuentaComoResolucion" classname="Game.Levels.Fire.Tests.HelpIntroTests" runstate="Runnable" seed="497275442" result="Passed" start-time="2026-10-13 22:54:51Z" end-time="2026-10-13 22:54:52Z" duration="1.088048" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1102" name="FireLevel_INC158_UnPerfilQueYaTerminoLaFase1NoVeElAviso" fullname="Game.Levels.Fire.Tests.HelpIntroTests.FireLevel_INC158_UnPerfilQueYaTerminoLaFase1NoVeElAviso" methodname="FireLevel_INC158_UnPerfilQueYaTerminoLaFase1NoVeElAviso" classname="Game.Levels.Fire.Tests.HelpIntroTests" runstate="Runnable" seed="990825855" result="Passed" start-time="2026-10-13 22:54:52Z" end-time="2026-10-13 22:54:52Z" duration="0.580599" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="20000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

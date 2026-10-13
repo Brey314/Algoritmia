@@ -380,6 +380,62 @@ namespace Game.UI.Tests
             Assert.That(atras.xMax, Is.LessThanOrEqualTo(interior.xMax + 0.5f), "ni por la derecha");
         }
 
+        /// <summary>
+        /// La disposición de los tres botones (INC-160, 13/10/2026): «Continuar» abajo a la derecha,
+        /// «Atrás» a su izquierda en la misma fila —mismo borde inferior y misma altura— y «Omitir»
+        /// encima de «Continuar», del mismo tamaño y alineado con él por la derecha. Ninguno pisa el
+        /// nombre ni el texto, también con «Omitir» a la vista (la segunda visita).
+        /// </summary>
+        /// <remarks>
+        /// «Atrás» no va en el extremo izquierdo de la columna del texto: el cuadro mide 216 px (el
+        /// cuarto inferior, D5) y nombre (48 px) + texto de dos líneas (86) + fila de botones (98 desde
+        /// el borde) suman 232 sobre 204 de interior, así que el texto tendría que acabar encima de la
+        /// fila sin sitio para nombrarlo. Con «Atrás» a la izquierda de «Continuar» el texto conserva
+        /// sus 680 × 137 px, que es lo que cada línea de las 18 narrativas necesita (RNF-01).
+        /// </remarks>
+        [Test]
+        [Timeout(30000)]
+        public async Task NarrativeScene_INC160_OmitirVaEncimaDeContinuarAtrasEnSuFilaYNingunoPisaAlOtro()
+        {
+            var (controller, _) = await OpenNarrative("N1_Apertura", LevelId.Wheel, new PhaseId(LevelId.Fire, 1));
+            Click(controller.AdvanceButton); // «Atrás» no se ofrece en la primera línea
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            Assert.That(controller.SkipButton.gameObject.activeSelf, Is.True, "el arreglo no ofrece omitir: es la segunda visita");
+            Assert.That(controller.BackButton.gameObject.activeSelf, Is.True, "ni «Atrás»: no es la primera línea");
+            var interior = EnPantalla((RectTransform)controller.BodyLabel.transform.parent); // Cuerpo → Fondo
+            var omitir = EnPantalla((RectTransform)controller.SkipButton.transform);
+            var atras = EnPantalla((RectTransform)controller.BackButton.transform);
+            var continuar = EnPantalla((RectTransform)controller.AdvanceButton.transform);
+            var texto = EnPantalla(controller.BodyLabel.rectTransform);
+            var nombre = EnPantalla(controller.SpeakerLabel.rectTransform);
+
+            Assert.That(omitir.yMin, Is.GreaterThanOrEqualTo(continuar.yMax), "«Omitir» va encima de «Continuar»");
+            Assert.That(omitir.width, Is.EqualTo(continuar.width).Within(0.5f), "del mismo ancho");
+            Assert.That(omitir.height, Is.EqualTo(continuar.height).Within(0.5f), "y de la misma altura");
+            Assert.That(omitir.xMax, Is.EqualTo(continuar.xMax).Within(0.5f), "alineado con «Continuar» por la derecha");
+            Assert.That(atras.yMin, Is.EqualTo(continuar.yMin).Within(0.5f), "«Atrás» comparte el borde inferior de «Continuar»");
+            Assert.That(atras.height, Is.EqualTo(continuar.height).Within(0.5f), "y su altura");
+            Assert.That(atras.xMax, Is.LessThanOrEqualTo(continuar.xMin), "y queda a su izquierda");
+
+            var botones = new[] { (nameof(omitir), omitir), (nameof(atras), atras), (nameof(continuar), continuar) };
+            foreach (var (nombreDelBoton, boton) in botones)
+            {
+                Assert.That(boton.Overlaps(texto), Is.False, $"«{nombreDelBoton}» no tapa el texto");
+                Assert.That(boton.Overlaps(nombre), Is.False, "ni el nombre de quien habla");
+                Assert.That(boton.xMin, Is.GreaterThanOrEqualTo(interior.xMin - 0.5f), $"«{nombreDelBoton}» no sale por la izquierda");
+                Assert.That(boton.xMax, Is.LessThanOrEqualTo(interior.xMax + 0.5f), "ni por la derecha");
+                Assert.That(boton.yMin, Is.GreaterThanOrEqualTo(interior.yMin - 0.5f), "ni por abajo");
+                Assert.That(boton.yMax, Is.LessThanOrEqualTo(interior.yMax + 0.5f), "ni por arriba");
+            }
+
+            foreach (var (a, b) in new[] { (omitir, atras), (omitir, continuar), (atras, continuar) })
+            {
+                Assert.That(a.Overlaps(b), Is.False, "los tres botones no se pisan entre sí");
+            }
+        }
+
         [Test]
         [Timeout(30000)]
         public async Task NarrativeScene_RF10_TerminarLaEscena21EntraAJugarLaFase1DelBosque()
