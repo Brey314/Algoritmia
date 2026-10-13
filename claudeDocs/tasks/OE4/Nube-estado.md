@@ -140,3 +140,20 @@ PlayMode, suite completa y rc4 aún no se corrieron: no afirmes resultados de Pl
 
 Mismas reglas de identidad (`santivaldiri`, sin coautor) y de archivos vedados que en `Encargo-Nube.md`;
 además no toques `ActionView.cs`, `CharacterViewTests.cs` ni `claudeDocs/tasks/Personajes/herramientas/*`.
+
+## Orden de la sesión local (13/10/2026, 14:45) — C7: cotejar INC-154
+
+INC-154 llegó en `d8ab0f4`. Coteja lo que escribiste de INC-154 (OE4 `src/`, `INCONSISTENCIAS.md`,
+`Interfaces.md` si aplica) con ese diff y corrige lo que no coincida. Datos del commit:
+- `ActionView`: Hug y Sleep → perfil; `CharacterViewTests` con `ActionView_INC154_AbrazarYDormirVanDePerfil`.
+- Clips `char_{papa,mama,nina,nino}_anim_{abrazar,dormir}.anim` regenerados (solo curvas de `Lienzo/Perfil`);
+  ningún prefab reconstruido. Abrazo: los dos brazos hacia delante; los adultos bajan las manos hacia los niños.
+  Dormir: `Lienzo/Perfil` a +90°, boca arriba, respiración de 4 s; la cabeza queda **opuesta** a la mirada
+  (a −90° quedaban boca abajo y sin ojos visibles).
+- `N1_NacimientoDelFuego`: `Facing` explícito en los abrazos (L4, L5, L12) y en L16 cada uno camina a su
+  sitio alrededor del fuego y llega dormido, sin taparlo. `N1_Hallazgo` L12: Mamá abraza mirando a la
+  izquierda (`Facing: 1`), hacia el niño.
+- Verificado en EditMode (`Character` 220/220, `NarrativeSequence` 34/34 con RNF-03) y con `pose_preview.py`;
+  **sin** PlayMode ni captura del motor todavía.
+Añade además una entrada fechada en `claudeDocs/tasks/Personajes/Personajes-Resultados.md` (registro
+histórico: solo se añade, no se reescribe). Mismas reglas de identidad y archivos vedados.
