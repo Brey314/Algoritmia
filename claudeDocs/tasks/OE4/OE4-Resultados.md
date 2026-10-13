@@ -359,3 +359,43 @@ PS-01..05 de la dirección de sonido, y lo que traiga la evaluación con estudia
 | Triaje de los 16 defectos | T21 | Corregir en OE4, registrar un INC o dejar como trabajo futuro, con fecha |
 | Etiqueta de rc3 | T01 | Decidir si se etiqueta; Claude solo la pone con su visto bueno |
 | Recorridos del arnés de PF-RNF13-01 | — | Decidir si Claude ejecuta los dos (ventana y pantalla completa) sobre rc3 antes de que Santiago haga el suyo |
+
+## 12. Nota del 13/10/2026 · sesión con estudiantes y hoja HUM
+
+Nota añadida; no corrige las secciones anteriores, que conservan el corte del 10/10/2026 sobre rc3.
+
+**Sesión.** El 13/10/2026, en el Colegio El Libertador IED, sede A, con 4 estudiantes de grado quinto. Un
+observador miró cómo jugaban; los estudiantes pensaron en voz alta y comunicaron sus inquietudes al
+observador. Autorización institucional: «Formato de autorización institucional» del 17/09/2026, firmado por el
+rector Richard Maldonado, para grado quinto de primaria dentro de la investigación doctoral de la docente
+Bibiana Patricia Rey Barrote, contacto del equipo en el colegio, con la condición del consentimiento
+informado de padres o acudientes (el número de documento y las firmas no se publican). Consentimientos: 4
+firmados, custodiados. Formato en blanco: `evidencias/consentimiento/Formato-consentimiento.md`. Constancia
+de borrado: positiva; se borraron los perfiles de la sesión y `Datos\` quedó vacía en los equipos.
+El grado queda registrado en INC-151.
+
+| Id | Resultado |
+|---|---|
+| H1 (PG-05) | Aprobado |
+| H2 (PG-06) | Aprobado |
+| H3 | Aprobado |
+| H4 | Aprobado |
+| H5 | Aprobado (equipos abajo) |
+| H6 | Aprobado: el sonido se escucha |
+| H7 | Aprobado |
+| H8 | Entre 40 y 45 min; la meta es de 20 a 40 min, así que supera el tope en hasta 5 min. Sin causa registrada |
+| H9 | Aprobado, sin comentarios: todo se comprendió |
+| H10 | Aprobado, sin comentarios: todo se comprendió |
+| H11 | Aprobado: la balsa se hundió, se comprendió por qué, se arregló y finalmente cruzó |
+| H12 | Aprobado, sin comentarios: todo se comprendió |
+| H13 | No se realizó en la sesión; pasa a trabajo futuro (el clic tras cargar una escena, la papelera del laberinto y la octava fila del informe) |
+
+Equipos de H5, ambos sin conexión a internet: (A) AMD A10-9600P, Radeon R5 con 66 MB de VRAM, 4 GB de RAM,
+512 GB de disco; (B) Intel Celeron B830, Intel HD Graphics de 32 MB, 4 GB de RAM, 512 GB de disco. La sala
+tenía internet disponible, de 20 Mb/s de bajada y 7 de subida, y no se usó.
+
+**Pendiente de consolidar.** Los veredictos de los casos con ejecutor HUM (`PF-RNF13-01`, `PF-SON-01` a
+`PF-SON-03`, `PF-RNF07-02`, `PF-CT02-01`, `PF-RNF08-01`) no están incorporados a las tablas 3.1 y 3.3 ni al
+Anexo A; esas cifras (96,8 %, 10 casos en PS) siguen siendo las del 10/10/2026. El entregable
+(`claudeDocs/entregables/OE4/src/05-estudiantes.md`) y el capítulo 9 ya recogen la sesión. Siguen
+pendientes `PF-RNF22-01` y `PF-RNF23-01`.

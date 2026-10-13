@@ -207,3 +207,15 @@ Cada tarea es una sesión de `casos.md`. Al cerrarla: veredictos, evidencias, JS
 - [ ] KPI-1 y KPI-2 finales publicados, con las dos pasadas
 - [ ] **S-HUM y PG-05/PG-06 hechos por Santiago** y transcritos
 - [ ] Revisado con Santiago. **Fin del OE4 en su parte de pruebas.**
+
+### Nota del 13/10/2026 · sesión con estudiantes y hoja HUM
+
+- Sesión en el Colegio El Libertador IED, sede A, con 4 estudiantes de grado quinto, con autorización
+  institucional del 17/09/2026 y 4 consentimientos firmados y custodiados. Formato en blanco:
+  `evidencias/consentimiento/Formato-consentimiento.md` (cierra la entrega del formato de `PF-RNF12-01`;
+  el veredicto del caso no se consolida aquí).
+- Resultado: PG-05 y PG-06 positivos (H1 y H2); H3 a H7 y H9 a H12 aprobados; H8 entre 40 y 45 min (meta
+  de 20 a 40, supera el tope en hasta 5 min, sin causa registrada); H13 no se realizó y pasa a trabajo
+  futuro. Constancia de borrado positiva. Detalle: `OE4-Resultados.md` §12 y `Hoja-HUM.md`, Anexo C.
+- No se marca T19, T21 ni el checkpoint F: faltan H13, la consolidación de los veredictos de los casos HUM
+  en las tablas y en el Anexo A, y `PF-RNF22-01` y `PF-RNF23-01`.

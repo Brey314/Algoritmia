@@ -14,7 +14,7 @@ los dos tienen su conversión en `docs/md/`. Las citas por sección de este docu
 con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
 (control de cambios).
 
-**Verificación vigente: 10/10/2026, rev. 24.** La rev. 14 (29/09/2026) contrastó todos los
+**Verificación vigente: 13/10/2026, rev. 25.** La rev. 14 (29/09/2026) contrastó todos los
 documentos —los `.docx` de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago,
 **todos los hallazgos están cerrados**: ante un conflicto gana el juego y se edita el documento; lo
 que solo pide el documento se implementa en el juego; lo que solo tiene el juego se añade al
@@ -55,9 +55,11 @@ INC-132 (la regla de la familia no cambia). La rev. 24 (10/10/2026) registra y c
 línea de las 18 narrativas se dice con la expresión del guion y la tarjeta del cuadro de diálogo pasa del
 retrato fijo a una cara animada, con lo que el frente de la familia ya parpadea y Algoritm tiene cara
 final (INC-148); el arte de caras y retratos entra recortado y a 256 px como máximo (INC-149), y quien
-trabaja junto al fuego lo mira (INC-150, el efecto espejo). Siguen abiertos
-solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
-**pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
+trabaja junto al fuego lo mira (INC-150, el efecto espejo). La rev. 25 (13/10/2026) registra y cierra
+**INC-151**: el grupo de la evaluación con estudiantes es de grado quinto, por la autorización del colegio,
+y el juego y los entregables del OE4 y del trabajo de grado pasan a «quinto». Con esa sesión se
+cierran `PG-05` y `PG-06`, puntos del guion que exigían observar a estudiantes jugando, con resultado
+positivo. Siguen abiertos los **pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
 (acta D10), lo que deja sin efecto la decisión D1 del 29/09/2026 de darle solo una nota fechada.
 
@@ -96,7 +98,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 
 ---
 
-## Resumen — estado a 10/10/2026 (rev. 24)
+## Resumen — estado a 13/10/2026 (rev. 25)
 
 | ID | Hallazgo | Documentos | Estado |
 |---|---|---|---|
@@ -231,6 +233,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-148 | Cada línea se dice con la expresión del guion y la tarjeta del diálogo es una cara animada que parpadea y habla; la dirección de arte (§10.3) daba un retrato neutro fijo | Dirección de arte, Interfaces, Inventario de arte, Plan de personajes finales, Personajes-Resultados, Anexo F del OE3, CLAUDE.md, juego | **Cerrado** (10/10/2026), salvo los radicados |
 | INC-149 | Las caras y los retratos de los personajes entran recortados y a 256 px como máximo, sin comprimir | Dirección de arte (§15.2), Inventario de arte, Anexo E del OE3, CLAUDE.md, juego | **Cerrado** (10/10/2026) |
 | INC-150 | Papá, Mamá y la Niña se arrodillaban junto a la fogata de espaldas a ella; el rumbo se fija en los datos | Personajes-Resultados, Anexo F del OE3, juego | **Cerrado** (10/10/2026) |
+| INC-151 | El grupo de la evaluación con estudiantes es de grado quinto y los radicados dicen grado cuarto | Trabajo de grado, OE1, OE2, entregables OE4 y TG, juego | **Cerrado** (13/10/2026), salvo los radicados |
 
 ---
 
@@ -3488,6 +3491,31 @@ fallaba en 17 instancias de línea y ahora en ninguna. **Verificación en el Edi
 `claudeDocs/tasks/Personajes/capturas/2026-10-10/` Papá se arrodilla mirando la llama en N1 1.3 (L02 y L03) y
 Mamá en N2 2.5 (L02).
 
+### INC-151 · El grupo de la evaluación es de grado quinto — cerrado (13/10/2026), salvo los radicados
+
+**El conflicto.** Los documentos del proyecto dirigen el juego a estudiantes de grado cuarto de primaria. El
+Colegio El Libertador IED autorizó la evaluación con estudiantes de grado quinto, y la sesión del 13/10/2026
+se hizo con 4 estudiantes de ese grado.
+
+**Qué decían los documentos.** El título del proyecto, el OE1 y el OE2 (público objetivo, guion, historias
+de usuario) dicen «grado cuarto». El «Formato de autorización institucional» del 17/09/2026, firmado por el
+rector Richard Maldonado, autoriza a estudiantes de grado quinto de primaria dentro de la investigación doctoral
+de la docente Bibiana Patricia Rey Barrote, contacto del equipo en el colegio, con la condición del
+consentimiento informado de padres o acudientes. No se publican el número de documento ni las firmas.
+
+**Qué hacía el juego.** Sus textos se escribieron para grado cuarto. El vocabulario se ajusta aparte, en
+INC-157.
+
+**Regla.** Rige la autorización del colegio, que fija el grado de la evaluación. El grupo evaluado es de
+grado quinto, y el juego y los entregables del OE4 y del trabajo de grado (capítulo 9) dicen «quinto». Las
+expresiones que no designan el grado («cuarto objetivo», «cuarto golpe») no cambian.
+
+**Corrección aplicada (13/10/2026).** Los fuentes del entregable del OE4 (`claudeDocs/entregables/OE4/src/`),
+el capítulo 9 (`claudeDocs/entregables/TG/cap9-evaluacion.md`) y el formato de consentimiento en blanco
+(`claudeDocs/tasks/OE4/evidencias/consentimiento/Formato-consentimiento.md`) dicen «grado quinto». Los
+radicados del OE1 y del OE2 siguen diciendo «cuarto» hasta que haya autorización expresa para editarlos; son
+`docs/Solución OE1_Requerimientos.docx` y `docs/Solucion_OE2_Diseno_final.docx`.
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -3497,6 +3525,8 @@ Mamá en N2 2.5 (L02).
    una pregunta orientadora», dentro de la reescritura de la tabla que hizo INC-47.
 3. **INC-44-r2** — `Solucion_OE2_Diseno_final` §1.1.1: se retiró «Nombre provisional — ver punto
    abierto PG-02», y §1.2 escribe el estado de `PG-02` como «Cerrado (Algoritm)», sin tilde.
+
+*Nota (13/10/2026): la sesión con 4 estudiantes de grado quinto del Colegio El Libertador IED cerró `PG-05` y `PG-06` con resultado positivo (comprobaciones H1 y H2; `claudeDocs/tasks/OE4/OE4-Resultados.md`). El párrafo siguiente conserva su texto del 29/09/2026; la columna «Situación» del guion radicado no se edita sin autorización expresa (INC-151).*
 
 **Puntos abiertos del guion** —`Solucion_OE2_Diseno_final` §1.2— son del guion, no conflictos
 entre documentos. Siguen **abiertos** `PG-05` (verificar en pruebas que el cambio de esquema de
@@ -3577,6 +3607,13 @@ no.
 ---
 
 ## Historial de revisiones
+
+- **rev. 25 (13/10/2026)** — Sesión de evaluación con estudiantes en el Colegio El Libertador IED, sede A,
+  con 4 estudiantes de grado quinto. Se registra y cierra **INC-151**: el grupo es de grado quinto por la
+  autorización institucional del 17/09/2026, y el juego y los entregables del OE4 y del trabajo de grado
+  (capítulo 9) pasan a «quinto». Los radicados del OE1 y del OE2 siguen diciendo «cuarto» hasta que haya
+  autorización expresa para editarlos. Con la sesión se cierran `PG-05` y `PG-06` con resultado positivo
+  (`claudeDocs/tasks/OE4/OE4-Resultados.md`, nota del 13/10/2026).
 
 - **rev. 24 (10/10/2026)** — Decisiones de Santiago con la entrega de expresiones de Sofía (tarjeta D11-11).
   Se registran y cierran **INC-148** (cada línea de las 18 narrativas con la expresión del guion, tarjeta
