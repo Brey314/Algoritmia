@@ -170,3 +170,17 @@ histórico: solo se añade, no se reescribe). Mismas reglas de identidad y archi
 - **`Interfaces.md`** no menciona el abrazo ni el sueño, y no se tocó.
 - **Para la sesión local:** `CLAUDE.md` (apartado de los personajes) todavía lista como acciones de perfil solo `Walk`…`Blow`. Falta `Hug` y `Sleep`, pero la orden solo pedía la línea del grado y no se tocó.
 
+
+## Orden de la sesión local (13/10/2026, noche) — C8: cifras de `OE4-Resultados.md` y `todo.md`
+
+En `e9a26fc` la eficacia del OE4 pasó de 96,8 % (122/126, 10 PS) a **97,0 % (128/132, 4 PS)**: la sesión
+manual del 13/10/2026 sobre rc3 cerró como P `PF-RNF07-02` (H3), `PF-RNF08-01` (H4), `PF-CT02-01` (H5) y
+`PF-SON-01..03` (H12, con H6/H7). Siguen PS `PF-RNF13-01` (H8: el caso pide tres recorridos y los del arnés no
+se corrieron), `PF-RNF12-01`, `PF-RNF22-01`, `PF-RNF23-01`. H13 no se hizo: `PF-RNF02-01`, `PF-RF34-01`,
+`PF-RF46-01` conservan su P de rc3. Por sesión: S-RNF 6·0·0, S-HUM 5·0·1; RNF 82,4 % (14/17); SON 100 % (3/3).
+Lee `claudeDocs/entregables/OE4/src/veredictos-rc3.csv` y `03-resultados.md` para confirmarlo.
+
+- Añade a `claudeDocs/tasks/OE4/OE4-Resultados.md` una nota **fechada** (registro histórico: no reescribas lo
+  anterior) con esas cifras, y marca en `todo.md` lo que la sesión cerró (T19 HUM salvo H13, T20, Checkpoint F
+  parcial). No afirmes nada de PlayMode ni de rc4: siguen en curso en local.
+Mismas reglas de identidad y archivos vedados.
