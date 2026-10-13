@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Prototipo de videojuego educativo 2D en Unity (trabajo de grado): tres niveles narrativos
 —fuego, rueda, balsa— que ejercitan facetas del pensamiento computacional en estudiantes de
-grado cuarto. Entrega = ejecutable portable de Windows, sin instalación ni internet.
+grado quinto. Entrega = ejecutable portable de Windows, sin instalación ni internet.
 
 Unity 6000.5.10f1, plantilla 2D + URP 17.6.0, Input System 1.20.0, Unity Test Framework 1.7.0.
 Presupuestos duros que se verifican, no se estiman (RNF-04..RNF-06): carga de escena < 10 s,

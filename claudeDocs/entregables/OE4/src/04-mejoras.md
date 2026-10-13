@@ -72,6 +72,8 @@ Las pruebas automáticas que nombran RNF-03 pasaron en la suite del 10/10/2026 (
 
 El 13/10/2026 se ejecutó la hoja HUM con 4 estudiantes de grado quinto del Colegio El Libertador IED (apartado 5.1). PG-05 y PG-06 del guion dieron resultado positivo (H1 y H2), y las comprobaciones H3 a H7 y H9 a H12 se aprobaron (Tabla 5.2): el segundo equipo, la ejecución sin conexión a internet, el equipo sin tarjeta gráfica dedicada, el oído de la escena final y del hundimiento de la balsa, la vista del cruce de la escena 3.3 y de la recolección del Nivel 3, y las piezas que suenan. En H11 la balsa se hundió, se comprendió por qué, se arregló y finalmente cruzó.
 
+Las observaciones de la sesión sobre el juego produjeron diez correcciones, registradas como `INC-152` a `INC-160` (Tabla 5.4, apartado 5.3); ninguna se probó todavía en un ejecutable.
+
 Quedan abiertos tres puntos:
 
 - H8, el recorrido con cronómetro, dio entre 40 y 45 minutos frente a la referencia de 20 a 40 del OE1. Supera el tope en hasta 5 minutos y no se registró la causa. Medir cuánto de ese tiempo es lectura de narrativas, cuánto reto y cuánto espera del estudiante exige una sesión con registro por fase.
