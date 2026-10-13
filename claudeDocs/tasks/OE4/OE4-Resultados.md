@@ -399,3 +399,30 @@ tenía internet disponible, de 20 Mb/s de bajada y 7 de subida, y no se usó.
 Anexo A; esas cifras (96,8 %, 10 casos en PS) siguen siendo las del 10/10/2026. El entregable
 (`claudeDocs/entregables/OE4/src/05-estudiantes.md`) y el capítulo 9 ya recogen la sesión. Siguen
 pendientes `PF-RNF22-01` y `PF-RNF23-01`.
+
+## 13. Nota del 13/10/2026 (noche) · veredictos de la hoja HUM consolidados
+
+Nota añadida; no corrige las secciones anteriores ni la §12. Con el commit `e9a26fc` los veredictos de la sesión manual del 13/10/2026 sobre rc3 entraron en `claudeDocs/entregables/OE4/src/veredictos-rc3.csv` y en `03-resultados.md`. El recuento del CSV es 128 P, 4 F y 4 PS.
+
+**Pasaron a P seis casos:**
+- `PF-RNF07-02` (H3, segundo equipo);
+- `PF-RNF08-01` (H4, sin conexión a internet);
+- `PF-CT02-01` (H5, equipo sin tarjeta gráfica dedicada);
+- `PF-SON-01` a `PF-SON-03` (H12, con H6 y H7 para `PF-SON-03`).
+
+**Siguen en PS cuatro casos:**
+- `PF-RNF13-01`: H8 registró de 40 a 45 min, pero el caso pide tres recorridos y los dos del arnés sobre rc3 no se corrieron.
+- `PF-RNF12-01`, `PF-RNF22-01` y `PF-RNF23-01`.
+
+**H13 no se hizo.** `PF-RNF02-01`, `PF-RF34-01` y `PF-RF46-01` conservan su P de rc3.
+
+| Cifra | 10/10/2026 | 13/10/2026 |
+|---|---|---|
+| Eficacia (KPI 1) | 96,8 % = 122 / (122 + 4), 10 PS | 97,0 % = 128 / (128 + 4), 4 PS |
+| S-RNF (P · F · PS) | 5 · 0 · 1 | 6 · 0 · 0 |
+| S-HUM (P · F · PS) | 0 · 0 · 6 | 5 · 0 · 1 |
+| Etiqueta RNF | 78,6 % (11 de 14) | 82,4 % (14 de 17) |
+| Etiqueta SON | sin veredicto | 100 % (3 de 3), juicio de oído |
+
+Si los 4 PS fallaran, la eficacia quedaría en 94,1 % (128 de 136). Ningún dato de esta nota viene de PlayMode ni de rc4, que siguen en curso en local.
+

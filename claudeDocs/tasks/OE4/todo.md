@@ -143,12 +143,12 @@ Cada tarea es una sesión de `casos.md`. Al cerrarla: veredictos, evidencias, JS
       modo avión, y los documentos de RNF-12, RNF-22 y RNF-23.
       *Acepta:* `Hoja-HUM.md` al día con rc3, con una casilla y un campo de nota por comprobación y cada
       fila con su caso `PF-*`; faltan las confirmaciones documentales de PF-RNF22-01 y PF-RNF23-01.
-- [ ] **T19 · Ejecución HUM (Santiago)** — `M` · HUM (+ Claude en PF-RNF08-01)
+- [x] **T19 · Ejecución HUM (Santiago)** — `M` · HUM (+ Claude en PF-RNF08-01) · *13/10/2026: hecha salvo H13, que pasa a trabajo futuro; P en PF-RNF07-02, PF-RNF08-01, PF-CT02-01 y PF-SON-01..03; siguen PS PF-RNF13-01 (faltan los recorridos del arnés), PF-RNF12-01, PF-RNF22-01 y PF-RNF23-01 (`e9a26fc`)*
       PF-RNF13-01, PF-SON-01..03, PF-RNF07-02, PF-CT02-01, PF-RNF12-01, PF-RNF22-01,
       PF-RNF23-01 · depende de: T18, A
       **S-HUM y la observación con estudiantes (PG-05, PG-06) las hace Santiago.** Claude transcribe lo que
       él reporte, sin completar nada, y cada caso tiene veredicto o queda B con motivo.
-- [ ] **T20 · S-RNF · Medidas en el ejecutable (RNF-04, RNF-05, RNF-06)** — `S` · INSP + EXE · depende de: T07–T17, T19 · *10/10/2026: cargas (0,268 s), memoria (1.094 MiB), tamaño (426,6 MB) y red medidos en el equipo 1; faltan PF-RNF08-01 y el equipo 2 (Santiago)*
+- [x] **T20 · S-RNF · Medidas en el ejecutable (RNF-04, RNF-05, RNF-06)** — `S` · INSP + EXE · depende de: T07–T17, T19 · *13/10/2026: S-RNF cerrada con 6 P, 0 F y 0 PS al pasar PF-RNF08-01 a P (H4, sin conexión) y el equipo 2 con H3 (`e9a26fc`). Las cargas y la memoria de RNF-04 y RNF-05 siguen medidas solo en el equipo 1* · *10/10/2026: cargas (0,268 s), memoria (1.094 MiB), tamaño (426,6 MB) y red medidos en el equipo 1; faltan PF-RNF08-01 y el equipo 2 (Santiago)*
       PF-RNF04-01, 05-01, 06-01, 07-01, 08-01, 10-01
       *Acepta:* la tabla de cargas de las 12 escenas (3 mediciones en el equipo 1, más las del equipo 2), los
       picos de memoria, el tamaño de la carpeta (< 500 MB) y el análisis de red, con su veredicto. Se llena
@@ -205,7 +205,7 @@ Cada tarea es una sesión de `casos.md`. Al cerrarla: veredictos, evidencias, JS
 ### Checkpoint F — OE4 evaluado
 - [ ] Los entregables del cronograma tienen dónde vivir (`plan.md` §1)
 - [ ] KPI-1 y KPI-2 finales publicados, con las dos pasadas
-- [ ] **S-HUM y PG-05/PG-06 hechos por Santiago** y transcritos
+- [x] **S-HUM y PG-05/PG-06 hechos** y transcritos *(13/10/2026, salvo H13; los otros tres puntos del checkpoint siguen abiertos)*
 - [ ] Revisado con Santiago. **Fin del OE4 en su parte de pruebas.**
 
 ### Nota del 13/10/2026 · sesión con estudiantes y hoja HUM
@@ -219,3 +219,10 @@ Cada tarea es una sesión de `casos.md`. Al cerrarla: veredictos, evidencias, JS
   futuro. Constancia de borrado positiva. Detalle: `OE4-Resultados.md` §12 y `Hoja-HUM.md`, Anexo C.
 - No se marca T19, T21 ni el checkpoint F: faltan H13, la consolidación de los veredictos de los casos HUM
   en las tablas y en el Anexo A, y `PF-RNF22-01` y `PF-RNF23-01`.
+
+### Nota del 13/10/2026 (noche) · cifras consolidadas tras la hoja HUM
+
+- En `e9a26fc` se consolidaron los veredictos de la sesión manual sobre rc3 en `veredictos-rc3.csv` y `03-resultados.md`. La eficacia pasó de 96,8 % (122 de 126, 10 PS) a **97,0 % (128 de 132, 4 PS)**.
+- Se marcan T19 (salvo H13) y T20, y del checkpoint F la casilla de S-HUM y PG-05/PG-06.
+- Siguen abiertos T21, el checkpoint D (4 casos en PS) y el resto del checkpoint F. PlayMode y rc4 siguen en curso en local.
+
