@@ -8,9 +8,10 @@ La sesión en la nube actualiza este archivo en cada push: tarea, commit, qué q
 | C1 Vocabulario (INC-157) | hecho, falta cotejo local | `6d26abb` | 22 pares en `tools/pares/guion-inc157.json`, sin cotejar con el guion radicado |
 | C2 Oscuridad y caminata (INC-152, INC-153) | hecho, falta Editor | `52ecca5` | Prueba nueva `NarrativeLocomotionTests`, compilada con `mcs` y sin ejecutar |
 | C3 Resultados en markdown (INC-151) | hecho | `c62a09f` | Formato de consentimiento en `evidencias/consentimiento/` |
-| C4 Hallazgos y correcciones | hecho, INC-154 condicionado | `f1b689c` | Sobre `52908f1` |
+| C4 Hallazgos y correcciones | hecho; INC-154 cotejado en C7 | `f1b689c` | Sobre `52908f1` |
 | C5 Créditos (INC-156) | hecho | `ca51d02` | |
 | C6 Grado quinto en la tesis (INC-151) | hecho | `5f573b7` | |
+| C7 Cotejo de INC-154 con `d8ab0f4` | hecho | `2681a39` | Falta PlayMode y captura del motor |
 
 ## Lo aplicado (13/10/2026)
 
@@ -157,3 +158,15 @@ INC-154 llegó en `d8ab0f4`. Coteja lo que escribiste de INC-154 (OE4 `src/`, `I
   **sin** PlayMode ni captura del motor todavía.
 Añade además una entrada fechada en `claudeDocs/tasks/Personajes/Personajes-Resultados.md` (registro
 histórico: solo se añade, no se reescribe). Mismas reglas de identidad y archivos vedados.
+
+### C7 · INC-154 cotejado con `d8ab0f4`, `2681a39`
+
+- **`INCONSISTENCIAS.md`:** INC-154 pasa de «registrado, código en curso» a **cerrado**.
+  - La entrada se reescribió con lo que trae el diff: `ActionView`, los clips (solo `Lienzo/Perfil`), el abrazo con los dos brazos hacia delante, el sueño a +90° boca arriba con una respiración de 4 s, y el `Facing` de las líneas 4, 5, 12 y 16 de `N1_NacimientoDelFuego` y de la línea 12 de `N1_Hallazgo`.
+  - Ahí mismo, la lista de acciones de perfil de INC-134 se amplía con `Hug` y `Sleep`.
+  - También se actualizaron la cabecera y la rev. 26.
+- **OE4, `05-estudiantes.md`:** en la Tabla 5.4, las filas del abrazo y del sueño ya no dicen «según el plan». El texto cita `d8ab0f4` y lo que la sesión local verificó: EditMode `Character` 220 de 220 y `NarrativeSequence` 34 de 34, sin PlayMode.
+- **`Personajes-Resultados.md`:** nueva entrada C.16, fechada y añadida al final.
+- **`Interfaces.md`** no menciona el abrazo ni el sueño, y no se tocó.
+- **Para la sesión local:** `CLAUDE.md` (apartado de los personajes) todavía lista como acciones de perfil solo `Walk`…`Blow`. Falta `Hug` y `Sleep`, pero la orden solo pedía la línea del grado y no se tocó.
+
