@@ -17,11 +17,15 @@ namespace Game.Scaffolding.Tests
     /// </summary>
     public class CharacterViewTests
     {
-        /// <summary>Las acciones de perfil, tal como las fijó Santiago: recorrer o trabajar el entorno.</summary>
+        /// <summary>
+        /// Las acciones de perfil, tal como las fijó Santiago: recorrer o trabajar el entorno (INC-134) y, desde
+        /// el 13/10/2026, abrazar y dormir (INC-154).
+        /// </summary>
         private static readonly ActorAction[] AccionesDePerfil =
         {
             ActorAction.Walk, ActorAction.Run, ActorAction.Carry, ActorAction.Push,
-            ActorAction.PickUp, ActorAction.Kneel, ActorAction.Blow
+            ActorAction.PickUp, ActorAction.Kneel, ActorAction.Blow,
+            ActorAction.Hug, ActorAction.Sleep
         };
 
         private static readonly ActorAction[] TodasLasAcciones = (ActorAction[])Enum.GetValues(typeof(ActorAction));
@@ -63,12 +67,13 @@ namespace Game.Scaffolding.Tests
             }
 
             Assert.That(TodasLasAcciones.Where(accion => ActionView.For(accion) == CharacterView.Profile),
-                Is.EquivalentTo(AccionesDePerfil), "de perfil exactamente: caminar, correr, cargar, empujar, recoger, arrodillarse y soplar");
+                Is.EquivalentTo(AccionesDePerfil), "de perfil exactamente: caminar, correr, cargar, empujar, recoger, arrodillarse, soplar, abrazar y dormir");
         }
 
         /// <summary>
         /// Moverse con Idle (la balsa que cruza, Algoritm flotando) sigue de frente, y los gestos hacia el
         /// estudiante —hablar, señalar, celebrar, animar— también: manda la acción y no el desplazamiento.
+        /// Abrazar y dormir ya no están aquí (INC-154): ver <c>ActionView_INC154_AbrazarYDormirVanDePerfil</c>.
         /// </summary>
         [Test]
         public void ActionView_INC134_LosGestosHaciaElEstudianteVanDeFrente()
@@ -77,12 +82,24 @@ namespace Game.Scaffolding.Tests
                      {
                          ActorAction.Idle, ActorAction.Hidden, ActorAction.Talk, ActorAction.Strike, ActorAction.Hammer,
                          ActorAction.Point, ActorAction.Observe, ActorAction.Celebrate, ActorAction.Encourage,
-                         ActorAction.Hug, ActorAction.Surprise, ActorAction.Sleep, ActorAction.Appear,
+                         ActorAction.Surprise, ActorAction.Appear,
                          ActorAction.Vanish, ActorAction.Spin, ActorAction.Wave // Wave: el saludo de Algoritm a quien juega
                      })
             {
                 Assert.That(ActionView.For(accion), Is.EqualTo(CharacterView.Front), $"{accion}");
             }
+        }
+
+        /// <summary>
+        /// El abrazo y el sueño se ven de perfil (Santiago, 13/10/2026, INC-154). De frente, los brazos abiertos del
+        /// abrazo se leían como una T —los estudiantes no veían un abrazo— y quien duerme no se puede ver acostado
+        /// sino de lado. Hasta el 12/10/2026 las dos eran de frente (INC-134).
+        /// </summary>
+        [Test]
+        public void ActionView_INC154_AbrazarYDormirVanDePerfil()
+        {
+            Assert.That(ActionView.For(ActorAction.Hug), Is.EqualTo(CharacterView.Profile), "Hug: el abrazo de perfil, los dos brazos hacia delante");
+            Assert.That(ActionView.For(ActorAction.Sleep), Is.EqualTo(CharacterView.Profile), "Sleep: acostado, que solo se ve de lado");
         }
 
         // ---- Heading: el lado de quien se mueve ----
