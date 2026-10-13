@@ -118,4 +118,6 @@ La suite no cuenta en los indicadores (apartado 1.3). Se corrió el 10/10/2026 c
 
 La omitida es `ProfileEraser_INC34_SobreDiscoRealCubreLosDosEscenariosDeAlmacenamiento`, que se salta por el entorno. El fallo es `RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos`: mide un salto de cuadro de 0,056 frente al límite de 0,05 con dos Editores compitiendo por CPU, y pasa corrida sola (1 de 1). La suite corrió sobre `292b108` más el árbol de la ronda, registrada en `23d7e8c`, y no sobre el contenido exacto de rc3 (DEF-RC3-I04). Entre `23d7e8c` y rc3 no cambió ningún `.cs`, aunque sí `Level2_Maze.unity` (78 líneas de reserialización del Editor, en `f49ccc9`) y se borraron 6 PNG de cara sin referencias.
 
+La suite del candidato rc4 (13/10/2026) dio EditMode 785 de 786 (una omitida por entorno) y PlayMode 427 de 427, con 1.213 pruebas listadas y las 1.213 ejecutadas; el apartado 5.3 da su contexto.
+
 Cada uno de los 47 RF tiene al menos una prueba automática que lo nombra (el mínimo es 1, en RF-21 y RF-27). Ninguna prueba nombra RNF-08, RNF-12, RNF-17 ni RNF-22, que se verifican por inspección o por documento. El recuento de pruebas por requerimiento está en el apartado 8 de `OE4-Resultados.md`.

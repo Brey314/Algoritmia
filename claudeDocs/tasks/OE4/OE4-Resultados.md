@@ -426,3 +426,14 @@ Nota añadida; no corrige las secciones anteriores ni la §12. Con el commit `e9
 
 Si los 4 PS fallaran, la eficacia quedaría en 94,1 % (128 de 136). Ningún dato de esta nota viene de PlayMode ni de rc4, que siguen en curso en local.
 
+## 14. Nota del 13/10/2026 (cierre) · rc4 y la suite
+
+Nota añadida; no corrige las secciones anteriores. La §13 decía que PlayMode y rc4 seguían en curso. Con el commit `56897fd` quedó así:
+
+- **rc4:** 426 930 226 bytes = 426,9 MB, con 73,1 MB de margen frente a los 500 MB de RNF-06; compilado desde `0839352` (`evidencias/build-rc4.md`). rc3 pesó 426,6 MB. Las evidencias de rc4 no incluyen mediciones de carga ni de memoria: las cifras de RNF-04 y RNF-05 de este documento son las de rc3.
+- **Suite completa** (`suite2.ps1`, 24,8 min; `evidencias/suites/rc4-previa-al-boton-atras/`): EditMode 785 de 786, con una omitida por entorno (`ProfileEraser_INC34_…`), y PlayMode 427 de 427; 1.213 pruebas listadas y las 1.213 ejecutadas. Corrió antes del último cambio de disposición del diálogo (INC-160). Lo que ese cambio afecta se volvió a correr aparte y pasó: `NarrativeScene_INC160` (3 pruebas), RNF-03 (9 pruebas) y las demás que lista `build-rc4.md`.
+- **Arreglo de `HelpButtonIntro`** (INC-158): al descargarse la escena con el aviso abierto, Unity lanzaba «Destroying object multiple times»; ahora no. Prueba de regresión: `FireLevel_INC158_UnaEscenaQueSeDescargaConElAvisoAbiertoDevuelveElTiempoSinErrores`.
+- **Disposición final del diálogo** (INC-160): «Omitir» encima de «Continuar» (260 × 76 px) y «Atrás» en la fila de «Continuar», a su izquierda (200 × 76 px). Se descartó «Atrás» a la izquierda del texto: el cuadro mide 216 px y la fila de botones, el nombre y dos líneas piden unos 240 px (`evidencias/rc4/Inc160_medidas_texto.txt`).
+- **Capturas** (`claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/`): el abrazo de la línea 5 se lee; el de la línea 12 se lee a medias, porque Papá no rodea a la Niña; el sueño de perfil no tapa el fuego; en la caminata de la escena 1.1 Papá queda parcialmente detrás de Algoritm al llegar. El abrazo de la línea 12 y el solapamiento con Algoritm siguen sin corregir (responsable: equipo de desarrollo).
+
+Los estudiantes jugaron rc3. rc4 no se probó con estudiantes, y los veredictos `PF-*` de este documento siguen siendo los de rc3.

@@ -63,8 +63,10 @@ positivo. La rev. 26 (13/10/2026) registra **INC-152** a **INC-160**, nueve hall
 luz del Nivel 1 (INC-152) y la caminata de la familia en la aparición del guía (INC-153), el abrazo y el sueño de
 perfil (INC-154), los troncos del bosque (INC-155), las flechas de «Girar» (INC-156), el vocabulario (INC-157), el
 aviso del botón de ayuda (INC-158), la pausa de cinco botones, que deja sin efecto a INC-49 (INC-159), y el botón
-«Atrás» del diálogo (INC-160). Quedan cerrados **INC-01** a **INC-160**; INC-154 se cerró con el commit `d8ab0f4`. Las pruebas de EditMode estaban en verde por carril según el
-commit `52908f1`; PlayMode, la suite completa y rc4 estaban pendientes. Siguen abiertos los **pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
+«Atrás» del diálogo (INC-160). Quedan cerrados **INC-01** a **INC-160**; INC-154 se cerró con el commit `d8ab0f4`. Su verificación se cerró el 13/10/2026 (commit `56897fd`): la suite completa dio EditMode 785 de 786 (1 omitida por entorno) y
+PlayMode 427 de 427, y el candidato rc4 pesó 426,9 MB (`claudeDocs/tasks/OE4/evidencias/build-rc4.md`). La suite corrió
+antes del último cambio de disposición del diálogo (INC-160); lo que ese cambio afecta se volvió a correr aparte y pasó.
+Siguen abiertos los **pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
 (acta D10), lo que deja sin efecto la decisión D1 del 29/09/2026 de darle solo una nota fechada.
 
@@ -3556,7 +3558,7 @@ pasó a entre 0,15 y 0,20). El destello de la línea 6 de `N1_Hallazgo` pasó de
 `brightest.Ambient` de 0,30 a 0,35, en `Level1_Cave.unity` y en los valores por defecto de
 `CaveLightingController`. **Prueba:** `CaveLighting_INC152_LaCuevaArrancaMasClaraQueEnElDisenoOriginal`.
 **Pendiente:** comprobar en el Editor que la luz de `N1_Apertura` no lave la escena y que
-`NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo` siga pasando; PlayMode no se corrió.
+`NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo` siga pasando. `RNF03` (9 pruebas) pasó el 13/10/2026 tras el último cambio del diálogo y la suite completa de PlayMode dio 427 de 427; la comprobación a ojo de la luz de `N1_Apertura` no consta en las fuentes de esta revisión.
 
 ### INC-153 · La caminata de la familia en la aparición del guía — cerrado (13/10/2026)
 
@@ -3576,7 +3578,10 @@ La prueba nueva encontró otros tres pasos `Push` del Nivel 2 con desplazamiento
 dirección (`N2_Escena21_Bosque` y dos en `N2_PuenteI_Bosque`). **Prueba:**
 `NarrativeSequence_INC153_LosPasosDeLocomocionDesplazanAlActor`
 (`Assets/Tests/EditMode/Scaffolding/NarrativeLocomotionTests.cs`), compilada con `mcs` en la nube y sin correr en el
-Editor al escribir esta entrada. **Pendiente:** mirar el encuadre de la línea 7 con la familia en x 0,18 a 0,22.
+Editor al escribir esta entrada. **Verificación del 13/10/2026 (`56897fd`).** En el motor, la familia se desplaza de x 0,281 a 0,333 (t = 0,35 s) a
+x 0,180 a 0,220 (t = 3,05 s), de perfil y hacia la izquierda (`claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/Inc154_AparicionGuia_L07_caminata.txt`).
+Al llegar, Papá (x = 0,180) queda parcialmente detrás de Algoritm (x = 0,168). **Pendiente:** decidir si ese solapamiento
+se corrige (responsable: equipo de desarrollo).
 
 ### INC-154 · El abrazo y el sueño de la familia se ven de perfil — cerrado (13/10/2026)
 
@@ -3609,7 +3614,10 @@ al que mira su perfil. La lista de acciones de perfil de INC-134 pasa a ser `Wal
 **Pruebas.** `ActionView_INC154_AbrazarYDormirVanDePerfil`. `ActionView_INC134_LaTablaCubreTodasLasAcciones`
 incluye ahora las dos acciones, y `ActionView_INC134_LosGestosHaciaElEstudianteVanDeFrente` ya no las incluye.
 Según la sesión local, en EditMode pasaron `Character` (220 de 220) y `NarrativeSequence` (34 de 34, con RNF-03),
-y `pose_preview.py` también. **Pendiente:** PlayMode y una captura del motor.
+y `pose_preview.py` también. **Verificación del 13/10/2026 (`56897fd`).** Con capturas del motor
+(`claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/`): el abrazo de la línea 5 se lee; el de la línea 12 se lee a medias,
+porque Papá no rodea a la Niña; el sueño de perfil no tapa el fuego. PlayMode pasó en la suite completa (427 de 427).
+**Pendiente:** el abrazo de la línea 12 (responsable: equipo de desarrollo).
 
 ### INC-155 · Los troncos del bosque: menos empuje, sin huida bajo el cursor y clic sobre todo el cuerpo — cerrado (13/10/2026)
 
@@ -3636,7 +3644,7 @@ captar clics. **Pruebas:** `ForestObjectNudge_INC155_ConElCursorSobreElObjetoNoS
 `ForestObjectNudge_INC155_ConElCursorEncimaSigueAvisandoQueEntro`,
 `RollingLog_INC155_ElAreaDeClicCubreElCuerpoQueSeDibujaYNoSuHuecoEnLaCaja`,
 `RollingLog_INC155_ElClicLoRecibeElCuerpoConElObjetoGiradoEspejadoYEscalado` y
-`RollingLog_INC155_EnLaNarrativaElTroncoNoCaptaClics`. **Pendiente:** PlayMode (`ForestSceneTests`).
+`RollingLog_INC155_EnLaNarrativaElTroncoNoCaptaClics`. PlayMode pasó en la suite completa del 13/10/2026 (427 de 427).
 
 ### INC-156 · Las flechas curvas de «Girar» — cerrado (13/10/2026)
 
@@ -3700,8 +3708,13 @@ clic en él y Algoritm te repetirá la instrucción.». El rato del aviso se des
 el de la pausa. **Pruebas:** `FireHelpIntro_INC158_SaleMientrasElPerfilNoHayaConfirmadoLaFase1`,
 `FireHelpIntro_INC158_NoSaleSiElPerfilYaTerminoLaPrimeraMecanica`, `FireHelpIntro_INC158_SinPerfilActivoNoSale`,
 `FireHelpIntro_INC158_ConfirmarOtroNivelNoLoApaga`, `FireMessages_INC158_ElAvisoDeLaAyudaTieneTextoYNoTrataDeCifras`
-y `FireLevel_INC158_ElAvisoDeLaAyudaVaApagadoPorEncimaDeTodoYBloqueaLosClics`. **Pendiente:** PlayMode
-(`HelpIntroTests`).
+y `FireLevel_INC158_ElAvisoDeLaAyudaVaApagadoPorEncimaDeTodoYBloqueaLosClics`. **Arreglo de la descarga (13/10/2026, `56897fd`).** Si la
+escena se descargaba con el aviso abierto —por ejemplo, «Reiniciar» en la fase 1 del Nivel 1—, Unity lanzaba «Destroying
+object multiple times» porque `HelpButtonIntro.OnDestroy` destruía el `GraphicRaycaster` con `DestroyImmediate`; ese
+error hacía fallar `PauseMenu_HU17_ContinuarRestituyeElEstadoExacto`. Ahora `OnDestroy` solo devuelve el tiempo, y el
+raycaster y el `Canvas` salen con la escena. Prueba de regresión:
+`FireLevel_INC158_UnaEscenaQueSeDescargaConElAvisoAbiertoDevuelveElTiempoSinErrores`. Con el arreglo, el PlayMode de
+`Game.Levels.Fire` pasó 68 de 68 en la suite completa.
 
 ### INC-159 · La pausa pasa de tres botones a cinco — cerrado (13/10/2026), salvo los radicados
 
@@ -3729,7 +3742,7 @@ la tabla serializada `PhaseNarrative` en `MenuPausa.prefab` (fases 1 a 3 del Niv
 `PauseMenu_INC159_LosTextosNuevosSalenDelAssetYElPrefabDiceLoMismo` y
 `PauseMenu_INC159_ElPanelConCincoBotonesYElTituloCabeEnLos1080DeAlto`. **Pendiente:** el RF-07 y HU-17 radicados
 siguen con tres rótulos hasta que haya autorización expresa para editarlos; los casos `PF-RF07-*` del OE4 describen
-el menú de rc3; PlayMode (`PauseMenuTests`).
+el menú de rc3. PlayMode pasó en la suite completa del 13/10/2026 (427 de 427).
 
 ### INC-160 · El botón «Atrás» del diálogo — cerrado (13/10/2026)
 
@@ -3748,8 +3761,14 @@ repiten sonidos ni movimientos de objetos. Al avanzar de nuevo sobre líneas ya 
 `ActorTimeline.StillCue`; `NarrativeSceneController.Back` y `SnapToLine`; `BotonAtras` (200 × 76 px, «Atrás») en el
 cuadro de diálogo de `Narrative.unity`. **Pruebas:** `DialogueRunner_INC160_*` (cinco), `ActorTimeline_INC160_*`
 (cinco), `NarrativeScene_INC160_AtrasVuelveALaLineaAnteriorYNoSeOfreceEnLaPrimera` y
-`NarrativeScene_INC160_AtrasNoPisaElTextoNiLosOtrosBotonesYQuedaDentroDelCuadro`. **Pendiente:** PlayMode
-(`NarrativeSceneTests`).
+`NarrativeScene_INC160_AtrasNoPisaElTextoNiLosOtrosBotonesYQuedaDentroDelCuadro`. **Disposición final (13/10/2026, `56897fd`).** «Omitir» (260 × 76 px) va encima de
+«Continuar», del mismo tamaño y alineado a la derecha; «Atrás» (200 × 76 px) va en la fila de «Continuar», a su izquierda.
+El texto conserva su área. Prueba nueva:
+`NarrativeScene_INC160_OmitirVaEncimaDeContinuarAtrasEnSuFilaYNingunoPisaAlOtro`. **Descartado:** poner «Atrás» a la
+izquierda del texto. El cuadro mide 216 px, el tope del cuarto de pantalla de RNF-03, y el nombre, dos líneas de texto y
+la fila de botones piden unos 240 px (medidas en `claudeDocs/tasks/OE4/evidencias/rc4/Inc160_medidas_texto.txt`).
+**Verificación.** La suite completa de PlayMode (427 de 427) corrió antes de este cambio de disposición; después se
+volvieron a correr aparte `NarrativeScene_INC160` (3 pruebas) y `RNF03` (9), y pasaron.
 
 ## Residuos y puntos abiertos
 
@@ -3850,7 +3869,10 @@ no.
   pasa a «menor o igual»), **INC-156** (flechas curvas de «Girar»), **INC-157** (vocabulario; el guion radicado
   espera cotejo y autorización), **INC-158** (aviso del botón de ayuda), **INC-159** (pausa de cinco botones, deja
   sin efecto a INC-49 en el número de botones) e **INC-160** (botón «Atrás» del diálogo). Según el commit
-  `52908f1`, EditMode estaba en verde por carril; PlayMode, la suite completa y rc4 estaban pendientes.
+  `52908f1`, EditMode estaba en verde por carril; PlayMode, la suite completa y rc4 estaban pendientes. **Cierre de la
+  verificación (13/10/2026, `56897fd`):** suite completa con EditMode 785 de 786 (1 omitida por entorno) y PlayMode 427
+  de 427, sobre `0839352` con el arreglo de `HelpButtonIntro` (INC-158); rc4 de 426,9 MB (`evidencias/build-rc4.md`); y
+  la disposición final del diálogo de INC-160, verificada aparte porque la suite la precede.
 
 - **rev. 25 (13/10/2026)** — Sesión de evaluación con estudiantes en el Colegio El Libertador IED, sede A,
   con 4 estudiantes de grado quinto. Se registra y cierra **INC-151**: el grupo es de grado quinto por la
