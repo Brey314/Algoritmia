@@ -37,7 +37,7 @@ namespace Game.Levels.River.Tests
             var sut = new TaskList();
 
             sut.MarkPhaseConfirmed(1);
-            Assert.That(sut.IsDone(RiverTaskId.AssembleRaft), Is.False, "la base no marca «Ensamblar la balsa»");
+            Assert.That(sut.IsDone(RiverTaskId.AssembleRaft), Is.False, "la base no marca «Armar la balsa»");
 
             Assert.That(sut.MarkPhaseConfirmed(2), Is.EqualTo(RiverTaskId.AssembleRaft));
             Assert.That(sut.IsDone(RiverTaskId.AssembleRaft), Is.True, "el amarre sí (INC-30)");

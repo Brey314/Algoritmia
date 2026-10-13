@@ -52,7 +52,7 @@ namespace Game.Levels.River.Tests
 
             Assert.That(RiverTask.All.Select(config.LabelFor), Is.EqualTo(new[]
             {
-                "Recoger troncos", "Encontrar sogas", "Ensamblar la balsa", "Colocar el mástil y la vela"
+                "Recoger troncos", "Encontrar sogas", "Armar la balsa", "Colocar el mástil y la vela"
             }), "los textos son los del guion §1.8.1, en su orden");
             Assert.That(config.TaskLabels.Any(label => System.Text.RegularExpressions.Regex.IsMatch(label, @"\d")),
                 Is.False, "ninguna cifra en la lista (CP-03)");

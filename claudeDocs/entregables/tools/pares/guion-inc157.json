@@ -1,0 +1,112 @@
+[
+  {
+    "antes": "Noche helada, sin luna. La familia camina a la intemperie.",
+    "despues": "Noche helada, sin luna. La familia camina al aire libre, sin techo.",
+    "nota": "INC-157 (N1_Apertura)"
+  },
+  {
+    "antes": "Se escuchan animales y sonidos extraños. En el horizonte se distingue la silueta de una cueva.",
+    "despues": "Se escuchan animales y sonidos extraños. En el horizonte se distingue la sombra de una cueva.",
+    "nota": "INC-157 (N1_Apertura)"
+  },
+  {
+    "antes": "Algo se acerca entre la maleza. La familia corre hacia la cueva y entra.",
+    "despues": "Algo se acerca entre los matorrales. La familia corre hacia la cueva y entra.",
+    "nota": "INC-157 (N1_Apertura)"
+  },
+  {
+    "antes": "Algoritm gira en el aire como un trompo feliz, dejando una estela de puntos luminosos.",
+    "despues": "Algoritm gira en el aire como un trompo feliz, dejando un rastro de puntos luminosos.",
+    "nota": "INC-157 (N1_AparicionGuia)"
+  },
+  {
+    "antes": "Papá se arrodilla en el centro de la cueva, busca a tientas un montón de hojas secas y ramitas finas.",
+    "despues": "Papá se arrodilla en el centro de la cueva, busca a ciegas un montón de hojas secas y ramitas finas.",
+    "nota": "INC-157 (N1_Hallazgo)"
+  },
+  {
+    "antes": "Papá los abraza a todos mientras el fuego crepita.",
+    "despues": "Papá los abraza a todos mientras el fuego chisporrotea.",
+    "nota": "INC-157 (N1_NacimientoDelFuego)"
+  },
+  {
+    "antes": "En el corazón de las llamas aparece una silueta pequeña, con cara, brazos y piernas.",
+    "despues": "En el corazón de las llamas aparece una sombra pequeña, con cara, brazos y piernas.",
+    "nota": "INC-157 (N1_NacimientoDelFuego)"
+  },
+  {
+    "antes": "Bosque. Objetos dispersos por el suelo: piedras irregulares, troncos redondos, plantas, herramientas.",
+    "despues": "Bosque. Objetos regados por el suelo: piedras de formas distintas, troncos redondos, plantas, herramientas.",
+    "nota": "INC-157 (N2_Escena21_Bosque)"
+  },
+  {
+    "antes": "Papá carga grandes troncos para mantener avivado el fuego; mamá, la niña y el niño recogen alimentos.",
+    "despues": "Papá carga grandes troncos para mantener vivo el fuego; mamá, la niña y el niño recogen alimentos.",
+    "nota": "INC-157 (N2_PuenteI_Bosque)"
+  },
+  {
+    "antes": "¡Alto, viajeros! Este río no es sencillo. Para cruzarlo necesitamos pensar bien.",
+    "despues": "¡Alto, viajeros! Este río no es fácil. Para cruzarlo necesitamos pensar bien.",
+    "nota": "INC-157 (N3_Escena31_Llegada)"
+  },
+  {
+    "antes": "En pantalla aparece la lista de tareas, que permanecerá visible durante todo el nivel.",
+    "despues": "En pantalla aparece la lista de tareas, que se queda a la vista durante todo el nivel.",
+    "nota": "INC-157 (N3_Escena31_Llegada)"
+  },
+  {
+    "antes": "La familia sube a la balsa corregida. Esta vez flota con estabilidad. La vela se llena de viento.",
+    "despues": "La familia sube a la balsa corregida. Esta vez flota derecha, sin voltearse. La vela se llena de viento.",
+    "nota": "INC-157 (N3_Escena33_Cruce)"
+  },
+  {
+    "antes": "Llegan a la orilla opuesta. El humo de las fogatas de la civilización se divisa cerca, en el horizonte.",
+    "despues": "Llegan a la otra orilla. El humo de las fogatas de otras familias se ve cerca, en el horizonte.",
+    "nota": "INC-157 (N3_Escena33_Cruce)"
+  },
+  {
+    "antes": "Eso es pensar computacionalmente.",
+    "despues": "Eso es pensar como un algoritmo.",
+    "nota": "INC-157 (N3_Escena33_Cruce)"
+  },
+  {
+    "antes": "Algoritm gira una última vez y se apaga suavemente. Fundido a negro.",
+    "despues": "Algoritm gira una última vez y se apaga suavemente. Todo queda en negro.",
+    "nota": "INC-157 (N3_EscenaFinal)"
+  },
+  {
+    "antes": "La cámara se desplaza hacia el horizonte. A lo lejos se ven las fogatas de la civilización.",
+    "despues": "La cámara se desplaza hacia el horizonte. A lo lejos se ven las fogatas de otras familias.",
+    "nota": "INC-157 (N3_PuenteII_Horizonte)"
+  },
+  {
+    "antes": "La familia avanza con la carretilla. El camino se corta abruptamente. Frente a ellos: el río, ancho y de corriente visible.",
+    "despues": "La familia avanza con la carretilla. El camino se corta de repente. Frente a ellos: el río, ancho y de corriente visible.",
+    "nota": "INC-157 (N3_PuenteII_Rio)"
+  },
+  {
+    "antes": "La pieza vuelve al inventario.",
+    "despues": "La pieza vuelve a tus materiales.",
+    "nota": "INC-157 (N3_RaftAssemblyContent)"
+  },
+  {
+    "antes": "Cayó fuera de la balsa: la pieza vuelve al inventario.",
+    "despues": "Cayó fuera de la balsa: la pieza vuelve a tus materiales.",
+    "nota": "INC-157 (N3_RaftAssemblyContent)"
+  },
+  {
+    "antes": "{0}: al inventario. Mira la lista: ¿qué falta?",
+    "despues": "{0}: guardado en tus materiales. Mira la lista: ¿qué falta?",
+    "nota": "INC-157 (N3_RiverLevelConfig)"
+  },
+  {
+    "antes": "Elegiste los troncos, el orden de las piezas y el camino casi de inmediato.",
+    "despues": "Elegiste los troncos, el orden de las piezas y el camino casi enseguida.",
+    "nota": "INC-157 (N2_ResumenNivel)"
+  },
+  {
+    "antes": "Ensamblar la balsa",
+    "despues": "Armar la balsa",
+    "nota": "INC-157 (N3_RiverLevelConfig)"
+  }
+]

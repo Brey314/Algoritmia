@@ -118,7 +118,7 @@ namespace Game.Levels.River.Tests
 
             BuildLashing(sut);
             Assert.That(tasks.MarkPhaseConfirmed((int)RaftPhase.Lashing), Is.EqualTo(RiverTaskId.AssembleRaft),
-                "confirmar el amarre marca «Ensamblar la balsa»");
+                "confirmar el amarre marca «Armar la balsa»");
 
             Assert.That((int)RaftPhase.MastAndSail, Is.EqualTo(3), "y la fase 3 es la que marca la tarea 4");
             Assert.That(RiverTask.ForConfirmedPhase((int)RaftPhase.MastAndSail), Is.EqualTo(RiverTaskId.PlaceMastAndSail));
