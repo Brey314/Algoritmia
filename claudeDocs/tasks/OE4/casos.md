@@ -118,7 +118,8 @@ Abajo Izquierda Derecha W A S D Rueda` → no debe cambiar nada en pantalla.
    «Créditos», «Progreso del equipo» y «Salir», todos visibles y sin solaparse. Comprobar que no se
    ve ningún rótulo de trabajo ni recuadro vacío en lugar de la ilustración.
    ‹PF-RF01-01, PF-RF01-02›
-   **Portada (desde el 09/10/2026):** el título queda sobre una tarjeta más baja y detrás se ve el bosque
+   **Portada (desde el 09/10/2026):** un panel ámbar a la izquierda lleva el título, el lema y los
+   botones, y a la derecha, enmarcado, se ve el bosque
    con **los cinco personajes** (Papá, Mamá, la Niña, el Niño y Algoritm), de frente, cada uno con su
    respiración **sin el mismo compás** que los demás (`idlePhase`); ninguno cortado por el borde, ninguno
    sobre los botones y ninguno de perfil ni espejado. ‹PF-RF01-03›
@@ -183,7 +184,7 @@ Abajo Izquierda Derecha W A S D Rueda` → no debe cambiar nada en pantalla.
 |---|---|---|---|---|
 | PF-RF01-01 | RF-01 · HU-01, HU-18, CU-01 | NAV | 1–3 | Título y los cuatro botones visibles, alcanzables y sin solapes; ninguna tecla hace nada |
 | PF-RF01-02 | RF-01, RF-03, RF-08 · RNF-01, CN-04 | BOT | 2, 4, 13 | Ninguna pantalla de flujo (inicio, créditos, menú de niveles) muestra rótulos de trabajo |
-| PF-RF01-03 | RF-01 · portada del inicio (09/10/2026), INC-136 | NAV | 2 | Detrás del título se ven los cinco personajes en el bosque, enteros, de frente y sin respirar al unísono; ninguno tapa un botón ni se corta. Sin rótulos de trabajo ni recuadros vacíos |
+| PF-RF01-03 | RF-01 · portada del inicio (09/10/2026), INC-136 | NAV | 2 | A la derecha del panel del título se ven los cinco personajes en el bosque, enteros, de frente y sin respirar al unísono; ninguno tapa un botón ni se corta. Sin rótulos de trabajo ni recuadros vacíos |
 | PF-RF02-01 | RF-02 · HU-01 FA-01/02, CU-01 4a | DAT | 8–11 y S-N1 paso 1 | Vacío, espacios, duplicado e inválido se rechazan con su mensaje sin crear archivo; el nombre válido crea `Datos/<nombre>.json` con `reachedLevel` 1 y `phases` vacío |
 | PF-RF02-02 | RF-02 · HU-01 | DAT | 13, 21 | Elegir un perfil existente abre el menú de niveles con su progreso exacto |
 | PF-RF02-03 | RF-02, RNF-09 | DAT | 7, 12 | El formulario pide solo el nombre y lo limita a 24 caracteres |
@@ -247,8 +248,11 @@ efectivos habilitan «Soplar».
    ‹PF-RNF04-01, PF-RF10-01, PF-RF14-01, PF-RF21-01›
 5. Teclas de control negativo → nada cambia. ‹PF-RNF02-01›
 6. Pista → la tablilla repite «Reúne todas…» y aparece el círculo en el centro. ‹PF-RF13-01›
-7. `Arrastrar` una hoja a (0,20; 0,50) → no pasa nada: ni mensaje ni cambio. ‹PF-RF14-01›
-8. `Arrastrar` las 7 piezas a destinos alrededor de (0,50; 0,50), a ≤ 0,04 del centro, la última
+7. Foto y leer dónde cayó cada pieza: **las siete se reparten al azar en cada entrada**, así que las
+   coordenadas hay que tomarlas de la foto y no de este documento. `Arrastrar` una hoja a un punto
+   vacío de la pantalla, lejos del centro → no pasa nada: ni mensaje ni cambio. ‹PF-RF14-01›
+8. `Arrastrar` las 7 piezas, desde donde la foto las muestre, a destinos alrededor del centro
+   (0,50; 0,50), a ≤ 0,04 de él, la última
    con `-ConFoto` a +100 ms → al soltarla, la cámara se acerca y las hojas forman el montón. **Desde
    el primer cuadro del acercamiento** el sílex y el pedernal se ven encima del montón, sin ninguna
    hoja sobre ellos, y así siguen al terminar. Aparecen: el deslizante vertical
@@ -475,7 +479,9 @@ de la secuencia ganadora.
    ni tinte; el entorno, la carretilla, el refugio y los obstáculos se ven tal cual viene el arte, sobre
    un único fondo ámbar `#C4A882` (el mismo detrás del panel del entorno y de la escena), con marco
    redondeado de 8 px `#6A5A44` alrededor del entorno y de «Tu secuencia»; la zona «Suelta un bloque
-   aquí» es `#E0D4C0`. ‹PF-RF30-02›
+   aquí» es `#E0D4C0`. Los colores medidos por píxel se admiten con ±1 en cada canal de 8 bits (la
+   foto da `#6A5A45` donde el documento dice `#6A5A44` y `#A0320D` donde dice `#A0330D`: es
+   redondeo de color y no se ve). ‹PF-RF30-02›
    ‹PF-RF30-01, PF-RF31-01, PF-RNF04-01, PF-RF05-02›
 2. Foto y **transcribir el tablero** a una rejilla ASCII 16 × 11 en el registro de la sesión (`#`
    seto, `S` salida, `R` refugio, `X` arbusto). La foto va a evidencias. Es el mapa del paso 12.
@@ -663,12 +669,13 @@ cualquier rechazo (INC-122). N3F1 2/1/1 · N3F2 5/2/2 · N3F3 7/4/3.
     ‹PF-RF44-01, PF-RF41-01, PF-RF36-01›
 21. `N3_Escena33_Cruce` (7 líneas), **sin «Omitir»**: foto al abrir. La balsa sale de la poza por
     debajo de la espuma de la cascada, no por encima, con los cuatro viajeros de pie sobre la
-    cubierta, y cruza el río en ~9 s. En cuanto se ve, «Continuar» seis veces, una por segundo, sin
-    esperar a que llegue (`Clic … -Veces 6 -Intervalo 1000 -ConFoto`) → en la foto, a mitad del
-    río, los cuatro siguen sobre la balsa —ninguno saltó a la orilla— y el cuadro de diálogo
-    muestra la última línea, «Eso es pensar computacionalmente.». `Foto` a los ~12 s → la balsa
-    llegó a la otra orilla y los cuatro bajaron caminando al pasto, no al agua. Nada queda bajo el
-    cuadro de diálogo. ‹PF-RF12-03, PF-RF05-03, PF-RF44-01›
+    cubierta. La balsa **no se mueve mientras la escena espera en las líneas 1 a 3**: el cruce arranca
+    con la línea 4 («Llegan a la orilla opuesta…»). Por eso «Continuar» se pulsa hasta la línea 4
+    y se toma la foto entonces → la balsa cruza el río con los cuatro todavía sobre ella —ninguno
+    saltó a la orilla—. Después se avanza hasta la última línea, «Eso es pensar computacionalmente.»
+    (con un clic por segundo aparece a ~6,4 s, cuando los cuatro ya bajaron, y es lo esperado):
+    `Foto` → la balsa llegó a la otra orilla y los cuatro bajaron caminando al pasto, no al agua; el
+    desembarco tarda ~2,5 s tras la línea 4. Nada queda bajo el cuadro de diálogo. ‹PF-RF12-03, PF-RF05-03, PF-RF44-01›
 22. `LevelSummary`: «Esto es lo que pasó en el río», «Probaste piezas que no iban en su sitio y la
     balsa te lo dijo al hundirse.», «Cuando algo falló, buscaste justo la parte rota y arreglaste
     solo esa.» y «Eso se llama descomponer y depurar: …»; ningún dígito. ‹PF-RF45-03›
@@ -938,7 +945,7 @@ Lo que falte se completa aquí.
 | PF-RNF02-01 | RNF-02 · CT-06 | BOT | EXE + SUITE | Los pasos de teclas de control negativo de las cinco escenas, más `Controls_RNF02_*` y `RiverScene_INC01_*` en la SUITE | En las cinco escenas jugables, ninguna tecla ni la rueda hacen nada. Observación: créditos e informe docente se desplazan con la barra o arrastrando la lista (`ScrollRect`), la excepción decidida el 29/09/2026 para pantallas sin arrastrar y soltar (`Slice 4/Slice-4-Resultados.md` A.6, INC-80); la rueda no tiene vínculo en el mapa de controles. La lista de «¿Quién juega?» solo se mueve con ▲/▼ (S-INI paso 20) |
 | PF-RNF03-01 | RNF-03 · CP-08 | RNF | INSP | Sobre las capturas de cada fase de las sesiones S-N1 a S-N3 | En cada fase hay una sola tarea activa; la lista del N3 muestra cuatro, pero una sola en curso. En cada captura, a pantalla completa, ningún control, texto u objeto nombrado queda fuera de la pantalla, solapado o bajo el cuadro de diálogo; también las pruebas `*_RNF03_*` en la SUITE |
 | PF-RNF15-01 | RNF-15 | RNF | INSP | Muestra de 10 clases: `GameFlow`, `GameFlowRunner`, `SaveStore`, `PlayerProfile`, `FirePanelController`, `ForestSceneController`, `WorkshopSceneController`, `MazeSceneController`, `AssemblyPanelController`, `NarrativeSceneController`. Se revisan identificadores en inglés, PascalCase en tipos y miembros públicos, `_camelCase` en campos privados, y un `<summary>` que diga la responsabilidad de la clase | Las 10 cumplen |
-| PF-RNF16-01 | RNF-16 · CT-04 | RNF | SUITE | **En los dos sentidos** (acta D10), cada uno en una copia aparte de la versión que se prueba: el árbol de trabajo sin `Library/`, `Temp/`, `Logs/`, `Build/` ni `.git/`, en `%TEMP%\Algoritmia-sinN2` y `%TEMP%\Algoritmia-sinN1`. Si la versión ya está en un commit, vale `git worktree add <ruta> <commit>`. **Sin N2:** borrar `Assets/Game/Scripts/Runtime/Levels/Wheel/`, `Assets/Tests/*/Levels/Wheel/` y `Assets/Tests/EditMode/Content/` (el único assembly que ve los tres niveles), y quitar las tres `Level2_*` de Build Settings con un script de editor efímero. **Sin N1:** lo mismo con `Levels/Fire/`, `Assets/Tests/*/Levels/Fire/`, `Content/` y `Level1_Cave`. En cada copia, con el Editor cerrado, `unity test` EditMode y PlayMode (comprobar el parámetro de proyecto con `unity test --help`); la primera importación tarda. Al final se borra la copia, o `git worktree remove` | En los dos sentidos compila sin tocar ningún archivo de los niveles que quedan, y sus pruebas pasan enteras. Solo pueden fallar pruebas transversales que cargan por nombre una escena del nivel retirado, y se listan. Sin N2: `Controls_RNF02_LasCincoEscenasJugables…` (recorre las cinco), `Personajes_DA133_CapturaCadaMecanicaConSusPersonajes` en sus casos `Level2_*`, `GameFlowRunner_RF22_JugarLaFase1DelNivel2…` y `GameFlowRunner_RNF14_…RetomaEnElLaberinto`. Sin N1: `Controls_RNF02_…`, el caso `Level1_Cave` de `Personajes_DA133_…` y las de `PauseMenuTests` y `LevelSummaryTests` que cargan `Level1_Cave`. También `Architecture_RNF16_*` en la SUITE normal |
+| PF-RNF16-01 | RNF-16 · CT-04 | RNF | SUITE | **En los dos sentidos** (acta D10), cada uno en una copia aparte de la versión que se prueba: el árbol de trabajo sin `Library/`, `Temp/`, `Logs/`, `Build/` ni `.git/`, en `%TEMP%\Algoritmia-sinN2` y `%TEMP%\Algoritmia-sinN1`. Si la versión ya está en un commit, vale `git worktree add <ruta> <commit>`. **Sin N2:** borrar `Assets/Game/Scripts/Runtime/Levels/Wheel/`, `Assets/Tests/*/Levels/Wheel/` y `Assets/Tests/EditMode/Content/` (el único assembly que ve los tres niveles), y quitar las tres `Level2_*` de Build Settings con un script de editor efímero. **Sin N1:** lo mismo con `Levels/Fire/`, `Assets/Tests/*/Levels/Fire/`, `Content/` y `Level1_Cave`. En cada copia, con el Editor cerrado, `unity test` EditMode y PlayMode (comprobar el parámetro de proyecto con `unity test --help`); la primera importación tarda. Al final se borra la copia, o `git worktree remove` | En los dos sentidos compila sin tocar ningún archivo de los niveles que quedan, y sus pruebas pasan enteras. Solo pueden fallar pruebas transversales que cargan por nombre una escena del nivel retirado, y se listan. **En los dos sentidos fallan además, y son esperadas, cinco pruebas de EditMode** que exigen los tres assemblies y todos los RF y no detectan acoplamiento: `Architecture_RNF15_CadaModuloDeclaraSuAssemblyDeRuntimeYDePruebas`, `Architecture_RNF15_ElNombreDelAssemblyCoincideConSuRutaBajoScripts`, `Architecture_RNF16_NingunAssemblyDeNivelReferenciaAOtroNivel`, `Architecture_RNF16_RetirarUnNivelNoAfectaALosOtrosDos` y `Traceability_CT10_TodoRFTieneAlMenosUnaPruebaQueLoNombra`. Sin N2: `Controls_RNF02_LasCincoEscenasJugables…` (recorre las cinco), `Personajes_DA133_CapturaCadaMecanicaConSusPersonajes` en sus casos `Level2_*`, `GameFlowRunner_RF22_JugarLaFase1DelNivel2…` y `GameFlowRunner_RNF14_…RetomaEnElLaberinto`. Sin N1: `Controls_RNF02_…`, el caso `Level1_Cave` de `Personajes_DA133_…` y las de `PauseMenuTests` y `LevelSummaryTests` que cargan `Level1_Cave`. También `Architecture_RNF16_*` en la SUITE normal |
 | PF-RNF17-01 | RNF-17 · CT-11 | RNF | INSP | `git log --no-merges <commit> -- Assets/`, sobre el commit que contenga la versión que se prueba, clasificado en: con tarjeta (`Dnn-n`, `Onn-n`), con marcador `<id>`, o sin nada | El 100 % de los commits de código lleva tarjeta. ⚠ se sabe que no |
 | PF-RNF18-01 | RNF-18 · CT-05 | RNF | EDIT | Con el Editor abierto: en `N1_Config.asset`, `MinimumEffectiveStrikes` de 3 a 2, y cambiar el texto de una línea de `N1_Hallazgo` (Inspector o `coplay set_property`). Play desde `Boot` con un perfil nuevo. `git status` y `check_compile_errors`. **Revertir** con `git checkout -- <los dos .asset>` y comprobar `git status` limpio | La línea muestra el texto nuevo; «Soplar» se habilita al segundo golpe efectivo; solo cambiaron dos `.asset`, sin ningún `.cs` ni recompilación |
 | PF-RNF19-01 | RNF-19 | RNF | INSP | Pasar a escala de grises las capturas de: niveles bloqueados, «Soplar» con candado, «Empujar» con candado, «Mecanizar» con candado y «Aún no», los rechazos del bosque, del taller y del laberinto, el lado elegido de «Girar», el bloque detenido, los espacios marcados de la balsa y la lista del N3 | Cada estado se distingue sin color |

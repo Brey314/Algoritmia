@@ -13,6 +13,8 @@ La sesión en la nube actualiza este archivo en cada push: tarea, commit, qué q
 | C6 Grado quinto en la tesis (INC-151) | hecho | `5f573b7` | |
 | C7 Cotejo de INC-154 con `d8ab0f4` | hecho | `2681a39` | Falta PlayMode y captura del motor |
 | C8 Cifras en `OE4-Resultados.md` y `todo.md` | hecho | `37fa4e3` | 97,0 % (128/132, 4 PS) |
+| C9 OE3 al estado vigente | hecho, falta publicar | `24aee19` | Solo markdown; `build.py --publish` en local |
+| C10 Triaje y `PF-RNF12-01` | hecho | `e4051d3` | 97,0 % (129/133, 3 PS) |
 
 ## Lo aplicado (13/10/2026)
 
@@ -225,3 +227,33 @@ Word); se corrigen en código DEF-RC3-05, -09, -10 y -11 (en curso en local, ent
     rc4», la sesión local confirmará con el commit); **trabajo futuro** DEF-RC3-01, -03, -08, -I01, -I02, -I03, -I04,
     cada uno con su causa. Refleja lo mismo en la tabla de 3.6 y en `cap9-evaluacion.md` (9.3.1) si los cita.
 Mismas reglas de identidad y de archivos vedados. No toques `.docx`.
+
+### C9 · OE3 al estado vigente, `24aee19`
+
+- **Alcance:** 18 archivos de `claudeDocs/entregables/OE3/src/` y de `src/anexos/`, con INC-151 a INC-160, cada cambio contrastado con `52908f1`, `d8ab0f4`, `56897fd`, `OE4-Resultados.md` §14 y `build-rc4.md`.
+- **Qué entró:** grado quinto y pausa de cinco botones; el aviso del botón de ayuda y el botón «Atrás», con la disposición final de `56897fd`; troncos y flechas curvas; vocabulario («Armar la balsa», «pensar como un algoritmo»); abrazo y sueño de perfil; luz del N1 y caminata 1.1.
+- **Dónde:** apartado 2.6 nuevo del Anexo G y 2.15 del Anexo F; filas nuevas en las Tablas 5.4, 6.3, 9.6, B.4, C.5, D.4, E.4, E.9, F.5, F.6, F.13 y G.2 a G.11 (las que aplican), y una fila del 13/10 en el control de cambios.
+- **Guardas a mano:** cero «§» y cero «Anexo H». Las tablas y figuras que cita el trabajo de grado siguen en su sitio.
+- **Revisión:** se quitaron, en el OE3 y en `INCONSISTENCIAS.md` (INC-152, INC-156 e INC-160), frases que atribuían a los estudiantes dichos sin fuente («dijeron», «no entendían», «pidieron»). Ahora dicen que la sesión dejó el hallazgo, salvo la oscuridad, que el encargo sí registra («vieron el inicio del Nivel 1 demasiado oscuro»).
+- **Para la sesión local, antes de `build.py --publish`:**
+  - Regenerar el Anexo A con `rf_matrix.py --worktree`, que sigue sobre `123785e`. INC-152 a INC-160 añadieron pruebas; puede cambiar la Tabla 9.4 y su texto, y la fila del control de cambios dice «sin modificar el Anexo A».
+  - Correr las guardas completas (pandoc y Word) y mirar en el PDF las celdas largas de F.13 y 9.6.
+  - El ámbar `#E8A33D` sigue en C (2.4) y E (2.1), aunque se revirtió a `#C4A882` el 10/10. No es de esta tanda y no se tocó.
+  - Los capítulos 9 y 10 conservan las cifras del OE4 al corte (103 casos); el estado vigente lo lleva el OE4.
+  - En la columna «Autor» de G.2 y en el control de cambios se supuso `santivaldiri` = Santiago Valdiri García y `Brey314` = Santiago Benavides Rey.
+  - `01-objetivo.md` cita el objetivo general con «quinto»: el `.docx` de la tesis debe decir lo mismo.
+
+### C10 · Triaje y `PF-RNF12-01`, `e4051d3`
+
+- **Cifras** (del CSV): 129 P, 4 F y 3 PS (`PF-RNF13-01`, `PF-RNF22-01`, `PF-RNF23-01`); eficacia 97,0 % (129/133); RNF 83,3 % (15/18); S-INSP 8·3·2 (72,7 %); peor caso 94,9 % (129/136).
+  - Se propagaron a `OE4/src` (02 a 06), al cap9 (Tablas 12 y 13 y 9.3.1) y a una nota §15 en `OE4-Resultados.md`.
+- **Triaje en 3.6, con columna nueva en su tabla:**
+  - **Documento:** DEF-RC3-02, -04, -06, -07 y -12, corregidos en `casos.md`.
+  - **Código:** DEF-RC3-05, -09, -10 y -11, «se corrige en rc4»; no se afirma que ya estén corregidos.
+  - **Trabajo futuro:** DEF-RC3-01, -03, -08 e -I01 a -I04, cada uno con su causa.
+- **`todo.md`:** T21 marcado con nota fechada; T22 sigue abierto.
+- **Para la sesión local:**
+  - `build.py` del OE4 no corrió aquí porque falta `docs/md/` del OE1.
+  - Revisar que el nuevo paso 21 de S-N3 en `casos.md` (DEF-06) se pueda ejecutar con el arnés.
+  - El `[Pendiente: …]` de `PF-RNF22-01` y `PF-RNF23-01` en la Tabla 16 del cap9 sigue igual.
+

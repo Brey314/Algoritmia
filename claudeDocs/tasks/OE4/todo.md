@@ -164,7 +164,7 @@ Cada tarea es una sesión de `casos.md`. Al cerrarla: veredictos, evidencias, JS
 
 ## Fase 4 — Corrección y regresión
 
-- [ ] **T21 · Triaje** — `S` · HUM + INSP · depende de: D
+- [x] **T21 · Triaje** — `S` · HUM + INSP · depende de: D
       Santiago decide cada `DEF`: corregir en OE4, registrar un INC o dejarlo como trabajo futuro.
       Los F de criterios de HU sin INC se deciden aquí.
       *Acepta:* cada `DEF` con decisión y fecha.
@@ -226,3 +226,7 @@ Cada tarea es una sesión de `casos.md`. Al cerrarla: veredictos, evidencias, JS
 - Se marcan T19 (salvo H13) y T20, y del checkpoint F la casilla de S-HUM y PG-05/PG-06.
 - Siguen abiertos T21, el checkpoint D (4 casos en PS) y el resto del checkpoint F. PlayMode y rc4 siguen en curso en local.
 
+**Nota del 13/10/2026 (cierre).**
+- Se marca T21: los 16 defectos de rc3 tienen decisión y fecha (apartado 3.6 de `03-resultados.md`, §15 de `OE4-Resultados.md`). Documento: DEF-RC3-02, -04, -06, -07, -12, ya aplicado en `casos.md`. Código, para rc4: DEF-RC3-05, -09, -10, -11. Trabajo futuro: DEF-RC3-01, -03, -08, -I01 a -I04.
+- T22 sigue abierto hasta que el commit de rc4 confirme cada corrección de código.
+- `PF-RNF12-01` pasó a P: 129 P, 4 F y 3 PS (eficacia 97,0 % = 129 / 133). El checkpoint D queda con 3 casos en PS.
