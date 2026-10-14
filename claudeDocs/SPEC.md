@@ -38,13 +38,13 @@ corrige el otro. Verificado contra su estado del 14/09/2026 (rev. 8):
 > sino la edición del documento.
 
 La precedencia no resuelve las contradicciones **internas** a un documento: esas se corrigen
-editándolo. `INCONSISTENCIAS.md` (rev. 15, 30/09/2026) registra los hallazgos `INC-01`..`INC-117`,
-y **todos están cerrados**: el 29/09/2026 se cerraron los que seguían abiertos (`INC-46`..`INC-54` y
+editándolo. `INCONSISTENCIAS.md` (rev. 26, 13/10/2026) registra los hallazgos `INC-01`..`INC-160`,
+y **todos están cerrados** (`INC-118`..`INC-160` se recogen solo allí): el 29/09/2026 se cerraron los que seguían abiertos (`INC-46`..`INC-54` y
 los residuos `INC-24-r`, `INC-44-r`, `INC-44-r2`) y los sesenta nuevos (`INC-55`..`INC-114`) con una
 regla —ante un conflicto gana el juego y se edita el documento; lo que solo pide el documento se
 implementa; lo que solo tiene el juego se añade al documento—, y el 30/09/2026 `INC-115`..`INC-117`,
-tres puntos en los que Santiago decidió corregir el juego. Solo siguen abiertos `PG-05` y
-`PG-06` del guion, que exigen observar a estudiantes jugando.
+tres puntos en los que Santiago decidió corregir el juego. `PG-05` y `PG-06` del guion, que exigían observar
+a estudiantes jugando, se cerraron el 13/10/2026 con resultado positivo (`claudeDocs/tasks/OE4/OE4-Resultados.md`, H1 y H2).
 
 **La mecánica del Nivel 1 ya coincide en documentos y código** (`INC-47`, cerrado el 29/09/2026):
 el guion §1.4.3–§1.4.4, `RF-14`–`RF-16` y OE1 §3.6.1, HU-04..HU-07 y CU-05 describen lo que hace
@@ -77,7 +77,7 @@ RF-47 → RF-46 deja de ser un riesgo de cronograma.
 
 ## Objetivo
 
-Prototipo de videojuego educativo 2D en Unity para estudiantes de grado cuarto (9–11 años)
+Prototipo de videojuego educativo 2D en Unity para estudiantes de grado quinto (9–11 años)
 del Colegio El Libertador IED, que ejercite las facetas del pensamiento computacional
 —iteración, depuración, abstracción, reconocimiento de patrones, modelado, pensamiento
 algorítmico y generalización— a través de tres niveles narrativos encadenados: una familia
@@ -543,7 +543,7 @@ Flujo de trabajo test-first por slice: `plan-feature` → `test-designer` → `f
 - Externalizar a ScriptableObject todo texto visible y todo parámetro ajustable jugando.
 - Mantener la lógica del nivel en C# plano, probable sin escena.
 - Acompañar toda señal por color con un segundo indicador — icono, texto o forma (RNF-19).
-- Redactar los textos del estudiante a nivel lector de grado cuarto: máximo 20 palabras por
+- Redactar los textos del estudiante a nivel lector de grado quinto: máximo 20 palabras por
   oración, sin tecnicismos sin explicar (RNF-01).
 - Mantener toda instrucción en **máximo dos líneas** y acompañar todo texto instruccional con
   **refuerzo icónico** (CP-08). Es distinto del doble indicador de RNF-19: aquel acompaña al
@@ -612,11 +612,13 @@ Verificables, uno por KPI del trabajo de grado (§2.3):
 
 ## Decisiones sobre los documentos en conflicto
 
-`INCONSISTENCIAS.md` (rev. 15, 30/09/2026) registra los hallazgos `INC-01`..`INC-117` entre los
+`INCONSISTENCIAS.md` (rev. 26, 13/10/2026) registra los hallazgos `INC-01`..`INC-160` entre los
 `.docx` y entre ellos y el juego. **Todos están cerrados en los documentos**: `INC-43`/`INC-44`/`INC-45`
 desde la refundición del 14/09/2026, `INC-46`..`INC-114` el 29/09/2026 e `INC-115`..`INC-117` el
 30/09/2026, cuando los `.docx` se
-alinearon con el juego y se implementó lo que solo pedían los documentos. Ya no hay divergencias
+alinearon con el juego y se implementó lo que solo pedían los documentos. De `INC-118` a `INC-160` el detalle
+está en `INCONSISTENCIAS.md`; los radicados del OE1 y del OE2 siguen con dos cambios pendientes de autorización
+(grado cuarto, `INC-151`, y los tres botones de pausa, `INC-159`). Ya no hay divergencias
 deliberadas entre documento y código. Los que eran el código adelantándose al documento quedaron así:
 
 - **`INC-46`** — la lista de tareas del Nivel 3 es la tablilla de marfil con un círculo por tarea que
@@ -625,7 +627,9 @@ deliberadas entre documento y código. Los que eran el código adelantándose al
 - **`INC-48`** — la §4 del documento refundido resume la arquitectura que implementa el código, con
   remisión a `arquitectura_videojuego_v2 (2).docx`, que también se alineó (INC-94..INC-96).
 - **`INC-49`** — el menú de pausa del **mockup 6** (Reanudar · Reiniciar · Volver al menú de niveles)
-  está ya en RF-07 y HU-17; «Reiniciar» repite la fase activa sin repetir la narrativa.
+  está ya en RF-07 y HU-17; «Reiniciar» repite la fase activa sin repetir la narrativa. **`INC-159`**
+  (13/10/2026) lo deja en cinco botones: suma «Volver a ver la historia» y «Guardar y salir»; los radicados
+  siguen con tres rótulos hasta que haya autorización expresa para editarlos.
 - **`INC-50`** — «Empujar» confirma la fase y sale a la escena 2.2, que anima el rodado; RF-26,
   HU-08, CU-06 y el guion ya lo describen así.
 
@@ -634,7 +638,7 @@ Lo que el código materializa de cada decisión, para que no se pierda al leer s
 
 | Hallazgo (cerrado) | Lo que el código materializa |
 |---|---|
-| INC-25 · HU-17 | Pausa como capa de UI sobre `Playing`, no un estado nuevo: `Time.timeScale = 0` mientras está abierta. Rótulos del mockup 6 (INC-49, cerrado): Reanudar (restituye el estado exacto), Reiniciar (confirmación, repite **la fase activa** sin repetir la narrativa, nunca re-bloquea un nivel desbloqueado, no borra indicadores; en el Nivel 3, cuyas tres fases comparten escena, `AssemblyPanelController` registra la fase activa al confirmar cada una con `GameFlow.SetPlayingPhase`, INC-117), Volver al menú de niveles. Un solo prefab `MenuPausa` en las cinco escenas jugables. Sin `GameOver`. |
+| INC-25 · HU-17 | Pausa como capa de UI sobre `Playing`, no un estado nuevo: `Time.timeScale = 0` mientras está abierta. Rótulos del mockup 6 (INC-49, cerrado): Reanudar (restituye el estado exacto), Reiniciar (confirmación, repite **la fase activa** sin repetir la narrativa, nunca re-bloquea un nivel desbloqueado, no borra indicadores; en el Nivel 3, cuyas tres fases comparten escena, `AssemblyPanelController` registra la fase activa al confirmar cada una con `GameFlow.SetPlayingPhase`, INC-117), Volver al menú de niveles. Desde INC-159 (13/10/2026) suma «Volver a ver la historia» (sin confirmación; abre la narrativa de la fase y vuelve a ella; oculto en el amarre del Nivel 3) y «Guardar y salir» (confirma, guarda el perfil y cierra). Un solo prefab `MenuPausa` en las cinco escenas jugables. Sin `GameOver`. |
 | INC-26 · HU-14 | El resumen de fin de nivel es **narrativo y sin cifras** (RF-45, RF-17, CP-03). Las cifras solo viven en `TeacherReport` (RF-46); no hay `ScoreManager`. |
 | INC-01 · controles | **Botones de dirección en pantalla, accionados con clic sostenido.** Nunca teclado. El mapa de controles se inspecciona sin salvedades (RNF-02, CT-06). |
 | INC-27 · RNF-09 | Se persisten nombre o alias, nivel alcanzado, fases confirmadas y los cuatro indicadores. Nada más. |
@@ -701,7 +705,7 @@ Corregir cualquiera de estos ahora sale más barato que después.
    que ahora enuncian lo mismo: hipótesis → experimento → resultado observable → ajuste.
 
    Valores vigentes en `FireLevelConfig` (`N1_Config.asset`), **ninguno validado jugando todavía**
-   (`PG-06`, abierto: exige jugar con estudiantes, fuera del OE4):
+   (`PG-06`, cerrado el 13/10/2026 con resultado positivo en la sesión con estudiantes; los valores no cambiaron):
 
    | Campo | Valor |
    |---|---|
@@ -746,10 +750,10 @@ por nivel está fijada en OE1 §3.6.1, con lista cerrada.
 
 ## Preguntas abiertas
 
-Ningún hallazgo de `INCONSISTENCIAS.md` queda abierto (rev. 15, 30/09/2026).
+Ningún hallazgo de `INCONSISTENCIAS.md` queda abierto (rev. 26, 13/10/2026).
 
-**Del guion (§1.2), sin resolver** — son del guion, no conflictos entre documentos, y los dos
-exigen observar a estudiantes jugando, que el OE4 no hace: **PG-05** verificar en pruebas que el
+**Del guion (§1.2)** — son del guion, no conflictos entre documentos, y los dos
+exigían observar a estudiantes jugando; se cerraron el 13/10/2026 con resultado positivo (H1 y H2 del OE4): **PG-05** verificar en pruebas que el
 cambio de esquema de control entre el Nivel 1 y el 2 no confunde · **PG-06** validar jugando los
 valores del Nivel 1 (`FireLevelConfig`). Cerrados: ~~**PG-01** título del producto~~ **«Algoritmia»**
 (09/09/2026, `GameTitleConfig`) · ~~**PG-02** nombre definitivo del guía~~ **Algoritm**

@@ -1,0 +1,20 @@
+[
+ {
+  "despues_de": "FA-05: La aplicación se cierra de forma inesperada con el menú de pausa abierto → al volver a abrirla, el perfil retoma el juego desde la última fase confirmada (RNF-14).",
+  "texto": "FA-06: El estudiante acciona Volver a ver la historia → el sistema cierra la pausa sin pedir confirmación, reproduce la escena narrativa que presenta la fase activa y, al terminarla, vuelve a cargar esa fase en su estado inicial, como Reiniciar; lo confirmado no cambia (RF-41). En la fase de amarre del Nivel 3, que no tiene escena propia, la opción no se muestra (RF-07)."
+ },
+ {
+  "despues_de": "FA-06: El estudiante acciona Volver a ver la historia → el sistema cierra la pausa sin pedir confirmación, reproduce la escena narrativa que presenta la fase activa y, al terminarla, vuelve a cargar esa fase en su estado inicial, como Reiniciar; lo confirmado no cambia (RF-41). En la fase de amarre del Nivel 3, que no tiene escena propia, la opción no se muestra (RF-07).",
+  "texto": "FA-07: El estudiante acciona Guardar y salir → el sistema pide confirmación («¿Quieres salir del juego? Lo que ya terminaste queda guardado.», con las opciones Sí, salir y Cancelar). Al confirmar, guarda el perfil activo y después cierra la aplicación; al cancelar, regresa al menú de pausa sin cambio alguno (RF-09).",
+  "como": "FA-05: La aplicación se cierra de forma inesperada con el menú de pausa abierto → al volver a abrirla, el perfil retoma el juego desde la última fase confirmada (RNF-14)."
+ },
+ {
+  "despues_de": "• Volver al menú de niveles conserva el progreso guardado hasta la última fase confirmada (RF-04).",
+  "texto": "• Volver a ver la historia no pide confirmación: cierra la pausa, reproduce la escena narrativa que presenta la fase activa y al terminarla vuelve a empezar esa fase, sin tocar lo confirmado (RF-41). En la fase de amarre del Nivel 3, que no tiene escena propia, la opción no se muestra."
+ },
+ {
+  "despues_de": "• Volver a ver la historia no pide confirmación: cierra la pausa, reproduce la escena narrativa que presenta la fase activa y al terminarla vuelve a empezar esa fase, sin tocar lo confirmado (RF-41). En la fase de amarre del Nivel 3, que no tiene escena propia, la opción no se muestra.",
+  "texto": "• Guardar y salir pide confirmación; al confirmar, guarda el perfil activo y solo después cierra la aplicación (RF-09).",
+  "como": "• Volver al menú de niveles conserva el progreso guardado hasta la última fase confirmada (RF-04)."
+ }
+]

@@ -1,0 +1,17 @@
+[
+ {
+  "antes": "El sistema debe ofrecer un menú de pausa con las opciones Reanudar, Reiniciar —que vuelve a empezar la fase en curso— y Volver al menú de niveles.",
+  "despues": "El sistema debe ofrecer un menú de pausa con cinco opciones: Reanudar; Reiniciar, que vuelve a empezar la fase en curso; Volver a ver la historia, que repite la escena narrativa que presenta la fase, cuando la fase la tiene, y después la vuelve a empezar; Volver al menú de niveles, y Guardar y salir, que guarda el perfil activo y cierra la aplicación.",
+  "nota": "INC-159, RF-07 (pausa de cinco botones)."
+ },
+ {
+  "antes": "El sistema debe mostrar de forma permanente la descomposición del objetivo en tareas (recoger troncos, encontrar sogas, ensamblar la balsa, colocar el mástil y la vela) y marcar cada una al completarse.",
+  "despues": "El sistema debe mostrar de forma permanente la descomposición del objetivo en tareas (recoger troncos, encontrar sogas, armar la balsa, colocar el mástil y la vela) y marcar cada una al completarse.",
+  "nota": "INC-157, RF-36 (rótulo de la tarea 3 en N3_RiverLevelConfig: «Armar la balsa»)."
+ },
+ {
+  "antes": "Ni reiniciar la fase en curso desde el menú de pausa (RF-07) ni volver a jugar un nivel ya completado borra o modifica los indicadores ya registrados: se conserva el registro de la primera vez que se confirmó cada fase.",
+  "despues": "Ni reiniciar la fase en curso o volver a ver su historia desde el menú de pausa (RF-07) ni volver a jugar un nivel ya completado borra o modifica los indicadores ya registrados: se conserva el registro de la primera vez que se confirmó cada fase.",
+  "nota": "INC-159, 3.6.1 nota 4."
+ }
+]

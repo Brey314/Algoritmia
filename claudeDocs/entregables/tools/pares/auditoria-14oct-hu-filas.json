@@ -1,0 +1,26 @@
+[
+ {
+  "tabla_ultima_fila": "Menú de pausa (sistema)",
+  "celdas": [
+   "Botón Volver a ver la historia",
+   "N/A",
+   "Acción (clic)",
+   "NO",
+   "SI",
+   "SI",
+   "Cierra la pausa, reproduce la escena narrativa que presenta la fase activa y, al terminarla, vuelve a cargar esa fase; no pide confirmación y no se muestra en la fase de amarre del Nivel 3."
+  ]
+ },
+ {
+  "tabla_ultima_fila": "Menú de pausa (sistema)",
+  "celdas": [
+   "Botón Guardar y salir",
+   "N/A",
+   "Acción (clic)",
+   "NO",
+   "SI",
+   "SI",
+   "Pide confirmación («¿Quieres salir del juego? Lo que ya terminaste queda guardado.»); con Sí, salir guarda el perfil activo y después cierra la aplicación, y con Cancelar regresa al menú de pausa (RF-09)."
+  ]
+ }
+]

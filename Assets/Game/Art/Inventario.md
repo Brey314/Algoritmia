@@ -375,7 +375,7 @@ RF-45) y **sin texto dentro de la imagen**: el texto lo escribe Unity encima.
 > tipografías (OFL), y «originales del proyecto» ya no los abarca (INC-127). Es el único crédito de
 > Phosphor: los iconos de pausa y, desde INC-156, las dos flechas de giro del laberinto (`ui_girar_izq`, `ui_girar_der`), no el resto de la interfaz (`ui_alerta`, `ui_lock`, `ui_papelera`,
 > `ui_circulo` y `ui_flecha` son del proyecto). Los créditos dicen «Entornos, objetos e interfaz: originales
-> del proyecto, salvo los iconos de pausa.» e «Iconos de pausa: Phosphor Icons, licencia MIT.». La licencia
+> del proyecto, salvo los iconos de pausa y de giro.» e «Iconos de pausa y de giro: Phosphor Icons, licencia MIT.». La licencia
 > está en `Assets/Game/Art/UI/Common/LICENSE-Phosphor.txt` y el build la copia a `Licencias/`.
 
 **`UI/Common/Animations/`** · — ~~`ui_transicion_fundido.anim`~~ (el fundido es de `SceneLoader`) ·

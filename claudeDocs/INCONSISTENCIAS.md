@@ -243,15 +243,15 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-148 | Cada línea se dice con la expresión del guion y la tarjeta del diálogo es una cara animada que parpadea y habla; la dirección de arte (§10.3) daba un retrato neutro fijo | Dirección de arte, Interfaces, Inventario de arte, Plan de personajes finales, Personajes-Resultados, Anexo F del OE3, CLAUDE.md, juego | **Cerrado** (10/10/2026), salvo los radicados |
 | INC-149 | Las caras y los retratos de los personajes entran recortados y a 256 px como máximo, sin comprimir | Dirección de arte (§15.2), Inventario de arte, Anexo E del OE3, CLAUDE.md, juego | **Cerrado** (10/10/2026) |
 | INC-150 | Papá, Mamá y la Niña se arrodillaban junto a la fogata de espaldas a ella; el rumbo se fija en los datos | Personajes-Resultados, Anexo F del OE3, juego | **Cerrado** (10/10/2026) |
-| INC-151 | El grupo de la evaluación con estudiantes es de grado quinto y los radicados dicen grado cuarto | Trabajo de grado, OE1, OE2, entregables OE4 y TG, juego | **Cerrado** (13/10/2026), salvo los radicados |
+| INC-151 | El grupo de la evaluación con estudiantes es de grado quinto y los radicados dicen grado cuarto | Trabajo de grado, OE1, OE2, entregables OE4 y TG, juego | **Cerrado** (13/10/2026); radicados el 14/10/2026 |
 | INC-152 | El inicio del Nivel 1 se veía demasiado oscuro: las tres narrativas del N1 y la cueva arrancaban con luz de 0,02 a 0,10 | Cámara narrativa N1, juego | **Cerrado** (13/10/2026) |
 | INC-153 | En `N1_AparicionGuia` (línea 7) los pasos de la familia no se desplazaban lo mínimo y no había una guarda de contenido que lo exigiera | Juego | **Cerrado** (13/10/2026) |
 | INC-154 | El abrazo y el sueño de la familia se veían de frente; pasan a verse de perfil | Personajes-Resultados, juego | **Cerrado** (13/10/2026) |
 | INC-155 | Los troncos del bosque huían del cursor y solo el cuadrado del objeto recibía el clic | Juego | **Cerrado** (13/10/2026) |
 | INC-156 | El lado de «Girar» se dibujaba con una misma punta de flecha girada ±90°; pasa a flechas curvas de Phosphor | Inventario de arte, créditos, juego | **Cerrado** (13/10/2026) |
-| INC-157 | Vocabulario de narrativas y textos del río demasiado difícil para grado quinto | Guion (radicado), juego | **Cerrado** (13/10/2026), salvo el radicado |
+| INC-157 | Vocabulario de narrativas y textos del río demasiado difícil para grado quinto | Guion (radicado), juego | **Cerrado** (13/10/2026); radicados el 14/10/2026 |
 | INC-158 | No se entendía para qué sirve el botón de ayuda; la primera mecánica lo explica con un aviso | Interfaces, juego | **Cerrado** (13/10/2026) |
-| INC-159 | La pausa de tres botones de INC-49 pasa a cinco: «Volver a ver la historia» y «Guardar y salir» | OE1, OE2 (RF-07, HU-17), Interfaces, juego | **Cerrado** (13/10/2026), salvo los radicados |
+| INC-159 | La pausa de tres botones de INC-49 pasa a cinco: «Volver a ver la historia» y «Guardar y salir» | OE1, OE2 (RF-07, HU-17), Interfaces, juego | **Cerrado** (13/10/2026); radicados el 14/10/2026 |
 | INC-160 | El diálogo no permitía volver a la línea anterior; se añade «Atrás» | Interfaces, juego | **Cerrado** (13/10/2026) |
 
 ---

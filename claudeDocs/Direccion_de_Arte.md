@@ -42,7 +42,7 @@ clic sostenido.
 
 El videojuego acompaña a una familia prehistórica a través de tres descubrimientos
 —el fuego, la rueda y el cruce de un río— que funcionan como marco narrativo para retos
-de pensamiento computacional dirigidos a estudiantes de grado cuarto de primaria
+de pensamiento computacional dirigidos a estudiantes de grado quinto de primaria
 (9 a 11 años).
 
 La dirección de arte responde a tres condiciones que no son negociables y que ordenan
@@ -939,7 +939,7 @@ El diálogo se lee en un cuadro con retrato, no en un globo con cola (INC-129). 
 relleno marfil `#F7EFE2` en un marco `#C4A882` y una sombra plana inferior de 6 px, sin
 degradado. A la izquierda, centrado en vertical, lleva el retrato del hablante en un recuadro de
 128 px. A su derecha van el nombre del hablante y el texto (§11.3). Abajo a la derecha quedan «Continuar», botón primario de
-260 × 76, y «Omitir», secundario de 200 × 76, que solo aparece en escenas ya vistas (RF-06).
+260 × 76, y «Omitir», secundario de 260 × 76 encima de «Continuar» y alineado a la derecha, que solo aparece en escenas ya vistas (RF-06), y «Atrás», de 200 × 76, a la izquierda de «Continuar» (INC-160).
 
 **El retrato es una cara animada (decisión de Santiago, 10/10/2026, INC-148).** Antes era la imagen
 fija `char_<x>_retrato_neutra.png` (o el `_reposo` de la forma de Algoritm). Ahora es una **base de
@@ -1030,7 +1030,7 @@ Definida a resolución de diseño 1920×1080.
 | Contadores | 30 px | Baloo 2 | 700 | 1.0 |
 
 **Mínimo: 26 px para el texto que lee el estudiante.** Solo bajan de ese tamaño los rótulos
-secundarios —rótulo «Algoritm» del resumen, etiqueta del laberinto, «Aún no» del taller, a 22 px— y la instrucción del Nivel 1 (24 px).
+secundarios —etiqueta del laberinto, «Aún no» del taller, a 22 px— y la instrucción del Nivel 1 (24 px).
 
 ### 11.4 Reglas de composición
 
@@ -1408,7 +1408,7 @@ para el primer asset de cada nivel; los siguientes usan referencia adjunta.
 ```
 CONTEXTO DEL ENCARGO
 Estoy produciendo los assets de entorno de un videojuego educativo 2D para niños de 9 a 11
-años (grado cuarto), desarrollado en Unity. El juego sigue a una familia prehistórica a través
+años (grado quinto), desarrollado en Unity. El juego sigue a una familia prehistórica a través
 de tres niveles de retos de pensamiento computacional: encender el fuego, inventar la rueda y
 cruzar un río en balsa.
 
@@ -1618,6 +1618,6 @@ comerciales sin restricciones de atribución en el producto.
 Los tres glifos del menú de pausa (`ui_pausa`, `ui_reanudar` y `ui_reiniciar`) no son
 originales del proyecto: son iconos de la familia Phosphor Icons, con licencia MIT, y la
 pantalla de créditos los acredita con su licencia (INC-127). Es el único crédito de Phosphor: solo los
-iconos de pausa, no el resto de la interfaz. Los créditos dicen «Entornos, objetos e interfaz: originales
-del proyecto, salvo los iconos de pausa.» e «Iconos de pausa: Phosphor Icons, licencia MIT.», y la
+iconos de pausa y, desde INC-156, las dos flechas de giro del laberinto, no el resto de la interfaz. Los créditos dicen «Entornos, objetos e interfaz: originales
+del proyecto, salvo los iconos de pausa y de giro.» e «Iconos de pausa y de giro: Phosphor Icons, licencia MIT.», y la
 licencia está en `Assets/Game/Art/UI/Common/LICENSE-Phosphor.txt` (el build la copia a `Licencias/`).
