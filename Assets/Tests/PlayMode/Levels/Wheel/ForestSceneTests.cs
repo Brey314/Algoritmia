@@ -231,6 +231,42 @@ namespace Game.Levels.Wheel.Tests
             }
         }
 
+        // DEF-RC3-10: la instrucción con que abre la fase ocupaba tres líneas en una tablilla de dos y se salía
+        // de ella. Rojo esperado sin la corrección: el texto de la instrucción mide más que el alto de la tablilla.
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RNF03_DEFRC310_LasFrasesDeLaTablillaCabenEnSuAlto()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            const float margen = 8f;
+            var etiqueta = forest.MessageLabel;
+            var tablilla = (RectTransform)etiqueta.transform.parent;
+            var frases = new[]
+            {
+                etiqueta.text, // la instrucción con que abre la fase: la dice el asset del guía
+                forest.Config.CargoPlacedMessage,
+                forest.Config.CargoMissedMessage,
+                string.Format(forest.Config.PendingLogsFormat, forest.Config.RequiredLogs)
+            };
+            Assume.That(frases[0], Is.Not.Empty, "la fase abre con la instrucción del guía");
+
+            var desbordan = new List<string>();
+            foreach (var frase in frases)
+            {
+                etiqueta.text = frase;
+                var alto = etiqueta.preferredHeight;
+                if (alto + 2f * margen > tablilla.rect.height)
+                {
+                    desbordan.Add($"«{frase}» mide {alto:0} y la tablilla {tablilla.rect.height:0}");
+                }
+            }
+
+            Assert.That(desbordan, Is.Empty, string.Join(" · ", desbordan));
+        }
+
         [Test]
         [Timeout(30000)]
         public async Task ForestScene_RF22_LosObjetosCaenEntreElCincoYElSesentaPorCientoDeLaPantalla()

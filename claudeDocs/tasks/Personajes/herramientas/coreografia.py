@@ -2796,22 +2796,23 @@ def perfil_hug(x, s):
     g = x.perfil
     L = s.largo / x.k
     alcance = {lado: g.brazo[lado]["l1"] + g.brazo[lado]["l2"] for lado in ("c", "l")}
+    abierto, cerrado, suelto = HUG_PERSONAJE.get(x.id, (HUG_ABIERTO, HUG_CERRADO, HUG_SUELTO))
 
     def abraza(t):
         # 0 = el abrazo mas abierto (alcanzando), 1 = el mas cerrado (apretando): sube y baja una vez por ciclo y nunca se suelta del todo
-        return HUG_SUELTO + (1.0 - HUG_SUELTO) * 0.5 * (1.0 - math.cos(TAU * t / L))
+        return suelto + (1.0 - suelto) * 0.5 * (1.0 - math.cos(TAU * t / L))
 
     def mano(lado, c):
         r = alcance[lado]
-        adelante = HUG_ABIERTO[0] + (HUG_CERRADO[0] - HUG_ABIERTO[0]) * c
-        arriba = HUG_ABIERTO[1] + (HUG_CERRADO[1] - HUG_ABIERTO[1]) * c
+        adelante = abierto[0] + (cerrado[0] - abierto[0]) * c
+        arriba = abierto[1] + (cerrado[1] - abierto[1]) * c
         extra = HUG_LEJANO if lado == "l" else (0.0, 0.0)    # el brazo de atras rodea un poco mas arriba y mas lejos: asoma por encima del otro
         arriba += HUG_BAJA.get(x.id, 0.0)
         return lambda pts: (pts["hombro_" + lado][0] + (adelante + extra[0]) * r, pts["hombro_" + lado][1] - (arriba + extra[1]) * r)
 
     def f(t):
         c = abraza(t)
-        return {"tau": -1.5 - 3.5 * c, "n": -1.0 - 3.0 * c, "h": -1.0 - 1.5 * c, "vol": 1.0 - 0.008 * c,
+        return {"tau": -1.5 - 3.5 * c + HUG_INCLINA.get(x.id, 0.0) * c, "n": -1.0 - 3.0 * c, "h": -1.0 - 1.5 * c, "vol": 1.0 - 0.008 * c,
                 "mano_c": mano("c", c), "mano_l": mano("l", c)}
 
     return emite_perfil(x, s, L, f, 0.1)
@@ -2826,7 +2827,14 @@ HUG_SUELTO = 0.25
 HUG_LEJANO = (0.00, 0.26)
 # Los adultos abrazan casi siempre a los niños (la 1.4.4 y la 1.3), que les llegan al pecho o a la cintura: sus manos van mas abajo (fraccion del alcance, hacia arriba
 # negativa) para rodearlos por los hombros en vez de quedar sobre sus cabezas. Los niños abrazan a la cintura de quien les llega, un poco por debajo de su hombro.
-HUG_BAJA = {"papa": -0.28, "mama": -0.22, "nina": -0.12, "nino": -0.12}
+HUG_BAJA = {"papa": -0.62, "mama": -0.22, "nina": -0.12, "nino": -0.12}
+# INC-154 (13/10/2026, tras las capturas del motor): Papa abraza a la Nina, que le llega al pecho y apoya la cara en su vientre; con los brazos a la altura del pecho
+# los pasaba por encima de ella sin rodearla, y en el motor la Nina (que se dibuja delante) tapaba el brazo, de modo que solo asomaba una mano extendida. Ahora Papa se
+# inclina sobre ella (HUG_INCLINA: grados extra de tronco al cerrar el abrazo, el hombro se adelanta y baja), baja las manos hasta su espalda (HUG_BAJA) y las deja
+# alli: HUG_PERSONAJE le da su propio (abierto, cerrado, suelto) —menos alcance hacia delante y un apretar casi imperceptible— para que se lea igual en cualquier cuadro del
+# ciclo. Solo cambia Papa: Mama, la Nina y el Nino se quedan con los valores de arriba.
+HUG_INCLINA = {"papa": -14.0}
+HUG_PERSONAJE = {"papa": ((0.70, 0.0), (0.64, -0.03), 0.45)}
 
 # INC-154: dormir de perfil es estar ACOSTADO. Perfil gira ACOSTADO_GIRO grados (+ = antihorario: la cabeza se va a la izquierda y la cara mira hacia arriba:
 # boca arriba; con el lienzo volteado —quien mira a la izquierda— la cabeza queda a la derecha). Girar en sentido contrario, el unico otro modo, deja a
