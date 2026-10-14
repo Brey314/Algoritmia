@@ -199,3 +199,29 @@ Mismas reglas de identidad y archivos vedados.
   - T21, el checkpoint D y el resto del checkpoint F siguen abiertos.
 - **Para la sesión local:** T20 queda marcado como pide la orden. Su criterio menciona cargas y memoria también en el equipo 2, pero RNF-04 y RNF-05 siguen medidos solo en el equipo 1, y la nota de T20 lo dice. Nada de esto viene de PlayMode ni de rc4.
 
+
+## Orden de la sesión local (13/10/2026, cierre) — C9 y C10
+
+Decisiones del usuario (13/10/2026): triaje de los 16 defectos de rc3; `PF-RNF12-01` pasa a **P**; se
+redactan formatos de autorización para la Familia Anonaky y la colaboradora de arte (los hace la sesión local en
+Word); se corrigen en código DEF-RC3-05, -09, -10 y -11 (en curso en local, entrarán en un rc4 recompilado).
+
+- **C9 · OE3 al estado vigente.** El entregable del OE3 se reescribe al estado vigente del prototipo (acta D10).
+  Actualiza `claudeDocs/entregables/OE3/src/` y `src/anexos/` con INC-151 a INC-160: grado quinto, pausa de 5
+  botones, aviso del botón de ayuda, botón Atrás (Omitir encima de Continuar), troncos, flechas curvas,
+  vocabulario, abrazo y sueño de perfil, luz del N1, caminata de 1.1. Lee `INCONSISTENCIAS.md` (INC-151..160) y los
+  commits `52908f1`, `d8ab0f4`, `56897fd`. Sin «§», sin Anexo H. La publicación (`build.py --publish`, Word COM) la
+  hace la sesión local: solo markdown.
+- **C10 · Triaje y RNF-12 en el OE4.**
+  - `PF-RNF12-01` → P en `claudeDocs/entregables/OE4/src/veredictos-rc3.csv` (comentario: formato en el Anexo F
+    y 4 consentimientos firmados, sesión del 13/10/2026). Recalcula y propaga: P/F/PS = 129/4/3, eficacia 97,0 %
+    (129/133) — compruébalo con el CSV —, RNF y por sesión, en `src/*.md`, `claudeDocs/entregables/TG/cap9-evaluacion.md`
+    y una nota fechada en `claudeDocs/tasks/OE4/OE4-Resultados.md`.
+  - Apartado 3.6 de `03-resultados.md`: cambia el `[Pendiente: triaje…]` por la decisión, fecha 13/10/2026:
+    **documento** DEF-RC3-02, -04, -06, -07, -12 (y aplica la corrección en `claudeDocs/tasks/OE4/casos.md`:
+    02 describe la portada como es; 04 sin coordenadas fijas de las siete piezas; 06 el paso 21 de S-N3 como se
+    reproduce; 07 admite ±1 en 8 bits; 12 lista las cinco pruebas que fallan al retirar un nivel como esperadas —
+    lee el defecto en `OE4-Resultados.md` para los nombres); **código** DEF-RC3-05, -09, -10, -11 («se corrige en
+    rc4», la sesión local confirmará con el commit); **trabajo futuro** DEF-RC3-01, -03, -08, -I01, -I02, -I03, -I04,
+    cada uno con su causa. Refleja lo mismo en la tabla de 3.6 y en `cap9-evaluacion.md` (9.3.1) si los cita.
+Mismas reglas de identidad y de archivos vedados. No toques `.docx`.
