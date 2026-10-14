@@ -14,7 +14,7 @@ los dos tienen su conversión en `docs/md/`. Las citas por sección de este docu
 con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
 (control de cambios).
 
-**Verificación vigente: 10/10/2026, rev. 24.** La rev. 14 (29/09/2026) contrastó todos los
+**Verificación vigente: 13/10/2026, rev. 26.** La rev. 14 (29/09/2026) contrastó todos los
 documentos —los `.docx` de `docs/` y los de `claudeDocs/`— con el juego. Por decisión de Santiago,
 **todos los hallazgos están cerrados**: ante un conflicto gana el juego y se edita el documento; lo
 que solo pide el documento se implementa en el juego; lo que solo tiene el juego se añade al
@@ -55,9 +55,21 @@ INC-132 (la regla de la familia no cambia). La rev. 24 (10/10/2026) registra y c
 línea de las 18 narrativas se dice con la expresión del guion y la tarjeta del cuadro de diálogo pasa del
 retrato fijo a una cara animada, con lo que el frente de la familia ya parpadea y Algoritm tiene cara
 final (INC-148); el arte de caras y retratos entra recortado y a 256 px como máximo (INC-149), y quien
-trabaja junto al fuego lo mira (INC-150, el efecto espejo). Siguen abiertos
-solo `PG-05` y `PG-06`, puntos del guion que exigen observar a estudiantes jugando, y los
-**pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
+trabaja junto al fuego lo mira (INC-150, el efecto espejo). La rev. 25 (13/10/2026) registra y cierra
+**INC-151**: el grupo de la evaluación con estudiantes es de grado quinto, por la autorización del colegio,
+y el juego y los entregables del OE4 y del trabajo de grado pasan a «quinto». Con esa sesión se
+cierran `PG-05` y `PG-06`, puntos del guion que exigían observar a estudiantes jugando, con resultado
+positivo. La rev. 26 (13/10/2026) registra **INC-152** a **INC-160**, nueve hallazgos de esa misma sesión: la
+luz del Nivel 1 (INC-152) y la caminata de la familia en la aparición del guía (INC-153), el abrazo y el sueño de
+perfil (INC-154), los troncos del bosque (INC-155), las flechas de «Girar» (INC-156), el vocabulario (INC-157), el
+aviso del botón de ayuda (INC-158), la pausa de cinco botones, que deja sin efecto a INC-49 (INC-159), y el botón
+«Atrás» del diálogo (INC-160). Quedan cerrados **INC-01** a **INC-160**; INC-154 se cerró con el commit `d8ab0f4`. Su verificación se cerró el 13/10/2026 (commit `56897fd`): la suite completa dio EditMode 785 de 786 (1 omitida por entorno) y
+PlayMode 427 de 427, y el candidato rc4 pesó 426,9 MB (`claudeDocs/tasks/OE4/evidencias/build-rc4.md`). La suite corrió
+antes del último cambio de disposición del diálogo (INC-160); lo que ese cambio afecta se volvió a correr aparte y pasó.
+El rc4 vigente se recompiló después desde `0405eba` (13/10/2026, noche): 426,9 MB, peor carga de escena de 0,403 s,
+pico de memoria privada de 1 083,3 MiB y suite completa de 792 de 793 en EditMode (1 omitida por entorno) y 435 de 435
+en PlayMode; recoge además los defectos DEF-RC3-05, -09, -10 y -11 del OE4 y los retoques de INC-154.
+Siguen abiertos los **pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
 (acta D10), lo que deja sin efecto la decisión D1 del 29/09/2026 de darle solo una nota fechada.
 
@@ -96,7 +108,7 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 
 ---
 
-## Resumen — estado a 10/10/2026 (rev. 24)
+## Resumen — estado a 13/10/2026 (rev. 26)
 
 | ID | Hallazgo | Documentos | Estado |
 |---|---|---|---|
@@ -231,6 +243,16 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-148 | Cada línea se dice con la expresión del guion y la tarjeta del diálogo es una cara animada que parpadea y habla; la dirección de arte (§10.3) daba un retrato neutro fijo | Dirección de arte, Interfaces, Inventario de arte, Plan de personajes finales, Personajes-Resultados, Anexo F del OE3, CLAUDE.md, juego | **Cerrado** (10/10/2026), salvo los radicados |
 | INC-149 | Las caras y los retratos de los personajes entran recortados y a 256 px como máximo, sin comprimir | Dirección de arte (§15.2), Inventario de arte, Anexo E del OE3, CLAUDE.md, juego | **Cerrado** (10/10/2026) |
 | INC-150 | Papá, Mamá y la Niña se arrodillaban junto a la fogata de espaldas a ella; el rumbo se fija en los datos | Personajes-Resultados, Anexo F del OE3, juego | **Cerrado** (10/10/2026) |
+| INC-151 | El grupo de la evaluación con estudiantes es de grado quinto y los radicados dicen grado cuarto | Trabajo de grado, OE1, OE2, entregables OE4 y TG, juego | **Cerrado** (13/10/2026), salvo los radicados |
+| INC-152 | El inicio del Nivel 1 se veía demasiado oscuro: las tres narrativas del N1 y la cueva arrancaban con luz de 0,02 a 0,10 | Cámara narrativa N1, juego | **Cerrado** (13/10/2026) |
+| INC-153 | En `N1_AparicionGuia` (línea 7) los pasos de la familia no se desplazaban lo mínimo y no había una guarda de contenido que lo exigiera | Juego | **Cerrado** (13/10/2026) |
+| INC-154 | El abrazo y el sueño de la familia se veían de frente; pasan a verse de perfil | Personajes-Resultados, juego | **Cerrado** (13/10/2026) |
+| INC-155 | Los troncos del bosque huían del cursor y solo el cuadrado del objeto recibía el clic | Juego | **Cerrado** (13/10/2026) |
+| INC-156 | El lado de «Girar» se dibujaba con una misma punta de flecha girada ±90°; pasa a flechas curvas de Phosphor | Inventario de arte, créditos, juego | **Cerrado** (13/10/2026) |
+| INC-157 | Vocabulario de narrativas y textos del río demasiado difícil para grado quinto | Guion (radicado), juego | **Cerrado** (13/10/2026), salvo el radicado |
+| INC-158 | No se entendía para qué sirve el botón de ayuda; la primera mecánica lo explica con un aviso | Interfaces, juego | **Cerrado** (13/10/2026) |
+| INC-159 | La pausa de tres botones de INC-49 pasa a cinco: «Volver a ver la historia» y «Guardar y salir» | OE1, OE2 (RF-07, HU-17), Interfaces, juego | **Cerrado** (13/10/2026), salvo los radicados |
+| INC-160 | El diálogo no permitía volver a la línea anterior; se añade «Atrás» | Interfaces, juego | **Cerrado** (13/10/2026) |
 
 ---
 
@@ -706,6 +728,8 @@ rótulos del mockup 6, y «Reiniciar» repite la fase activa sin repetir la narr
 RF-07 y HU-17 se conservan. `SPEC.md`, `Interfaces.md` y `casos.md` hablan de cinco escenas
 jugables. En el juego, el comentario de `PauseMenuController` y una prueba de los tres rótulos
 (tarea UI-09). Se completó además: HU v2: HU-17 FA-01 y su regla de negocio (el reinicio en el Nivel 3, que desde el 30/09/2026 vuelve a la fase activa también con el nivel completado, INC-117).
+
+*Nota (13/10/2026): INC-159 deja sin efecto la decisión de los tres botones. La pausa pasa a cinco: «Reanudar», «Reiniciar», «Volver a ver la historia», «Volver al menú de niveles» y «Guardar y salir». Los rótulos de «Reanudar», «Reiniciar» y «Volver al menú de niveles» y el destino de este último no cambian. El texto anterior conserva su redacción del 29/09/2026.*
 
 ### INC-50 · El rodado del Nivel 2 solo se ve en la narrativa — cerrado (29/09/2026)
 
@@ -3488,6 +3512,270 @@ fallaba en 17 instancias de línea y ahora en ninguna. **Verificación en el Edi
 `claudeDocs/tasks/Personajes/capturas/2026-10-10/` Papá se arrodilla mirando la llama en N1 1.3 (L02 y L03) y
 Mamá en N2 2.5 (L02).
 
+### INC-151 · El grupo de la evaluación es de grado quinto — cerrado (13/10/2026), salvo los radicados
+
+**El conflicto.** Los documentos del proyecto dirigen el juego a estudiantes de grado cuarto de primaria. El
+Colegio El Libertador IED autorizó la evaluación con estudiantes de grado quinto, y la sesión del 13/10/2026
+se hizo con 4 estudiantes de ese grado.
+
+**Qué decían los documentos.** El título del proyecto, el OE1 y el OE2 (público objetivo, guion, historias
+de usuario) dicen «grado cuarto». El «Formato de autorización institucional» del 17/09/2026, firmado por el
+rector Richard Maldonado, autoriza a estudiantes de grado quinto de primaria dentro de la investigación doctoral
+de la docente Bibiana Patricia Rey Barrote, contacto del equipo en el colegio, con la condición del
+consentimiento informado de padres o acudientes. No se publican el número de documento ni las firmas.
+
+**Qué hacía el juego.** Sus textos se escribieron para grado cuarto. El vocabulario se ajusta aparte, en
+INC-157.
+
+**Regla.** Rige la autorización del colegio, que fija el grado de la evaluación. El grupo evaluado es de
+grado quinto, y el juego, el entregable del OE4 y el trabajo de grado entero dicen «quinto». Las
+expresiones que no designan el grado («cuarto objetivo», «cuarto golpe») no cambian.
+
+**Corrección aplicada (13/10/2026).** Los fuentes del entregable del OE4 (`claudeDocs/entregables/OE4/src/`),
+el capítulo 9 (`claudeDocs/entregables/TG/cap9-evaluacion.md`) y el formato de consentimiento en blanco
+(`claudeDocs/tasks/OE4/evidencias/consentimiento/Formato-consentimiento.md`) dicen «grado quinto». El paso del `.docx` del trabajo de grado a «quinto» quedó para la sesión local, con Word. Solo los
+radicados del OE1 y del OE2 siguen diciendo «cuarto» hasta que haya autorización expresa para editarlos; son
+`docs/Solución OE1_Requerimientos.docx` y `docs/Solucion_OE2_Diseno_final.docx`.
+
+### INC-152 · La luz del inicio del Nivel 1: narrativas y cueva — cerrado (13/10/2026)
+
+**El conflicto.** En la sesión del 13/10/2026 los estudiantes vieron el inicio del Nivel 1 demasiado
+oscuro. Eran tres narrativas (`N1_Apertura`, `N1_AparicionGuia`, `N1_Hallazgo`) y la cueva de la mecánica.
+
+**Qué decían los documentos.** El diseño de cámara del N1 (`docs/Camara_Narrativa_N1.md`) fija un estado de luz
+por encuadre, y es un documento de Santiago que no se edita desde código. El comentario de
+`CaveLightingController` citaba el recorrido de la luz de la cueva de 0,10 a 0,30 («§8»).
+
+**Qué hacía el juego.** Las narrativas arrancaban con `Ambient` de 0,02 a 0,09 (`N1_AparicionGuia` entre 0 y 0,03),
+y la cueva, con `darkest` en 0,10 y `brightest` en 0,30.
+
+**Regla.** La luz sigue siendo la del encuadre, con un mínimo para que la escena se lea. En las narrativas se
+sumaron 0,12 al `Ambient` de `LightStart` y de cada parada, con un mínimo de 0,15. Excepciones: el negro
+intencional de la línea 6 de `N1_Apertura` (0, corte seco) queda en 0. En la cueva, 0,22 y 0,35. El diseño de cámara
+del N1 no se edita; manda el asset.
+
+**Corrección aplicada (13/10/2026).** Narrativas (commit `52ecca5`): `N1_Apertura` (0,06 pasó a 0,18; 0,09 a 0,21;
+0,04 a 0,16), `N1_AparicionGuia` (de 0 a 0,03 pasó a 0,15 en todas las paradas) y `N1_Hallazgo` (entre 0,03 y 0,08
+pasó a entre 0,15 y 0,20). El destello de la línea 6 de `N1_Hallazgo` pasó de 0,95 a 1,0, el máximo de
+`NarrativeLight.Ambient`, porque la regla daba 1,07. Cueva (commit `52908f1`): `darkest.Ambient` de 0,10 a 0,22 y
+`brightest.Ambient` de 0,30 a 0,35, en `Level1_Cave.unity` y en los valores por defecto de
+`CaveLightingController`. **Prueba:** `CaveLighting_INC152_LaCuevaArrancaMasClaraQueEnElDisenoOriginal`.
+**Pendiente:** comprobar en el Editor que la luz de `N1_Apertura` no lave la escena y que
+`NarrativeSequence_RNF03_LosObjetosNoQuedanBajoElCuadroDeDialogo` siga pasando. `RNF03` (9 pruebas) pasó el 13/10/2026 tras el último cambio del diálogo y la suite completa de PlayMode dio 427 de 427; la comprobación a ojo de la luz de `N1_Apertura` no consta en las fuentes de esta revisión.
+
+### INC-153 · La caminata de la familia en la aparición del guía — cerrado (13/10/2026)
+
+**El conflicto.** En `N1_AparicionGuia`, línea 7, los pasos `Walk` de Papá, Mamá, la Niña y el Niño tenían un
+destino casi igual a su origen (Papá, de 0,285 a 0,281), menos que `ActorTimeline.MinimumDisplacement` (0,01), umbral
+debajo del cual el desplazamiento no da rumbo.
+
+**Qué decían los documentos.** Ninguno: es un defecto de datos.
+
+**Qué hacía el juego.** Ninguna prueba exigía que un paso de locomoción desplazara al actor.
+
+**Regla.** Todo paso `Walk`, `Run`, `Carry` o `Push` con movimiento se desplaza al menos `MinimumDisplacement`.
+
+**Corrección aplicada (13/10/2026).** Datos (commit `52ecca5`): los destinos de la línea 7 pasaron a x entre 0,18 y
+0,22 (Papá 0,18; Niña 0,195; Mamá 0,215; Niño 0,22), con el mismo orden y separación y `Facing: 1` (izquierda).
+La prueba nueva encontró otros tres pasos `Push` del Nivel 2 con desplazamiento 0,012 y se corrigieron en la misma
+dirección (`N2_Escena21_Bosque` y dos en `N2_PuenteI_Bosque`). **Prueba:**
+`NarrativeSequence_INC153_LosPasosDeLocomocionDesplazanAlActor`
+(`Assets/Tests/EditMode/Scaffolding/NarrativeLocomotionTests.cs`), compilada con `mcs` en la nube y sin correr en el
+Editor al escribir esta entrada. **Verificación del 13/10/2026 (`56897fd`).** En el motor, la familia se desplaza de x 0,281 a 0,333 (t = 0,35 s) a
+x 0,180 a 0,220 (t = 3,05 s), de perfil y hacia la izquierda (`claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/Inc154_AparicionGuia_L07_caminata.txt`).
+Al llegar, Papá (x = 0,180) queda parcialmente detrás de Algoritm (x = 0,168). **Pendiente:** decidir si ese solapamiento
+se corrige (responsable: equipo de desarrollo). `0405eba` (13/10/2026) cambió `N1_AparicionGuia` para que nadie
+quede escondido tras Algoritm en la 1.1; sus capturas `_v2` no tienen revisión visual registrada.
+
+### INC-154 · El abrazo y el sueño de la familia se ven de perfil — cerrado (13/10/2026)
+
+**El conflicto.** `ActionView` (INC-134) decide por la acción si la familia se ve de frente o de perfil. `Hug` y
+`Sleep` se veían de frente: los brazos abiertos del abrazo se leían como una T y no como un abrazo, y quien duerme
+no se ve acostado si se le mira de frente.
+
+**Qué decían los documentos.** INC-134 fija la lista de acciones de perfil: `Walk`, `Run`, `Carry`, `Push`, `PickUp`,
+`Kneel` y `Blow`.
+
+**Regla.** Abrazar y dormir no son gestos hacia el estudiante y van de perfil. El guion decide hacia dónde con
+`ActorBeat.Facing`: quien abraza mira a quien abraza, y quien duerme queda con la cabeza hacia el lado contrario
+al que mira su perfil. La lista de acciones de perfil de INC-134 pasa a ser `Walk`, `Run`, `Carry`, `Push`,
+`PickUp`, `Kneel`, `Blow`, `Hug` y `Sleep`. Algoritm sigue de frente, porque no tiene torso de perfil.
+
+**Corrección aplicada (13/10/2026, `d8ab0f4`).**
+
+- `ActionView`: `Hug` y `Sleep` devuelven `Profile`.
+- Clips `char_{papa,mama,nina,nino}_anim_{abrazar,dormir}.anim`: se regeneraron solo las curvas de
+  `Lienzo/Perfil` y no se reconstruyó ningún prefab.
+  - En el abrazo los dos brazos van hacia delante, y los adultos bajan las manos hacia los niños.
+  - En el sueño `Lienzo/Perfil` gira a +90°: el cuerpo queda boca arriba y respira en un ciclo de 4 s. A −90°
+    quedaba boca abajo y sin ojos visibles; por eso la cabeza queda opuesta a la mirada.
+- `N1_NacimientoDelFuego`: `Facing` explícito en los abrazos de las líneas 4, 5 y 12. En la línea 16 cada uno
+  camina a su sitio alrededor del fuego y llega dormido, sin taparlo.
+- `N1_Hallazgo`, línea 12: Mamá abraza mirando a la izquierda (`Facing: 1`), hacia el niño.
+- Herramientas: `coreografia.py`, `clips_personajes.json`, `pose_preview.py` y `prefabs.py`. Las vistas previas
+  de las líneas 5, 12 y 16 están en `claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/`.
+
+**Pruebas.** `ActionView_INC154_AbrazarYDormirVanDePerfil`. `ActionView_INC134_LaTablaCubreTodasLasAcciones`
+incluye ahora las dos acciones, y `ActionView_INC134_LosGestosHaciaElEstudianteVanDeFrente` ya no las incluye.
+Según la sesión local, en EditMode pasaron `Character` (220 de 220) y `NarrativeSequence` (34 de 34, con RNF-03),
+y `pose_preview.py` también. **Verificación del 13/10/2026 (`56897fd`).** Con capturas del motor
+(`claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/`): el abrazo de la línea 5 se lee; el de la línea 12 se lee a medias,
+porque Papá no rodea a la Niña; el sueño de perfil no tapa el fuego. PlayMode pasó en la suite completa (427 de 427).
+**Pendiente:** el abrazo de la línea 12 (responsable: equipo de desarrollo). `0405eba` (13/10/2026) retocó el clip
+`char_papa_anim_abrazar` y los destinos de las líneas 4 de `N1_NacimientoDelFuego` para que Papá se incline hacia el
+abrazo; las capturas `_v2` no tienen revisión visual registrada.
+
+### INC-155 · Los troncos del bosque: menos empuje, sin huida bajo el cursor y clic sobre todo el cuerpo — cerrado (13/10/2026)
+
+**El conflicto.** En la fase 1 del Nivel 2 los troncos eran difíciles de coger. El modelo de movimiento aparta el
+objeto del cursor, y el tronco huía justo cuando el cursor llegaba a él. Además, el clic lo recibía el cuadrado de
+120 × 120 del objeto, mientras `RollingLog` dibuja un cilindro que sale de ese cuadrado.
+
+**Qué decían los documentos.** Ninguno fija esos parámetros: viven en `N2_WheelLevelConfig.asset`. La prueba
+`WheelLevelConfig_RF23_ElAssetDaAlTroncoMasEmpujeQueAlRestoDeCategorias` exigía que todas las demás categorías
+empujaran estrictamente menos que el tronco.
+
+**Qué hacía el juego.** Para el tronco, `Push` 0,75 y `Drag` 1,4.
+
+**Regla.** El tronco rueda poco y se frena enseguida; con el cursor sobre su área de clic no se aparta; el clic
+cubre el cuerpo que se dibuja. Como el empuje del tronco bajó, la prueba de RF-23 pasa de «menor que» a «menor o
+igual» (`Is.All.LessThanOrEqualTo`): ninguna otra categoría empuja más que el tronco.
+
+**Corrección aplicada (13/10/2026).** Commit `52908f1`: `Push` 0,35 y `Drag` 3 en `N2_WheelLevelConfig.asset`;
+`ForestObjectNudge.Step(cursor, deltaTime, overObject)` no empuja ni levanta con el cursor encima (el aviso de
+entrada sigue sonando); `RollingLog.Attach(…, clickable: true)` hace que el cuerpo reciba el clic, con
+`raycastPadding` hasta su caja y `IsRaycastLocationValid` recortado a la silueta; en la narrativa el tronco sigue sin
+captar clics. **Pruebas:** `ForestObjectNudge_INC155_ConElCursorSobreElObjetoNoSeApartaNingunaCategoria`,
+`ForestObjectNudge_INC155_ElTroncoSigueApartandoseMientrasElCursorSeAcerca`,
+`ForestObjectNudge_INC155_ConElCursorEncimaSigueAvisandoQueEntro`,
+`RollingLog_INC155_ElAreaDeClicCubreElCuerpoQueSeDibujaYNoSuHuecoEnLaCaja`,
+`RollingLog_INC155_ElClicLoRecibeElCuerpoConElObjetoGiradoEspejadoYEscalado` y
+`RollingLog_INC155_EnLaNarrativaElTroncoNoCaptaClics`. PlayMode pasó en la suite completa del 13/10/2026 (427 de 427).
+
+### INC-156 · Las flechas curvas de «Girar» — cerrado (13/10/2026)
+
+**El conflicto.** En el laberinto, cada lado de «Girar» era la misma punta de flecha (`DropdownArrow`) girada +90° o
+−90°. La sesión del 13/10/2026 dejó como hallazgo que esas flechas no indicaban con claridad hacia dónde iba el giro.
+
+**Qué decían los documentos.** `Assets/Game/Art/Inventario.md` listaba `ui_flecha.png` para la lista del Nivel 2 y
+la cruceta del Nivel 3, y los créditos acreditan Phosphor solo para los iconos de pausa.
+
+**Qué hacía el juego.** `Level2_Maze.unity` usaba el sprite por defecto girado ±0,7071 en z, a 30 × 30 px.
+
+**Regla.** El lado se dice con una flecha curva dibujada con su sentido, sin girar el icono. No se usa
+`ui_reiniciar`, que se confundiría con «Reiniciar». Misma licencia que los glifos de pausa (Phosphor, MIT).
+
+**Corrección aplicada (13/10/2026).** Commit `52908f1`: `ui_girar_izq.png` y `ui_girar_der.png`, de los iconos
+`arrow-arc-left` y `arrow-arc-right` de Phosphor (`@phosphor-icons/core@2.1.1`), a 128 px en blanco; en
+`Level2_Maze.unity` los iconos de `Izq` y `Der` miden 48 × 48 y no tienen rotación. `Inventario.md` los registra.
+**Prueba:** `MazeScene_INC156_ElLadoDeGirarSeDibujaConFlechasCurvasSinGirarElIcono`. **Pendiente:** el texto de
+los créditos pasa de «Iconos de pausa: Phosphor Icons, licencia MIT.» a «Iconos de pausa y de giro: …» (tarea C5 de
+la orden del 13/10/2026).
+
+### INC-157 · Vocabulario para grado quinto — cerrado (13/10/2026), salvo el radicado
+
+**El conflicto.** Los textos que lee el estudiante (narrativas, río, resumen del Nivel 2) usaban palabras difíciles
+para grado quinto, como «intemperie», «maleza», «estela», «civilización» o «inventario».
+
+**Qué decían los documentos.** El guion radicado (`Solucion_OE2_Diseno_final.docx`, §1) trae las mismas
+palabras en sus textos.
+
+**Qué hacía el juego.** Los assets repetían el texto del guion.
+
+**Regla.** Palabras llanas. Se conservan «abstraer», «iterar», «descomponer», «depurar», «algoritmo» y «patrón»,
+porque son los términos del pensamiento computacional y cada uno trae su explicación al lado.
+
+**Corrección aplicada (13/10/2026).** Commit `6d26abb`: 21 reemplazos en los assets de `Narrative/`, `River/` y
+`Wheel/N2_ResumenNivel`, por ejemplo «intemperie» por «al aire libre, sin techo», «civilización» por «otras familias»,
+«abruptamente» por «de repente», «Ensamblar la balsa» por «Armar la balsa» e «inventario» por «tus materiales»; las
+pruebas de `RiverLevelConfigTests`, `TaskListTests` y `RaftAssemblyTests` se actualizaron con el título nuevo. Los
+22 pares para el guion están en `claudeDocs/entregables/tools/pares/guion-inc157.json`. **Pendiente:** cotejar los
+pares con el guion radicado, que no se edita sin autorización, y aplicarlos al `.docx` con su fila en el control de
+cambios; ese paso es aparte de esta revisión. `RiverLevelConfig.cs` conserva «Ensamblar la balsa» como valor por
+defecto, que el asset sobrescribe.
+
+### INC-158 · El aviso del botón de ayuda — cerrado (13/10/2026)
+
+**El conflicto.** La sesión del 13/10/2026 dejó como hallazgo el botón de ayuda (el círculo con Algoritm): nada lo
+presentaba al estudiante antes de la primera mecánica.
+
+**Qué decían los documentos.** RF-13 define la pista; ningún documento prevé una explicación del botón.
+
+**Qué hacía el juego.** Nada: el botón de ayuda estaba sin explicar.
+
+**Regla.** La primera vez que se juega la primera mecánica aparece un aviso. Se deriva del progreso y no se guarda
+nada nuevo (RNF-09): sale mientras el perfil activo no haya confirmado la fase 1 del Nivel 1, y no sale sin perfil.
+
+**Corrección aplicada (13/10/2026).** Commit `52908f1`: `HelpButtonIntro` (`Game.Scaffolding`) oscurece la
+pantalla (alfa 0,72, bloquea los clics), deja el botón de ayuda encima con un `Canvas` de orden propio, detiene el
+tiempo y se cierra con «Cerrar»; `FireHelpIntro.ShouldShow` decide cuándo sale y `FirePanelController` lo dispara al
+final de `Start`. El texto sale de `N1_Mensajes.asset`: «Este es el botón de ayuda. Si no recuerdas qué hacer, haz
+clic en él y Algoritm te repetirá la instrucción.». El rato del aviso se descuenta del tiempo de resolución, como
+el de la pausa. **Pruebas:** `FireHelpIntro_INC158_SaleMientrasElPerfilNoHayaConfirmadoLaFase1`,
+`FireHelpIntro_INC158_NoSaleSiElPerfilYaTerminoLaPrimeraMecanica`, `FireHelpIntro_INC158_SinPerfilActivoNoSale`,
+`FireHelpIntro_INC158_ConfirmarOtroNivelNoLoApaga`, `FireMessages_INC158_ElAvisoDeLaAyudaTieneTextoYNoTrataDeCifras`
+y `FireLevel_INC158_ElAvisoDeLaAyudaVaApagadoPorEncimaDeTodoYBloqueaLosClics`. **Arreglo de la descarga (13/10/2026, `56897fd`).** Si la
+escena se descargaba con el aviso abierto —por ejemplo, «Reiniciar» en la fase 1 del Nivel 1—, Unity lanzaba «Destroying
+object multiple times» porque `HelpButtonIntro.OnDestroy` destruía el `GraphicRaycaster` con `DestroyImmediate`; ese
+error hacía fallar `PauseMenu_HU17_ContinuarRestituyeElEstadoExacto`. Ahora `OnDestroy` solo devuelve el tiempo, y el
+raycaster y el `Canvas` salen con la escena. Prueba de regresión:
+`FireLevel_INC158_UnaEscenaQueSeDescargaConElAvisoAbiertoDevuelveElTiempoSinErrores`. Con el arreglo, el PlayMode de
+`Game.Levels.Fire` pasó 68 de 68 en la suite completa.
+
+### INC-159 · La pausa pasa de tres botones a cinco — cerrado (13/10/2026), salvo los radicados
+
+**El conflicto.** INC-49 (29/09/2026) fijó el menú de pausa del mockup 6 con tres botones. En la sesión del
+13/10/2026 hizo falta poder volver a ver la historia de la fase y salir del juego guardando.
+
+**Qué decían los documentos.** RF-07, OE1 §3.6.1 nota 4 y HU-17 usan los rótulos «Reanudar», «Reiniciar» y
+«Volver al menú de niveles»; `Interfaces.md` describía tres botones.
+
+**Qué hacía el juego.** Tres botones.
+
+**Regla.** **INC-159 deja sin efecto a INC-49 en el número de botones.** Son cinco, en este orden: «Reanudar»,
+«Reiniciar», «Volver a ver la historia», «Volver al menú de niveles» y «Guardar y salir». «Volver a ver la historia»
+no pide confirmación, porque no pierde nada (RF-41, CP-02): cierra la pausa, abre la narrativa que presenta la fase
+y, al terminar, `NarrativeSceneController.Leave` vuelve a la misma fase; sin fila en la tabla (el amarre del Nivel 3
+no tiene escena propia) el botón se oculta. «Guardar y salir» pide confirmación («¿Quieres salir del juego? Lo que
+ya terminaste queda guardado.», «Sí, salir», «Cancelar»), guarda el perfil activo y después cierra (RF-09).
+
+**Corrección aplicada (13/10/2026).** Commit `52908f1`: `PauseMenuPolicy.StoryFor`, `WatchStory` y `SaveThenQuit`;
+la tabla serializada `PhaseNarrative` en `MenuPausa.prefab` (fases 1 a 3 del Nivel 2, fases 1 y 3 del Nivel 3 y fase
+1 del Nivel 1); los textos en `Assets/Game/Data/PauseMenuContent.asset` (CT-05). **Pruebas:**
+`PauseMenuPolicy_INC159_*` (seis), `PauseMenu_INC159_CadaFilaDeLaTablaApuntaALaEscenaQueArrancaEsaFase`,
+`PauseMenu_INC159_TodaFaseTieneSuHistoriaSalvoElAmarreDelNivel3`,
+`PauseMenu_INC159_ElPanelBaseTieneCincoBotonesEnOrdenYCableados`,
+`PauseMenu_INC159_LosTextosNuevosSalenDelAssetYElPrefabDiceLoMismo` y
+`PauseMenu_INC159_ElPanelConCincoBotonesYElTituloCabeEnLos1080DeAlto`. **Pendiente:** el RF-07 y HU-17 radicados
+siguen con tres rótulos hasta que haya autorización expresa para editarlos; los casos `PF-RF07-*` del OE4 describen
+el menú de rc3. PlayMode pasó en la suite completa del 13/10/2026 (427 de 427).
+
+### INC-160 · El botón «Atrás» del diálogo — cerrado (13/10/2026)
+
+**El conflicto.** La sesión del 13/10/2026 dejó como hallazgo que el cuadro de diálogo no permitía volver a leer la línea anterior.
+
+**Qué decían los documentos.** RF-05 y RF-06 describen «Continuar» y «Omitir»; ningún documento prevé volver atrás.
+
+**Qué hacía el juego.** Las líneas solo avanzaban.
+
+**Regla.** «Atrás» solo relee: vuelve a la línea anterior sin transición, no cruza a la secuencia anterior (en la
+primera línea no se ve) y no reabre una escena terminada. Una línea que ya se vivió se pinta quieta: cámara y luz
+saltan a la parada de esa línea, los personajes quedan donde la línea los deja (los de locomoción, de pie) y no se
+repiten sonidos ni movimientos de objetos. Al avanzar de nuevo sobre líneas ya vistas, también se pintan quietas.
+
+**Corrección aplicada (13/10/2026).** Commit `52908f1`: `DialogueRunner.Back`, `CanGoBack` e `IsNewLine`;
+`ActorTimeline.StillCue`; `NarrativeSceneController.Back` y `SnapToLine`; `BotonAtras` (200 × 76 px, «Atrás») en el
+cuadro de diálogo de `Narrative.unity`. **Pruebas:** `DialogueRunner_INC160_*` (cinco), `ActorTimeline_INC160_*`
+(cinco), `NarrativeScene_INC160_AtrasVuelveALaLineaAnteriorYNoSeOfreceEnLaPrimera` y
+`NarrativeScene_INC160_AtrasNoPisaElTextoNiLosOtrosBotonesYQuedaDentroDelCuadro`. **Disposición final (13/10/2026, `56897fd`).** «Omitir» (260 × 76 px) va encima de
+«Continuar», del mismo tamaño y alineado a la derecha; «Atrás» (200 × 76 px) va en la fila de «Continuar», a su izquierda.
+El texto conserva su área. Prueba nueva:
+`NarrativeScene_INC160_OmitirVaEncimaDeContinuarAtrasEnSuFilaYNingunoPisaAlOtro`. **Descartado:** poner «Atrás» a la
+izquierda del texto. El cuadro mide 216 px, el tope del cuarto de pantalla de RNF-03, y el nombre, dos líneas de texto y
+la fila de botones piden unos 240 px (medidas en `claudeDocs/tasks/OE4/evidencias/rc4/Inc160_medidas_texto.txt`).
+**Verificación.** La suite completa de PlayMode (427 de 427) corrió antes de este cambio de disposición; después se
+volvieron a correr aparte `NarrativeScene_INC160` (3 pruebas) y `RNF03` (9), y pasaron.
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -3497,6 +3785,8 @@ Mamá en N2 2.5 (L02).
    una pregunta orientadora», dentro de la reescritura de la tabla que hizo INC-47.
 3. **INC-44-r2** — `Solucion_OE2_Diseno_final` §1.1.1: se retiró «Nombre provisional — ver punto
    abierto PG-02», y §1.2 escribe el estado de `PG-02` como «Cerrado (Algoritm)», sin tilde.
+
+*Nota (13/10/2026): la sesión con 4 estudiantes de grado quinto del Colegio El Libertador IED cerró `PG-05` y `PG-06` con resultado positivo (comprobaciones H1 y H2; `claudeDocs/tasks/OE4/OE4-Resultados.md`). El párrafo siguiente conserva su texto del 29/09/2026; la columna «Situación» del guion radicado no se edita sin autorización expresa (INC-151).*
 
 **Puntos abiertos del guion** —`Solucion_OE2_Diseno_final` §1.2— son del guion, no conflictos
 entre documentos. Siguen **abiertos** `PG-05` (verificar en pruebas que el cambio de esquema de
@@ -3577,6 +3867,27 @@ no.
 ---
 
 ## Historial de revisiones
+
+- **rev. 26 (13/10/2026)** — Correcciones de la sesión con estudiantes (commits `6d26abb`, `52ecca5` y `52908f1`).
+  Se registran **INC-152** (luz del Nivel 1 en las narrativas y la cueva), **INC-153** (caminata de la familia en
+  la aparición del guía y guarda de contenido), **INC-154** (abrazo y sueño de perfil; cotejado y cerrado con `d8ab0f4`
+  el mismo día), **INC-155** (troncos del bosque; la prueba de RF-23
+  pasa a «menor o igual»), **INC-156** (flechas curvas de «Girar»), **INC-157** (vocabulario; el guion radicado
+  espera cotejo y autorización), **INC-158** (aviso del botón de ayuda), **INC-159** (pausa de cinco botones, deja
+  sin efecto a INC-49 en el número de botones) e **INC-160** (botón «Atrás» del diálogo). Según el commit
+  `52908f1`, EditMode estaba en verde por carril; PlayMode, la suite completa y rc4 estaban pendientes. **Cierre de la
+  verificación (13/10/2026, `56897fd`):** suite completa con EditMode 785 de 786 (1 omitida por entorno) y PlayMode 427
+  de 427, sobre `0839352` con el arreglo de `HelpButtonIntro` (INC-158); rc4 de 426,9 MB (`evidencias/build-rc4.md`); y
+  la disposición final del diálogo de INC-160, verificada aparte porque la suite la precede. **Recompilación
+  (13/10/2026, noche, `0405eba`):** rc4 de 426,9 MB con RNF-04 en 0,403 s y RNF-05 en 1 083,3 MiB medidos sobre el
+  ejecutable, y suite completa de 792 de 793 en EditMode (1 omitida) y 435 de 435 en PlayMode.
+
+- **rev. 25 (13/10/2026)** — Sesión de evaluación con estudiantes en el Colegio El Libertador IED, sede A,
+  con 4 estudiantes de grado quinto. Se registra y cierra **INC-151**: el grupo es de grado quinto por la
+  autorización institucional del 17/09/2026, y el juego y los entregables del OE4 y del trabajo de grado
+  (capítulo 9) pasan a «quinto». Los radicados del OE1 y del OE2 siguen diciendo «cuarto» hasta que haya
+  autorización expresa para editarlos. Con la sesión se cierran `PG-05` y `PG-06` con resultado positivo
+  (`claudeDocs/tasks/OE4/OE4-Resultados.md`, nota del 13/10/2026).
 
 - **rev. 24 (10/10/2026)** — Decisiones de Santiago con la entrega de expresiones de Sofía (tarjeta D11-11).
   Se registran y cierran **INC-148** (cada línea de las 18 narrativas con la expresión del guion, tarjeta

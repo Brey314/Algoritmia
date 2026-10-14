@@ -38,6 +38,10 @@ namespace Game.UI
         [SerializeField] private Button skipButton;
 
         [SerializeField]
+        [Tooltip("«Atrás» (BotonAtras): vuelve a la línea anterior para releerla (INC-160). Se oculta en la primera línea de la secuencia.")]
+        private Button backButton;
+
+        [SerializeField]
         [Tooltip("Material con el shader Algoritm/Oscuridad (fx_oscuridad). La capa se crea al arrancar, a pantalla completa, justo encima de la ilustración. Sin él no hay oscuridad.")]
         private Material darknessMaterial;
 
@@ -116,6 +120,7 @@ namespace Game.UI
         internal Text SpeakerLabel => speakerLabel;
         internal Button AdvanceButton => advanceButton;
         internal Button SkipButton => skipButton;
+        internal Button BackButton => backButton;
         internal NarrativeSequence[] Sequences => sequences;
         internal RectTransform IllustrationRect => illustration.rectTransform;
         internal CameraFraming CameraTarget => TargetFraming();
@@ -131,6 +136,11 @@ namespace Game.UI
         {
             advanceButton.onClick.AddListener(Advance);
             skipButton.onClick.AddListener(SkipScene);
+            if (backButton != null)
+            {
+                backButton.onClick.AddListener(Back);
+            }
+
             Begin();
         }
 
@@ -573,6 +583,49 @@ namespace Game.UI
             actor.Moving?.Cancel();
             actor.Moving?.Dispose();
             actor.Moving = null;
+        }
+
+        /// <summary>
+        /// Pinta una línea que ya se vivió, sin la transición (INC-160): los personajes quedan donde la línea los
+        /// deja (<see cref="ActorTimeline.StillCue"/>), y cámara y luz saltan en seco a la parada de la línea,
+        /// sin suavizado, sin corte con fundido ni destello.
+        /// </summary>
+        /// <remarks>
+        /// Los objetos pintados (<see cref="PlayMotions"/>) no se tocan: lo que ya se movió se queda donde llegó,
+        /// y por eso la línea no se vuelve a reproducir. Tampoco suena nada: el audio solo acompaña a la línea
+        /// nueva. «Por qué no» con <see cref="SyncKey"/>: dejar que él detecte el cambio de parada dispararía
+        /// el corte seco con su fundido y el destello al retroceder, así que aquí se fija <c>_keyIndex</c> antes.
+        /// </remarks>
+        private void SnapToLine(DialogueLine line)
+        {
+            var index = Dialogue.Index;
+            foreach (var actor in _actors)
+            {
+                StopWalking(actor);
+                var cue = ActorTimeline.StillCue(actor.Prop, index, actor.Rig.Speaks(line.Speaker));
+                SetAnchor(actor.Rect, cue.To);
+                actor.Rig.Mirrored = MirroredInSlot(actor.Prop, ActorTimeline.FacesLeftAt(actor.Prop, index));
+                actor.Rig.Play(cue.During);
+                actor.Rig.EmotionOverride = cue.Emotion;
+            }
+
+            var key = ActiveKeyIndex();
+            _keyIndex = key;
+            _flashUntil = 0f;
+            if (_cutKey != null)
+            {
+                // Un corte seco a medias aplicaría a oscuras el encuadre de una parada que ya no es esta.
+                _cutKey = null;
+                _cutRemaining = 0f;
+                _fade = 1f;
+            }
+
+            // Un destello ya pasó: la luz de la parada es la de después de él, la de la parada anterior.
+            _lightBefore = key > 0 ? _sequence.CameraKeys[key - 1].Light : _sequence.LightStart;
+            _camera = TargetFraming(); // después de los personajes: la cámara que acompaña a un objeto los cuenta
+            _light = TargetLight();
+            Frame();
+            ApplyLight();
         }
 
         /// <summary>
@@ -1024,6 +1077,21 @@ namespace Game.UI
             }
         }
 
+        /// <summary>
+        /// Vuelve a la línea anterior para releerla (INC-160, lo pidieron los estudiantes en la sesión del
+        /// 13/10/2026). No cruza a la secuencia anterior: en la primera línea el botón no se ve.
+        /// </summary>
+        internal void Back()
+        {
+            if (Dialogue == null || !Dialogue.CanGoBack)
+            {
+                return;
+            }
+
+            Dialogue.Back();
+            Render();
+        }
+
         private void Render()
         {
             var line = Dialogue.Current;
@@ -1037,6 +1105,20 @@ namespace Game.UI
             speakerLabel.gameObject.SetActive(!line.IsStageDirection);
             bodyLabel.text = line.Text;
             ShowPortrait(line, Dialogue.Index);
+            if (backButton != null)
+            {
+                backButton.gameObject.SetActive(Dialogue.CanGoBack);
+            }
+
+            if (!Dialogue.IsNewLine)
+            {
+                // Una línea que ya se vivió se relee, no se repite: sin sonidos ni movimientos de objetos,
+                // y cámara, luz y personajes cortados en seco a donde la línea los deja.
+                UpdateSpeaking(line.Speaker);
+                SnapToLine(line);
+                return;
+            }
+
             PlayMotions(Dialogue.Index);
             UpdateSpeaking(line.Speaker);
             PlayActors(Dialogue.Index, line.Speaker);

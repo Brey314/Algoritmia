@@ -1,0 +1,38 @@
+[
+ {
+  "despues_de": "Los dos equipos de la sesión no tenían conexión a internet. La sala disponía de internet, de 20 Mb/s de bajada y 7 Mb/s de subida, y no se usó. Las cifras de carga y de memoria de la Tabla 14 son las del equipo 1 de las mediciones sobre rc3 (Ryzen 5 7600X, RTX 5070 Ti).",
+  "titulo": "Equipos de la sesión del 13 de octubre de 2026",
+  "modelo": "Defectos hallados por severidad y estado al cierre de la pasada sobre rc3",
+  "anchos": [
+   16,
+   24,
+   28,
+   16,
+   16
+  ],
+  "filas": [
+   [
+    "Equipo",
+    "Procesador",
+    "Gráficos",
+    "Memoria",
+    "Disco"
+   ],
+   [
+    "Equipo A",
+    "AMD A10-9600P",
+    "Radeon R5, 66 MB de VRAM",
+    "4 GB de RAM",
+    "512 GB"
+   ],
+   [
+    "Equipo B",
+    "Intel Celeron B830",
+    "Intel HD Graphics, 32 MB",
+    "4 GB de RAM",
+    "512 GB"
+   ]
+  ],
+  "fuente": "Fuente: elaboración propia a partir de la hoja de comprobaciones humanas (Anexo G)."
+ }
+]

@@ -785,3 +785,28 @@ Nivel 3 por jugar (sus narrativas salen enteras, sin «Omitir»). Bórralo al te
 ```json
 {"name":"OE4_C","reachedLevel":3,"phases":[{"level":1,"phase":1,"attempts":7,"correctedErrors":3,"stepsUsed":3,"resolutionSeconds":125.0},{"level":2,"phase":1,"attempts":4,"correctedErrors":2,"stepsUsed":0,"resolutionSeconds":61.0},{"level":2,"phase":2,"attempts":5,"correctedErrors":3,"stepsUsed":6,"resolutionSeconds":95.0},{"level":2,"phase":3,"attempts":2,"correctedErrors":5,"stepsUsed":12,"resolutionSeconds":140.0}]}
 ```
+
+## Anexo C · resultados de la sesión del 13/10/2026
+
+Nota añadida; no modifica los guiones anteriores. Sesión en el Colegio El Libertador IED, sede A, con 4
+estudiantes de grado quinto (en esta hoja, «cuarto» en las líneas de H1 y H2 se lee «quinto», INC-151).
+Registro de lo que se reportó, sin completar nada más:
+
+| Id | Resultado |
+|---|---|
+| H1 | Aprobado |
+| H2 | Aprobado |
+| H3 | Aprobado |
+| H4 | Aprobado |
+| H5 | Aprobado; equipos: AMD A10-9600P con Radeon R5 de 66 MB de VRAM y 4 GB de RAM, e Intel Celeron B830 con Intel HD Graphics de 32 MB y 4 GB de RAM; 512 GB de disco cada uno, sin conexión a internet |
+| H6 | Aprobado: el sonido se escucha |
+| H7 | Aprobado |
+| H8 | Entre 40 y 45 min (meta de 20 a 40 min; supera el tope en hasta 5 min; sin causa registrada) |
+| H9 | Aprobado, sin comentarios: todo se comprendió |
+| H10 | Aprobado, sin comentarios: todo se comprendió |
+| H11 | Aprobado: la balsa se hundió, se comprendió por qué, se arregló y finalmente cruzó |
+| H12 | Aprobado, sin comentarios: todo se comprendió |
+| H13 | No se realizó en la sesión; pasa a trabajo futuro |
+
+Los cuatro consentimientos están firmados y se custodian; la constancia de borrado es positiva (perfiles
+borrados, `Datos\` vacía en los equipos). La sala tenía internet de 20 Mb/s de bajada y 7 de subida y no se usó.

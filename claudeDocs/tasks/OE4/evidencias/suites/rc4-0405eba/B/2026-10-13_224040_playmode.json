@@ -1,0 +1,426 @@
+{
+  "mode": "playmode",
+  "filter": "Game.Levels.River.PlayMode.Tests",
+  "filterType": "assembly",
+  "startedUtc": "2026-10-14T03:40:40.2210714Z",
+  "finishedUtc": "2026-10-14T03:43:17.8814988Z",
+  "elapsedSec": 157.7,
+  "status": "completed",
+  "error": "",
+  "summary": {
+    "Total": 58,
+    "Passed": 58,
+    "Failed": 0,
+    "Skipped": 0,
+    "Inconclusive": 0
+  },
+  "xml": "C:\\Users\\benab\\AppData\\Local\\Temp\\Algoritmia-suite\\2026-10-13_223704\\B\\2026-10-13_224040_playmode.xml",
+  "results": [
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_DA133_AlAprobarUnaFaseMamaYLaFamiliaCelebran",
+      "Status": "Passed",
+      "Duration": 2.3372186,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_DA133_CuandoLaBalsaSeHundeLaFamiliaAnimaYNingunoHaceOtroGesto",
+      "Status": "Passed",
+      "Duration": 3.6670597,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance",
+      "Status": "Passed",
+      "Duration": 3.4734329,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF40_MuestraSoloLosEspaciosDeLaFaseActiva",
+      "Status": "Passed",
+      "Duration": 2.6590692,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF40_SoltarSobreLaPuntaDeUnTroncoLoPoneEnEseTroncoYNoEnElVecino",
+      "Status": "Passed",
+      "Duration": 1.5297446,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF42_ElBotonProbarBalsaEstaDisponibleEnCadaFase",
+      "Status": "Passed",
+      "Duration": 2.6862368,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto",
+      "Status": "Passed",
+      "Duration": 2.1120564,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF42_ProbarLaBalsaIncompletaLaHundeYSigueEnLaFase",
+      "Status": "Passed",
+      "Duration": 2.1157541,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido",
+      "Status": "Passed",
+      "Duration": 1.5229786,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF02_LaCasillaDelInventarioRecibeElClicSostenidoPorRaycastYSueltaEnElEspacio",
+      "Status": "Passed",
+      "Duration": 1.5183054,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF03_ConLaFase3AbiertaLaBalsaElBotonYLasTablillasCabenSinSolaparse",
+      "Status": "Passed",
+      "Duration": 2.7581527,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse",
+      "Status": "Passed",
+      "Duration": 1.515178,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF19_ElEspacioIncorrectoSeResaltaConColorEIcono",
+      "Status": "Passed",
+      "Duration": 1.567534,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.BuildZoneTests.BuildZone_CU09_SinTodosLosMaterialesIndicaCualesFaltanSinCifras",
+      "Status": "Passed",
+      "Duration": 0.538094,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.BuildZoneTests.BuildZone_DA133_EntrarSinTodoLosMaterialesDaAnimoYNingunGestoDeDerrota",
+      "Status": "Passed",
+      "Duration": 1.405382,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.BuildZoneTests.BuildZone_RF39_AbreElPanelSoloConLosCuatroMateriales",
+      "Status": "Passed",
+      "Duration": 0.5389345,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.BuildZoneTests.RiverScene_DA133_MamaRecogeAlPulsarRecogerYVuelveSolaAlReposo",
+      "Status": "Passed",
+      "Duration": 1.0164616,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.BuildZoneTests.RiverScene_DA83_LoQueEstaMasAbajoSeDibujaDelante",
+      "Status": "Passed",
+      "Duration": 0.5659256,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.BuildZoneTests.RiverScene_DA83_MamaYLosMaterialesSeVenMasGrandesCuantoMasAbajoEstan",
+      "Status": "Passed",
+      "Duration": 0.5450072,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.BuildZoneTests.RiverScene_RF36_RecogerTroncosSeMarcaConElUltimoTroncoYNoAntes",
+      "Status": "Passed",
+      "Duration": 0.5363734,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.ConditionalNarrativeTests.RiverIndicators_RF45_UnaPruebaDeBalsaIncompletaCuentaComoIntento",
+      "Status": "Passed",
+      "Duration": 2.7400555,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.ConditionalNarrativeTests.RiverScene_CP02_LaEscena32NoReiniciaElEnsamblaje",
+      "Status": "Passed",
+      "Duration": 3.6344992,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.ConditionalNarrativeTests.RiverScene_Guion841_AcertarAlPrimerIntentoVaDirectoAlCruce",
+      "Status": "Passed",
+      "Duration": 2.4228564,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.ConditionalNarrativeTests.RiverScene_Guion841_LaEscena32SeReproduceSoloTrasElPrimerFallo",
+      "Status": "Passed",
+      "Duration": 2.7216077,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.ConditionalNarrativeTests.RiverScene_Guion841_ProbarAntesDeLaUltimaFaseNoGastaLaEscena32",
+      "Status": "Passed",
+      "Duration": 4.4562278,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.ConditionalNarrativeTests.RiverScene_RNF14_AlRetomarElEnsamblajeMamaEsperaEnLaZona",
+      "Status": "Passed",
+      "Duration": 0.5395249,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.GameEndingTests.GameEnding_INC39_RecorreLevelSummaryNarrativeCreditsYMainMenu",
+      "Status": "Passed",
+      "Duration": 6.3433776,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.GameEndingTests.GameEnding_RF44_LaPruebaSuperadaReproduceElCruceYElCierre",
+      "Status": "Passed",
+      "Duration": 3.2417564,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF19_LaListaDeTareasSeLeeEnEscalaDeGrises",
+      "Status": "Passed",
+      "Duration": 0.6665115,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF19_LosEstadosDeErrorSeLeenSinColor",
+      "Status": "Passed",
+      "Duration": 3.9012258,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF20_ContrasteSuficienteSobreElEscenarioClaro",
+      "Status": "Passed",
+      "Duration": 2.2714155,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos",
+      "Status": "Passed",
+      "Duration": 3.3904453,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF04_LaEscenaDelNivel3CargaEnMenosDeDiezSegundos",
+      "Status": "Passed",
+      "Duration": 2.5776592,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF05_LaMemoriaQuedaBajoDosGigasConElNivel3Cargado",
+      "Status": "Passed",
+      "Duration": 3.6245689,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio_AcertandoAlPrimerIntento",
+      "Status": "Passed",
+      "Duration": 12.7472179,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio_FallandoLaPrueba",
+      "Status": "Passed",
+      "Duration": 16.4356533,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba_TrasLaBase",
+      "Status": "Passed",
+      "Duration": 5.3475296,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba_TrasElAmarre",
+      "Status": "Passed",
+      "Duration": 5.3920771,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverLevelJourneyTests.RiverScene_HU17_ReiniciarEnElAmarreOElMastilVuelveALaFaseActivaYNoALaRecoleccion",
+      "Status": "Passed",
+      "Duration": 6.2974079,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverMovementTests.RiverScene_DA133_MamaCaminaMientrasSeSostieneUnaFlechaYReposaAlSoltarla",
+      "Status": "Passed",
+      "Duration": 0.5464946,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverMovementTests.RiverScene_DA76_ElBotonDeAyudaMuestraAAlgoritmEnSuFormaDeGota",
+      "Status": "Passed",
+      "Duration": 0.5266986,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverMovementTests.RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles",
+      "Status": "Passed",
+      "Duration": 0.002193,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverMovementTests.RiverScene_INC134_MamaVaDePerfilAlCaminarYDeFrenteAlSoltarLaFlecha",
+      "Status": "Passed",
+      "Duration": 0.5335175,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverMovementTests.RiverScene_RF13_ElBotonDeAyudaEstaVisibleYRepiteLaInstruccion",
+      "Status": "Passed",
+      "Duration": 0.5265768,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverMovementTests.RiverScene_RF35_ElPersonajeNoAtraviesaLosLimitesDelEscenario",
+      "Status": "Passed",
+      "Duration": 0.5459354,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverMovementTests.RiverScene_RF35_ElPersonajeSeDesplazaConLosBotonesEnPantalla",
+      "Status": "Passed",
+      "Duration": 0.5475535,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverMovementTests.RiverScene_RNF02_LaEscenaSoloRespondeAClicYClicSostenido",
+      "Status": "Passed",
+      "Duration": 0.5383374,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverMovementTests.RiverScene_RNF03_ControlesListaEInventarioCabenEnPantallaYNoSeSolapan",
+      "Status": "Passed",
+      "Duration": 0.4656534,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSceneVisualTests.RiverScene_RF36_CapturaDeLaOrillaAlAbrir",
+      "Status": "Passed",
+      "Duration": 0.6234478,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSceneVisualTests.RiverScene_RF39_CapturaConTodoRecogidoYLaZonaAbierta",
+      "Status": "Passed",
+      "Duration": 0.6411166,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_CP02_UnaFaseQueNoPasaNoSuena",
+      "Status": "Passed",
+      "Duration": 2.4372373,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_RF40_ColocarUnaPiezaSuenaUnMartillazoYSoltarlaFueraNada",
+      "Status": "Passed",
+      "Duration": 1.4992535,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_RF41_AprobarUnaFaseSuenaTresMartillazosAntesDeSeguir",
+      "Status": "Passed",
+      "Duration": 2.738123,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas(Base)",
+      "Status": "Passed",
+      "Duration": 3.0165791,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas(MastAndSail)",
+      "Status": "Passed",
+      "Duration": 4.2545062,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_RF44_LaBalsaTerminadaSuenaAPiezaTomadaTrasLosMartillazos",
+      "Status": "Passed",
+      "Duration": 3.6863942,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsTests.RiverScene_RF35_LaOrillaSuenaAlRioConElBosqueDeFondo",
+      "Status": "Passed",
+      "Duration": 0.5447069,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "Game.Levels.River.Tests.RiverSoundsTests.RiverScene_RF37_RecogerUnMaterialSuenaAEncajeUnaVez",
+      "Status": "Passed",
+      "Duration": 0.4582421,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}

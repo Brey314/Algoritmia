@@ -57,7 +57,7 @@ NK = T + "/Cuello"
 HD = NK + "/Cabeza"
 
 # INC-134 (09/10/2026): el cuerpo de PERFIL de la familia, un segundo cuerpo junto a Lienzo/Cuerpo que se enciende en las acciones de
-# ActionView (Walk, Run, Carry, Push, PickUp, Kneel, Blow). Todo cuelga de UN Tronco con el pivote en la cadera, y los hijos de Tronco van en
+# ActionView (Walk, Run, Carry, Push, PickUp, Kneel, Blow y, desde INC-154, Hug y Sleep). Todo cuelga de UN Tronco con el pivote en la cadera, y los hijos de Tronco van en
 # este orden de dibujo (de atras adelante): BrazoLejano, PiernaLejana, PiernaCercana, Torso, Cuello, BrazoCercano (las piernas, SIEMPRE detras del torso:
 # Santiago, 09/10/2026). «Cercano» es el lado que
 # mira al espectador; el arte canonico mira a la DERECHA (el motor voltea el Lienzo para mirar a la izquierda). Papa, Mama, Nina y Nino; Algoritm no tiene.
@@ -76,7 +76,7 @@ PHD = PNK + "/Cabeza"
 # las 12 articulaciones con rotacion de perfil (el espejo de las 12 de frente): cada clip de la familia lleva una curva en cada una
 HUESOS_PERFIL = [PF, PT, PBL, PBC, PEL, PEC, PLL, PLC, PKL, PKC, PNK, PHD]
 # las acciones que se ven de perfil: la MISMA tabla que ActionView.cs (Game.Scaffolding); si cambia una fila alli, cambia aqui
-ACCIONES_PERFIL = ("Walk", "Run", "Carry", "Push", "PickUp", "Kneel", "Blow")
+ACCIONES_PERFIL = ("Walk", "Run", "Carry", "Push", "PickUp", "Kneel", "Blow", "Hug", "Sleep")   # Hug y Sleep desde INC-154 (13/10/2026)
 
 # id del JSON -> (prefab, carpeta de arte, guia)
 PERSONAJES = {

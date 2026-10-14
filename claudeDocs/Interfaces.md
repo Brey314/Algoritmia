@@ -25,7 +25,7 @@ y no es un olvido:** CP-02 la prohíbe, junto con el límite de intentos y la pe
 | 3 | Selección de perfil | `MainMenu.unity` | RF-02, RF-03, RF-04, RF-47, HU-01, HU-16, CU-01, CU-12 | ✓ `ProfileSelectController`, con el borrado de un perfil tras confirmación |
 | 4 | Menú de niveles | `LevelSelect.unity` | RF-03, RNF-19, HU-14 | ✓ `LevelSelectController` |
 | 5 | Escena narrativa | `Narrative.unity` | RF-05, RF-06 | ✓ `NarrativeSceneController`, parametrizada por `NarrativeSequence` |
-| 6 | Pausa | superposición — prefab `Assets/Game/Prefabs/UI/MenuPausa.prefab` en las cinco escenas jugables | RF-07, HU-17, INC-25 | ✓ `PauseMenuController` (T16; W17 desde el 15/09/2026): no tiene estado propio en la FSM, va sobre `Playing` |
+| 6 | Pausa | superposición — prefab `Assets/Game/Prefabs/UI/MenuPausa.prefab` en las cinco escenas jugables | RF-07, HU-17, INC-25, INC-159 | ✓ `PauseMenuController` (T16; W17 desde el 15/09/2026; cinco botones desde el 13/10/2026): no tiene estado propio en la FSM, va sobre `Playing` |
 | 7 | Nivel 1 · panel de encendido | `Level1_Cave.unity` | RF-14, RF-15, RF-19, RF-21 | ✓ `FirePanelController` (Fase 5 del Slice 1, INC-47) |
 | 8 | Nivel 2 · fase 1, selección por patrón | `Level2_Forest.unity` | RF-22..RF-26 | ✓ `ForestSceneController` (W06/W07) |
 | 9 | Nivel 2 · fase 2, ensamblaje | `Level2_Workshop.unity` | RF-27..RF-29 | ✓ `WorkshopSceneController` (W09, 12/09/2026), contenido en `N2_AssemblyContent.asset` |
@@ -71,15 +71,24 @@ dos canales y sin cifras (HU-14 paso 7, HU-05, CP-03); sigue desbloqueado y se p
 **5 · Escena narrativa.** Cuadro de diálogo de 1400 × 216 px en el cuarto inferior de la pantalla
 (§10.3), sin cola: retrato animado y nombre del hablante (el retrato es una cara con la expresión de
 la línea que parpadea y mueve la boca, INC-148), el texto a 30 px en carbón oscuro, botón de
-continuar y botón de omitir —este último **solo en escenas ya vistas** (RF-06)—. Hasta tres
+continuar, botón «Atrás» y botón de omitir —este último **solo en escenas ya vistas** (RF-06)—. «Atrás» (200 × 76 px,
+a la izquierda de «Continuar») vuelve a la línea anterior para releerla: la pinta quieta, con cámara, luz y
+personajes cortados en seco a lo que esa línea dejó y sin repetir sonidos ni movimientos; no se ve en la primera
+línea ni cruza a la secuencia anterior (INC-160). Hasta tres
 renglones por cuadro (§11.4, INC-138). Las fogatas llevan un halo que respira (`FireGlow`,
 INC-139), y en la 3.3 la cámara acompaña a la balsa.
 
 **6 · Pausa.** Está arriba a la derecha en las cinco escenas jugables y permanece toda la fase,
 como el botón de pista y la tablilla de mensajes (regla 6 de §3).
-Tablilla marfil sobre el velo carbón al 72 % con tres botones apilados: **Reanudar** (primario),
+Tablilla marfil sobre el velo carbón al 72 % con cinco botones apilados desde el 13/10/2026 (INC-159, que deja
+sin efecto los tres de INC-49), de 480 × 94 px: **Reanudar** (primario),
 **Reiniciar** (secundario, añadido el 15/09/2026 por decisión de Santiago: pide confirmación de una
-frase y repite **la fase activa**, INC-25) y **Volver al menú de niveles** (secundario). Sin ajustes
+frase y repite **la fase activa**, INC-25), **Volver a ver la historia** (lleva a la narrativa que presenta la fase
+y de ahí se vuelve a la misma fase; sin confirmación, porque no pierde nada, y oculto en la fase sin escena propia,
+el amarre del Nivel 3), **Volver al menú de niveles** (secundario) y **Guardar y salir**. Este último abre un panel
+de confirmación con «¿Quieres salir del juego? Lo que ya terminaste queda guardado.», «Sí, salir» y
+«Cancelar»; al confirmar guarda el perfil activo y después cierra el juego. Los textos de los dos botones nuevos y de
+la confirmación viven en `PauseMenuContent.asset`. Sin ajustes
 de dificultad: no existen. Con la pausa abierta el tiempo se detiene (`Time.timeScale = 0`) y no
 suma al indicador de resolución (OE1 §3.6.1 nota 1). Los glifos del botón de pausa, de Reanudar y
 de Reiniciar son de Phosphor Icons (MIT), acreditados en los créditos (INC-127).
@@ -104,12 +113,19 @@ llevan candado, porque no es un «todavía no» sino el fuego naciendo (CP-02). 
 progresión de luz del nivel es retroalimentación en sí misma (RF-21), pero **nunca es el único
 canal** (RNF-19).
 
+**Aviso del botón de ayuda (Nivel 1, INC-158).** La primera vez que se abre la cueva —mientras el perfil activo no
+haya confirmado la fase 1 del Nivel 1— sale una tarjeta marfil sobre un velo oscuro al 72 % que bloquea los clics y
+detiene el tiempo. El botón de «Pista» (el círculo con Algoritm) queda encima, iluminado, y la tarjeta dice «Este es el
+botón de ayuda. Si no recuerdas qué hacer, haz clic en él y Algoritm te repetirá la instrucción.» con un solo botón,
+«Cerrar». Se deriva del progreso y no se guarda nada (RNF-09); el texto vive en `N1_Mensajes.asset`.
+
 **8–10 · Nivel 2.** Fase 1: objetos del bosque, contador de acopio, iconos de aceptado y
 devuelto. Fase 2: siete piezas —la séptima es la cuerda— y el panel de ensamblaje. Fase 3: tablero cenital, editor con los
 tres bloques de instrucción —que se distinguen **por forma**, criterio literal de RNF-19— y el
 botón «Ejecutar», de clic simple (`PG-04`). En la fase 3 todo lo que rodea al tablero es un solo
 ámbar `#E8A33D`; el entorno y la tarjeta del editor llevan el mismo marco redondeado de 8 px y la
-zona donde se suelta la secuencia es marfil sombra (INC-137).
+zona donde se suelta la secuencia es marfil sombra (INC-137). Los dos lados de «Girar» se dibujan con las flechas
+curvas `ui_girar_izq` y `ui_girar_der` (Phosphor, 48 × 48 px, sin girar el icono, INC-156).
 
 **11–12 · Nivel 3.** La orilla en un plano fijo con perspectiva por profundidad, a ×1,4: el río y
 el pie de la cascada a la derecha. Mamá, la familia —detrás de la zona de construcción—, los ocho

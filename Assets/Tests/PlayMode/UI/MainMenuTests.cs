@@ -211,6 +211,26 @@ namespace Game.UI.Tests
                 "el aviso de la ruta de respaldo se monta sobre «Quedarme»");
         }
 
+        // DEF-RC3-11: la ruta de respaldo quedaba a ~8 px de los botones (el rectángulo del aviso acababa 2 px
+        // sobre «Quedarme»). Rojo esperado sin la corrección: el hueco mide dos píxeles.
+        [Test]
+        [Timeout(20000)]
+        public async Task MainMenu_HU18_DEFRC311_ElAvisoDeRespaldoDejaAireSobreLosBotones()
+        {
+            await LoadMainMenu();
+            var sut = Object.FindAnyObjectByType<MainMenuController>();
+            sut.FallbackDirectory = () => Application.persistentDataPath;
+
+            Click(FindOption("Salir"));
+            Canvas.ForceUpdateCanvases();
+
+            var aviso = ScreenRectOf((RectTransform)sut.FallbackNoticeLabel.transform);
+            var botones = ScreenRectOf(FindOption("Quedarme"));
+            var hueco = aviso.yMin - botones.yMax;
+            Assert.That(hueco, Is.GreaterThanOrEqualTo(Screen.height * 0.02f),
+                $"entre la ruta de respaldo y los botones hay {hueco:0} px");
+        }
+
         [Test]
         [Timeout(20000)]
         public async Task MainMenu_RNF18_ElTituloSeLeeDelScriptableObject()

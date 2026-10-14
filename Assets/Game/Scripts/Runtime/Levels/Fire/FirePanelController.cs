@@ -111,6 +111,10 @@ namespace Game.Levels.Fire
         private Button hintButton;
 
         [SerializeField]
+        [Tooltip("El aviso que explica el botón «Pista» (INC-158). Sale al abrir la cueva mientras el perfil activo no haya confirmado la fase 1 (FireHelpIntro). Puede quedar sin asignar: el nivel se juega igual.")]
+        private HelpButtonIntro helpIntro;
+
+        [SerializeField]
         [Tooltip("Las piezas de sonido del nivel (N1_Sonidos). Puede quedar sin asignar: el nivel se juega igual en silencio — el audio refuerza, nunca informa solo (§2.4).")]
         private FireSounds sounds;
 
@@ -241,6 +245,7 @@ namespace Game.Levels.Fire
         internal StoneSpacing Spacing => _spacing;
         internal CaveLightingController Lighting => lighting;
         internal Button HintButton => hintButton;
+        internal HelpButtonIntro HelpIntro => helpIntro;
         internal FireSounds Sounds => sounds;
         internal CharacterRig Player => player;
         internal CharacterRig[] Family => family;
@@ -325,6 +330,27 @@ namespace Game.Levels.Fire
                     member.Play(member == restless ? ActorAction.Observe : ActorAction.Idle);
                 }
             }
+
+            ShowHelpIntro();
+        }
+
+        /// <summary>
+        /// Explica el botón «Pista» la primera vez que se juega la cueva (INC-158). Va al final de
+        /// <see cref="Start"/>: el aviso detiene el tiempo, y el reparto de las piezas y el resto
+        /// del arranque tienen que haber corrido antes.
+        /// </summary>
+        private void ShowHelpIntro()
+        {
+            var profile = Runner != null ? Runner.Flow.ActiveProfile : null;
+            if (helpIntro == null || !FireHelpIntro.ShouldShow(profile))
+            {
+                return;
+            }
+
+            // Leer el aviso no es resolver: ese rato se descuenta del tiempo de resolución igual
+            // que el de la pausa (RF-07, RF-45).
+            _indicators.PauseOpened();
+            helpIntro.Show(messages.HelpIntro, messages.HelpIntroClose, _indicators.PauseClosed);
         }
 
         /// <summary>

@@ -57,5 +57,14 @@ namespace Game.Levels.Fire
         [field: SerializeField, TextArea(2, 3)]
         [field: Tooltip("El soplo tiene éxito y nace el fuego (guion §4.3.4, §4.4).")]
         public string BlowSuccess { get; set; }
+
+        [field: SerializeField, TextArea(2, 3)]
+        [field: Tooltip("Lo que explica el aviso del botón de ayuda, la primera vez que se juega la cueva (INC-158). No es un mensaje del registro: sale en una tarjeta aparte.")]
+        public string HelpIntro { get; set; } =
+            "Este es el botón de ayuda. Si no recuerdas qué hacer, haz clic en él y Algoritm te repetirá la instrucción.";
+
+        [field: SerializeField]
+        [field: Tooltip("Rótulo del botón que cierra el aviso del botón de ayuda.")]
+        public string HelpIntroClose { get; set; } = "Cerrar";
     }
 }

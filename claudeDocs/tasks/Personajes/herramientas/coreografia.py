@@ -31,7 +31,7 @@
 # ancla: solo BrazoX y BrazoX/CodoX (el ancla vive bajo el codo y el motor copia su pose al antebrazo).
 #
 # PERFIL (INC-134, 09/10/2026). La familia (Papa, Mama, Nina y Nino; Algoritm no) tiene un SEGUNDO cuerpo, Lienzo/Perfil, dibujado de perfil y mirando a
-# la DERECHA, que el motor enseña en las siete acciones de ActionView (ACCIONES_PERFIL = Walk, Run, Carry, Push, PickUp, Kneel y Blow) y apaga en las
+# la DERECHA, que el motor enseña en las acciones de ActionView (ACCIONES_PERFIL = Walk, Run, Carry, Push, PickUp, Kneel, Blow y, desde INC-154, Hug y Sleep) y apaga en las
 # demas. Este script anade, al mismo clip y con la misma duracion que su version de frente, las curvas del cuerpo de perfil (rutas Lienzo/Perfil/…, las
 # mismas propiedades: localEulerAnglesRaw.z, m_AnchoredPosition y m_LocalScale): las piernas oscilan adelante y atras con la rodilla doblada en el balanceo,
 # los brazos a contrafase con el codo llegando tarde, el tronco inclinado hacia delante con las piernas compensandolo (cuelgan de el), squash & stretch <= 15 %
@@ -99,7 +99,7 @@ HUESOS_GUIA = [C, T, LA, RA, LE, RE, LL, RL, LK, RK]
 
 # INC-134 (09/10/2026): el cuerpo de PERFIL de la familia. Cada clip de la familia lleva ademas una curva de rotacion en CADA una de estas 12
 # articulaciones (las acciones de frente la dejan constante en su reposo, para que ningun hueso de perfil quede sin curva y caiga a la pose en T),
-# y los siete clips de ACCIONES_PERFIL las animan. Los huesos de frente no cambian en ningun clip. OJO con el nombre: PERFIL (mas abajo) es el angulo de
+# y los nueve clips de ACCIONES_PERFIL las animan. Los huesos de frente no cambian en ningun clip. OJO con el nombre: PERFIL (mas abajo) es el angulo de
 # reposo de los brazos de cada personaje, no una vista de lado.
 PF, PT, PBL, PEL, PBC, PEC = P.PF, P.PT, P.PBL, P.PEL, P.PBC, P.PEC
 PLL, PKL, PLC, PKC, PNK, PHD = P.PLL, P.PKL, P.PLC, P.PKC, P.PNK, P.PHD
@@ -2259,7 +2259,7 @@ def visibilidad(x, lista):
 # ============================================================================ 2b. EL CUERPO DE PERFIL (INC-134, 09/10/2026)
 #
 # La familia gana un SEGUNDO cuerpo, Lienzo/Perfil, dibujado de perfil y mirando a la DERECHA (el motor voltea el Lienzo para mirar a la izquierda), que
-# se ve en las siete acciones de ActionView (ACCIONES_PERFIL: Walk, Run, Carry, Push, PickUp, Kneel y Blow); en las demas se ve el de frente. Los DOS
+# se ve en las acciones de ActionView (ACCIONES_PERFIL: Walk, Run, Carry, Push, PickUp, Kneel, Blow y, desde INC-154, Hug y Sleep); en las demas se ve el de frente. Los DOS
 # cuerpos los anima el mismo clip, con las mismas duraciones: aqui solo se AÑADEN curvas sobre los huesos de perfil (P.HUESOS_PERFIL) y los de frente
 # no se tocan en ningun clip. En los clips de frente los 12 huesos de perfil llevan una curva constante en su reposo (Spec.finish), para que ninguno
 # caiga a la pose en T.
@@ -2371,12 +2371,12 @@ class GeoPerfil:
         self.y_reposo = {l: max(p[1] for p in pts["pies_" + l]) - pts["cadera_" + l][1] for l in ("c", "l")}   # del pivote de la cadera al suelo, de pie
 
     # -- cinematica directa
-    def puntos(self, loc, desp=(0.0, 0.0), esc=(1.0, 1.0)):
+    def puntos(self, loc, desp=(0.0, 0.0), esc=(1.0, 1.0), desp_pf=(0.0, 0.0)):
         """
         Los puntos del cuerpo (lienzo, y hacia abajo) con las rotaciones LOCALES de «loc» (grados; T tronco, pc/pl muslos, kc/kl rodillas, bc/bl brazos,
-        ec/el codos, n cuello, h cabeza, P el giro de Perfil; lo que falte vale 0), el desplazamiento «desp» (dx, dy) de Tronco y la escala «esc» de
-        Perfil (alrededor del suelo). Devuelve cadera_c/l, rodilla_c/l, pies_c/l (lista de puntos de contacto), hombro_c/l, codo_c/l, mano_c/l,
-        cuello y copa.
+        ec/el codos, n cuello, h cabeza, P el giro de Perfil; lo que falte vale 0), el desplazamiento «desp» (dx, dy) de Tronco, la escala «esc» de
+        Perfil (alrededor del suelo) y, al final, el desplazamiento «desp_pf» (dx, dy hacia abajo) de Perfil entero (INC-154: el anclaje del cuerpo
+        acostado). Devuelve cadera_c/l, rodilla_c/l, pies_c/l (lista de puntos de contacto), hombro_c/l, codo_c/l, mano_c/l, cuello y copa.
         """
         tau = loc.get("T", 0.0)
         cad0 = _mas(self.cadera, desp)
@@ -2407,6 +2407,10 @@ class GeoPerfil:
                 v = rota(((q[0] - self.raiz[0]) * esc[0], (q[1] - self.raiz[1]) * esc[1]), giro)
                 return (self.raiz[0] + v[0], self.raiz[1] + v[1])
             out = {k: ([raiz(q) for q in v] if isinstance(v, list) else raiz(v)) for k, v in out.items()}
+        if desp_pf[0] or desp_pf[1]:
+            def mueve(q):
+                return (q[0] + desp_pf[0], q[1] + desp_pf[1])
+            out = {k: ([mueve(q) for q in v] if isinstance(v, list) else mueve(v)) for k, v in out.items()}
         return out
 
     # -- pies en el suelo
@@ -2477,6 +2481,8 @@ def resuelve_pose(g, m, reposo_codo):
       ec, el         flexion de los codos (>= 0)                n, h       cuello y cabeza, locales
       extra          px que se SUBE el cuerpo (el salto de correr)         vol    escala Y de Perfil (X la compensa)
       pie_x          "c" o "l": el pie que no resbala (agachadas, arrodillado); sin el, Tronco no se desplaza en X
+      acostado       True: el cuerpo gira entero con P (INC-154) y no se planta nada: el desplazamiento de Tronco es local, y con Perfil girado 90 grados
+                     «bajar» seria correr el cuerpo a lo largo del suelo. El anclaje al suelo lo da el desplazamiento de Perfil (pf_x, pf_y; emite_perfil)
       mano_c/mano_l  objetivo de la mano (punto del lienzo o funcion de los puntos del cuerpo ya plantado), con peso_c/peso_l (0 a 1) que mezcla
                      la cinematica inversa con el angulo pedido en bc/ec
     El desplazamiento de Tronco PLANTA los pies (GeoPerfil.baja). Devuelve (loc, dx, dy): loc con T, pc, pl, kc, kl, bc, bl, ec, el, n, h; dy es lo que BAJA.
@@ -2484,8 +2490,11 @@ def resuelve_pose(g, m, reposo_codo):
     tau = m.get("tau", 0.0)
     loc = {"T": tau, "pc": m.get("mc", 0.0) - tau, "pl": m.get("ml", 0.0) - tau, "kc": -m.get("fc", 0.0), "kl": -m.get("fl", 0.0),
            "n": m.get("n", 0.0), "h": m.get("h", 0.0), "P": m.get("P", 0.0)}
-    dy = g.baja(loc) - m.get("extra", 0.0)
-    dx = g.corre_x(loc, m["pie_x"]) if m.get("pie_x") else 0.0
+    if m.get("acostado"):
+        dx = dy = 0.0
+    else:
+        dy = g.baja(loc) - m.get("extra", 0.0)
+        dx = g.corre_x(loc, m["pie_x"]) if m.get("pie_x") else 0.0
     pts = g.puntos(loc, (dx, dy))
     for lado in ("c", "l"):
         b, e = m.get("b" + lado, 0.0), m.get("e" + lado, reposo_codo)
@@ -2502,7 +2511,8 @@ def resuelve_pose(g, m, reposo_codo):
 def emite_perfil(x, s, largo, f, paso):
     """
     Muestrea f(t) (t en segundos base) cada «paso» y escribe en el clip «s» las curvas del cuerpo de perfil: la rotacion de las 12 articulaciones, el
-    desplazamiento de Tronco que planta los pies (POSX y POSY, si no es cero) y el squash & stretch de Perfil (ESCX y ESCY, si no es 1). Una curva
+    desplazamiento de Tronco que planta los pies (POSX y POSY, si no es cero), el de Perfil entero (INC-154: pf_x y pf_y, solo el cuerpo acostado) y el
+    squash & stretch de Perfil (ESCX y ESCY, si no es 1). Una curva
     que no varia se escribe con dos claves. El desplazamiento de Tronco se muestrea el TRIPLE de denso (DENSIDAD_PLANTA) que las rotaciones: el
     «el punto mas bajo de dos piernas» tiene picos en cada cruce de piernas y una curva suave de pocas claves los redondearia, hundiendo el pie unos px.
     En un bucle f debe ser periodica en «largo», y cierra sola. Devuelve la lista de (t, loc, dx, dy) de todas las muestras.
@@ -2527,6 +2537,8 @@ def emite_perfil(x, s, largo, f, paso):
         if i % paso_:
             continue      # el resto de las curvas, a la densidad de «paso»
         pon(PF, ROT, i, loc["P"])
+        pon(PF, POSX, i, m.get("pf_x", 0.0))   # INC-154: el anclaje del cuerpo acostado (px hacia la derecha y hacia arriba); 0 en las demas acciones
+        pon(PF, POSY, i, m.get("pf_y", 0.0))
         pon(PT, ROT, i, loc["T"])
         pon(PLC, ROT, i, loc["pc"])
         pon(PLL, ROT, i, loc["pl"])
@@ -2557,7 +2569,7 @@ def emite_perfil(x, s, largo, f, paso):
     return muestras
 
 
-# ---------------------------------------------------------------------------- las siete acciones de perfil
+# ---------------------------------------------------------------------------- las nueve acciones de perfil (las siete de INC-134, mas abrazar y dormir de INC-154)
 
 
 def _punto_muslo(g, pts, lado, frac=0.6, arriba=0.5):
@@ -2771,7 +2783,103 @@ def perfil_kneel(x, s):
     return emite_perfil(x, s, L, f, 0.25)
 
 
+def perfil_hug(x, s):
+    """
+    Abrazar de perfil (INC-154, 13/10/2026; 2 s, bucle). De frente los brazos abiertos se leian como una T y nadie veia un abrazo: de perfil los DOS brazos van
+    hacia delante, un poco por encima de la horizontal, como rodeando a quien se tiene delante, y se cierran: las manos se acercan al cuerpo (el codo se
+    pliega y la mano pasa de «alcanzar» a «abrazar») y el abrazo aprieta y afloja sin llegar a soltar, con el tronco inclinado hacia quien abraza y la cabeza
+    reclinada. Lateralmente un abrazo se cierra de lado a lado, que de perfil no se ve: lo que se ve es cuanto alcanzan las manos, y por eso se pide en
+    fracciones del alcance del brazo (HUG_ABIERTO, HUG_CERRADO) y el gesto vale para el brazo corto de la Niña y para el largo de Papá. La mano cercana va
+    delante de todo y la lejana asoma por delante del torso (va detras: es el primer hijo de Tronco). Los pies no resbalan. Para que se lea el abrazo el
+    guion pone a quien abraza mirando a quien abraza (ActorBeat.Facing) y las casillas juntas.
+    """
+    g = x.perfil
+    L = s.largo / x.k
+    alcance = {lado: g.brazo[lado]["l1"] + g.brazo[lado]["l2"] for lado in ("c", "l")}
+    abierto, cerrado, suelto = HUG_PERSONAJE.get(x.id, (HUG_ABIERTO, HUG_CERRADO, HUG_SUELTO))
+
+    def abraza(t):
+        # 0 = el abrazo mas abierto (alcanzando), 1 = el mas cerrado (apretando): sube y baja una vez por ciclo y nunca se suelta del todo
+        return suelto + (1.0 - suelto) * 0.5 * (1.0 - math.cos(TAU * t / L))
+
+    def mano(lado, c):
+        r = alcance[lado]
+        adelante = abierto[0] + (cerrado[0] - abierto[0]) * c
+        arriba = abierto[1] + (cerrado[1] - abierto[1]) * c
+        extra = HUG_LEJANO if lado == "l" else (0.0, 0.0)    # el brazo de atras rodea un poco mas arriba y mas lejos: asoma por encima del otro
+        arriba += HUG_BAJA.get(x.id, 0.0)
+        return lambda pts: (pts["hombro_" + lado][0] + (adelante + extra[0]) * r, pts["hombro_" + lado][1] - (arriba + extra[1]) * r)
+
+    def f(t):
+        c = abraza(t)
+        return {"tau": -1.5 - 3.5 * c + HUG_INCLINA.get(x.id, 0.0) * c, "n": -1.0 - 3.0 * c, "h": -1.0 - 1.5 * c, "vol": 1.0 - 0.008 * c,
+                "mano_c": mano("c", c), "mano_l": mano("l", c)}
+
+    return emite_perfil(x, s, L, f, 0.1)
+
+
+# El abrazo, en fracciones del alcance del brazo (humero + antebrazo) desde el hombro: (hacia delante, hacia arriba). Abierto: casi el brazo entero estirado
+# y un poco subido; cerrado: el codo plegado y la mano mas cerca del cuerpo. HUG_SUELTO es lo mas abierto que llega a estar el abrazo en el ciclo
+# (0 = del todo abierto, 1 = del todo cerrado); HUG_LEJANO, lo que el brazo de atras alcanza de mas.
+HUG_ABIERTO = (0.97, 0.00)
+HUG_CERRADO = (0.80, -0.04)
+HUG_SUELTO = 0.25
+HUG_LEJANO = (0.00, 0.26)
+# Los adultos abrazan casi siempre a los niños (la 1.4.4 y la 1.3), que les llegan al pecho o a la cintura: sus manos van mas abajo (fraccion del alcance, hacia arriba
+# negativa) para rodearlos por los hombros en vez de quedar sobre sus cabezas. Los niños abrazan a la cintura de quien les llega, un poco por debajo de su hombro.
+HUG_BAJA = {"papa": -0.62, "mama": -0.22, "nina": -0.12, "nino": -0.12}
+# INC-154 (13/10/2026, tras las capturas del motor): Papa abraza a la Nina, que le llega al pecho y apoya la cara en su vientre; con los brazos a la altura del pecho
+# los pasaba por encima de ella sin rodearla, y en el motor la Nina (que se dibuja delante) tapaba el brazo, de modo que solo asomaba una mano extendida. Ahora Papa se
+# inclina sobre ella (HUG_INCLINA: grados extra de tronco al cerrar el abrazo, el hombro se adelanta y baja), baja las manos hasta su espalda (HUG_BAJA) y las deja
+# alli: HUG_PERSONAJE le da su propio (abierto, cerrado, suelto) —menos alcance hacia delante y un apretar casi imperceptible— para que se lea igual en cualquier cuadro del
+# ciclo. Solo cambia Papa: Mama, la Nina y el Nino se quedan con los valores de arriba.
+HUG_INCLINA = {"papa": -14.0}
+HUG_PERSONAJE = {"papa": ((0.70, 0.0), (0.64, -0.03), 0.45)}
+
+# INC-154: dormir de perfil es estar ACOSTADO. Perfil gira ACOSTADO_GIRO grados (+ = antihorario: la cabeza se va a la izquierda y la cara mira hacia arriba:
+# boca arriba; con el lienzo volteado —quien mira a la izquierda— la cabeza queda a la derecha). Girar en sentido contrario, el unico otro modo, deja a
+# la persona boca abajo y con la cara contra el suelo, sin que se vean los ojos cerrados. El giro es alrededor del pivote de Perfil (los pies, en el
+# suelo), asi que el cuerpo queda tendido por encima y por debajo de la linea del suelo y a la izquierda del eje del lienzo: ACOSTADO_ANCLA[personaje]
+# = (dx hacia la derecha, dy hacia arriba) en px lo sube hasta apoyar la espalda en el suelo (y = SUELO) y lo centra en el eje (x = 512), que es donde el
+# motor voltea el lienzo (el mismo cuerpo, tendido a un lado o al otro). MEDIDOS, no deducidos: salen de pose_preview.py --acostado, que dibuja el
+# cuerpo con sus sprites y mide la caja de lo opaco; hay que repetirlos si cambia el arte de perfil (la prueba de pose_preview.py lo comprueba).
+ACOSTADO_GIRO = 90.0
+ACOSTADO_ANCLA = {"papa": (427.0, 99.0), "mama": (424.0, 111.0), "nina": (426.0, 121.0), "nino": (441.0, 149.0)}
+# La pose de las piernas y la cabeza al dormir (grados, del mundo del cuerpo de pie: + hacia delante, que acostado es hacia arriba). De pie el cuerpo no es plano: de
+# espaldas a espalda hay mas hondo la cabeza (el pelo y la barba salen hacia atras) que el torso, y menos las piernas, delgadas. Con la espalda del torso en el suelo,
+# las piernas se echan hacia atras SLEEP_MUSLO[personaje] grados (el muslo lejano, 4 menos; rectas, sin flexion de rodilla) hasta que los pies llegan al suelo —lo mide
+# pose_preview.py, y cada personaje tiene su angulo porque el torso del Nino y el de la Nina son mas gruesos que sus piernas— y la cabeza se inclina un poco hacia
+# delante (SLEEP_CUELLO: cuello, cabeza), lo que la sube del suelo sin dejarla mirando a los pies. La cabeza no llega a apoyar igual: el pelo largo de Mama y el
+# de Papa quedan por debajo de la espalda (pose_preview.TOLERANCIA_ACOSTADO_CABEZA), como el pelo suelto sobre el suelo.
+SLEEP_MUSLO = {"papa": -10.0, "mama": -14.0, "nina": -18.0, "nino": -24.0}
+SLEEP_CUELLO = (-14.0, -6.0)
+
+
+def perfil_sleep(x, s):
+    """
+    Dormir de perfil (INC-154, 13/10/2026; 4 s, bucle): el cuerpo de perfil tendido boca arriba (ACOSTADO_GIRO, ACOSTADO_ANCLA), con las piernas rectas
+    y un poco echadas hacia el suelo (SLEEP_MUSLO), los brazos sueltos a lo largo del cuerpo en su reposo y la cabeza apenas inclinada (SLEEP_CUELLO). Respira despacio, una vez por ciclo de 4 s (RNF-21:
+    nada que parpadee): el pecho sube y baja con el giro del tronco (un grado) y la cabeza lo sigue unos cuadros tarde. Los ojos cerrados no son de la curva:
+    la emocion Sleeping (ActionEmotion) pone el cuadro de ojos cerrados y apaga el parpadeo. Tumbado del todo, con los ojos abiertos, se leeria como caido
+    (CP-02): por eso solo se acuesta quien duerme, y el guion (ActorBeat.Emotion) lo declara.
+    """
+    L = s.largo / x.k
+    ax, ay = ACOSTADO_ANCLA.get(x.id, (0.0, 0.0))
+    muslo = SLEEP_MUSLO.get(x.id, -10.0)
+
+    def f(t):
+        r = math.sin(TAU * t / L)
+        r_tarde = math.sin(TAU * (t - 3.0 / FPS) / L)
+        return {"acostado": True, "P": ACOSTADO_GIRO, "pf_x": ax, "pf_y": ay,
+                "tau": 0.5 + 0.8 * r, "mc": muslo, "ml": muslo + 4.0,
+                "n": SLEEP_CUELLO[0] + 0.5 * r_tarde, "h": SLEEP_CUELLO[1], "vol": 1.0 + 0.006 * r}
+
+    return emite_perfil(x, s, L, f, 0.2)
+
+
 PERFIL_ACCION = {
+    "Hug": perfil_hug,
+    "Sleep": perfil_sleep,
     "Walk": lambda x, s: perfil_ciclo(x, s, par_walk(x.a)),
     "Run": lambda x, s: perfil_ciclo(x, s, par_run(x.a)),
     "Carry": lambda x, s: perfil_ciclo(x, s, par_carry(x.a)),
@@ -3107,8 +3215,10 @@ TOL_FLOTA = 4.0
 VELOCIDAD_PERFIL = 1300.0
 ESCALA_PERFIL = (0.85, 1.15)        # squash & stretch <= 15 % (DA 13.2)
 TRONCO_PERFIL = (-48.0, 10.0)       # hacia delante hasta 48 grados (soplar y recoger); hacia atras, casi nada: sin poses de caida (CP-02)
-SIN_SALTO = ("Walk", "Carry", "Push", "PickUp", "Kneel", "Blow")   # Run salta: es la unica que puede tener los dos pies en el aire
-SOSTENIDAS = ("Kneel",)             # poses que se sostienen (solo respiran): se piden lejos del reposo, no en movimiento
+SIN_SALTO = ("Walk", "Carry", "Push", "PickUp", "Kneel", "Blow", "Hug")   # Run salta: es la unica que puede tener los dos pies en el aire
+SOSTENIDAS = ("Kneel", "Sleep")     # poses que se sostienen (solo respiran): se piden lejos del reposo, no en movimiento
+ACOSTADAS = ("Sleep",)              # INC-154: Perfil girado ~90 grados. Sus puntos de contacto (esquinas de los rects) no son el suelo: no se les mide pie, mano ni cabeza contra el; lo hace pose_preview.py con lo opaco
+TOL_ACOSTADO = 10.0                 # cuanto puede apartarse el giro de Perfil acostado de ACOSTADO_GIRO
 
 
 def valida_perfil(doc, rig=None):
@@ -3157,7 +3267,7 @@ def valida_perfil(doc, rig=None):
                 loc = {"P": v(PF, ROT, t), "T": v(PT, ROT, t), "pc": v(PLC, ROT, t), "pl": v(PLL, ROT, t), "kc": v(PKC, ROT, t), "kl": v(PKL, ROT, t),
                        "bc": v(PBC, ROT, t), "bl": v(PBL, ROT, t), "ec": v(PEC, ROT, t), "el": v(PEL, ROT, t), "n": v(PNK, ROT, t), "h": v(PHD, ROT, t)}
                 esc = (v(PF, ESCX, t, 1.0), v(PF, ESCY, t, 1.0))
-                pts = g.puntos(loc, (v(PT, POSX, t), -v(PT, POSY, t)), esc)
+                pts = g.puntos(loc, (v(PT, POSX, t), -v(PT, POSY, t)), esc, (v(PF, POSX, t), -v(PF, POSY, t)))
                 bajo = max(q[1] for lado in ("c", "l") for q in pts["pies_" + lado])
                 peor["hunde"] = max(peor.get("hunde", -1e9), bajo - g.suelo)
                 peor["flota"] = max(peor.get("flota", -1e9), g.suelo - bajo)
@@ -3179,7 +3289,10 @@ def valida_perfil(doc, rig=None):
                         if rapido > VELOCIDAD_PERFIL:
                             peor.setdefault("vel_en", (h.split("/")[-1], round(t, 3), round(rapido)))
                 previo = (t, loc)
-            if peor["hunde"] > TOL_SUELO:
+            acostada = clip["accion"] in ACOSTADAS
+            if acostada and not all(abs(v(PF, ROT, i * dur / n) - ACOSTADO_GIRO) <= TOL_ACOSTADO for i in range(n + 1)):
+                errores.append("%s: Perfil no esta acostado (el giro se aparta mas de %.0f grados de %.0f)" % (ctx, TOL_ACOSTADO, ACOSTADO_GIRO))
+            if peor["hunde"] > TOL_SUELO and not acostada:
                 errores.append("%s: un pie atraviesa el suelo %.1f px" % (ctx, peor["hunde"]))
             if clip["accion"] in SIN_SALTO and peor["flota"] > TOL_FLOTA:
                 errores.append("%s: el cuerpo flota %.1f px sobre el suelo" % (ctx, peor["flota"]))
@@ -3193,9 +3306,9 @@ def valida_perfil(doc, rig=None):
                 errores.append("%s: squash & stretch de Perfil fuera del 15 %% (%.3f a %.3f)" % (ctx, peor["esc_min"], peor["esc_max"]))
             if peor["tau_min"] < TRONCO_PERFIL[0] or peor["tau_max"] > TRONCO_PERFIL[1]:
                 errores.append("%s: el tronco se inclina de %.1f a %.1f grados (limite %s)" % (ctx, peor["tau_min"], peor["tau_max"], TRONCO_PERFIL))
-            if peor["mano"] > TOL_SUELO:
+            if peor["mano"] > TOL_SUELO and not acostada:
                 errores.append("%s: una mano baja %.1f px del suelo" % (ctx, peor["mano"]))
-            if peor["copa"] > 0.0:
+            if peor["copa"] > 0.0 and not acostada:
                 errores.append("%s: la cabeza baja del suelo" % ctx)
             reposo = reposo_perfil(Ctx(p["id"]))
             if clip["accion"] in SOSTENIDAS:
@@ -3372,7 +3485,14 @@ def autoprueba_perfil(doc):
                 k["claves"] = [[k["claves"][0][0], k["claves"][0][1]], [k["claves"][-1][0], k["claves"][0][1]]]
 
     con(quieto, "no mueve el cuerpo de perfil", nombre="una accion de perfil sin movimiento")
-    # --- el contrato con ActionView.cs: las siete acciones
+
+    def de_pie(d):
+        # INC-154: Sleep con Perfil sin girar es dormir de pie
+        for k in curva(d, "papa", "Sleep", PF, ROT)["claves"]:
+            k[1] = 0.0
+
+    con(de_pie, "no esta acostado", nombre="dormir de pie (Perfil sin acostar)")
+    # --- el contrato con ActionView.cs: las nueve acciones
     acciones, hallada = P.acciones_de_perfil()
     casos.append(("perfil: ActionView.cs " + ("coincide con ACCIONES_PERFIL" if hallada else "no esta: se usa el contrato"), acciones == set(ACCIONES_PERFIL)))
     # --- que las 7 acciones de perfil y solo ellas se muevan, y los clips de frente lleven los 12 huesos en reposo constante

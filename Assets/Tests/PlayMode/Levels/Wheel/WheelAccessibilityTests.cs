@@ -202,9 +202,10 @@ namespace Game.Levels.Wheel.Tests
         {
             var botones = Object.FindObjectsByType<Button>(FindObjectsInactive.Include)
                 .Where(b => b.GetComponentInChildren<Text>(true) is { } t
-                            && new[] { "Reanudar", "Reiniciar", "Volver al menú de niveles", "Sí, reiniciar", "Cancelar" }.Contains(t.text.Trim()))
+                            && new[] { "Reanudar", "Reiniciar", "Volver a ver la historia", "Volver al menú de niveles", "Guardar y salir", "Sí, reiniciar", "Sí, salir", "Cancelar" }.Contains(t.text.Trim()))
                 .ToArray();
-            Assert.That(botones, Has.Length.EqualTo(5), $"{escena}: el menú de pausa está en la escena con sus cinco botones (W17)");
+            // Los cinco del panel base (W17, INC-159) y los dos de cada confirmación —«Reiniciar» y «Guardar y salir»—: «Sí…» y «Cancelar».
+            Assert.That(botones, Has.Length.EqualTo(9), $"{escena}: el menú de pausa está en la escena con sus cinco botones y las dos confirmaciones (W17, INC-159)");
             foreach (var boton in botones)
             {
                 AssertContraste($"{escena} · pausa · {boton.GetComponentInChildren<Text>(true).text}", boton.GetComponentInChildren<Text>(true), ilustracion);

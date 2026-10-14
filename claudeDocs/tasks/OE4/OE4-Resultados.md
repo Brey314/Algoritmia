@@ -359,3 +359,110 @@ PS-01..05 de la dirección de sonido, y lo que traiga la evaluación con estudia
 | Triaje de los 16 defectos | T21 | Corregir en OE4, registrar un INC o dejar como trabajo futuro, con fecha |
 | Etiqueta de rc3 | T01 | Decidir si se etiqueta; Claude solo la pone con su visto bueno |
 | Recorridos del arnés de PF-RNF13-01 | — | Decidir si Claude ejecuta los dos (ventana y pantalla completa) sobre rc3 antes de que Santiago haga el suyo |
+
+## 12. Nota del 13/10/2026 · sesión con estudiantes y hoja HUM
+
+Nota añadida; no corrige las secciones anteriores, que conservan el corte del 10/10/2026 sobre rc3.
+
+**Sesión.** El 13/10/2026, en el Colegio El Libertador IED, sede A, con 4 estudiantes de grado quinto. Un
+observador miró cómo jugaban; los estudiantes pensaron en voz alta y comunicaron sus inquietudes al
+observador. Autorización institucional: «Formato de autorización institucional» del 17/09/2026, firmado por el
+rector Richard Maldonado, para grado quinto de primaria dentro de la investigación doctoral de la docente
+Bibiana Patricia Rey Barrote, contacto del equipo en el colegio, con la condición del consentimiento
+informado de padres o acudientes (el número de documento y las firmas no se publican). Consentimientos: 4
+firmados, custodiados. Formato en blanco: `evidencias/consentimiento/Formato-consentimiento.md`. Constancia
+de borrado: positiva; se borraron los perfiles de la sesión y `Datos\` quedó vacía en los equipos.
+El grado queda registrado en INC-151.
+
+| Id | Resultado |
+|---|---|
+| H1 (PG-05) | Aprobado |
+| H2 (PG-06) | Aprobado |
+| H3 | Aprobado |
+| H4 | Aprobado |
+| H5 | Aprobado (equipos abajo) |
+| H6 | Aprobado: el sonido se escucha |
+| H7 | Aprobado |
+| H8 | Entre 40 y 45 min; la meta es de 20 a 40 min, así que supera el tope en hasta 5 min. Sin causa registrada |
+| H9 | Aprobado, sin comentarios: todo se comprendió |
+| H10 | Aprobado, sin comentarios: todo se comprendió |
+| H11 | Aprobado: la balsa se hundió, se comprendió por qué, se arregló y finalmente cruzó |
+| H12 | Aprobado, sin comentarios: todo se comprendió |
+| H13 | No se realizó en la sesión; pasa a trabajo futuro (el clic tras cargar una escena, la papelera del laberinto y la octava fila del informe) |
+
+Equipos de H5, ambos sin conexión a internet: (A) AMD A10-9600P, Radeon R5 con 66 MB de VRAM, 4 GB de RAM,
+512 GB de disco; (B) Intel Celeron B830, Intel HD Graphics de 32 MB, 4 GB de RAM, 512 GB de disco. La sala
+tenía internet disponible, de 20 Mb/s de bajada y 7 de subida, y no se usó.
+
+**Pendiente de consolidar.** Los veredictos de los casos con ejecutor HUM (`PF-RNF13-01`, `PF-SON-01` a
+`PF-SON-03`, `PF-RNF07-02`, `PF-CT02-01`, `PF-RNF08-01`) no están incorporados a las tablas 3.1 y 3.3 ni al
+Anexo A; esas cifras (96,8 %, 10 casos en PS) siguen siendo las del 10/10/2026. El entregable
+(`claudeDocs/entregables/OE4/src/05-estudiantes.md`) y el capítulo 9 ya recogen la sesión. Siguen
+pendientes `PF-RNF22-01` y `PF-RNF23-01`.
+
+## 13. Nota del 13/10/2026 (noche) · veredictos de la hoja HUM consolidados
+
+Nota añadida; no corrige las secciones anteriores ni la §12. Con el commit `e9a26fc` los veredictos de la sesión manual del 13/10/2026 sobre rc3 entraron en `claudeDocs/entregables/OE4/src/veredictos-rc3.csv` y en `03-resultados.md`. El recuento del CSV es 128 P, 4 F y 4 PS.
+
+**Pasaron a P seis casos:**
+- `PF-RNF07-02` (H3, segundo equipo);
+- `PF-RNF08-01` (H4, sin conexión a internet);
+- `PF-CT02-01` (H5, equipo sin tarjeta gráfica dedicada);
+- `PF-SON-01` a `PF-SON-03` (H12, con H6 y H7 para `PF-SON-03`).
+
+**Siguen en PS cuatro casos:**
+- `PF-RNF13-01`: H8 registró de 40 a 45 min, pero el caso pide tres recorridos y los dos del arnés sobre rc3 no se corrieron.
+- `PF-RNF12-01`, `PF-RNF22-01` y `PF-RNF23-01`.
+
+**H13 no se hizo.** `PF-RNF02-01`, `PF-RF34-01` y `PF-RF46-01` conservan su P de rc3.
+
+| Cifra | 10/10/2026 | 13/10/2026 |
+|---|---|---|
+| Eficacia (KPI 1) | 96,8 % = 122 / (122 + 4), 10 PS | 97,0 % = 128 / (128 + 4), 4 PS |
+| S-RNF (P · F · PS) | 5 · 0 · 1 | 6 · 0 · 0 |
+| S-HUM (P · F · PS) | 0 · 0 · 6 | 5 · 0 · 1 |
+| Etiqueta RNF | 78,6 % (11 de 14) | 82,4 % (14 de 17) |
+| Etiqueta SON | sin veredicto | 100 % (3 de 3), juicio de oído |
+
+Si los 4 PS fallaran, la eficacia quedaría en 94,1 % (128 de 136). Ningún dato de esta nota viene de PlayMode ni de rc4, que siguen en curso en local.
+
+## 14. Nota del 13/10/2026 (cierre) · rc4 y la suite
+
+Nota añadida; no corrige las secciones anteriores. La §13 decía que PlayMode y rc4 seguían en curso. Con el commit `56897fd` quedó así:
+
+- **rc4:** 426 930 226 bytes = 426,9 MB, con 73,1 MB de margen frente a los 500 MB de RNF-06; compilado desde `0839352` (`evidencias/build-rc4.md`). rc3 pesó 426,6 MB. Las evidencias de rc4 no incluyen mediciones de carga ni de memoria: las cifras de RNF-04 y RNF-05 de este documento son las de rc3.
+- **Suite completa** (`suite2.ps1`, 24,8 min; `evidencias/suites/rc4-previa-al-boton-atras/`): EditMode 785 de 786, con una omitida por entorno (`ProfileEraser_INC34_…`), y PlayMode 427 de 427; 1.213 pruebas listadas y las 1.213 ejecutadas. Corrió antes del último cambio de disposición del diálogo (INC-160). Lo que ese cambio afecta se volvió a correr aparte y pasó: `NarrativeScene_INC160` (3 pruebas), RNF-03 (9 pruebas) y las demás que lista `build-rc4.md`.
+- **Arreglo de `HelpButtonIntro`** (INC-158): al descargarse la escena con el aviso abierto, Unity lanzaba «Destroying object multiple times»; ahora no. Prueba de regresión: `FireLevel_INC158_UnaEscenaQueSeDescargaConElAvisoAbiertoDevuelveElTiempoSinErrores`.
+- **Disposición final del diálogo** (INC-160): «Omitir» encima de «Continuar» (260 × 76 px) y «Atrás» en la fila de «Continuar», a su izquierda (200 × 76 px). Se descartó «Atrás» a la izquierda del texto: el cuadro mide 216 px y la fila de botones, el nombre y dos líneas piden unos 240 px (`evidencias/rc4/Inc160_medidas_texto.txt`).
+- **Capturas** (`claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/`): el abrazo de la línea 5 se lee; el de la línea 12 se lee a medias, porque Papá no rodea a la Niña; el sueño de perfil no tapa el fuego; en la caminata de la escena 1.1 Papá queda parcialmente detrás de Algoritm al llegar. El abrazo de la línea 12 y el solapamiento con Algoritm siguen sin corregir (responsable: equipo de desarrollo).
+
+Los estudiantes jugaron rc3. rc4 no se probó con estudiantes, y los veredictos `PF-*` de este documento siguen siendo los de rc3.
+
+## 15. Nota del 13/10/2026 (cierre) · `PF-RNF12-01` en P y triaje de los 16 defectos
+
+Nota añadida; no corrige las secciones anteriores ni la §13, cuyo recuento (128 P, 4 F, 4 PS) era el del momento.
+
+- **`PF-RNF12-01` pasa de PS a P** en `claudeDocs/entregables/OE4/src/veredictos-rc3.csv`: el formato de consentimiento informado consta en el Anexo F y hay 4 consentimientos firmados (sesión del 13/10/2026).
+- **Recuento del CSV:** 129 P, 4 F y 3 PS. Siguen en PS `PF-RNF13-01`, `PF-RNF22-01` y `PF-RNF23-01`.
+
+| Cifra | §13 | Esta nota |
+|---|---|---|
+| Eficacia (KPI 1) | 97,0 % = 128 / (128 + 4), 4 PS | 97,0 % = 129 / (129 + 4), 3 PS |
+| S-INSP (P · F · PS) | 7 · 3 · 3 (70,0 %) | 8 · 3 · 2 (72,7 %) |
+| Etiqueta RNF | 82,4 % (14 de 17) | 83,3 % (15 de 18) |
+| Si los PS fallaran | 94,1 % (128 de 136) | 94,9 % (129 de 136) |
+
+- **Triaje de los 16 defectos de rc3 (decisión del usuario):** *documento* DEF-RC3-02, -04, -06, -07 y -12, ya aplicado en `casos.md`; *código*, para rc4, DEF-RC3-05, -09, -10 y -11, cuya corrección confirmará el commit que la recoja; *trabajo futuro* DEF-RC3-01, -03, -08, -I01, -I02, -I03 y -I04. La tabla de defectos de §6 conserva su estado «Abierto» de la pasada.
+- Ningún dato de esta nota viene de PlayMode ni de rc4.
+
+## 16. Nota del 13/10/2026 (noche) · rc4 recompilado desde `0405eba`
+
+Nota añadida; no corrige las secciones anteriores, que citan el rc4 compilado desde `0839352` (§14) y dicen que las cifras de RNF-04 y RNF-05 son las de rc3. Ese rc4 se sustituyó; el vigente es el de `evidencias/build-rc4.md`.
+
+- **Procedencia:** compilado de 23:02 a 23:03 desde `0405eba`, con `git diff HEAD` vacío sobre `Assets/`, `Packages/` y `ProjectSettings/` y sin archivos sin seguimiento en ellas. Sin etiqueta. Incluye las correcciones de código del triaje de la §15: DEF-RC3-05 (cabeceras del informe docente), DEF-RC3-09 (`InputGuard`, 0,3 s sin clics tras cada carga de escena), DEF-RC3-10 (tablilla del bosque más ancha) y DEF-RC3-11 (textos de botones del informe docente y de los diálogos de borrar y salir), y los retoques de narrativa de INC-154 (Papá en el abrazo de la 1.4.4; nadie tras Algoritm en la 1.1).
+- **RNF-06:** 426 932 086 bytes = 407,2 MiB = 426,9 MB (252 archivos), con 73,1 MB de margen frente a los 500 MB. rc3 pesó 426,6 MB.
+- **RNF-04:** el peor valor fue 0,403 s, en la primera `Narrative`; 46 cargas en 4 lanzamientos, a 1920 × 1080. `Boot` a `MainMenu`, 2,76 s (cota desde `Start-Process`). Son una o dos cargas por escena (17 en `Narrative`), menos de las tres de `PF-RNF04-01`: la tabla de rc3 sigue siendo la evidencia de ese caso y la de rc4 la confirma.
+- **RNF-05:** pico de memoria privada de 1 083,3 MiB (1,06 GiB) en `Level1_Cave` y de trabajo de 434,6 MiB en `Level3_River`, sobre 373 muestras; el límite es 2 048 MiB. rc3 dio 1 094 MiB y 438 MiB. **RNF-10:** 373 filas de red sin ninguna conexión TCP ni UDP a una dirección que no fuera de loopback.
+- **Suite completa** sobre `0405eba` (`suite2.ps1`, 24,4 min; `evidencias/suites/rc4-0405eba/`): EditMode 793 = 792 aprobadas y 1 omitida por entorno, PlayMode 435 de 435, 0 fallos; 1 228 listadas y 1 228 ejecutadas. Sustituye a la de la §14 (785 de 786 y 427 de 427).
+- **Veredictos `PF-*`:** siguen siendo los de rc3. rc4 no tuvo pasada de casos ni se probó con estudiantes, así que los cuatro F no se han vuelto a ejecutar; sus defectos se dan por corregidos en código, con pruebas nuevas en verde (`InputGuard`, `DEFRC3`, `TeacherReport`, `EraseDialog`, `MainMenu`, `ForestScene`).
+- **Pendiente (equipo de desarrollo):** revisar las capturas `Personajes_N1_*_v2.png` del abrazo de la línea 12 y de la escena 1.1; la §14 las daba por sin corregir y el retoque de `0405eba` no tiene revisión visual registrada. Etiquetar rc4: lo decide Santiago Benavides Rey.

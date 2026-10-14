@@ -31,7 +31,7 @@ MonoBehaviour:
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.5, y: 0.5}
       <Radius>k__BackingField: 0
-      <Ambient>k__BackingField: 0.06
+      <Ambient>k__BackingField: 0.18
       <Tint>k__BackingField: {r: 0.55, g: 0.68, b: 1, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
@@ -42,7 +42,7 @@ MonoBehaviour:
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.5, y: 0.5}
       <Radius>k__BackingField: 0
-      <Ambient>k__BackingField: 0.09
+      <Ambient>k__BackingField: 0.21
       <Tint>k__BackingField: {r: 0.55, g: 0.68, b: 1, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
@@ -53,7 +53,7 @@ MonoBehaviour:
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.46, y: 0.44}
       <Radius>k__BackingField: 0.14
-      <Ambient>k__BackingField: 0.04
+      <Ambient>k__BackingField: 0.16
       <Tint>k__BackingField: {r: 0.55, g: 0.68, b: 1, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
@@ -71,7 +71,7 @@ MonoBehaviour:
   <LightStart>k__BackingField:
     <Center>k__BackingField: {x: 0.5, y: 0.5}
     <Radius>k__BackingField: 0
-    <Ambient>k__BackingField: 0.06
+    <Ambient>k__BackingField: 0.18
     <Tint>k__BackingField: {r: 0.55, g: 0.68, b: 1, a: 1}
     <FlashSeconds>k__BackingField: 0
   <CameraSmoothingSeconds>k__BackingField: 1.2
@@ -364,18 +364,19 @@ MonoBehaviour:
   <NextSequenceId>k__BackingField: N1_AparicionGuia
   <Lines>k__BackingField:
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: Noche helada, sin luna. La familia camina a la intemperie.
+    <Text>k__BackingField: Noche helada, sin luna. La familia camina al aire libre,
+      sin techo.
     <Sound>k__BackingField: {fileID: 0}
     <Ambient>k__BackingField: {fileID: 0}
     <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: "Se escuchan animales y sonidos extra\xF1os. En el horizonte
-      se distingue la silueta de una cueva."
+      se distingue la sombra de una cueva."
     <Sound>k__BackingField: {fileID: 0}
     <Ambient>k__BackingField: {fileID: 0}
     <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
-    <Text>k__BackingField: Algo se acerca entre la maleza. La familia corre hacia
+    <Text>k__BackingField: Algo se acerca entre los matorrales. La familia corre hacia
       la cueva y entra.
     <Sound>k__BackingField: {fileID: 0}
     <Ambient>k__BackingField: {fileID: 0}

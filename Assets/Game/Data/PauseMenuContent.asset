@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51d2a4ffdae318846a13d217d0df3521, type: 3}
+  m_Name: PauseMenuContent
+  m_EditorClassIdentifier: Game.UI::Game.UI.PauseMenuContent
+  <HistoryLabel>k__BackingField: Volver a ver la historia
+  <SaveQuitLabel>k__BackingField: Guardar y salir
+  <QuitPrompt>k__BackingField: "\xBFQuieres salir del juego? Lo que ya terminaste queda guardado."
+  <ConfirmQuitLabel>k__BackingField: "S\xED, salir"
+  <CancelQuitLabel>k__BackingField: Cancelar

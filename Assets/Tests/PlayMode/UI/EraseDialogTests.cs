@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Game.Core;
 using Game.Reporting;
@@ -97,7 +98,37 @@ namespace Game.UI.Tests
             Assert.That(controller.Entries, Is.Empty, "y la pantalla lo refleja sin recargar la escena");
         }
 
+        // DEF-RC3-11: «Eliminar datos» se partía en dos líneas dentro de su botón porque la papelera y los
+        // márgenes le dejaban 140 px. Rojo esperado sin la corrección: el rótulo mide más que su caja.
+        [Test]
+        [Timeout(20000)]
+        public async Task EraseDialog_RF47_DEFRC311_EliminarDatosCabeEnUnaLineaJuntoASuIcono()
+        {
+            var (_, controller) = await OpenWithProfile("Ana");
+            Click(controller.DeleteButton);
+            await Awaitable.NextFrameAsync();
+            Canvas.ForceUpdateCanvases();
+
+            var boton = controller.EraseDialog.ConfirmButton;
+            var rotulo = boton.GetComponentsInChildren<Text>(true).Single(texto => texto.name == "Label");
+            var icono = boton.GetComponentsInChildren<Image>(true).Single(imagen => imagen.name == "Icono");
+
+            Assert.That(rotulo.preferredWidth, Is.LessThanOrEqualTo(rotulo.rectTransform.rect.width),
+                "el rótulo cabe en una sola línea");
+            Assert.That(EnPantalla(rotulo.rectTransform).xMin, Is.GreaterThanOrEqualTo(EnPantalla(icono.rectTransform).xMax),
+                "y empieza donde acaba la papelera");
+            Assert.That(EnPantalla(rotulo.rectTransform).xMax, Is.LessThanOrEqualTo(EnPantalla((RectTransform)boton.transform).xMax),
+                "sin salirse del botón");
+        }
+
         // --- helpers -----------------------------------------------------------------------
+
+        private static Rect EnPantalla(RectTransform rect)
+        {
+            var esquinas = new Vector3[4];
+            rect.GetWorldCorners(esquinas);
+            return new Rect(esquinas[0].x, esquinas[0].y, esquinas[2].x - esquinas[0].x, esquinas[2].y - esquinas[0].y);
+        }
 
         private async Task<(GameFlowRunner, TeacherReportController)> OpenWithProfile(string profileName)
         {

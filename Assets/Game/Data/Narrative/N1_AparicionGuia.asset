@@ -31,7 +31,7 @@ MonoBehaviour:
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.255, y: 0.46}
       <Radius>k__BackingField: 0.18
-      <Ambient>k__BackingField: 0.02
+      <Ambient>k__BackingField: 0.15
       <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
@@ -42,7 +42,7 @@ MonoBehaviour:
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.258, y: 0.46}
       <Radius>k__BackingField: 0.22
-      <Ambient>k__BackingField: 0.03
+      <Ambient>k__BackingField: 0.15
       <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
@@ -53,7 +53,7 @@ MonoBehaviour:
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.285, y: 0.45}
       <Radius>k__BackingField: 0.24
-      <Ambient>k__BackingField: 0.03
+      <Ambient>k__BackingField: 0.15
       <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
@@ -64,7 +64,7 @@ MonoBehaviour:
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.2, y: 0.47}
       <Radius>k__BackingField: 0.2
-      <Ambient>k__BackingField: 0.03
+      <Ambient>k__BackingField: 0.15
       <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
@@ -75,7 +75,7 @@ MonoBehaviour:
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.207, y: 0.38}
       <Radius>k__BackingField: 0.3
-      <Ambient>k__BackingField: 0.03
+      <Ambient>k__BackingField: 0.15
       <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
@@ -86,14 +86,14 @@ MonoBehaviour:
     <Light>k__BackingField:
       <Center>k__BackingField: {x: 0.207, y: 0.38}
       <Radius>k__BackingField: 0
-      <Ambient>k__BackingField: 0
+      <Ambient>k__BackingField: 0.15
       <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
       <FlashSeconds>k__BackingField: 0
     <HardCut>k__BackingField: 0
   <LightStart>k__BackingField:
     <Center>k__BackingField: {x: 0.255, y: 0.46}
     <Radius>k__BackingField: 0
-    <Ambient>k__BackingField: 0.02
+    <Ambient>k__BackingField: 0.15
     <Tint>k__BackingField: {r: 1, g: 0.82, b: 0.613, a: 1}
     <FlashSeconds>k__BackingField: 0
   <CameraSmoothingSeconds>k__BackingField: 1.2
@@ -146,12 +146,12 @@ MonoBehaviour:
     - <Line>k__BackingField: 7
       <Action>k__BackingField: 2
       <Moves>k__BackingField: 1
-      <Destination>k__BackingField: {x: 0.281, y: 0.4964}
+      <Destination>k__BackingField: {x: 0.19, y: 0.4964}
       <Seconds>k__BackingField: 3
       <Arrival>k__BackingField: 0
       <SetsEmotion>k__BackingField: 1
       <Emotion>k__BackingField: 0
-      <Facing>k__BackingField: 0
+      <Facing>k__BackingField: 1
   - <Art>k__BackingField: {fileID: 21300000, guid: 8f21db6f6119dfb45947752a1fa80a19, type: 3}
     <Position>k__BackingField: {x: 0.335, y: 0.479}
     <Size>k__BackingField: 0.313
@@ -198,12 +198,12 @@ MonoBehaviour:
     - <Line>k__BackingField: 7
       <Action>k__BackingField: 2
       <Moves>k__BackingField: 1
-      <Destination>k__BackingField: {x: 0.325, y: 0.481}
+      <Destination>k__BackingField: {x: 0.225, y: 0.481}
       <Seconds>k__BackingField: 3
       <Arrival>k__BackingField: 0
       <SetsEmotion>k__BackingField: 1
       <Emotion>k__BackingField: 0
-      <Facing>k__BackingField: 0
+      <Facing>k__BackingField: 1
   - <Art>k__BackingField: {fileID: 21300000, guid: 1596f2479651a6543b5d24335c4ac340, type: 3}
     <Position>k__BackingField: {x: 0.305, y: 0.4087}
     <Size>k__BackingField: 0.204
@@ -250,12 +250,12 @@ MonoBehaviour:
     - <Line>k__BackingField: 7
       <Action>k__BackingField: 2
       <Moves>k__BackingField: 1
-      <Destination>k__BackingField: {x: 0.271, y: 0.4097}
+      <Destination>k__BackingField: {x: 0.205, y: 0.4097}
       <Seconds>k__BackingField: 3
       <Arrival>k__BackingField: 13
       <SetsEmotion>k__BackingField: 1
       <Emotion>k__BackingField: 0
-      <Facing>k__BackingField: 0
+      <Facing>k__BackingField: 1
   - <Art>k__BackingField: {fileID: 21300000, guid: 19df714a131467f4db89973933e2d398, type: 3}
     <Position>k__BackingField: {x: 0.337, y: 0.4047}
     <Size>k__BackingField: 0.204
@@ -302,12 +302,12 @@ MonoBehaviour:
     - <Line>k__BackingField: 7
       <Action>k__BackingField: 2
       <Moves>k__BackingField: 1
-      <Destination>k__BackingField: {x: 0.303, y: 0.4057}
+      <Destination>k__BackingField: {x: 0.23, y: 0.4057}
       <Seconds>k__BackingField: 3
       <Arrival>k__BackingField: 0
       <SetsEmotion>k__BackingField: 1
       <Emotion>k__BackingField: 1
-      <Facing>k__BackingField: 0
+      <Facing>k__BackingField: 1
   - <Art>k__BackingField: {fileID: 21300000, guid: 8901e2732ad71f04f90af0c7dc82af0f, type: 3}
     <Position>k__BackingField: {x: 0.186, y: 0.355}
     <Size>k__BackingField: 0.055
@@ -386,7 +386,7 @@ MonoBehaviour:
     - <Line>k__BackingField: 7
       <Action>k__BackingField: 0
       <Moves>k__BackingField: 1
-      <Destination>k__BackingField: {x: 0.168, y: 0.45}
+      <Destination>k__BackingField: {x: 0.14, y: 0.45}
       <Seconds>k__BackingField: 4
       <Arrival>k__BackingField: 0
       <SetsEmotion>k__BackingField: 1
@@ -460,7 +460,7 @@ MonoBehaviour:
     <Silence>k__BackingField: 0
   - <Speaker>k__BackingField: 
     <Text>k__BackingField: Algoritm gira en el aire como un trompo feliz, dejando
-      una estela de puntos luminosos.
+      un rastro de puntos luminosos.
     <Sound>k__BackingField: {fileID: 0}
     <Ambient>k__BackingField: {fileID: 0}
     <Silence>k__BackingField: 0

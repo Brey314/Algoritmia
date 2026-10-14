@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="4" result="Passed" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-14 03:38:01Z" end-time="2026-10-14 03:38:02Z" duration="0,0486259">
+  <test-suite type="TestSuite" id="1514" name="Algoritmia" fullname="Algoritmia" runstate="Runnable" testcasecount="435" result="Passed" start-time="2026-10-14 03:38:01Z" end-time="2026-10-14 03:38:02Z" duration="0.048626" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1006" name="Game.Audio.PlayMode.Tests.dll" fullname="C:/Dev/Algoritmia-B/Library/ScriptAssemblies/Game.Audio.PlayMode.Tests.dll" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-14 03:38:01Z" end-time="2026-10-14 03:38:02Z" duration="0.042616" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="29668" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1007" name="Game" fullname="Game" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-14 03:38:01Z" end-time="2026-10-14 03:38:02Z" duration="0.041489" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1008" name="Audio" fullname="Game.Audio" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-14 03:38:01Z" end-time="2026-10-14 03:38:02Z" duration="0.040625" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1009" name="Tests" fullname="Game.Audio.Tests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-14 03:38:01Z" end-time="2026-10-14 03:38:02Z" duration="0.039788" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestFixture" id="1001" name="AudioManagerTests" fullname="Game.Audio.Tests.AudioManagerTests" classname="Game.Audio.Tests.AudioManagerTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-14 03:38:01Z" end-time="2026-10-14 03:38:02Z" duration="0.038336" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1004" name="AudioManager_RF05_ElCorteDeMusicaConservaElAmbiente" fullname="Game.Audio.Tests.AudioManagerTests.AudioManager_RF05_ElCorteDeMusicaConservaElAmbiente" methodname="AudioManager_RF05_ElCorteDeMusicaConservaElAmbiente" classname="Game.Audio.Tests.AudioManagerTests" runstate="Runnable" seed="2019843873" result="Passed" start-time="2026-10-14 03:38:01Z" end-time="2026-10-14 03:38:01Z" duration="0.009042" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1003" name="AudioManager_RF05_ElCorteSecoCallaElAmbienteAlInstante" fullname="Game.Audio.Tests.AudioManagerTests.AudioManager_RF05_ElCorteSecoCallaElAmbienteAlInstante" methodname="AudioManager_RF05_ElCorteSecoCallaElAmbienteAlInstante" classname="Game.Audio.Tests.AudioManagerTests" runstate="Runnable" seed="50757817" result="Passed" start-time="2026-10-14 03:38:01Z" end-time="2026-10-14 03:38:01Z" duration="0.000745" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1002" name="AudioManager_RF05_PedirElAmbienteQueYaSuenaNoLoReinicia" fullname="Game.Audio.Tests.AudioManagerTests.AudioManager_RF05_PedirElAmbienteQueYaSuenaNoLoReinicia" methodname="AudioManager_RF05_PedirElAmbienteQueYaSuenaNoLoReinicia" classname="Game.Audio.Tests.AudioManagerTests" runstate="Runnable" seed="763295841" result="Passed" start-time="2026-10-14 03:38:01Z" end-time="2026-10-14 03:38:01Z" duration="0.011116" asserts="0">
+                <properties>
+                  <property name="Timeout" value="10000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1005" name="AudioManager_RF11_UnEfectoSeReproduceConVolumenAudible" fullname="Game.Audio.Tests.AudioManagerTests.AudioManager_RF11_UnEfectoSeReproduceConVolumenAudible" methodname="AudioManager_RF11_UnEfectoSeReproduceConVolumenAudible" classname="Game.Audio.Tests.AudioManagerTests" runstate="Runnable" seed="2076184267" result="Passed" start-time="2026-10-14 03:38:01Z" end-time="2026-10-14 03:38:02Z" duration="0.006678" asserts="0">
+                <properties>
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

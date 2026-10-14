@@ -53,6 +53,24 @@ namespace Game.Scaffolding
         }
 
         /// <summary>
+        /// Cómo se ve el personaje en la línea <paramref name="line"/> **sin vivirla** (INC-160): al volver
+        /// atrás o al avanzar sobre líneas ya vistas se coloca en el sitio donde la línea lo deja y haciendo
+        /// lo que hace al terminarla, sin caminar. El cue que devuelve no se mueve (<c>From == To</c>).
+        /// Una acción de desplazamiento (<see cref="IsLocomotion"/>) no tiene sentido quieta —caminar en
+        /// el sitio—: queda de pie, o gesticulando si la línea es suya.
+        /// </summary>
+        public static ActorCue StillCue(NarrativeProp prop, int line, bool speaking)
+        {
+            var cue = Cue(prop, line, speaking);
+            var action = IsLocomotion(cue.After) ? Talking(ActorAction.Idle, speaking) : cue.After;
+            return new ActorCue(cue.To, cue.To, false, 0f, action, action, cue.Emotion);
+        }
+
+        private static bool IsLocomotion(ActorAction action) =>
+            action == ActorAction.Walk || action == ActorAction.Run
+            || action == ActorAction.Carry || action == ActorAction.Push;
+
+        /// <summary>
         /// La expresión que el guion fija para la línea: la del último paso que la fija en esa línea
         /// o antes (si hay dos en la misma, el último de la lista, como <see cref="BeatAt"/>). Se
         /// mantiene hasta que otro paso la cambia, igual que la acción. <c>null</c> si ninguno la

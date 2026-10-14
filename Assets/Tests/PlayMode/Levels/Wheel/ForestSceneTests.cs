@@ -231,6 +231,42 @@ namespace Game.Levels.Wheel.Tests
             }
         }
 
+        // DEF-RC3-10: la instrucción con que abre la fase ocupaba tres líneas en una tablilla de dos y se salía
+        // de ella. Rojo esperado sin la corrección: el texto de la instrucción mide más que el alto de la tablilla.
+        [Test]
+        [Timeout(30000)]
+        public async Task ForestScene_RNF03_DEFRC310_LasFrasesDeLaTablillaCabenEnSuAlto()
+        {
+            var forest = await OpenForest();
+            Canvas.ForceUpdateCanvases();
+            await Awaitable.NextFrameAsync();
+
+            const float margen = 8f;
+            var etiqueta = forest.MessageLabel;
+            var tablilla = (RectTransform)etiqueta.transform.parent;
+            var frases = new[]
+            {
+                etiqueta.text, // la instrucción con que abre la fase: la dice el asset del guía
+                forest.Config.CargoPlacedMessage,
+                forest.Config.CargoMissedMessage,
+                string.Format(forest.Config.PendingLogsFormat, forest.Config.RequiredLogs)
+            };
+            Assume.That(frases[0], Is.Not.Empty, "la fase abre con la instrucción del guía");
+
+            var desbordan = new List<string>();
+            foreach (var frase in frases)
+            {
+                etiqueta.text = frase;
+                var alto = etiqueta.preferredHeight;
+                if (alto + 2f * margen > tablilla.rect.height)
+                {
+                    desbordan.Add($"«{frase}» mide {alto:0} y la tablilla {tablilla.rect.height:0}");
+                }
+            }
+
+            Assert.That(desbordan, Is.Empty, string.Join(" · ", desbordan));
+        }
+
         [Test]
         [Timeout(30000)]
         public async Task ForestScene_RF22_LosObjetosCaenEntreElCincoYElSesentaPorCientoDeLaPantalla()
@@ -410,8 +446,16 @@ namespace Game.Levels.Wheel.Tests
             var rect = (RectTransform)tronco.Button.transform;
             var sitio = rect.anchorMin;
 
-            // El cursor se pega al objeto por su izquierda y se queda ahí.
-            var cursor = EnPantalla(rect).center + Vector2.left * 24f;
+            // El cursor se pega al objeto por su izquierda y se queda ahí: pegado, pero **fuera** del
+            // cuerpo del tronco, porque encima el tronco ya no se aparta (INC-155).
+            var cuerpo = tronco.Button.GetComponentInChildren<RollingLog>();
+            var cursor = EnPantalla(rect).center;
+            while (cuerpo.IsRaycastLocationValid(cursor, null))
+            {
+                cursor += Vector2.left * 4f;
+            }
+
+            cursor += Vector2.left * 8f;
             for (var frame = 0; frame < 90; frame++)
             {
                 forest.Nudge(cursor, 1f / 60f);
@@ -504,7 +548,8 @@ namespace Game.Levels.Wheel.Tests
                     ElCursorLejos(forest);
                 }
 
-                forest.Nudge(Aislado(forest, ForestObjectCategory.Plant), 1f / 60f);
+                // Al lado de la hoja y no encima: con el cursor sobre ella ya no vuela (INC-155).
+                forest.Nudge(Aislado(forest, ForestObjectCategory.Plant) + Vector2.right * 120f, 1f / 60f);
                 Assert.That(audio.HeldClip, Is.SameAs(sounds.LeafNudge), "la hoja suena mientras vuela");
 
                 for (var frame = 0; frame < 60 * 6; frame++)

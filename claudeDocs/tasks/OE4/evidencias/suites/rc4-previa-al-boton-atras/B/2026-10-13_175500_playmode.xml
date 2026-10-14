@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="58" result="Passed" total="58" passed="58" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-13 22:55:04Z" end-time="2026-10-13 22:57:41Z" duration="156,9343937">
+  <test-suite type="TestSuite" id="1511" name="Algoritmia" fullname="Algoritmia" runstate="Runnable" testcasecount="427" result="Passed" start-time="2026-10-13 22:55:04Z" end-time="2026-10-13 22:57:41Z" duration="156.934394" total="58" passed="58" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1178" name="Game.Levels.River.PlayMode.Tests.dll" fullname="C:/Dev/Algoritmia-B/Library/ScriptAssemblies/Game.Levels.River.PlayMode.Tests.dll" runstate="Runnable" testcasecount="58" result="Passed" start-time="2026-10-13 22:55:04Z" end-time="2026-10-13 22:57:41Z" duration="156.930435" total="58" passed="58" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="23396" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1179" name="Game" fullname="Game" runstate="Runnable" testcasecount="58" result="Passed" start-time="2026-10-13 22:55:04Z" end-time="2026-10-13 22:57:41Z" duration="156.929367" total="58" passed="58" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1180" name="Levels" fullname="Game.Levels" runstate="Runnable" testcasecount="58" result="Passed" start-time="2026-10-13 22:55:04Z" end-time="2026-10-13 22:57:41Z" duration="156.928207" total="58" passed="58" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1181" name="River" fullname="Game.Levels.River" runstate="Runnable" testcasecount="58" result="Passed" start-time="2026-10-13 22:55:04Z" end-time="2026-10-13 22:57:41Z" duration="156.927224" total="58" passed="58" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1182" name="Tests" fullname="Game.Levels.River.Tests" runstate="Runnable" testcasecount="58" result="Passed" start-time="2026-10-13 22:55:04Z" end-time="2026-10-13 22:57:41Z" duration="156.926281" total="58" passed="58" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1108" name="AssemblyPanelTests" fullname="Game.Levels.River.Tests.AssemblyPanelTests" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" testcasecount="13" result="Passed" start-time="2026-10-13 22:55:04Z" end-time="2026-10-13 22:55:35Z" duration="30.546589" total="13" passed="13" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1117" name="AssemblyPanel_DA133_AlAprobarUnaFaseMamaYLaFamiliaCelebran" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_DA133_AlAprobarUnaFaseMamaYLaFamiliaCelebran" methodname="AssemblyPanel_DA133_AlAprobarUnaFaseMamaYLaFamiliaCelebran" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1319449692" result="Passed" start-time="2026-10-13 22:55:04Z" end-time="2026-10-13 22:55:07Z" duration="2.469369" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1118" name="AssemblyPanel_DA133_CuandoLaBalsaSeHundeLaFamiliaAnimaYNingunoHaceOtroGesto" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_DA133_CuandoLaBalsaSeHundeLaFamiliaAnimaYNingunoHaceOtroGesto" methodname="AssemblyPanel_DA133_CuandoLaBalsaSeHundeLaFamiliaAnimaYNingunoHaceOtroGesto" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1960251144" result="Passed" start-time="2026-10-13 22:55:07Z" end-time="2026-10-13 22:55:10Z" duration="3.691127" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1116" name="AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance" methodname="AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="622914016" result="Passed" start-time="2026-10-13 22:55:10Z" end-time="2026-10-13 22:55:14Z" duration="3.534102" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Revisar las tres capturas: la balsa crece de la base con siluetas, a la base con amarres, al mástil y la vela; la familia en la orilla a la izquierda y la balsa sobre el agua a la derecha, a la escala de la 3.3, sin tocar a la familia ni los botones; la casilla de tronco a 1:1, sin pixelado; la sombra al 30 % (lectura B, INC-118). En _Base y _Amarre se ven «Listo» y «Probar balsa» lado a lado, con la misma tipografía, sin solaparse con la balsa y con contraste legible; en _MastilYVela hay un solo «Probar balsa», centrado (D-j del 30/09/2026)." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/AssemblyPanel_HU12_Base.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/AssemblyPanel_HU12_Amarre.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/AssemblyPanel_HU12_MastilYVela.png
+]]></output>
+                </test-case>
+                <test-case id="1109" name="AssemblyPanel_RF40_MuestraSoloLosEspaciosDeLaFaseActiva" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF40_MuestraSoloLosEspaciosDeLaFaseActiva" methodname="AssemblyPanel_RF40_MuestraSoloLosEspaciosDeLaFaseActiva" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1707305709" result="Passed" start-time="2026-10-13 22:55:14Z" end-time="2026-10-13 22:55:17Z" duration="2.804445" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1111" name="AssemblyPanel_RF40_SoltarSobreLaPuntaDeUnTroncoLoPoneEnEseTroncoYNoEnElVecino" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF40_SoltarSobreLaPuntaDeUnTroncoLoPoneEnEseTroncoYNoEnElVecino" methodname="AssemblyPanel_RF40_SoltarSobreLaPuntaDeUnTroncoLoPoneEnEseTroncoYNoEnElVecino" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="828172275" result="Passed" start-time="2026-10-13 22:55:17Z" end-time="2026-10-13 22:55:18Z" duration="1.556620" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1119" name="AssemblyPanel_RF42_ElBotonProbarBalsaEstaDisponibleEnCadaFase" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF42_ElBotonProbarBalsaEstaDisponibleEnCadaFase" methodname="AssemblyPanel_RF42_ElBotonProbarBalsaEstaDisponibleEnCadaFase" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="45266816" result="Passed" start-time="2026-10-13 22:55:18Z" end-time="2026-10-13 22:55:21Z" duration="2.820145" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1121" name="AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto" methodname="AssemblyPanel_RF42_ProbarAntesDeTiempoSenalaSoloLoMalPuesto" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="31283144" result="Passed" start-time="2026-10-13 22:55:21Z" end-time="2026-10-13 22:55:23Z" duration="2.188540" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1120" name="AssemblyPanel_RF42_ProbarLaBalsaIncompletaLaHundeYSigueEnLaFase" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RF42_ProbarLaBalsaIncompletaLaHundeYSigueEnLaFase" methodname="AssemblyPanel_RF42_ProbarLaBalsaIncompletaLaHundeYSigueEnLaFase" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="99262124" result="Passed" start-time="2026-10-13 22:55:23Z" end-time="2026-10-13 22:55:26Z" duration="2.218936" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1112" name="AssemblyPanel_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" methodname="AssemblyPanel_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1968988966" result="Passed" start-time="2026-10-13 22:55:26Z" end-time="2026-10-13 22:55:27Z" duration="1.625474" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1113" name="AssemblyPanel_RNF02_LaCasillaDelInventarioRecibeElClicSostenidoPorRaycastYSueltaEnElEspacio" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF02_LaCasillaDelInventarioRecibeElClicSostenidoPorRaycastYSueltaEnElEspacio" methodname="AssemblyPanel_RNF02_LaCasillaDelInventarioRecibeElClicSostenidoPorRaycastYSueltaEnElEspacio" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1552408226" result="Passed" start-time="2026-10-13 22:55:27Z" end-time="2026-10-13 22:55:29Z" duration="1.604146" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1114" name="AssemblyPanel_RNF03_ConLaFase3AbiertaLaBalsaElBotonYLasTablillasCabenSinSolaparse" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF03_ConLaFase3AbiertaLaBalsaElBotonYLasTablillasCabenSinSolaparse" methodname="AssemblyPanel_RNF03_ConLaFase3AbiertaLaBalsaElBotonYLasTablillasCabenSinSolaparse" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="124179489" result="Passed" start-time="2026-10-13 22:55:29Z" end-time="2026-10-13 22:55:32Z" duration="2.835162" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1115" name="AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse" methodname="AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="209454275" result="Passed" start-time="2026-10-13 22:55:32Z" end-time="2026-10-13 22:55:33Z" duration="1.560404" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1110" name="AssemblyPanel_RNF19_ElEspacioIncorrectoSeResaltaConColorEIcono" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF19_ElEspacioIncorrectoSeResaltaConColorEIcono" methodname="AssemblyPanel_RNF19_ElEspacioIncorrectoSeResaltaConColorEIcono" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="250717208" result="Passed" start-time="2026-10-13 22:55:33Z" end-time="2026-10-13 22:55:35Z" duration="1.634244" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1122" name="BuildZoneTests" fullname="Game.Levels.River.Tests.BuildZoneTests" classname="Game.Levels.River.Tests.BuildZoneTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-13 22:55:35Z" end-time="2026-10-13 22:55:41Z" duration="5.813973" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1126" name="BuildZone_CU09_SinTodosLosMaterialesIndicaCualesFaltanSinCifras" fullname="Game.Levels.River.Tests.BuildZoneTests.BuildZone_CU09_SinTodosLosMaterialesIndicaCualesFaltanSinCifras" methodname="BuildZone_CU09_SinTodosLosMaterialesIndicaCualesFaltanSinCifras" classname="Game.Levels.River.Tests.BuildZoneTests" runstate="Runnable" seed="1532030132" result="Passed" start-time="2026-10-13 22:55:35Z" end-time="2026-10-13 22:55:35Z" duration="0.616728" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1129" name="BuildZone_DA133_EntrarSinTodoLosMaterialesDaAnimoYNingunGestoDeDerrota" fullname="Game.Levels.River.Tests.BuildZoneTests.BuildZone_DA133_EntrarSinTodoLosMaterialesDaAnimoYNingunGestoDeDerrota" methodname="BuildZone_DA133_EntrarSinTodoLosMaterialesDaAnimoYNingunGestoDeDerrota" classname="Game.Levels.River.Tests.BuildZoneTests" runstate="Runnable" seed="879501725" result="Passed" start-time="2026-10-13 22:55:35Z" end-time="2026-10-13 22:55:37Z" duration="1.566385" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1123" name="BuildZone_RF39_AbreElPanelSoloConLosCuatroMateriales" fullname="Game.Levels.River.Tests.BuildZoneTests.BuildZone_RF39_AbreElPanelSoloConLosCuatroMateriales" methodname="BuildZone_RF39_AbreElPanelSoloConLosCuatroMateriales" classname="Game.Levels.River.Tests.BuildZoneTests" runstate="Runnable" seed="320866716" result="Passed" start-time="2026-10-13 22:55:37Z" end-time="2026-10-13 22:55:38Z" duration="0.626895" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1128" name="RiverScene_DA133_MamaRecogeAlPulsarRecogerYVuelveSolaAlReposo" fullname="Game.Levels.River.Tests.BuildZoneTests.RiverScene_DA133_MamaRecogeAlPulsarRecogerYVuelveSolaAlReposo" methodname="RiverScene_DA133_MamaRecogeAlPulsarRecogerYVuelveSolaAlReposo" classname="Game.Levels.River.Tests.BuildZoneTests" runstate="Runnable" seed="1516982807" result="Passed" start-time="2026-10-13 22:55:38Z" end-time="2026-10-13 22:55:39Z" duration="1.178098" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1125" name="RiverScene_DA83_LoQueEstaMasAbajoSeDibujaDelante" fullname="Game.Levels.River.Tests.BuildZoneTests.RiverScene_DA83_LoQueEstaMasAbajoSeDibujaDelante" methodname="RiverScene_DA83_LoQueEstaMasAbajoSeDibujaDelante" classname="Game.Levels.River.Tests.BuildZoneTests" runstate="Runnable" seed="1028462957" result="Passed" start-time="2026-10-13 22:55:39Z" end-time="2026-10-13 22:55:39Z" duration="0.617058" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1124" name="RiverScene_DA83_MamaYLosMaterialesSeVenMasGrandesCuantoMasAbajoEstan" fullname="Game.Levels.River.Tests.BuildZoneTests.RiverScene_DA83_MamaYLosMaterialesSeVenMasGrandesCuantoMasAbajoEstan" methodname="RiverScene_DA83_MamaYLosMaterialesSeVenMasGrandesCuantoMasAbajoEstan" classname="Game.Levels.River.Tests.BuildZoneTests" runstate="Runnable" seed="745614316" result="Passed" start-time="2026-10-13 22:55:39Z" end-time="2026-10-13 22:55:40Z" duration="0.571472" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1127" name="RiverScene_RF36_RecogerTroncosSeMarcaConElUltimoTroncoYNoAntes" fullname="Game.Levels.River.Tests.BuildZoneTests.RiverScene_RF36_RecogerTroncosSeMarcaConElUltimoTroncoYNoAntes" methodname="RiverScene_RF36_RecogerTroncosSeMarcaConElUltimoTroncoYNoAntes" classname="Game.Levels.River.Tests.BuildZoneTests" runstate="Runnable" seed="1527740433" result="Passed" start-time="2026-10-13 22:55:40Z" end-time="2026-10-13 22:55:41Z" duration="0.634517" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1130" name="ConditionalNarrativeTests" fullname="Game.Levels.River.Tests.ConditionalNarrativeTests" classname="Game.Levels.River.Tests.ConditionalNarrativeTests" runstate="Runnable" testcasecount="6" result="Passed" start-time="2026-10-13 22:55:41Z" end-time="2026-10-13 22:55:58Z" duration="17.058746" total="6" passed="6" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1136" name="RiverIndicators_RF45_UnaPruebaDeBalsaIncompletaCuentaComoIntento" fullname="Game.Levels.River.Tests.ConditionalNarrativeTests.RiverIndicators_RF45_UnaPruebaDeBalsaIncompletaCuentaComoIntento" methodname="RiverIndicators_RF45_UnaPruebaDeBalsaIncompletaCuentaComoIntento" classname="Game.Levels.River.Tests.ConditionalNarrativeTests" runstate="Runnable" seed="893219097" result="Passed" start-time="2026-10-13 22:55:41Z" end-time="2026-10-13 22:55:43Z" duration="2.808516" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1133" name="RiverScene_CP02_LaEscena32NoReiniciaElEnsamblaje" fullname="Game.Levels.River.Tests.ConditionalNarrativeTests.RiverScene_CP02_LaEscena32NoReiniciaElEnsamblaje" methodname="RiverScene_CP02_LaEscena32NoReiniciaElEnsamblaje" classname="Game.Levels.River.Tests.ConditionalNarrativeTests" runstate="Runnable" seed="1460196548" result="Passed" start-time="2026-10-13 22:55:43Z" end-time="2026-10-13 22:55:47Z" duration="3.697068" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1132" name="RiverScene_Guion841_AcertarAlPrimerIntentoVaDirectoAlCruce" fullname="Game.Levels.River.Tests.ConditionalNarrativeTests.RiverScene_Guion841_AcertarAlPrimerIntentoVaDirectoAlCruce" methodname="RiverScene_Guion841_AcertarAlPrimerIntentoVaDirectoAlCruce" classname="Game.Levels.River.Tests.ConditionalNarrativeTests" runstate="Runnable" seed="484389452" result="Passed" start-time="2026-10-13 22:55:47Z" end-time="2026-10-13 22:55:50Z" duration="2.455839" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1131" name="RiverScene_Guion841_LaEscena32SeReproduceSoloTrasElPrimerFallo" fullname="Game.Levels.River.Tests.ConditionalNarrativeTests.RiverScene_Guion841_LaEscena32SeReproduceSoloTrasElPrimerFallo" methodname="RiverScene_Guion841_LaEscena32SeReproduceSoloTrasElPrimerFallo" classname="Game.Levels.River.Tests.ConditionalNarrativeTests" runstate="Runnable" seed="1045073985" result="Passed" start-time="2026-10-13 22:55:50Z" end-time="2026-10-13 22:55:52Z" duration="2.760450" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1135" name="RiverScene_Guion841_ProbarAntesDeLaUltimaFaseNoGastaLaEscena32" fullname="Game.Levels.River.Tests.ConditionalNarrativeTests.RiverScene_Guion841_ProbarAntesDeLaUltimaFaseNoGastaLaEscena32" methodname="RiverScene_Guion841_ProbarAntesDeLaUltimaFaseNoGastaLaEscena32" classname="Game.Levels.River.Tests.ConditionalNarrativeTests" runstate="Runnable" seed="62162328" result="Passed" start-time="2026-10-13 22:55:52Z" end-time="2026-10-13 22:55:57Z" duration="4.653052" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1134" name="RiverScene_RNF14_AlRetomarElEnsamblajeMamaEsperaEnLaZona" fullname="Game.Levels.River.Tests.ConditionalNarrativeTests.RiverScene_RNF14_AlRetomarElEnsamblajeMamaEsperaEnLaZona" methodname="RiverScene_RNF14_AlRetomarElEnsamblajeMamaEsperaEnLaZona" classname="Game.Levels.River.Tests.ConditionalNarrativeTests" runstate="Runnable" seed="2015035517" result="Passed" start-time="2026-10-13 22:55:57Z" end-time="2026-10-13 22:55:58Z" duration="0.679896" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1137" name="GameEndingTests" fullname="Game.Levels.River.Tests.GameEndingTests" classname="Game.Levels.River.Tests.GameEndingTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-13 22:55:58Z" end-time="2026-10-13 22:56:08Z" duration="10.225330" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1138" name="GameEnding_INC39_RecorreLevelSummaryNarrativeCreditsYMainMenu" fullname="Game.Levels.River.Tests.GameEndingTests.GameEnding_INC39_RecorreLevelSummaryNarrativeCreditsYMainMenu" methodname="GameEnding_INC39_RecorreLevelSummaryNarrativeCreditsYMainMenu" classname="Game.Levels.River.Tests.GameEndingTests" runstate="Runnable" seed="729827705" result="Passed" start-time="2026-10-13 22:55:58Z" end-time="2026-10-13 22:56:05Z" duration="6.840109" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="180000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[RNF-04: «MainMenu» cargó en 0.873 s
+RNF-04: «LevelSelect» cargó en 0.626 s
+RNF-04: «Level3_River» cargó en 1.500 s
+RNF-04: «Narrative» cargó en 0.679 s
+RNF-04: «LevelSummary» cargó en 0.519 s
+RNF-04: «Narrative» cargó en 0.911 s
+RNF-04: «Credits» cargó en 0.486 s
+RNF-04: «MainMenu» cargó en 0.803 s
+]]></output>
+                </test-case>
+                <test-case id="1139" name="GameEnding_RF44_LaPruebaSuperadaReproduceElCruceYElCierre" fullname="Game.Levels.River.Tests.GameEndingTests.GameEnding_RF44_LaPruebaSuperadaReproduceElCruceYElCierre" methodname="GameEnding_RF44_LaPruebaSuperadaReproduceElCruceYElCierre" classname="Game.Levels.River.Tests.GameEndingTests" runstate="Runnable" seed="847544951" result="Passed" start-time="2026-10-13 22:56:05Z" end-time="2026-10-13 22:56:08Z" duration="3.382079" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="120000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1140" name="RiverAccessibilityTests" fullname="Game.Levels.River.Tests.RiverAccessibilityTests" classname="Game.Levels.River.Tests.RiverAccessibilityTests" runstate="Runnable" testcasecount="4" result="Passed" start-time="2026-10-13 22:56:08Z" end-time="2026-10-13 22:56:19Z" duration="10.837093" total="4" passed="4" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1142" name="RiverLevel_RNF19_LaListaDeTareasSeLeeEnEscalaDeGrises" fullname="Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF19_LaListaDeTareasSeLeeEnEscalaDeGrises" methodname="RiverLevel_RNF19_LaListaDeTareasSeLeeEnEscalaDeGrises" classname="Game.Levels.River.Tests.RiverAccessibilityTests" runstate="Runnable" seed="1524465464" result="Passed" start-time="2026-10-13 22:56:08Z" end-time="2026-10-13 22:56:09Z" duration="0.785996" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Verificar en la captura en escala de grises: las tareas hechas (1 y 2) y las pendientes (3 y 4) se distinguen por la forma del icono sin el color." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/RiverLevel_RNF19_ListaDeTareas.png
+]]></output>
+                </test-case>
+                <test-case id="1141" name="RiverLevel_RNF19_LosEstadosDeErrorSeLeenSinColor" fullname="Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF19_LosEstadosDeErrorSeLeenSinColor" methodname="RiverLevel_RNF19_LosEstadosDeErrorSeLeenSinColor" classname="Game.Levels.River.Tests.RiverAccessibilityTests" runstate="Runnable" seed="255076791" result="Passed" start-time="2026-10-13 22:56:09Z" end-time="2026-10-13 22:56:13Z" duration="4.041409" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Verificar en las capturas: la tablilla del guía lleva icono además de color en cada rechazo; el espacio incorrecto de la balsa tiene el icono de alerta encima, no solo otro tinte; tras la prueba fallida la balsa vuelve a su sitio con los dos espacios señalados." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/RiverLevel_RNF19_ZonaSinMateriales.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/RiverLevel_RNF19_ColocacionIncorrecta.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/RiverLevel_RNF19_PruebaFallida.png
+]]></output>
+                </test-case>
+                <test-case id="1143" name="RiverLevel_RNF20_ContrasteSuficienteSobreElEscenarioClaro" fullname="Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF20_ContrasteSuficienteSobreElEscenarioClaro" methodname="RiverLevel_RNF20_ContrasteSuficienteSobreElEscenarioClaro" classname="Game.Levels.River.Tests.RiverAccessibilityTests" runstate="Runnable" seed="127499229" result="Passed" start-time="2026-10-13 22:56:13Z" end-time="2026-10-13 22:56:15Z" duration="2.490208" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[orilla · mensaje: 13,34:1
+orilla · recoger: 7,06:1
+orilla · tarea «CollectLogs»: 6,32:1
+orilla · tarea «FindRopes»: 6,32:1
+orilla · tarea «AssembleRaft»: 6,32:1
+orilla · tarea «PlaceMastAndSail»: 6,32:1
+ensamblaje · confirmar: 7,06:1
+ensamblaje · probar: 7,06:1
+orilla · pausa · Reiniciar: 13,34:1
+orilla · pausa · Cancelar: 13,34:1
+orilla · pausa · Volver al menú de niveles: 13,34:1
+orilla · pausa · Guardar y salir: 13,34:1
+orilla · pausa · Sí, salir: 7,06:1
+orilla · pausa · Sí, reiniciar: 7,06:1
+orilla · pausa · Cancelar: 13,34:1
+orilla · pausa · Reanudar: 7,06:1
+orilla · pausa · Volver a ver la historia: 13,34:1
+orilla · tarea hecha «CollectLogs»: 5,94:1
+orilla · tarea hecha «FindRopes»: 5,94:1
+]]></output>
+                </test-case>
+                <test-case id="1144" name="RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos" fullname="Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos" methodname="RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos" classname="Game.Levels.River.Tests.RiverAccessibilityTests" runstate="Runnable" seed="638211011" result="Passed" start-time="2026-10-13 22:56:15Z" end-time="2026-10-13 22:56:19Z" duration="3.516254" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="120000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Verificar en las capturas: el empuje de cámara al abrir el ensamblaje, el pulso de fase confirmada y el hundimiento son movimientos continuos; nada se apaga y enciende ni destella. (El cruce llega con R14.)" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/RiverLevel_RNF21_Empuje.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/RiverLevel_RNF21_Completado.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/RiverLevel_RNF21_Hundimiento.png
+]]></output>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1145" name="RiverLevelJourneyTests" fullname="Game.Levels.River.Tests.RiverLevelJourneyTests" classname="Game.Levels.River.Tests.RiverLevelJourneyTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-10-13 22:56:19Z" end-time="2026-10-13 22:57:15Z" duration="56.612493" total="7" passed="7" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1153" name="RiverLevel_RNF04_LaEscenaDelNivel3CargaEnMenosDeDiezSegundos" fullname="Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF04_LaEscenaDelNivel3CargaEnMenosDeDiezSegundos" methodname="RiverLevel_RNF04_LaEscenaDelNivel3CargaEnMenosDeDiezSegundos" classname="Game.Levels.River.Tests.RiverLevelJourneyTests" runstate="Runnable" seed="1056297521" result="Passed" start-time="2026-10-13 22:56:19Z" end-time="2026-10-13 22:56:22Z" duration="3.171497" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[RNF-04: «MainMenu» cargó en 0.855 s
+RNF-04: «LevelSelect» cargó en 0.673 s
+RNF-04: «Level3_River» cargó en 1.632 s
+RNF-04: Level3_River cargó en 1,632 s (Editor)
+]]></output>
+                </test-case>
+                <test-case id="1154" name="RiverLevel_RNF05_LaMemoriaQuedaBajoDosGigasConElNivel3Cargado" fullname="Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF05_LaMemoriaQuedaBajoDosGigasConElNivel3Cargado" methodname="RiverLevel_RNF05_LaMemoriaQuedaBajoDosGigasConElNivel3Cargado" classname="Game.Levels.River.Tests.RiverLevelJourneyTests" runstate="Runnable" seed="590425687" result="Passed" start-time="2026-10-13 22:56:22Z" end-time="2026-10-13 22:56:26Z" duration="3.976096" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[RNF-04: «MainMenu» cargó en 0.822 s
+RNF-04: «LevelSelect» cargó en 0.579 s
+RNF-04: «Level3_River» cargó en 1.479 s
+RNF-05: memoria reservada con el Nivel 3 cargado: 1718 MB, asignada 1138 MB (Editor)
+]]></output>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1148" name="RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio" fullname="Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio" classname="Game.Levels.River.Tests.RiverLevelJourneyTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-13 22:56:26Z" end-time="2026-10-13 22:56:57Z" duration="31.535482" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="300000" />
+                    <property name="Category" value="Acceptance" />
+                  </properties>
+                  <test-case id="1146" name="RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio_AcertandoAlPrimerIntento" fullname="Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio_AcertandoAlPrimerIntento" methodname="RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio" classname="Game.Levels.River.Tests.RiverLevelJourneyTests" runstate="Runnable" seed="2090409457" result="Passed" start-time="2026-10-13 22:56:26Z" end-time="2026-10-13 22:56:40Z" duration="14.107632" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <output><![CDATA[RNF-04: «MainMenu» cargó en 0.892 s
+RNF-04: «LevelSelect» cargó en 0.604 s
+RNF-04: «Narrative» cargó en 1.667 s
+RNF-04: «Narrative» cargó en 0.530 s
+RNF-04: «Narrative» cargó en 0.552 s
+RNF-04: «Narrative» cargó en 0.516 s
+RNF-04: «Level3_River» cargó en 0.518 s
+RNF-04: «Narrative» cargó en 0.618 s
+RNF-04: «LevelSummary» cargó en 0.513 s
+RNF-04: «Narrative» cargó en 0.913 s
+RNF-04: «Credits» cargó en 0.519 s
+RNF-04: «MainMenu» cargó en 0.784 s
+]]></output>
+                  </test-case>
+                  <test-case id="1147" name="RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio_FallandoLaPrueba" fullname="Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio_FallandoLaPrueba" methodname="RiverLevel_RNF13_RecorreElNivel3CompletoHastaElInicio" classname="Game.Levels.River.Tests.RiverLevelJourneyTests" runstate="Runnable" seed="1820820410" result="Passed" start-time="2026-10-13 22:56:40Z" end-time="2026-10-13 22:56:57Z" duration="17.426113" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <output><![CDATA[RNF-04: «MainMenu» cargó en 0.810 s
+RNF-04: «LevelSelect» cargó en 0.575 s
+RNF-04: «Narrative» cargó en 1.563 s
+RNF-04: «Narrative» cargó en 0.519 s
+RNF-04: «Narrative» cargó en 0.511 s
+RNF-04: «Narrative» cargó en 0.517 s
+RNF-04: «Level3_River» cargó en 0.532 s
+RNF-04: «Narrative» cargó en 0.592 s
+RNF-04: «Level3_River» cargó en 0.546 s
+RNF-04: «Narrative» cargó en 0.638 s
+RNF-04: «LevelSummary» cargó en 0.506 s
+RNF-04: «Narrative» cargó en 0.874 s
+RNF-04: «Credits» cargó en 0.511 s
+RNF-04: «MainMenu» cargó en 0.749 s
+]]></output>
+                  </test-case>
+                </test-suite>
+                <test-suite type="ParameterizedMethod" id="1151" name="RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba" fullname="Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba" classname="Game.Levels.River.Tests.RiverLevelJourneyTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-13 22:56:57Z" end-time="2026-10-13 22:57:09Z" duration="11.430333" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="120000" />
+                    <property name="Category" value="Acceptance" />
+                  </properties>
+                  <test-case id="1149" name="RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba_TrasLaBase" fullname="Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba_TrasLaBase" methodname="RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba" classname="Game.Levels.River.Tests.RiverLevelJourneyTests" runstate="Runnable" seed="794132114" result="Passed" start-time="2026-10-13 22:56:57Z" end-time="2026-10-13 22:57:03Z" duration="5.803034" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <output><![CDATA[RNF-04: «MainMenu» cargó en 0.801 s
+RNF-04: «LevelSelect» cargó en 0.565 s
+RNF-04: «MainMenu» cargó en 0.841 s
+RNF-04: «LevelSelect» cargó en 0.617 s
+RNF-04: «Level3_River» cargó en 1.480 s
+]]></output>
+                  </test-case>
+                  <test-case id="1150" name="RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba_TrasElAmarre" fullname="Game.Levels.River.Tests.RiverLevelJourneyTests.RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba_TrasElAmarre" methodname="RiverLevel_RNF14_CierreForzadoTrasCadaFaseConfirmadaRetomaDondeIba" classname="Game.Levels.River.Tests.RiverLevelJourneyTests" runstate="Runnable" seed="1127861955" result="Passed" start-time="2026-10-13 22:57:03Z" end-time="2026-10-13 22:57:09Z" duration="5.620575" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <output><![CDATA[RNF-04: «MainMenu» cargó en 0.809 s
+RNF-04: «LevelSelect» cargó en 0.561 s
+RNF-04: «MainMenu» cargó en 0.802 s
+RNF-04: «LevelSelect» cargó en 0.556 s
+RNF-04: «Level3_River» cargó en 1.335 s
+]]></output>
+                  </test-case>
+                </test-suite>
+                <test-case id="1152" name="RiverScene_HU17_ReiniciarEnElAmarreOElMastilVuelveALaFaseActivaYNoALaRecoleccion" fullname="Game.Levels.River.Tests.RiverLevelJourneyTests.RiverScene_HU17_ReiniciarEnElAmarreOElMastilVuelveALaFaseActivaYNoALaRecoleccion" methodname="RiverScene_HU17_ReiniciarEnElAmarreOElMastilVuelveALaFaseActivaYNoALaRecoleccion" classname="Game.Levels.River.Tests.RiverLevelJourneyTests" runstate="Runnable" seed="1804150033" result="Passed" start-time="2026-10-13 22:57:09Z" end-time="2026-10-13 22:57:15Z" duration="6.496870" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="120000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[RNF-04: «MainMenu» cargó en 0.795 s
+RNF-04: «LevelSelect» cargó en 0.549 s
+RNF-04: «Level3_River» cargó en 1.362 s
+RNF-04: «Level3_River» cargó en 0.484 s
+]]></output>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1155" name="RiverMovementTests" fullname="Game.Levels.River.Tests.RiverMovementTests" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" testcasecount="9" result="Passed" start-time="2026-10-13 22:57:15Z" end-time="2026-10-13 22:57:20Z" duration="4.771540" total="9" passed="9" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1157" name="RiverScene_DA133_MamaCaminaMientrasSeSostieneUnaFlechaYReposaAlSoltarla" fullname="Game.Levels.River.Tests.RiverMovementTests.RiverScene_DA133_MamaCaminaMientrasSeSostieneUnaFlechaYReposaAlSoltarla" methodname="RiverScene_DA133_MamaCaminaMientrasSeSostieneUnaFlechaYReposaAlSoltarla" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" seed="354674783" result="Passed" start-time="2026-10-13 22:57:15Z" end-time="2026-10-13 22:57:16Z" duration="0.625225" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1159" name="RiverScene_DA76_ElBotonDeAyudaMuestraAAlgoritmEnSuFormaDeGota" fullname="Game.Levels.River.Tests.RiverMovementTests.RiverScene_DA76_ElBotonDeAyudaMuestraAAlgoritmEnSuFormaDeGota" methodname="RiverScene_DA76_ElBotonDeAyudaMuestraAAlgoritmEnSuFormaDeGota" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" seed="14428678" result="Passed" start-time="2026-10-13 22:57:16Z" end-time="2026-10-13 22:57:17Z" duration="0.582251" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1160" name="RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles" fullname="Game.Levels.River.Tests.RiverMovementTests.RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles" methodname="RiverScene_INC01_NoExisteVinculacionDeTecladoEnElMapaDeControles" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" seed="1852321323" result="Passed" start-time="2026-10-13 22:57:17Z" end-time="2026-10-13 22:57:17Z" duration="0.002206" asserts="0">
+                  <properties>
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1158" name="RiverScene_INC134_MamaVaDePerfilAlCaminarYDeFrenteAlSoltarLaFlecha" fullname="Game.Levels.River.Tests.RiverMovementTests.RiverScene_INC134_MamaVaDePerfilAlCaminarYDeFrenteAlSoltarLaFlecha" methodname="RiverScene_INC134_MamaVaDePerfilAlCaminarYDeFrenteAlSoltarLaFlecha" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" seed="253353814" result="Passed" start-time="2026-10-13 22:57:17Z" end-time="2026-10-13 22:57:17Z" duration="0.609740" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1162" name="RiverScene_RF13_ElBotonDeAyudaEstaVisibleYRepiteLaInstruccion" fullname="Game.Levels.River.Tests.RiverMovementTests.RiverScene_RF13_ElBotonDeAyudaEstaVisibleYRepiteLaInstruccion" methodname="RiverScene_RF13_ElBotonDeAyudaEstaVisibleYRepiteLaInstruccion" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" seed="362405186" result="Passed" start-time="2026-10-13 22:57:17Z" end-time="2026-10-13 22:57:18Z" duration="0.569554" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1161" name="RiverScene_RF35_ElPersonajeNoAtraviesaLosLimitesDelEscenario" fullname="Game.Levels.River.Tests.RiverMovementTests.RiverScene_RF35_ElPersonajeNoAtraviesaLosLimitesDelEscenario" methodname="RiverScene_RF35_ElPersonajeNoAtraviesaLosLimitesDelEscenario" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" seed="983546863" result="Passed" start-time="2026-10-13 22:57:18Z" end-time="2026-10-13 22:57:18Z" duration="0.603173" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1156" name="RiverScene_RF35_ElPersonajeSeDesplazaConLosBotonesEnPantalla" fullname="Game.Levels.River.Tests.RiverMovementTests.RiverScene_RF35_ElPersonajeSeDesplazaConLosBotonesEnPantalla" methodname="RiverScene_RF35_ElPersonajeSeDesplazaConLosBotonesEnPantalla" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" seed="976139458" result="Passed" start-time="2026-10-13 22:57:18Z" end-time="2026-10-13 22:57:19Z" duration="0.598562" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1163" name="RiverScene_RNF02_LaEscenaSoloRespondeAClicYClicSostenido" fullname="Game.Levels.River.Tests.RiverMovementTests.RiverScene_RNF02_LaEscenaSoloRespondeAClicYClicSostenido" methodname="RiverScene_RNF02_LaEscenaSoloRespondeAClicYClicSostenido" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" seed="1495291137" result="Passed" start-time="2026-10-13 22:57:19Z" end-time="2026-10-13 22:57:20Z" duration="0.588614" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1164" name="RiverScene_RNF03_ControlesListaEInventarioCabenEnPantallaYNoSeSolapan" fullname="Game.Levels.River.Tests.RiverMovementTests.RiverScene_RNF03_ControlesListaEInventarioCabenEnPantallaYNoSeSolapan" methodname="RiverScene_RNF03_ControlesListaEInventarioCabenEnPantallaYNoSeSolapan" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" seed="602990464" result="Passed" start-time="2026-10-13 22:57:20Z" end-time="2026-10-13 22:57:20Z" duration="0.588918" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1165" name="RiverSceneVisualTests" fullname="Game.Levels.River.Tests.RiverSceneVisualTests" classname="Game.Levels.River.Tests.RiverSceneVisualTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-13 22:57:20Z" end-time="2026-10-13 22:57:22Z" duration="1.375956" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1166" name="RiverScene_RF36_CapturaDeLaOrillaAlAbrir" fullname="Game.Levels.River.Tests.RiverSceneVisualTests.RiverScene_RF36_CapturaDeLaOrillaAlAbrir" methodname="RiverScene_RF36_CapturaDeLaOrillaAlAbrir" classname="Game.Levels.River.Tests.RiverSceneVisualTests" runstate="Runnable" seed="758374816" result="Passed" start-time="2026-10-13 22:57:20Z" end-time="2026-10-13 22:57:21Z" duration="0.685858" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Revisar la captura: lista de tareas arriba a la izquierda, inventario vacío abajo a la izquierda, flechas y «Recoger» a la derecha, el río y el pie de la cascada a la derecha; la zona junto al agua con la familia detrás; los ocho materiales repartidos por la orilla, sin deformar ni ampliar y ninguno sobre agua o seto; Mamá, la familia y los materiales a la escala de la 3.1 (INC-118) (mockup 11-12)." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/RiverScene_RF36_OrillaAlAbrir.png
+]]></output>
+                </test-case>
+                <test-case id="1167" name="RiverScene_RF39_CapturaConTodoRecogidoYLaZonaAbierta" fullname="Game.Levels.River.Tests.RiverSceneVisualTests.RiverScene_RF39_CapturaConTodoRecogidoYLaZonaAbierta" methodname="RiverScene_RF39_CapturaConTodoRecogidoYLaZonaAbierta" classname="Game.Levels.River.Tests.RiverSceneVisualTests" runstate="Runnable" seed="346151676" result="Passed" start-time="2026-10-13 22:57:21Z" end-time="2026-10-13 22:57:22Z" duration="0.688210" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Revisar la captura: tareas 1 y 2 con visto verde, 3 y 4 con círculo; inventario con los cuatro materiales; panel de ensamblaje abierto y flechas retiradas; Mamá en el borde de la zona, entera y fuera del inventario, delante de la familia (lectura B, INC-118)." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/RiverScene_RF39_ZonaAbierta.png
+]]></output>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1168" name="RiverSoundsTests" fullname="Game.Levels.River.Tests.RiverSoundsTests" classname="Game.Levels.River.Tests.RiverSoundsTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-10-13 22:57:22Z" end-time="2026-10-13 22:57:41Z" duration="19.682480" total="8" passed="8" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1173" name="AssemblyPanel_CP02_UnaFaseQueNoPasaNoSuena" fullname="Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_CP02_UnaFaseQueNoPasaNoSuena" methodname="AssemblyPanel_CP02_UnaFaseQueNoPasaNoSuena" classname="Game.Levels.River.Tests.RiverSoundsTests" runstate="Runnable" seed="1511424256" result="Passed" start-time="2026-10-13 22:57:22Z" end-time="2026-10-13 22:57:24Z" duration="2.575637" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1171" name="AssemblyPanel_RF40_ColocarUnaPiezaSuenaUnMartillazoYSoltarlaFueraNada" fullname="Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_RF40_ColocarUnaPiezaSuenaUnMartillazoYSoltarlaFueraNada" methodname="AssemblyPanel_RF40_ColocarUnaPiezaSuenaUnMartillazoYSoltarlaFueraNada" classname="Game.Levels.River.Tests.RiverSoundsTests" runstate="Runnable" seed="1249167542" result="Passed" start-time="2026-10-13 22:57:24Z" end-time="2026-10-13 22:57:26Z" duration="1.604262" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1172" name="AssemblyPanel_RF41_AprobarUnaFaseSuenaTresMartillazosAntesDeSeguir" fullname="Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_RF41_AprobarUnaFaseSuenaTresMartillazosAntesDeSeguir" methodname="AssemblyPanel_RF41_AprobarUnaFaseSuenaTresMartillazosAntesDeSeguir" classname="Game.Levels.River.Tests.RiverSoundsTests" runstate="Runnable" seed="191815335" result="Passed" start-time="2026-10-13 22:57:26Z" end-time="2026-10-13 22:57:29Z" duration="2.933269" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-suite type="ParameterizedMethod" id="1176" name="AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas" fullname="Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas" classname="Game.Levels.River.Tests.RiverSoundsTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-13 22:57:29Z" end-time="2026-10-13 22:57:36Z" duration="7.452736" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="Category" value="Acceptance" />
+                  </properties>
+                  <test-case id="1174" name="AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas(Base)" fullname="Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas(Base)" methodname="AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas" classname="Game.Levels.River.Tests.RiverSoundsTests" runstate="Runnable" seed="1939179579" result="Passed" start-time="2026-10-13 22:57:29Z" end-time="2026-10-13 22:57:32Z" duration="3.124782" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                  <test-case id="1175" name="AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas(MastAndSail)" fullname="Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas(MastAndSail)" methodname="AssemblyPanel_RF42_LaBalsaQueSeHundeSuenaUnaSalpicaduraYNadaMas" classname="Game.Levels.River.Tests.RiverSoundsTests" runstate="Runnable" seed="1453738687" result="Passed" start-time="2026-10-13 22:57:32Z" end-time="2026-10-13 22:57:36Z" duration="4.325322" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                  </test-case>
+                </test-suite>
+                <test-case id="1177" name="AssemblyPanel_RF44_LaBalsaTerminadaSuenaAPiezaTomadaTrasLosMartillazos" fullname="Game.Levels.River.Tests.RiverSoundsTests.AssemblyPanel_RF44_LaBalsaTerminadaSuenaAPiezaTomadaTrasLosMartillazos" methodname="AssemblyPanel_RF44_LaBalsaTerminadaSuenaAPiezaTomadaTrasLosMartillazos" classname="Game.Levels.River.Tests.RiverSoundsTests" runstate="Runnable" seed="1486190813" result="Passed" start-time="2026-10-13 22:57:36Z" end-time="2026-10-13 22:57:40Z" duration="3.816485" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Level3_River» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el ensamblaje no navega a «N3_Escena33_Cruce».
+]]></output>
+                </test-case>
+                <test-case id="1169" name="RiverScene_RF35_LaOrillaSuenaAlRioConElBosqueDeFondo" fullname="Game.Levels.River.Tests.RiverSoundsTests.RiverScene_RF35_LaOrillaSuenaAlRioConElBosqueDeFondo" methodname="RiverScene_RF35_LaOrillaSuenaAlRioConElBosqueDeFondo" classname="Game.Levels.River.Tests.RiverSoundsTests" runstate="Runnable" seed="710955317" result="Passed" start-time="2026-10-13 22:57:40Z" end-time="2026-10-13 22:57:41Z" duration="0.621267" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1170" name="RiverScene_RF37_RecogerUnMaterialSuenaAEncajeUnaVez" fullname="Game.Levels.River.Tests.RiverSoundsTests.RiverScene_RF37_RecogerUnMaterialSuenaAEncajeUnaVez" methodname="RiverScene_RF37_RecogerUnMaterialSuenaAEncajeUnaVez" classname="Game.Levels.River.Tests.RiverSoundsTests" runstate="Runnable" seed="1843131774" result="Passed" start-time="2026-10-13 22:57:41Z" end-time="2026-10-13 22:57:41Z" duration="0.674575" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

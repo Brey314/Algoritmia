@@ -1,0 +1,47 @@
+[
+ {
+  "antes": "De los 136 casos, 122 terminaron en P, 4 en F y 10 quedaron pendientes de la hoja de comprobaciones humanas, que se ejecutó el 13 de octubre (Tabla 16), sin PD, B ni NA (Tabla 13). Los fallidos son PF-RF45-05, de la sesión de omisión, y PF-RNF03-01, PF-RNF15-01 y PF-RNF17-01, de la de inspecciones; las demás sesiones aprobaron todos sus casos.",
+  "despues": "De los 136 casos, 128 terminaron en P, 4 en F y 4 siguen pendientes (PF-RNF12-01, PF-RNF13-01, PF-RNF22-01 y PF-RNF23-01), sin PD, B ni NA (Tabla 13). Seis de los 128 P salen de la hoja de comprobaciones humanas, que se ejecutó el 13 de octubre en una sesión manual sobre rc3 y no con el arnés: PF-RNF07-02 (H3), PF-RNF08-01 (H4), PF-CT02-01 (H5) y PF-SON-01 a PF-SON-03 (H12, con H6 y H7). En el corte del 10 de octubre eran 122 P, 4 F y 10 pendientes. Los fallidos son PF-RF45-05, de la sesión de omisión, y PF-RNF03-01, PF-RNF15-01 y PF-RNF17-01, de la de inspecciones; las demás sesiones aprobaron todos sus casos.",
+  "nota": "eficacia con la sesión manual del 13/10/2026"
+ },
+ {
+  "antes": "Por etiqueta, NAV alcanza 94,1 % (16 de 17), BOT 100 % (28 de 28), RETO 100 % (37 de 37) y DAT 100 % (30 de 30). SON no se puede calcular, porque sus tres casos son de oído y los hace una persona; RNF queda en 78,6 % (11 de 14) por los tres fallidos de la inspección.",
+  "despues": "Por etiqueta, NAV alcanza 94,1 % (16 de 17), BOT 100 % (28 de 28), RETO 100 % (37 de 37) y DAT 100 % (30 de 30). SON queda en 100 % (3 de 3), porque sus tres casos son de oído y los aprobó una persona el 13 de octubre, lo que es un juicio y no una medición; RNF queda en 82,4 % (14 de 17) por los tres fallidos de la inspección, frente a 78,6 % (11 de 14) en el corte del 10 de octubre.",
+  "nota": "eficacia con la sesión manual del 13/10/2026"
+ },
+ {
+  "antes": "Dos tipos de prueba quedan fuera del arnés: las que necesitan niños de grado quinto jugando y las que necesitan los sentidos de una persona o un segundo equipo (Tabla 16). Son diez casos y dos puntos del guion, PG-05 y PG-06. Se ejecutaron el 13 de octubre de 2026 en el Colegio El Libertador IED, sede A, con 4 estudiantes de grado quinto. Un observador miró cómo jugaban; los estudiantes pensaron en voz alta y comunicaron sus inquietudes al observador, la técnica Thinking Aloud que la metodología Árcade asigna a esta fase [6]. La muestra es no probabilística (apartado 5.3) y la sesión verifica que la interfaz se entienda y la ruta principal se complete, sin medir el efecto del juego.",
+  "despues": "Dos tipos de prueba quedan fuera del arnés: las que necesitan niños de grado quinto jugando y las que necesitan los sentidos de una persona o un segundo equipo (Tabla 16). Eran diez casos y dos puntos del guion, PG-05 y PG-06. La hoja de comprobaciones humanas se ejecutó el 13 de octubre de 2026 en el Colegio El Libertador IED, sede A, con 4 estudiantes de grado quinto. Un observador miró cómo jugaban; los estudiantes pensaron en voz alta y comunicaron sus inquietudes al observador, la técnica Thinking Aloud que la metodología Árcade asigna a esta fase [6]. La muestra es no probabilística (apartado 5.3) y la sesión verifica que la interfaz se entienda y la ruta principal se complete, sin medir el efecto del juego.",
+  "nota": "eficacia con la sesión manual del 13/10/2026"
+ },
+ {
+  "antes": "De los 136 casos, 122 terminan en P, 4 en F y 10 esperan la consolidación de la hoja de comprobaciones humanas del 13 de octubre. La eficacia es de 96,8 % frente a la meta de 90 %, y los 45 RF de prioridad Alta están implementados, porque ninguno tiene un defecto Bloqueante o Mayor; el único fallido que toca uno de ellos, PF-RF45-05, es Menor. De las etiquetas que el indicador nombra, NAV (94,1 %) y BOT (100 %) superan la meta y SON no se puede calcular hasta que se consoliden los tres casos de oído, aprobados el 13 de octubre (H6, H7 y H12); la más baja es RNF, con 78,6 %, por textos e iconos fuera de su caja (PF-RNF03-01), identificadores en español (PF-RNF15-01) y commits sin tarjeta (PF-RNF17-01). Los dos indicadores se cumplen en lo medido, y el primero queda abierto en su parte de sonido.",
+  "despues": "De los 136 casos, 128 terminan en P, 4 en F y 4 siguen pendientes. La eficacia es de 97,0 % (128 de 132) frente a la meta de 90 % (96,8 % en el corte del 10 de octubre), y los 45 RF de prioridad Alta están implementados, porque ninguno tiene un defecto Bloqueante o Mayor; el único fallido que toca uno de ellos, PF-RF45-05, es Menor. De las etiquetas que el indicador nombra, NAV (94,1 %), BOT (100 %) y SON (100 %, tres casos de oído aprobados el 13 de octubre en H6, H7 y H12) superan la meta; la más baja es RNF, con 82,4 %, por textos e iconos fuera de su caja (PF-RNF03-01), identificadores en español (PF-RNF15-01) y commits sin tarjeta (PF-RNF17-01). Los dos indicadores se cumplen; el de sonidos descansa en un juicio de oído y no en una medición.",
+  "nota": "eficacia con la sesión manual del 13/10/2026"
+ },
+ {
+  "antes": "Lo que la evaluación no pudo observar tiene causa: el arnés no oye, no cronometra a un niño ni cambia de equipo, y PG-05 y PG-06 exigen estudiantes y el consentimiento de sus acudientes. Por eso RNF-07, RNF-08, CT-02, el sonido y la ruta de 20 a 40 min dependían de la sesión del 13 de octubre, que dio PG-05 y PG-06 positivos y aprobó las comprobaciones H1 a H7 y H9 a H12; el recorrido de H8 duró entre 40 y 45 min y H13 no se realizó. Los diez casos quedan fuera del denominador; cuando se consoliden sus veredictos, la eficacia se recalcula con ellos y el indicador de sonidos se cierra con los tres de SON.",
+  "despues": "Lo que la evaluación no pudo observar tiene causa: el arnés no oye, no cronometra a un niño ni cambia de equipo, y PG-05 y PG-06 exigen estudiantes y el consentimiento de sus acudientes. Por eso RNF-07, RNF-08, CT-02, el sonido y la ruta de 20 a 40 min dependían de la sesión del 13 de octubre, que dio PG-05 y PG-06 positivos y aprobó las comprobaciones H1 a H7 y H9 a H12; el recorrido de H8 duró entre 40 y 45 min y H13 no se realizó. Seis de los diez casos pasaron a P con esa sesión. Los cuatro que siguen pendientes quedan fuera del denominador: PF-RNF13-01, porque los dos recorridos del arnés sobre rc3 no se ejecutaron y H8 no cubre los tres recorridos que el caso pide; PF-RNF12-01, que ninguna comprobación de la hoja cubre; y PF-RNF22-01 y PF-RNF23-01, que esperan la confirmación del contenido y el soporte escrito de la Familia Anonaky y de la colaboradora de arte. Si los cuatro fallaran, la eficacia sería 94,1 % (128 de 136).",
+  "nota": "eficacia con la sesión manual del 13/10/2026"
+ },
+ {
+  "antes": "96,8 % (122 de 126 casos con veredicto)",
+  "despues": "97,0 % (128 de 132 casos con veredicto; 96,8 %, 122 de 126, en el corte del 10 de octubre)",
+  "nota": "celda"
+ },
+ {
+  "antes": "NAV 94,1 % y BOT 100 %; SON sin calcular en el corte del 10 de octubre, con sus 3 casos de oído pendientes; H6, H7 y H12 se aprobaron el 13 de octubre (Tabla 16)",
+  "despues": "NAV 94,1 %, BOT 100 % y SON 100 % (3 de 3, aprobados por una persona el 13 de octubre; sin calcular en el corte del 10 de octubre)",
+  "nota": "celda"
+ },
+ {
+  "antes": "5 · 0 · 1",
+  "despues": "6 · 0 · 0",
+  "nota": "celda"
+ },
+ {
+  "antes": "122 · 4 · 10",
+  "despues": "128 · 4 · 4",
+  "nota": "celda"
+ }
+]

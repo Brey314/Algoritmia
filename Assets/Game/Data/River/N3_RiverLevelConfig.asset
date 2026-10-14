@@ -15,7 +15,7 @@ MonoBehaviour:
   <TaskLabels>k__BackingField:
   - Recoger troncos
   - Encontrar sogas
-  - Ensamblar la balsa
+  - Armar la balsa
   - "Colocar el m\xE1stil y la vela"
   <ProximityRadius>k__BackingField: 0.06
   <MoveSpeed>k__BackingField: 0.25
@@ -34,8 +34,8 @@ MonoBehaviour:
   <PlayFraming>k__BackingField:
     <Focus>k__BackingField: {x: 0.3572, y: 0.3572}
     <Zoom>k__BackingField: 1.4
-  <CollectedFormat>k__BackingField: "{0}: al inventario. Mira la lista: \xBFqu\xE9
-    falta?"
+  <CollectedFormat>k__BackingField: "{0}: guardado en tus materiales. Mira la lista:
+    \xBFqu\xE9 falta?"
   <AllCollectedMessage>k__BackingField: Ya tienes todos los materiales. Ve a la zona
     marcada junto al agua.
   <MissingFormat>k__BackingField: "Para armar la balsa todav\xEDa falta: {0}. Sigue

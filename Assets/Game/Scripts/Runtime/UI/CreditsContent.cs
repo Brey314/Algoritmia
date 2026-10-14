@@ -34,7 +34,7 @@ namespace Game.UI
                         "Anonaky no se puede quitar: los personajes son obra derivada suya.")]
         public string Body { get; private set; } =
             "Personajes basados en diseños de la Familia Anonaky, usados con autorización escrita.\n" +
-            "Entornos, objetos e interfaz: originales del proyecto, salvo los iconos de pausa.\n" +
-            "Iconos de pausa: Phosphor Icons, licencia MIT.";
+            "Entornos, objetos e interfaz: originales del proyecto, salvo los iconos de pausa y de giro.\n" +
+            "Iconos de pausa y de giro: Phosphor Icons, licencia MIT.";
     }
 }

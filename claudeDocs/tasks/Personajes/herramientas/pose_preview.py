@@ -38,10 +38,10 @@
 # Algoritm no tiene clip de Strike y la prueba no lo usa para el. La lista se lee del .cs; si no esta, {Strike} con un aviso.
 #
 # UN CUERPO POR ACCION (INC-134, 09/10/2026). Los prefabs de la familia llevan DOS cuerpos, Lienzo/Cuerpo (de frente) y Lienzo/Perfil (de perfil, mirando a la derecha), y el
-# motor enciende UNO por accion (CharacterRig.ShowView, que decide ActionView.cs: Walk, Run, Carry, Push, PickUp, Kneel y Blow de perfil; todo lo demas, Wave incluida, de frente; corte
+# motor enciende UNO por accion (CharacterRig.ShowView, que decide ActionView.cs: Walk, Run, Carry, Push, PickUp, Kneel, Blow y, desde INC-154, Hug y Sleep de perfil; todo lo demas, Wave incluida, de frente; corte
 # seco; un rig cuyo torso de perfil no tiene sprite —Algoritm— se queda de frente en toda accion). Personaje hace lo mismo: una Vista por cuerpo (sus capas y los nombres de SUS nodos) y
 # vista_de/orden_de eligen por la accion; lo que cuelga de Lienzo fuera de los dos cuerpos (la sombra) va en los dos. Las acciones de perfil se leen de ActionView.cs
-# (prefabs.acciones_de_perfil, como armsInFrontActions de CharacterRig.cs); si el .cs no esta o no se entiende, la lista acordada {Walk, Run, Carry, Push, PickUp, Kneel, Blow} y un AVISO.
+# (prefabs.acciones_de_perfil, como armsInFrontActions de CharacterRig.cs); si el .cs no esta o no se entiende, la lista acordada {Walk, Run, Carry, Push, PickUp, Kneel, Blow, Hug, Sleep} y un AVISO.
 # Hasta esta fecha se dibujaban LOS DOS cuerpos a la vez (el de perfil, en reposo, encima del de frente) y todas las medidas de la familia veian las capas del otro: las hojas, los ~74
 # fallos de la familia y los 6 de la autoprueba desde que el perfil entro en los prefabs (9966bcb) eran de eso. La regla de «brazos delante» (armsInFrontActions) es por cuerpo: ArmLayering
 # solo toca Lienzo/Cuerpo/Tronco, y en el perfil no hay BrazoIzq/BrazoDer, asi que alli no cambia el orden.
@@ -721,6 +721,7 @@ class Resultado:
         self.vel = (0.0, 0.0, "")  # la mayor velocidad angular de un hombro o un codo, instante, hueso
         self.torso = (0.0, 0.0)    # el mayor % de la caja de ojos y boca que tapa el torso (con la cabeza al fondo), instante
         self.choque = None         # solo Strike: (y del choque, instante, distancia minima entre manos, limite de altura) del instante de minima distancia
+        self.acostado = None       # (INC-154) solo Sleep: (cuanto baja de mas la espalda del suelo, cuanto se aparta del eje, x izquierda, x derecha) en px, el peor de cuatro instantes
 
     def mejor_peor(self, nombre, valor, t, extra=""):
         if nombre == "brazo" and valor < self.brazo[0]:
@@ -1032,10 +1033,98 @@ def prueba_clip(pj, clip, tiempos=None, _sin_base=False):
             res.mejor_peor("suelo", bajo - SUELO, t)
     if es_strike:
         res.choque = (choque[2], choque[1], choque[0], limite_cintura(pj))
+    if clip.accion in K.ACOSTADAS and not es_guia and vista is pj.perfil:
+        res.acostado = mide_acostado(pj, clip)
     if es_guia and not _sin_base:
         # (b) de Algoritm mide cuanto TAPA EL GESTO de la caja de la cara, no lo que ya tapan en reposo los hombros que caen junto a ella
         res.cara = (min(100.0, res.cara[0] + (100.0 - pj.cara_reposo())), res.cara[1])
     return res
+
+
+# INC-154: el cuerpo acostado. El suelo es la ESPALDA DEL TORSO (la masa del cuerpo): la caja de lo opaco del torso acaba en y = SUELO, y el cuerpo, centrado en el
+# eje del lienzo (x = 512), que es donde el motor voltea el lienzo para mirar a la izquierda: el mismo cuerpo, tendido hacia un lado o hacia el otro. De perfil de pie el
+# cuerpo no es plano: de espaldas a espalda hay mas hondo la cabeza (el pelo y la barba salen hacia atras) que el torso, y menos las piernas y los brazos, delgados.
+# Anclado por el torso, la cabeza se hunde un poco bajo la linea del suelo y las piernas flotan un poco sobre ella, y eso es lo que se acota: la cabeza se inclina
+# (SLEEP_CUELLO) y las piernas se bajan (SLEEP_PIERNAS) para que los tres apoyen casi igual.
+TOLERANCIA_ACOSTADO_Y = 4.0        # px: la espalda del torso contra el suelo
+TOLERANCIA_ACOSTADO_X = 8.0        # px: el centro de la caja contra el eje
+TOLERANCIA_ACOSTADO_CABEZA = 120.0 # px: lo que la cabeza puede hundirse bajo la espalda del torso (hoy, hasta 112 en Mama: el pelo largo tendido sobre el suelo)
+TOLERANCIA_ACOSTADO_PIERNAS = 40.0 # px: lo que las piernas pueden quedar sobre ella (hoy, hasta 12)
+
+
+def caja_opaca(pj, clip, t, escala=0.5, partes=None):
+    """
+    La caja (x0, y0, x1, y1), en px del lienzo de 1024, de todo lo opaco que se dibuja en el instante t, sin la sombra; None si no se dibuja nada. «partes»: si
+    se da, una funcion del nombre del nodo que dice que capas cuentan. El lienzo de medida es mas grande que el del personaje (x de -512 a 1536, y de -256 a 1280):
+    un cuerpo acostado y sin anclar se sale del suyo, y hay que verlo para saber cuanto.
+    """
+    mundo, _ = matrices(pj, clip, t)
+    ox, oy = -512.0, -256.0
+    tam = (int(2048 * escala), int(1536 * escala))
+    union = Image.new("L", tam, 0)
+    for capa in pj.orden_de(clip.accion)[0]:
+        if capa.nodo.ruta == "Lienzo/Sombra" or (partes is not None and not partes(capa.nodo.nombre)):
+            continue
+        im = _capa_a_lienzo(capa, mundo, escala, (ox, oy), tam)
+        if im is not None:
+            union = ImageChops.lighter(union, _mascara(im))
+    caja = union.getbbox()
+    if caja is None:
+        return None
+    return (ox + caja[0] / escala, oy + caja[1] / escala, ox + caja[2] / escala, oy + caja[3] / escala)
+
+
+def _es_torso(nombre):
+    return nombre == "Torso"
+
+
+def _es_cabeza(nombre):
+    return nombre in ("Cabeza", "CaraBase", "Ojos", "Boca")
+
+
+def _es_pierna(nombre):
+    return nombre.startswith("Pierna") or nombre.startswith("Antepierna")
+
+
+def apoyos_acostado(pj, clip, t):
+    """(torso, cabeza, piernas, centro): el borde de abajo (y del lienzo) del torso, de la cabeza y de las piernas, y el centro en x de todo lo opaco; None si falta una parte."""
+    todo = caja_opaca(pj, clip, t)
+    partes = [caja_opaca(pj, clip, t, partes=p) for p in (_es_torso, _es_cabeza, _es_pierna)]
+    if todo is None or any(p is None for p in partes):
+        return None
+    return partes[0][3], partes[1][3], partes[2][3], 0.5 * (todo[0] + todo[2])
+
+
+def mide_acostado(pj, clip, instantes=4):
+    """
+    (dy, dx, izquierda, derecha, cabeza, piernas) del cuerpo acostado, el PEOR de «instantes» cuadros repartidos por el ciclo (la respiracion lo mueve unos px): dy es cuanto
+    baja la espalda del torso del suelo (+ por debajo de y = SUELO, - flotando), dx cuanto se aparta el centro de la caja del eje x = 512, izquierda y derecha hasta donde
+    llega todo, y cabeza y piernas cuanto se hunde la cabeza bajo la espalda del torso y cuanto quedan las piernas sobre ella (siempre >= 0 en lo que se acota).
+    """
+    dy = dx = 0.0
+    izq, der, cabeza, piernas = 1e9, -1e9, -1e9, -1e9
+    for i in range(instantes):
+        t = clip.duracion * i / instantes
+        caja = caja_opaca(pj, clip, t)
+        apoyos = apoyos_acostado(pj, clip, t)
+        if caja is None or apoyos is None:
+            return (1e9, 1e9, 1e9, -1e9, 1e9, 1e9)
+        torso, cab, pie, centro = apoyos
+        y, x = torso - SUELO, centro - 512.0
+        if abs(y) > abs(dy):
+            dy = y
+        if abs(x) > abs(dx):
+            dx = x
+        izq, der = min(izq, caja[0]), max(der, caja[2])
+        cabeza, piernas = max(cabeza, cab - torso), max(piernas, torso - pie)
+    return (dy, dx, izq, der, cabeza, piernas)
+
+
+def ancla_acostado(pj, clip):
+    """El ACOSTADO_ANCLA (dx hacia la derecha, dy hacia arriba) que deja la espalda del torso en el suelo y el cuerpo centrado, a partir del que lleva hoy el clip: lo que escribe coreografia.py."""
+    apoyos = apoyos_acostado(pj, clip, 0.0)
+    x0, y0 = K.ACOSTADO_ANCLA.get(pj.pid, (0.0, 0.0))
+    return (x0 - (apoyos[3] - 512.0), y0 + (apoyos[0] - SUELO))
 
 
 def limite_cintura(pj):
@@ -1062,17 +1151,22 @@ def fila(pid, clip, r):
     ok_v = r.vel[0] <= VELOCIDAD_MAX or ("*", clip.accion) in EXCEPCIONES_VEL
     ok_t = r.torso[0] <= UMBRAL_TORSO
     ok_h = r.choque is None or r.choque[0] <= r.choque[3]
-    ok = ok_b and ok_c and ok_k and ok_s and ok_m and ok_v and ok_t and ok_h and ok_o
+    ok_a = r.acostado is None or (abs(r.acostado[0]) <= TOLERANCIA_ACOSTADO_Y and abs(r.acostado[1]) <= TOLERANCIA_ACOSTADO_X
+                                  and r.acostado[2] >= 0.0 and r.acostado[3] <= 1024.0
+                                  and r.acostado[4] <= TOLERANCIA_ACOSTADO_CABEZA and r.acostado[5] <= TOLERANCIA_ACOSTADO_PIERNAS)
+    ok = ok_b and ok_c and ok_k and ok_s and ok_m and ok_v and ok_t and ok_h and ok_o and ok_a
     choque = "" if r.choque is None else " | choque y=%.0f @%.2fs (manos a %.0f px; limite y=%.0f) %s" % (
         r.choque[0], r.choque[1], r.choque[2], r.choque[3], "" if ok_h else "FALLA: bajo la cintura")
     mano = "libre" if ok_m else "%d cuadros @%.2fs %s" % (r.mano[0], r.mano[1], r.mano[2])
     # INC-134: de perfil hay UN ojo (no hay «los dos a la vez» que medir: la cara a la vista ya lo vigila) y el brazo lejano solo se informa
     perfil = r.vista == "perfil"
     ojos = "no se mide de perfil (un solo ojo)" if perfil else "los dos %4.1f%% (un ojo hasta %4.1f%%) %s" % (r.ojos[0], r.ojo_peor, "" if ok_o else "FALLA")
+    acostado = "" if r.acostado is None else " | acostado: espalda %+.1f px del suelo, %+.1f px del eje, de x=%.0f a x=%.0f, cabeza %+.0f px bajo la espalda, piernas %+.0f px sobre ella %s" % (
+        r.acostado + ("" if ok_a else "FALLA (--acostado da el anclaje, ACOSTADO_ANCLA)",))
     lejano = "" if r.lejano is None else " | brazo lejano %5.1f%% @%.2fs (solo se informa: va tras el torso)" % (r.lejano[0], r.lejano[1])
-    return ok, ("%-14s %-10s %-8s %-6s brazo %5.1f%% @%.2fs %-5s | humero %5.1f%% @%.2fs %-5s%s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s | ojos tapados: %s | giro max %4.0f deg/s %s | torso sobre la cara %4.1f%% %s%s" % (
+    return ok, ("%-14s %-10s %-8s %-6s brazo %5.1f%% @%.2fs %-5s | humero %5.1f%% @%.2fs %-5s%s | cara %5.1f%% @%.2fs | bisagra %4.1f deg @%.2fs %-9s | suelo %+6.1f px @%.2fs | mano en la caja: %s | ojos tapados: %s | giro max %4.0f deg/s %s | torso sobre la cara %4.1f%% %s%s%s" % (
         pid, clip.accion, "ok" if ok else "FALLA", r.vista, r.brazo[0], r.brazo[1], r.brazo[2], r.humero[0], r.humero[1], r.humero[2], lejano, r.cara[0], r.cara[1],
-        r.codo[0], r.codo[1], r.codo[2], r.suelo[0] if r.suelo[0] > -900 else 0.0, r.suelo[1], mano, ojos, r.vel[0], "" if ok_v else "FALLA", r.torso[0], "" if ok_t else "FALLA", choque))
+        r.codo[0], r.codo[1], r.codo[2], r.suelo[0] if r.suelo[0] > -900 else 0.0, r.suelo[1], mano, ojos, r.vel[0], "" if ok_v else "FALLA", r.torso[0], "" if ok_t else "FALLA", choque, acostado))
 
 
 # --------------------------------------------------------------------------- hojas y GIF
@@ -1529,6 +1623,17 @@ def autoprueba(rig):
         detecta = r.vista == "perfil" and not ok and falla_la_medida[medida](r)
         print("%-40s %-9s %s" % (nombre, medida, "detectada" if detecta else "NO SE DETECTA"))
         malos += 0 if detecta else 1
+    # INC-154: el cuerpo acostado (Sleep). El del clip, anclado, apoya y se centra; el mismo clip sin las curvas de posicion de Perfil, girado 90 grados sobre los pies, queda
+    # hundido bajo el suelo y fuera del lienzo, y la prueba lo detecta
+    doc_ = K.construir(rig)[0]
+    sleep_ = next(c for p_ in doc_["personajes"] if p_["id"] == "nino" for c in p_["clips"] if c["accion"] == "Sleep")
+    anclado = Clip(sleep_)
+    sin_anclar = Clip(dict(sleep_, curvas=[c_ for c_ in sleep_["curvas"] if not (c_["ruta"] == P.PF and c_["propiedad"] in (K.POSX, K.POSY))]))
+    r_a, r_s = prueba_clip(nino, anclado, tiempos=[0.0]), prueba_clip(nino, sin_anclar, tiempos=[0.0])
+    ok = r_a.vista == "perfil" and fila("nino", anclado, r_a)[0] and r_s.acostado is not None and not fila("nino", sin_anclar, r_s)[0]
+    malos += 0 if ok else 1
+    print("%-40s %-9s %s" % ("perfil acostado: sin anclar", "acostado", ("detectada (anclado: espalda %+.0f px del suelo; sin anclar: %+.0f px y de x=%.0f a x=%.0f)" % (
+        r_a.acostado[0], r_s.acostado[0], r_s.acostado[2], r_s.acostado[3])) if ok else "NO SE DETECTA"))
     # y lo que no se mide de perfil se dice: un solo ojo (no hay «los dos a la vez») y el brazo lejano, que va tras el torso, solo se informa (no falla un reposo)
     reposo_perfil = Clip({"archivo": "x", "accion": "Walk", "duracion": 1.0, "bucle": True, "curvas": []})
     r = prueba_clip(nino, reposo_perfil, tiempos=[0.0])
@@ -1651,6 +1756,8 @@ def main(argv=None):
     ap.add_argument("--orden", help="otro orden de dibujo de Tronco, de atras adelante (Cuello,BrazoIzq,BrazoDer,Torso); por defecto el del JSON")
     ap.add_argument("--tira", nargs=4, metavar=("PERSONAJE", "ACCION", "N", "PNG"))
     ap.add_argument("--mide", metavar="PERSONAJE", help="comprueba las articulaciones del rig contra el alfa de las piezas")
+    ap.add_argument("--acostado", action="store_true",
+                    help="(INC-154) mide el cuerpo acostado de Sleep de cada miembro de la familia y da el ACOSTADO_ANCLA de coreografia.py que lo apoya en el suelo y lo centra")
     ap.add_argument("--autoprueba", action="store_true", help="comprueba que la prueba SI falla con poses malas a proposito")
     ap.add_argument("--exporta-maqueta", nargs="?", const=CARPETA_PARTES_GUIA, metavar="CARPETA",
                     help="RETIRADO (INC-136): Algoritm ya no se corta de su sprite entero; sus piezas salen de preparar_algoritm.py")
@@ -1668,6 +1775,17 @@ def main(argv=None):
         return 2
     if a.mide:
         return mide(Personaje(a.mide, rig))
+    if a.acostado:
+        anclas = {}
+        for pid in P.FAMILIA:
+            pj = Personaje(pid, rig, a.orden)
+            clip = next(c for c in clips_de(clips, pid) if c.accion == "Sleep")
+            dy, dx, izq, der, cabeza, piernas = mide_acostado(pj, clip)
+            anclas[pid] = ancla_acostado(pj, clip)
+            print("%-5s hoy: espalda %+7.1f px del suelo, %+7.1f px del eje, de x=%.0f a x=%.0f; cabeza %+.0f px bajo la espalda, piernas %+.0f px sobre ella" % (
+                pid, dy, dx, izq, der, cabeza, piernas))
+        print("ACOSTADO_ANCLA = {%s}" % ", ".join('"%s": (%.1f, %.1f)' % (p_, x_, y_) for p_, (x_, y_) in anclas.items()))
+        return 0
     if a.autoprueba:
         return autoprueba(rig)
     if a.tira:

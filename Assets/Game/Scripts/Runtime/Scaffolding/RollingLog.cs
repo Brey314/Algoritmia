@@ -22,7 +22,7 @@ namespace Game.Scaffolding
     /// porque la interfaz no tiene antialiasing (MSAA apagado en <c>UniversalRP.asset</c>) y una
     /// arista de malla se vería en escalera.
     /// </remarks>
-    public class RollingLog : MaskableGraphic
+    public class RollingLog : MaskableGraphic, ICanvasRaycastFilter
     {
         /// <summary>Tiras por vuelta. Con 48 ninguna arista se distingue al tamaño de juego.</summary>
         private const int Segments = 48;
@@ -66,10 +66,11 @@ namespace Game.Scaffolding
 
         /// <summary>
         /// Dibuja <paramref name="look"/> en lugar de <paramref name="face"/>, que sigue siendo la
-        /// imagen del objeto —la que recibe el clic en el bosque y la que leen las pruebas— pero
-        /// transparente.
+        /// imagen del objeto —la que leen las pruebas— pero transparente. Con
+        /// <paramref name="clickable"/> el clic lo recibe el cuerpo que se dibuja y no el cuadrado
+        /// de <paramref name="face"/> (INC-155); sin él, el tronco no capta clics (la narrativa).
         /// </summary>
-        public static RollingLog Attach(Image face, RollingLogLook look)
+        public static RollingLog Attach(Image face, RollingLogLook look, bool clickable = false)
         {
             var part = new GameObject("Tronco", typeof(RectTransform), typeof(CanvasRenderer));
             part.layer = face.gameObject.layer;
@@ -87,8 +88,94 @@ namespace Game.Scaffolding
             // Alfa en el color y no la imagen apagada: apagada dejaría de recibir el clic, y el
             // tinte del botón pisa el alfa del CanvasRenderer pero no el del color.
             face.color = new Color(face.color.r, face.color.g, face.color.b, 0f);
+            if (clickable)
+            {
+                log.MakeClickable();
+            }
+
             log.LateUpdate();
             return log;
+        }
+
+        /// <summary>
+        /// El cuerpo recibe el clic en lugar de <see cref="Face"/> (INC-155). El cuerpo se dibuja
+        /// mucho más allá del cuadrado del objeto —hacia arriba y a la derecha, a lo largo del
+        /// eje—, y ese cuadrado gira con el objeto mientras el cilindro no: un relleno fijo sobre la
+        /// imagen del objeto no puede seguirlo. Este gráfico sí está alineado con la pantalla (se
+        /// deshace el giro y el espejo en <c>LateUpdate</c>), así que su rectángulo se ensancha una
+        /// vez con <see cref="Graphic.raycastPadding"/> hasta la caja del cuerpo y
+        /// <see cref="IsRaycastLocationValid"/> recorta lo que sobra a la silueta exacta. La escala
+        /// del objeto (lejanía, realce) viaja sola: todo se mide en unidades locales.
+        /// </summary>
+        private void MakeClickable()
+        {
+            // ponytail: el relleno se calcula una vez; si el tamaño del objeto cambiara en marcha
+            // habría que recalcularlo en OnRectTransformDimensionsChange. Hoy no cambia.
+            raycastTarget = true;
+            _face.raycastTarget = false;
+
+            var rect = rectTransform.rect;
+            var body = BodyBounds(Radius, _look);
+            // Solo ensancha (nunca encoge): lo que sobra lo recorta la silueta.
+            raycastPadding = new Vector4(
+                Mathf.Min(0f, body.xMin - rect.xMin), Mathf.Min(0f, body.yMin - rect.yMin),
+                Mathf.Min(0f, rect.xMax - body.xMax), Mathf.Min(0f, rect.yMax - body.yMax));
+        }
+
+        /// <summary>
+        /// Si <paramref name="screenPoint"/> cae sobre el cuerpo que se dibuja —el corte, el costado
+        /// y el fondo—, no sobre el rectángulo del objeto (INC-155).
+        /// </summary>
+        public bool IsRaycastLocationValid(Vector2 screenPoint, Camera eventCamera) =>
+            _look != null &&
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, screenPoint, eventCamera, out var local) &&
+            BodyContains(local, Radius, _look);
+
+        /// <summary>
+        /// Los semiejes de la silueta del cilindro (<paramref name="across"/>, a lo largo del eje) y
+        /// lo que separa el corte del fondo (<paramref name="reach"/>). Son los números con los
+        /// que <see cref="OnPopulateMesh"/> traza la silueta: la zona de clic no puede discrepar de
+        /// lo que se ve.
+        /// </summary>
+        private static void SilhouetteSize(float outer, RollingLogLook look, out float across, out float reach)
+        {
+            var outline = outer * look.OutlineWidth;
+            var tilt = look.TiltDegrees * Mathf.Deg2Rad;
+            across = (outer - outline) * Mathf.Cos(tilt) + outline;
+            reach = outer * look.Depth * Mathf.Sin(tilt);
+        }
+
+        /// <summary>
+        /// Si un punto, en unidades locales desde el centro del corte, cae dentro de la silueta: el
+        /// casco de dos elipses iguales —la del corte y la del fondo— separadas por <c>reach</c> a
+        /// lo largo del eje, que es la suma de una elipse y un segmento.
+        /// </summary>
+        public static bool BodyContains(Vector2 point, float radius, RollingLogLook look)
+        {
+            SilhouetteSize(radius, look, out var across, out var reach);
+            var axis = look.AxisDegrees * Mathf.Deg2Rad;
+            var (cos, sin) = (Mathf.Cos(axis), Mathf.Sin(axis));
+            var along = point.x * cos + point.y * sin; // en el marco del eje
+            var side = point.y * cos - point.x * sin;
+            // Lo más cerca que está del segmento corte-fondo; desde ahí, es una elipse.
+            var gap = (along - Mathf.Clamp(along, 0f, reach)) / across;
+            var rise = side / radius;
+            return gap * gap + rise * rise <= 1f;
+        }
+
+        /// <summary>La caja, en unidades locales desde el centro del corte, que envuelve la silueta.</summary>
+        public static Rect BodyBounds(float radius, RollingLogLook look)
+        {
+            SilhouetteSize(radius, look, out var across, out var reach);
+            var axis = look.AxisDegrees * Mathf.Deg2Rad;
+            var (cos, sin) = (Mathf.Cos(axis), Mathf.Sin(axis));
+            // Media anchura de una elipse girada, y el fondo desplazado a lo largo del eje.
+            var halfX = Mathf.Sqrt(across * across * cos * cos + radius * radius * sin * sin);
+            var halfY = Mathf.Sqrt(across * across * sin * sin + radius * radius * cos * cos);
+            var back = new Vector2(cos, sin) * reach;
+            return Rect.MinMaxRect(
+                Mathf.Min(0f, back.x) - halfX, Mathf.Min(0f, back.y) - halfY,
+                Mathf.Max(0f, back.x) + halfX, Mathf.Max(0f, back.y) + halfY);
         }
 
         /// <summary>
@@ -176,7 +263,7 @@ namespace Game.Scaffolding
             var inner = outer - outline;
             var tilt = _look.TiltDegrees;
             var length = outer * _look.Depth;
-            var reach = Project(0f, length, 0f, tilt).x;
+            SilhouetteSize(outer, _look, out var across, out var reach);
             var toLocal = Quaternion.Euler(0f, 0f, _look.AxisDegrees);
             // σ, el ángulo en la textura, es ψ − turn: el corte gira con el objeto y el eje no.
             var turn = _spin - _look.AxisDegrees;
@@ -185,7 +272,7 @@ namespace Game.Scaffolding
             if (_silhouetteOnly)
             {
                 // La sombra: el contorno entero, en el color plano del gráfico y sin textura.
-                AddSilhouette(vh, toLocal, inner * Mathf.Cos(tilt * Mathf.Deg2Rad) + outline, outer, reach, tint, Vector2.zero);
+                AddSilhouette(vh, toLocal, across, outer, reach, tint, Vector2.zero);
                 return;
             }
 
@@ -200,7 +287,7 @@ namespace Game.Scaffolding
 
             // 1. La silueta, en el color del anillo del corte, que es el del contorno.
             var ring = capCenter + new Vector2(capRadius.x * (1f - _look.OutlineWidth / 2f), 0f);
-            AddSilhouette(vh, toLocal, inner * Mathf.Cos(tilt * Mathf.Deg2Rad) + outline, outer, reach, tint, ring);
+            AddSilhouette(vh, toLocal, across, outer, reach, tint, ring);
 
             // 2. El costado: las tiras de la mitad que mira a quien juega, recortadas en ±90°.
             var step = 360f / Segments;
