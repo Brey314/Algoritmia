@@ -1,6 +1,6 @@
 # Slice 4: progreso, informe docente y eliminación de datos
 
-Este anexo describe el cuarto incremento del prototipo, que cerró el módulo de progreso y registro de OE1 con el informe docente y la eliminación de datos, y el cierre del proyecto que siguió hasta el corte del 1 de octubre de 2026, con las corridas completas de la suite y las mediciones sobre el ejecutable. Sale del documento de resultados del cuarto slice (`claudeDocs/tasks/Slice 4/Slice-4-Resultados.md`), que el repositorio conserva como registro histórico con sus notas fechadas, de su tablero (`todo.md`), de los documentos del OE4 (`claudeDocs/tasks/OE4/`), de las actas D08 a D10 y del registro de inconsistencias (revisión 16). Sirve a los apartados 3.4 a 3.6, 6.4 y 7.1 del documento principal y a sus capítulos 8, 9 y 10.
+Este anexo describe el cuarto incremento del prototipo, que cerró el módulo de progreso y registro de OE1 con el informe docente y la eliminación de datos, y el cierre del proyecto que siguió hasta el corte del 1 de octubre de 2026, con las corridas completas de la suite y las mediciones sobre el ejecutable. El apartado 2.6 recoge además los ajustes de la sesión con estudiantes del 13/10/2026. Sale del documento de resultados del cuarto slice (`claudeDocs/tasks/Slice 4/Slice-4-Resultados.md`), que el repositorio conserva como registro histórico con sus notas fechadas, de su tablero (`todo.md`), de los documentos del OE4 (`claudeDocs/tasks/OE4/`), de las actas D08 a D10 y del registro de inconsistencias (revisión 16). Sirve a los apartados 3.4 a 3.6, 6.4 y 7.1 del documento principal y a sus capítulos 8, 9 y 10.
 
 ## 1. Alcance y seguimiento
 
@@ -28,6 +28,10 @@ La tarjeta que abrió el incremento es la D08-1, que pedía confirmar el corredo
 | 30/09/2026 | `5a22df1` | Santiago Benavides Rey | Documentos alineados con el juego (registro de inconsistencias, revisión 15) |
 | 01/10/2026 | Árbol de trabajo del corte | Santiago Benavides Rey | Línea `RNF-04` por cada carga de escena (tarjeta D10-5) |
 | 01/10/2026 | Árbol de trabajo del corte (ejecutable del corte) | Santiago Benavides Rey | Servicios de Unity apagados al compilar, guardado con temporal y reemplazo, aviso del perfil ilegible, panel de perfiles por páginas, «Cerrar el juego» en una línea y encabezado del informe con el perfil mirado |
+| 13/10/2026 | `52ecca5`, `6d26abb` y `ca51d02` | Santiago Valdiri García | Luz de apertura del Nivel 1 y caminata de la escena 1.1 (INC-152, INC-153); vocabulario de grado quinto (INC-157); créditos de los iconos de giro (INC-156) |
+| 13/10/2026 | `52908f1` | Santiago Benavides Rey | Botón «Atrás», troncos del bosque, flechas curvas de «Girar», pausa de cinco botones, aviso del botón de ayuda y cueva más clara (INC-152, INC-155, INC-156, INC-158, INC-159, INC-160) |
+| 13/10/2026 | `d8ab0f4` | Santiago Benavides Rey | Abrazo y sueño de perfil (INC-154) |
+| 13/10/2026 | `56897fd` | Santiago Benavides Rey | Verificación de rc4: suite completa, arreglo de la descarga del aviso de ayuda, disposición final del cuadro de diálogo y procedencia de rc4 |
 
 `d105838`, `37b3cb7` y `5a22df1` entraron en la rama principal con la solicitud n.º 88 (`1c7f4ab`, 30/09/2026).
 
@@ -89,6 +93,22 @@ El plan de pruebas del OE4 entró con `d105838` (29/09/2026): `plan.md` fija la 
 
 En el tablero del slice, el acta D10 marcó como revisadas por Santiago Benavides Rey las cinco casillas de revisión con el usuario de P-A a P-E, después de verificarlas con pruebas y capturas. PG-01, el título «Algoritmia», en pantalla desde el 09/09/2026, se cerró en el guion el 29/09/2026; PG-02, el nombre del guía, lo estaba desde el 02/09/2026. Los diez criterios de éxito de la especificación se revisaron uno por uno el 01/10/2026 (apartado 4.4), y el registro de inconsistencias, en su revisión 16, no reabrió ningún hallazgo.
 
+### 2.6 Sesión con estudiantes y ajustes del 13/10/2026 (INC-151 a INC-160)
+
+El 13/10/2026 se hizo la sesión de evaluación con 4 estudiantes de grado quinto del colegio El Libertador IED, sede A, sobre el candidato rc3 (resultados en `claudeDocs/tasks/OE4/OE4-Resultados.md`). Cerró PG-05 y PG-06 con resultado positivo (comprobaciones H1 y H2) y dejó diez hallazgos, INC-151 a INC-160, que el mismo día se corrigieron en el juego y en los documentos. La Tabla G.2 lista los commits y la Tabla G.4, cada hallazgo.
+
+**Grado.** INC-151 fijó que el grupo es de grado quinto, por la autorización del colegio. Este documento, los fuentes del entregable del OE4 y el capítulo 9 del trabajo de grado dicen «quinto» donde nombran el grado; las expresiones que no lo designan, como «cuarto objetivo» o «cuarto golpe», no cambian, y los radicados del OE1 y del OE2 conservan «cuarto» hasta que haya autorización expresa para editarlos.
+
+**Nivel 1.** Los estudiantes vieron el inicio del nivel demasiado oscuro (INC-152). En las narrativas se sumaron 0,12 al valor de luz (`Ambient`) del arranque y de cada parada, con un mínimo de 0,15: `N1_Apertura` pasó de 0,06, 0,09 y 0,04 a 0,18, 0,21 y 0,16; `N1_AparicionGuia`, de entre 0 y 0,03 a 0,15 en todas las paradas; y `N1_Hallazgo`, de entre 0,03 y 0,08 a entre 0,15 y 0,20. Se conservó el negro intencional de la línea 6 de la apertura (0, con corte seco), y el destello de la línea 6 de `N1_Hallazgo` pasó de 0,95 a 1,0, el máximo de `NarrativeLight.Ambient`, porque la regla daba 1,07. En la cueva, `darkest` pasó de 0,10 a 0,22 y `brightest`, de 0,30 a 0,35, en `Level1_Cave.unity` y en los valores por defecto de `CaveLightingController` (`CaveLighting_INC152_LaCuevaArrancaMasClaraQueEnElDisenoOriginal`). El diseño de cámara del Nivel 1 no se editó. Para el botón de ayuda (INC-158), la primera vez que se juega la primera mecánica sale un aviso (`HelpButtonIntro`, `FireHelpIntro`; Anexo B, apartado 2.5): oscurece la pantalla con un alfa de 0,72 que bloquea los clics, deja el botón encima con un `Canvas` de orden propio, detiene el tiempo y se cierra con «Cerrar». Se deriva del progreso, sin guardar nada nuevo (RNF-09), y su texto sale de `N1_Mensajes.asset`. La caminata de la familia en la escena 1.1 (INC-153) y el abrazo y el sueño de perfil (INC-154) se describen en el Anexo F, apartado 2.15.
+
+**Nivel 2.** En el bosque, el tronco huía justo cuando el cursor llegaba a él y solo el cuadrado de 120 × 120 del objeto recibía el clic, mientras `RollingLog` dibuja un cilindro que sale de ese cuadrado (INC-155). Se bajó el empuje de 0,75 a 0,35 y se subió el frenado de 1,4 a 3; `ForestObjectNudge.Step(cursor, deltaTime, overObject)` no empuja ni levanta con el cursor encima, aunque el aviso de entrada sigue sonando; y `RollingLog.Attach(…, clickable: true)` hace que el cuerpo reciba el clic. En el laberinto, cada lado de «Girar» era la misma punta de flecha girada ±90° y la sesión dejó como hallazgo que no indicaba con claridad hacia dónde iba el giro (INC-156): ahora son las flechas `arrow-arc-left` y `arrow-arc-right` de Phosphor Icons, sin giro, con la misma licencia que los glifos de pausa; no se usó `ui_reiniciar`, que se confundiría con «Reiniciar».
+
+**Diálogo y pausa.** La sesión dejó como hallazgo que no se podía volver a leer la línea anterior (INC-160). «Atrás» (`DialogueRunner.Back`, `CanGoBack` e `IsNewLine`; `ActorTimeline.StillCue`; `NarrativeSceneController.Back` y `SnapToLine`) solo relee: no cruza a la secuencia anterior, no se ofrece en la primera línea y no reabre una escena terminada. Al avanzar de nuevo sobre líneas ya vistas, también se pintan quietas. La disposición final se fijó con `56897fd`: «Omitir» (260 × 76 px, en (−32; 108)) encima de «Continuar» (260 × 76 px, en (−32; 22)) y «Atrás» (200 × 76 px, en (−308; 22)) en la fila de «Continuar», a su izquierda; se descartó ponerlo a la izquierda del texto porque el cuadro mide 216 px y la fila de botones, el nombre y dos líneas de texto piden unos 240 px (`claudeDocs/tasks/OE4/evidencias/rc4/Inc160_medidas_texto.txt`). La pausa pasó de tres botones a cinco (INC-159): «Volver a ver la historia» cierra la pausa, abre la narrativa que presenta la fase (`PauseMenuPolicy.StoryFor` y `WatchStory`, con la tabla serializada `PhaseNarrative` en `MenuPausa.prefab`: fase 1 del Nivel 1, fases 1 a 3 del Nivel 2 y fases 1 y 3 del Nivel 3) y `NarrativeSceneController.Leave` vuelve a la misma fase; «Guardar y salir» pide confirmación y guarda el perfil activo antes de cerrar (`SaveThenQuit`).
+
+**Vocabulario.** Los textos que lee el estudiante traían palabras difíciles para grado quinto (INC-157). `6d26abb` hizo 21 reemplazos en los assets de narrativas, del río y del resumen del Nivel 2: «intemperie» pasó a «al aire libre, sin techo», «civilización» a «otras familias», «abruptamente» a «de repente», «Ensamblar la balsa» a «Armar la balsa» e «inventario» a «tus materiales». Se conservaron «abstraer», «iterar», «descomponer», «depurar», «algoritmo» y «patrón», porque son los términos del pensamiento computacional y cada uno trae su explicación al lado. Los 22 pares para el guion están en `claudeDocs/entregables/tools/pares/guion-inc157.json`; el guion radicado no se edita sin cotejo y autorización.
+
+**Verificación y pendientes.** La suite completa se corrió el 13/10/2026 sobre el árbol de rc4 (Tabla G.6): EditMode 785 de 786 y PlayMode 427 de 427. El candidato rc4 pesó 426,9 MB, con 73,1 MB de margen frente a los 500 MB de RNF-06 (documento principal, apartado 8.3). rc4 no se probó con estudiantes. Lo que sigue abierto tras la sesión está en el apartado 10.1 del documento principal.
+
 ## 3. Decisiones de diseño y hallazgos de consistencia
 
 Las decisiones del slice, descritas en el apartado 2, quedaron escritas en su tablero con su fecha: el informe depende solo del núcleo, sus pantallas viven en `Game.UI`, el resumen de nivel no se reconstruyó y el borrado reutiliza `SaveStore.Delete`. La escena del informe se armó con un script de editor temporal, borrado al terminar, que para una pantalla de unos cuarenta objetos evitaba cientos de operaciones sueltas.
@@ -115,6 +135,16 @@ Las pruebas encontraron defectos reales durante el slice. La cabecera de la tabl
 | INC-97 | Identidad y configuración del ejecutable (decisiones D2 y D3) | Especificación; casos del OE4; arquitectura; guía del repositorio; implementado en la configuración del proyecto | 29/09/2026 |
 | INC-104 | Ningún texto visible queda escrito en C# | Implementado: `ProfileSelectContent`, `ReportContent` y rótulos del laberinto en datos | 29/09/2026 |
 | INC-116 | Un nivel se desbloquea también con todas las fases del anterior confirmadas | Arquitectura, apartados 7 y 12; HU-18; especificación; interfaces; casos y plan del OE4; implementado | 30/09/2026 |
+| INC-151 | El grupo de la evaluación con estudiantes es de grado quinto, por la autorización del colegio | Este documento, los fuentes del entregable del OE4 y el capítulo 9 del trabajo de grado; los radicados del OE1 y del OE2 conservan «cuarto» hasta que haya autorización expresa para editarlos | 13/10/2026 |
+| INC-152 | El inicio del Nivel 1 se veía demasiado oscuro | `N1_Apertura`, `N1_AparicionGuia`, `N1_Hallazgo`, `Level1_Cave` y `CaveLightingController`; el diseño de cámara del Nivel 1 no se edita | 13/10/2026 |
+| INC-153 | Todo paso de locomoción desplaza al actor al menos 0,01 | Cuatro destinos de la línea 7 de `N1_AparicionGuia` y tres pasos `Push` del Nivel 2; prueba de contenido nueva | 13/10/2026 |
+| INC-154 | Abrazar y dormir se ven de perfil | `ActionView`, ocho clips, `N1_NacimientoDelFuego` y `N1_Hallazgo`; resultados de los personajes (apartado C.16) | 13/10/2026 |
+| INC-155 | Troncos del bosque con menos empuje, sin huida bajo el cursor y con clic sobre todo el cuerpo | `N2_WheelLevelConfig`, `ForestObjectNudge` y `RollingLog`; la prueba de RF-23 pasa a «menor o igual» | 13/10/2026 |
+| INC-156 | El lado de «Girar» se dibuja con flechas curvas de Phosphor Icons | `Level2_Maze`, índice de sprites y créditos | 13/10/2026 |
+| INC-157 | Vocabulario de grado quinto en narrativas, río y resumen del Nivel 2 | 21 reemplazos en los assets de `Narrative/`, `River/` y `Wheel/N2_ResumenNivel`; el guion radicado espera cotejo y autorización | 13/10/2026 |
+| INC-158 | La primera mecánica explica el botón de ayuda con un aviso | Interfaces; `HelpButtonIntro`, `FireHelpIntro` y `N1_Mensajes` | 13/10/2026 |
+| INC-159 | La pausa pasa de tres botones a cinco; deja sin efecto a INC-49 en el número de botones | OE1, OE2 (RF-07 y HU-17) e Interfaces; `MenuPausa.prefab` y `PauseMenuContent`. Los radicados esperan autorización | 13/10/2026 |
+| INC-160 | El diálogo tiene «Atrás» | Interfaces; `DialogueRunner`, `ActorTimeline`, `NarrativeSceneController` y `Narrative.unity` | 13/10/2026 |
 
 ## 4. Verificación
 
@@ -141,10 +171,14 @@ En el corte, `Game.Reporting.Tests` tiene 9 métodos y 14 casos, y `Game.Content
 | RF-46 | El informe nombra el perfil que se está mirando | `TeacherReport_RF46_ElDetalleNombraElPerfilQueSeEstaMirando` |
 | RF-02, RF-09, RNF-14 | Panel de perfiles por páginas, «Cerrar el juego» en una línea, perfil ilegible y guardado con temporal | `ProfileSelect_RF02_ConOchoPerfilesTodosSeAlcanzanConLasFlechas`, `MainMenu_RF09_CerrarElJuegoNoLlevaPapeleraYSuRotuloCabeEnUnaLinea`, `ProfileSelect_RNF14_ElegirUnPerfilIlegibleAvisaYNoLanza`, `DiskFileSystem_RNF14_SiLaEscrituraFallaElPerfilAnteriorQuedaIntacto` |
 | RNF-04 | Una línea de registro por carga | `SceneLoader_RNF04_CadaCargaDejaSuTiempoEnElRegistro` |
+| INC-159 | La pausa tiene cinco botones, en orden y cableados | `PauseMenu_INC159_ElPanelBaseTieneCincoBotonesEnOrdenYCableados` |
+| INC-160 | «Omitir» va encima de «Continuar» y «Atrás» en su fila, sin pisarse | `NarrativeScene_INC160_OmitirVaEncimaDeContinuarAtrasEnSuFilaYNingunoPisaAlOtro` |
+| INC-158 | El aviso del botón de ayuda sale mientras el perfil no haya confirmado la fase 1 | `FireHelpIntro_INC158_SaleMientrasElPerfilNoHayaConfirmadoLaFase1` |
+| INC-155 | Con el cursor sobre el objeto, ninguna categoría se aparta | `ForestObjectNudge_INC155_ConElCursorSobreElObjetoNoSeApartaNingunaCategoria` |
 
 ### 4.2 Corridas declaradas
 
-La Tabla G.6 recoge las corridas del incremento y las corridas completas del cierre, con las cifras de la Tabla 9.2 del documento principal. Las del 25/09, el 30/09 y el 01/10/2026 se hicieron con el Editor abierto y la vista de juego a 1920 × 1080.
+La Tabla G.6 recoge las corridas del incremento y las corridas completas del cierre, con las cifras de la Tabla 9.2 del documento principal; la fila del 13/10/2026 está también en su Tabla 9.6. Las del 25/09, el 30/09 y el 01/10/2026 se hicieron con el Editor abierto y la vista de juego a 1920 × 1080.
 
 **Tabla G.6.** Corridas del incremento y corridas completas de la suite.
 
@@ -157,6 +191,7 @@ La Tabla G.6 recoge las corridas del incremento y las corridas completas del cie
 | 01/10/2026 | Correcciones del Nivel 3 (tarjeta D10-3) | 426 de 427 (1 omitida) | 363 de 363 | 1 705 s; la prueba de memoria pasó con 1 982 MB y el Editor reiniciado |
 | 01/10/2026 | Primer candidato del ejecutable | 433 de 434 (1 omitida) | 364 de 364 | 7,8 s y 28 min |
 | 01/10/2026 | Corte del entregable (ejecutable del corte) | 469 de 470 (1 omitida) | 376 de 376 | 8,9 s y 29 min (1 743,5 s) |
+| 13/10/2026 | Verificación de rc4 (`56897fd`) | 785 de 786 (1 omitida) | 427 de 427 | `suite2.ps1` en 24,8 min con 1 213 pruebas listadas y ejecutadas una vez; precede a la disposición final del cuadro de diálogo (INC-160), cuyas pruebas se corrieron aparte y pasaron |
 
 La omitida de las corridas del 24/09 al 01/10/2026 es `ProfileEraser_INC34_SobreDiscoRealCubreLosDosEscenariosDeAlmacenamiento`, que se omite sola con un motivo declarado: el equipo de desarrollo no hace cumplir el atributo de solo lectura sobre carpetas, así que el escenario de solo lectura de INC-34 no puede simularse en él. El mismo escenario está cubierto con un sistema de archivos simulado (`SaveStore_INC34_BorraDesdeLaRutaDeRespaldoAunqueDatosNoSeaEscribible`). La prueba de memoria del Nivel 3 lee la memoria reservada del Editor, de modo que mide la sesión y no el nivel; el valor que vale para RNF-05 es el del ejecutable (apartado 4.3).
 
@@ -261,6 +296,8 @@ Los criterios 6, 8, 9 y 10 se revisaron de nuevo con el ejecutable del corte, so
 | `Assets/Tests/EditMode/Architecture/` | `AssemblyDependencyTest`, `PlayerSettingsTest`, `SceneTextTest`, `InputSchemeTest` y `TraceabilityTests` |
 | `Assets/Tests/PlayMode/UI/` y `Assets/Tests/PlayMode/Core/` | `TeacherReportTests`, `EraseDialogTests`, `MainMenuTests`, `LevelSelectTests`, `ProfileSelectTests` y `SceneLoaderTests` |
 | `claudeDocs/tasks/OE4/` | Plan, catálogo de casos y tablero del OE4; hoja de verificaciones manuales; formato de consentimiento; arnés `oe4.ps1`, corredor `editor.ps1` y perfiles semilla en `herramientas/`; evidencias en `evidencias/` |
+| `Assets/Game/Scripts/Runtime/Scaffolding/HelpButtonIntro.cs`, `Assets/Game/Scripts/Runtime/Levels/Fire/FireHelpIntro.cs` | El aviso del botón de ayuda de la primera mecánica (INC-158) |
+| `Assets/Game/Prefabs/UI/MenuPausa.prefab`, `Assets/Game/Data/PauseMenuContent.asset`, `Assets/Game/Scripts/Runtime/Core/PauseMenuPolicy.cs` y `PhaseNarrative.cs` | La pausa de cinco botones y la tabla de la narrativa que presenta cada fase (INC-159) |
 
 ## 6. Evaluación del OE4 y verificaciones a cargo de Santiago Benavides Rey
 

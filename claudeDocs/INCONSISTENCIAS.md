@@ -3536,7 +3536,7 @@ radicados del OE1 y del OE2 siguen diciendo «cuarto» hasta que haya autorizaci
 
 ### INC-152 · La luz del inicio del Nivel 1: narrativas y cueva — cerrado (13/10/2026)
 
-**El conflicto.** En la sesión del 13/10/2026 los estudiantes dijeron que el inicio del Nivel 1 estaba muy
+**El conflicto.** En la sesión del 13/10/2026 los estudiantes vieron el inicio del Nivel 1 demasiado
 oscuro. Eran tres narrativas (`N1_Apertura`, `N1_AparicionGuia`, `N1_Hallazgo`) y la cueva de la mecánica.
 
 **Qué decían los documentos.** El diseño de cámara del N1 (`docs/Camara_Narrativa_N1.md`) fija un estado de luz
@@ -3649,7 +3649,7 @@ captar clics. **Pruebas:** `ForestObjectNudge_INC155_ConElCursorSobreElObjetoNoS
 ### INC-156 · Las flechas curvas de «Girar» — cerrado (13/10/2026)
 
 **El conflicto.** En el laberinto, cada lado de «Girar» era la misma punta de flecha (`DropdownArrow`) girada +90° o
-−90°. En la sesión del 13/10/2026 los estudiantes no entendían hacia dónde iba el giro.
+−90°. La sesión del 13/10/2026 dejó como hallazgo que esas flechas no indicaban con claridad hacia dónde iba el giro.
 
 **Qué decían los documentos.** `Assets/Game/Art/Inventario.md` listaba `ui_flecha.png` para la lista del Nivel 2 y
 la cruceta del Nivel 3, y los créditos acreditan Phosphor solo para los iconos de pausa.
@@ -3746,7 +3746,7 @@ el menú de rc3. PlayMode pasó en la suite completa del 13/10/2026 (427 de 427)
 
 ### INC-160 · El botón «Atrás» del diálogo — cerrado (13/10/2026)
 
-**El conflicto.** En la sesión del 13/10/2026 los estudiantes pidieron volver a leer la línea anterior.
+**El conflicto.** La sesión del 13/10/2026 dejó como hallazgo que el cuadro de diálogo no permitía volver a leer la línea anterior.
 
 **Qué decían los documentos.** RF-05 y RF-06 describen «Continuar» y «Omitir»; ningún documento prevé volver atrás.
 
