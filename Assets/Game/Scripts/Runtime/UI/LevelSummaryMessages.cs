@@ -1,4 +1,5 @@
 using Game.Core;
+using Game.Scaffolding;
 using UnityEngine;
 
 namespace Game.UI
@@ -51,5 +52,9 @@ namespace Game.UI
         [field: SerializeField]
         [field: Tooltip("Secuencia narrativa a la que sale «Continuar». Vacío = menú de niveles. El Nivel 3 declara la escena final del juego (INC-39, guion §9).")]
         public string ClosingSequenceId { get; private set; }
+
+        [field: SerializeField]
+        [field: Tooltip("Algoritm en la forma de este nivel (INC-45): fuego en el 1, rueda en el 2, gota en el 3. Es el prefab del guía (Algoritm_Fuego, _Rueda o _Gota); el resumen lo pone en el hueco del avatar, en reposo y con su cara final (INC-136, INC-148).")]
+        public CharacterRig Guide { get; private set; }
     }
 }

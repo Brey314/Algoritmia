@@ -1,0 +1,17 @@
+[
+ {
+  "antes": "Pausa (RF-07). No es un estado del FSM sino una capa de UI sobre Playing, con Reanudar, Reiniciar —que vuelve a entrar en Playing con la fase activa; el Nivel 3, cuyas tres fases comparten escena, la actualiza al confirmar cada una (GameFlow.SetPlayingPhase)— y Volver al menú de niveles. Modelarla como estado obligaría a duplicar la transición de retorno desde cada fase.",
+  "despues": "Pausa (RF-07). No es un estado del FSM sino una capa de UI sobre Playing, con Reanudar, Reiniciar —que vuelve a entrar en Playing con la fase activa; el Nivel 3, cuyas tres fases comparten escena, la actualiza al confirmar cada una (GameFlow.SetPlayingPhase)—, Volver a ver la historia, Volver al menú de niveles y Guardar y salir. Volver a ver la historia pasa a Narrative con la secuencia que presenta la fase activa, y esa secuencia devuelve a Playing en la misma fase; en una fase sin secuencia propia, como el amarre del Nivel 3, la opción no se muestra. Guardar y salir guarda el perfil activo y después cierra la aplicación (RF-09). Modelarla como estado obligaría a duplicar la transición de retorno desde cada fase.",
+  "nota": "INC-159, sección 4 (Pausa)."
+ },
+ {
+  "antes": "Sesión del perfil activo (lista, carga, crea y guarda perfiles), regla de desbloqueo de niveles y regla de «Reiniciar» del menú de pausa; C# plano",
+  "despues": "Sesión del perfil activo (lista, carga, crea y guarda perfiles), regla de desbloqueo de niveles y reglas del menú de pausa («Reiniciar», «Volver a ver la historia» y «Guardar y salir»); C# plano",
+  "nota": "INC-159, sección 6 (fila PauseMenuPolicy: Restart, StoryFor, WatchStory y SaveThenQuit)."
+ },
+ {
+  "antes": "30/09/2026 (Santiago Benavides Rey). Decisiones de Santiago que se implementan en el juego; cierra INC-116 e INC-117: tras un cierre inesperado durante la escena de cierre del Nivel 2, el menú de niveles desbloquea el Nivel 3 a partir de las fases confirmadas, sin dato nuevo en el perfil (7); «Reiniciar» vuelve a la fase activa también en el Nivel 3, que la registra al confirmar cada fase (4).",
+  "despues": "30/09/2026 (Santiago Benavides Rey). Decisiones de diseño que se implementan en el juego; cierra INC-116 e INC-117: tras un cierre inesperado durante la escena de cierre del Nivel 2, el menú de niveles desbloquea el Nivel 3 a partir de las fases confirmadas, sin dato nuevo en el perfil (7); «Reiniciar» vuelve a la fase activa también en el Nivel 3, que la registra al confirmar cada fase (4).",
+  "nota": "Norma de redacción del 14/10/2026: sin nombres del equipo como sujeto de decisiones (fila 16 de la sección 12)."
+ }
+]

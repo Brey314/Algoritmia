@@ -1,0 +1,17 @@
+[
+ {
+  "antes": "4. El sistema muestra el menú de pausa con las tres opciones: Reanudar, Reiniciar y Volver al menú de niveles.",
+  "despues": "4. El sistema muestra el menú de pausa con cinco opciones, en este orden: Reanudar, Reiniciar, Volver a ver la historia, Volver al menú de niveles y Guardar y salir.",
+  "nota": "INC-159, HU-17 paso 4. Si el DryRun no lo encuentra, el «4.» es numeración automática: quitar «4. » de antes y despues."
+ },
+ {
+  "antes": "El botón de pausa está visible de forma permanente en toda escena jugable y no aparece en escenas narrativas (RF-07). El menú de pausa ofrece exactamente Reanudar, Reiniciar y Volver al menú de niveles. Mientras el menú de pausa está abierto, el nivel queda detenido y ese tiempo no se contabiliza (OE1 3.6.1, nota 1). Reanudar restituye el estado exacto en que se abrió la pausa. Reiniciar pide confirmación, vuelve a cargar la fase activa en su estado inicial y nunca vuelve a bloquear un nivel ya desbloqueado ni a desmarcar una fase confirmada (RF-03, RF-41); no borra los indicadores ya registrados (OE1 3.6.1, nota 4). Volver al menú de niveles conserva el progreso guardado hasta la última fase confirmada (RF-04). Ni la pausa ni la confirmación de reinicio muestran pantalla de derrota, cuenta regresiva ni atribuyen el reinicio a un fallo (CP-02).",
+  "despues": "El botón de pausa está visible de forma permanente en toda escena jugable y no aparece en escenas narrativas (RF-07). El menú de pausa ofrece exactamente Reanudar, Reiniciar, Volver a ver la historia, Volver al menú de niveles y Guardar y salir. Mientras el menú de pausa está abierto, el nivel queda detenido y ese tiempo no se contabiliza (OE1 3.6.1, nota 1). Reanudar restituye el estado exacto en que se abrió la pausa. Reiniciar pide confirmación, vuelve a cargar la fase activa en su estado inicial y nunca vuelve a bloquear un nivel ya desbloqueado ni a desmarcar una fase confirmada (RF-03, RF-41); no borra los indicadores ya registrados (OE1 3.6.1, nota 4). Volver al menú de niveles conserva el progreso guardado hasta la última fase confirmada (RF-04). Volver a ver la historia no pide confirmación y no cambia nada de lo confirmado. Guardar y salir pide confirmación y guarda el perfil activo antes de cerrar (RF-09). Ni la pausa ni la confirmación de reinicio muestran pantalla de derrota, cuenta regresiva ni atribuyen el reinicio a un fallo (CP-02).",
+  "nota": "INC-159, HU-17 criterios de aceptación."
+ },
+ {
+  "antes": "• El menú de pausa presenta exactamente tres opciones: Reanudar, Reiniciar y Volver al menú de niveles (RF-07).",
+  "despues": "• El menú de pausa presenta exactamente cinco opciones, en este orden: Reanudar, Reiniciar, Volver a ver la historia, Volver al menú de niveles y Guardar y salir (RF-07).",
+  "nota": "INC-159, HU-17 reglas de negocio."
+ }
+]

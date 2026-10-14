@@ -163,7 +163,7 @@ aceptación. Los «propuesta» los confirma Santiago en el triaje (T21). **Ningu
 
 | DEF | Caso | Severidad | Tipo propuesto | Resumen | Estado |
 |---|---|---|---|---|---|
-| DEF-RC3-01 | PF-RF45-01 | Observación | decisión de Santiago (documento o arte) | El avatar de Algoritm en el resumen de nivel es un círculo con el texto «Algoritm», pese al diseño final | Abierto |
+| DEF-RC3-01 | PF-RF45-01 | Observación | decisión de Santiago (documento o arte) | El avatar de Algoritm en el resumen de nivel es un círculo con el texto «Algoritm», pese al diseño final | Abierto en rc3 y en rc4; corregido en el código el 14/10/2026 (`86a9898`, posterior a rc4), ver §17 |
 | DEF-RC3-02 | PF-RF01-03 | Observación | documento (casos.md) | casos.md describe la portada de otra manera; el criterio se cumple | Abierto |
 | DEF-RC3-03 | PF-RF05-05 | Observación | documento o arte | El criterio «cara no tapada» no contempla el gesto en reposo del Niño (excepción `CARA_TAPADA`) | Abierto |
 | DEF-RC3-04 | PF-RF14-01 | Observación | documento (casos.md) | Las siete piezas del N1 caen en sitios distintos en cada entrada; las coordenadas del caso no valen | Abierto |
@@ -309,7 +309,7 @@ PS-01..05 de la dirección de sonido, y lo que traiga la evaluación con estudia
 - DEF-RC3-05: dar a la cabecera del informe docente una altura propia para los iconos y ensanchar «Volver al menú» para que no parta su texto.
 - DEF-RC3-10: acortar la instrucción del bosque en `N2_Guia.asset` o subir la altura de su tablilla, para que las tres líneas quepan.
 - DEF-RC3-11: ensanchar el botón «Eliminar datos» (o acortar el rótulo) y dar más aire a la ruta de respaldo del diálogo de «Salir».
-- DEF-RC3-01: sustituir el círculo con el texto «Algoritm» del resumen de nivel por su arte final.
+- DEF-RC3-01: sustituir el círculo con el texto «Algoritm» del resumen de nivel por su arte final (corregido en el código el 14/10/2026, ver §17).
 
 **Mecánica**
 - DEF-RC3-09: ignorar la entrada unos ~300 ms tras cargar el resumen, para que un doble clic en «Omitir» no pulse «Volver al menú de niveles».
@@ -466,3 +466,12 @@ Nota añadida; no corrige las secciones anteriores, que citan el rc4 compilado d
 - **Suite completa** sobre `0405eba` (`suite2.ps1`, 24,4 min; `evidencias/suites/rc4-0405eba/`): EditMode 793 = 792 aprobadas y 1 omitida por entorno, PlayMode 435 de 435, 0 fallos; 1 228 listadas y 1 228 ejecutadas. Sustituye a la de la §14 (785 de 786 y 427 de 427).
 - **Veredictos `PF-*`:** siguen siendo los de rc3. rc4 no tuvo pasada de casos ni se probó con estudiantes, así que los cuatro F no se han vuelto a ejecutar; sus defectos se dan por corregidos en código, con pruebas nuevas en verde (`InputGuard`, `DEFRC3`, `TeacherReport`, `EraseDialog`, `MainMenu`, `ForestScene`).
 - **Pendiente (equipo de desarrollo):** revisar las capturas `Personajes_N1_*_v2.png` del abrazo de la línea 12 y de la escena 1.1; la §14 las daba por sin corregir y el retoque de `0405eba` no tiene revisión visual registrada. Etiquetar rc4: lo decide Santiago Benavides Rey.
+
+## 17. Nota del 14/10/2026 · DEF-RC3-01 corregido en el código, después de rc4; hallazgo DEF-RC4-01
+
+Nota añadida; no corrige las secciones anteriores. La §15 dejó DEF-RC3-01 en trabajo futuro y la tabla de la §6 conserva su estado de la pasada.
+
+- **DEF-RC3-01 (Observación, `PF-RF45-01`) corregido en el código en `86a9898` (14/10/2026), posterior a rc4.** El avatar del resumen de nivel ya no es un círculo con el texto «Algoritm»: es el prefab del guía en reposo, con su diseño final y la cara que parpadea, en la forma del nivel terminado (Nivel 1, llama; Nivel 2, disco de madera; Nivel 3, gota), y lo declara el asset de mensajes de cada nivel.
+- **Pruebas:** `LevelSummary_DEFRC301_*`, 3 casos en EditMode y 3 en PlayMode, en verde. EditMode completa, 795 de 796 (1 omitida por entorno); `tests-play LevelSummary`, 8 de 8. Capturas: `evidencias/rc4/DEF-RC3-01_N1.png`, `_N2.png` y `_N3.png`.
+- **rc4 no se recompiló.** rc4 está compilado desde `0405eba`, así que el ejecutable rc4 todavía muestra el círculo. La corrección entra en el siguiente candidato. El veredicto de `PF-RF45-01` sigue siendo el de rc3: el caso no se repitió sobre ningún ejecutable con la corrección.
+- **DEF-RC4-01 (Observación, corregida el 14/10/2026 en `ca6fd91`, entra en rc5).** En el resumen del Nivel 3 a 1920 × 1080 la tarjeta medía más de 1080 px y se cortaban sus bordes superior e inferior (captura `evidencias/rc4/DEF-RC3-01_N3.png`). Se redujo el espaciado vertical de la tarjeta (48 → 32 px) y se ensanchó el texto de la habilidad (710 → 900 px): la tarjeta mide ahora 927 a 989 px en los tres niveles (capturas del Editor en `evidencias/rc5/`). rc5 (`build-rc5.md`, 426,9 MB) se compiló sin pasada de casos ni medidas de RNF-04/05.

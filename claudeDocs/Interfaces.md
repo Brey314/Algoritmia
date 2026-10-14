@@ -147,7 +147,7 @@ salpicadura, y se marca y vuelve al inventario solo lo mal puesto, nunca los esp
 espuma de la cascada, a y 0,395 (INC-124).
 
 **13 · Resumen de fin de nivel.** Mockups 13 y 13b, en código desde el 12/09/2026: tablilla
-centrada sobre arena con el avatar del guía y el título («Esto es lo que pasó en la cueva»), el
+centrada sobre arena con el avatar del guía —el prefab de Algoritm en reposo, en la forma del nivel terminado, que declara `LevelSummaryMessages.Guide` (DEF-RC3-01)— y el título («Esto es lo que pasó en la cueva»), el
 hallazgo («Descubriste que el fuego necesita chispa y aire»), el relato en viñetas —una por frase
 que compone `LevelSummaryComposer`—, el recuadro verde con la habilidad nombrada («probar y
 ajustar», RF-12) y dos botones: «Volver al menú de niveles» y «Continuar», que hacen lo mismo. En los niveles 1 y 2 llevan al menú de niveles. En el Nivel 3 llevan los dos a la escena final del juego y de ahí a los créditos (INC-39); lo declara `LevelSummaryMessages.ClosingSequenceId` en `N3_ResumenNivel`. Todo en palabras:
@@ -183,7 +183,7 @@ carbón oscuro `#1F100C` (solo el texto del diálogo y el nombre del hablante) �
 guía de los niveles 2 y 3; Nunito para el diálogo, el cuerpo, la instrucción del Nivel 1 y las
 cifras del informe docente. Las dos SIL OFL 1.1 y con soporte de `ñ`, tildes y `¿ ¡`. Tamaños en el
 juego, a 1920×1080: diálogo y nombre del hablante a 30 px, el título del juego a 112 px y texto de
-lectura desde 26 px; bajan de ahí el rótulo «Algoritm» del resumen, la etiqueta del laberinto y el
+lectura desde 26 px; bajan de ahí la etiqueta del laberinto y el
 «Aún no» del taller (22 px) y la instrucción del Nivel 1 (24 px).
 
 ---
@@ -207,7 +207,7 @@ lectura desde 26 px; bajan de ahí el rótulo «Algoritm» del resumen, la etiqu
 4. **Área táctil de 88×88 px** a resolución de diseño 1920×1080 en todo botón de acción
    (§10.1). La motricidad fina de un niño de nueve años no es la de un adulto. Quedan por debajo
    los controles que van en una franja estrecha o dentro de un blanco mayor: «Continuar» (260×76)
-   y «Omitir» (200×76) en el cuadro de diálogo, y en el editor de bloques del laberinto «−» y «+»
+   «Atrás» (200×76) y «Omitir» (260×76) en el cuadro de diálogo, y en el editor de bloques del laberinto «−» y «+»
    de la cuenta (64×64), la flecha de giro (52×52), los dos lados de «Girar» (82×64) y las flechas
    que desplazan la lista (56×56).
 5. **Contraste ≥ 4.5:1** (RNF-20). El par carbón sobre marfil lo sostiene; texto claro sobre
