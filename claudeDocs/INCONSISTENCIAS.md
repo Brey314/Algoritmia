@@ -66,6 +66,9 @@ aviso del botón de ayuda (INC-158), la pausa de cinco botones, que deja sin efe
 «Atrás» del diálogo (INC-160). Quedan cerrados **INC-01** a **INC-160**; INC-154 se cerró con el commit `d8ab0f4`. Su verificación se cerró el 13/10/2026 (commit `56897fd`): la suite completa dio EditMode 785 de 786 (1 omitida por entorno) y
 PlayMode 427 de 427, y el candidato rc4 pesó 426,9 MB (`claudeDocs/tasks/OE4/evidencias/build-rc4.md`). La suite corrió
 antes del último cambio de disposición del diálogo (INC-160); lo que ese cambio afecta se volvió a correr aparte y pasó.
+El rc4 vigente se recompiló después desde `0405eba` (13/10/2026, noche): 426,9 MB, peor carga de escena de 0,403 s,
+pico de memoria privada de 1 083,3 MiB y suite completa de 792 de 793 en EditMode (1 omitida por entorno) y 435 de 435
+en PlayMode; recoge además los defectos DEF-RC3-05, -09, -10 y -11 del OE4 y los retoques de INC-154.
 Siguen abiertos los **pendientes de Santiago** que el juego no zanja: uno del trabajo de grado y uno del sonido (ver
 «Residuos y puntos abiertos»). El entregable del OE3 se reescribe al estado vigente del prototipo
 (acta D10), lo que deja sin efecto la decisión D1 del 29/09/2026 de darle solo una nota fechada.
@@ -3581,7 +3584,8 @@ dirección (`N2_Escena21_Bosque` y dos en `N2_PuenteI_Bosque`). **Prueba:**
 Editor al escribir esta entrada. **Verificación del 13/10/2026 (`56897fd`).** En el motor, la familia se desplaza de x 0,281 a 0,333 (t = 0,35 s) a
 x 0,180 a 0,220 (t = 3,05 s), de perfil y hacia la izquierda (`claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/Inc154_AparicionGuia_L07_caminata.txt`).
 Al llegar, Papá (x = 0,180) queda parcialmente detrás de Algoritm (x = 0,168). **Pendiente:** decidir si ese solapamiento
-se corrige (responsable: equipo de desarrollo).
+se corrige (responsable: equipo de desarrollo). `0405eba` (13/10/2026) cambió `N1_AparicionGuia` para que nadie
+quede escondido tras Algoritm en la 1.1; sus capturas `_v2` no tienen revisión visual registrada.
 
 ### INC-154 · El abrazo y el sueño de la familia se ven de perfil — cerrado (13/10/2026)
 
@@ -3617,7 +3621,9 @@ Según la sesión local, en EditMode pasaron `Character` (220 de 220) y `Narrati
 y `pose_preview.py` también. **Verificación del 13/10/2026 (`56897fd`).** Con capturas del motor
 (`claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/`): el abrazo de la línea 5 se lee; el de la línea 12 se lee a medias,
 porque Papá no rodea a la Niña; el sueño de perfil no tapa el fuego. PlayMode pasó en la suite completa (427 de 427).
-**Pendiente:** el abrazo de la línea 12 (responsable: equipo de desarrollo).
+**Pendiente:** el abrazo de la línea 12 (responsable: equipo de desarrollo). `0405eba` (13/10/2026) retocó el clip
+`char_papa_anim_abrazar` y los destinos de las líneas 4 de `N1_NacimientoDelFuego` para que Papá se incline hacia el
+abrazo; las capturas `_v2` no tienen revisión visual registrada.
 
 ### INC-155 · Los troncos del bosque: menos empuje, sin huida bajo el cursor y clic sobre todo el cuerpo — cerrado (13/10/2026)
 
@@ -3872,7 +3878,9 @@ no.
   `52908f1`, EditMode estaba en verde por carril; PlayMode, la suite completa y rc4 estaban pendientes. **Cierre de la
   verificación (13/10/2026, `56897fd`):** suite completa con EditMode 785 de 786 (1 omitida por entorno) y PlayMode 427
   de 427, sobre `0839352` con el arreglo de `HelpButtonIntro` (INC-158); rc4 de 426,9 MB (`evidencias/build-rc4.md`); y
-  la disposición final del diálogo de INC-160, verificada aparte porque la suite la precede.
+  la disposición final del diálogo de INC-160, verificada aparte porque la suite la precede. **Recompilación
+  (13/10/2026, noche, `0405eba`):** rc4 de 426,9 MB con RNF-04 en 0,403 s y RNF-05 en 1 083,3 MiB medidos sobre el
+  ejecutable, y suite completa de 792 de 793 en EditMode (1 omitida) y 435 de 435 en PlayMode.
 
 - **rev. 25 (13/10/2026)** — Sesión de evaluación con estudiantes en el Colegio El Libertador IED, sede A,
   con 4 estudiantes de grado quinto. Se registra y cierra **INC-151**: el grupo es de grado quinto por la

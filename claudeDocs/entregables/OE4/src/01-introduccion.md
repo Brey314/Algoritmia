@@ -22,4 +22,4 @@ La evaluación con estudiantes de grado quinto no entra en los 136 casos ni en l
 
 ## 1.4 Corte del documento
 
-Las cifras de este documento corresponden al candidato rc3 y a la pasada de pruebas hecha el 10/10/2026. Las pasadas sobre rc1 y rc2 (ambas del 01/10/2026) fueron previas; sus veredictos no se heredan, porque el juego cambió en 108 commits entre rc2 y rc3, y se citan solo como historia de las correcciones en el apartado 3.6.
+Los veredictos de este documento corresponden al candidato rc3 y a la pasada de pruebas hecha el 10/10/2026. El 13/10/2026 se recompiló el candidato rc4 desde `0405eba`, con las correcciones de código del triaje (apartado 3.6); de rc4 se dan el tamaño, las cargas, la memoria y la suite (apartados 3.5 y 3.7), y no tiene pasada propia de los casos `PF-*`. Las pasadas sobre rc1 y rc2 (ambas del 01/10/2026) fueron previas; sus veredictos no se heredan, porque el juego cambió en 108 commits entre rc2 y rc3, y se citan solo como historia de las correcciones en el apartado 3.6.

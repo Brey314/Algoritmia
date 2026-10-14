@@ -454,3 +454,15 @@ Nota añadida; no corrige las secciones anteriores ni la §13, cuyo recuento (12
 
 - **Triaje de los 16 defectos de rc3 (decisión del usuario):** *documento* DEF-RC3-02, -04, -06, -07 y -12, ya aplicado en `casos.md`; *código*, para rc4, DEF-RC3-05, -09, -10 y -11, cuya corrección confirmará el commit que la recoja; *trabajo futuro* DEF-RC3-01, -03, -08, -I01, -I02, -I03 y -I04. La tabla de defectos de §6 conserva su estado «Abierto» de la pasada.
 - Ningún dato de esta nota viene de PlayMode ni de rc4.
+
+## 16. Nota del 13/10/2026 (noche) · rc4 recompilado desde `0405eba`
+
+Nota añadida; no corrige las secciones anteriores, que citan el rc4 compilado desde `0839352` (§14) y dicen que las cifras de RNF-04 y RNF-05 son las de rc3. Ese rc4 se sustituyó; el vigente es el de `evidencias/build-rc4.md`.
+
+- **Procedencia:** compilado de 23:02 a 23:03 desde `0405eba`, con `git diff HEAD` vacío sobre `Assets/`, `Packages/` y `ProjectSettings/` y sin archivos sin seguimiento en ellas. Sin etiqueta. Incluye las correcciones de código del triaje de la §15: DEF-RC3-05 (cabeceras del informe docente), DEF-RC3-09 (`InputGuard`, 0,3 s sin clics tras cada carga de escena), DEF-RC3-10 (tablilla del bosque más ancha) y DEF-RC3-11 (textos de botones del informe docente y de los diálogos de borrar y salir), y los retoques de narrativa de INC-154 (Papá en el abrazo de la 1.4.4; nadie tras Algoritm en la 1.1).
+- **RNF-06:** 426 932 086 bytes = 407,2 MiB = 426,9 MB (252 archivos), con 73,1 MB de margen frente a los 500 MB. rc3 pesó 426,6 MB.
+- **RNF-04:** el peor valor fue 0,403 s, en la primera `Narrative`; 46 cargas en 4 lanzamientos, a 1920 × 1080. `Boot` a `MainMenu`, 2,76 s (cota desde `Start-Process`). Son una o dos cargas por escena (17 en `Narrative`), menos de las tres de `PF-RNF04-01`: la tabla de rc3 sigue siendo la evidencia de ese caso y la de rc4 la confirma.
+- **RNF-05:** pico de memoria privada de 1 083,3 MiB (1,06 GiB) en `Level1_Cave` y de trabajo de 434,6 MiB en `Level3_River`, sobre 373 muestras; el límite es 2 048 MiB. rc3 dio 1 094 MiB y 438 MiB. **RNF-10:** 373 filas de red sin ninguna conexión TCP ni UDP a una dirección que no fuera de loopback.
+- **Suite completa** sobre `0405eba` (`suite2.ps1`, 24,4 min; `evidencias/suites/rc4-0405eba/`): EditMode 793 = 792 aprobadas y 1 omitida por entorno, PlayMode 435 de 435, 0 fallos; 1 228 listadas y 1 228 ejecutadas. Sustituye a la de la §14 (785 de 786 y 427 de 427).
+- **Veredictos `PF-*`:** siguen siendo los de rc3. rc4 no tuvo pasada de casos ni se probó con estudiantes, así que los cuatro F no se han vuelto a ejecutar; sus defectos se dan por corregidos en código, con pruebas nuevas en verde (`InputGuard`, `DEFRC3`, `TeacherReport`, `EraseDialog`, `MainMenu`, `ForestScene`).
+- **Pendiente (equipo de desarrollo):** revisar las capturas `Personajes_N1_*_v2.png` del abrazo de la línea 12 y de la escena 1.1; la §14 las daba por sin corregir y el retoque de `0405eba` no tiene revisión visual registrada. Etiquetar rc4: lo decide Santiago Benavides Rey.

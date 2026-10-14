@@ -18,10 +18,11 @@ SALIDA = AQUI.parent / "tools" / "pares"
 FUENTE = AQUI / "cap9-evaluacion.md"
 
 # Último párrafo del apartado 8.3: ancla de la primera entrada y modelo del estilo Normal.
-CIERRE_8_3 = ("Lo pendiente pasa al cuarto objetivo: correr la carpeta portable en otro equipo y en uno sin tarjeta "
-              "gráfica dedicada, repitiendo allí las medidas, jugar con el adaptador de red deshabilitado, cronometrar "
-              "un recorrido completo hecho por una persona y observar a estudiantes jugando para cerrar PG-05 y PG-06, "
-              "con el consentimiento informado de sus acudientes (RNF-12, Anexo F).")
+CIERRE_8_3 = ("Lo pendiente pasó al cuarto objetivo: correr la carpeta portable en otro equipo y en uno sin tarjeta "
+              "gráfica dedicada, jugar sin conexión a internet, cronometrar un recorrido completo hecho por una "
+              "persona y observar a estudiantes jugando para cerrar PG-05 y PG-06, con el consentimiento informado "
+              "de sus acudientes (RNF-12, Anexo F). Esas comprobaciones se hicieron el 13/10/2026 y sus resultados "
+              "están en el apartado 9.2.")
 MODELOS = {  # estilo -> texto completo de un párrafo del capítulo 8 con ese estilo
     "Título 1": "8. DESARROLLO DEL PROTOTIPO FUNCIONAL",
     "Título 2": "8.1 Desarrollo",
