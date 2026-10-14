@@ -177,6 +177,45 @@ namespace Game.UI.Tests
             Assert.That(levelSelect.LockBadgeShownFor(LevelId.River), Is.False, "y sin candado (RNF-19)");
         }
 
+        // DEF-RC3-01: el avatar era un círculo con el texto «Algoritm». Ahora es el guía con su arte final
+        // (INC-136, INC-148), en la forma del nivel que se acaba de terminar (INC-45).
+        [TestCase(LevelId.Fire, 1, "Algoritm_Fuego(Resumen)")]
+        [TestCase(LevelId.Wheel, 3, "Algoritm_Rueda(Resumen)")]
+        [TestCase(LevelId.River, 3, "Algoritm_Gota(Resumen)")]
+        [Timeout(45000)]
+        public async Task LevelSummary_DEFRC301_ElAvatarEsAlgoritmEnLaFormaDelNivelTerminado(
+            LevelId level, int phase, string expectedName)
+        {
+            var profile = NewProfile();
+            profile.Reach(level);
+            var runner = new GameObject("TestRunner").AddComponent<GameFlowRunner>();
+            await Awaitable.NextFrameAsync(); // GameFlowRunner.Start() navega solo a MainMenu
+            runner.GoTo(GameState.ProfileSelect);
+            runner.SelectProfile(profile);
+            Assume.That(runner.StartPlaying(level, phase), Is.True, "el arreglo de la prueba está roto");
+            Assume.That(runner.GoTo(GameState.LevelSummary), Is.True, "el arreglo de la prueba está roto");
+
+            // Sin SceneLoader el flujo no carga la escena: se carga aquí, como en GameEndingTests.
+            var load = SceneManager.LoadSceneAsync("LevelSummary", LoadSceneMode.Single);
+            while (load is { isDone: false })
+            {
+                await Awaitable.NextFrameAsync();
+            }
+
+            var summary = await WaitForComponentAsync<LevelSummaryController>(10f);
+            Assert.That(summary, Is.Not.Null, "no apareció el resumen de fin de nivel");
+            await Awaitable.NextFrameAsync();
+
+            var guide = summary.Guide;
+            Assert.That(guide, Is.Not.Null, "el resumen no puso a Algoritm en el avatar");
+            Assert.That(guide.name, Is.EqualTo(expectedName), "la forma de Algoritm es la del nivel terminado");
+            Assert.That(guide.transform.parent.name, Is.EqualTo("Avatar"), "va en el hueco del avatar de la cabecera");
+            Assert.That(guide.Current, Is.EqualTo(ActorAction.Idle), "en reposo: un resumen no es un saludo");
+            Assert.That(guide.FaceSet, Is.Not.Null, "con la cara final (INC-148)");
+            Assert.That(Object.FindObjectsByType<Text>(FindObjectsInactive.Include).Select(text => text.text),
+                Does.Not.Contain("Algoritm"), "ya no queda el rótulo de trabajo del círculo");
+        }
+
         // --- helpers -----------------------------------------------------------------------
 
         private static PlayerProfile NewProfile() =>

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Game.Core;
+using Game.Scaffolding;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -44,11 +45,16 @@ namespace Game.UI
         [Tooltip("La habilidad nombrada, en el recuadro verde (RF-12, CP-07).")]
         private Text skillLabel;
 
+        [SerializeField]
+        [Tooltip("El hueco del avatar, en la cabecera: ahí se instancia Algoritm en la forma del nivel (LevelSummaryMessages.Guide).")]
+        private RectTransform guideSlot;
+
         [SerializeField] private Button continueButton;
         [SerializeField] private Button menuButton;
 
         private readonly List<Text> _bullets = new List<Text>();
         private LevelSummaryMessages _messages;
+        private CharacterRig _guide;
 
         internal GameFlowRunner Runner { get; set; }
 
@@ -61,6 +67,7 @@ namespace Game.UI
         internal IReadOnlyList<Text> Bullets => _bullets;
         internal Button ContinueButton => continueButton;
         internal Button MenuButton => menuButton;
+        internal CharacterRig Guide => _guide;
 #endif
 
         private void Awake() => Runner ??= GameFlowRunner.Instance;
@@ -107,6 +114,7 @@ namespace Game.UI
             }
 
             _messages = messages;
+            PlaceGuide(messages.Guide);
 
             // El compositor devuelve la apertura y las frases del relato separadas por línea en
             // blanco: la primera es el título, el resto son las viñetas.
@@ -116,6 +124,28 @@ namespace Game.UI
             discoveryLabel.text = messages.Discovery;
             skillLabel.text = messages.SkillNamed;
             FillBullets(lines, 1);
+        }
+
+        /// <summary>
+        /// Pone a Algoritm, en la forma del nivel, llenando el hueco del avatar (DEF-RC3-01), como en los
+        /// créditos. Queda en reposo, con su cara final parpadeando: <c>CharacterRig</c> arranca solo en
+        /// <c>Idle</c>. Una sola vez: <see cref="Show"/> puede repetirse y el nivel no cambia dentro de
+        /// la escena.
+        /// </summary>
+        private void PlaceGuide(CharacterRig prefab)
+        {
+            if (_guide != null || prefab == null || guideSlot == null)
+            {
+                return;
+            }
+
+            _guide = Instantiate(prefab, guideSlot, false);
+            _guide.name = $"{prefab.name}(Resumen)";
+            var rect = (RectTransform)_guide.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.sizeDelta = Vector2.zero;
+            rect.anchoredPosition = Vector2.zero;
         }
 
         private LevelSummaryMessages MessagesFor(LevelId level) =>
