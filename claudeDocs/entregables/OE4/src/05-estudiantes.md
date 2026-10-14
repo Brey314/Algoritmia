@@ -16,7 +16,7 @@ La sesión cierra los puntos PG-05 y PG-06 del guion, que seguían abiertos porq
 
 | Elemento | Estado |
 |---|---|
-| Formato de consentimiento informado (RNF-12, `PF-RNF12-01`) | Entregado en blanco: `evidencias/consentimiento/Formato-consentimiento.md` |
+| Formato de consentimiento informado (RNF-12, `PF-RNF12-01`) | Entregado en blanco: `evidencias/consentimiento/Formato-consentimiento.md`. Con el formato en el Anexo F y los 4 consentimientos firmados, `PF-RNF12-01` pasó a P en la sesión del 13/10/2026 |
 | Visto bueno del colegio | «Formato de autorización institucional» del 17/09/2026, firmado por el rector Richard Maldonado, para grado quinto de primaria, dentro de la investigación doctoral de la docente Bibiana Patricia Rey Barrote, con la condición del consentimiento informado de padres o acudientes |
 | Consentimientos firmados | 4, uno por estudiante; se custodian |
 | Fecha y lugar de la sesión | 13/10/2026, Colegio El Libertador IED, sede A, con 4 estudiantes de grado quinto |
@@ -64,7 +64,7 @@ Esos dos equipos no son el equipo 1 de las mediciones sobre rc3 (apartado 2.6), 
 
 **H13, trabajo futuro.** La comprobación de mano se queda sin ejecutar. Cubre lo que el arnés enmascara porque mueve el puntero un píxel antes de cada clic: el clic tras cargar una escena sin mover el puntero (`PF-RNF02-01`), la papelera del laberinto (`PF-RF34-01`) y la octava fila del informe docente (`PF-RF46-01`). Mientras no se haga, esos tres casos conservan el veredicto de rc3.
 
-Los veredictos de la hoja HUM sí están incorporados a la Tabla 3.1 y al Anexo A, como los de una sesión manual sobre rc3 (no del arnés): H3 cierra `PF-RNF07-02`, H4 cierra `PF-RNF08-01`, H5 cierra `PF-CT02-01` y H12, con H6 y H7, cierra `PF-SON-01` a `PF-SON-03`; los seis pasaron de PS a P. H1 y H2 son puntos del guion y H9 a H11 corroboran casos que ya eran P, así que no cambian ninguna cifra. H8 no cierra `PF-RNF13-01`, que pide además los dos recorridos del arnés, y H13 no se realizó. Con ello la eficacia pasó de 96,8 % (122 de 126) a 97,0 % (128 de 132).
+Los veredictos de la hoja HUM sí están incorporados a la Tabla 3.1 y al Anexo A, como los de una sesión manual sobre rc3 (no del arnés): H3 cierra `PF-RNF07-02`, H4 cierra `PF-RNF08-01`, H5 cierra `PF-CT02-01` y H12, con H6 y H7, cierra `PF-SON-01` a `PF-SON-03`; los seis pasaron de PS a P, y `PF-RNF12-01` pasó también a P con el formato de consentimiento (Anexo F) y los 4 consentimientos firmados. H1 y H2 son puntos del guion y H9 a H11 corroboran casos que ya eran P, así que no cambian ninguna cifra. H8 no cierra `PF-RNF13-01`, que pide además los dos recorridos del arnés, y H13 no se realizó. Con ello la eficacia pasó de 96,8 % (122 de 126) a 97,0 % (129 de 133).
 
 ## 5.3 Hallazgos de la sesión y correcciones aplicadas
 

@@ -437,3 +437,20 @@ Nota añadida; no corrige las secciones anteriores. La §13 decía que PlayMode 
 - **Capturas** (`claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/`): el abrazo de la línea 5 se lee; el de la línea 12 se lee a medias, porque Papá no rodea a la Niña; el sueño de perfil no tapa el fuego; en la caminata de la escena 1.1 Papá queda parcialmente detrás de Algoritm al llegar. El abrazo de la línea 12 y el solapamiento con Algoritm siguen sin corregir (responsable: equipo de desarrollo).
 
 Los estudiantes jugaron rc3. rc4 no se probó con estudiantes, y los veredictos `PF-*` de este documento siguen siendo los de rc3.
+
+## 15. Nota del 13/10/2026 (cierre) · `PF-RNF12-01` en P y triaje de los 16 defectos
+
+Nota añadida; no corrige las secciones anteriores ni la §13, cuyo recuento (128 P, 4 F, 4 PS) era el del momento.
+
+- **`PF-RNF12-01` pasa de PS a P** en `claudeDocs/entregables/OE4/src/veredictos-rc3.csv`: el formato de consentimiento informado consta en el Anexo F y hay 4 consentimientos firmados (sesión del 13/10/2026).
+- **Recuento del CSV:** 129 P, 4 F y 3 PS. Siguen en PS `PF-RNF13-01`, `PF-RNF22-01` y `PF-RNF23-01`.
+
+| Cifra | §13 | Esta nota |
+|---|---|---|
+| Eficacia (KPI 1) | 97,0 % = 128 / (128 + 4), 4 PS | 97,0 % = 129 / (129 + 4), 3 PS |
+| S-INSP (P · F · PS) | 7 · 3 · 3 (70,0 %) | 8 · 3 · 2 (72,7 %) |
+| Etiqueta RNF | 82,4 % (14 de 17) | 83,3 % (15 de 18) |
+| Si los PS fallaran | 94,1 % (128 de 136) | 94,9 % (129 de 136) |
+
+- **Triaje de los 16 defectos de rc3 (decisión del usuario):** *documento* DEF-RC3-02, -04, -06, -07 y -12, ya aplicado en `casos.md`; *código*, para rc4, DEF-RC3-05, -09, -10 y -11, cuya corrección confirmará el commit que la recoja; *trabajo futuro* DEF-RC3-01, -03, -08, -I01, -I02, -I03 y -I04. La tabla de defectos de §6 conserva su estado «Abierto» de la pasada.
+- Ningún dato de esta nota viene de PlayMode ni de rc4.

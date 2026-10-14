@@ -1,6 +1,6 @@
 # 4. OPORTUNIDADES DE MEJORA PARA TRABAJOS FUTUROS
 
-El objetivo pide identificar oportunidades de mejora, no solo contar casos aprobados. Este capítulo recoge lo que la pasada rc3 dejó abierto, cada punto con su origen y su causa, agrupado por el tema donde habría que trabajar. Entran cuatro clases de hallazgo: los defectos Menores y las Observaciones de la Tabla 3.6, que siguen abiertos hasta que se haga el triaje; los casos que aprobaron con una reserva; las fallas del propio instrumento de evaluación, y lo que el método no pudo observar. Cada fila trae el tipo de arreglo que propuso quien probó; la decisión de corregir, registrar un INC o dejarlo como trabajo futuro se decide en el triaje.
+El objetivo pide identificar oportunidades de mejora, no solo contar casos aprobados. Este capítulo recoge lo que la pasada rc3 dejó abierto, cada punto con su origen y su causa, agrupado por el tema donde habría que trabajar. Entran cuatro clases de hallazgo: los defectos Menores y las Observaciones de la Tabla 3.6, cuyo triaje se decidió el 13/10/2026 (apartado 3.6); los casos que aprobaron con una reserva; las fallas del propio instrumento de evaluación, y lo que el método no pudo observar. Cada fila trae el tipo de arreglo que propuso quien probó; la decisión del triaje del 13/10/2026 (documento, código en rc4 o trabajo futuro) está en la Tabla 3.6.
 
 ## 4.1 Interfaz
 
@@ -67,6 +67,8 @@ Las pruebas automáticas que nombran RNF-03 pasaron en la suite del 10/10/2026 (
 | Listar las cinco pruebas de arquitectura como esperadas en `PF-RNF16-01`, o dejarlas de listar si se corrigen | DEF-RC3-12 | El caso solo admite fallos de pruebas que cargan una escena por nombre | `casos.md` |
 | Reformular la advertencia de riesgo de `PF-RF21-02`: la narrativa de cierre entra a unos 1,3 s tras «Soplar», no a los 3,5 s que cita el caso, y el máximo de luz tras el cuarto golpe efectivo no se pudo medir | Observación de S-OMI, sin id propio | El caso no se puede comprobar como está escrito | `casos.md` |
 | Decidir si Claude ejecuta los dos recorridos completos del arnés de `PF-RNF13-01`, además del recorrido con cronómetro de H8 | Tabla 3.4 | El caso está en PS y sus dos recorridos del arnés, planeados, no se corrieron | Decisión pendiente |
+
+El 13/10/2026 se aplicaron en `casos.md` las correcciones de DEF-RC3-02, -04, -06, -07 y -12 de esta tabla. Las de DEF-RC3-08 y DEF-RC3-03 siguen como trabajo futuro (apartado 3.6).
 
 ## 4.6 Lo que la evaluación con personas resolvió y lo que dejó abierto
 
