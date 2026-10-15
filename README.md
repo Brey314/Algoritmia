@@ -23,6 +23,13 @@ Son reglas del diseño, y cada una tiene pruebas automáticas que la verifican:
 - Lo que ya se aprobó no se pierde por un fallo posterior.
 - La entrada es solo clic y clic sostenido. Los controles de dirección del Nivel 3 son botones en pantalla.
 
+## Descargar y jugar
+
+1. Descarga el `.zip` de la [última versión](https://github.com/Brey314/Algoritmia/releases/latest) (Windows de 64 bits).
+2. Descomprímelo y abre `Algoritmia/Algoritmia.exe`.
+
+No hace falta instalar nada ni tener conexión a internet.
+
 ## Cómo se entrega
 
 Es un ejecutable portable para Windows de 64 bits: no se instala, funciona sin internet y no envía datos por red. El progreso se guarda en archivos JSON dentro de una carpeta `Datos/` que el juego crea junto al ejecutable. Desde el propio juego se puede borrar un perfil de forma definitiva.
