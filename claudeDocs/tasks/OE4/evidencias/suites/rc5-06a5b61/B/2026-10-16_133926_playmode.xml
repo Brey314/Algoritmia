@@ -1,0 +1,921 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="103" result="Passed" total="103" passed="103" failed="0" inconclusive="0" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-10-16 18:39:30Z" end-time="2026-10-16 18:44:53Z" duration="323,6371318">
+  <test-suite type="TestSuite" id="1526" name="Algoritmia" fullname="Algoritmia" runstate="Runnable" testcasecount="438" result="Passed" start-time="2026-10-16 18:39:30Z" end-time="2026-10-16 18:44:53Z" duration="323.637132" total="103" passed="103" failed="0" inconclusive="0" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <test-suite type="Assembly" id="1293" name="Game.Levels.Wheel.PlayMode.Tests.dll" fullname="C:/Dev/Algoritmia-B/Library/ScriptAssemblies/Game.Levels.Wheel.PlayMode.Tests.dll" runstate="Runnable" testcasecount="103" result="Passed" start-time="2026-10-16 18:39:30Z" end-time="2026-10-16 18:44:53Z" duration="323.631209" total="103" passed="103" failed="0" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="37672" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <test-suite type="TestSuite" id="1294" name="Game" fullname="Game" runstate="Runnable" testcasecount="103" result="Passed" start-time="2026-10-16 18:39:30Z" end-time="2026-10-16 18:44:53Z" duration="323.630144" total="103" passed="103" failed="0" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <test-suite type="TestSuite" id="1295" name="Levels" fullname="Game.Levels" runstate="Runnable" testcasecount="103" result="Passed" start-time="2026-10-16 18:39:30Z" end-time="2026-10-16 18:44:53Z" duration="323.629205" total="103" passed="103" failed="0" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <test-suite type="TestSuite" id="1296" name="Wheel" fullname="Game.Levels.Wheel" runstate="Runnable" testcasecount="103" result="Passed" start-time="2026-10-16 18:39:30Z" end-time="2026-10-16 18:44:53Z" duration="323.628304" total="103" passed="103" failed="0" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <test-suite type="TestSuite" id="1297" name="Tests" fullname="Game.Levels.Wheel.Tests" runstate="Runnable" testcasecount="103" result="Passed" start-time="2026-10-16 18:39:30Z" end-time="2026-10-16 18:44:53Z" duration="323.627407" total="103" passed="103" failed="0" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <test-suite type="TestFixture" id="1183" name="ForestSceneTests" fullname="Game.Levels.Wheel.Tests.ForestSceneTests" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" testcasecount="40" result="Passed" start-time="2026-10-16 18:39:30Z" end-time="2026-10-16 18:40:06Z" duration="35.879662" total="40" passed="40" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1199" name="ForestScene_CP02_ApartarLosObjetosNoTocaElAcopioNiLaFrase" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_CP02_ApartarLosObjetosNoTocaElAcopioNiLaFrase" methodname="ForestScene_CP02_ApartarLosObjetosNoTocaElAcopioNiLaFrase" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1849059016" result="Passed" start-time="2026-10-16 18:39:30Z" end-time="2026-10-16 18:39:31Z" duration="0.791254" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1220" name="ForestScene_DA133_AlCompletarElAcopioCelebranLaNinaYLaFamilia" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_DA133_AlCompletarElAcopioCelebranLaNinaYLaFamilia" methodname="ForestScene_DA133_AlCompletarElAcopioCelebranLaNinaYLaFamilia" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1166028586" result="Passed" start-time="2026-10-16 18:39:31Z" end-time="2026-10-16 18:39:31Z" duration="0.508971" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1218" name="ForestScene_DA133_LaNinaEmpujaLaCajaMientrasLaSostiene" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_DA133_LaNinaEmpujaLaCajaMientrasLaSostiene" methodname="ForestScene_DA133_LaNinaEmpujaLaCajaMientrasLaSostiene" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="511882479" result="Passed" start-time="2026-10-16 18:39:31Z" end-time="2026-10-16 18:39:33Z" duration="1.759096" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1216" name="ForestScene_DA133_LaNinaSenalaElTroncoQueEligeYVuelveAlReposo" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_DA133_LaNinaSenalaElTroncoQueEligeYVuelveAlReposo" methodname="ForestScene_DA133_LaNinaSenalaElTroncoQueEligeYVuelveAlReposo" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1723863058" result="Passed" start-time="2026-10-16 18:39:33Z" end-time="2026-10-16 18:39:34Z" duration="1.303861" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1217" name="ForestScene_DA133_TrasCadaDistractorLaNinaHaceAnimoYNuncaOtroGesto" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_DA133_TrasCadaDistractorLaNinaHaceAnimoYNuncaOtroGesto" methodname="ForestScene_DA133_TrasCadaDistractorLaNinaHaceAnimoYNuncaOtroGesto" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="328602949" result="Passed" start-time="2026-10-16 18:39:34Z" end-time="2026-10-16 18:39:35Z" duration="0.474694" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1223" name="ForestScene_DA76_ElBotonDeAyudaMuestraAAlgoritmConSuFormaDeRueda" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_DA76_ElBotonDeAyudaMuestraAAlgoritmConSuFormaDeRueda" methodname="ForestScene_DA76_ElBotonDeAyudaMuestraAAlgoritmConSuFormaDeRueda" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="4790449" result="Passed" start-time="2026-10-16 18:39:35Z" end-time="2026-10-16 18:39:35Z" duration="0.539520" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1219" name="ForestScene_INC134_LaNinaMiraALaCajaMientrasLaEmpujaYSeGiraSiLaCajaCruza" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_INC134_LaNinaMiraALaCajaMientrasLaEmpujaYSeGiraSiLaCajaCruza" methodname="ForestScene_INC134_LaNinaMiraALaCajaMientrasLaEmpujaYSeGiraSiLaCajaCruza" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="708575281" result="Passed" start-time="2026-10-16 18:39:35Z" end-time="2026-10-16 18:39:37Z" duration="1.703574" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1209" name="ForestScene_RF04_ConfirmarLaFase1GuardaElProgreso" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF04_ConfirmarLaFase1GuardaElProgreso" methodname="ForestScene_RF04_ConfirmarLaFase1GuardaElProgreso" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1540900286" result="Passed" start-time="2026-10-16 18:39:37Z" end-time="2026-10-16 18:39:41Z" duration="3.816786" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[RNF-04: «MainMenu» cargó en 0.753 s
+RNF-04: «LevelSelect» cargó en 0.505 s
+RNF-04: «Level2_Forest» cargó en 1.278 s
+]]></output>
+                </test-case>
+                <test-case id="1189" name="ForestScene_RF13_ElBotonDeAyudaRepiteLaInstruccionYNoAcercaLaPista" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF13_ElBotonDeAyudaRepiteLaInstruccionYNoAcercaLaPista" methodname="ForestScene_RF13_ElBotonDeAyudaRepiteLaInstruccionYNoAcercaLaPista" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="531553220" result="Passed" start-time="2026-10-16 18:39:41Z" end-time="2026-10-16 18:39:41Z" duration="0.512280" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1197" name="ForestScene_RF22_CadaObjetoApareceConLaOrientacionDeSuAsset" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF22_CadaObjetoApareceConLaOrientacionDeSuAsset" methodname="ForestScene_RF22_CadaObjetoApareceConLaOrientacionDeSuAsset" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="158477897" result="Passed" start-time="2026-10-16 18:39:41Z" end-time="2026-10-16 18:39:42Z" duration="0.471463" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1201" name="ForestScene_RF22_ElBosqueSuenaDeFondoYCadaObjetoSuenaALoQueEsAlApartarse" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF22_ElBosqueSuenaDeFondoYCadaObjetoSuenaALoQueEsAlApartarse" methodname="ForestScene_RF22_ElBosqueSuenaDeFondoYCadaObjetoSuenaALoQueEsAlApartarse" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1323503918" result="Passed" start-time="2026-10-16 18:39:42Z" end-time="2026-10-16 18:39:42Z" duration="0.550118" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1214" name="ForestScene_RF22_ElObjetoCreceAlAcercarseElCursorYVuelveAlAlejarse" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF22_ElObjetoCreceAlAcercarseElCursorYVuelveAlAlejarse" methodname="ForestScene_RF22_ElObjetoCreceAlAcercarseElCursorYVuelveAlAlejarse" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1060702435" result="Passed" start-time="2026-10-16 18:39:42Z" end-time="2026-10-16 18:39:43Z" duration="0.531394" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1198" name="ForestScene_RF22_ElObjetoSeApartaAlAcercarseElCursor" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF22_ElObjetoSeApartaAlAcercarseElCursor" methodname="ForestScene_RF22_ElObjetoSeApartaAlAcercarseElCursor" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1841822773" result="Passed" start-time="2026-10-16 18:39:43Z" end-time="2026-10-16 18:39:43Z" duration="0.500943" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1193" name="ForestScene_RF22_LosObjetosCaenEntreElCincoYElSesentaPorCientoDeLaPantalla" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF22_LosObjetosCaenEntreElCincoYElSesentaPorCientoDeLaPantalla" methodname="ForestScene_RF22_LosObjetosCaenEntreElCincoYElSesentaPorCientoDeLaPantalla" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1718365492" result="Passed" start-time="2026-10-16 18:39:43Z" end-time="2026-10-16 18:39:44Z" duration="0.514448" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1213" name="ForestScene_RF22_LosObjetosMasAltosSeVenMasPequenos" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF22_LosObjetosMasAltosSeVenMasPequenos" methodname="ForestScene_RF22_LosObjetosMasAltosSeVenMasPequenos" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1683414512" result="Passed" start-time="2026-10-16 18:39:44Z" end-time="2026-10-16 18:39:44Z" duration="0.512205" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1195" name="ForestScene_RF22_NingunObjetoQuedaTapadoPorLaInterfaz" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF22_NingunObjetoQuedaTapadoPorLaInterfaz" methodname="ForestScene_RF22_NingunObjetoQuedaTapadoPorLaInterfaz" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="114179138" result="Passed" start-time="2026-10-16 18:39:44Z" end-time="2026-10-16 18:39:45Z" duration="0.492222" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1184" name="ForestScene_RF22_PresentaCincoValidosEntreOchoDistractores" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF22_PresentaCincoValidosEntreOchoDistractores" methodname="ForestScene_RF22_PresentaCincoValidosEntreOchoDistractores" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1990483591" result="Passed" start-time="2026-10-16 18:39:45Z" end-time="2026-10-16 18:39:45Z" duration="0.526684" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1210" name="ForestScene_RF23_AlCompletarElAcopioQuedanLaCajaALaIzquierdaYLosTroncosASuDerecha" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF23_AlCompletarElAcopioQuedanLaCajaALaIzquierdaYLosTroncosASuDerecha" methodname="ForestScene_RF23_AlCompletarElAcopioQuedanLaCajaALaIzquierdaYLosTroncosASuDerecha" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="380375045" result="Passed" start-time="2026-10-16 18:39:45Z" end-time="2026-10-16 18:39:47Z" duration="1.705587" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1202" name="ForestScene_RF24_CadaTroncoAcopiadoSuenaAEncajeYLosCincoReunidosAPiezaTomada" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF24_CadaTroncoAcopiadoSuenaAEncajeYLosCincoReunidosAPiezaTomada" methodname="ForestScene_RF24_CadaTroncoAcopiadoSuenaAEncajeYLosCincoReunidosAPiezaTomada" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1933635880" result="Passed" start-time="2026-10-16 18:39:47Z" end-time="2026-10-16 18:39:48Z" duration="0.554877" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1194" name="ForestScene_RF24_ElAcopioSeLlenaConformeSeRecogenLosTroncos" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF24_ElAcopioSeLlenaConformeSeRecogenLosTroncos" methodname="ForestScene_RF24_ElAcopioSeLlenaConformeSeRecogenLosTroncos" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="599435909" result="Passed" start-time="2026-10-16 18:39:48Z" end-time="2026-10-16 18:39:48Z" duration="0.510415" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1186" name="ForestScene_RF24_ElContadorEsVisibleDuranteTodaLaFase" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF24_ElContadorEsVisibleDuranteTodaLaFase" methodname="ForestScene_RF24_ElContadorEsVisibleDuranteTodaLaFase" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="191654925" result="Passed" start-time="2026-10-16 18:39:48Z" end-time="2026-10-16 18:39:49Z" duration="0.531570" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1187" name="ForestScene_RF24_ElContadorNoRetrocedeAlPulsarUnDistractor" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF24_ElContadorNoRetrocedeAlPulsarUnDistractor" methodname="ForestScene_RF24_ElContadorNoRetrocedeAlPulsarUnDistractor" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="825980313" result="Passed" start-time="2026-10-16 18:39:49Z" end-time="2026-10-16 18:39:49Z" duration="0.517336" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1204" name="ForestScene_RF25_ConLosCincoTroncosLaCajaSigueAlClicSostenidoYSeColocaAlSoltar" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF25_ConLosCincoTroncosLaCajaSigueAlClicSostenidoYSeColocaAlSoltar" methodname="ForestScene_RF25_ConLosCincoTroncosLaCajaSigueAlClicSostenidoYSeColocaAlSoltar" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="789999608" result="Passed" start-time="2026-10-16 18:39:49Z" end-time="2026-10-16 18:39:51Z" duration="1.724815" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1212" name="ForestScene_RF25_LaCajaEsperaEnElSueloYNingunObjetoSeLeMonta" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF25_LaCajaEsperaEnElSueloYNingunObjetoSeLeMonta" methodname="ForestScene_RF25_LaCajaEsperaEnElSueloYNingunObjetoSeLeMonta" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1169121249" result="Passed" start-time="2026-10-16 18:39:51Z" end-time="2026-10-16 18:39:51Z" duration="0.531862" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1203" name="ForestScene_RF25_LaCajaNoSeArrastraSinLosCincoTroncos" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF25_LaCajaNoSeArrastraSinLosCincoTroncos" methodname="ForestScene_RF25_LaCajaNoSeArrastraSinLosCincoTroncos" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="60186310" result="Passed" start-time="2026-10-16 18:39:51Z" end-time="2026-10-16 18:39:52Z" duration="0.513088" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1207" name="ForestScene_RF26_EmpujarNoAnimaElRodadoEnLaMecanicaSinoQueSaleALaNarrativa" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF26_EmpujarNoAnimaElRodadoEnLaMecanicaSinoQueSaleALaNarrativa" methodname="ForestScene_RF26_EmpujarNoAnimaElRodadoEnLaMecanicaSinoQueSaleALaNarrativa" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="2021932664" result="Passed" start-time="2026-10-16 18:39:52Z" end-time="2026-10-16 18:39:54Z" duration="1.720242" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Level2_Forest» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el rodado no confirma la fase ni navega.
+]]></output>
+                </test-case>
+                <test-case id="1205" name="ForestScene_RF26_EmpujarSeHabilitaSoloConLaCajaColocada" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF26_EmpujarSeHabilitaSoloConLaCajaColocada" methodname="ForestScene_RF26_EmpujarSeHabilitaSoloConLaCajaColocada" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1453210727" result="Passed" start-time="2026-10-16 18:39:54Z" end-time="2026-10-16 18:39:55Z" duration="1.713057" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1211" name="ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22" methodname="ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="477523815" result="Passed" start-time="2026-10-16 18:39:55Z" end-time="2026-10-16 18:39:57Z" duration="1.698957" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1208" name="ForestScene_RF26_LosTroncosDeLaFilaVanPegadosComoEnLaEscena22" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF26_LosTroncosDeLaFilaVanPegadosComoEnLaEscena22" methodname="ForestScene_RF26_LosTroncosDeLaFilaVanPegadosComoEnLaEscena22" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="735134858" result="Passed" start-time="2026-10-16 18:39:57Z" end-time="2026-10-16 18:39:59Z" duration="1.716692" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1190" name="ForestScene_RNF02_LaEscenaSoloRespondeAClicSimple" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RNF02_LaEscenaSoloRespondeAClicSimple" methodname="ForestScene_RNF02_LaEscenaSoloRespondeAClicSimple" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="2050396615" result="Passed" start-time="2026-10-16 18:39:59Z" end-time="2026-10-16 18:39:59Z" duration="0.507102" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1221" name="ForestScene_RNF02_LosPersonajesNoLeQuitanElClicANingunObjeto" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RNF02_LosPersonajesNoLeQuitanElClicANingunObjeto" methodname="ForestScene_RNF02_LosPersonajesNoLeQuitanElClicANingunObjeto" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1052679966" result="Passed" start-time="2026-10-16 18:39:59Z" end-time="2026-10-16 18:40:00Z" duration="0.514200" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1192" name="ForestScene_RNF03_DEFRC310_LasFrasesDeLaTablillaCabenEnSuAlto" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RNF03_DEFRC310_LasFrasesDeLaTablillaCabenEnSuAlto" methodname="ForestScene_RNF03_DEFRC310_LasFrasesDeLaTablillaCabenEnSuAlto" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="728899576" result="Passed" start-time="2026-10-16 18:40:00Z" end-time="2026-10-16 18:40:00Z" duration="0.523213" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1196" name="ForestScene_RNF03_LaInterfazEscalaConLaResolucionComoElRestoDelJuego" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RNF03_LaInterfazEscalaConLaResolucionComoElRestoDelJuego" methodname="ForestScene_RNF03_LaInterfazEscalaConLaResolucionComoElRestoDelJuego" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1957719830" result="Passed" start-time="2026-10-16 18:40:00Z" end-time="2026-10-16 18:40:01Z" duration="0.503184" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1222" name="ForestScene_RNF03_LosPersonajesSeVenEnterosYNoQuedanBajoLaInterfaz" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RNF03_LosPersonajesSeVenEnterosYNoQuedanBajoLaInterfaz" methodname="ForestScene_RNF03_LosPersonajesSeVenEnterosYNoQuedanBajoLaInterfaz" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="2055262022" result="Passed" start-time="2026-10-16 18:40:01Z" end-time="2026-10-16 18:40:01Z" duration="0.538348" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1191" name="ForestScene_RNF03_NadaSeSaleDePantallaNiSeSolapa" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RNF03_NadaSeSaleDePantallaNiSeSolapa" methodname="ForestScene_RNF03_NadaSeSaleDePantallaNiSeSolapa" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="312008529" result="Passed" start-time="2026-10-16 18:40:01Z" end-time="2026-10-16 18:40:02Z" duration="0.509732" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1200" name="ForestScene_RNF03_NingunObjetoSeVaDelSueloPorMuchoQueSeEmpuje" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RNF03_NingunObjetoSeVaDelSueloPorMuchoQueSeEmpuje" methodname="ForestScene_RNF03_NingunObjetoSeVaDelSueloPorMuchoQueSeEmpuje" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="698621335" result="Passed" start-time="2026-10-16 18:40:02Z" end-time="2026-10-16 18:40:02Z" duration="0.592688" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1188" name="ForestScene_RNF19_ElRechazoSeDistingueSinDependerDelColor" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RNF19_ElRechazoSeDistingueSinDependerDelColor" methodname="ForestScene_RNF19_ElRechazoSeDistingueSinDependerDelColor" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="751954944" result="Passed" start-time="2026-10-16 18:40:02Z" end-time="2026-10-16 18:40:03Z" duration="0.517125" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1206" name="ForestScene_RNF19_EmpujarDeshabilitadoLlevaCandado" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RNF19_EmpujarDeshabilitadoLlevaCandado" methodname="ForestScene_RNF19_EmpujarDeshabilitadoLlevaCandado" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="141516948" result="Passed" start-time="2026-10-16 18:40:03Z" end-time="2026-10-16 18:40:05Z" duration="1.702678" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1185" name="ForestScene_RNF23_CadaObjetoMuestraLaIlustracionDeSuAsset" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RNF23_CadaObjetoMuestraLaIlustracionDeSuAsset" methodname="ForestScene_RNF23_CadaObjetoMuestraLaIlustracionDeSuAsset" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="515775140" result="Passed" start-time="2026-10-16 18:40:05Z" end-time="2026-10-16 18:40:05Z" duration="0.508603" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1215" name="ForestScene_RNF23_ElEntornoCubreLaPantallaSinDeformarse" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RNF23_ElEntornoCubreLaPantallaSinDeformarse" methodname="ForestScene_RNF23_ElEntornoCubreLaPantallaSinDeformarse" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="1919222422" result="Passed" start-time="2026-10-16 18:40:05Z" end-time="2026-10-16 18:40:06Z" duration="0.507924" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1224" name="MazeSceneTests" fullname="Game.Levels.Wheel.Tests.MazeSceneTests" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" testcasecount="35" result="Passed" start-time="2026-10-16 18:40:06Z" end-time="2026-10-16 18:42:26Z" duration="140.712557" total="35" passed="35" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1242" name="MazeScene_CP02_NoHayLimiteDeEjecucionesNiPantallaDeDerrota" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_CP02_NoHayLimiteDeEjecucionesNiPantallaDeDerrota" methodname="MazeScene_CP02_NoHayLimiteDeEjecucionesNiPantallaDeDerrota" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="965052630" result="Passed" start-time="2026-10-16 18:40:06Z" end-time="2026-10-16 18:40:13Z" duration="7.726210" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1257" name="MazeScene_DA133_AlLlegarAlRefugioLaNinaYLaFamiliaCelebran" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_DA133_AlLlegarAlRefugioLaNinaYLaFamiliaCelebran" methodname="MazeScene_DA133_AlLlegarAlRefugioLaNinaYLaFamiliaCelebran" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="85132840" result="Passed" start-time="2026-10-16 18:40:13Z" end-time="2026-10-16 18:40:36Z" duration="22.155072" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="120000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1254" name="MazeScene_DA133_LaNinaMiraElTableroJuntoALaSalidaYLaFamiliaEsperaEnElRefugio" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_DA133_LaNinaMiraElTableroJuntoALaSalidaYLaFamiliaEsperaEnElRefugio" methodname="MazeScene_DA133_LaNinaMiraElTableroJuntoALaSalidaYLaFamiliaEsperaEnElRefugio" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1840574604" result="Passed" start-time="2026-10-16 18:40:36Z" end-time="2026-10-16 18:40:36Z" duration="0.544456" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1255" name="MazeScene_DA133_LaNinaSenalaAlEjecutarYVuelveAMirarElTablero" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_DA133_LaNinaSenalaAlEjecutarYVuelveAMirarElTablero" methodname="MazeScene_DA133_LaNinaSenalaAlEjecutarYVuelveAMirarElTablero" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="425867727" result="Passed" start-time="2026-10-16 18:40:36Z" end-time="2026-10-16 18:40:37Z" duration="1.109830" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1256" name="MazeScene_DA133_SiLaCarretillaNoLlegaLaNinaSeAnimaYNuncaHaceOtroGesto" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_DA133_SiLaCarretillaNoLlegaLaNinaSeAnimaYNuncaHaceOtroGesto" methodname="MazeScene_DA133_SiLaCarretillaNoLlegaLaNinaSeAnimaYNuncaHaceOtroGesto" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="469329875" result="Passed" start-time="2026-10-16 18:40:37Z" end-time="2026-10-16 18:40:40Z" duration="3.210297" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1258" name="MazeScene_DA76_ElBotonDePistaMuestraAAlgoritmEnFormaDeRueda" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_DA76_ElBotonDePistaMuestraAAlgoritmEnFormaDeRueda" methodname="MazeScene_DA76_ElBotonDePistaMuestraAAlgoritmEnFormaDeRueda" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1889845646" result="Passed" start-time="2026-10-16 18:40:40Z" end-time="2026-10-16 18:40:41Z" duration="0.550765" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1227" name="MazeScene_PG04_EjecutarRespondeAClicSimpleNoADobleClic" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_PG04_EjecutarRespondeAClicSimpleNoADobleClic" methodname="MazeScene_PG04_EjecutarRespondeAClicSimpleNoADobleClic" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="2034540071" result="Passed" start-time="2026-10-16 18:40:41Z" end-time="2026-10-16 18:40:41Z" duration="0.509592" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1253" name="MazeScene_RF04_AlcanzarElRefugioConfirmaYGuardaLaFase3" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF04_AlcanzarElRefugioConfirmaYGuardaLaFase3" methodname="MazeScene_RF04_AlcanzarElRefugioConfirmaYGuardaLaFase3" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="268763585" result="Passed" start-time="2026-10-16 18:40:41Z" end-time="2026-10-16 18:41:10Z" duration="28.116980" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="120000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[RNF-04: «MainMenu» cargó en 0.734 s
+RNF-04: «LevelSelect» cargó en 0.515 s
+RNF-04: «Level2_Maze» cargó en 1.292 s
+]]></output>
+                </test-case>
+                <test-case id="1234" name="MazeScene_RF30_ElEntornoQuedaSinTinte" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF30_ElEntornoQuedaSinTinte" methodname="MazeScene_RF30_ElEntornoQuedaSinTinte" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1381493753" result="Passed" start-time="2026-10-16 18:41:10Z" end-time="2026-10-16 18:41:10Z" duration="0.537033" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1235" name="MazeScene_RF30_ElEntornoYLaTarjetaLlevanElMismoMarcoRedondeado" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF30_ElEntornoYLaTarjetaLlevanElMismoMarcoRedondeado" methodname="MazeScene_RF30_ElEntornoYLaTarjetaLlevanElMismoMarcoRedondeado" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="795734449" result="Passed" start-time="2026-10-16 18:41:10Z" end-time="2026-10-16 18:41:11Z" duration="0.550013" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1237" name="MazeScene_RF30_LaSalidaSeLeeEnElEntornoYElFondoEsUnoSolo" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF30_LaSalidaSeLeeEnElEntornoYElFondoEsUnoSolo" methodname="MazeScene_RF30_LaSalidaSeLeeEnElEntornoYElFondoEsUnoSolo" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1900959868" result="Passed" start-time="2026-10-16 18:41:11Z" end-time="2026-10-16 18:41:11Z" duration="0.506501" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1225" name="MazeScene_RF30_PresentaCarretillaRefugioYObstaculos" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF30_PresentaCarretillaRefugioYObstaculos" methodname="MazeScene_RF30_PresentaCarretillaRefugioYObstaculos" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="599247122" result="Passed" start-time="2026-10-16 18:41:11Z" end-time="2026-10-16 18:41:12Z" duration="0.530506" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1231" name="MazeScene_RF31_ElContadorDeAvanzarYRetrocederSeEditaEnElBloqueEntre1Y9" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF31_ElContadorDeAvanzarYRetrocederSeEditaEnElBloqueEntre1Y9" methodname="MazeScene_RF31_ElContadorDeAvanzarYRetrocederSeEditaEnElBloqueEntre1Y9" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1857162509" result="Passed" start-time="2026-10-16 18:41:12Z" end-time="2026-10-16 18:41:12Z" duration="0.578943" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1236" name="MazeScene_RF31_LaCuadriculaDeLaMatrizSeDibujaDentroDelSeto" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF31_LaCuadriculaDeLaMatrizSeDibujaDentroDelSeto" methodname="MazeScene_RF31_LaCuadriculaDeLaMatrizSeDibujaDentroDelSeto" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1610866368" result="Passed" start-time="2026-10-16 18:41:12Z" end-time="2026-10-16 18:41:13Z" duration="0.527711" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1230" name="MazeScene_RF31_LaOrientacionDeLaCarretillaEsVisibleYGiraACadaLado" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF31_LaOrientacionDeLaCarretillaEsVisibleYGiraACadaLado" methodname="MazeScene_RF31_LaOrientacionDeLaCarretillaEsVisibleYGiraACadaLado" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="233927270" result="Passed" start-time="2026-10-16 18:41:13Z" end-time="2026-10-16 18:41:15Z" duration="2.307606" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1238" name="MazeScene_RF31_LaZonaDeSoltarEsMarfilSombraSobreLaTarjeta" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF31_LaZonaDeSoltarEsMarfilSombraSobreLaTarjeta" methodname="MazeScene_RF31_LaZonaDeSoltarEsMarfilSombraSobreLaTarjeta" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1878005630" result="Passed" start-time="2026-10-16 18:41:15Z" end-time="2026-10-16 18:41:16Z" duration="0.513626" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1247" name="MazeScene_RF32_AlEjecutarLaListaMuestraElBloqueEnCurso" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF32_AlEjecutarLaListaMuestraElBloqueEnCurso" methodname="MazeScene_RF32_AlEjecutarLaListaMuestraElBloqueEnCurso" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1684130335" result="Passed" start-time="2026-10-16 18:41:16Z" end-time="2026-10-16 18:41:28Z" duration="12.011208" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1233" name="MazeScene_RF32_LaCarretillaSuenaMientrasRecorreLaSecuenciaYCallaAlTerminar" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF32_LaCarretillaSuenaMientrasRecorreLaSecuenciaYCallaAlTerminar" methodname="MazeScene_RF32_LaCarretillaSuenaMientrasRecorreLaSecuenciaYCallaAlTerminar" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1231154176" result="Passed" start-time="2026-10-16 18:41:28Z" end-time="2026-10-16 18:41:31Z" duration="2.948150" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1241" name="MazeScene_RF34_ElBloqueSeleccionadoMuestraLaPapeleraYEstaLoRetira" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF34_ElBloqueSeleccionadoMuestraLaPapeleraYEstaLoRetira" methodname="MazeScene_RF34_ElBloqueSeleccionadoMuestraLaPapeleraYEstaLoRetira" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="999364764" result="Passed" start-time="2026-10-16 18:41:31Z" end-time="2026-10-16 18:41:31Z" duration="0.532921" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1244" name="MazeScene_RF34_ReordenarUnBloqueEsUnSoloGestoYNoQuedaPegado" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF34_ReordenarUnBloqueEsUnSoloGestoYNoQuedaPegado" methodname="MazeScene_RF34_ReordenarUnBloqueEsUnSoloGestoYNoQuedaPegado" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1934053136" result="Passed" start-time="2026-10-16 18:41:31Z" end-time="2026-10-16 18:41:32Z" duration="0.564457" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1245" name="MazeScene_RF34_RetirarYReordenarArrastrandoCuentanSoloLasEdicionesHechas" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF34_RetirarYReordenarArrastrandoCuentanSoloLasEdicionesHechas" methodname="MazeScene_RF34_RetirarYReordenarArrastrandoCuentanSoloLasEdicionesHechas" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="313140455" result="Passed" start-time="2026-10-16 18:41:32Z" end-time="2026-10-16 18:41:39Z" duration="7.194532" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1243" name="MazeScene_RF34_SoltarSobreLaSecuenciaEnganchaYSoltarFueraRetira" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF34_SoltarSobreLaSecuenciaEnganchaYSoltarFueraRetira" methodname="MazeScene_RF34_SoltarSobreLaSecuenciaEnganchaYSoltarFueraRetira" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1675161381" result="Passed" start-time="2026-10-16 18:41:39Z" end-time="2026-10-16 18:41:39Z" duration="0.557437" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1248" name="MazeScene_RF34_TrasLaPapeleraConElCajonCerradoLasFilasLaOfrecen" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF34_TrasLaPapeleraConElCajonCerradoLasFilasLaOfrecen" methodname="MazeScene_RF34_TrasLaPapeleraConElCajonCerradoLasFilasLaOfrecen" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1924905347" result="Passed" start-time="2026-10-16 18:41:39Z" end-time="2026-10-16 18:41:40Z" duration="0.552693" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1249" name="MazeScene_RF34_TrasRetirarArrastrandoLasFilasOfrecenLaPapelera" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF34_TrasRetirarArrastrandoLasFilasOfrecenLaPapelera" methodname="MazeScene_RF34_TrasRetirarArrastrandoLasFilasOfrecenLaPapelera" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1892225296" result="Passed" start-time="2026-10-16 18:41:40Z" end-time="2026-10-16 18:41:41Z" duration="0.580691" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1232" name="MazeScene_RF34_TrasUnaEjecucionFallidaLaSecuenciaPermaneceEnPantalla" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF34_TrasUnaEjecucionFallidaLaSecuenciaPermaneceEnPantalla" methodname="MazeScene_RF34_TrasUnaEjecucionFallidaLaSecuenciaPermaneceEnPantalla" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="986708066" result="Passed" start-time="2026-10-16 18:41:41Z" end-time="2026-10-16 18:41:43Z" duration="2.901009" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1246" name="MazeScene_RF34_UnClicSinMoverSobreUnBloqueLoDejaDondeEstabaYNoCuentaEdicion" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RF34_UnClicSinMoverSobreUnBloqueLoDejaDondeEstabaYNoCuentaEdicion" methodname="MazeScene_RF34_UnClicSinMoverSobreUnBloqueLoDejaDondeEstabaYNoCuentaEdicion" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="732066185" result="Passed" start-time="2026-10-16 18:41:43Z" end-time="2026-10-16 18:41:51Z" duration="7.177772" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1252" name="MazeScene_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" methodname="MazeScene_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="2001794985" result="Passed" start-time="2026-10-16 18:41:51Z" end-time="2026-10-16 18:41:51Z" duration="0.521220" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1240" name="MazeScene_RNF02_LaBarraDeDesplazamientoSePulsaPeroNoSeArrastra" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RNF02_LaBarraDeDesplazamientoSePulsaPeroNoSeArrastra" methodname="MazeScene_RNF02_LaBarraDeDesplazamientoSePulsaPeroNoSeArrastra" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="243860201" result="Passed" start-time="2026-10-16 18:41:51Z" end-time="2026-10-16 18:41:52Z" duration="0.653752" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1250" name="MazeScene_RNF03_AlAcumularseLosBloquesSeComprimenYLaFlechaDespliegaUno" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RNF03_AlAcumularseLosBloquesSeComprimenYLaFlechaDespliegaUno" methodname="MazeScene_RNF03_AlAcumularseLosBloquesSeComprimenYLaFlechaDespliegaUno" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="622185500" result="Passed" start-time="2026-10-16 18:41:52Z" end-time="2026-10-16 18:41:52Z" duration="0.630159" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1239" name="MazeScene_RNF03_AlSoltarUnBloqueYAlAbrirElCajonLaSecuenciaQuedaAbajoDelTodo" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RNF03_AlSoltarUnBloqueYAlAbrirElCajonLaSecuenciaQuedaAbajoDelTodo" methodname="MazeScene_RNF03_AlSoltarUnBloqueYAlAbrirElCajonLaSecuenciaQuedaAbajoDelTodo" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1940501056" result="Passed" start-time="2026-10-16 18:41:52Z" end-time="2026-10-16 18:41:53Z" duration="0.653297" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1251" name="MazeScene_RNF03_ConMasBloquesDeLosQueCabenLaListaSeDesplazaSinEncogerLasFilas" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RNF03_ConMasBloquesDeLosQueCabenLaListaSeDesplazaSinEncogerLasFilas" methodname="MazeScene_RNF03_ConMasBloquesDeLosQueCabenLaListaSeDesplazaSinEncogerLasFilas" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="919188491" result="Passed" start-time="2026-10-16 18:41:53Z" end-time="2026-10-16 18:41:54Z" duration="0.769715" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1229" name="MazeScene_RNF19_ElLadoElegidoDeGirarSeDistingueSinColor" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RNF19_ElLadoElegidoDeGirarSeDistingueSinColor" methodname="MazeScene_RNF19_ElLadoElegidoDeGirarSeDistingueSinColor" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="1978763926" result="Passed" start-time="2026-10-16 18:41:54Z" end-time="2026-10-16 18:41:54Z" duration="0.525084" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1228" name="MazeScene_RNF19_LosTresBloquesSeDistinguenPorFormaYElCajonLosGuarda" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RNF19_LosTresBloquesSeDistinguenPorFormaYElCajonLosGuarda" methodname="MazeScene_RNF19_LosTresBloquesSeDistinguenPorFormaYElCajonLosGuarda" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="437666636" result="Passed" start-time="2026-10-16 18:41:54Z" end-time="2026-10-16 18:41:55Z" duration="0.536310" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1259" name="MazeScene_RNF20_CapturaDelLaberintoEnReposoConBloquesYEnEjecucion" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RNF20_CapturaDelLaberintoEnReposoConBloquesYEnEjecucion" methodname="MazeScene_RNF20_CapturaDelLaberintoEnReposoConBloquesYEnEjecucion" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="865218446" result="Passed" start-time="2026-10-16 18:41:55Z" end-time="2026-10-16 18:42:26Z" duration="30.858070" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Verificar en las capturas: el claro cenital entero y sin deformar en el panel izquierdo; carretilla en el hueco izquierdo mirando al este, refugio en el hueco derecho, piedras dentro del seto; a la derecha «Tu secuencia» con bloques encajados (contador, lado, rombo), el cajón «Bloques» abierto y «Ejecutar»; con muchos bloques, filas comprimidas con flecha y una desplegada; con más de los que caben, las filas conservan su alto, la lista se recorta en su ventana y aparecen los dos botones de desplazamiento junto al título; el bloque en curso resaltado." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/Maze_01_reposo.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/Maze_02_bloques_y_cajon.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/Maze_03_comprimidos.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/Maze_05_desplazada.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/Maze_04_ejecutando.png
+]]></output>
+                </test-case>
+                <test-case id="1226" name="MazeScene_RNF23_ElEntornoCabeEnteroEnSuPanelSinDeformarseYLaMatrizCubreElSeto" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RNF23_ElEntornoCabeEnteroEnSuPanelSinDeformarseYLaMatrizCubreElSeto" methodname="MazeScene_RNF23_ElEntornoCabeEnteroEnSuPanelSinDeformarseYLaMatrizCubreElSeto" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="2113475686" result="Passed" start-time="2026-10-16 18:42:26Z" end-time="2026-10-16 18:42:26Z" duration="0.561721" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1260" name="PauseMenuWheelTests" fullname="Game.Levels.Wheel.Tests.PauseMenuWheelTests" classname="Game.Levels.Wheel.Tests.PauseMenuWheelTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-16 18:42:26Z" end-time="2026-10-16 18:42:33Z" duration="7.069737" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1263" name="PauseMenu_CP02_NingunaRutaDeLaPausaLlevaAUnaPantallaDeDerrota" fullname="Game.Levels.Wheel.Tests.PauseMenuWheelTests.PauseMenu_CP02_NingunaRutaDeLaPausaLlevaAUnaPantallaDeDerrota" methodname="PauseMenu_CP02_NingunaRutaDeLaPausaLlevaAUnaPantallaDeDerrota" classname="Game.Levels.Wheel.Tests.PauseMenuWheelTests" runstate="Runnable" seed="1858771727" result="Passed" start-time="2026-10-16 18:42:26Z" end-time="2026-10-16 18:42:29Z" duration="2.609199" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[RNF-04: «MainMenu» cargó en 0.735 s
+RNF-04: «LevelSelect» cargó en 0.519 s
+RNF-04: «Level2_Forest» cargó en 1.285 s
+]]></output>
+                </test-case>
+                <test-case id="1261" name="PauseMenu_HU17_ContinuarRestituyeLaSecuenciaDeBloquesAMedioComponer" fullname="Game.Levels.Wheel.Tests.PauseMenuWheelTests.PauseMenu_HU17_ContinuarRestituyeLaSecuenciaDeBloquesAMedioComponer" methodname="PauseMenu_HU17_ContinuarRestituyeLaSecuenciaDeBloquesAMedioComponer" classname="Game.Levels.Wheel.Tests.PauseMenuWheelTests" runstate="Runnable" seed="339195460" result="Passed" start-time="2026-10-16 18:42:29Z" end-time="2026-10-16 18:42:30Z" duration="1.314355" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[RNF-04: «LevelSelect» cargó en 0.452 s
+]]></output>
+                </test-case>
+                <test-case id="1262" name="PauseMenu_INC25_ReiniciarNivelNoDescartaLasFasesYaConfirmadas" fullname="Game.Levels.Wheel.Tests.PauseMenuWheelTests.PauseMenu_INC25_ReiniciarNivelNoDescartaLasFasesYaConfirmadas" methodname="PauseMenu_INC25_ReiniciarNivelNoDescartaLasFasesYaConfirmadas" classname="Game.Levels.Wheel.Tests.PauseMenuWheelTests" runstate="Runnable" seed="1744111945" result="Passed" start-time="2026-10-16 18:42:30Z" end-time="2026-10-16 18:42:33Z" duration="3.143993" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[RNF-04: «MainMenu» cargó en 0.765 s
+RNF-04: «LevelSelect» cargó en 0.505 s
+RNF-04: «Level2_Workshop» cargó en 1.315 s
+RNF-04: «Level2_Workshop» cargó en 0.427 s
+]]></output>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1264" name="WheelAccessibilityTests" fullname="Game.Levels.Wheel.Tests.WheelAccessibilityTests" classname="Game.Levels.Wheel.Tests.WheelAccessibilityTests" runstate="Runnable" testcasecount="3" result="Passed" start-time="2026-10-16 18:42:33Z" end-time="2026-10-16 18:43:03Z" duration="29.451669" total="3" passed="3" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1265" name="WheelLevel_RNF19_LosTresEstadosDeErrorSeLeenSinColor" fullname="Game.Levels.Wheel.Tests.WheelAccessibilityTests.WheelLevel_RNF19_LosTresEstadosDeErrorSeLeenSinColor" methodname="WheelLevel_RNF19_LosTresEstadosDeErrorSeLeenSinColor" classname="Game.Levels.Wheel.Tests.WheelAccessibilityTests" runstate="Runnable" seed="1578696877" result="Passed" start-time="2026-10-16 18:42:33Z" end-time="2026-10-16 18:42:37Z" duration="3.377470" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Verificar en las capturas: cada rechazo lleva icono además de color en la tablilla; en el laberinto el bloque donde se detuvo el avance tiene contorno y tamaño mayor, no solo otro color." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/WheelLevel_RNF19_Bosque_ObjetoNoValido.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/WheelLevel_RNF19_Taller_FueraDeSecuencia.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/WheelLevel_RNF19_Laberinto_MovimientoInvalido.png
+]]></output>
+                </test-case>
+                <test-case id="1266" name="WheelLevel_RNF20_ContrasteSuficienteEnLasTresEscenas" fullname="Game.Levels.Wheel.Tests.WheelAccessibilityTests.WheelLevel_RNF20_ContrasteSuficienteEnLasTresEscenas" methodname="WheelLevel_RNF20_ContrasteSuficienteEnLasTresEscenas" classname="Game.Levels.Wheel.Tests.WheelAccessibilityTests" runstate="Runnable" seed="321438287" result="Passed" start-time="2026-10-16 18:42:37Z" end-time="2026-10-16 18:42:38Z" duration="1.609377" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[bosque · mensaje: 13,34:1
+bosque · contador: 13,34:1
+bosque · pausa · Cancelar: 13,34:1
+bosque · pausa · Reanudar: 7,06:1
+bosque · pausa · Reiniciar: 13,34:1
+bosque · pausa · Volver a ver la historia: 13,34:1
+bosque · pausa · Guardar y salir: 13,34:1
+bosque · pausa · Volver al menú de niveles: 13,34:1
+bosque · pausa · Sí, reiniciar: 7,06:1
+bosque · pausa · Cancelar: 13,34:1
+bosque · pausa · Sí, salir: 7,06:1
+taller · mensaje: 13,34:1
+taller · mecanizar: 15,23:1
+taller · pausa · Sí, reiniciar: 7,06:1
+taller · pausa · Volver a ver la historia: 13,34:1
+taller · pausa · Reiniciar: 13,34:1
+taller · pausa · Cancelar: 13,34:1
+taller · pausa · Guardar y salir: 13,34:1
+taller · pausa · Cancelar: 13,34:1
+taller · pausa · Volver al menú de niveles: 13,34:1
+taller · pausa · Sí, salir: 7,06:1
+taller · pausa · Reanudar: 7,06:1
+laberinto · mensaje: 13,34:1
+laberinto · ejecutar: 7,06:1
+laberinto · bloque «Avanzar»: 13,34:1
+laberinto · bloque «−»: 10,40:1
+laberinto · bloque «2»: 13,34:1
+laberinto · bloque «+»: 7,07:1
+laberinto · pausa · Reiniciar: 13,34:1
+laberinto · pausa · Sí, salir: 7,06:1
+laberinto · pausa · Cancelar: 13,34:1
+laberinto · pausa · Volver al menú de niveles: 13,34:1
+laberinto · pausa · Volver a ver la historia: 13,34:1
+laberinto · pausa · Guardar y salir: 13,34:1
+laberinto · pausa · Cancelar: 13,34:1
+laberinto · pausa · Sí, reiniciar: 7,06:1
+laberinto · pausa · Reanudar: 7,06:1
+]]></output>
+                </test-case>
+                <test-case id="1267" name="WheelLevel_RNF21_NingunaAnimacionDelNivel2TieneDestellos" fullname="Game.Levels.Wheel.Tests.WheelAccessibilityTests.WheelLevel_RNF21_NingunaAnimacionDelNivel2TieneDestellos" methodname="WheelLevel_RNF21_NingunaAnimacionDelNivel2TieneDestellos" classname="Game.Levels.Wheel.Tests.WheelAccessibilityTests" runstate="Runnable" seed="381082790" result="Passed" start-time="2026-10-16 18:42:38Z" end-time="2026-10-16 18:43:03Z" duration="24.461718" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="120000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Verificar en las capturas: el acercamiento del bosque y el recorrido de la carretilla son movimientos continuos, sin parpadeos ni destellos; ningún elemento se apaga y enciende durante la animación." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/WheelLevel_RNF21_Acercamiento.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/WheelLevel_RNF21_Ejecucion.png
+«Level2_Maze» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que llegar al refugio no confirma la fase ni navega.
+]]></output>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1268" name="WheelLevelJourneyTests" fullname="Game.Levels.Wheel.Tests.WheelLevelJourneyTests" classname="Game.Levels.Wheel.Tests.WheelLevelJourneyTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-16 18:43:03Z" end-time="2026-10-16 18:44:30Z" duration="86.861165" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-suite type="ParameterizedMethod" id="1271" name="WheelLevel_RNF13_RecorreElNivel2CompletoHastaElMenuConNivel3Desbloqueado" fullname="Game.Levels.Wheel.Tests.WheelLevelJourneyTests.WheelLevel_RNF13_RecorreElNivel2CompletoHastaElMenuConNivel3Desbloqueado" classname="Game.Levels.Wheel.Tests.WheelLevelJourneyTests" runstate="Runnable" testcasecount="2" result="Passed" start-time="2026-10-16 18:43:03Z" end-time="2026-10-16 18:44:30Z" duration="86.859165" total="2" passed="2" failed="0" inconclusive="0" skipped="0" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="300000" />
+                    <property name="Category" value="Acceptance" />
+                  </properties>
+                  <test-case id="1269" name="WheelLevel_RNF13_RecorreElNivel2CompletoHastaElMenuConNivel3Desbloqueado_PrimerRecorrido" fullname="Game.Levels.Wheel.Tests.WheelLevelJourneyTests.WheelLevel_RNF13_RecorreElNivel2CompletoHastaElMenuConNivel3Desbloqueado_PrimerRecorrido" methodname="WheelLevel_RNF13_RecorreElNivel2CompletoHastaElMenuConNivel3Desbloqueado" classname="Game.Levels.Wheel.Tests.WheelLevelJourneyTests" runstate="Runnable" seed="1765195044" result="Passed" start-time="2026-10-16 18:43:03Z" end-time="2026-10-16 18:43:45Z" duration="42.451437" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <output><![CDATA[RNF-04: «MainMenu» cargó en 0.766 s
+RNF-04: «LevelSelect» cargó en 0.537 s
+RNF-04: «Narrative» cargó en 1.414 s
+RNF-04: «Narrative» cargó en 0.435 s
+RNF-04: «Narrative» cargó en 0.479 s
+RNF-04: «Level2_Forest» cargó en 0.509 s
+RNF-04: «Narrative» cargó en 0.625 s
+RNF-04: «Narrative» cargó en 1.350 s
+RNF-04: «Level2_Workshop» cargó en 0.741 s
+RNF-04: «Narrative» cargó en 1.645 s
+RNF-04: «Level2_Maze» cargó en 0.937 s
+RNF-04: «Narrative» cargó en 0.576 s
+RNF-04: «LevelSummary» cargó en 0.448 s
+]]></output>
+                  </test-case>
+                  <test-case id="1270" name="WheelLevel_RNF13_RecorreElNivel2CompletoHastaElMenuConNivel3Desbloqueado_SegundoRecorrido" fullname="Game.Levels.Wheel.Tests.WheelLevelJourneyTests.WheelLevel_RNF13_RecorreElNivel2CompletoHastaElMenuConNivel3Desbloqueado_SegundoRecorrido" methodname="WheelLevel_RNF13_RecorreElNivel2CompletoHastaElMenuConNivel3Desbloqueado" classname="Game.Levels.Wheel.Tests.WheelLevelJourneyTests" runstate="Runnable" seed="911149519" result="Passed" start-time="2026-10-16 18:43:45Z" end-time="2026-10-16 18:44:30Z" duration="44.405789" asserts="0">
+                    <properties>
+                      <property name="retryIteration" value="0" />
+                      <property name="repeatIteration" value="0" />
+                    </properties>
+                    <output><![CDATA[RNF-04: «LevelSelect» cargó en 0.467 s
+RNF-04: «MainMenu» cargó en 0.732 s
+RNF-04: «LevelSelect» cargó en 0.519 s
+RNF-04: «Narrative» cargó en 1.460 s
+RNF-04: «Narrative» cargó en 0.429 s
+RNF-04: «Narrative» cargó en 0.439 s
+RNF-04: «Level2_Forest» cargó en 0.415 s
+RNF-04: «Narrative» cargó en 0.560 s
+RNF-04: «Narrative» cargó en 0.429 s
+RNF-04: «Level2_Workshop» cargó en 0.452 s
+RNF-04: «Narrative» cargó en 0.531 s
+RNF-04: «Level2_Maze» cargó en 0.484 s
+RNF-04: «Narrative» cargó en 0.589 s
+RNF-04: «LevelSummary» cargó en 0.455 s
+]]></output>
+                  </test-case>
+                </test-suite>
+              </test-suite>
+              <test-suite type="TestFixture" id="1272" name="WorkshopSceneTests" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" testcasecount="20" result="Passed" start-time="2026-10-16 18:44:30Z" end-time="2026-10-16 18:44:53Z" duration="23.650435" total="20" passed="20" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <output><![CDATA[RNF-04: «LevelSelect» cargó en 0.460 s
+]]></output>
+                <test-case id="1289" name="WorkshopScene_CP02_TrasUnPasoFueraDeOrdenLaNinaAnimaYNuncaHaceOtroGesto" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_CP02_TrasUnPasoFueraDeOrdenLaNinaAnimaYNuncaHaceOtroGesto" methodname="WorkshopScene_CP02_TrasUnPasoFueraDeOrdenLaNinaAnimaYNuncaHaceOtroGesto" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="612991429" result="Passed" start-time="2026-10-16 18:44:30Z" end-time="2026-10-16 18:44:32Z" duration="1.772818" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1288" name="WorkshopScene_DA133_LaNinaMartillaAlPerforarYPapaConEllaAlEncajarCadaPieza" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_DA133_LaNinaMartillaAlPerforarYPapaConEllaAlEncajarCadaPieza" methodname="WorkshopScene_DA133_LaNinaMartillaAlPerforarYPapaConEllaAlEncajarCadaPieza" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="522843303" result="Passed" start-time="2026-10-16 18:44:32Z" end-time="2026-10-16 18:44:33Z" duration="0.596102" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1287" name="WorkshopScene_DA133_LaNinaSenalaElTroncoQueEligeYVuelveAlReposo" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_DA133_LaNinaSenalaElTroncoQueEligeYVuelveAlReposo" methodname="WorkshopScene_DA133_LaNinaSenalaElTroncoQueEligeYVuelveAlReposo" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="1174542619" result="Passed" start-time="2026-10-16 18:44:33Z" end-time="2026-10-16 18:44:34Z" duration="1.180001" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1290" name="WorkshopScene_DA133_TodaLaFamiliaCelebraLaCarretillaTerminadaHastaSalir" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_DA133_TodaLaFamiliaCelebraLaCarretillaTerminadaHastaSalir" methodname="WorkshopScene_DA133_TodaLaFamiliaCelebraLaCarretillaTerminadaHastaSalir" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="961575364" result="Passed" start-time="2026-10-16 18:44:34Z" end-time="2026-10-16 18:44:36Z" duration="1.783590" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Level2_Workshop» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que la carretilla terminada no confirma la fase ni navega.
+]]></output>
+                </test-case>
+                <test-case id="1292" name="WorkshopScene_INC45_ElBotonDePistaMuestraAAlgoritmConSuFormaDeRueda" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_INC45_ElBotonDePistaMuestraAAlgoritmConSuFormaDeRueda" methodname="WorkshopScene_INC45_ElBotonDePistaMuestraAAlgoritmConSuFormaDeRueda" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="1015334839" result="Passed" start-time="2026-10-16 18:44:36Z" end-time="2026-10-16 18:44:36Z" duration="0.572833" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1280" name="WorkshopScene_INC54_AlAmarrarLaCuerdaLaCarretillaPasaAlDibujoConCuerda" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_INC54_AlAmarrarLaCuerdaLaCarretillaPasaAlDibujoConCuerda" methodname="WorkshopScene_INC54_AlAmarrarLaCuerdaLaCarretillaPasaAlDibujoConCuerda" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="1328136941" result="Passed" start-time="2026-10-16 18:44:36Z" end-time="2026-10-16 18:44:37Z" duration="0.591384" asserts="0">
+                  <properties>
+                    <property name="Category" value="Acceptance" />
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1273" name="WorkshopScene_RF27_PresentaLasSeisPiezas" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RF27_PresentaLasSeisPiezas" methodname="WorkshopScene_RF27_PresentaLasSeisPiezas" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="1315777512" result="Passed" start-time="2026-10-16 18:44:37Z" end-time="2026-10-16 18:44:37Z" duration="0.539612" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1276" name="WorkshopScene_RF28_ElMazoArrastradoSobreElTroncoResaltadoLoPerforaIgualQueElBoton" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RF28_ElMazoArrastradoSobreElTroncoResaltadoLoPerforaIgualQueElBoton" methodname="WorkshopScene_RF28_ElMazoArrastradoSobreElTroncoResaltadoLoPerforaIgualQueElBoton" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="1640199846" result="Passed" start-time="2026-10-16 18:44:37Z" end-time="2026-10-16 18:44:38Z" duration="0.577253" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1275" name="WorkshopScene_RF28_MecanizarSeHabilitaSoloConTroncoSeleccionadoYConDobleIndicador" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RF28_MecanizarSeHabilitaSoloConTroncoSeleccionadoYConDobleIndicador" methodname="WorkshopScene_RF28_MecanizarSeHabilitaSoloConTroncoSeleccionadoYConDobleIndicador" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="262189759" result="Passed" start-time="2026-10-16 18:44:38Z" end-time="2026-10-16 18:44:38Z" duration="0.552866" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1279" name="WorkshopScene_RF29_LaCarretillaCreceSobreLoAnteriorSinQueLaInterfazLaTape" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RF29_LaCarretillaCreceSobreLoAnteriorSinQueLaInterfazLaTape" methodname="WorkshopScene_RF29_LaCarretillaCreceSobreLoAnteriorSinQueLaInterfazLaTape" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="1110080271" result="Passed" start-time="2026-10-16 18:44:38Z" end-time="2026-10-16 18:44:39Z" duration="0.555659" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1284" name="WorkshopScene_RF29_LaSecuenciaCompletaConfirmaYGuardaLaFase2" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RF29_LaSecuenciaCompletaConfirmaYGuardaLaFase2" methodname="WorkshopScene_RF29_LaSecuenciaCompletaConfirmaYGuardaLaFase2" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="239451285" result="Passed" start-time="2026-10-16 18:44:39Z" end-time="2026-10-16 18:44:43Z" duration="4.002289" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[RNF-04: «MainMenu» cargó en 0.840 s
+RNF-04: «LevelSelect» cargó en 0.561 s
+RNF-04: «Level2_Workshop» cargó en 1.355 s
+]]></output>
+                </test-case>
+                <test-case id="1283" name="WorkshopScene_RF29_PerforarSuenaAEncajeCadaPiezaATresMartillazosYElFinalAPiezaTomada" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RF29_PerforarSuenaAEncajeCadaPiezaATresMartillazosYElFinalAPiezaTomada" methodname="WorkshopScene_RF29_PerforarSuenaAEncajeCadaPiezaATresMartillazosYElFinalAPiezaTomada" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="1980905104" result="Passed" start-time="2026-10-16 18:44:43Z" end-time="2026-10-16 18:44:46Z" duration="3.317310" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[«Level2_Workshop» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que la carretilla terminada no confirma la fase ni navega.
+]]></output>
+                </test-case>
+                <test-case id="1277" name="WorkshopScene_RF29_SoltarElMazoLejosNoCuentaComoIntento" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RF29_SoltarElMazoLejosNoCuentaComoIntento" methodname="WorkshopScene_RF29_SoltarElMazoLejosNoCuentaComoIntento" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="408821138" result="Passed" start-time="2026-10-16 18:44:46Z" end-time="2026-10-16 18:44:47Z" duration="0.581213" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1278" name="WorkshopScene_RF29_UnPasoFueraDeOrdenDevuelveLaPiezaYNoDeshaceNada" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RF29_UnPasoFueraDeOrdenDevuelveLaPiezaYNoDeshaceNada" methodname="WorkshopScene_RF29_UnPasoFueraDeOrdenDevuelveLaPiezaYNoDeshaceNada" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="520118213" result="Passed" start-time="2026-10-16 18:44:47Z" end-time="2026-10-16 18:44:47Z" duration="0.589072" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1281" name="WorkshopScene_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" methodname="WorkshopScene_RNF02_ElMapaDeControlesSoloTieneClicYClicSostenido" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="1457150756" result="Passed" start-time="2026-10-16 18:44:47Z" end-time="2026-10-16 18:44:48Z" duration="0.570486" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1291" name="WorkshopScene_RNF03_LaFamiliaNoTapaPiezasCarretillaNiInterfazYNoRecibeClics" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RNF03_LaFamiliaNoTapaPiezasCarretillaNiInterfazYNoRecibeClics" methodname="WorkshopScene_RNF03_LaFamiliaNoTapaPiezasCarretillaNiInterfazYNoRecibeClics" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="973614129" result="Passed" start-time="2026-10-16 18:44:48Z" end-time="2026-10-16 18:44:49Z" duration="0.577370" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1282" name="WorkshopScene_RNF03_NadaSeSaleDePantallaNiSeSolapa" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RNF03_NadaSeSaleDePantallaNiSeSolapa" methodname="WorkshopScene_RNF03_NadaSeSaleDePantallaNiSeSolapa" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="687291294" result="Passed" start-time="2026-10-16 18:44:49Z" end-time="2026-10-16 18:44:49Z" duration="0.609344" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+                <test-case id="1285" name="WorkshopScene_RNF14_ConLaFase1EnDiscoEntrarAlNivelRetomaEnElTaller" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RNF14_ConLaFase1EnDiscoEntrarAlNivelRetomaEnElTaller" methodname="WorkshopScene_RNF14_ConLaFase1EnDiscoEntrarAlNivelRetomaEnElTaller" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="1313774903" result="Passed" start-time="2026-10-16 18:44:49Z" end-time="2026-10-16 18:44:52Z" duration="2.739696" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[RNF-04: «MainMenu» cargó en 0.766 s
+RNF-04: «LevelSelect» cargó en 0.565 s
+RNF-04: «Level2_Workshop» cargó en 1.355 s
+]]></output>
+                </test-case>
+                <test-case id="1286" name="WorkshopScene_RNF20_CapturaDelTallerEnReposoYConLaCarretillaMontada" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RNF20_CapturaDelTallerEnReposoYConLaCarretillaMontada" methodname="WorkshopScene_RNF20_CapturaDelTallerEnReposoYConLaCarretillaMontada" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="2140671806" result="Passed" start-time="2026-10-16 18:44:52Z" end-time="2026-10-16 18:44:53Z" duration="0.979672" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Verificar en las capturas: el taller es el claro este del bosque con el encuadre de la 2.3; las piezas se leen sobre el pasto sin que la tablilla ni los botones las tapen; la carretilla crece donde estaban las ruedas; «Aún no» con candado sobre «Mecanizar»; contraste carbón sobre marfil; en _04 la carretilla amarrada (e5): la caja atada con la cuerda tras el empuje de cierre." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/Workshop_01_reposo.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/Workshop_02_tronco_resaltado.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/Workshop_03_tabla_montada.png
+Captura: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia/TestScreenshots/Workshop_04_carretilla_amarrada.png
+]]></output>
+                </test-case>
+                <test-case id="1274" name="WorkshopScene_RNF23_ElEntornoEsElDelBosqueYCubreLaPantallaConElEncuadreDeLa23" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RNF23_ElEntornoEsElDelBosqueYCubreLaPantallaConElEncuadreDeLa23" methodname="WorkshopScene_RNF23_ElEntornoEsElDelBosqueYCubreLaPantallaConElEncuadreDeLa23" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="1030150118" result="Passed" start-time="2026-10-16 18:44:53Z" end-time="2026-10-16 18:44:53Z" duration="0.523934" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <output><![CDATA[Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+]]></output>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

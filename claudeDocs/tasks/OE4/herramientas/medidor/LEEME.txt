@@ -1,0 +1,24 @@
+MEDIDOR DE ALGORITMIA (RNF-04 carga de escena y RNF-05 memoria)
+
+Qué hace
+  Abre el juego, anota la memoria que usa mientras se juega y, al cerrarlo, lee del registro del juego
+  cuánto tardó en cargar cada escena. Compara con los límites: menos de 10 s por carga y menos de 2 GB
+  de memoria. No usa internet, no instala nada y no toca los perfiles de la carpeta Datos.
+
+Cómo usarlo en cada computador
+  1. Copie MedirAlgoritmia.exe en una memoria USB (o junto a la carpeta Algoritmia del equipo).
+  2. Haga doble clic en MedirAlgoritmia.exe. Busca el juego en este orden: junto al medidor, en una
+     carpeta Algoritmia a su lado y en Escritorio\Algoritmia. Si no lo encuentra, pide la carpeta.
+     Si Windows muestra «Windows protegió su PC», elija «Más información» y «Ejecutar de todas formas».
+  3. Se abre el juego. Juéguelo con normalidad; conviene pasar por los tres niveles.
+  4. Cierre el juego («Guardar y salir» o la X). La ventana negra muestra el resultado.
+  5. Pulse Intro para cerrar la ventana negra.
+  Al terminar la sesión, borre los perfiles con «Eliminar datos», como en las sesiones anteriores.
+
+Qué deja junto al medidor
+  Resultado_<equipo>_<fecha>.txt   informe de ese equipo
+  Player_<equipo>_<fecha>.log      copia del registro del juego (por si hay que revisar algo)
+  resultados_medicion.csv          una fila por equipo; si el medidor corre desde la misma USB en
+                                   todos los computadores, este archivo los reúne a todos
+
+Devuelva la carpeta con esos archivos para incluir las cifras en el OE4 y en el trabajo de grado.

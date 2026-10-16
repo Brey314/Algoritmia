@@ -52,7 +52,7 @@ Desde el 29/09/2026 corre además el **carril OE4** —la evaluación funcional 
 su `plan.md`, `casos.md` (el catálogo `PF-*` con guion paso a paso) y `todo.md` en
 `claudeDocs/tasks/OE4/`. Prueba el **ejecutable** compilado, no el Editor, y cada veredicto lleva
 la versión en que se obtuvo. El candidato vigente es rc5 (14/10/2026, 426,9 MB, compilado desde `ca6fd91`, sin etiqueta), que sustituye a
-rc4 (13/10/2026, desde `0405eba`); rc5 se compiló y se pesó, sin pasada de casos ni medidas de RNF-04 y RNF-05 sobre él. Los veredictos `PF-*` siguen
+rc4 (13/10/2026, desde `0405eba`); rc5 se compiló y se pesó, sin pasada de casos; su suite completa corrió el 16/10/2026 sobre `06a5b61`, el mismo `Assets/` que `ca6fd91` (795 de 796 EditMode, 438 de 438 PlayMode, `evidencias/suites/rc5-06a5b61/`), lo que cerró DEF-RC3-I04, y ese día se midieron RNF-04 y RNF-05 en un equipo del colegio solo durante el Nivel 1 (1,223 s, 633 MiB; `evidencias/rc5/medicion-colegio/`); el 16/10/2026 lo jugaron 30 estudiantes del curso 501 en 30 equipos del colegio, sin fallas (`evidencias/rc5/sesion-estudiantes-2026-10-16.md`: apoyo, no cambia veredictos); ese día se cerraron además `PF-RNF13-01` (dos recorridos del arnés sobre rc5, `evidencias/rc5/GP/`), `PF-RNF22-01` y `PF-RNF23-01`: 132 P, 4 F, 0 pendientes (97,1 %). Los veredictos `PF-*` siguen
 siendo los de rc3 (10/10/2026, probado con estudiantes el 13/10/2026), y RNF-04 y RNF-05 se midieron en rc4. Su procedencia está en
 `evidencias/build-rc3.md`, `build-rc4.md` y `build-rc5.md` y los resultados, en `OE4-Resultados.md` y
 `evidencias/rc3/`, `rc4/` y `rc5/`. Las evidencias de rc1 y rc2 se retiraron (se recuperan de `4e78f47`;

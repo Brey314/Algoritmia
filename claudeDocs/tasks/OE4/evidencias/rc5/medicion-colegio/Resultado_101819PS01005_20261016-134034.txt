@@ -1,0 +1,21 @@
+MEDICIÓN DE ALGORITMIA · 2026-10-16 13:40:34
+Equipo: 101819PS01005
+Procesador: AMD A10-9600P RADEON R5, 10 COMPUTE CORES 4C+6G
+Memoria RAM: 3,9 GB
+Gráficos: AMD Radeon(TM) R5 Graphics (80 MB)
+Sistema: Microsoft Windows 10 Education 10.0.19045
+Juego: C:\Users\ESTUDIANTES\Downloads\Algoritmia (1)\Algoritmia\Algoritmia.exe
+Tiempo jugado: 0,9 min · código de salida 0 · 200 muestras de memoria
+
+RNF-04, carga de escena (límite 10 s), peor valor por escena:
+  Level1_Cave          0.256 s  (1 carga(s))
+  LevelSelect          0.193 s  (1 carga(s))
+  MainMenu             1.223 s  (1 carga(s))
+  Narrative            1.075 s  (3 carga(s))
+  Peor carga: 1.223 s -> CUMPLE
+
+RNF-05, memoria (límite 2 GB = 2048 MiB):
+  Working set máximo 589 MiB · memoria privada máxima 633 MiB · pico del sistema 589 MiB
+  Máximo considerado: 633 MiB -> CUMPLE
+
+Líneas con «Exception» en el Player.log: 0

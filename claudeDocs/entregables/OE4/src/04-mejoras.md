@@ -23,8 +23,9 @@ Las pruebas automáticas que nombran RNF-03 pasaron en la suite del 10/10/2026 (
 |---|---|---|---|
 | Ignorar la entrada unos 300 ms después de cargar el resumen de nivel, para que un doble clic en «Omitir» no pulse «Volver al menú de niveles» | DEF-RC3-09 (Menor), `PF-RF45-05` (F) | Con un doble clic rápido al final del Nivel 1 el estudiante cae en el menú sin ver el resumen (2 de 3 intentos); el progreso no se pierde | Código |
 | Fijar la distribución de las siete piezas del Nivel 1 si la evaluación con estudiantes necesita partidas comparables; hoy es aleatoria en cada entrada | DEF-RC3-04 (Observación), `PF-RF14-01` | Nada: es una decisión de diseño. Cambia lo que se puede comparar entre dos estudiantes | Decisión pendiente |
-| Confirmar que es intencional la forma de Algoritm en las secuencias puente: llama en `N2_PuenteI`, disco en `N3_PuenteII` y `N3_PuenteII_Horizonte`, gota desde `N3_PuenteII_Rio` | DEF-RC3-08 (Observación), `PF-RF05-04` | El estudiante ve al guía con la forma del nivel que acaba de terminar | Decisión pendiente o documento |
-| Decidir si el gesto del Niño en reposo, con la mano a la sien tapando parte de un ojo, se acepta como excepción (`CARA_TAPADA`) o se corrige en el arte | DEF-RC3-03 (Observación), `PF-RF05-05` | Un ojo parcialmente tapado en la portada y en la cueva | Documento o arte |
+| Revisar con más estudiantes la franja de cercanía de las piedras del Nivel 1, un parámetro de `FireLevelConfig` | Sesión del 16/10/2026 (apartado 5.4) | A una estudiante le costó encender el fuego porque las piedras quedaban demasiado juntas o demasiado separadas; PG-06 había dado los valores por buenos con 4 estudiantes | Parámetro, sin recompilar (CT-05) |
+| Equilibrar la dificultad del Nivel 3, o reforzar su instrucción, después de observar a más estudiantes | Sesión del 16/10/2026 (apartado 5.4) | A un estudiante el nivel le pareció muy fácil y a otra le costó entender qué hacer | Diseño, por decidir con más datos |
+| Mostrar en el inventario del Nivel 3 cuántas sogas faltan por amarrar, como ya lo hace con los troncos | Sesión del 16/10/2026 (apartado 5.4), persona externa | Quien amarra no sabe cuántos de los diez amarres le quedan | Interfaz |
 
 ## 4.3 Arte y paquete del ejecutable
 
@@ -47,7 +48,6 @@ Las pruebas automáticas que nombran RNF-03 pasaron en la suite del 10/10/2026 (
 | Exigir la tarjeta del Kanban en el mensaje de cada commit, con una plantilla o un hook de `commit-msg` que rechace el marcador `(tarjeta: <id>)` sin resolver | DEF-RC3-I02 (Menor), `PF-RNF17-01` (F): 9 de 122 commits con tarjeta (7,4 %), 4 con el marcador sin resolver, 109 sin tarjeta (82 citan INC, R, W o T) | RNF-17 y CT-11 piden trazar cada commit de código a su tarjeta. Corregirlo en lo ya hecho exigiría reescribir la historia | Proceso |
 | Hacer que las pruebas de arquitectura toleren un nivel ausente: `Architecture_RNF15_CadaModuloDeclaraSuAssemblyDeRuntimeYDePruebas`, `Architecture_RNF15_ElNombreDelAssemblyCoincideConSuRutaBajoScripts`, `Architecture_RNF16_NingunAssemblyDeNivelReferenciaAOtroNivel`, `Architecture_RNF16_RetirarUnNivelNoAfectaALosOtrosDos` y `Traceability_CT10_TodoRFTieneAlMenosUnaPruebaQueLoNombra` | DEF-RC3-12 (Observación), `PF-RNF16-01`: sin `Levels/Wheel` fallan en EditMode 6 de 663 y sin `Levels/Fire` 6 de 696 | Hoy exigen los tres assemblies y todos los RF, no detectan acoplamiento; con ellas tolerantes, RNF-16 podría afirmar cero fallos de acoplamiento | Prueba |
 | Fijar la resolución de `unity test` en lote: 15 pruebas de River, Wheel y UI (RNF-03, RNF-19, RNF-20, RNF-21) fallan a 640 × 480 también en la copia completa y pasan con `editor.ps1` a 1920 × 1080 | `PF-RNF16-01`, `S-RNF/rnf16/resumen.md` | Un fallo de entorno se lee como fallo del juego; `NORMA-PRUEBAS.md` ya manda la vía de `editor.ps1` | Herramienta |
-| Correr la suite completa, o al menos `Maze` en PlayMode, sobre el HEAD que se entregue | DEF-RC3-I04 (Menor): la suite corrió sobre `292b108` y no sobre `f49ccc9` | Las 78 líneas de `Level2_Maze.unity` reserializadas en `f49ccc9` no tienen una corrida propia. En rc4 la suite sí corrió sobre `0405eba`, el commit del build | Proceso |
 | Revisar si `RiverLevel_RNF21_NingunaAnimacionDelNivel3TieneDestellos` puede medir sin depender de la carga del equipo | La prueba falló una vez (salto de cuadro de 0,056 frente a 0,05 con dos Editores en paralelo) y pasa sola | Un falso rojo en la suite distribuida obliga a repetirla | Prueba |
 
 ## 4.5 Instrumento y proceso de evaluación
@@ -63,26 +63,22 @@ Las pruebas automáticas que nombran RNF-03 pasaron en la suite del 10/10/2026 (
 | No prometer coordenadas de las piezas en `PF-RF14-01`: pedir leer la pantalla antes de arrastrar | DEF-RC3-04 | Las coordenadas del caso no valen, y los pasos 7 y 8 se rehicieron leyendo la pantalla | `casos.md` |
 | En el paso 21 de `PF-RF44-01`, pedir los clics hasta la línea 4 y fotografiar entonces | DEF-RC3-06 | Con un clic por segundo la última línea y «a mitad del río» no coinciden nunca | `casos.md` |
 | Admitir ±1 en los colores medidos por píxel de `PF-RF30-02` | DEF-RC3-07 | Quien compare píxeles puede dar por defecto un redondeo de color que no se ve | `casos.md` |
-| Decir qué forma de Algoritm lleva cada secuencia puente en `PF-RF05-04`, y contemplar el gesto del Niño en el criterio de `PF-RF05-05` | DEF-RC3-08 y DEF-RC3-03 | Los criterios de esos casos no describen lo que el juego hace | `casos.md` |
 | Listar las cinco pruebas de arquitectura como esperadas en `PF-RNF16-01`, o dejarlas de listar si se corrigen | DEF-RC3-12 | El caso solo admite fallos de pruebas que cargan una escena por nombre | `casos.md` |
 | Reformular la advertencia de riesgo de `PF-RF21-02`: la narrativa de cierre entra a unos 1,3 s tras «Soplar», no a los 3,5 s que cita el caso, y el máximo de luz tras el cuarto golpe efectivo no se pudo medir | Observación de S-OMI, sin id propio | El caso no se puede comprobar como está escrito | `casos.md` |
-| Decidir si Claude ejecuta los dos recorridos completos del arnés de `PF-RNF13-01`, además del recorrido con cronómetro de H8 | Tabla 3.4 | El caso está en PS y sus dos recorridos del arnés, planeados, no se corrieron | Decisión pendiente |
 
-El 13/10/2026 se aplicaron en `casos.md` las correcciones de DEF-RC3-02, -04, -06, -07 y -12 de esta tabla. Las de DEF-RC3-08 y DEF-RC3-03 siguen como trabajo futuro (apartado 3.6). Las filas de DEF-RC3-05, -09, -10 y -11 quedaron corregidas en el código en `0405eba` y entraron en rc4 (apartado 3.6); sin pasada propia de los casos, el veredicto de rc3 se conserva.
+El 13/10/2026 se aplicaron en `casos.md` las correcciones de DEF-RC3-02, -04, -06, -07 y -12 de esta tabla. Las de DEF-RC3-08 y DEF-RC3-03 se aplicaron el 16/10/2026, cuando el equipo los aceptó como diseño (apartado 3.6). Las filas de DEF-RC3-05, -09, -10 y -11 quedaron corregidas en el código en `0405eba` y entraron en rc4 (apartado 3.6); sin pasada propia de los casos, el veredicto de rc3 se conserva.
 
 ## 4.6 Lo que la evaluación con personas resolvió y lo que dejó abierto
 
-El 13/10/2026 se ejecutó la hoja HUM con 4 estudiantes de grado quinto del Colegio El Libertador IED (apartado 5.1). PG-05 y PG-06 del guion dieron resultado positivo (H1 y H2), y las comprobaciones H3 a H7 y H9 a H12 se aprobaron (Tabla 5.2): el segundo equipo, la ejecución sin conexión a internet, el equipo sin tarjeta gráfica dedicada, el oído de la escena final y del hundimiento de la balsa, la vista del cruce de la escena 3.3 y de la recolección del Nivel 3, y las piezas que suenan. En H11 la balsa se hundió, se comprendió por qué, se arregló y finalmente cruzó.
+El 13/10/2026 se ejecutó la hoja HUM con 4 estudiantes de grado quinto del Colegio El Libertador IED (apartado 5.1). PG-05 y PG-06 del guion dieron resultado positivo (H1 y H2), y las comprobaciones H3 a H7 y H9 a H13 se aprobaron (Tabla 5.2): el segundo equipo, la ejecución sin conexión a internet, el equipo sin tarjeta gráfica dedicada, el oído de la escena final y del hundimiento de la balsa, la vista del cruce de la escena 3.3 y de la recolección del Nivel 3, y las piezas que suenan. En H11 la balsa se hundió, se comprendió por qué, se arregló y finalmente cruzó.
 
-Las observaciones de la sesión sobre el juego produjeron diez correcciones, registradas como `INC-152` a `INC-160` (Tabla 5.4, apartado 5.3); ninguna se probó todavía en un ejecutable.
+Las observaciones de la sesión sobre el juego produjeron diez correcciones, registradas como `INC-152` a `INC-160` (Tabla 5.4, apartado 5.3). Entraron en rc4 y en rc5, y el 16/10/2026 los 30 estudiantes de un curso jugaron rc5 en 30 equipos del colegio, sin conexión y sin tarjeta gráfica dedicada, sin ninguna complicación y hasta terminar los tres niveles (apartado 5.4). Esa sesión no revisó cada corrección por separado ni siguió el catálogo de casos. De sus testimonios salen tres oportunidades nuevas de la Tabla 4.2: la cercanía de las piedras del Nivel 1, la dificultad del Nivel 3 y el conteo de sogas en su inventario.
 
-Quedan abiertos tres puntos:
+Queda abierto un punto:
 
 - H8, el recorrido con cronómetro, dio entre 40 y 45 minutos frente a la referencia de 20 a 40 del OE1. Supera el tope en hasta 5 minutos y no se registró la causa. Medir cuánto de ese tiempo es lectura de narrativas, cuánto reto y cuánto espera del estudiante exige una sesión con registro por fase.
-- H13, la comprobación de mano, no se realizó. Cubre el clic tras cargar una escena sin mover el puntero, la papelera del laberinto y la octava fila del informe, tres cosas que el arnés enmascara; pasa a trabajo futuro.
-- Las confirmaciones documentales de `PF-RNF22-01` y `PF-RNF23-01` siguen pendientes (apartado 3.1).
 
-Este documento no incluye cifras de carga ni de memoria de los dos equipos del colegio, así que RNF-04 y RNF-05 siguen medidos con cifras solo en el equipo 1.
+De los equipos del colegio hay cifras de carga y memoria de uno solo, medido sobre rc5 el 16/10/2026 en un recorrido de 0,9 min por el Nivel 1 (1,223 s de peor carga y 633 MiB de memoria privada, apartado 3.5). Medir el recorrido completo en varios equipos del colegio, con el mismo medidor, completaría RNF-04 y RNF-05 en el hardware de destino.
 
 ## 4.7 Límites de la evaluación
 
@@ -90,12 +86,11 @@ Este documento no incluye cifras de carga ni de memoria de los dos equipos del c
 
 | Límite | Efecto sobre la lectura |
 |---|---|
-| Un solo equipo en las mediciones de RNF-04, RNF-05 y RNF-06 | Los valores de carga y memoria valen para el equipo 1 (Ryzen 5 7600X, 32 GB, RTX 5070 Ti); un equipo modesto puede dar más. El tamaño del paquete no depende del equipo |
+| Las mediciones completas de RNF-04 y RNF-05 son de un solo equipo | Los valores de carga y memoria de todas las escenas valen para el equipo 1 (Ryzen 5 7600X, 32 GB, RTX 5070 Ti). En un equipo del colegio (AMD A10-9600P, 3,9 GB, gráficos integrados) se midió solo el Nivel 1 de rc5: la peor carga subió a 1,223 s y la memoria privada quedó en 633 MiB, ambas dentro del límite. El tamaño del paquete no depende del equipo |
 | La línea `RNF-04` de `SceneLoader` mide la carga, no el primer cuadro visible; el muestreo de red empieza unos 2 a 8 s después del arranque y no ve conexiones de menos de 2 s | RNF-04 y RNF-10 son cotas del comportamiento, no una medida exhaustiva; `globalgamemanagers` sin `unity3d.com` cubre el arranque |
 | RNF-18 se probó en un ejecutable de la copia desechable y no con el Editor abierto y en Play | «Sin recompilación» no es observable con `unity build`; el caso aprueba como variante |
 | RNF-16 se probó con `unity test` en copias sin un nivel | El caso aprueba con la desviación de DEF-RC3-12; 15 pruebas de River, Wheel y UI fallan igual en la copia completa por la resolución del lote |
 | Los mensajes de las fotos se leyeron a 0,5 a 0,9 s de cada acción | El límite de 1 s de RF-11 se juzga por ese margen y no por un cronómetro |
-| La suite no corrió sobre el contenido exacto de rc3 | Entre `23d7e8c` y rc3 no cambió ningún `.cs`; la reserialización de `Level2_Maze.unity` queda sin corrida propia (DEF-RC3-I04) |
 | El sonido no lo mide el arnés | Los tres casos `SON` los aprobó una persona el 13/10/2026 (H12, con H6 y H7); es un juicio de oído sin medición propia |
 | La pausa del laberinto se tomó a unos 0,3 s de pulsar «Ejecutar», no a mitad del recorrido | La carretilla ya se movía y siguió tras «Reanudar»; la parada a mitad del recorrido no tiene captura |
-| Los dos recorridos del arnés de `PF-RNF13-01` no se ejecutaron | No hay duración medida del juego entero con un perfil nuevo; solo la del Nivel 1 en S-N1 |
+| Los dos recorridos del arnés de `PF-RNF13-01` se hicieron sobre rc5, no sobre rc3 | El recorrido completo sin bloqueos se comprobó en la versión que se entrega; sus tiempos incluyen la latencia del arnés y no miden a un estudiante |

@@ -1,0 +1,174 @@
+{
+  "head": "06a5b61",
+  "arbol": "c599b82e13ec",
+  "unity": "6000.5.10f1",
+  "paredMin": 25.5,
+  "editmode": {
+    "Total": 796.0,
+    "Passed": 795.0,
+    "Failed": 0.0,
+    "Skipped": 1.0
+  },
+  "playmode": {
+    "Total": 438.0,
+    "Passed": 438.0,
+    "Failed": 0.0,
+    "Skipped": 0.0
+  },
+  "listadas": 1234,
+  "ejecutadas": 1234,
+  "faltan": [],
+  "repetidas": [],
+  "corridas": [
+    {
+      "carril": "A",
+      "archivo": "2026-10-16_133406_editmode.json",
+      "modo": "editmode",
+      "filtro": "",
+      "seg": 24.5,
+      "s": {
+        "Total": 796,
+        "Passed": 795,
+        "Failed": 0,
+        "Skipped": 1,
+        "Inconclusive": 0
+      }
+    },
+    {
+      "carril": "A",
+      "archivo": "2026-10-16_133432_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.UI.PlayMode.Tests",
+      "seg": 1395.0,
+      "s": {
+        "Total": 193,
+        "Passed": 193,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      }
+    },
+    {
+      "carril": "B",
+      "archivo": "2026-10-16_133407_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.Audio.PlayMode.Tests",
+      "seg": 12.3,
+      "s": {
+        "Total": 4,
+        "Passed": 4,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      }
+    },
+    {
+      "carril": "B",
+      "archivo": "2026-10-16_133420_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.Core.PlayMode.Tests",
+      "seg": 27.4,
+      "s": {
+        "Total": 12,
+        "Passed": 12,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      }
+    },
+    {
+      "carril": "B",
+      "archivo": "2026-10-16_133448_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.Levels.Fire.PlayMode.Tests",
+      "seg": 122.5,
+      "s": {
+        "Total": 68,
+        "Passed": 68,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      }
+    },
+    {
+      "carril": "B",
+      "archivo": "2026-10-16_133652_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.Levels.River.PlayMode.Tests",
+      "seg": 152.7,
+      "s": {
+        "Total": 58,
+        "Passed": 58,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      }
+    },
+    {
+      "carril": "B",
+      "archivo": "2026-10-16_133926_playmode.json",
+      "modo": "playmode",
+      "filtro": "Game.Levels.Wheel.PlayMode.Tests",
+      "seg": 333.1,
+      "s": {
+        "Total": 103,
+        "Passed": 103,
+        "Failed": 0,
+        "Skipped": 0,
+        "Inconclusive": 0
+      }
+    }
+  ],
+  "fallos": [],
+  "codigos": [
+    {
+      "corrida": "tests-edit - testName 900",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "75e84639-fa28-4e1a-9676-c28cedade61b",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.UI.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "75e84639-fa28-4e1a-9676-c28cedade61b",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.Audio.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "fe365341-7d56-4544-942c-bab7116b5aec",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.Core.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "fe365341-7d56-4544-942c-bab7116b5aec",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.Levels.Fire.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "fe365341-7d56-4544-942c-bab7116b5aec",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.Levels.River.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "fe365341-7d56-4544-942c-bab7116b5aec",
+      "PSShowComputerName": false
+    },
+    {
+      "corrida": "tests-play Game.Levels.Wheel.PlayMode.Tests assembly 3600",
+      "codigo": 0,
+      "PSComputerName": "localhost",
+      "RunspaceId": "fe365341-7d56-4544-942c-bab7116b5aec",
+      "PSShowComputerName": false
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+Mono path[0] = 'C:/Users/ESTUDIANTES/Downloads/Algoritmia (1)/Algoritmia/Algoritmia_Data/Managed'
+Mono config path = 'C:/Users/ESTUDIANTES/Downloads/Algoritmia (1)/Algoritmia/MonoBleedingEdge/etc'
+CodeReloadManager initialized
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Plugins: Failed to load 'C:/Users/ESTUDIANTES/Downloads/Algoritmia (1)/Algoritmia/Algoritmia_Data/Plugins\x86_64/AppUINativePlugin.dll' because one or more of its dependencies could not be loaded.
+Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+[Subsystems] Discovering subsystems at path C:/Users/ESTUDIANTES/Downloads/Algoritmia (1)/Algoritmia/Algoritmia_Data/UnitySubsystems
+[D3D12 Device Filter] Vendor Name: ATI
+[D3D12 Device Filter] Device Name: AMD Radeon(TM) R5 Graphics
+[D3D12 Device Filter] Driver Version: 27.20.20904.1004
+[D3D12 Device Filter] Feature Level: 12.0
+[D3D12 Device Filter] Graphics Memory: 1973 MB
+[D3D12 Device Filter] Processor Count: 4
+[D3D12 Device Filter] Device Type: Integrated
+[D3D12 Device Filter] D3D12 API denied by user filter: {"Feature Level Comparator": Less Than"Feature Level": "12.1", "Device Type:": Do Not Care}
+GfxDevice: creating device client; kGfxThreadingModeClientWorkerJobs
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: AMD Radeon(TM) R5 Graphics (ID=0x9874)
+    Vendor:   ATI
+    VRAM:     1973 MB
+    Driver:   27.20.20904.1004
+Begin MonoManager ReloadAssembly
+- Finished resetting the current domain, in  0.103 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+D3D11 device created for Microsoft Media Foundation video decoding.
+<RI> Initializing input.
+Using Windows.Gaming.Input
+UnloadTime: 2.294300 ms
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.848600 ms
+RNF-04: «MainMenu» cargó en 1.223 s
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 4768.
+Total: 6.325100 ms (FindLiveObjects: 0.715100 ms CreateObjectMapping: 1.244700 ms MarkObjects: 4.212100 ms  DeleteObjects: 0.140500 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 12.592300 ms
+RNF-04: «LevelSelect» cargó en 0.193 s
+Unloading 463 unused Assets to reduce memory usage. Loaded Objects now: 3502.
+Total: 8.520200 ms (FindLiveObjects: 0.513900 ms CreateObjectMapping: 0.766700 ms MarkObjects: 5.784600 ms  DeleteObjects: 1.454300 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 2.664200 ms
+RNF-04: «Narrative» cargó en 1.075 s
+Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 5435.
+Total: 8.306400 ms (FindLiveObjects: 1.204400 ms CreateObjectMapping: 1.507800 ms MarkObjects: 5.454300 ms  DeleteObjects: 0.139300 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 4.893900 ms
+RNF-04: «Narrative» cargó en 0.042 s
+Unloading 6 unused Assets to reduce memory usage. Loaded Objects now: 5538.
+Total: 8.012000 ms (FindLiveObjects: 1.684000 ms CreateObjectMapping: 2.495000 ms MarkObjects: 3.733600 ms  DeleteObjects: 0.098400 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 5.091500 ms
+RNF-04: «Narrative» cargó en 0.043 s
+Unloading 6 unused Assets to reduce memory usage. Loaded Objects now: 5492.
+Total: 8.298500 ms (FindLiveObjects: 1.416000 ms CreateObjectMapping: 2.354200 ms MarkObjects: 4.464900 ms  DeleteObjects: 0.062800 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 5.206200 ms
+RNF-04: «Level1_Cave» cargó en 0.256 s
+Unloading 1008 unused Assets to reduce memory usage. Loaded Objects now: 4985.
+Total: 10.378100 ms (FindLiveObjects: 0.740900 ms CreateObjectMapping: 2.933600 ms MarkObjects: 5.348700 ms  DeleteObjects: 1.354100 ms)
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+CodeReloadManager destroyed
+GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
