@@ -5,11 +5,11 @@
   y actualiza índices, listas y bibliografía. Solo usa Buscar y Range.Text de celdas: ningún campo CITATION se reescribe.
   De un solo uso; entradas: tesis-rc5-tablas.json y tesis-rc5-fragmentos.json. Aborta sin guardar si algo no aparece.
 #>
-param([Parameter(Mandatory = $true)][string]$Docx, [switch]$DryRun)
+param([Parameter(Mandatory = $true)][string]$Docx, [string]$Prefijo = 'tesis-rc5', [switch]$DryRun)
 $ErrorActionPreference = 'Stop'
 $here = Split-Path -Parent $PSCommandPath
-$tables = Get-Content -Raw -Encoding UTF8 (Join-Path $here 'tesis-rc5-tablas.json') | ConvertFrom-Json
-$fragments = Get-Content -Raw -Encoding UTF8 (Join-Path $here 'tesis-rc5-fragmentos.json') | ConvertFrom-Json
+$tables = Get-Content -Raw -Encoding UTF8 (Join-Path $here "$Prefijo-tablas.json") | ConvertFrom-Json
+$fragments = Get-Content -Raw -Encoding UTF8 (Join-Path $here "$Prefijo-fragmentos.json") | ConvertFrom-Json
 $path = (Resolve-Path -LiteralPath $Docx).Path
 
 function Replace-Once($Range, [string]$Old, [string]$New) {

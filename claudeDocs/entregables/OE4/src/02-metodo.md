@@ -37,17 +37,17 @@ Tres reglas gobiernan las sesiones EXE y evitan que un veredicto se invente. Se 
 | Veredicto | Cuándo | Cuenta como |
 |---|---|---|
 | P, aprobado | Se observan todos los resultados esperados de los pasos que el caso agrupa | Aprobado |
-| PD, aprobado con desviación documentada | Se observa lo esperado, pero un paso sigue la decisión de un INC o se aparta del texto con un defecto registrado que lo explica | Aprobado, reportado aparte |
+| PD, aprobado con desviación documentada | Se observa lo esperado, pero un paso sigue la decisión de un INC | Aprobado, reportado aparte |
 | F, fallido | Algún resultado esperado no se observa; se abre un defecto | No aprobado |
 | B, bloqueado | No se pudo ejecutar por precondición o entorno; si lo bloquea un defecto del juego, es F | Fuera del denominador |
 | NA, no aplica | Lo que el propio requerimiento deja fuera de un prototipo sin usuarios (RNF-12) | Fuera del denominador |
 | PS, pendiente de una persona | El caso lo ejecuta la hoja HUM, o falta un documento o una confirmación. No es un veredicto | Fuera del denominador |
 
-Durante la pasada un caso puede estar a medias o sin ejecutar. Son estados de trabajo y no veredictos: NE (no ejecutado por el ejecutor automático) y PS (la fila de la Tabla 2.3). Un caso con filas en varias sesiones toma la peor, en el orden F, B, NE, PD, P y NA. Al cierre de la pasada sobre rc5 seis casos quedan en PS y ninguno en B, NA ni NE (Tabla 3.1): `PF-RNF08-01`, que llegó como NE porque el modo avión lo activa una persona, va en PS con los otros cinco. En la pasada sobre rc3 eran diez en PS en el corte del 10/10/2026, siete se cerraron el 13/10/2026 y los tres últimos, `PF-RNF13-01`, `PF-RNF22-01` y `PF-RNF23-01`, el 16/10/2026 (apartado 5.2). Un F pasa a PD solo si el triaje registra un INC con la decisión tomada.
+Durante la pasada un caso puede estar a medias o sin ejecutar. Son estados de trabajo y no veredictos: NE (no ejecutado por el ejecutor automático) y PS (la fila de la Tabla 2.3). Ninguno de los dos entra en el denominador. Un caso con filas en varias sesiones toma la peor, en el orden F, B, PD, P y NA, y una fila NE no cuenta si otra sesión sí lo ejecutó. Al cierre de la pasada sobre rc5 tres casos quedan en NE y ninguno en B, NA ni PS (Tabla 3.1): `PF-SON-01`, `PF-SON-02` y `PF-SON-03`, que nadie ejecutó sobre esta versión. En la pasada sobre rc3 eran diez en PS en el corte del 10/10/2026, siete se cerraron el 13/10/2026 y los tres últimos, `PF-RNF13-01`, `PF-RNF22-01` y `PF-RNF23-01`, el 16/10/2026 (apartado 5.2). Un F pasa a PD solo si el triaje registra un INC con la decisión tomada.
 
 ## 2.5 Indicadores
 
-La eficacia de las pruebas funcionales se calcula como (P + PD) / (P + PD + F) × 100 sobre los casos con veredicto de los {{N_CASOS}} del catálogo, con meta de 90 % o más. Los casos en PS quedan fuera del cálculo, y el apartado 3.3 dice cuánto cambiaría el valor si fallaran. Se publica el valor global y el de cada etiqueta, porque el indicador nombra botones, sonidos y saltos de nivel y un promedio global podría ocultar una etiqueta por debajo de la meta.
+La eficacia de las pruebas funcionales se calcula como (P + PD) / (P + PD + F) × 100 sobre los casos con veredicto de los {{N_CASOS}} del catálogo, con meta de 90 % o más. Los casos en NE quedan fuera del cálculo, y el apartado 3.3 dice cuánto cambiaría el valor según su resultado. Se publica el valor global y el de cada etiqueta, porque el indicador nombra botones, sonidos y saltos de nivel y un promedio global podría ocultar una etiqueta por debajo de la meta.
 
 El cumplimiento de requerimientos de prioridad Alta se mide sobre 45 RF de prioridad Alta; RF-06 es de prioridad Media y RF-21 de prioridad Baja, según el OE1. Un RF de prioridad Alta cuenta como implementado si ninguno de sus casos termina en F con severidad Bloqueante o Mayor. Un F Menor, como un rótulo o un criterio secundario de una historia, resta en la eficacia pero no niega que el RF exista.
 
@@ -87,7 +87,7 @@ El candidato rc5 es el de la pasada final. Se compiló el 14/10/2026 a las 11:37
 | SHA-256 de `Algoritmia.exe` | `6cd16edfbe85284eb69cd2efe1170aa1cffdf0dbdb309c3269e2f8454811adab`, el mismo de rc1 a rc4: es solo el lanzador |
 | Compilación | Unity 6000.5.10f1, StandaloneWindows64, sin development build, 12 escenas con `Boot` primera |
 
-Para la pasada se extrajo el zip en `Build/Algoritmia_rc5/`. `Start-Juego` compara esa carpeta con `evidencias/rc5/manifiesto-rc5.tsv` antes de cada lanzamiento y no lanza nada si difiere, y al terminar cada sesión `manifiesto.ps1 -Verificar` volvió a coincidir. La huella global se reconstruye desde la lista de huellas con el comando de `build-rc5.md`. Las sesiones corrieron en el equipo 1, con Unity y Word cerrados; los recorridos del 16/10/2026 (`evidencias/rc5/GP/`) se hicieron con Word abierto y no entran en la consolidación.
+Para la pasada se extrajo el zip en `Build/Algoritmia_rc5/`. `Start-Juego` compara esa carpeta con `evidencias/rc5/manifiesto-rc5.tsv` antes de cada lanzamiento y no lanza nada si difiere, y al terminar cada sesión `manifiesto.ps1 -Verificar` volvió a coincidir. La huella global se reconstruye desde la lista de huellas con el comando de `build-rc5.md`. Las sesiones corrieron en el equipo 1, con Unity y Word cerrados; los recorridos del 16/10/2026 (`evidencias/rc5/GP/`) se hicieron con Word abierto y no entran en la consolidación. La sesión del colegio del 16/10/2026 no tomó la huella de la carpeta (apartado 5.5).
 
 ## 2.7 Defectos y correcciones
 

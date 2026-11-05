@@ -19,6 +19,7 @@ VEREDICTOS_RC3 = HERE.parent / "src" / "veredictos-rc3.csv"
 MANIFIESTO = CASOS.parent / "evidencias" / "rc5" / "manifiesto-rc5.tsv"
 PENDING = "PENDIENTE-CIFRA"
 VERDICTS = ("P", "PD", "F", "B", "NA", "NE", "PS")  # NE no ejecutado (de Claude) · PS pendiente de Santiago (HUM)
+SHOWN = ("P", "PD", "F", "B", "NA", "NE")  # columnas de las tablas: PS no aparece en rc5 (INC-163)
 LABELS = ("NAV", "BOT", "SON", "RETO", "DAT", "RNF")
 HEADER = re.compile(r"^## (S-[A-Z0-9]+) · (.+?) — (.+?) · (.+)$")
 ROW = re.compile(r"^\| (PF-[A-Z0-9]+-\d\d) \|")
@@ -98,10 +99,10 @@ def table(header, rows):
 def tally(selected, found):
     """Conteo P/PD/F/B/NA de los casos elegidos; PENDIENTE-CIFRA si alguno aún no tiene veredicto."""
     if any(c["id"] not in found for c in selected):
-        return [PENDING] * len(VERDICTS), None
+        return [PENDING] * len(SHOWN), None
     n = Counter(found[c["id"]] for c in selected)
     ok, bad = n["P"] + n["PD"], n["F"]
-    return [n[v] for v in VERDICTS], pct(ok, ok + bad)
+    return [n[v] for v in SHOWN], pct(ok, ok + bad)
 
 
 def tables():
@@ -122,13 +123,13 @@ def tables():
         rows.append((s, len(by_session[s]), *counts, eff or PENDING))
     counts, eff = tally(cases, found)
     rows.append(("Total", len(cases), *counts, eff or PENDING))
-    out["{{TABLA_RESULTADOS_SESION}}"] = table(["Sesión", "Casos", *VERDICTS, "Eficacia"], rows)
+    out["{{TABLA_RESULTADOS_SESION}}"] = table(["Sesión", "Casos", *SHOWN, "Eficacia"], rows)
     rows = []
     for label in LABELS:
         sel = [c for c in cases if c["label"] == label]
         counts, eff = tally(sel, found)
         rows.append((label, len(sel), *counts, eff or PENDING))
-    out["{{TABLA_RESULTADOS_ETIQUETA}}"] = table(["Etiqueta", "Casos", *VERDICTS, "Eficacia"], rows)
+    out["{{TABLA_RESULTADOS_ETIQUETA}}"] = table(["Etiqueta", "Casos", *SHOWN, "Eficacia"], rows)
     names = {}
     for line in OE1.read_text(encoding="utf-8").splitlines():
         m = re.match(r"^\|\s*(RF-\d\d)\s*\|\s*([^|]+?)\s*\|", line)

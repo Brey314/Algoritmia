@@ -1,6 +1,6 @@
 # 5. EVALUACIÓN CON ESTUDIANTES Y COMPROBACIONES HUMANAS
 
-Dos tipos de prueba no los puede ejecutar el arnés: las que necesitan niños de grado quinto jugando y las que necesitan los sentidos de una persona o un segundo equipo. Este capítulo da el resultado de ambas sobre rc3, obtenido en la sesión del 13/10/2026, y el de una segunda sesión, el 16/10/2026, en la que un curso completo jugó rc5 (apartado 5.4). Lo que falta repetir sobre rc5 se reúne en el apartado 5.5.
+Dos tipos de prueba no los puede ejecutar el arnés: las que necesitan niños de grado quinto jugando y las que necesitan los sentidos de una persona o un segundo equipo. Este capítulo da el resultado de ambas sobre rc3, obtenido en la sesión del 13/10/2026, y el de una segunda sesión, el 16/10/2026, en la que un curso completo jugó rc5 (apartado 5.4). Lo que eso respalda sobre rc5, y lo que no se repitió, se reúne en el apartado 5.5.
 
 ## 5.1 Sesión con estudiantes
 
@@ -64,7 +64,7 @@ Esos dos equipos no son el equipo 1 de las mediciones (apartado 2.6), un Ryzen 5
 
 **H13, la comprobación de mano.** Cubre lo que el arnés enmascara porque mueve el puntero un píxel antes de cada clic: el clic tras cargar una escena sin mover el puntero (`PF-RNF02-01`), la papelera del laberinto (`PF-RF34-01`) y la octava fila del informe docente (`PF-RF46-01`). Se aprobó y confirma el P de rc3 de esos tres casos.
 
-Los resultados de la hoja HUM cuentan en la primera pasada, como los de una sesión manual sobre rc3 (no del arnés): H3 cerró `PF-RNF07-02`, H4 `PF-RNF08-01`, H5 `PF-CT02-01` y H12, con H6 y H7, `PF-SON-01` a `PF-SON-03`; los seis pasaron de PS a P, y `PF-RNF12-01` pasó también a P con el formato de consentimiento (Anexo F) y los 4 consentimientos firmados. H1 y H2 son puntos del guion y H9 a H11 corroboran casos que ya eran P. H8 no cerró por sí sola `PF-RNF13-01`, que pide además los dos recorridos del arnés; en la primera pasada esos recorridos se hicieron sobre rc5 el 16/10/2026. Con ello la eficacia de la primera pasada subió de 96,8 % (122 de 126) a 97,0 % (129 de 133) el 13/10/2026, y a 97,1 % (132 de 136) el 16/10/2026. En la pasada final sobre rc5 esos seis casos no heredan el resultado y quedan en PS (apartado 5.5).
+Los resultados de la hoja HUM cuentan en la primera pasada, como los de una sesión manual sobre rc3 (no del arnés): H3 cerró `PF-RNF07-02`, H4 `PF-RNF08-01`, H5 `PF-CT02-01` y H12, con H6 y H7, `PF-SON-01` a `PF-SON-03`; los seis pasaron de PS a P, y `PF-RNF12-01` pasó también a P con el formato de consentimiento (Anexo F) y los 4 consentimientos firmados. H1 y H2 son puntos del guion y H9 a H11 corroboran casos que ya eran P. H8 no cerró por sí sola `PF-RNF13-01`, que pide además los dos recorridos del arnés; en la primera pasada esos recorridos se hicieron sobre rc5 el 16/10/2026. Con ello la eficacia de la primera pasada subió de 96,8 % (122 de 126) a 97,0 % (129 de 133) el 13/10/2026, y a 97,1 % (132 de 136) el 16/10/2026. En la pasada final sobre rc5 esos seis casos no heredan el resultado (apartado 5.5).
 
 ## 5.3 Hallazgos de la sesión y correcciones aplicadas
 
@@ -114,7 +114,7 @@ El 16/10/2026 los 30 estudiantes del curso 501 de grado quinto del Colegio El Li
 | Testimonios | 10 de estudiantes, grabados para la investigación doctoral, y 1 de una persona adulta ajena al equipo |
 | Medición | Un equipo (AMD A10-9600P, 3,9 GB): peor carga 1,223 s y memoria privada máxima 633 MiB en el Nivel 1 (apartado 3.5) |
 
-**Qué aporta a la evaluación.** rc5 incluye las correcciones de `INC-152` a `INC-160` (apartado 5.3) y las de DEF-RC3-01 y DEF-RC4-01 (apartado 3.6), así que es la primera versión con ellas que jugaron estudiantes; la sesión no revisó cada corrección por separado. Tampoco siguió los pasos del catálogo ni sus plantillas de resultado, y la carga y la memoria se midieron en un solo equipo y solo en el Nivel 1. Por eso no aporta ni cambia ningún veredicto `PF-*`. La sesión queda como evidencia de apoyo sobre rc5 para RNF-07 (la carpeta portable en otros equipos), RNF-08 (sin conexión), CT-02 (sin tarjeta gráfica dedicada) y la ruta principal, que hasta entonces solo se habían comprobado en los dos equipos del 13/10/2026.
+**Qué aporta a la evaluación.** rc5 incluye las correcciones de `INC-152` a `INC-160` (apartado 5.3) y las de DEF-RC3-01 y DEF-RC4-01 (apartado 3.6), así que es la primera versión con ellas que jugaron estudiantes; la sesión no revisó cada corrección por separado. Tampoco siguió los pasos del catálogo ni sus plantillas de resultado, y la carga y la memoria se midieron en un solo equipo y solo en el Nivel 1. Por eso, cuando se decidió usarla para cerrar sobre rc5, los casos que respalda quedaron en PD y no en P (apartado 5.5). Cubre RNF-07 (la carpeta portable en otros equipos), RNF-08 (sin conexión), CT-02 (sin tarjeta gráfica dedicada) y la ruta principal, que hasta entonces solo se habían comprobado en los dos equipos del 13/10/2026.
 
 **Lo que dicen los testimonios.** Diez estudiantes grabaron al final un testimonio breve. Son 10 de 30 y no forman una muestra, así que se resumen como observaciones y sin porcentajes:
 
@@ -131,18 +131,25 @@ Tres de estas observaciones pasan al capítulo 4 como oportunidades de mejora (T
 
 **La guía de la investigación doctoral.** Los estudiantes respondieron además «Mi bitácora de juego». Por cada nivel pregunta cuántos intentos hicieron, qué cambiaron entre uno y otro, qué tenían en común los objetos que rodaban o en cuántas tareas dividieron la balsa, y qué habilidad nombró Algoritm al cerrar el nivel. Sigue una ronda en grupos de cuatro sobre lo que no les funcionó, una comparación entre la habilidad que el estudiante esperaba y la que nombró Algoritm, y un ejercicio de asociar cada nivel con una estrategia y de aconsejar a un compañero sin darle la respuesta. La guía indaga lo que el estudiante reconoce de su propio proceso, es decir, el efecto pedagógico, que este objetivo no evalúa (apartado 1.3). Sus resultados son de la investigación de la docente y este documento no los usa.
 
-## 5.5 Lo que falta repetir sobre rc5
+## 5.5 Cierre sobre rc5 sin una sesión nueva en el colegio
 
-La pasada del 04 y el 05/11/2026 cubrió lo que hace el arnés. Lo que hace una persona sigue sin ejecutarse sobre rc5, y los resultados de rc3 no se heredan.
+Las comprobaciones humanas H3 a H8 y H12 estaban previstas sobre rc5 en una sesión que no se hizo. El 05/11/2026 se decidió cerrar sobre rc5, sin compilar otra versión y sin heredar nada de rc3 (`INC-163`): lo que la sesión del curso 501 y la medición del 16/10/2026 respaldan queda en PD, con su desviación escrita en `evidencias/rc5/S-COLEGIO/veredictos.csv`, y lo que nadie ejecutó queda en NE.
 
-**Tabla 5.6.** Comprobaciones humanas pendientes sobre rc5.
+**Tabla 5.6.** Casos con parte humana sobre rc5.
 
-| Comprobación | Caso | Resultado sobre rc3 | Estado sobre rc5 |
+| Comprobación | Caso | Resultado sobre rc3 | Resultado sobre rc5 |
 |---|---|---|---|
-| H3, segundo equipo | `PF-RNF07-02`; cifras del equipo 2 de `PF-RNF04-01` y `PF-RNF05-01` | Aprobado | [Pendiente: ejecutar H3 y anotar las cifras del equipo 2] |
-| H4, sin conexión a internet | `PF-RNF08-01` | Aprobado | [Pendiente: ejecutar H4] |
-| H5, sin tarjeta gráfica dedicada | `PF-CT02-01` | Aprobado | [Pendiente: ejecutar H5] |
-| H12, con H6 y H7, oído | `PF-SON-01`, `PF-SON-02`, `PF-SON-03` | Aprobado | [Pendiente: ejecutar H6, H7 y H12] |
-| H8, recorrido con cronómetro | Parte humana de `PF-RNF13-01` | Entre 40 y 45 min | [Pendiente: ejecutar H8] |
+| H3, segundo equipo | `PF-RNF07-02` | Aprobado | PD: Windows 10 Education, carpeta descargada y no copiada por USB, sin instalar; `Datos\` creada y luego vacía; 30 equipos sin ninguna complicación |
+| Cifras del equipo 2 | `PF-RNF04-01`, `PF-RNF05-01` | Sin cifras | PD: un equipo del colegio, solo Nivel 1: 1,223 s de peor carga y 633 MiB de memoria privada |
+| H4, sin conexión a internet | `PF-RNF08-01` | Aprobado | PD: los 30 equipos sin conexión, sin complicaciones; no se activó el modo avión del guion |
+| H5, sin tarjeta gráfica dedicada | `PF-CT02-01` | Aprobado | PD: AMD A10-9600P con gráficos integrados y 3,9 GB de RAM dentro de los presupuestos durante el Nivel 1; los 30 equipos eran sin tarjeta dedicada |
+| H8, recorrido con cronómetro | Tercer recorrido de `PF-RNF13-01` | Entre 40 y 45 min | PD: 30 estudiantes terminaron los tres niveles; la duración no se registró |
+| H12, con H6 y H7, oído | `PF-SON-01`, `PF-SON-02`, `PF-SON-03` | Aprobado | NE: no ejecutado; la meta de sonidos no queda demostrada sobre rc5 |
 
-La sesión del 16/10/2026 da indicios sobre rc5 para H3, H4 y H5, porque el juego funcionó en 30 equipos sin conexión ni tarjeta gráfica dedicada, pero no siguió sus plantillas y por eso no cierra esos casos.
+Estos límites valen para los seis PD:
+
+- La huella de la carpeta no se tomó el 16/10/2026. Se identifica como rc5 por el registro de la sesión y por su ruta, compatible con el zip.
+- El log y las medidas son de un solo equipo y solo del Nivel 1.
+- No consta si la cuenta `ESTUDIANTES` tenía privilegios de administrador.
+- No se activó el modo avión del guion, y no se conservaron logs de los 30 equipos.
+- Los resultados de los 30 equipos son los entregados por el equipo.

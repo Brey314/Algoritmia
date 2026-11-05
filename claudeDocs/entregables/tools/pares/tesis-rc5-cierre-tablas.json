@@ -1,0 +1,37 @@
+[
+ {
+  "pie": "Metas del cuarto objetivo y resultado obtenido",
+  "titulo": null,
+  "celdas": {
+   "2,3": "rc5: 97,2 % (138 de 142, con 3 de los 145 casos sin ejecutar). rc3: 97,1 % (132 de 136)",
+   "3,3": "rc5: NAV 100 % y BOT 100 %; la meta de SON no queda demostrada, porque sus 3 casos no se ejecutaron. rc3: NAV 94,4 %, BOT 100 % y SON 100 % (3 de 3)"
+  }
+ },
+ {
+  "pie": "Veredictos de rc5 por sesión",
+  "titulo": null,
+  "celdas": {
+   "1,3": "Veredictos (P · PD · F · no ejecutados)",
+   "12,3": "3 · 3 · 0 · 0",
+   "14,3": "0 · 3 · 0 · 3",
+   "15,3": "130 · 8 · 4 · 3"
+  }
+ },
+ {
+  "pie": "Presupuestos de rendimiento y de paquete en rc5, con referencia a rc3",
+  "titulo": null,
+  "celdas": {
+   "1,4": "rc5 (equipo 1, 05/11/2026; equipo 2, 16/10/2026)",
+   "2,4": "Equipo 1: 0,714 s en la carga más lenta dentro del juego y 1,48 s de arranque hasta MainMenu, como cota. Equipo 2, del colegio, solo Nivel 1: 1,223 s",
+   "3,4": "Equipo 1: máximos de 475 MiB de memoria de trabajo y 1223 MiB de memoria privada. Equipo 2, del colegio, solo Nivel 1: 589 MiB y 633 MiB",
+   "5,4": "Equipo 2: AMD A10-9600P con gráficos integrados y 3,9 GB de RAM, solo Nivel 1, dentro de los límites. Los 30 equipos, sin tarjeta dedicada y sin internet, funcionaron sin complicación, según el registro de la sesión"
+  }
+ },
+ {
+  "pie": "Defectos hallados por severidad y estado al cierre de la pasada sobre rc5",
+  "titulo": null,
+  "celdas": {
+   "4,5": "6"
+  }
+ }
+]
