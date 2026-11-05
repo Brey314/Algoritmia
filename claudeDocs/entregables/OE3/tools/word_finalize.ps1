@@ -2,6 +2,8 @@
 # numeración de páginas al pie, tabla de contenido actualizada y un PDF de revisión por documento.
 # -List: archivo con una línea «ruta.docx<TAB>ruta.pdf» por documento; un solo Word para todos.
 param([string]$List)
+# Un error de COM no debe dejar un documento a medio terminar con salida 0: build.py lo publicaría.
+$ErrorActionPreference = 'Stop'
 $word = New-Object -ComObject Word.Application
 $word.Visible = $false
 $word.DisplayAlerts = 0
@@ -19,6 +21,16 @@ function Complete-Document([string]$In, [string]$Pdf) {
     # ancho de la página; pandoc da a todas las columnas el mismo ancho.
     $table.AutoFitBehavior(1)            # wdAutoFitContent
     $table.AutoFitBehavior(2)            # wdAutoFitWindow
+    # La matriz del Anexo A del OE4 (nueve columnas): al ajustar a la ventana Word escala cada columna en
+    # proporción y parte el caso y la fecha letra por letra, así que sus anchos se fijan aquí.
+    if ($table.Columns.Count -eq 9 -and $table.Cell(1, 1).Range.Text -like 'Caso*') {
+      $table.AllowAutoFit = $false
+      $percent = 9, 11, 3.5, 3.5, 8, 12, 15, 25, 13
+      for ($i = 1; $i -le 9; $i++) {
+        $table.Columns.Item($i).PreferredWidthType = 2   # wdPreferredWidthPercent
+        $table.Columns.Item($i).PreferredWidth = [single]$percent[$i - 1]
+      }
+    }
     $header = $table.Rows.Item(1)
     $header.HeadingFormat = -1           # se repite en cada página
     $header.Range.Font.Bold = 1

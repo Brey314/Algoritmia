@@ -1,0 +1,90 @@
+[
+ {
+  "pie": "Metas del cuarto objetivo y resultado obtenido",
+  "titulo": null,
+  "celdas": {
+   "2,3": "rc5: 97,1 % (135 de 139, con 6 de los 145 casos pendientes de ejecución). rc3: 97,1 % (132 de 136)",
+   "3,3": "rc5: NAV 100 %, BOT 100 % y SON [Pendiente: tres casos de oído sobre rc5]. rc3: NAV 94,4 %, BOT 100 % y SON 100 %",
+   "4,3": "45 de 45, sin defecto Bloqueante ni Mayor, en rc3 y en rc5",
+   "5,3": "47 de 47 RF y 23 de 23 RNF, con 145 casos"
+  }
+ },
+ {
+  "pie": "Veredictos de rc3 por sesión",
+  "titulo": "Veredictos de rc5 por sesión",
+  "celdas": {
+   "1,3": "Veredictos (P · PD · F · pendientes)",
+   "2,2": "14",
+   "3,2": "30",
+   "4,2": "11",
+   "5,2": "4",
+   "6,2": "11",
+   "7,2": "20",
+   "8,2": "6",
+   "9,2": "8",
+   "10,2": "7",
+   "11,2": "9",
+   "12,2": "6",
+   "13,2": "13",
+   "14,2": "6",
+   "15,2": "145",
+   "2,3": "14 · 0 · 0 · 0",
+   "3,3": "30 · 0 · 0 · 0",
+   "4,3": "11 · 0 · 0 · 0",
+   "5,3": "4 · 0 · 0 · 0",
+   "6,3": "10 · 1 · 0 · 0",
+   "7,3": "20 · 0 · 0 · 0",
+   "8,3": "6 · 0 · 0 · 0",
+   "9,3": "7 · 0 · 1 · 0",
+   "10,3": "7 · 0 · 0 · 0",
+   "11,3": "9 · 0 · 0 · 0",
+   "12,3": "5 · 0 · 0 · 1",
+   "13,3": "9 · 1 · 3 · 0",
+   "14,3": "1 · 0 · 0 · 5",
+   "15,3": "133 · 2 · 4 · 6"
+  }
+ },
+ {
+  "pie": "Presupuestos de rendimiento y de paquete en rc3",
+  "titulo": "Presupuestos de rendimiento y de paquete en rc5, con referencia a rc3",
+  "celdas": {
+   "1,3": "rc3 (10/10/2026)",
+   "1,4": "rc5 (05/11/2026)",
+   "2,3": "0,268 s en la carga más lenta",
+   "2,4": "0,714 s en la carga más lenta dentro del juego; 1,48 s de arranque hasta MainMenu, como cota. Equipo 2: [Pendiente: cifra de carga]",
+   "3,3": "Máximos de 438 MiB de memoria de trabajo y 1094 MiB de memoria privada",
+   "3,4": "Máximos de 475 MiB de memoria de trabajo y 1223 MiB de memoria privada. Equipo 2: [Pendiente: cifra de memoria]",
+   "4,3": "426,6 MB, con 73,4 MB de margen",
+   "4,4": "426,9 MB, con 73,1 MB de margen",
+   "5,3": "Sin cifra de carga ni de memoria; H5 aprobada el 13 de octubre en dos equipos sin conexión a internet (Tabla 17)",
+   "5,4": "[Pendiente: ejecutar H5 sobre rc5]"
+  }
+ },
+ {
+  "pie": "Defectos hallados por severidad y estado al cierre de la pasada sobre rc3",
+  "titulo": "Defectos hallados por severidad y estado al cierre de la pasada sobre rc5",
+  "celdas": {
+   "1,2": "Hallados en rc1 y rc2",
+   "1,3": "Hallados en rc3",
+   "1,4": "Hallados en rc5",
+   "1,5": "Abiertos al cierre de rc5",
+   "2,2": "0",
+   "2,3": "0",
+   "2,4": "0",
+   "2,5": "0",
+   "3,2": "4",
+   "3,3": "0",
+   "3,4": "0",
+   "3,5": "0",
+   "4,2": "6",
+   "4,3": "7",
+   "4,4": "5",
+   "4,5": "7"
+  }
+ },
+ {
+  "pie": "Comprobaciones con personas y su resultado al 13 de octubre de 2026",
+  "titulo": "Comprobaciones con personas y su resultado sobre rc3 al 13 de octubre de 2026",
+  "celdas": {}
+ }
+]

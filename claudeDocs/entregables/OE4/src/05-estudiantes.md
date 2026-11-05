@@ -1,6 +1,6 @@
 # 5. EVALUACIÓN CON ESTUDIANTES Y COMPROBACIONES HUMANAS
 
-Dos tipos de prueba no los puede ejecutar el arnés: las que necesitan niños de grado quinto jugando y las que necesitan los sentidos de una persona o un segundo equipo. Este capítulo da el resultado de ambas, obtenido en la sesión del 13/10/2026, y el de una segunda sesión, el 16/10/2026, en la que un curso completo jugó rc5 (apartado 5.4). Lo que no se realizó se dice como tal y pasa a trabajo futuro.
+Dos tipos de prueba no los puede ejecutar el arnés: las que necesitan niños de grado quinto jugando y las que necesitan los sentidos de una persona o un segundo equipo. Este capítulo da el resultado de ambas sobre rc3, obtenido en la sesión del 13/10/2026, y el de una segunda sesión, el 16/10/2026, en la que un curso completo jugó rc5 (apartado 5.4). Lo que falta repetir sobre rc5 se reúne en el apartado 5.5.
 
 ## 5.1 Sesión con estudiantes
 
@@ -29,9 +29,9 @@ La sesión verifica que la interfaz se entienda y que la ruta principal se compl
 
 ## 5.2 Comprobaciones de la hoja HUM
 
-La hoja HUM reúne las 13 comprobaciones que no puede ejecutar el arnés. Cada una trae su precondición, sus pasos y una plantilla de resultado; se registra solo lo que la plantilla diga. Las 13 se ejecutaron: doce en la sesión del 13/10/2026 y la H13 después.
+La hoja HUM reúne las 13 comprobaciones que no puede ejecutar el arnés. Cada una trae su precondición, sus pasos y una plantilla de resultado; se registra solo lo que la plantilla diga. Las 13 se ejecutaron sobre rc3: doce en la sesión del 13/10/2026 y la H13 después.
 
-**Tabla 5.2.** Comprobaciones de la hoja HUM y su resultado.
+**Tabla 5.2.** Comprobaciones de la hoja HUM y su resultado sobre rc3.
 
 | Id | Comprobación | Caso | Resultado |
 |---|---|---|---|
@@ -58,13 +58,13 @@ La hoja HUM reúne las 13 comprobaciones que no puede ejecutar el arnés. Cada u
 | Equipo A | AMD A10-9600P | Radeon R5, 66 MB de VRAM | 4 GB de RAM | 512 GB | Sin conexión a internet |
 | Equipo B | Intel Celeron B830 | Intel HD Graphics, 32 MB | 4 GB de RAM | 512 GB | Sin conexión a internet |
 
-Esos dos equipos no son el equipo 1 de las mediciones sobre rc3 (apartado 2.6), un Ryzen 5 7600X con una RTX 5070 Ti. Las cargas de escena y la memoria de RNF-04 y RNF-05 de todas las escenas se midieron en ese equipo 1; en un equipo del colegio del mismo modelo que el equipo A se midió el Nivel 1 de rc5 el 16/10/2026 (apartado 3.5).
+Esos dos equipos no son el equipo 1 de las mediciones (apartado 2.6), un Ryzen 5 7600X con una RTX 5070 Ti. Las cargas de escena y la memoria de RNF-04 y RNF-05 de todas las escenas se midieron en ese equipo 1; en un equipo del colegio del mismo modelo que el equipo A se midió el Nivel 1 de rc5 el 16/10/2026 (apartado 3.5).
 
 **H8 frente a la referencia.** El OE1 fija una duración de 20 a 40 minutos para el recorrido completo. La sesión registró entre 40 y 45 minutos, hasta 5 minutos por encima del tope. No se registró la causa de la diferencia, y este documento no la supone.
 
 **H13, la comprobación de mano.** Cubre lo que el arnés enmascara porque mueve el puntero un píxel antes de cada clic: el clic tras cargar una escena sin mover el puntero (`PF-RNF02-01`), la papelera del laberinto (`PF-RF34-01`) y la octava fila del informe docente (`PF-RF46-01`). Se aprobó y confirma el P de rc3 de esos tres casos.
 
-Los veredictos de la hoja HUM sí están incorporados a la Tabla 3.1 y al Anexo A, como los de una sesión manual sobre rc3 (no del arnés): H3 cierra `PF-RNF07-02`, H4 cierra `PF-RNF08-01`, H5 cierra `PF-CT02-01` y H12, con H6 y H7, cierra `PF-SON-01` a `PF-SON-03`; los seis pasaron de PS a P, y `PF-RNF12-01` pasó también a P con el formato de consentimiento (Anexo F) y los 4 consentimientos firmados. H1 y H2 son puntos del guion y H9 a H11 corroboran casos que ya eran P, así que no cambian ninguna cifra. H8 no cierra por sí sola `PF-RNF13-01`, que pide además los dos recorridos del arnés; esos recorridos se hicieron sobre rc5 el 16/10/2026 y el caso pasó a P (apartado 3.4). H13 confirma casos que ya eran P. Con ello la eficacia pasó de 96,8 % (122 de 126) a 97,0 % (129 de 133) el 13/10/2026, y a 97,1 % (132 de 136) el 16/10/2026, cuando se cerraron también `PF-RNF22-01` y `PF-RNF23-01`.
+Los resultados de la hoja HUM cuentan en la primera pasada, como los de una sesión manual sobre rc3 (no del arnés): H3 cerró `PF-RNF07-02`, H4 `PF-RNF08-01`, H5 `PF-CT02-01` y H12, con H6 y H7, `PF-SON-01` a `PF-SON-03`; los seis pasaron de PS a P, y `PF-RNF12-01` pasó también a P con el formato de consentimiento (Anexo F) y los 4 consentimientos firmados. H1 y H2 son puntos del guion y H9 a H11 corroboran casos que ya eran P. H8 no cerró por sí sola `PF-RNF13-01`, que pide además los dos recorridos del arnés; en la primera pasada esos recorridos se hicieron sobre rc5 el 16/10/2026. Con ello la eficacia de la primera pasada subió de 96,8 % (122 de 126) a 97,0 % (129 de 133) el 13/10/2026, y a 97,1 % (132 de 136) el 16/10/2026. En la pasada final sobre rc5 esos seis casos no heredan el resultado y quedan en PS (apartado 5.5).
 
 ## 5.3 Hallazgos de la sesión y correcciones aplicadas
 
@@ -87,13 +87,13 @@ Las observaciones del 13/10/2026 (apartado 5.1) dejaron diez hallazgos sobre el 
 
 **Disposición final del botón «Atrás».** El 13/10/2026 se fijó la disposición del cuadro de diálogo (`INC-160`, commit `56897fd`): «Omitir» encima de «Continuar», del mismo tamaño (260 × 76 px), y «Atrás» en la fila de «Continuar», a su izquierda (200 × 76 px). El texto conserva su área. Se descartó poner «Atrás» a la izquierda del texto: el cuadro mide 216 px, que es el tope del cuarto de pantalla de RNF-03, y el nombre, dos líneas de texto y la fila de botones piden unos 240 px (medidas en `evidencias/rc4/Inc160_medidas_texto.txt`).
 
-**Estado de la verificación.** La suite vigente es la de rc5: corrió el 16/10/2026 sobre el contenido de `ca6fd91`, el commit del build, con EditMode 795 de 796 (una omitida por entorno) y PlayMode 438 de 438, 1.234 pruebas listadas y las 1.234 ejecutadas (`evidencias/suites/rc5-06a5b61/`, apartado 3.7). Antes, la suite completa sobre `0405eba` (`suite2.ps1`, 13/10/2026, 24,4 min) dio EditMode 793, con 792 aprobadas y una omitida por entorno, y PlayMode 435 de 435, con 1.228 pruebas listadas y las 1.228 ejecutadas (`evidencias/suites/rc4-0405eba/`). Una suite anterior (`suite2.ps1`, 13/10/2026, 24,8 min) dio EditMode 785 de 786, con una omitida por entorno (`ProfileEraser_INC34_SobreDiscoRealCubreLosDosEscenariosDeAlmacenamiento`), y PlayMode 427 de 427, con 1.213 pruebas listadas y las 1.213 ejecutadas (`evidencias/suites/rc4-previa-al-boton-atras/`). Esa corrida fue sobre `0839352` más el arreglo de `HelpButtonIntro`: si la escena se descargaba con el aviso de ayuda abierto, Unity lanzaba «Destroying object multiple times» y fallaba `PauseMenu_HU17_ContinuarRestituyeElEstadoExacto`; ahora el aviso solo devuelve el tiempo, con la prueba de regresión `FireLevel_INC158_UnaEscenaQueSeDescargaConElAvisoAbiertoDevuelveElTiempoSinErrores`. Esa suite precedía al cambio de disposición del diálogo; lo que ese cambio afecta se volvió a correr aparte y pasó (`NarrativeScene_INC160`, 3 pruebas, y RNF-03, 9 pruebas, entre otras que lista `evidencias/build-rc4.md`). El candidato rc4, recompilado desde `0405eba`, pesa 426,9 MB (426 932 086 bytes, 13/10/2026), con 73,1 MB de margen frente a los 500 MB de RNF-06; su peor carga de escena fue de 0,403 s y su pico de memoria privada, de 1.083,3 MiB (`evidencias/build-rc4.md`). Esas mediciones están en la Tabla 3.5, junto a las de rc3, que son las que sostienen los veredictos.
+**Estado de la verificación.** La suite vigente es la de rc5: corrió el 16/10/2026 sobre el contenido de `ca6fd91`, el commit del build, con EditMode 795 de 796 (una omitida por entorno) y PlayMode 438 de 438, 1.234 pruebas listadas y las 1.234 ejecutadas (`evidencias/suites/rc5-06a5b61/`, apartado 3.7). Antes, la suite completa sobre `0405eba` (`suite2.ps1`, 13/10/2026, 24,4 min) dio EditMode 793, con 792 aprobadas y una omitida por entorno, y PlayMode 435 de 435, con 1.228 pruebas listadas y las 1.228 ejecutadas (`evidencias/suites/rc4-0405eba/`). Una suite anterior (`suite2.ps1`, 13/10/2026, 24,8 min) dio EditMode 785 de 786, con una omitida por entorno (`ProfileEraser_INC34_SobreDiscoRealCubreLosDosEscenariosDeAlmacenamiento`), y PlayMode 427 de 427, con 1.213 pruebas listadas y las 1.213 ejecutadas (`evidencias/suites/rc4-previa-al-boton-atras/`). Esa corrida fue sobre `0839352` más el arreglo de `HelpButtonIntro`: si la escena se descargaba con el aviso de ayuda abierto, Unity lanzaba «Destroying object multiple times» y fallaba `PauseMenu_HU17_ContinuarRestituyeElEstadoExacto`; ahora el aviso solo devuelve el tiempo, con la prueba de regresión `FireLevel_INC158_UnaEscenaQueSeDescargaConElAvisoAbiertoDevuelveElTiempoSinErrores`. Esa suite precedía al cambio de disposición del diálogo; lo que ese cambio afecta se volvió a correr aparte y pasó (`NarrativeScene_INC160`, 3 pruebas, y RNF-03, 9 pruebas, entre otras que lista `evidencias/build-rc4.md`). El candidato rc4, recompilado desde `0405eba`, pesa 426,9 MB (426 932 086 bytes, 13/10/2026), con 73,1 MB de margen frente a los 500 MB de RNF-06; su peor carga de escena fue de 0,403 s y su pico de memoria privada, de 1.083,3 MiB (`evidencias/build-rc4.md`). Esas mediciones están en la Tabla 3.5, junto a las de rc5, que son las que sostienen los veredictos vigentes.
 
 **Lo que mostraron las capturas.** Se revisaron capturas del motor (`claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/` y `evidencias/rc4/`). En el abrazo de perfil, la línea 5 de `N1_NacimientoDelFuego` se lee; la línea 12 se lee a medias, porque Papá no rodea a la Niña. El sueño de perfil no tapa el fuego. En la caminata de la escena 1.1 (línea 7 de `N1_AparicionGuia`) la familia se desplaza hacia la izquierda: de x entre 0,281 y 0,333 a x entre 0,180 y 0,220, de perfil. Al llegar, Papá (x = 0,180) queda parcialmente detrás de Algoritm (x = 0,168). Esas dos debilidades, el abrazo de la línea 12 y el solapamiento con Algoritm, se retocaron después en `0405eba` (Papá se inclina hacia el abrazo en la 1.4.4 y nadie queda escondido tras Algoritm en la 1.1), y el retoque entró en rc4. Este documento no registra que se hayan revisado las capturas nuevas (`Personajes_N1_*_v2.png`): el efecto del retoque está pendiente de revisión visual por el equipo de desarrollo.
 
-**Qué versión vio cada cosa.** Los estudiantes jugaron rc3 el 13/10/2026 y los hallazgos de la Tabla 5.4 salen de esa sesión. Las correcciones están en rc4 y en rc5. rc4 no se probó con estudiantes; rc5 lo jugaron 30 estudiantes el 16/10/2026 (apartado 5.4). Los veredictos de la hoja HUM y los de los casos `PF-*` siguen siendo los de rc3; de RNF-04, RNF-05 y RNF-06 hay además una medida de rc4 (Tabla 3.5).
+**Qué versión vio cada cosa.** Los estudiantes jugaron rc3 el 13/10/2026 y los hallazgos de la Tabla 5.4 salen de esa sesión. Las correcciones están en rc4 y en rc5. rc4 no se probó con estudiantes; rc5 lo jugaron 30 estudiantes el 16/10/2026 (apartado 5.4). Los resultados de la hoja HUM son de rc3 y los veredictos `PF-*` vigentes, de rc5.
 
-**Lo que cambia respecto de rc3.** La pausa de cinco botones sustituye a la de tres que fijó `INC-49`. Los casos `PF-RF07-*` describen el menú de tres botones de rc3; su veredicto se conserva con la versión en que se obtuvo y no cubre el menú nuevo.
+**Lo que cambia respecto de rc3.** La pausa de cinco botones sustituye a la de tres que fijó `INC-49`. En rc3 los casos `PF-RF07-*` describían el menú de tres botones; sobre rc5 cubren el de cinco, con `PF-RF07-07` y `PF-RF07-08` como casos nuevos.
 
 ## 5.4 Segunda sesión: un curso completo con rc5
 
@@ -114,7 +114,7 @@ El 16/10/2026 los 30 estudiantes del curso 501 de grado quinto del Colegio El Li
 | Testimonios | 10 de estudiantes, grabados para la investigación doctoral, y 1 de una persona adulta ajena al equipo |
 | Medición | Un equipo (AMD A10-9600P, 3,9 GB): peor carga 1,223 s y memoria privada máxima 633 MiB en el Nivel 1 (apartado 3.5) |
 
-**Qué aporta a la evaluación.** rc5 incluye las correcciones de `INC-152` a `INC-160` (apartado 5.3) y las de DEF-RC3-01 y DEF-RC4-01 (apartado 3.6), así que es la primera versión con ellas que jugaron estudiantes; la sesión no revisó cada corrección por separado. Tampoco siguió los pasos del catálogo ni sus plantillas de resultado, y la carga y la memoria se midieron en un solo equipo y solo en el Nivel 1. Por eso ningún veredicto `PF-*` cambia: los de la Tabla 3.1 siguen siendo de rc3. La sesión queda como evidencia de apoyo sobre rc5 para RNF-07 (la carpeta portable en otros equipos), RNF-08 (sin conexión), CT-02 (sin tarjeta gráfica dedicada) y la ruta principal, que hasta entonces solo se habían comprobado en los dos equipos del 13/10/2026.
+**Qué aporta a la evaluación.** rc5 incluye las correcciones de `INC-152` a `INC-160` (apartado 5.3) y las de DEF-RC3-01 y DEF-RC4-01 (apartado 3.6), así que es la primera versión con ellas que jugaron estudiantes; la sesión no revisó cada corrección por separado. Tampoco siguió los pasos del catálogo ni sus plantillas de resultado, y la carga y la memoria se midieron en un solo equipo y solo en el Nivel 1. Por eso no aporta ni cambia ningún veredicto `PF-*`. La sesión queda como evidencia de apoyo sobre rc5 para RNF-07 (la carpeta portable en otros equipos), RNF-08 (sin conexión), CT-02 (sin tarjeta gráfica dedicada) y la ruta principal, que hasta entonces solo se habían comprobado en los dos equipos del 13/10/2026.
 
 **Lo que dicen los testimonios.** Diez estudiantes grabaron al final un testimonio breve. Son 10 de 30 y no forman una muestra, así que se resumen como observaciones y sin porcentajes:
 
@@ -130,3 +130,19 @@ Una persona adulta ajena al equipo, que también jugó rc5, entendió todo sin p
 Tres de estas observaciones pasan al capítulo 4 como oportunidades de mejora (Tabla 4.2): la franja de cercanía de las piedras del Nivel 1, que PG-06 había dado por buena con 4 estudiantes, el equilibrio de dificultad del Nivel 3 y el conteo de sogas en su inventario.
 
 **La guía de la investigación doctoral.** Los estudiantes respondieron además «Mi bitácora de juego». Por cada nivel pregunta cuántos intentos hicieron, qué cambiaron entre uno y otro, qué tenían en común los objetos que rodaban o en cuántas tareas dividieron la balsa, y qué habilidad nombró Algoritm al cerrar el nivel. Sigue una ronda en grupos de cuatro sobre lo que no les funcionó, una comparación entre la habilidad que el estudiante esperaba y la que nombró Algoritm, y un ejercicio de asociar cada nivel con una estrategia y de aconsejar a un compañero sin darle la respuesta. La guía indaga lo que el estudiante reconoce de su propio proceso, es decir, el efecto pedagógico, que este objetivo no evalúa (apartado 1.3). Sus resultados son de la investigación de la docente y este documento no los usa.
+
+## 5.5 Lo que falta repetir sobre rc5
+
+La pasada del 04 y el 05/11/2026 cubrió lo que hace el arnés. Lo que hace una persona sigue sin ejecutarse sobre rc5, y los resultados de rc3 no se heredan.
+
+**Tabla 5.6.** Comprobaciones humanas pendientes sobre rc5.
+
+| Comprobación | Caso | Resultado sobre rc3 | Estado sobre rc5 |
+|---|---|---|---|
+| H3, segundo equipo | `PF-RNF07-02`; cifras del equipo 2 de `PF-RNF04-01` y `PF-RNF05-01` | Aprobado | [Pendiente: ejecutar H3 y anotar las cifras del equipo 2] |
+| H4, sin conexión a internet | `PF-RNF08-01` | Aprobado | [Pendiente: ejecutar H4] |
+| H5, sin tarjeta gráfica dedicada | `PF-CT02-01` | Aprobado | [Pendiente: ejecutar H5] |
+| H12, con H6 y H7, oído | `PF-SON-01`, `PF-SON-02`, `PF-SON-03` | Aprobado | [Pendiente: ejecutar H6, H7 y H12] |
+| H8, recorrido con cronómetro | Parte humana de `PF-RNF13-01` | Entre 40 y 45 min | [Pendiente: ejecutar H8] |
+
+La sesión del 16/10/2026 da indicios sobre rc5 para H3, H4 y H5, porque el juego funcionó en 30 equipos sin conexión ni tarjeta gráfica dedicada, pero no siguió sus plantillas y por eso no cierra esos casos.

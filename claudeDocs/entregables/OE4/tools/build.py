@@ -15,13 +15,13 @@ commit 127fbc4, estilos de pandoc, tabla de contenido, saltos de página) y de .
 
 Fuentes: src/01-... a 06-*.md (capítulos, en el orden de CHAPTERS) y src/A-matriz-casos.md (Anexo A). Los
 marcadores {{TABLA_...}} y {{MATRIZ}} los rellena tools/casos.py desde claudeDocs/tasks/OE4/casos.md y
-desde src/veredictos-rc3.csv (caso,veredicto). Una cifra que aún no se midió se escribe PENDIENTE-CIFRA.
+desde src/veredictos-rc5.csv (lo escribe tools/veredictos_rc5.py; empieza por caso,veredicto). Una cifra que aún no se midió se escribe PENDIENTE-CIFRA.
 
 Guardas, sobre el Markdown intermedio de build/:
   - se armaron los dos documentos y el número de casos del catálogo coincide con el que declara casos.md y cubre RF-01..47 y RNF-01..23 (CT-10);
   - ningún «§», ningún marcador «{{...}}» sin rellenar ni comentario de trabajo «<!--»;
   - ningún PENDIENTE-CIFRA (cifra sin medir) ni PENDIENTE-PASADA (texto que se redacta tras la pasada): impide publicar. Los «[Pendiente: ...]» visibles, que
-    esperan datos de Santiago (estudiantes, hoja HUM), sí se publican; el armado los cuenta.
+    esperan datos de una persona (hoja HUM, equipo 2), sí se publican; el armado los cuenta.
 Sale con 0 si todo está en orden y con 1 si alguna guarda falla (los .docx de build/ quedan armados).
 
 Requiere pypandoc_binary, git y, salvo con --no-word, Microsoft Word sin otra automatización en curso.
@@ -116,7 +116,7 @@ def guards(documents, cases) -> list[str]:
                 shown = "; ".join(f"l. {n} «...{line[max(0, m.start() - 25):m.end() + 25]}...»"
                                   for n, line, m in hits[:3])
                 problems.append(f"{stem}.md: {len(hits)} veces {label} (p. ej. {shown})")
-    print(f"AVISO: {visible} «[Pendiente: ...]» visibles esperan datos de Santiago; no impiden publicar")
+    print(f"AVISO: {visible} «[Pendiente: ...]» visibles esperan datos de una persona; no impiden publicar")
     return problems
 
 
