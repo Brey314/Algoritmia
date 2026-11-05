@@ -1,0 +1,18 @@
+inicio_utc	fin_utc	duracion_ms	intervalo_derivado_ms	punto	uso
+2026-11-05 08:27:52.088	2026-11-05 08:27:52.471	383	144	0.411 0.896 x2/70ms -> (789,967)	Soplar, entrada 1 (paso 4)
+2026-11-05 08:28:27.215	2026-11-05 08:28:27.587	372	133	0.777 0.843 x2/70ms -> (1491,910)	Omitir, entrada 1 (paso 5, intento 1)
+2026-11-05 08:30:24.047	2026-11-05 08:30:24.418	371	132	0.411 0.896 x2/70ms -> (789,967)	Soplar, entrada 2 (paso 4)
+2026-11-05 08:31:03.702	2026-11-05 08:31:04.075	373	134	0.777 0.843 x2/70ms -> (1491,910)	Omitir, entrada 2 (paso 5, intento 2)
+2026-11-05 08:32:28.085	2026-11-05 08:32:28.471	386	147	0.411 0.896 x2/70ms -> (789,967)	Soplar, entrada 3 (paso 4)
+2026-11-05 08:33:33.943	2026-11-05 08:33:34.313	370	131	0.79 0.85 x2/70ms -> (1516,918)	Omitir, entrada 3 (paso 5, intento 3)
+2026-11-05 08:34:50.478	2026-11-05 08:34:50.846	368	129	0.411 0.896 x2/70ms -> (789,967)	Soplar, entrada 4 (paso 4)
+2026-11-05 08:35:05.707	2026-11-05 08:35:06.082	375	136	0.76 0.835 x2/70ms -> (1459,901)	Omitir, entrada 4 (paso 5, intento 4)
+2026-11-05 12:06:17.391	2026-11-05 12:06:17.767	376	137	0.95 0.15 x2/70ms -> (1824,162)	calibración
+2026-11-05 12:06:19.695	2026-11-05 12:06:20.067	372	133	0.95 0.15 x2/70ms -> (1824,162)	calibración
+2026-11-05 12:06:21.986	2026-11-05 12:06:22.358	372	133	0.95 0.15 x2/70ms -> (1824,162)	calibración
+2026-11-05 12:06:24.276	2026-11-05 12:06:24.652	376	137	0.95 0.15 x2/70ms -> (1824,162)	calibración
+2026-11-05 12:06:26.541	2026-11-05 12:06:26.918	377	138	0.95 0.15 x2/70ms -> (1824,162)	calibración
+2026-11-05 12:06:28.817	2026-11-05 12:06:29.195	378	139	0.95 0.15 x2/70ms -> (1824,162)	calibración
+2026-11-05 12:08:07.275	2026-11-05 12:08:07.659	384	145	0.411 0.896 x2/70ms -> (789,967)	Soplar, entrada 5 (paso 4)
+
+# duracion_ms = fin - inicio de la llamada Clic -Veces 2 -Intervalo 70 (acciones.tsv). intervalo_derivado_ms = duracion - 238,8 ms, la duracion media de 6 Clic de un solo clic en la misma pantalla (229-245 ms, calibracion de las 12:06): la unica diferencia entre un clic y dos es el tiempo entre el inicio de la pulsacion 1 y el de la pulsacion 2. El minimo que admite el arnes (-Intervalo 70) da ~130-147 ms reales (60 ms de pulsacion + espera hasta 70 ms + movimiento de 1 px de ida y vuelta ~36 ms + 30 ms).

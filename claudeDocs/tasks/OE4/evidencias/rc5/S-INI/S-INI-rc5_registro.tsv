@@ -1,0 +1,171 @@
+2026-11-05 02:19:22.415Z	1	Mono path[0] = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/Managed'
+2026-11-05 02:19:22.415Z	1	Mono config path = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/MonoBleedingEdge/etc'
+2026-11-05 02:19:22.415Z	1	CodeReloadManager initialized
+2026-11-05 02:19:22.415Z	1	Input System module state changed to: Initialized.
+2026-11-05 02:19:22.415Z	1	[Physics::Module] Initialized fallback backend.
+2026-11-05 02:19:22.415Z	1	[Physics::Module] Id: 0xdecafbad
+2026-11-05 02:19:22.415Z	1	Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+2026-11-05 02:19:22.415Z	1	[Subsystems] Discovering subsystems at path C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/UnitySubsystems
+2026-11-05 02:19:22.415Z	1	[D3D12 Device Filter] Vendor Name: NVIDIA
+2026-11-05 02:19:22.415Z	1	[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 5070 Ti
+2026-11-05 02:19:22.415Z	1	[D3D12 Device Filter] Driver Version: 32.0.16.2101
+2026-11-05 02:19:22.415Z	1	[D3D12 Device Filter] Feature Level: 12.2
+2026-11-05 02:19:22.415Z	1	[D3D12 Device Filter] Graphics Memory: 15995 MB
+2026-11-05 02:19:22.415Z	1	[D3D12 Device Filter] Processor Count: 12
+2026-11-05 02:19:22.415Z	1	[D3D12 Device Filter] Device Type: Discrete
+2026-11-05 02:19:22.415Z	1	GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+2026-11-05 02:19:22.415Z	1	d3d12: failed to query info queue interface (0x80004002).
+2026-11-05 02:19:22.415Z	1	Direct3D:
+2026-11-05 02:19:22.415Z	1	    Version:         Direct3D 12 [level 12.2]
+2026-11-05 02:19:22.415Z	1	    Renderer:        NVIDIA GeForce RTX 5070 Ti (ID=0x2c05)
+2026-11-05 02:19:22.415Z	1	    Vendor:          NVIDIA
+2026-11-05 02:19:22.415Z	1	    VRAM:            15995 MB
+2026-11-05 02:19:22.415Z	1	    App VRAM Budget: 15227 MB
+2026-11-05 02:19:22.415Z	1	    Driver:          32.0.16.2101
+2026-11-05 02:19:22.415Z	1	Begin MonoManager ReloadAssembly
+2026-11-05 02:19:22.415Z	1	- Finished resetting the current domain, in  0.026 seconds
+2026-11-05 02:19:22.415Z	1	[Physics::Module] Selected backend.
+2026-11-05 02:19:22.415Z	1	[Physics::Module] Name: PhysX
+2026-11-05 02:19:22.415Z	1	[Physics::Module] Id: 0xf2b8ea05
+2026-11-05 02:19:22.415Z	1	[Physics::Module] SDK Version: 4.1.2
+2026-11-05 02:19:22.415Z	1	[Physics::Module] Integration Version: 1.0.0
+2026-11-05 02:19:22.415Z	1	[Physics::Module] Threading Mode: Multi-Threaded
+2026-11-05 02:19:22.415Z	1	<RI> Initializing input.
+2026-11-05 02:19:22.415Z	1	Using Windows.Gaming.Input
+2026-11-05 02:19:22.415Z	1	UnloadTime: 1.109400 ms
+2026-11-05 02:19:22.415Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 02:19:22.415Z	1	UnloadTime: 0.320900 ms
+2026-11-05 02:19:22.415Z	1	RNF-04: «MainMenu» cargó en 0.142 s
+2026-11-05 02:19:22.415Z	1	Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 4770.
+2026-11-05 02:19:22.415Z	1	Total: 1.211900 ms (FindLiveObjects: 0.182300 ms CreateObjectMapping: 0.092000 ms MarkObjects: 0.927100 ms  DeleteObjects: 0.007400 ms)
+2026-11-05 02:20:02.119Z	1	Direct3D: detected that using refresh rate causes time drift. Will stop trusting refresh rate until the game window is moved.
+2026-11-05 02:20:02.119Z	1	Direct3D: detected that vsync is broken (it does not limit frame rate properly). Delta time will now be calculated using cpu-side time stampling until the game window is moved.
+2026-11-05 02:21:00.382Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 02:21:00.789Z	1	UnloadTime: 4.952200 ms
+2026-11-05 02:21:00.789Z	1	RNF-04: «Credits» cargó en 0.018 s
+2026-11-05 02:21:00.789Z	1	Unloading 415 unused Assets to reduce memory usage. Loaded Objects now: 3532.
+2026-11-05 02:21:00.789Z	1	Total: 1.487500 ms (FindLiveObjects: 0.168100 ms CreateObjectMapping: 0.108700 ms MarkObjects: 0.896800 ms  DeleteObjects: 0.313800 ms)
+2026-11-05 02:22:17.245Z	1	Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 02:22:17.510Z	1	UnloadTime: 1.321200 ms
+2026-11-05 02:22:17.510Z	1	RNF-04: «MainMenu» cargó en 0.054 s
+2026-11-05 02:22:17.510Z	1	Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4770.
+2026-11-05 02:22:17.510Z	1	Total: 1.014100 ms (FindLiveObjects: 0.147900 ms CreateObjectMapping: 0.098200 ms MarkObjects: 0.758200 ms  DeleteObjects: 0.009700 ms)
+2026-11-05 02:24:28.560Z	1	Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 02:24:28.560Z	1	UnloadTime: 0.867400 ms
+2026-11-05 02:24:28.560Z	1	RNF-04: «LevelSelect» cargó en 0.027 s
+2026-11-05 02:24:28.560Z	1	Unloading 463 unused Assets to reduce memory usage. Loaded Objects now: 3504.
+2026-11-05 02:24:28.560Z	1	Total: 1.660500 ms (FindLiveObjects: 0.150800 ms CreateObjectMapping: 0.090700 ms MarkObjects: 0.806200 ms  DeleteObjects: 0.612400 ms)
+2026-11-05 02:24:59.110Z	1	Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 02:24:59.110Z	1	UnloadTime: 0.478300 ms
+2026-11-05 02:24:59.110Z	1	RNF-04: «MainMenu» cargó en 0.041 s
+2026-11-05 02:24:59.110Z	1	Unloading 14 unused Assets to reduce memory usage. Loaded Objects now: 4770.
+2026-11-05 02:24:59.110Z	1	Total: 0.994200 ms (FindLiveObjects: 0.151500 ms CreateObjectMapping: 0.083100 ms MarkObjects: 0.737900 ms  DeleteObjects: 0.021500 ms)
+2026-11-05 02:25:28.833Z	1	[Physics::Module] Cleanup current backend.
+2026-11-05 02:25:28.833Z	1	[Physics::Module] Id: 0xf2b8ea05
+2026-11-05 02:25:28.833Z	1	Input System module state changed to: ShutdownInProgress.
+2026-11-05 02:25:28.833Z	1	Input Polling Thread exited.
+2026-11-05 02:25:28.833Z	1	Input System module state changed to: Shutdown.
+2026-11-05 02:25:28.833Z	1	CodeReloadManager destroyed
+2026-11-05 02:25:28.833Z	1	GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-11-05 02:25:28.833Z	1	[d3d12] Unreleased non-evictable resource 000001C3A2E21AB0 (size 4096 B, lastUsedFence 9)
+2026-11-05 02:25:49.273Z	2	Mono path[0] = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/Managed'
+2026-11-05 02:25:49.273Z	2	Mono config path = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/MonoBleedingEdge/etc'
+2026-11-05 02:25:49.273Z	2	CodeReloadManager initialized
+2026-11-05 02:25:49.273Z	2	Input System module state changed to: Initialized.
+2026-11-05 02:25:49.273Z	2	[Physics::Module] Initialized fallback backend.
+2026-11-05 02:25:49.273Z	2	[Physics::Module] Id: 0xdecafbad
+2026-11-05 02:25:49.273Z	2	Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+2026-11-05 02:25:49.273Z	2	[Subsystems] Discovering subsystems at path C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/UnitySubsystems
+2026-11-05 02:25:49.273Z	2	[D3D12 Device Filter] Vendor Name: NVIDIA
+2026-11-05 02:25:49.273Z	2	[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 5070 Ti
+2026-11-05 02:25:49.273Z	2	[D3D12 Device Filter] Driver Version: 32.0.16.2101
+2026-11-05 02:25:49.273Z	2	[D3D12 Device Filter] Feature Level: 12.2
+2026-11-05 02:25:49.273Z	2	[D3D12 Device Filter] Graphics Memory: 15995 MB
+2026-11-05 02:25:49.273Z	2	[D3D12 Device Filter] Processor Count: 12
+2026-11-05 02:25:49.273Z	2	[D3D12 Device Filter] Device Type: Discrete
+2026-11-05 02:25:49.273Z	2	GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+2026-11-05 02:25:49.273Z	2	d3d12: failed to query info queue interface (0x80004002).
+2026-11-05 02:25:49.273Z	2	Direct3D:
+2026-11-05 02:25:49.273Z	2	    Version:         Direct3D 12 [level 12.2]
+2026-11-05 02:25:49.273Z	2	    Renderer:        NVIDIA GeForce RTX 5070 Ti (ID=0x2c05)
+2026-11-05 02:25:49.273Z	2	    Vendor:          NVIDIA
+2026-11-05 02:25:49.273Z	2	    VRAM:            15995 MB
+2026-11-05 02:25:49.273Z	2	    App VRAM Budget: 15227 MB
+2026-11-05 02:25:49.273Z	2	    Driver:          32.0.16.2101
+2026-11-05 02:25:49.273Z	2	Begin MonoManager ReloadAssembly
+2026-11-05 02:25:49.273Z	2	- Finished resetting the current domain, in  0.025 seconds
+2026-11-05 02:25:49.273Z	2	[Physics::Module] Selected backend.
+2026-11-05 02:25:49.273Z	2	[Physics::Module] Name: PhysX
+2026-11-05 02:25:49.273Z	2	[Physics::Module] Id: 0xf2b8ea05
+2026-11-05 02:25:49.273Z	2	[Physics::Module] SDK Version: 4.1.2
+2026-11-05 02:25:49.273Z	2	[Physics::Module] Integration Version: 1.0.0
+2026-11-05 02:25:49.273Z	2	[Physics::Module] Threading Mode: Multi-Threaded
+2026-11-05 02:25:49.273Z	2	<RI> Initializing input.
+2026-11-05 02:25:49.273Z	2	Using Windows.Gaming.Input
+2026-11-05 02:25:49.273Z	2	UnloadTime: 0.804000 ms
+2026-11-05 02:25:49.273Z	2	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 02:25:49.273Z	2	UnloadTime: 0.352800 ms
+2026-11-05 02:25:49.273Z	2	RNF-04: «MainMenu» cargó en 0.125 s
+2026-11-05 02:25:49.273Z	2	Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 4770.
+2026-11-05 02:25:49.273Z	2	Total: 1.323700 ms (FindLiveObjects: 0.192500 ms CreateObjectMapping: 0.108000 ms MarkObjects: 1.011400 ms  DeleteObjects: 0.010200 ms)
+2026-11-05 02:25:59.846Z	2	[Physics::Module] Cleanup current backend.
+2026-11-05 02:25:59.846Z	2	[Physics::Module] Id: 0xf2b8ea05
+2026-11-05 02:25:59.846Z	2	Input System module state changed to: ShutdownInProgress.
+2026-11-05 02:25:59.846Z	2	Input Polling Thread exited.
+2026-11-05 02:25:59.846Z	2	Input System module state changed to: Shutdown.
+2026-11-05 02:25:59.846Z	2	CodeReloadManager destroyed
+2026-11-05 02:25:59.846Z	2	GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-11-05 02:25:59.846Z	2	[d3d12] Unreleased non-evictable resource 000001D14BE1A650 (size 4096 B, lastUsedFence 9)
+2026-11-05 02:26:19.145Z	3	Mono path[0] = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/Managed'
+2026-11-05 02:26:19.145Z	3	Mono config path = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/MonoBleedingEdge/etc'
+2026-11-05 02:26:19.145Z	3	CodeReloadManager initialized
+2026-11-05 02:26:19.145Z	3	Input System module state changed to: Initialized.
+2026-11-05 02:26:19.145Z	3	[Physics::Module] Initialized fallback backend.
+2026-11-05 02:26:19.145Z	3	[Physics::Module] Id: 0xdecafbad
+2026-11-05 02:26:19.145Z	3	Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+2026-11-05 02:26:19.145Z	3	[Subsystems] Discovering subsystems at path C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/UnitySubsystems
+2026-11-05 02:26:19.145Z	3	[D3D12 Device Filter] Vendor Name: NVIDIA
+2026-11-05 02:26:19.145Z	3	[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 5070 Ti
+2026-11-05 02:26:19.145Z	3	[D3D12 Device Filter] Driver Version: 32.0.16.2101
+2026-11-05 02:26:19.145Z	3	[D3D12 Device Filter] Feature Level: 12.2
+2026-11-05 02:26:19.145Z	3	[D3D12 Device Filter] Graphics Memory: 15995 MB
+2026-11-05 02:26:19.145Z	3	[D3D12 Device Filter] Processor Count: 12
+2026-11-05 02:26:19.145Z	3	[D3D12 Device Filter] Device Type: Discrete
+2026-11-05 02:26:19.145Z	3	GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+2026-11-05 02:26:19.145Z	3	d3d12: failed to query info queue interface (0x80004002).
+2026-11-05 02:26:19.145Z	3	Direct3D:
+2026-11-05 02:26:19.145Z	3	    Version:         Direct3D 12 [level 12.2]
+2026-11-05 02:26:19.145Z	3	    Renderer:        NVIDIA GeForce RTX 5070 Ti (ID=0x2c05)
+2026-11-05 02:26:19.145Z	3	    Vendor:          NVIDIA
+2026-11-05 02:26:19.145Z	3	    VRAM:            15995 MB
+2026-11-05 02:26:19.145Z	3	    App VRAM Budget: 15227 MB
+2026-11-05 02:26:19.145Z	3	    Driver:          32.0.16.2101
+2026-11-05 02:26:19.145Z	3	Begin MonoManager ReloadAssembly
+2026-11-05 02:26:19.145Z	3	- Finished resetting the current domain, in  0.025 seconds
+2026-11-05 02:26:19.145Z	3	[Physics::Module] Selected backend.
+2026-11-05 02:26:19.145Z	3	[Physics::Module] Name: PhysX
+2026-11-05 02:26:19.145Z	3	[Physics::Module] Id: 0xf2b8ea05
+2026-11-05 02:26:19.145Z	3	[Physics::Module] SDK Version: 4.1.2
+2026-11-05 02:26:19.145Z	3	[Physics::Module] Integration Version: 1.0.0
+2026-11-05 02:26:19.145Z	3	[Physics::Module] Threading Mode: Multi-Threaded
+2026-11-05 02:26:19.145Z	3	<RI> Initializing input.
+2026-11-05 02:26:19.145Z	3	Using Windows.Gaming.Input
+2026-11-05 02:26:19.145Z	3	UnloadTime: 0.692100 ms
+2026-11-05 02:26:19.145Z	3	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 02:26:19.145Z	3	UnloadTime: 0.326500 ms
+2026-11-05 02:26:19.145Z	3	RNF-04: «MainMenu» cargó en 0.127 s
+2026-11-05 02:26:19.145Z	3	Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 4770.
+2026-11-05 02:26:19.145Z	3	Total: 1.788700 ms (FindLiveObjects: 0.165500 ms CreateObjectMapping: 0.291000 ms MarkObjects: 1.321800 ms  DeleteObjects: 0.008800 ms)
+2026-11-05 02:27:31.844Z	3	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 02:27:31.844Z	3	UnloadTime: 2.584800 ms
+2026-11-05 02:27:31.844Z	3	RNF-04: «LevelSelect» cargó en 0.018 s
+2026-11-05 02:27:31.844Z	3	Unloading 463 unused Assets to reduce memory usage. Loaded Objects now: 3504.
+2026-11-05 02:27:31.844Z	3	Total: 1.319300 ms (FindLiveObjects: 0.144400 ms CreateObjectMapping: 0.092800 ms MarkObjects: 0.807500 ms  DeleteObjects: 0.274400 ms)
+2026-11-05 02:27:43.891Z	3	[Physics::Module] Cleanup current backend.
+2026-11-05 02:27:43.891Z	3	[Physics::Module] Id: 0xf2b8ea05
+2026-11-05 02:27:43.891Z	3	Input System module state changed to: ShutdownInProgress.
+2026-11-05 02:27:43.891Z	3	Input Polling Thread exited.
+2026-11-05 02:27:43.891Z	3	Input System module state changed to: Shutdown.
+2026-11-05 02:27:43.891Z	3	CodeReloadManager destroyed
+2026-11-05 02:27:43.891Z	3	GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-11-05 02:27:43.891Z	3	[d3d12] Unreleased non-evictable resource 0000029463AB5B80 (size 4096 B, lastUsedFence 9)

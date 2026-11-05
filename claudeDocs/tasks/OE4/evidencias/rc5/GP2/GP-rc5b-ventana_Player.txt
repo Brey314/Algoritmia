@@ -1,0 +1,229 @@
+Mono path[0] = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/Managed'
+Mono config path = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/MonoBleedingEdge/etc'
+CodeReloadManager initialized
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+[Subsystems] Discovering subsystems at path C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/UnitySubsystems
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 5070 Ti
+[D3D12 Device Filter] Driver Version: 32.0.16.2101
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 15995 MB
+[D3D12 Device Filter] Processor Count: 12
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 5070 Ti (ID=0x2c05)
+    Vendor:          NVIDIA
+    VRAM:            15995 MB
+    App VRAM Budget: 15227 MB
+    Driver:          32.0.16.2101
+Begin MonoManager ReloadAssembly
+- Finished resetting the current domain, in  0.023 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+Using Windows.Gaming.Input
+UnloadTime: 0.851100 ms
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.218800 ms
+RNF-04: «MainMenu» cargó en 0.120 s
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 4770.
+Total: 1.231500 ms (FindLiveObjects: 0.165400 ms CreateObjectMapping: 0.094200 ms MarkObjects: 0.958000 ms  DeleteObjects: 0.011800 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 3.562100 ms
+RNF-04: «LevelSelect» cargó en 0.069 s
+Unloading 463 unused Assets to reduce memory usage. Loaded Objects now: 3504.
+Total: 1.817000 ms (FindLiveObjects: 0.170400 ms CreateObjectMapping: 0.099800 ms MarkObjects: 1.065700 ms  DeleteObjects: 0.481000 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.529200 ms
+RNF-04: «Narrative» cargó en 0.680 s
+Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 4808.
+Total: 1.344800 ms (FindLiveObjects: 0.152000 ms CreateObjectMapping: 0.115800 ms MarkObjects: 1.039600 ms  DeleteObjects: 0.037200 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.064200 ms
+RNF-04: «Narrative» cargó en 0.035 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4823.
+Total: 1.147200 ms (FindLiveObjects: 0.160500 ms CreateObjectMapping: 0.102000 ms MarkObjects: 0.875300 ms  DeleteObjects: 0.009300 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.298300 ms
+RNF-04: «Narrative» cargó en 0.036 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4823.
+Total: 1.631700 ms (FindLiveObjects: 0.169800 ms CreateObjectMapping: 0.103500 ms MarkObjects: 1.342100 ms  DeleteObjects: 0.016100 ms)
+
+Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.133800 ms
+RNF-04: «Level1_Cave» cargó en 0.091 s
+Unloading 1008 unused Assets to reduce memory usage. Loaded Objects now: 4988.
+Total: 1.881400 ms (FindLiveObjects: 0.252900 ms CreateObjectMapping: 0.182400 ms MarkObjects: 1.050500 ms  DeleteObjects: 0.395400 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 2.572900 ms
+RNF-04: «Narrative» cargó en 0.354 s
+Unloading 72 unused Assets to reduce memory usage. Loaded Objects now: 5578.
+Total: 2.608500 ms (FindLiveObjects: 0.403600 ms CreateObjectMapping: 0.317900 ms MarkObjects: 1.758100 ms  DeleteObjects: 0.128700 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.168000 ms
+RNF-04: «LevelSummary» cargó en 0.035 s
+Unloading 1185 unused Assets to reduce memory usage. Loaded Objects now: 3696.
+Total: 2.251900 ms (FindLiveObjects: 0.289200 ms CreateObjectMapping: 0.286500 ms MarkObjects: 1.051900 ms  DeleteObjects: 0.624200 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.703300 ms
+RNF-04: «LevelSelect» cargó en 0.085 s
+Unloading 307 unused Assets to reduce memory usage. Loaded Objects now: 3527.
+Total: 2.063700 ms (FindLiveObjects: 0.281600 ms CreateObjectMapping: 0.122400 ms MarkObjects: 1.456900 ms  DeleteObjects: 0.202600 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.918800 ms
+RNF-04: «Narrative» cargó en 0.618 s
+Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 5557.
+Total: 3.473700 ms (FindLiveObjects: 0.693700 ms CreateObjectMapping: 0.196100 ms MarkObjects: 2.484200 ms  DeleteObjects: 0.099400 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.288000 ms
+RNF-04: «Narrative» cargó en 0.036 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4831.
+Total: 1.175000 ms (FindLiveObjects: 0.164300 ms CreateObjectMapping: 0.102300 ms MarkObjects: 0.897300 ms  DeleteObjects: 0.010900 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.139900 ms
+RNF-04: «Narrative» cargó en 0.036 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4830.
+Total: 1.358900 ms (FindLiveObjects: 0.174200 ms CreateObjectMapping: 0.131700 ms MarkObjects: 1.039200 ms  DeleteObjects: 0.013600 ms)
+
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.950700 ms
+RNF-04: «Level2_Forest» cargó en 0.053 s
+Unloading 1063 unused Assets to reduce memory usage. Loaded Objects now: 4613.
+Total: 1.846900 ms (FindLiveObjects: 0.169700 ms CreateObjectMapping: 0.133500 ms MarkObjects: 1.067200 ms  DeleteObjects: 0.476100 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.128500 ms
+RNF-04: «Narrative» cargó en 0.536 s
+Unloading 27 unused Assets to reduce memory usage. Loaded Objects now: 4830.
+Total: 1.518500 ms (FindLiveObjects: 0.186200 ms CreateObjectMapping: 0.132300 ms MarkObjects: 1.117800 ms  DeleteObjects: 0.082100 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.923900 ms
+RNF-04: «Narrative» cargó en 0.035 s
+Unloading 8 unused Assets to reduce memory usage. Loaded Objects now: 4829.
+Total: 1.180700 ms (FindLiveObjects: 0.157100 ms CreateObjectMapping: 0.102300 ms MarkObjects: 0.894300 ms  DeleteObjects: 0.026900 ms)
+
+Unloading 8 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.775500 ms
+RNF-04: «Level2_Workshop» cargó en 0.069 s
+Unloading 1069 unused Assets to reduce memory usage. Loaded Objects now: 4615.
+Total: 1.416900 ms (FindLiveObjects: 0.167000 ms CreateObjectMapping: 0.113700 ms MarkObjects: 0.859900 ms  DeleteObjects: 0.275900 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.848800 ms
+RNF-04: «Narrative» cargó en 0.536 s
+Unloading 34 unused Assets to reduce memory usage. Loaded Objects now: 4830.
+Total: 1.485300 ms (FindLiveObjects: 0.158600 ms CreateObjectMapping: 0.128000 ms MarkObjects: 1.130700 ms  DeleteObjects: 0.067800 ms)
+
+Unloading 7 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.961200 ms
+RNF-04: «Level2_Maze» cargó en 0.070 s
+Unloading 1084 unused Assets to reduce memory usage. Loaded Objects now: 5407.
+Total: 1.955200 ms (FindLiveObjects: 0.214200 ms CreateObjectMapping: 0.135700 ms MarkObjects: 1.149000 ms  DeleteObjects: 0.456100 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 3.539600 ms
+RNF-04: «Narrative» cargó en 0.555 s
+Unloading 44 unused Assets to reduce memory usage. Loaded Objects now: 5626.
+Total: 1.503500 ms (FindLiveObjects: 0.203400 ms CreateObjectMapping: 0.161400 ms MarkObjects: 1.051200 ms  DeleteObjects: 0.087200 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.984800 ms
+RNF-04: «LevelSummary» cargó en 0.035 s
+Unloading 1185 unused Assets to reduce memory usage. Loaded Objects now: 3699.
+Total: 1.813700 ms (FindLiveObjects: 0.166000 ms CreateObjectMapping: 0.105400 ms MarkObjects: 0.991200 ms  DeleteObjects: 0.551100 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.450200 ms
+RNF-04: «LevelSelect» cargó en 0.085 s
+Unloading 307 unused Assets to reduce memory usage. Loaded Objects now: 3530.
+Total: 1.342200 ms (FindLiveObjects: 0.138800 ms CreateObjectMapping: 0.088000 ms MarkObjects: 0.991900 ms  DeleteObjects: 0.123200 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.406700 ms
+RNF-04: «Narrative» cargó en 0.568 s
+Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 4831.
+Total: 1.924400 ms (FindLiveObjects: 0.165400 ms CreateObjectMapping: 0.130500 ms MarkObjects: 1.570500 ms  DeleteObjects: 0.057800 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.932900 ms
+RNF-04: «Narrative» cargó en 0.035 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4834.
+Total: 1.454400 ms (FindLiveObjects: 0.237700 ms CreateObjectMapping: 0.102700 ms MarkObjects: 1.103300 ms  DeleteObjects: 0.010600 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.520000 ms
+RNF-04: «Narrative» cargó en 0.035 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4834.
+Total: 1.284400 ms (FindLiveObjects: 0.162200 ms CreateObjectMapping: 0.106200 ms MarkObjects: 1.006000 ms  DeleteObjects: 0.010000 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.908300 ms
+RNF-04: «Narrative» cargó en 0.036 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4831.
+Total: 1.291000 ms (FindLiveObjects: 0.164600 ms CreateObjectMapping: 0.110200 ms MarkObjects: 1.003600 ms  DeleteObjects: 0.012400 ms)
+
+Unloading 8 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.641100 ms
+RNF-04: «Level3_River» cargó en 0.055 s
+Unloading 1076 unused Assets to reduce memory usage. Loaded Objects now: 4854.
+Total: 1.939600 ms (FindLiveObjects: 0.208500 ms CreateObjectMapping: 0.141300 ms MarkObjects: 1.228200 ms  DeleteObjects: 0.361400 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.269600 ms
+RNF-04: «Narrative» cargó en 0.570 s
+Unloading 45 unused Assets to reduce memory usage. Loaded Objects now: 4831.
+Total: 1.473800 ms (FindLiveObjects: 0.181800 ms CreateObjectMapping: 0.116300 ms MarkObjects: 1.092300 ms  DeleteObjects: 0.083300 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.899300 ms
+RNF-04: «LevelSummary» cargó en 0.035 s
+Unloading 1184 unused Assets to reduce memory usage. Loaded Objects now: 3697.
+Total: 2.337400 ms (FindLiveObjects: 0.182700 ms CreateObjectMapping: 0.136800 ms MarkObjects: 1.321700 ms  DeleteObjects: 0.696100 ms)
+
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.490000 ms
+RNF-04: «Narrative» cargó en 0.551 s
+Unloading 12 unused Assets to reduce memory usage. Loaded Objects now: 4831.
+Total: 1.201200 ms (FindLiveObjects: 0.151000 ms CreateObjectMapping: 0.099800 ms MarkObjects: 0.921200 ms  DeleteObjects: 0.029100 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.975900 ms
+RNF-04: «Credits» cargó en 0.036 s
+Unloading 1430 unused Assets to reduce memory usage. Loaded Objects now: 3481.
+Total: 1.906400 ms (FindLiveObjects: 0.273800 ms CreateObjectMapping: 0.152600 ms MarkObjects: 0.954500 ms  DeleteObjects: 0.525200 ms)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.113000 ms
+RNF-04: «MainMenu» cargó en 0.086 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4796.
+Total: 1.432800 ms (FindLiveObjects: 0.147000 ms CreateObjectMapping: 0.091200 ms MarkObjects: 1.182300 ms  DeleteObjects: 0.012100 ms)
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+CodeReloadManager destroyed
+GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+[d3d12] Unreleased non-evictable resource 000002486E7EF9D0 (size 4096 B, lastUsedFence 9)

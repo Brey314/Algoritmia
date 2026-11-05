@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="utf-8"?>
+<test-run id="2" testcasecount="22" result="Failed(Child)" total="22" passed="4" failed="17" inconclusive="1" skipped="0" asserts="0" engine-version="3.5.0.0" clr-version="4.0.30319.42000" start-time="2026-11-05 18:54:54Z" end-time="2026-11-05 19:03:20Z" duration="506,2150572">
+  <test-suite type="TestSuite" id="1517" name="Algoritmia" fullname="Algoritmia" runstate="Runnable" testcasecount="438" result="Failed" site="Child" start-time="2026-11-05 18:54:54Z" end-time="2026-11-05 19:03:20Z" duration="506.215057" total="22" passed="4" failed="17" inconclusive="1" skipped="0" asserts="0">
+    <properties>
+      <property name="platform" value="PlayMode" />
+    </properties>
+    <failure>
+      <message><![CDATA[One or more child tests had errors]]></message>
+    </failure>
+    <test-suite type="Assembly" id="1178" name="Game.Levels.River.PlayMode.Tests.dll" fullname="C:/Users/benab/AppData/Local/Temp/Algoritmia-rc5-insp/Library/ScriptAssemblies/Game.Levels.River.PlayMode.Tests.dll" runstate="Runnable" testcasecount="58" result="Failed" site="Child" start-time="2026-11-05 18:54:54Z" end-time="2026-11-05 19:00:59Z" duration="365.226994" total="10" passed="1" failed="9" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="31564" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1179" name="Game" fullname="Game" runstate="Runnable" testcasecount="58" result="Failed" site="Child" start-time="2026-11-05 18:54:54Z" end-time="2026-11-05 19:00:59Z" duration="365.226342" total="10" passed="1" failed="9" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1180" name="Levels" fullname="Game.Levels" runstate="Runnable" testcasecount="58" result="Failed" site="Child" start-time="2026-11-05 18:54:54Z" end-time="2026-11-05 19:00:59Z" duration="365.225951" total="10" passed="1" failed="9" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1181" name="River" fullname="Game.Levels.River" runstate="Runnable" testcasecount="58" result="Failed" site="Child" start-time="2026-11-05 18:54:54Z" end-time="2026-11-05 19:00:59Z" duration="365.225543" total="10" passed="1" failed="9" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestSuite" id="1182" name="Tests" fullname="Game.Levels.River.Tests" runstate="Runnable" testcasecount="58" result="Failed" site="Child" start-time="2026-11-05 18:54:54Z" end-time="2026-11-05 19:00:59Z" duration="365.225072" total="10" passed="1" failed="9" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-suite type="TestFixture" id="1108" name="AssemblyPanelTests" fullname="Game.Levels.River.Tests.AssemblyPanelTests" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" testcasecount="13" result="Failed" site="Child" start-time="2026-11-05 18:54:54Z" end-time="2026-11-05 18:56:28Z" duration="94.214131" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1116" name="AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance" methodname="AssemblyPanel_HU12_LaBalsaReflejaLasTresEtapasDeAvance" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1737212650" result="Failed" start-time="2026-11-05 18:54:54Z" end-time="2026-11-05 18:56:24Z" duration="90.005240" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Revisar las tres capturas: la balsa crece de la base con siluetas, a la base con amarres, al mástil y la vela; la familia en la orilla a la izquierda y la balsa sobre el agua a la derecha, a la escala de la 3.3, sin tocar a la familia ni los botones; la casilla de tronco a 1:1, sin pixelado; la sombra al 30 % (lectura B, INC-118). En _Base y _Amarre se ven «Listo» y «Probar balsa» lado a lado, con la misma tipografía, sin solaparse con la balsa y con contraste legible; en _MastilYVela hay un solo «Probar balsa», centrado (D-j del 30/09/2026)." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[Timeout value of 90000 ms was exceeded. If this is intended, increase the timeout value using a TimeoutAttribute.]]></message>
+                    <stack-trace><![CDATA[]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1114" name="AssemblyPanel_RNF03_ConLaFase3AbiertaLaBalsaElBotonYLasTablillasCabenSinSolaparse" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF03_ConLaFase3AbiertaLaBalsaElBotonYLasTablillasCabenSinSolaparse" methodname="AssemblyPanel_RNF03_ConLaFase3AbiertaLaBalsaElBotonYLasTablillasCabenSinSolaparse" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1908432715" result="Failed" start-time="2026-11-05 18:56:24Z" end-time="2026-11-05 18:56:27Z" duration="2.723150" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  «lista de tareas» (x:24.63, y:353.75, width:215.54, height:101.61) y «tablilla del guía» (x:204.53, y:401.48, width:315.62, height:53.89) no se solapan (RNF-03); pantalla (x:0.00, y:0.00, width:640.00, height:480.00)
+  Expected: False
+  But was:  True
+]]></message>
+                    <stack-trace><![CDATA[at Game.Levels.River.Tests.AssemblyPanelTests.AssertCabenSinSolaparse (System.ValueTuple`2[System.String,UnityEngine.RectTransform][] piezas) [0x0009c] in C:\Users\benab\AppData\Local\Temp\Algoritmia-rc5-insp\Assets\Tests\PlayMode\Levels\River\AssemblyPanelTests.cs:471
+at Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF03_ConLaFase3AbiertaLaBalsaElBotonYLasTablillasCabenSinSolaparse () [0x00286] in C:\Users\benab\AppData\Local\Temp\Algoritmia-rc5-insp\Assets\Tests\PlayMode\Levels\River\AssemblyPanelTests.cs:174
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1115" name="AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse" fullname="Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse" methodname="AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse" classname="Game.Levels.River.Tests.AssemblyPanelTests" runstate="Runnable" seed="1981094721" result="Failed" start-time="2026-11-05 18:56:27Z" end-time="2026-11-05 18:56:28Z" duration="1.475479" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  «lista de tareas» (x:24.63, y:353.75, width:215.54, height:101.61) y «tablilla del guía» (x:204.53, y:401.48, width:315.62, height:53.89) no se solapan (RNF-03); pantalla (x:0.00, y:0.00, width:640.00, height:480.00)
+  Expected: False
+  But was:  True
+]]></message>
+                    <stack-trace><![CDATA[at Game.Levels.River.Tests.AssemblyPanelTests.AssertCabenSinSolaparse (System.ValueTuple`2[System.String,UnityEngine.RectTransform][] piezas) [0x0009c] in C:\Users\benab\AppData\Local\Temp\Algoritmia-rc5-insp\Assets\Tests\PlayMode\Levels\River\AssemblyPanelTests.cs:471
+at Game.Levels.River.Tests.AssemblyPanelTests.AssemblyPanel_RNF03_EnLaBaseLosDosBotonesLaBalsaYLasTablillasCabenSinSolaparse () [0x00116] in C:\Users\benab\AppData\Local\Temp\Algoritmia-rc5-insp\Assets\Tests\PlayMode\Levels\River\AssemblyPanelTests.cs:196
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                  </failure>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1122" name="BuildZoneTests" fullname="Game.Levels.River.Tests.BuildZoneTests" classname="Game.Levels.River.Tests.BuildZoneTests" runstate="Runnable" testcasecount="7" result="Passed" start-time="2026-11-05 18:56:28Z" end-time="2026-11-05 18:56:29Z" duration="0.497473" total="1" passed="1" failed="0" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <test-case id="1127" name="RiverScene_RF36_RecogerTroncosSeMarcaConElUltimoTroncoYNoAntes" fullname="Game.Levels.River.Tests.BuildZoneTests.RiverScene_RF36_RecogerTroncosSeMarcaConElUltimoTroncoYNoAntes" methodname="RiverScene_RF36_RecogerTroncosSeMarcaConElUltimoTroncoYNoAntes" classname="Game.Levels.River.Tests.BuildZoneTests" runstate="Runnable" seed="1164169463" result="Passed" start-time="2026-11-05 18:56:28Z" end-time="2026-11-05 18:56:29Z" duration="0.495816" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1140" name="RiverAccessibilityTests" fullname="Game.Levels.River.Tests.RiverAccessibilityTests" classname="Game.Levels.River.Tests.RiverAccessibilityTests" runstate="Runnable" testcasecount="4" result="Failed" site="Child" start-time="2026-11-05 18:56:29Z" end-time="2026-11-05 18:59:59Z" duration="210.002806" total="3" passed="0" failed="3" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1142" name="RiverLevel_RNF19_LaListaDeTareasSeLeeEnEscalaDeGrises" fullname="Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF19_LaListaDeTareasSeLeeEnEscalaDeGrises" methodname="RiverLevel_RNF19_LaListaDeTareasSeLeeEnEscalaDeGrises" classname="Game.Levels.River.Tests.RiverAccessibilityTests" runstate="Runnable" seed="1416943011" result="Failed" start-time="2026-11-05 18:56:29Z" end-time="2026-11-05 18:57:29Z" duration="60.000462" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Verificar en la captura en escala de grises: las tareas hechas (1 y 2) y las pendientes (3 y 4) se distinguen por la forma del icono sin el color." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[Timeout value of 60000 ms was exceeded. If this is intended, increase the timeout value using a TimeoutAttribute.]]></message>
+                    <stack-trace><![CDATA[]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1141" name="RiverLevel_RNF19_LosEstadosDeErrorSeLeenSinColor" fullname="Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF19_LosEstadosDeErrorSeLeenSinColor" methodname="RiverLevel_RNF19_LosEstadosDeErrorSeLeenSinColor" classname="Game.Levels.River.Tests.RiverAccessibilityTests" runstate="Runnable" seed="2128156837" result="Failed" start-time="2026-11-05 18:57:29Z" end-time="2026-11-05 18:58:59Z" duration="90.000439" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="90000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Verificar en las capturas: la tablilla del guía lleva icono además de color en cada rechazo; el espacio incorrecto de la balsa tiene el icono de alerta encima, no solo otro tinte; tras la prueba fallida la balsa vuelve a su sitio con los dos espacios señalados." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[Timeout value of 90000 ms was exceeded. If this is intended, increase the timeout value using a TimeoutAttribute.]]></message>
+                    <stack-trace><![CDATA[]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1143" name="RiverLevel_RNF20_ContrasteSuficienteSobreElEscenarioClaro" fullname="Game.Levels.River.Tests.RiverAccessibilityTests.RiverLevel_RNF20_ContrasteSuficienteSobreElEscenarioClaro" methodname="RiverLevel_RNF20_ContrasteSuficienteSobreElEscenarioClaro" classname="Game.Levels.River.Tests.RiverAccessibilityTests" runstate="Runnable" seed="490372066" result="Failed" start-time="2026-11-05 18:58:59Z" end-time="2026-11-05 18:59:59Z" duration="60.000437" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="60000" />
+                    <property name="Category" value="Acceptance" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[Timeout value of 60000 ms was exceeded. If this is intended, increase the timeout value using a TimeoutAttribute.]]></message>
+                    <stack-trace><![CDATA[]]></stack-trace>
+                  </failure>
+                  <output><![CDATA[orilla · mensaje: 13,34:1
+orilla · recoger: 7,06:1
+orilla · tarea «CollectLogs»: 6,32:1
+orilla · tarea «FindRopes»: 6,32:1
+orilla · tarea «AssembleRaft»: 6,32:1
+orilla · tarea «PlaceMastAndSail»: 6,32:1
+ensamblaje · confirmar: 7,06:1
+ensamblaje · probar: 7,06:1
+orilla · pausa · Cancelar: 13,34:1
+orilla · pausa · Volver a ver la historia: 13,34:1
+orilla · pausa · Sí, salir: 7,06:1
+orilla · pausa · Reanudar: 7,06:1
+orilla · pausa · Guardar y salir: 13,34:1
+orilla · pausa · Reiniciar: 13,34:1
+orilla · pausa · Sí, reiniciar: 7,06:1
+orilla · pausa · Volver al menú de niveles: 13,34:1
+orilla · pausa · Cancelar: 13,34:1
+]]></output>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1155" name="RiverMovementTests" fullname="Game.Levels.River.Tests.RiverMovementTests" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" testcasecount="9" result="Failed" site="Child" start-time="2026-11-05 18:59:59Z" end-time="2026-11-05 18:59:59Z" duration="0.505709" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1164" name="RiverScene_RNF03_ControlesListaEInventarioCabenEnPantallaYNoSeSolapan" fullname="Game.Levels.River.Tests.RiverMovementTests.RiverScene_RNF03_ControlesListaEInventarioCabenEnPantallaYNoSeSolapan" methodname="RiverScene_RNF03_ControlesListaEInventarioCabenEnPantallaYNoSeSolapan" classname="Game.Levels.River.Tests.RiverMovementTests" runstate="Runnable" seed="1035808361" result="Failed" start-time="2026-11-05 18:59:59Z" end-time="2026-11-05 18:59:59Z" duration="0.503523" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  «lista de tareas» y «tablilla del guía» no se solapan
+  Expected: False
+  But was:  True
+]]></message>
+                    <stack-trace><![CDATA[at Game.Levels.River.Tests.RiverMovementTests.RiverScene_RNF03_ControlesListaEInventarioCabenEnPantallaYNoSeSolapan () [0x00277] in C:\Users\benab\AppData\Local\Temp\Algoritmia-rc5-insp\Assets\Tests\PlayMode\Levels\River\RiverMovementTests.cs:288
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                  </failure>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1165" name="RiverSceneVisualTests" fullname="Game.Levels.River.Tests.RiverSceneVisualTests" classname="Game.Levels.River.Tests.RiverSceneVisualTests" runstate="Runnable" testcasecount="2" result="Failed" site="Child" start-time="2026-11-05 18:59:59Z" end-time="2026-11-05 19:00:59Z" duration="60.001944" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1166" name="RiverScene_RF36_CapturaDeLaOrillaAlAbrir" fullname="Game.Levels.River.Tests.RiverSceneVisualTests.RiverScene_RF36_CapturaDeLaOrillaAlAbrir" methodname="RiverScene_RF36_CapturaDeLaOrillaAlAbrir" classname="Game.Levels.River.Tests.RiverSceneVisualTests" runstate="Runnable" seed="1177718423" result="Failed" start-time="2026-11-05 18:59:59Z" end-time="2026-11-05 19:00:29Z" duration="30.000454" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Revisar la captura: lista de tareas arriba a la izquierda, inventario vacío abajo a la izquierda, flechas y «Recoger» a la derecha, el río y el pie de la cascada a la derecha; la zona junto al agua con la familia detrás; los ocho materiales repartidos por la orilla, sin deformar ni ampliar y ninguno sobre agua o seto; Mamá, la familia y los materiales a la escala de la 3.1 (INC-118) (mockup 11-12)." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[Timeout value of 30000 ms was exceeded. If this is intended, increase the timeout value using a TimeoutAttribute.]]></message>
+                    <stack-trace><![CDATA[]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1167" name="RiverScene_RF39_CapturaConTodoRecogidoYLaZonaAbierta" fullname="Game.Levels.River.Tests.RiverSceneVisualTests.RiverScene_RF39_CapturaConTodoRecogidoYLaZonaAbierta" methodname="RiverScene_RF39_CapturaConTodoRecogidoYLaZonaAbierta" classname="Game.Levels.River.Tests.RiverSceneVisualTests" runstate="Runnable" seed="1567422101" result="Failed" start-time="2026-11-05 19:00:29Z" end-time="2026-11-05 19:00:59Z" duration="30.000221" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="Category" value="VisualVerification" />
+                    <property name="Description" value="Revisar la captura: tareas 1 y 2 con visto verde, 3 y 4 con círculo; inventario con los cuatro materiales; panel de ensamblaje abierto y flechas retiradas; Mamá en el borde de la zona, entera y fuera del inventario, delante de la familia (lectura B, INC-118)." />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[Timeout value of 30000 ms was exceeded. If this is intended, increase the timeout value using a TimeoutAttribute.]]></message>
+                    <stack-trace><![CDATA[]]></stack-trace>
+                  </failure>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1293" name="Game.Levels.Wheel.PlayMode.Tests.dll" fullname="C:/Users/benab/AppData/Local/Temp/Algoritmia-rc5-insp/Library/ScriptAssemblies/Game.Levels.Wheel.PlayMode.Tests.dll" runstate="Runnable" testcasecount="103" result="Failed" site="Child" start-time="2026-11-05 19:00:59Z" end-time="2026-11-05 19:01:03Z" duration="3.557099" total="4" passed="0" failed="4" inconclusive="0" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="31564" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1294" name="Game" fullname="Game" runstate="Runnable" testcasecount="103" result="Failed" site="Child" start-time="2026-11-05 19:00:59Z" end-time="2026-11-05 19:01:03Z" duration="3.556187" total="4" passed="0" failed="4" inconclusive="0" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1295" name="Levels" fullname="Game.Levels" runstate="Runnable" testcasecount="103" result="Failed" site="Child" start-time="2026-11-05 19:00:59Z" end-time="2026-11-05 19:01:03Z" duration="3.555389" total="4" passed="0" failed="4" inconclusive="0" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1296" name="Wheel" fullname="Game.Levels.Wheel" runstate="Runnable" testcasecount="103" result="Failed" site="Child" start-time="2026-11-05 19:00:59Z" end-time="2026-11-05 19:01:03Z" duration="3.554677" total="4" passed="0" failed="4" inconclusive="0" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestSuite" id="1297" name="Tests" fullname="Game.Levels.Wheel.Tests" runstate="Runnable" testcasecount="103" result="Failed" site="Child" start-time="2026-11-05 19:00:59Z" end-time="2026-11-05 19:01:03Z" duration="3.553951" total="4" passed="0" failed="4" inconclusive="0" skipped="0" asserts="0">
+              <properties />
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-suite type="TestFixture" id="1183" name="ForestSceneTests" fullname="Game.Levels.Wheel.Tests.ForestSceneTests" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" testcasecount="40" result="Failed" site="Child" start-time="2026-11-05 19:00:59Z" end-time="2026-11-05 19:01:01Z" duration="2.252873" total="2" passed="0" failed="2" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1201" name="ForestScene_RF22_ElBosqueSuenaDeFondoYCadaObjetoSuenaALoQueEsAlApartarse" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF22_ElBosqueSuenaDeFondoYCadaObjetoSuenaALoQueEsAlApartarse" methodname="ForestScene_RF22_ElBosqueSuenaDeFondoYCadaObjetoSuenaALoQueEsAlApartarse" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="223558798" result="Failed" start-time="2026-11-05 19:00:59Z" end-time="2026-11-05 19:01:00Z" duration="0.576381" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  la hoja suena mientras vuela
+  Expected: same as <sfx_n1_hojas_acomodo (UnityEngine.AudioClip)>
+  But was:  null
+]]></message>
+                    <stack-trace><![CDATA[at Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF22_ElBosqueSuenaDeFondoYCadaObjetoSuenaALoQueEsAlApartarse () [0x001ae] in C:\Users\benab\AppData\Local\Temp\Algoritmia-rc5-insp\Assets\Tests\PlayMode\Levels\Wheel\ForestSceneTests.cs:553
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                  </failure>
+                </test-case>
+                <test-case id="1211" name="ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22" fullname="Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22" methodname="ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22" classname="Game.Levels.Wheel.Tests.ForestSceneTests" runstate="Runnable" seed="325137924" result="Failed" start-time="2026-11-05 19:01:00Z" end-time="2026-11-05 19:01:01Z" duration="1.669462" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  pantalla (x:0.00, y:0.00, width:640.00, height:480.00): la caja (x:-38.19, y:130.73, width:112.36, height:112.36)
+  Expected: <empty>
+  But was:  < "la caja (x:-38.19, y:130.73, width:112.36, height:112.36)" >
+]]></message>
+                    <stack-trace><![CDATA[at Game.Levels.Wheel.Tests.ForestSceneTests.ForestScene_RF26_LaCajaYLosTroncosTerminanEnCuadroDondeLosDibujaLaEscena22 () [0x00234] in C:\Users\benab\AppData\Local\Temp\Algoritmia-rc5-insp\Assets\Tests\PlayMode\Levels\Wheel\ForestSceneTests.cs:930
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                  </failure>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1224" name="MazeSceneTests" fullname="Game.Levels.Wheel.Tests.MazeSceneTests" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" testcasecount="35" result="Failed" site="Child" start-time="2026-11-05 19:01:01Z" end-time="2026-11-05 19:01:02Z" duration="0.744448" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1251" name="MazeScene_RNF03_ConMasBloquesDeLosQueCabenLaListaSeDesplazaSinEncogerLasFilas" fullname="Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RNF03_ConMasBloquesDeLosQueCabenLaListaSeDesplazaSinEncogerLasFilas" methodname="MazeScene_RNF03_ConMasBloquesDeLosQueCabenLaListaSeDesplazaSinEncogerLasFilas" classname="Game.Levels.Wheel.Tests.MazeSceneTests" runstate="Runnable" seed="384738483" result="Failed" start-time="2026-11-05 19:01:01Z" end-time="2026-11-05 19:01:02Z" duration="0.738488" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  ninguna fila se encoge por debajo de lo legible
+  Expected: <empty>
+  But was:  < (0, 24,63367), (1, 24,63367), (2, 24,63367), (3, 24,63367), (4, 24,63367), (5, 24,63364), (6, 24,63361), (7, 24,63361), (8, 24,63361), (9, 24,63361)... >
+]]></message>
+                    <stack-trace><![CDATA[at Game.Levels.Wheel.Tests.MazeSceneTests.MazeScene_RNF03_ConMasBloquesDeLosQueCabenLaListaSeDesplazaSinEncogerLasFilas () [0x00171] in C:\Users\benab\AppData\Local\Temp\Algoritmia-rc5-insp\Assets\Tests\PlayMode\Levels\Wheel\MazeSceneTests.cs:1016
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                  </failure>
+                </test-case>
+              </test-suite>
+              <test-suite type="TestFixture" id="1272" name="WorkshopSceneTests" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" testcasecount="20" result="Failed" site="Child" start-time="2026-11-05 19:01:02Z" end-time="2026-11-05 19:01:03Z" duration="0.553980" total="1" passed="0" failed="1" inconclusive="0" skipped="0" asserts="0">
+                <properties>
+                  <property name="Category" value="Integration" />
+                </properties>
+                <failure>
+                  <message><![CDATA[One or more child tests had errors]]></message>
+                </failure>
+                <test-case id="1282" name="WorkshopScene_RNF03_NadaSeSaleDePantallaNiSeSolapa" fullname="Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RNF03_NadaSeSaleDePantallaNiSeSolapa" methodname="WorkshopScene_RNF03_NadaSeSaleDePantallaNiSeSolapa" classname="Game.Levels.Wheel.Tests.WorkshopSceneTests" runstate="Runnable" seed="57246392" result="Failed" start-time="2026-11-05 19:01:02Z" end-time="2026-11-05 19:01:03Z" duration="0.548819" asserts="0">
+                  <properties>
+                    <property name="Timeout" value="30000" />
+                    <property name="retryIteration" value="0" />
+                    <property name="repeatIteration" value="0" />
+                  </properties>
+                  <failure>
+                    <message><![CDATA[  Pieza_Cargo entra por la derecha
+  Expected: less than or equal to 640.5f
+  But was:  645.06665f
+]]></message>
+                    <stack-trace><![CDATA[at Game.Levels.Wheel.Tests.WorkshopSceneTests.WorkshopScene_RNF03_NadaSeSaleDePantallaNiSeSolapa () [0x001d6] in C:\Users\benab\AppData\Local\Temp\Algoritmia-rc5-insp\Assets\Tests\PlayMode\Levels\Wheel\WorkshopSceneTests.cs:325
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                  </failure>
+                </test-case>
+              </test-suite>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+    <test-suite type="Assembly" id="1510" name="Game.UI.PlayMode.Tests.dll" fullname="C:/Users/benab/AppData/Local/Temp/Algoritmia-rc5-insp/Library/ScriptAssemblies/Game.UI.PlayMode.Tests.dll" runstate="Runnable" testcasecount="193" result="Failed" site="Child" start-time="2026-11-05 19:01:03Z" end-time="2026-11-05 19:03:20Z" duration="137.419697" total="8" passed="3" failed="4" inconclusive="1" skipped="0" asserts="0">
+      <properties>
+        <property name="_PID" value="31564" />
+        <property name="_APPDOMAIN" value="Unity Child Domain" />
+        <property name="platform" value="PlayMode" />
+        <property name="EditorOnly" value="False" />
+      </properties>
+      <failure>
+        <message><![CDATA[One or more child tests had errors]]></message>
+      </failure>
+      <test-suite type="TestSuite" id="1511" name="Game" fullname="Game" runstate="Runnable" testcasecount="193" result="Failed" site="Child" start-time="2026-11-05 19:01:03Z" end-time="2026-11-05 19:03:20Z" duration="137.414452" total="8" passed="3" failed="4" inconclusive="1" skipped="0" asserts="0">
+        <properties />
+        <failure>
+          <message><![CDATA[One or more child tests had errors]]></message>
+        </failure>
+        <test-suite type="TestSuite" id="1512" name="UI" fullname="Game.UI" runstate="Runnable" testcasecount="193" result="Failed" site="Child" start-time="2026-11-05 19:01:03Z" end-time="2026-11-05 19:03:20Z" duration="137.409784" total="8" passed="3" failed="4" inconclusive="1" skipped="0" asserts="0">
+          <properties />
+          <failure>
+            <message><![CDATA[One or more child tests had errors]]></message>
+          </failure>
+          <test-suite type="TestSuite" id="1513" name="Tests" fullname="Game.UI.Tests" runstate="Runnable" testcasecount="193" result="Failed" site="Child" start-time="2026-11-05 19:01:03Z" end-time="2026-11-05 19:03:20Z" duration="137.404851" total="8" passed="3" failed="4" inconclusive="1" skipped="0" asserts="0">
+            <properties />
+            <failure>
+              <message><![CDATA[One or more child tests had errors]]></message>
+            </failure>
+            <test-suite type="TestFixture" id="1360" name="NarrativeSceneTests" fullname="Game.UI.Tests.NarrativeSceneTests" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" testcasecount="111" result="Failed" site="Child" start-time="2026-11-05 19:01:03Z" end-time="2026-11-05 19:03:13Z" duration="130.089757" total="4" passed="1" failed="3" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1476" name="NarrativeScene_RNF21_AvanzarElTextoDuranteElCruceNoHaceSaltarALosViajeros" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF21_AvanzarElTextoDuranteElCruceNoHaceSaltarALosViajeros" methodname="NarrativeScene_RNF21_AvanzarElTextoDuranteElCruceNoHaceSaltarALosViajeros" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1238147145" result="Passed" start-time="2026-11-05 19:01:03Z" end-time="2026-11-05 19:01:15Z" duration="12.616125" asserts="0">
+                <properties>
+                  <property name="Category" value="Acceptance" />
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1389" name="NarrativeScene_RNF21_ElHaloDeLaFogataPulsaLentoYSinDestellos" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF21_ElHaloDeLaFogataPulsaLentoYSinDestellos" methodname="NarrativeScene_RNF21_ElHaloDeLaFogataPulsaLentoYSinDestellos" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="880961463" result="Failed" start-time="2026-11-05 19:01:15Z" end-time="2026-11-05 19:02:15Z" duration="60.000421" asserts="0">
+                <properties>
+                  <property name="Category" value="Acceptance" />
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[Timeout value of 60000 ms was exceeded. If this is intended, increase the timeout value using a TimeoutAttribute.]]></message>
+                  <stack-trace><![CDATA[]]></stack-trace>
+                </failure>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1390" name="NarrativeScene_RNF21_ElHaloDeLaFogataSeQuedaQuietoConLaPausa" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF21_ElHaloDeLaFogataSeQuedaQuietoConLaPausa" methodname="NarrativeScene_RNF21_ElHaloDeLaFogataSeQuedaQuietoConLaPausa" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="722206075" result="Failed" start-time="2026-11-05 19:02:15Z" end-time="2026-11-05 19:02:45Z" duration="30.000718" asserts="0">
+                <properties>
+                  <property name="Timeout" value="30000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[Timeout value of 30000 ms was exceeded. If this is intended, increase the timeout value using a TimeoutAttribute.]]></message>
+                  <stack-trace><![CDATA[]]></stack-trace>
+                </failure>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+              <test-case id="1396" name="NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos" fullname="Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos" methodname="NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos" classname="Game.UI.Tests.NarrativeSceneTests" runstate="Runnable" seed="1854348992" result="Failed" start-time="2026-11-05 19:02:45Z" end-time="2026-11-05 19:03:13Z" duration="27.463122" asserts="0">
+                <properties>
+                  <property name="Category" value="Acceptance" />
+                  <property name="Timeout" value="60000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  la balsa llega a la otra orilla
+  Expected: 0.680000007f +/- 0.00100000005f
+  But was:  0.560000002f
+]]></message>
+                  <stack-trace><![CDATA[at Game.UI.Tests.NarrativeSceneTests.NarrativeScene_RNF21_LaBalsaCruzaSinSaltosNiParpadeos () [0x0045b] in C:\Users\benab\AppData\Local\Temp\Algoritmia-rc5-insp\Assets\Tests\PlayMode\UI\NarrativeSceneTests.cs:1052
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                </failure>
+                <output><![CDATA[«Narrative» se abrió sin pasar por «Boot»: no hay GameFlowRunner, así que el clic no navega. Para recorrer el juego, arranca en la escena Boot.
+]]></output>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1478" name="PauseMenuTests" fullname="Game.UI.Tests.PauseMenuTests" classname="Game.UI.Tests.PauseMenuTests" runstate="Runnable" testcasecount="8" result="Passed" start-time="2026-11-05 19:03:13Z" end-time="2026-11-05 19:03:19Z" duration="5.748683" total="1" passed="0" failed="0" inconclusive="1" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <test-case id="1481" name="PauseMenu_HU17_ConfirmarReiniciarReinicioElIntentoSinTocarElProgreso" fullname="Game.UI.Tests.PauseMenuTests.PauseMenu_HU17_ConfirmarReiniciarReinicioElIntentoSinTocarElProgreso" methodname="PauseMenu_HU17_ConfirmarReiniciarReinicioElIntentoSinTocarElProgreso" classname="Game.UI.Tests.PauseMenuTests" runstate="Runnable" seed="1135790497" result="Inconclusive" start-time="2026-11-05 19:03:13Z" end-time="2026-11-05 19:03:19Z" duration="5.747168" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="Category" value="Acceptance" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <reason>
+                  <message><![CDATA[  el panel pasó al encendido
+  Expected: True
+  But was:  False
+]]></message>
+                </reason>
+              </test-case>
+            </test-suite>
+            <test-suite type="TestFixture" id="1499" name="TeacherReportTests" fullname="Game.UI.Tests.TeacherReportTests" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" testcasecount="10" result="Failed" site="Child" start-time="2026-11-05 19:03:19Z" end-time="2026-11-05 19:03:20Z" duration="1.559842" total="3" passed="2" failed="1" inconclusive="0" skipped="0" asserts="0">
+              <properties>
+                <property name="Category" value="Integration" />
+              </properties>
+              <failure>
+                <message><![CDATA[One or more child tests had errors]]></message>
+              </failure>
+              <test-case id="1508" name="TeacherReport_RF46_DEFRC305_LaCabeceraNoSeMontaSobreLaTablaNiSobreElNombreDelPerfil" fullname="Game.UI.Tests.TeacherReportTests.TeacherReport_RF46_DEFRC305_LaCabeceraNoSeMontaSobreLaTablaNiSobreElNombreDelPerfil" methodname="TeacherReport_RF46_DEFRC305_LaCabeceraNoSeMontaSobreLaTablaNiSobreElNombreDelPerfil" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" seed="115094937" result="Passed" start-time="2026-11-05 19:03:19Z" end-time="2026-11-05 19:03:19Z" duration="0.538457" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+              </test-case>
+              <test-case id="1507" name="TeacherReport_RF46_DEFRC305_LosCuatroIconosQuedanSobreSuCabeceraALaMismaDistancia" fullname="Game.UI.Tests.TeacherReportTests.TeacherReport_RF46_DEFRC305_LosCuatroIconosQuedanSobreSuCabeceraALaMismaDistancia" methodname="TeacherReport_RF46_DEFRC305_LosCuatroIconosQuedanSobreSuCabeceraALaMismaDistancia" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" seed="1512543051" result="Failed" start-time="2026-11-05 19:03:19Z" end-time="2026-11-05 19:03:20Z" duration="0.511236" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <failure>
+                  <message><![CDATA[  los iconos se leen: ni «muy pequeños» ni sueltos
+  Expected: all items greater than or equal to 0.0399999991f
+  But was:  < 0.0384900421f, 0.0384900421f, 0.0384900421f, 0.0384900421f >
+]]></message>
+                  <stack-trace><![CDATA[at Game.UI.Tests.TeacherReportTests.TeacherReport_RF46_DEFRC305_LosCuatroIconosQuedanSobreSuCabeceraALaMismaDistancia () [0x00248] in C:\Users\benab\AppData\Local\Temp\Algoritmia-rc5-insp\Assets\Tests\PlayMode\UI\TeacherReportTests.cs:248
+at UnityEngine.TestTools.TestRunner.TestTaskWrapper+<Execute>d__2.MoveNext () [0x00063] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\TestRunner\TestTaskWrapper.cs:31
+at UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\Library\PackageCache\com.unity.test-framework@1405238725ab\UnityEngine.TestRunner\NUnitExtensions\Attributes\TestEnumerator.cs:44
+]]></stack-trace>
+                </failure>
+              </test-case>
+              <test-case id="1509" name="TeacherReport_RF46_DEFRC305_VolverAlMenuCabeEnUnaLineaDentroDeSuBoton" fullname="Game.UI.Tests.TeacherReportTests.TeacherReport_RF46_DEFRC305_VolverAlMenuCabeEnUnaLineaDentroDeSuBoton" methodname="TeacherReport_RF46_DEFRC305_VolverAlMenuCabeEnUnaLineaDentroDeSuBoton" classname="Game.UI.Tests.TeacherReportTests" runstate="Runnable" seed="1172075224" result="Passed" start-time="2026-11-05 19:03:20Z" end-time="2026-11-05 19:03:20Z" duration="0.508287" asserts="0">
+                <properties>
+                  <property name="Timeout" value="20000" />
+                  <property name="retryIteration" value="0" />
+                  <property name="repeatIteration" value="0" />
+                </properties>
+                <output><![CDATA[Saving results to: C:/Users/benab/AppData/LocalLow/Universidad Catolica de Colombia/Algoritmia\TestResults.xml
+]]></output>
+              </test-case>
+            </test-suite>
+          </test-suite>
+        </test-suite>
+      </test-suite>
+    </test-suite>
+  </test-suite>
+</test-run>

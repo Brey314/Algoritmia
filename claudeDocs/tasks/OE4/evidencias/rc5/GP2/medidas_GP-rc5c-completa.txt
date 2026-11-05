@@ -1,0 +1,5 @@
+GP-rc5c-completa: 400 muestras · WorkingSet máx 448 MiB (escena «Narrative») · Private máx 1,186 MiB (escena «Narrative») · picos del SO: WS 449 MiB, commit 1,186 MiB
+RNF-05: máximo 1,186 MiB (1.16 GiB) frente a 2048 MiB: CUMPLE
+GP-rc5c-completa: red · 400 filas (=400)
+RNF-10: cero conexiones a direcciones que no son de loopback (las UDP/TCP «escucha-local» no cuentan, pero se anotan)
+RNF-04: 0 cargas medidas (peor valor por escena; límite 10 s)

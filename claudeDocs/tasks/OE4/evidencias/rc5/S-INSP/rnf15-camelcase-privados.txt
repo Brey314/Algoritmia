@@ -1,0 +1,6 @@
+PF-RNF15-01 · criterio 3: _camelCase en campos privados · scripts/rnf15.py
+Resultado: los campos de instancia privados no serializados de las 10 clases usan _camelCase; los serializados, camelCase (convención
+de Unity para el Inspector). Los estáticos privados mutables de AssemblyPanelController llevan prefijo s_ (s_firstFailure L117,
+s_stash L118, s_indicators L119), distinto de _camelCase pero coherente con el prefijo de estáticos; observación, no incumplimiento
+(el script marca L118 'static' por una tupla anulable que no sabe leer).
+Cumplen las 10.

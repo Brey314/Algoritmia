@@ -1,6 +1,14 @@
 # Build rc5 — procedencia
 
-Candidato compilado el 14/10/2026 desde `9dfe513` más la corrección de DEF-RC4-01, que **aún no está en un commit**. Sustituye a rc4 (compilado el 13/10/2026 desde `0405eba`), que queda en `Build/Algoritmia_rc4`. **Sin etiqueta**: la etiqueta la decide Santiago.
+Candidato compilado el 14/10/2026 desde `9dfe513` más la corrección de DEF-RC4-01, que entonces no estaba en un commit y entró en `ca6fd91`. Sustituye a rc4 (compilado el 13/10/2026 desde `0405eba`), que queda en `Build/Algoritmia_rc4`. Etiqueta anotada `rc5` sobre `ca6fd91`, del 15/10/2026.
+
+**Actualización del 04/11/2026.**
+- `git diff --binary --no-textconv --no-ext-diff 9dfe513 ca6fd91 -- Assets Packages ProjectSettings | sha256sum` da `dc025f48…0238877`, la huella de abajo: lo commiteado es lo compilado.
+- `evidencias/rc5/manifiesto-rc5.tsv` lista los 253 archivos del paquete con bytes y SHA-256, y reproduce la huella de la carpeta y la de `Algoritmia_Data` (`herramientas/manifiesto.ps1`).
+- El paquete congelado es `Build/Algoritmia.zip` (14/10/2026 11:51, SHA-256 `12adda48…f558`), extraído en `Build/Algoritmia_rc5/`. `Build/Algoritmia/` tiene el mismo contenido más `MedirAlgoritmia.exe`, `Player_SANTIAGO_*.log`, `Resultado_SANTIAGO_*.txt`, `resultados_medicion.csv` y `Datos/pruba.json`, del 16/10/2026, así que no pasa `-Verificar`.
+- De la carpeta del equipo del colegio solo consta la ruta `Downloads\Algoritmia (1)\Algoritmia`, compatible con ese zip; su huella no se tomó ese día.
+
+Lo que sigue es el registro del 14/10/2026.
 
 **Sin pasada de casos ni medidas de RNF-04 y RNF-05 por decisión del usuario.** Este build se compiló y se pesó; no se ejecutó ni se midió como ejecutable, y tampoco se corrió la suite de pruebas (EditMode ni PlayMode) sobre este árbol.
 

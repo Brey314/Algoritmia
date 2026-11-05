@@ -1,0 +1,15 @@
+PF-RNF15-01 · criterio 1: identificadores en inglés · árbol = ca6fd91 (solo difiere Inventario.md)
+Método: scripts/vocab.py (palabras de cada identificador de las 10 clases, sin comentarios ni cadenas) y barrido por línea de
+las palabras en español (rnf15-identificadores-es-detalle.txt; los tooltips multilínea que el barrido marca son texto, no identificadores).
+No se consideran en español: Silex y Pedernal (PieceKind), vocabulario del dominio (como en rc3).
+
+CUMPLEN (identificadores en inglés): GameFlow, GameFlowRunner, SaveStore, PlayerProfile, FirePanelController,
+AssemblyPanelController, NarrativeSceneController.
+
+INCUMPLEN (identificadores en español), Assets/Game/Scripts/Runtime/Levels/Wheel/:
+ForestSceneController.cs — 20: Despejar (L339, método), Apartar (L368, método), EnPantalla (L826, método), SueloUnitario (L430, propiedad),
+  parámetro objeto (L368), locales escala (L374), suelo (L381), caja (L386), estorbo (L387), margen (L380), vueltas (L382), vuelta (L384),
+  haciaElCentro (L392), candidatos (L393), destino (L400), candidato (L401), sitio (L403), dentro (L404), esquinas (L828), indice (L841).
+WorkshopSceneController.cs — 2: EnPantalla (L750, método; usado en L488), esquinas (L752).
+MazeSceneController.cs — 1: desborda (L876, local).
+Total: 23 identificadores en español en 3 de las 10 clases. Idéntico a rc3 (20 + 2 + 1): DEF-RC3-I01 sigue sin corregir.

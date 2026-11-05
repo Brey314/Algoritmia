@@ -1,0 +1,8 @@
+PF-RNF15-01 · criterio 2: PascalCase en tipos y miembros públicos · scripts/rnf15.py sobre las 10 clases (683 miembros analizados)
+Resultado: las 10 clases y todos sus miembros públicos/internos (tipos, métodos, propiedades, constantes) cumplen PascalCase.
+Observaciones (no incumplimientos del criterio, que habla de tipos y miembros públicos):
+- Estáticos privados de solo lectura y propiedades privadas en PascalCase (convención habitual de C#): GameFlow.Allowed (L17),
+  GameFlowRunner.Scenes (L23) y PlayingScenes (L44), FirePanelController.Floor (L258), ForestSceneController.Phase1 (L154),
+  SueloUnitario (L430), UiCamera (L645), WorkshopSceneController.UiCamera (L745), MazeSceneController.Phase3 (L170), BlockKinds (L172),
+  ContrastId (L514), SaturationId (L515), ScrollMax (L859), Page (L862), UiCamera (L1435). El script los marca como falsos positivos.
+- FirePanelController.Piece_PickedUp (L388) y Piece_Dropped (L397): manejadores de evento privados con guion bajo (estilo Unity); no son públicos.

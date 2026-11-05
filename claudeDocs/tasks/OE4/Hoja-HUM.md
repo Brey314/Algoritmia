@@ -10,7 +10,7 @@
 
 | # | Comprobación | Caso | Cierra | Hace falta |
 |---|---|---|---|---|
-| H1 | PG-05 · el cambio de controles entre niveles no confunde | guion §1.2 PG-05 | S2 «PG-05 verificado: el paso del panel del N1 al arrastre del N2» y «PG-05 · cambio de esquema de control N1 → N2» · S3 «PG-05 verificado sobre los tres niveles» | estudiantes de cuarto con consentimiento (RNF-12) |
+| H1 | PG-05 · el cambio de controles entre niveles no confunde | guion §1.2 PG-05 | S2 «PG-05 verificado: el paso del panel del N1 al arrastre del N2» y «PG-05 · cambio de esquema de control N1 → N2» · S3 «PG-05 verificado sobre los tres niveles» | estudiantes de quinto con consentimiento (RNF-12) |
 | H2 | PG-06 · los valores del Nivel 1, validados jugando | guion §1.2 PG-06 | S1 «PG-06 · validar jugando los valores de `FireLevelConfig`» | la misma sesión de H1 |
 | H3 | RNF-07 · la carpeta portable en un segundo equipo | PF-RNF07-02 | S1 «Ejecución portable con el adaptador de red deshabilitado» (con H4) · S4 «P12 · Presupuestos y ejecución portable», columna «Equipo 2» | Windows 10/11 de 64 bits, cuenta estándar |
 | H4 | RNF-08 · sin conexión a internet | PF-RNF08-01 | S1 «Ejecución portable con el adaptador de red deshabilitado» (con H3) | poder quitar la red |
@@ -23,6 +23,11 @@
 | H11 | «Probar balsa» con la base completa y bien puesta | PF-RF42-02 | ninguna (D10-3, decisión D-j) | ídem |
 | H12 | Oído · lo que suena, pieza por pieza | PF-SON-01, 02 y 03 | ninguna (KPI de sonido del OE4) | parlantes o audífonos |
 | H13 | Mano · lo que el arnés no ve: el clic tras cargar una escena, la papelera del laberinto y la 8.ª fila del informe | PF-RNF02-01, PF-RF34-01, PF-RF46-01 | ninguna (revisión final de rc2, decisión D-OBS) | un *touchpad* si lo hay; los perfiles semilla para el paso 4 |
+
+**Para rc5 (04/11/2026) se repiten H3, H4, H5, H6, H7, H8 y H12**, en una sesión B sobre un equipo del colegio, para
+que el veredicto sea de rc5. H1, H2, H9, H10 y H11 no se repiten en esta hoja: sus resultados del 13/10/2026 son de rc3 y
+así se reportan. H6, H7 y H12 no se repiten porque el audio haya cambiado (entre rc3 y rc5 no cambió ningún clip ni su
+cableado), sino porque cambiaron narrativas y sus tiempos.
 
 **Dos sesiones bastan.**
 
@@ -43,21 +48,20 @@
 
 ## Para todos los guiones
 
-1. **Versión.** La carpeta `Build\Algoritmia\` del ejecutable candidato vigente, **rc2**, descrito en
-   `claudeDocs/tasks/OE4/evidencias/build-rc2.md` (o el que lo sustituya, si `OE4-Resultados.md` nombra
-   otro). No hay etiqueta de git: la procedencia la fijan ese documento y sus huellas. Se copia entera,
+1. **Versión.** El ejecutable candidato vigente, **rc5**, descrito en
+   `claudeDocs/tasks/OE4/evidencias/build-rc5.md` (o el que lo sustituya, si `OE4-Resultados.md` nombra
+   otro), con etiqueta `rc5` sobre el commit `ca6fd91`. **Se lleva `Build\Algoritmia.zip`** y se extrae en una carpeta nueva
+   del equipo; la carpeta `Build\Algoritmia\` tiene archivos del medidor y un perfil del 16/10 y no sirve. El medidor
+   `MedirAlgoritmia.exe` va **junto a** la carpeta, no dentro. Se copia entera,
    **con** la carpeta `Licencias\` que va junto al `.exe` —`OFL.txt` de las tipografías y
    `LICENSE-Phosphor.txt` de los iconos de pausa: las dos licencias piden que el aviso viaje con cada
-   copia que se entrega—, **sin** `Datos\` y **sin** la carpeta `Algoritmia_BurstDebugInformation_DoNotShip`,
-   que el build deja junto al `.exe` y no es parte del juego. Ojo: junto a ella hay tres builds
-   apartados (`Algoritmia_rc1`, `Algoritmia_2026-10-01_827MB` y `Algoritmia_2026-09-21`) que no se usan.
-   **Lo mismo vale al empaquetar la entrega:** la copia que se entrega al colegio no lleva `Datos\` ni
-   ninguna carpeta `…_DoNotShip` (`OE4-Resultados.md` §8.9).
-2. **Huella.** En PowerShell, dentro de la carpeta: `(Get-FileHash .\Algoritmia.exe).Hash.Substring(0,8)`
-   debe dar `6CD16EDF`. El `.exe` es solo el lanzador y su huella no cambia de un build a otro, así
-   que compara también el tamaño de la carpeta sin `Datos\` ni `…_DoNotShip` (Propiedades → «Tamaño»):
-   478 987 619 bytes (456 MB en el Explorador). Si algo no coincide con `build-rc2.md`, la sesión no
-   cuenta (OE4 `plan.md` §2).
+   copia que se entrega— y **sin** `Datos\`. El zip de rc5 trae además la carpeta
+   `Algoritmia_BurstDebugInformation_DoNotShip` (un archivo de texto de depuración); va listada en el manifiesto, fuera de
+   la huella, y no se quita para esta sesión.
+2. **Huella.** Antes de extraer, en el símbolo del sistema: `certutil -hashfile Algoritmia.zip SHA256` debe dar
+   `12adda488c4ae984bc16d6228c21c3b89a2f004ac21ec30f84f1514fe852f558`. El `.exe` no sirve para esto: es solo el lanzador y su
+   huella no cambia de un build a otro. Si se puede correr PowerShell 7, `manifiesto.ps1 -Verificar` compara además archivo
+   por archivo contra `evidencias/rc5/manifiesto-rc5.tsv`. Si algo no coincide, la sesión no cuenta (OE4 `plan.md` §2).
 3. **Nunca dentro de OneDrive** ni de otra carpeta que se sincronice (Escritorio y Documentos
    suelen estarlo): `Datos\` subiría a internet, y el consentimiento promete lo contrario.
 4. **Player.log** vive en `%USERPROFILE%\AppData\LocalLow\Universidad Catolica de Colombia\Algoritmia\`
@@ -67,7 +71,9 @@
    `RNF-04: «<escena>» cargó en <s> s`, así que solo se cronometra el arranque (doble clic →
    pantalla de inicio; `Boot` no deja línea). Si el registro no trae esas líneas, cronometra las
    cargas que pida el guion.
-6. **Memoria.** El medidor del anexo A o el Administrador de tareas.
+6. **Memoria y cargas.** `MedirAlgoritmia.exe` (`herramientas/medidor/LEEME.txt`) **durante todo el recorrido**: se abre el
+   juego desde él y se cierra el juego al final, no después del Nivel 1. El medidor del anexo A o el Administrador de
+   tareas quedan de respaldo.
 7. **Si algo falla, no lo arregles:** hora, pantalla y qué pasó; guarda Player.log y sigue si se
    puede. Cada fallo abre un DEF (OE4 `plan.md` §6).
 8. **Qué devuelves:** la plantilla del guion (pegada en el chat o en un `.txt`) y los archivos que
@@ -240,7 +246,7 @@ estándar, sin instalar nada ni pedir permisos, y `Datos\` nace junto al `.exe`.
 H3 · RNF-07 · PF-RNF07-02 · resultado
 Fecha: ___   Equipo 2: ___ (¿del colegio? sí/no)   Windows 10/11, 64 bits: sí/no
 Cuenta: estándar / administrador sin elevar   CPU: ___  RAM: ___ GB  Gráfica: ___  Pantalla: ___×___
-SHA-256 (8 primeros): ________   Carpeta: ___ (¿con espacio? sí/no)   Tamaño sin Datos\: ___ MB
+SHA-256 del zip (8 primeros, 12ADDA48): ________   Carpeta: ___ (¿con espacio? sí/no)   Tamaño sin Datos\: ___ MB
 ¿Licencias\ junto al .exe, con OFL.txt y LICENSE-Phosphor.txt? sí/no
 ¿Instalar, permisos, Control de cuentas o SmartScreen? no / sí: ___
 ¿Datos\ nació junto al .exe? sí/no      Doble clic → pantalla de inicio: ___ s
@@ -447,6 +453,7 @@ solo si en la plantilla aceptas el motivo.
 H8 · Golden Path · PF-RNF13-01 · resultado
 Fecha: ___   Equipo: 1 / 2 / otro: ___   Pantalla completa: sí/no   Perfil: ___
 Desde «Jugar»: N1 __:__ · N2 __:__ · N3 __:__ · créditos __:__ (total)
+Quién juega: ___ (¿conoce las soluciones? sí/no)   Veces que usó la ayuda, por nivel: N1 __ · N2 __ · N3 __
 ¿Leíste cada línea entera, salvo la 3.3 (H9)? sí/no     ¿Apareció «Omitir»? no / sí, en ___
 Incidencias (hora · pantalla · qué pasó · ¿seguiste?): ___
 Si el total cae fuera de 20–40 min, por qué (¿lo aceptas?): ___

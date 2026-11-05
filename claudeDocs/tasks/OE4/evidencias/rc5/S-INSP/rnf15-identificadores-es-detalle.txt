@@ -1,0 +1,56 @@
+== Core/GameFlow.cs 0
+== Core/GameFlowRunner.cs 0
+== Core/SaveStore.cs 0
+== Core/PlayerProfile.cs 0
+== Levels/Fire/FirePanelController.cs 10
+   L57 suelo  [suelo]
+   L57 pedernal  [pedernal]
+   L61 centro  [centro]
+   L61 pantalla  [pantalla]
+   L69 zona  [zona]
+   L126 sitio  [sitio]
+   L126 dentro  [dentro]
+   L126 Suelo  [suelo]
+   L286 Silex  [silex]
+   L532 Pedernal  [pedernal]
+== Levels/Wheel/ForestSceneController.cs 24
+   L43 objeto  [objeto]
+   L47 suelo  [suelo]
+   L47 pantalla  [pantalla]
+   L51 Objeto  [objeto]
+   L83 caja  [caja]
+   L111 otro  [otro]
+   L257 Despejar  [despejar]
+   L321 SueloUnitario  [suelo,unitario]
+   L351 Apartar  [apartar]
+   L374 escala  [escala]
+   L380 margen  [margen]
+   L381 EnPantalla  [pantalla]
+   L382 vueltas  [vueltas]
+   L384 vuelta  [vuelta]
+   L387 estorbo  [estorbo]
+   L392 haciaElCentro  [hacia,centro]
+   L393 candidatos  [candidatos]
+   L400 destino  [destino]
+   L401 candidato  [candidato]
+   L403 sitio  [sitio]
+   L404 dentro  [dentro]
+   L422 zona  [zona]
+   L828 esquinas  [esquinas]
+   L841 indice  [indice]
+== Levels/Wheel/WorkshopSceneController.cs 4
+   L57 pantalla  [pantalla]
+   L93 otro  [otro]
+   L488 EnPantalla  [pantalla]
+   L752 esquinas  [esquinas]
+== Levels/Wheel/MazeSceneController.cs 6
+   L65 zona  [zona]
+   L69 dentro  [dentro]
+   L152 centro  [centro]
+   L157 escala  [escala]
+   L157 otro  [otro]
+   L876 desborda  [desborda]
+== Levels/River/AssemblyPanelController.cs 0
+== UI/NarrativeSceneController.cs 2
+   L45 pantalla  [pantalla]
+   L53 dentro  [dentro]

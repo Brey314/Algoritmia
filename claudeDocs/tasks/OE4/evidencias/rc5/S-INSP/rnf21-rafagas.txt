@@ -1,0 +1,17 @@
+PF-RNF21-01 · rafagas de S-N1 (paso 21) · luminancia media global por cuadro (columna luma8, 8 bits)
+Criterio: oscilacion de ida y vuelta = dos transiciones consecutivas de sentido opuesto, cada una de mas del 10 % de la luminancia (relativo al mayor de los dos extremos), dentro de una ventana deslizante de 1 s. Umbral de aprobacion: menos de 3 destellos por segundo.
+Limite: la ráfaga se toma a ~10,1 fps (cuadros cada ~100 ms), de modo que solo detecta oscilaciones por debajo de ~5 Hz; la serie es de luminancia global, no de regiones.
+
+## PF-RNF21-01_21_rafaga_cueva_llama.csv: 70 cuadros en 6.90 s (10.0 fps)
+luminancia: min 0.01, max 79.25, rango 79.24 (100.0 % del maximo)
+salto mayor entre cuadros consecutivos: 99.92 % (cuadro 25 a 26, 12.10 -> 0.01)
+cuadros con salto > 10 %: 9 ['cuadro 22 a t=2.2s: 70.7 -> 51.1', 'cuadro 23 a t=2.3s: 51.1 -> 31.9', 'cuadro 24 a t=2.4s: 31.9 -> 12.1', 'cuadro 25 a t=2.5s: 12.1 -> 0.0', 'cuadro 26 a t=2.6s: 0.0 -> 2.3', 'cuadro 27 a t=2.7s: 2.3 -> 15.9', 'cuadro 28 a t=2.8s: 15.9 -> 30.0', 'cuadro 29 a t=2.9s: 30.0 -> 44.2', 'cuadro 30 a t=3.0s: 44.2 -> 56.3']
+maximo de oscilaciones >10 % en una ventana de 1 s: 1 (ventana desde t=1.6 s)
+
+## PF-RNF21-01_22_rafaga_cierre_llama.csv: 60 cuadros en 5.90 s (10.0 fps)
+luminancia: min 63.63, max 64.51, rango 0.88 (1.4 % del maximo)
+salto mayor entre cuadros consecutivos: 0.38 % (cuadro 6 a 7, 63.97 -> 63.73)
+cuadros con salto > 10 %: 0 []
+maximo de oscilaciones >10 % en una ventana de 1 s: 0 (ventana desde t=0.0 s)
+
+MAXIMO GLOBAL: 1 destellos por ventana de 1 s (umbral: menos de 3)

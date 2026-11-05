@@ -51,7 +51,7 @@ trabajo del motor.
 Desde el 29/09/2026 corre además el **carril OE4** —la evaluación funcional del prototipo—, con
 su `plan.md`, `casos.md` (el catálogo `PF-*` con guion paso a paso) y `todo.md` en
 `claudeDocs/tasks/OE4/`. Prueba el **ejecutable** compilado, no el Editor, y cada veredicto lleva
-la versión en que se obtuvo. El candidato vigente es rc5 (14/10/2026, 426,9 MB, compilado desde `ca6fd91`, sin etiqueta), que sustituye a
+la versión en que se obtuvo. El candidato vigente es rc5 (14/10/2026, 426,9 MB, compilado desde `ca6fd91`, etiqueta `rc5`, lista de huellas en `evidencias/rc5/manifiesto-rc5.tsv`), que sustituye a
 rc4 (13/10/2026, desde `0405eba`); rc5 se compiló y se pesó, sin pasada de casos; su suite completa corrió el 16/10/2026 sobre `06a5b61`, el mismo `Assets/` que `ca6fd91` (795 de 796 EditMode, 438 de 438 PlayMode, `evidencias/suites/rc5-06a5b61/`), lo que cerró DEF-RC3-I04, y ese día se midieron RNF-04 y RNF-05 en un equipo del colegio solo durante el Nivel 1 (1,223 s, 633 MiB; `evidencias/rc5/medicion-colegio/`); el 16/10/2026 lo jugaron 30 estudiantes del curso 501 en 30 equipos del colegio, sin fallas (`evidencias/rc5/sesion-estudiantes-2026-10-16.md`: apoyo, no cambia veredictos); ese día se cerraron además `PF-RNF13-01` (dos recorridos del arnés sobre rc5, `evidencias/rc5/GP/`), `PF-RNF22-01` y `PF-RNF23-01`: 132 P, 4 F, 0 pendientes (97,1 %). Los veredictos `PF-*` siguen
 siendo los de rc3 (10/10/2026, probado con estudiantes el 13/10/2026), y RNF-04 y RNF-05 se midieron en rc4. Su procedencia está en
 `evidencias/build-rc3.md`, `build-rc4.md` y `build-rc5.md` y los resultados, en `OE4-Resultados.md` y
@@ -157,7 +157,7 @@ la precedencia sino la edición del documento.
 
 | # | Documento | Archivo en `docs/` |
 |---|---|---|
-| 1 | Trabajo de grado | `Trabajo_de_Grado_Entrega_Plantilla_28jul.docx` (desde el 30/09/2026) |
+| 1 | Trabajo de grado | `Trabajo_de_Grado_Corregido.docx` (desde el 04/11/2026, con las correcciones tras el informe `Informe_evaluacion_V2.docx`; antes, `Trabajo_de_Grado_Entrega_Plantilla_28jul.docx`, que se recupera de git) |
 | 2 | OE1 requerimientos | `Solución OE1_Requerimientos.docx` |
 | 3 | Guion | `Solucion_OE2_Diseno_final.docx` §1 |
 | 4 | Casos de uso, historias y matrices | `Solucion_OE2_Diseno_final.docx` §2–§3 |
@@ -171,7 +171,7 @@ abiertos `PG-*`— es §1.2); «OE2 §4» —control de cambios— es §5. (`SPE
 El trabajo de grado pasó el 30/09/2026 a la plantilla oficial del 28 de julio
 (`Plantilla Documento final 28 de julio de 2026 Pregrado.docx`, en blanco): los capítulos 6–9 son
 OE1–OE4 (el 9, «Evaluación del prototipo», con espacios `[Pendiente: …]` para lo de Santiago; el OE4 es su Anexo G). `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx` sigue en `docs/` como
-versión anterior; `SPEC.md` e `INCONSISTENCIAS.md` ya citan la plantilla.
+versión anterior; `SPEC.md` e `INCONSISTENCIAS.md` ya citan la plantilla. Desde el 04/11/2026 el documento vigente es `Trabajo_de_Grado_Corregido.docx`, sobre esa misma plantilla, con los anexos A a I de su lista (el OE4 es el Anexo E).
 
 **Numeración de requerimientos.** Los RF están cerrados en `RF-01..RF-47`. Los RNF **no**: OE1
 insertó `RNF-18` (parametrización de contenidos) el 24/08/2026 y desplazó en uno todo lo

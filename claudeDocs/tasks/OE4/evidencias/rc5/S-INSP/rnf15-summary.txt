@@ -1,0 +1,7 @@
+PF-RNF15-01 · criterio 4: <summary> con la responsabilidad de la clase · scripts/rnf15.py
+Las 10 clases tienen <summary> sobre su declaración y dicen su responsabilidad (texto completo en rnf15-nomenclatura.txt):
+GameFlow (máquina de estados), GameFlowRunner (adaptador entre GameFlow y las escenas), SaveStore (guardado local por perfil),
+PlayerProfile (perfil del estudiante), FirePanelController (panel de encendido N1), ForestSceneController (fase 1 del N2),
+WorkshopSceneController (fase 2 del N2), MazeSceneController (fase 3 del N2), AssemblyPanelController (panel de ensamblaje N3),
+NarrativeSceneController (la única escena narrativa).
+Cumplen 10 de 10.

@@ -1,0 +1,13 @@
+S-N1 · rc5 · tiempos del paso 24 (horas UTC de acciones.tsv; hora local = UTC-5)
+Carga de Level1_Cave (RNF-04)           02:40:31.346  (21:40:31 local)
+T0 = clic en «Cerrar» del aviso          02:40:59.318  (duración del aviso a pantalla: 28.0 s)
+Pausa: clic en el botón de pausa         02:44:34.976
+Pausa: clic en «Reanudar»                02:45:09.897   -> pausa real = 34.9 s (la guía pedía 30 s; la sobrecarga de cada llamada del arnés la alargó)
+«Soplar» (único clic)                    02:46:51.234
+T1_clic - T0                             351.9 s
+T1_clic - T0 - pausa real                317.0 s
+T1 (fin de la subida de luz y comienzo del fundido a negro, ~3,5 s tras el clic en «Soplar»; la rafaga lo situa entre 3,4 y 3,6 s) - T0 - pausa real = 320.5 s
+resolutionSeconds del JSON               320.509 s
+Diferencia JSON - (T1 - T0 - pausa real) = +0.01 s   (tolerancia ±5 s)
+Con la pausa nominal de 30 s              T1 - T0 - 30 = 325.4 s  (diferencia -4.9 s: en el borde de ±5 por la pausa de 34.9 s)
+Sin descontar el aviso ni la pausa, el valor habria sido 383.4 s: el juego descuenta ambos.

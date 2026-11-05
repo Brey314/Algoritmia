@@ -1,0 +1,24 @@
+PF-RF23-02 · INC-155 · rc5 · S-N2A paso 7 (troncos del bosque), 04/11/2026
+
+Prueba: arrastre por suelo vacío desde lejos hasta justo al lado de un tronco
+  Arrastrar (0,300; 0,500) -> (0,563; 0,648) en 700 ms = cliente (577,571) -> (1081,730), suelta a 03:09:41,15 UTC.
+  El tronco probado es el de la mitad derecha de la hoja, centrado en x ≈ 1194, y ≈ 703 (cliente). El cursor queda a
+  unos 55 px del borde izquierdo de su caja de clic (no sobre él), así que el aviso de entrada y el empuje sí actúan.
+
+Medición (centroide de los píxeles de madera del tronco, recorte 1090-1420 x 600-830; el tronco mide ~120 px de ancho):
+  antes               PF-RF23-02_7_antes.png   cx 1193,5  cy 703,4  área 5740 px
+  a +1,0 s            PF-RF23-02_7_mas1s.png   cx 1257,2  cy 711,7  área 7791 px   (foto tomada a +1,03 a +1,19 s según acciones.tsv)
+  a +2,0 s            PF-RF23-02_7_mas2s.png   cx 1268,1  cy 713,5  área 7620 px
+  a +34 s             PF-RF23-02_7_mas34s.png  cx 1266,4  cy 713,1  área 7634 px
+
+Lectura:
+  - Se apartó 64 px a +1 s y 73 px a +34 s: casi todo el desplazamiento ocurre en el primer segundo y luego se frena
+    (11 px más entre +1 s y +2 s; 0 entre +2 s y +34 s con el cursor sin moverse). No huyó, no salió del suelo ni se acercó a otro objeto.
+  - Se alzó un poco mientras el cursor estaba cerca (área +36 % a +1 s) y la conservó con el cursor parado; el resto de objetos no se movió.
+  - En rc3 (Push 0,75, Drag 1,4) el tronco huía del cursor; no hay medida de rc3 aquí, solo la descripción de INC-155.
+
+Paso 9, clic cerca del extremo
+  El cuarto tronco se pulsó en cliente (1839,722) -> en la hoja, a unos 10 px del borde derecho de su cuerpo, en el extremo
+  opuesto a la cara redonda (PF-RF23-02_9_4_extremo.png). Pasó a la casilla 4 y el contador dijo «4 de 5».
+
+Cifras de la fase tras este arrastre: ver S-N2_OE4_B.json (attempts 3, correctedErrors 1, stepsUsed 0): el arrastre no las alteró.

@@ -1,0 +1,5 @@
+Estado leido en Play (Editor sobre el worktree ca6fd91, N1_Config.MinimumEffectiveStrikes = 2; fuerza 7, muesca 5 = efectivas):
+sin golpes   : IsGathering=False EffectiveStrikes=0 CanBlow=False blowInteractable=False candado=True
+golpe 1      : EffectiveStrikes=1 CanBlow=False blowInteractable=False candado=True
+golpe 2      : EffectiveStrikes=2 CanBlow=True  blowInteractable=True  candado=False
+(Con el valor original, 3, Soplar se habilitaria al tercer golpe efectivo.)

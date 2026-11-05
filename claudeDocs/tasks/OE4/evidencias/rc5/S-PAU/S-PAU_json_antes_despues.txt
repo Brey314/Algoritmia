@@ -1,0 +1,35 @@
+S-PAU · rc5 · JSON de Datos\ antes y después de cada fila (hora local del equipo, 05/11/2026)
+La carpeta Datos\ se vació y se sembró con `Preparar-Datos` antes de cada lanzamiento; al terminar la sesión se dejó sin carpeta (`Preparar-Datos -SinCarpeta`),
+así que los JSON ya no existen: sus huellas SHA-256 son las de las semillas de `herramientas\perfiles\`.
+
+Semillas (SHA-256 completo)
+  OE4_Z   B99294A5A6035A6B1E48CB5AF1B9FD17992A767653B9D73916C12CE37DABA28D   (706 B)
+  OE4_B2  1FF97019543695BC4DA1F500AA426067B006E56C719FDF0D091916CC48D173F0   (234 B)
+  OE4_D   0E0A11488C18EB21A793DD78D9AE9CED130586C85D25DF2A96C1E02187B102BC   (517 B)
+  OE4_B3  E49DC5A241A297601D71B3B6D82F63ECBD62A837102232C3BED0EBEEEF429037   (328 B)
+
+Lanzamiento 1 · OE4_Z (02:41–02:59): cueva, bosque, orilla y ensamblaje con el nivel ya completado
+  OE4_Z.json  LastWriteTime 02:41:50.578, SHA-256 B99294A5…  desde el arranque hasta el final de la fila de la orilla (pausa, reanudar, cancelar,
+  reiniciar, «Volver a ver la historia» y «Volver al menú de niveles» en la cueva, el bosque y la orilla: ninguna de esas acciones tocó el archivo).
+  Fila del ensamblaje (nivel ya completado): al pulsar «Listo» en la base (fase 3·1 ya confirmada) el juego reescribió el archivo:
+  LastWriteTime 02:57:22.986 y la MISMA huella B99294A5… (mismo contenido, ningún intento ni dato sumado: RF-41/RF-43).
+  Durante la pausa, el reinicio y «Volver al menú de niveles» del ensamblaje el archivo no cambió (02:57:22.986, B99294A5…).
+
+Lanzamiento 2 · OE4_B2 (03:00–03:04): taller
+  OE4_B2.json  LastWriteTime 03:00:07.876, SHA-256 1FF97019…  sin cambios en toda la fila.
+
+Lanzamiento 3 · OE4_D (03:04–03:07): ensamblaje (amarre con tres sogas)
+  OE4_D.json  LastWriteTime 03:04:04.991, SHA-256 0E0A1148…  sin cambios en toda la fila.
+
+Lanzamiento 4 · OE4_B3 (03:07–03:12): laberinto
+  OE4_B3.json  LastWriteTime 03:07:16.863, SHA-256 E49DC5A2…  sin cambios en toda la fila.
+
+Lanzamiento 5 · OE4_B3 (03:12–03:13): salida real (PF-RF07-08)
+  Antes de la pausa:   LastWriteTime 2026-11-05 03:12:27.9910024 · 328 B · SHA-256 E49DC5A241A297601D71B3B6D82F63ECBD62A837102232C3BED0EBEEEF429037
+  Después de «Sí, salir»: LastWriteTime 2026-11-05 03:13:40.2871475 · 328 B · SHA-256 E49DC5A241A297601D71B3B6D82F63ECBD62A837102232C3BED0EBEEEF429037
+  Mismo contenido (copia en S-PAU_OE4_B3.json): reachedLevel 2 y tres fases `{1,1}`, `{2,1}`, `{2,2}`; ninguna fase de más.
+  Datos\ solo contiene OE4_B3.json.
+  Clic en «Sí, salir» (acciones.tsv, UTC): 08:13:40.082Z–08:13:40.314Z = 03:13:40,08–03:13:40,31 hora local.
+  El archivo se reescribió a las 03:13:40,287, dentro del propio clic.
+  El arnés volvió a las 03:13:40,439 y el proceso (pid 18488) ya había terminado; la última línea del Player.log es de las 03:13:40,690 (cierre de Unity).
+  Tiempo de cierre: ≤ 0,7 s desde el clic (límite del caso: 5 s).

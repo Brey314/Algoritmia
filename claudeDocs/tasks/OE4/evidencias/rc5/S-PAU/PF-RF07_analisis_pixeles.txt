@@ -1,0 +1,62 @@
+Diferencia por pixel (canal maximo > 16/255) entre capturas del area cliente 1920x1080.
+Se ignora la esquina de la superposicion de NVIDIA (x>=1620, y 100-200), que no es del juego.
+Con la pausa abierta cada comparacion es contra la primera captura de la pausa (a +0,7 s del clic).
+
+== PF-RF07-01: pausa abierta (el juego no cambia) ==
+-- cueva
+   PF-RF07-01_cueva_1 vs PF-RF07-01_cueva_2: 0.000 %
+   PF-RF07-01_cueva_1 vs PF-RF07-01_cueva_3_tras_esc: 0.000 %
+   PF-RF07-01_cueva_1 vs PF-RF07-01_cueva_4_tras_clic_juego: 0.000 %
+-- bosque
+   PF-RF07-01_bosque_1 vs PF-RF07-01_bosque_2: 0.000 %
+   PF-RF07-01_bosque_1 vs PF-RF07-01_bosque_3_tras_esc: 0.000 %
+   PF-RF07-01_bosque_1 vs PF-RF07-01_bosque_4_tras_clic_tronco: 0.000 %
+   PF-RF07-01_bosque_1 vs PF-RF07-01_bosque_5_tras_clic_tronco_fuera_del_panel: 0.626 %
+-- orilla
+   PF-RF07-01_orilla_1 vs PF-RF07-01_orilla_2: 0.000 %
+   PF-RF07-01_orilla_1 vs PF-RF07-01_orilla_3_tras_esc: 0.000 %
+   PF-RF07-01_orilla_1 vs PF-RF07-01_orilla_4_flecha_derecha_sostenida: 0.000 %
+   PF-RF07-01_orilla_1 vs PF-RF07-01_orilla_5_flecha_izquierda_sostenida: 0.000 %
+   PF-RF07-01_orilla_1 vs PF-RF07-01_orilla_6_clic_juego: 0.000 %
+-- ensamblaje (nivel completado, OE4_Z)
+   PF-RF07-01_ensamblaje-completado_1 vs PF-RF07-01_ensamblaje-completado_2: 0.000 %
+   PF-RF07-01_ensamblaje-completado_1 vs PF-RF07-01_ensamblaje-completado_3_tras_esc: 0.000 %
+   PF-RF07-01_ensamblaje-completado_1 vs PF-RF07-01_ensamblaje-completado_4_clic_probar_balsa: 0.000 %
+   PF-RF07-01_ensamblaje-completado_1 vs PF-RF07-01_ensamblaje-completado_5_arrastre_soga: 0.000 %
+-- taller
+   PF-RF07-01_taller_1 vs PF-RF07-01_taller_2: 0.000 %
+   PF-RF07-01_taller_1 vs PF-RF07-01_taller_3_tras_esc: 0.000 %
+   PF-RF07-01_taller_1 vs PF-RF07-01_taller_4_clic_mecanizar: 0.000 %
+   PF-RF07-01_taller_1 vs PF-RF07-01_taller_5_arrastre_pieza: 0.000 %
+   PF-RF07-01_taller_1 vs PF-RF07-01_taller_6_arrastre_cuerda_visible: 0.000 %
+-- laberinto (pausa a mitad de la ejecucion)
+   PF-RF07-01_laberinto_1 vs PF-RF07-01_laberinto_2: 0.000 %
+   PF-RF07-01_laberinto_1 vs PF-RF07-01_laberinto_3_tras_esc: 0.000 %
+   PF-RF07-01_laberinto_1 vs PF-RF07-01_laberinto_4_clic_ejecutar: 0.000 %
+   PF-RF07-01_laberinto_1 vs PF-RF07-01_laberinto_5_clic_cajon: 0.000 %
+-- ensamblaje (OE4_D)
+   PF-RF07-01_ensamblaje-D_1 vs PF-RF07-01_ensamblaje-D_2: 0.000 %
+   PF-RF07-01_ensamblaje-D_1 vs PF-RF07-01_ensamblaje-D_3_tras_esc: 0.000 %
+   PF-RF07-01_ensamblaje-D_1 vs PF-RF07-01_ensamblaje-D_4_clic_probar_balsa: 0.000 %
+   PF-RF07-01_ensamblaje-D_1 vs PF-RF07-01_ensamblaje-D_5_arrastre_soga: 0.000 %
+
+== PF-RF07-03 y PF-RF07-08: «Cancelar» (vuelven los botones de la pausa; la captura es identica a la de la pausa) ==
+-- cueva: pausa vs Cancelar de «Reiniciar» 0.000 % · pausa vs Cancelar de «Guardar y salir» 0.000 % (en la cueva y el bosque «Guardar y salir» se probó en una pausa aparte, con su propia captura de pausa)
+-- bosque: pausa vs Cancelar de «Reiniciar» 0.000 % · pausa vs Cancelar de «Guardar y salir» 0.000 % (en la cueva y el bosque «Guardar y salir» se probó en una pausa aparte, con su propia captura de pausa)
+-- orilla: pausa vs Cancelar de «Reiniciar» 0.000 % · pausa vs Cancelar de «Guardar y salir» 0.000 %
+-- ensamblaje (OE4_Z, completado): pausa vs Cancelar de «Reiniciar» 0.000 % · pausa vs Cancelar de «Guardar y salir» 0.000 %
+-- taller: pausa vs Cancelar de «Reiniciar» 0.000 % · pausa vs Cancelar de «Guardar y salir» 0.000 %
+-- laberinto: pausa vs Cancelar de «Reiniciar» 0.000 % · pausa vs Cancelar de «Guardar y salir» 0.000 %
+-- ensamblaje (OE4_D): pausa vs Cancelar de «Reiniciar» 0.000 % · pausa vs Cancelar de «Guardar y salir» 0.000 %
+
+== PF-RF07-02: «Reanudar» (el estado de (a) vuelve; solo cambia el reposo de los personajes) ==
+-- cueva, circulo de reunion (800,450)-(1150,650): 0.000 %
+-- cueva, imagen completa: 0.776 %
+-- cueva, circulo tras Cancelar de «Reiniciar»: 0.000 %
+-- bosque, casillas y contador (0,800)-(700,1020): 0.000 %
+-- bosque, el tronco bajo el cursor durante la pausa (1650,600)-(1920,800): 0.000 %
+-- orilla, imagen completa (reposo de los personajes): 0.662 %
+-- orilla, inventario (64,712)-(370,1016): 0.000 %
+-- ensamblaje OE4_Z, balsa y sogas (900,540)-(1500,920): 0.000 %
+-- ensamblaje OE4_D, balsa y sogas (900,540)-(1500,920): 0.000 %
+-- taller, piezas (0,540)-(1920,1080): 0.000 %

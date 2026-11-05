@@ -1,0 +1,34 @@
+Tablero de la partida principal (Level2_Maze de S-N2C, 04/11/2026 22:18), transcrito por muestreo de color del centro de cada casilla
+sobre PF-RF30-01_1_1.png (casilla de 60 px: x = 210 + 60·columna, y = 850 − 60·fila, en el cliente de 1920×1080).
+Columnas 0-15 de izquierda a derecha, filas 0-10 de abajo arriba. # seto o arbusto, S salida (0,8), R refugio (15,2).
+
+   0123456789012345
+10 ################
+ 9 #..............#
+ 8 S......#..####.#
+ 7 #....###.......#
+ 6 #...#..#..#....#
+ 5 #...#.....#....#
+ 4 ##........#...##
+ 3 ##.......##.#.##
+ 2 #........#.....R
+ 1 #..#.....#.....#
+ 0 ################
+
+Fijos que se cumplen: (1,8) libre, (14,2) libre, salida (0,8) mirando al este, refugio (15,2). La «L» directa (avanzar al este por la fila 8
+y bajar) está cerrada por (7,8).
+
+Camino ganador usado (13 bloques): Avanzar ×1 · Girar izq · Avanzar ×1 · Girar der · Avanzar ×7 · Girar der · Avanzar ×2 · Girar izq ·
+Avanzar ×3 · Girar der · Avanzar ×5 · Girar izq · Avanzar ×4:  (0,8)→(1,8) N (1,9) E (8,9) S (8,7) E (11,7) S (11,2) E (15,2).
+
+Conteo de ediciones desde la última ejecución fallida (la tercera):
+  paso 9  papelera de «Avanzar»                                   +1  =  1
+  paso 10 «Girar» soltado fuera del panel                         +1  =  2
+  paso 11 soltar Avanzar, Girar, Avanzar                          +3  =  5
+          «+» en el tercero                                       +1  =  6
+          reordenar (tercero encima del primero)                  +2  =  8
+          tres papeleras                                          +3  = 11
+  paso 12 13 bloques soltados                                    +13  = 24
+          Girar a la izquierda ×3 (‹)                             +3  = 27 (los tres «Girar izq»)
+          «+» de los Avanzar: ×7 → 6, ×2 → 1, ×3 → 2, ×5 → 4, ×4 → 3  = 16  = 43
+  Previsto: C 43 · P 13 · I 3.   JSON: correctedErrors 43 · stepsUsed 13 · attempts 3.

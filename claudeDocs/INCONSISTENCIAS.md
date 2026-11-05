@@ -9,7 +9,7 @@ documentos y cómo quedó**; allí está **qué implementa el código**.
 el guion (§1), los casos de uso (§2), las historias de usuario (§2 bis), las matrices de
 trazabilidad (§3) y la arquitectura (§4). El trabajo de grado sigue en `docs/`: desde el 30/09/2026
 el vigente es `Trabajo_de_Grado_Entrega_Plantilla_28jul.docx`, sobre la plantilla oficial del 28 de
-julio; las correcciones anteriores se hicieron en `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx`, y
+julio, que desde el 04/11/2026 es `Trabajo_de_Grado_Corregido.docx`; las correcciones anteriores se hicieron en `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx`, y
 los dos tienen su conversión en `docs/md/`. Las citas por sección de este documento siguen valiendo
 con una traducción mecánica: «guion §N» → `Solucion_OE2` §1.N, «OE2 §4» → `Solucion_OE2` §5
 (control de cambios).
@@ -94,7 +94,7 @@ corrigió el otro:
 
 | # | Documento (tras la refundición del 14/09/2026) | Qué gobierna |
 |---|---|---|
-| 1 | Trabajo de grado — `docs/Trabajo_de_Grado_Entrega_Plantilla_28jul.docx` (desde el 30/09/2026; antes, `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx`) | Objetivos, KPI, alcance, marco jurídico, metodología |
+| 1 | Trabajo de grado — `docs/Trabajo_de_Grado_Corregido.docx` (desde el 04/11/2026; del 30/09/2026 a esa fecha, `Trabajo_de_Grado_Entrega_Plantilla_28jul.docx`; antes, `Trabajo_de_Grado_2026_ICONTEC_IEEE (2).docx`) | Objetivos, KPI, alcance, marco jurídico, metodología |
 | 2 | `Solución OE1_Requerimientos.docx` | Lineamientos CP/CT/CN, RF-01..RF-47, RNF-01..RNF-23 |
 | 3 | `Solucion_OE2_Diseno_final.docx` §1 (guion) | Narrativa, mecánicas, parámetros y textos exactos |
 | 4 | `Solucion_OE2_Diseno_final.docx` §2–§3 | CU-01..CU-12, HU-01..HU-18, matrices |
@@ -3803,7 +3803,7 @@ escrita de los personajes, 30/08/2026 — INC-43).
 **Pendientes de Santiago (01/10/2026).** Puntos del trabajo de grado que el juego no zanja; quedan
 abiertos hasta que Santiago aporte el dato o la decisión. Sigue abierto el primero; el cuarto se
 cerró el 01/10/2026, y el segundo y el tercero el 09/10/2026 con el dato de Santiago. Las secciones son las del trabajo de grado vigente, la plantilla del
-28/07 (`Trabajo_de_Grado_Entrega_Plantilla_28jul.docx`, desde el 30/09/2026):
+28/07 (`Trabajo_de_Grado_Entrega_Plantilla_28jul.docx`, desde el 30/09/2026; `Trabajo_de_Grado_Corregido.docx` desde el 04/11/2026):
 
 1. **Anexo con la autorización de la Familia Anonaky** (INC-78). La letra C ya no está libre: en la
    plantilla, LISTA DE ANEXOS y ANEXOS tienen A (presupuesto), B (cronograma), C, D y E (las

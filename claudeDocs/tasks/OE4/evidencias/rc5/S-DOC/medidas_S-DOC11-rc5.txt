@@ -1,0 +1,7 @@
+S-DOC11-rc5: 60 muestras · WorkingSet máx 424 MiB (escena «Narrative») · Private máx 1,162 MiB (escena «Narrative») · picos del SO: WS 425 MiB, commit 1,162 MiB
+RNF-05: máximo 1,162 MiB (1.13 GiB) frente a 2048 MiB: CUMPLE
+S-DOC11-rc5: red · 60 filas (=60)
+RNF-10: cero conexiones a direcciones que no son de loopback (las UDP/TCP «escucha-local» no cuentan, pero se anotan)
+RNF-04: 2 cargas medidas (peor valor por escena; límite 10 s)
+  Narrative          n=1  peor 0.663 s  ok
+  TeacherReport      n=1  peor 0.074 s  ok

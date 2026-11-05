@@ -12,7 +12,7 @@
     Un solo script y SIN estado en memoria: cada llamada es un proceso nuevo. El estado vive en
     estado.json dentro de $env:OE4_TRABAJO (por defecto %TEMP%\Algoritmia-OE4); también ahí quedan
     fotos\, rafagas\, muestras\ (mem/red/registro por sesión), logs\, residuos\, cargas.csv y acciones.tsv.
-    Variables opcionales: OE4_TRABAJO · OE4_EXE · OE4_SHA256 · OE4_LOGDIR (carpeta del Player.log) ·
+    Variables opcionales: OE4_TRABAJO · OE4_EXE · OE4_MANIFIESTO (lista de huellas; Start-Juego verifica la carpeta y no lanza si difiere) · OE4_SHA256 · OE4_LOGDIR (carpeta del Player.log) ·
     OE4_REGKEY (clave de HKCU del reproductor) · OE4_STRICT=1 (Set-StrictMode -Version 1, para depurar el arnés).
 
     COORDENADAS: fracciones 0–1 del ÁREA CLIENTE (origen arriba a la izquierda; admite «0.5» y «0,5»). La
@@ -1001,6 +1001,14 @@ function Do-StartJuego {
     if ($vivos.Count -gt 0) { Stop-With 3 "Ya hay un proceso '$nombreProc' en ejecución (pid $(($vivos | ForEach-Object { $_.Id }) -join ', ')). Use Matar o Matar -Todos. No se lanzó nada." }
     if ($Completa -and ($Ancho -ne 1920 -or $Alto -ne 1080) -and $PSBoundParameters.ContainsKey('Ancho')) { Say 'AVISO: -Completa ignora -Ancho y -Alto.' }
 
+    # El .exe es solo el lanzador y no cambia entre candidatos: lo que identifica la versión es la carpeta entera.
+    if ($env:OE4_MANIFIESTO) {
+        $salidaManifiesto = & (Join-Path $PSScriptRoot 'manifiesto.ps1') -Verificar -Carpeta $dir -Manifiesto $env:OE4_MANIFIESTO 2>&1
+        $codManifiesto = $LASTEXITCODE
+        $salidaManifiesto | ForEach-Object { Say "$_" }
+        if ($codManifiesto -ne 0) { Stop-With 3 "MANIFIESTO: la carpeta no es la del candidato congelado (salida $codManifiesto). La sesión no contaría. No se lanzó nada." }
+    } else { Say 'AVISO: sin OE4_MANIFIESTO no se comprueba la carpeta del candidato, solo el exe.' }
+
     $sha = (Get-FileHash -LiteralPath $exe -Algorithm SHA256).Hash
     $ref = Get-ShaRef
     if ($ref -and $ref -ne $sha) {
@@ -1497,6 +1505,8 @@ function Do-RestaurarRegistro {
     foreach ($n in $k.GetValueNames()) { if (-not $antes.ContainsKey($n)) { $k.DeleteValue($n); Say "Valor nuevo borrado: $n" } }
     foreach ($v in $antes.Values) {
         $dato = switch ($v.tipo) { 'Binary' { [Convert]::FromBase64String($v.valor) } 'MultiString' { [string[]]@($v.valor) } 'DWord' { [int]$v.valor } 'QWord' { [long]$v.valor } default { [string]$v.valor } }
+        # switch enumera lo que devuelve: un byte[] sale como object[] y SetValue lo rechaza con RegistryValueKind.
+        if ($v.tipo -eq 'Binary') { $dato = [byte[]]@($dato) } elseif ($v.tipo -eq 'MultiString') { $dato = [string[]]@($dato) }
         $actual = $k.GetValue($v.nombre, $null, [Microsoft.Win32.RegistryValueOptions]::DoNotExpandEnvironmentNames)
         $igual = ($null -ne $actual) -and ((($actual | ConvertTo-Json -Compress) -eq ($dato | ConvertTo-Json -Compress)))
         if (-not $igual) { $k.SetValue($v.nombre, $dato, [Microsoft.Win32.RegistryValueKind]::$($v.tipo)); Say "Valor restaurado: $($v.nombre)" }

@@ -1,0 +1,43 @@
+Tableros del laberinto de PF-RNF14-04 (S-PER, rc5, 05/11/2026). Son aleatorios en cada entrada. Se transcribieron por muestreo del color del centro de cada
+casilla sobre la captura del cliente de 1920x1080 y se comprobaron a ojo contra la imagen.
+
+Calibración medida en esta sesión sobre las líneas de la rejilla (cada 60,2 px en x y cada 61,3 px en y): la casilla (columna c, fila r) tiene su centro en
+x = 216 + 60,2·c, y = 845 - 61,3·r. La fórmula de tablero_paso2.txt de S-N2C (x = 210 + 60·c, y = 850 - 60·r) se desvía hasta ~17 px en las filas altas.
+Columnas 0-15 de izquierda a derecha, filas 0-10 de abajo arriba. # seto o arbusto, S salida (0,8), R refugio (15,2). Las columnas 0 y 15 y las filas 0 y 10 son
+el borde de seto (salvo S y R); el muestreo automático no lo distingue bien (es de un verde más claro), así que el borde se escribió a mano.
+
+== Tablero 1 · primera entrada (PF-RNF14-04_1_laberinto.png) ==
+    0123456789012345
+10  ################
+ 9  #.....##.....###
+ 8  S....###.....#.#
+ 7  #.....#........#
+ 6  #.....#...#....#
+ 5  #.....#..##..#.#
+ 4  #........##....#
+ 3  #......####....#
+ 2  #.......#.#....R
+ 1  #.......#......#
+ 0  ################
+Camino de 13 bloques usado (S-PER4-rc5): Avanzar x4 · Girar der · Avanzar x4 · Girar izq · Avanzar x4 · Girar izq · Avanzar x3 · Girar der · Avanzar x3 ·
+Girar der · Avanzar x5 · Girar izq · Avanzar x4. Recorrido: (0,8) E (4,8) S (4,4) E (8,4) N (8,7) E (11,7) S (11,2) E (15,2).
+Resultado: llegó al refugio a la primera ejecución (JSON de la fase {2,3}: attempts 0, correctedErrors 0, stepsUsed 13, resolutionSeconds 257,9455).
+
+== Tablero 2 · rejuego tras el relanzamiento (PF-RNF14-04_3_laberinto_rejuego.png) ==
+    0123456789012345
+10  ################
+ 9  #......#.#.....#
+ 8  S........#.....#
+ 7  #.......####...#
+ 6  #....#.........#
+ 5  ###..#.....#...#
+ 4  #....##......#.#
+ 3  #.##.#......####
+ 2  #....#.......#.R
+ 1  #....#.........#
+ 0  ################
+(14,2) solo se alcanza desde (14,1) hacia el norte: (13,2) y (14,3) están bloqueadas.
+Camino de 9 bloques (S-PER4b-rc5): Avanzar x7 · Girar der · Avanzar x7 · Girar izq · Avanzar x7 · Girar izq · Avanzar x1 · Girar der · Avanzar x1.
+Recorrido: (0,8) E (7,8) S (7,1) E (14,1) N (14,2) E (15,2).
+Resultado: llegó a la primera ejecución; el cierre N2_Escena25_Cierre salió sin «Omitir»; el JSON conservó la fase {2,3} original (0, 0, 13, 257,9455), no la de
+esta repetición, y reachedLevel pasó a 3.

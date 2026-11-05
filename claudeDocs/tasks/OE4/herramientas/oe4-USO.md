@@ -45,8 +45,8 @@ Todo lo que produce el arnés va a `$env:OE4_TRABAJO`, por defecto `%TEMP%\Algor
 | Cargas medidas y acciones enviadas | `cargas.csv`, `acciones.tsv` |
 
 Es temporal: lo que respalda un veredicto se copia a `../evidencias/<sesión>/` al cerrar la sesión. Otras variables:
-`OE4_EXE` (por defecto `C:\Dev\Algoritmia\Build\Algoritmia\Algoritmia.exe`), `OE4_SHA256`, `OE4_LOGDIR`, `OE4_REGKEY` y
-`OE4_STRICT=1` (para depurar el arnés).
+`OE4_EXE` (por defecto `C:\Dev\Algoritmia\Build\Algoritmia\Algoritmia.exe`), `OE4_MANIFIESTO` (la lista de huellas del
+candidato), `OE4_SHA256`, `OE4_LOGDIR`, `OE4_REGKEY` y `OE4_STRICT=1` (para depurar el arnés).
 
 ## Subcomandos
 
@@ -117,6 +117,10 @@ Se corre al terminar cada sesión, después de `Residuos`, que necesita ver la c
   coincide. Pero el `.exe` es solo el lanzador de Unity: su huella es la misma en rc1 y rc2. La versión se identifica
   por la **huella del contenido** de la carpeta (`../evidencias/build-rc1.md`, `../evidencias/build-rc2.md`), que se
   comprueba antes y después de las sesiones.
+- **Lista de huellas.** Con `OE4_MANIFIESTO`, `Start-Juego` corre `manifiesto.ps1 -Verificar` sobre la carpeta del exe y
+  sale con 3, sin lanzar, si algún archivo cambió, falta o sobra (salvo `Datos/`). Sin esa variable solo avisa. La
+  pasada sobre rc5 usa `OE4_EXE=Build\Algoritmia_rc5\Algoritmia.exe` y
+  `OE4_MANIFIESTO=claudeDocs\tasks\OE4\evidencias\rc5\manifiesto-rc5.tsv`.
 - **Sin clics a ciegas.** Antes de cada clic se mira la pantalla (`Foto` o `-ConFoto`) y se confirma la coordenada
   con la primera captura de cada pantalla; las de `casos.md` son aproximadas. Ninguna acción se encadena sin mirar el
   resultado de la anterior.

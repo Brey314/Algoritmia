@@ -1,0 +1,19 @@
+Analisis de la rafaga ini_raf (60 cuadros, 10,1 fps) del inicio, sobre el area de cada personaje. Fondo (hierba) sin cambio: 0 de diferencia.
+60
+Nina range 15.97..22.19 argmin t=1.7s argmax t=3.4s
+Mama range 16.62..21.84 argmin t=2.6s argmax t=0.4s
+Algoritm range 14.59..17.50 argmin t=0.1s argmax t=4.6s
+Papa range 10.96..17.65 argmin t=1.7s argmax t=0.0s
+Nino range 12.50..20.71 argmin t=5.4s argmax t=3.8s
+corr
+Nina       1.00  0.29 -0.10  0.69 -0.31
+Mama       0.29  1.00 -0.46  0.50 -0.34
+Algoritm  -0.10 -0.46  1.00 -0.14 -0.14
+Papa       0.69  0.50 -0.14  1.00 -0.61
+Nino      -0.31 -0.34 -0.14 -0.61  1.00
+fondo (hierba) rango 0.00..0.00
+Nina      mov medio 5.574 max 11.347 en cuadro 46; cuadros con mov>0.3: 59
+Mama      mov medio 4.361 max 8.999 en cuadro 24; cuadros con mov>0.3: 59
+Algoritm  mov medio 10.756 max 15.832 en cuadro 48; cuadros con mov>0.3: 59
+Papa      mov medio 3.661 max 6.440 en cuadro 58; cuadros con mov>0.3: 59
+Nino      mov medio 7.462 max 21.702 en cuadro 26; cuadros con mov>0.3: 58

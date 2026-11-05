@@ -1,0 +1,75 @@
+Mono path[0] = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/Managed'
+Mono config path = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/MonoBleedingEdge/etc'
+CodeReloadManager initialized
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+[Subsystems] Discovering subsystems at path C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/UnitySubsystems
+[D3D12 Device Filter] Vendor Name: NVIDIA
+[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 5070 Ti
+[D3D12 Device Filter] Driver Version: 32.0.16.2101
+[D3D12 Device Filter] Feature Level: 12.2
+[D3D12 Device Filter] Graphics Memory: 15995 MB
+[D3D12 Device Filter] Processor Count: 12
+[D3D12 Device Filter] Device Type: Discrete
+GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 5070 Ti (ID=0x2c05)
+    Vendor:          NVIDIA
+    VRAM:            15995 MB
+    App VRAM Budget: 15227 MB
+    Driver:          32.0.16.2101
+Begin MonoManager ReloadAssembly
+- Finished resetting the current domain, in  0.026 seconds
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+<RI> Initializing input.
+Using Windows.Gaming.Input
+UnloadTime: 1.109400 ms
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.320900 ms
+RNF-04: «MainMenu» cargó en 0.142 s
+Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 4770.
+Total: 1.211900 ms (FindLiveObjects: 0.182300 ms CreateObjectMapping: 0.092000 ms MarkObjects: 0.927100 ms  DeleteObjects: 0.007400 ms)
+
+Direct3D: detected that using refresh rate causes time drift. Will stop trusting refresh rate until the game window is moved.
+Direct3D: detected that vsync is broken (it does not limit frame rate properly). Delta time will now be calculated using cpu-side time stampling until the game window is moved.
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 4.952200 ms
+RNF-04: «Credits» cargó en 0.018 s
+Unloading 415 unused Assets to reduce memory usage. Loaded Objects now: 3532.
+Total: 1.487500 ms (FindLiveObjects: 0.168100 ms CreateObjectMapping: 0.108700 ms MarkObjects: 0.896800 ms  DeleteObjects: 0.313800 ms)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 1.321200 ms
+RNF-04: «MainMenu» cargó en 0.054 s
+Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4770.
+Total: 1.014100 ms (FindLiveObjects: 0.147900 ms CreateObjectMapping: 0.098200 ms MarkObjects: 0.758200 ms  DeleteObjects: 0.009700 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.867400 ms
+RNF-04: «LevelSelect» cargó en 0.027 s
+Unloading 463 unused Assets to reduce memory usage. Loaded Objects now: 3504.
+Total: 1.660500 ms (FindLiveObjects: 0.150800 ms CreateObjectMapping: 0.090700 ms MarkObjects: 0.806200 ms  DeleteObjects: 0.612400 ms)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.478300 ms
+RNF-04: «MainMenu» cargó en 0.041 s
+Unloading 14 unused Assets to reduce memory usage. Loaded Objects now: 4770.
+Total: 0.994200 ms (FindLiveObjects: 0.151500 ms CreateObjectMapping: 0.083100 ms MarkObjects: 0.737900 ms  DeleteObjects: 0.021500 ms)
+
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input Polling Thread exited.
+Input System module state changed to: Shutdown.
+CodeReloadManager destroyed
+GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+[d3d12] Unreleased non-evictable resource 000001C3A2E21AB0 (size 4096 B, lastUsedFence 9)

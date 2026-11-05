@@ -1,0 +1,73 @@
+# S-DOC · rc5 · resumen
+
+- **Versión:** rc5, compilado desde `ca6fd91` (`../../build-rc5.md`). Carpeta `Build\Algoritmia_rc5\`, huella global `ab0c386e87045a4c525548109fa5f9e1905a7336dbd14f21f93b97c8bcb246c3` (253 archivos, `manifiesto-rc5.tsv`). SHA-256 del `.exe` (solo el lanzador) `6CD16EDF…ADAB`.
+- **Fecha:** 05/11/2026, de 08:06 a 08:17 (hora local). `Preparar-Datos` 08:06:19; primer `Start-Juego` 08:06:26; última foto de juego 08:13:27; cierre de sesión (`Restaurar-Registro`, `Preparar-Datos -SinCarpeta`, manifiesto) hacia las 08:15 a 08:17. Ejecutor EXE con `oe4.ps1`, sesión de arnés `S-DOC-rc5`, ventana de 1920×1080 sin marco (`-popupwindow`, monitor único de 1920×1080), tres lanzamientos (`S-DOC-rc5_lanz1_Player.txt`, `_lanz2_` y `S-DOC-rc5_Player.txt`, que es el tercero). Se mantuvo el nombre de sesión en los tres para conservar la foto previa de residuos y poder restaurar el registro al estado de antes de la sesión.
+- **Repetición del paso 11 (05/11/2026, de 08:19 a 08:22, sesión de arnés `S-DOC11-rc5`, dos lanzamientos).** El primer intento, a las 08:12, quedó bloqueado por `DEF-RC5-13`; tras corregir `manifiesto.ps1` (admite un archivo llamado exactamente `Datos` en la raíz) se repitió el paso entero con `OE4_MANIFIESTO` puesto y sin eludir nada. Es la segunda mitad de este resumen; lo demás es la primera pasada.
+- **Casos:** 9 (todos los de la tabla de S-DOC). **Veredictos: P 9 · PD 0 · F 0 · B 0 · NA 0 · NE 0.** Detalle en `veredictos.csv`. `PF-RF47-03` y `PF-RF09-04` pasaron de B a P con la repetición.
+- **Pasos 1–13 ejecutados** sin atajos: 1–10 y 12–13 en la primera pasada (`S-DOC-rc5`) y el 11 en la repetición.
+
+## Semillas
+`Preparar-Datos` con los JSON finales de las sesiones de rc5, en este orden: `S-N1/S-N1_OE4N1.json` (OE4N1), `S-N2C/S-N2_OE4_B.json` (OE4_B), `S-N3/S-N3_OE4_C.json` (OE4_C) y `herramientas/perfiles/OE4_Z.json` (OE4_Z, copia en `S-DOC_semilla_OE4_Z.json`). El catálogo no pide otra semilla ni otra ruta. `LastWriteTime` de los cuatro (08:06:19,979 / ,985 / ,986 / ,987) en `datos_lastwrite_inicial.txt`.
+
+## Informe docente: lo que se vio frente a los JSON
+Todas las cifras del informe coinciden con el JSON de cada perfil (tiempos redondeados al segundo: 320,51 s → «5:21»; 508,59 s → «8:29»). Ninguna difiere del catálogo: lo que este deja a las otras sesiones («N2F3 lo previsto en S-N2C», «los tiempos de S-N3») coincide con sus resúmenes (43 errores y 508,59 s; 85,97, 130,90 y 82,36 s). Los tiempos son de las partidas de rc5 y no los de rc3 (por ejemplo, OE4N1 daba «3:46» en rc3 y da «5:21»). Los valores son:
+
+| Perfil · fase | Informe (I/C/P y tiempo) | JSON |
+|---|---|---|
+| OE4N1 · N1F1 | 5/1/3 «5:21»; las otras seis filas «Sin datos» | 5/1/3, 320,509 s |
+| OE4_B · N1F1 | 7/3/3 «2:05» | 125,0 s |
+| OE4_B · N2F1 | 3/1/0 «4:30» | 269,610 s |
+| OE4_B · N2F2 | 5/3/6 «2:30» | 149,942 s |
+| OE4_B · N2F3 | 3/43/13 «8:29»; N3 «Sin datos» | 508,595 s |
+| OE4_C · N3F1 | 2/1/1 «1:26» | 85,967 s |
+| OE4_C · N3F2 | 5/2/2 «2:11» | 130,900 s |
+| OE4_C · N3F3 | 7/4/3 «1:22» | 82,363 s |
+| OE4_Z · siete filas | 7/3/3 «2:05» · 4/2/0 «1:01» · 5/3/6 «1:35» · 2/5/12 «2:20» · 1/1/1 «0:40» · 2/1/2 «1:10» · 3/2/3 «1:40» | las de la semilla |
+
+- El orden de la lista es OE4N1, OE4_B, OE4_C, OE4_Z. Al abrir el informe se selecciona el primero.
+- Los 43 errores corregidos del laberinto (OE4_B, N2F3) cuadran con la definición de `Solución OE1_Requerimientos` §3.6.1 (fase 3: toda edición de la secuencia entre una ejecución fallida y la siguiente), y los conteos del N3 acumulados entre fases (intentos 2, 5, 7; pasos 1, 2, 3) con su nota 6. El catálogo y el informe dicen lo mismo.
+- Los cuatro JSON conservan `LastWriteTime` y SHA-256 tras ver el informe y volver al menú (`datos_hash_tras_informe.txt`).
+
+## Correcciones posteriores a rc3 que se comprobaron
+- **DEF-RC3-05 (iconos de las cabeceras): corregido.** En rc5 los cuatro iconos (Intentos, Errores corregidos, Pasos utilizados, Tiempo de resolución) quedan encima del texto de su cabecera: terminan en y = 277 a 284 y el texto empieza en y = 296 a 297 (hueco de 13 a 18 px, `PF-RF46-01_1_medida_iconos.txt`); en rc3 la herradura y el reloj de arena cruzaban la primera línea. Siguen siendo pequeños (de 21 a 37 px de ancho) y el de «Pasos utilizados» es de trazo fino, pero ninguno toca el texto. Las cabeceras «Errores corregidos» y «Tiempo de resolución» ocupan dos líneas (son texto de cabecera, no botones). Capturas: `PF-RF46-01_1_cabeceras-x2.png` (ampliada) y `PF-RF46-01_1_1.png`.
+- **DEF-RC3-11 (botones partidos): corregido.** Una sola línea en: «Eliminar datos» y «Volver al menú» del informe (`PF-RF46-01_1_botones-x2.png`), «Cancelar» y «Eliminar datos» del diálogo de eliminar (`PF-RF47-02_8a_dialogo_eliminar.png`), «Conservar» y «Borrar» del diálogo de borrar el perfil (`PF-RF47-01_7a_dialogo_borrar_OE4N1.png`) y «Quedarme» y «Cerrar el juego» del diálogo «Salir» del inicio, con y sin aviso. **Con el aviso de carpeta no escribible** (repetición del paso 11, lo que en rc3 se partía): en el informe, con «Este equipo no deja guardar en la carpeta del juego: los perfiles se están guardando en la carpeta de datos de Windows.» arriba, «Volver al menú» y «Eliminar datos» siguen en una línea y los iconos de las cabeceras en las mismas posiciones que sin aviso (`PF-RF47-03_11_e_informe_con_aviso.png`, `PF-RF47-03_11_medida_iconos_con_aviso.txt`); el aviso queda a 34 px del título y a 14 px de la lista (`PF-RF47-03_11_medida_aviso_informe.txt`). En «Salir» con el aviso, la ruta de respaldo entera acaba a 60 px por encima de «Quedarme» y «Cerrar el juego» (en rc3, ~8 px) y los dos rótulos ocupan una línea (`PF-RF09-04_11_salir_con_aviso_ruta_respaldo.png`, `PF-RF09-04_11_medida_hueco_salir.txt`).
+
+## Borrado
+- **Panel (`PF-RF47-01`):** con cuatro perfiles «¿Quién juega?» muestra tres filas y ▼ (previsto). Papelera de OE4N1 → «¿Borras el perfil de OE4N1?» / «Su avance se pierde y no se puede recuperar.» → «Conservar»: sigue en la lista y en disco (mismo `LastWriteTime`) → otra vez la papelera → «Borrar»: sale de la lista y `Datos\OE4N1.json` ya no existe.
+- **Informe (`PF-RF47-02`):** con OE4_C, «¿Eliminas definitivamente los datos de OE4_C? Esta acción no se puede deshacer.» → «Cancelar»: nada cambia → otra vez → «Eliminar datos»: sale de la lista y del disco, y la tabla pasa a OE4_B. Después de borrar OE4_B y OE4_Z: «Todavía no hay perfiles registrados en este equipo.» con «Volver al menú» como único control (`PF-RF46-03`).
+
+## Ruta de respaldo, INC-34 (`PF-RF47-03` y `PF-RF09-04`, paso 11 repetido)
+- Con el juego cerrado se creó un archivo vacío `Datos` (0 B) en `Build\Algoritmia_rc5\` (la carpeta estaba vacía y no existía en ese momento). `manifiesto.ps1 -Verificar` coincidió con el archivo puesto (253 archivos, misma huella; `PF-RF47-03_11_repeticion_guarda_manifiesto_con_archivo_Datos.txt`) y `Start-Juego S-DOC11-rc5` lanzó sin avisos.
+- «Jugar»: lista vacía → «OE4R» → «Continuar»: entra a la narrativa y `LocalLow\Universidad Catolica de Colombia\Algoritmia\OE4R.json` (44 B, `{"name":"OE4R","reachedLevel":1,"phases":[]}`, `PF-RF47-03_11_creado_OE4R_en_LocalLow.json`) se escribe al pulsar «Continuar» (08:19:38, la misma hora de la carga de `Narrative`); `Datos` sigue siendo un archivo de 0 B.
+- Se cerró y relanzó: «Progreso del equipo» lista OE4R y muestra el aviso del informe; «Eliminar datos» → «¿Eliminas definitivamente los datos de OE4R? Esta acción no se puede deshacer.» → LocalLow queda sin `OE4R.json` ni ningún otro `.json`, y el informe dice «Todavía no hay perfiles registrados en este equipo.» con el aviso aún arriba.
+- «Salir» (sin perfil activo, OE4R ya borrado) muestra «Lo que has logrado ya está guardado. ¿Cerramos el juego?» y «Este equipo no deja guardar en la carpeta Datos del juego. El progreso quedó guardado en:» con `C:\Users\benab\AppData\LocalLow\Universidad Catolica de Colombia\Algoritmia`. «Cerrar el juego» cierra el proceso 0,7 s después del clic. El aviso salió aunque ya no quedaba ningún perfil en la ruta de respaldo.
+- Ambos casos: P.
+
+## Residuos (`PF-RNF11-01`, paso 9)
+Con el juego cerrado y OE4N1 y OE4_C ya borrados: el rastreo del arnés (`Residuos -Buscar OE4N1,OE4_C`, UTF-8 y UTF-16, nombres y contenido) más uno independiente, en bytes, sobre la carpeta del candidato y LocalLow (538 archivos, 741 MB, `Player.log` incluido), los 21 valores del registro y los archivos de `%TEMP%` modificados desde las 08:00 fuera de la carpeta del arnés: **cero apariciones**. El arnés solo señala dos cosas suyas: `%TEMP%\Algoritmia-OE4\acciones.tsv` (su registro de lo escrito en S-N1) y una foto que yo nombré `sdoc_005_OE4N1.png`. El control positivo (`-Buscar OE4_B`, que sí existía) halló `Datos\OE4_B.json`, así que el rastreo ve la carpeta portable.
+- **Tras la repetición del paso 11** (que escribió `OE4R.json` en LocalLow y lo borró): `Residuos -Buscar OE4R,OE4N1,OE4_C` y el rastreo independiente en bytes volvieron a dar cero en la carpeta del candidato y LocalLow (537 archivos, 741 MB, `Player.log` incluido), el registro y `%TEMP%` fuera de la carpeta del arnés (corte 08:15); el arnés solo señala sus propios `acciones.tsv` y `sdoc_005_OE4N1.png`. `LocalLow` quedó sin ningún `.json` y `Datos` sin existir. Con eso `PF-RNF11-01` sigue valiendo (`residuos_S-DOC11-rc5_buscar.txt`, `residuos_S-DOC11-rc5_rastreo_independiente.txt`, `residuos_S-DOC11-rc5_tras_restaurar.txt`).
+- **Observación de portabilidad:** fuera de su carpeta el juego deja `Player.log` en `LocalLow\Universidad Catolica de Colombia\Algoritmia\` y cambia nueve valores de `HKCU\Software\Universidad Catolica de Colombia\Algoritmia` (`Screenmanager Native RefreshRate Numerator/Denominator`, `Resolution Width/Height`, `Fullscreen mode`, `unity.player_session_count`, `unity.player_sessionid`, `unity_connect.mega_session_id` y `unity_connect.session_id`). La clave ya existía; `Restaurar-Registro` repuso los nueve, en cada pasada, y `Residuos` dice «existía y no cambió» (`residuos_S-DOC-rc5_tras_restaurar.txt`, `residuos_S-DOC11-rc5_tras_restaurar.txt`). En LocalLow había ya, de antes y ajenas al juego, `CoplayImagePreviews`, `TestScreenshots`, `Unity` y `TestResults.xml`.
+
+## JSON persistido (`PF-RNF09-01`, paso 12)
+49 JSON de perfil de `evidencias/rc5` (escritos por el juego y semillas) y los 8 de `herramientas/perfiles`, más la semilla de esta sesión: solo `name`, `reachedLevel` y `phases[level, phase, attempts, correctedErrors, stepsUsed, resolutionSeconds]`. Los dos `OE4_Corrupto` no parsean, por diseño. Se juzga lo que había al terminar S-DOC; si otra sesión añade JSON después, hay que volver a correr `PF-RNF09-01_12_campos_json_rc5.txt` (script en el scratchpad, no en el repo).
+
+## Cifras medidas (aportan a otros casos; aquí no se juzgan)
+- **RNF-04** (`PF-RNF04-01`): líneas `RNF-04` de los tres `Player.txt`: `TeacherReport` 0,057 · 0,052 · 0,074 s; `MainMenu` 0,128 · 0,121 · 0,123 · 0,112 s (tres arranques y un «Volver al menú» desde el informe). Peor valor 0,128 s. `Medidas` cuenta 4 (las que esperó `Esperar-Carga`); el log trae 7. `Boot` no deja línea.
+- **RNF-05** (`PF-RNF05-01`): 137 muestras; memoria de trabajo máx **409 MiB** y privada máx **864 MiB**, ambas en `TeacherReport`. Solo se recorrieron inicio, informe y perfiles: no es la medida de un nivel.
+- **RNF-10** (`PF-RNF10-01`): 137 muestras `NINGUNA`; ninguna conexión del proceso. Límite del arnés: no mira los primeros ≈ 3 s de cada arranque.
+- **PF-RNF03-01 y PF-RNF20-01:** capturas a pantalla completa del informe (`PF-RF46-01_1_1.png`, `PF-RF46-01_2_OE4_Z.png`, `PF-RF46-02_*`, `PF-RF46-03_10_e_sin_perfiles.png`) y de los diálogos; en ellas ningún texto ni botón desborda su tarjeta ni se solapa con otro. Para RNF-20: texto `#3B1C16` sobre `#F7EFE2` (13,49:1) en título, cabeceras, celdas, lista y diálogos, y sobre el ámbar `#E8A33D` de «Borrar», «Eliminar datos» (diálogo) y «Cerrar el juego» (7,14:1); el color de texto es el trazo más oscuro del rótulo, no un valor leído de un asset (`PF-RNF20-01_datos_contraste_informe_y_dialogos.txt`).
+- **PF-RNF23-01 / PF-RNF19-01 / PF-RNF21-01 / PF-RNF02-01:** sin datos de esta sesión.
+- **Repetición del paso 11 (`S-DOC11-rc5`):** RNF-04: `MainMenu` 0,125 · 0,128 · 0,120 s, `LevelSelect` 0,070 s, `Narrative` 0,663 s y `TeacherReport` 0,074 s (primera carga de `Narrative` de un perfil nuevo; peor valor 0,663 s). RNF-05: 60 muestras; trabajo máx **424 MiB** y privada máx **1.162 MiB**, ambas en `Narrative`. RNF-10: 60 muestras `NINGUNA`. Registro de los dos lanzamientos sin `Exception`, `Error` ni `Assert`.
+
+## Defectos
+- **`DEF-RC5-13`** (Observación, arnés y documento): la guarda del manifiesto rechazaba el archivo `Datos` del paso 11. **Corregido en el arnés el 05/11/2026** y repetido el paso con éxito; la entrada se conserva en `../defectos.md` con una nota de cierre.
+- Corregidos y comprobados: `DEF-RC3-05` y `DEF-RC3-11`, también en las variantes con el aviso de carpeta no escribible (informe y «Salir»).
+- Sin diferencias entre el catálogo y la pantalla: no se encontró ningún texto del paso 1 a 10 que cambie de palabras.
+
+## Avisos del arnés y límites
+- `Start-Juego` no avisó de contaminación (Unity y Word cerrados). Salidas: todas 0, salvo la 3 del primer intento del paso 11 (manifiesto, ya corregido) y la 2 de un `Esperar-Carga MainMenu` tras «Volver» desde «¿Quién juega?» (esa pantalla es parte de `MainMenu` y no vuelve a cargar la escena; el clic se había recibido). Los demás clics no necesitaron reintento.
+- El manifiesto coincidió antes de los cinco lanzamientos (tres de `S-DOC-rc5`, dos de `S-DOC11-rc5`) y coincide al terminar (253 archivos, misma huella; `manifiesto_verificacion_final.txt` y `manifiesto_verificacion_final_tras_repeticion.txt`). `Datos` (archivo) quedó eliminado con `Preparar-Datos -SinCarpeta`, LocalLow sin ningún `.json` suelto y el registro restaurado.
+- Log de los cinco lanzamientos sin `Exception`, `Error` ni `Assert`.
+- La superposición de NVIDIA («Presione Alt+Z…») sale unos segundos tras cada arranque, arriba a la derecha; no tapó ningún control. En una foto del informe con el aviso (`PF-RF47-03_11_d_informe_con_aviso_y_superposicion_NVIDIA.png`) cubre el final del aviso; se repitió la foto 6 s después (`..._e_informe_con_aviso.png`) y el aviso se lee entero.
+- Sin comprobar: nada de lo que pide el guion queda pendiente. Limitación: la ruta de respaldo se probó con `Datos` como archivo vacío, que es lo que pide el paso; otras causas de que `Datos` no admita escritura (permisos, disco de solo lectura) no se probaron.
+- Ninguna evidencia de esta carpeta usa un nombre reservado de Windows.

@@ -1,0 +1,9 @@
+PF-RF32-01 paso 14 · ejecución ganadora de la partida principal (PF-RF32-01_14_r, 56 cuadros a 4 fps + PF-RF32-01_14_a a +0,3 s)
+
+Se buscó en cada cuadro el contorno naranja del bloque en curso (píxeles #E8A33D ± 14 en la columna de bloques, x 1335-1760, y 165-760).
+Resultado: los 57 cuadros tienen un bloque resaltado dentro de la zona visible; ninguno sin resaltado.
+Posición vertical del resaltado: 187 (bloque 1) · 249 (2) · 315 (3) · 377 (4) · 443 (5, Avanzar ×7, 18 cuadros ≈ 4,5 s) · 505 (6) · 571 (7) ·
+633 (8) · 694 (9 a 13): la lista se desplaza sola para que el bloque en curso quede a la vista (el panel visible va de y 165 a 760).
+La ráfaga terminó 3 s antes de la llegada: el mensaje de llegada y la celebración no quedaron en esta partida. Se tomaron en la repetición del
+laberinto con el perfil OE4_B3 (sesión de arnés S-N2C2-rc5; ver resumen): PF-RF32-01_14_llegada_*.
+La partida principal duró en total, del clic en «Ejecutar» (03:26:22,75 UTC) a la llegada, unos 22 s (JSON: 508,59 s desde la carga del laberinto).

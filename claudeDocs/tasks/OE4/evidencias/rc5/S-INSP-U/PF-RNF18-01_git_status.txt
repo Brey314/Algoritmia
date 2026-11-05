@@ -1,0 +1,27 @@
+ M Assets/Game/Data/Fire/N1_Config.asset
+ M Assets/Game/Data/Narrative/N1_Hallazgo.asset
+ M Packages/Coplay/.gitignore
+diff --git a/Assets/Game/Data/Fire/N1_Config.asset b/Assets/Game/Data/Fire/N1_Config.asset
+index d18e626..e99053e 100644
+--- a/Assets/Game/Data/Fire/N1_Config.asset
++++ b/Assets/Game/Data/Fire/N1_Config.asset
+@@ -22,5 +22,5 @@ MonoBehaviour:
+   <GatherSeconds>k__BackingField: 0.8
+   <IgnitionSeconds>k__BackingField: 3.5
+   <BurnExtent>k__BackingField: 0.5
+-  <MinimumEffectiveStrikes>k__BackingField: 3
++  <MinimumEffectiveStrikes>k__BackingField: 2
+   <AttemptsBeforeHint>k__BackingField: 3
+diff --git a/Assets/Game/Data/Narrative/N1_Hallazgo.asset b/Assets/Game/Data/Narrative/N1_Hallazgo.asset
+index c8c1818..eec4e5a 100644
+--- a/Assets/Game/Data/Narrative/N1_Hallazgo.asset
++++ b/Assets/Game/Data/Narrative/N1_Hallazgo.asset
+@@ -564,7 +564,7 @@ MonoBehaviour:
+   <NextSequenceId>k__BackingField: 
+   <Lines>k__BackingField:
+   - <Speaker>k__BackingField: "NI\xD1A"
+-    <Text>k__BackingField: "\xBFSe fue?"
++    <Text>k__BackingField: "TEXTO NUEVO RNF18: la linea se cambio desde el asset."
+     <Sound>k__BackingField: {fileID: 0}
+     <Ambient>k__BackingField: {fileID: 0}
+     <Silence>k__BackingField: 0

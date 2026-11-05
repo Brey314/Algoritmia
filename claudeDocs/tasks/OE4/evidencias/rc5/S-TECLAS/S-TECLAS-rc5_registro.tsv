@@ -1,0 +1,73 @@
+2026-11-05 19:06:20.638Z	1	Mono path[0] = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/Managed'
+2026-11-05 19:06:20.638Z	1	Mono config path = 'C:/Dev/Algoritmia/Build/Algoritmia_rc5/MonoBleedingEdge/etc'
+2026-11-05 19:06:20.638Z	1	CodeReloadManager initialized
+2026-11-05 19:06:20.638Z	1	Input System module state changed to: Initialized.
+2026-11-05 19:06:20.638Z	1	[Physics::Module] Initialized fallback backend.
+2026-11-05 19:06:20.638Z	1	[Physics::Module] Id: 0xdecafbad
+2026-11-05 19:06:20.638Z	1	Initialize engine version: 6000.5.10f1 (3bd4f66ad299)
+2026-11-05 19:06:20.638Z	1	[Subsystems] Discovering subsystems at path C:/Dev/Algoritmia/Build/Algoritmia_rc5/Algoritmia_Data/UnitySubsystems
+2026-11-05 19:06:20.638Z	1	[D3D12 Device Filter] Vendor Name: NVIDIA
+2026-11-05 19:06:20.638Z	1	[D3D12 Device Filter] Device Name: NVIDIA GeForce RTX 5070 Ti
+2026-11-05 19:06:20.638Z	1	[D3D12 Device Filter] Driver Version: 32.0.16.2101
+2026-11-05 19:06:20.638Z	1	[D3D12 Device Filter] Feature Level: 12.2
+2026-11-05 19:06:20.638Z	1	[D3D12 Device Filter] Graphics Memory: 15995 MB
+2026-11-05 19:06:20.638Z	1	[D3D12 Device Filter] Processor Count: 12
+2026-11-05 19:06:20.638Z	1	[D3D12 Device Filter] Device Type: Discrete
+2026-11-05 19:06:20.638Z	1	GfxDevice: creating device client; kGfxThreadingModeSplitJobs
+2026-11-05 19:06:20.638Z	1	d3d12: failed to query info queue interface (0x80004002).
+2026-11-05 19:06:20.638Z	1	Direct3D:
+2026-11-05 19:06:20.638Z	1	    Version:         Direct3D 12 [level 12.2]
+2026-11-05 19:06:20.638Z	1	    Renderer:        NVIDIA GeForce RTX 5070 Ti (ID=0x2c05)
+2026-11-05 19:06:20.638Z	1	    Vendor:          NVIDIA
+2026-11-05 19:06:20.638Z	1	    VRAM:            15995 MB
+2026-11-05 19:06:20.638Z	1	    App VRAM Budget: 15227 MB
+2026-11-05 19:06:20.638Z	1	    Driver:          32.0.16.2101
+2026-11-05 19:06:20.638Z	1	Begin MonoManager ReloadAssembly
+2026-11-05 19:06:20.638Z	1	- Finished resetting the current domain, in  0.026 seconds
+2026-11-05 19:06:20.638Z	1	[Physics::Module] Selected backend.
+2026-11-05 19:06:20.638Z	1	[Physics::Module] Name: PhysX
+2026-11-05 19:06:20.638Z	1	[Physics::Module] Id: 0xf2b8ea05
+2026-11-05 19:06:20.638Z	1	[Physics::Module] SDK Version: 4.1.2
+2026-11-05 19:06:20.638Z	1	[Physics::Module] Integration Version: 1.0.0
+2026-11-05 19:06:20.638Z	1	[Physics::Module] Threading Mode: Multi-Threaded
+2026-11-05 19:06:20.638Z	1	<RI> Initializing input.
+2026-11-05 19:06:20.638Z	1	Using Windows.Gaming.Input
+2026-11-05 19:06:20.638Z	1	UnloadTime: 1.019500 ms
+2026-11-05 19:06:20.638Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 19:06:20.638Z	1	UnloadTime: 0.320900 ms
+2026-11-05 19:06:20.638Z	1	RNF-04: «MainMenu» cargó en 0.138 s
+2026-11-05 19:06:20.638Z	1	Unloading 3 unused Assets to reduce memory usage. Loaded Objects now: 4770.
+2026-11-05 19:06:20.638Z	1	Total: 1.648500 ms (FindLiveObjects: 0.211900 ms CreateObjectMapping: 0.301000 ms MarkObjects: 1.121900 ms  DeleteObjects: 0.008500 ms)
+2026-11-05 19:06:31.879Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 19:06:31.879Z	1	UnloadTime: 3.019600 ms
+2026-11-05 19:06:31.879Z	1	RNF-04: «LevelSelect» cargó en 0.026 s
+2026-11-05 19:06:31.879Z	1	Unloading 463 unused Assets to reduce memory usage. Loaded Objects now: 3504.
+2026-11-05 19:06:31.879Z	1	Total: 1.315800 ms (FindLiveObjects: 0.150500 ms CreateObjectMapping: 0.118500 ms MarkObjects: 0.743300 ms  DeleteObjects: 0.303400 ms)
+2026-11-05 19:06:41.305Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 19:06:41.305Z	1	UnloadTime: 1.005400 ms
+2026-11-05 19:06:41.305Z	1	RNF-04: «Narrative» cargó en 0.207 s
+2026-11-05 19:06:41.305Z	1	Unloading 15 unused Assets to reduce memory usage. Loaded Objects now: 4808.
+2026-11-05 19:06:41.305Z	1	Total: 1.232600 ms (FindLiveObjects: 0.183800 ms CreateObjectMapping: 0.165400 ms MarkObjects: 0.845100 ms  DeleteObjects: 0.038200 ms)
+2026-11-05 19:06:49.512Z	1	Unloading 6 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 19:06:49.512Z	1	UnloadTime: 1.378400 ms
+2026-11-05 19:06:49.512Z	1	RNF-04: «Narrative» cargó en 0.014 s
+2026-11-05 19:06:49.512Z	1	Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4830.
+2026-11-05 19:06:49.512Z	1	Total: 1.321100 ms (FindLiveObjects: 0.168900 ms CreateObjectMapping: 0.145400 ms MarkObjects: 0.996100 ms  DeleteObjects: 0.010600 ms)
+2026-11-05 19:07:11.261Z	1	Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 19:07:11.261Z	1	UnloadTime: 1.242900 ms
+2026-11-05 19:07:11.261Z	1	RNF-04: «Narrative» cargó en 0.013 s
+2026-11-05 19:07:11.261Z	1	Unloading 7 unused Assets to reduce memory usage. Loaded Objects now: 4829.
+2026-11-05 19:07:11.261Z	1	Total: 1.225200 ms (FindLiveObjects: 0.155500 ms CreateObjectMapping: 0.137900 ms MarkObjects: 0.920700 ms  DeleteObjects: 0.010800 ms)
+2026-11-05 19:07:28.144Z	1	Unloading 8 Unused Serialized files (Serialized files now loaded: 0)
+2026-11-05 19:07:28.144Z	1	UnloadTime: 1.027100 ms
+2026-11-05 19:07:28.144Z	1	RNF-04: «Level2_Workshop» cargó en 0.020 s
+2026-11-05 19:07:28.144Z	1	Unloading 1070 unused Assets to reduce memory usage. Loaded Objects now: 4614.
+2026-11-05 19:07:28.144Z	1	Total: 2.245500 ms (FindLiveObjects: 0.179600 ms CreateObjectMapping: 0.155800 ms MarkObjects: 1.359800 ms  DeleteObjects: 0.550200 ms)
+2026-11-05 19:08:07.834Z	1	[Physics::Module] Cleanup current backend.
+2026-11-05 19:08:07.834Z	1	[Physics::Module] Id: 0xf2b8ea05
+2026-11-05 19:08:07.834Z	1	Input System module state changed to: ShutdownInProgress.
+2026-11-05 19:08:07.834Z	1	Input Polling Thread exited.
+2026-11-05 19:08:07.834Z	1	Input System module state changed to: Shutdown.
+2026-11-05 19:08:07.834Z	1	CodeReloadManager destroyed
+2026-11-05 19:08:07.834Z	1	GarbageCollector disposing of ComputeBuffer. Please use ComputeBuffer.Release() or .Dispose() to manually release the buffer.
+2026-11-05 19:08:07.834Z	1	[d3d12] Unreleased non-evictable resource 000001ACCA64FF70 (size 4096 B, lastUsedFence 9)

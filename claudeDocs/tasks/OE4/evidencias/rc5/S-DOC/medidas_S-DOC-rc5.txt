@@ -1,0 +1,7 @@
+S-DOC-rc5: 137 muestras · WorkingSet máx 409 MiB (escena «TeacherReport») · Private máx 864 MiB (escena «TeacherReport») · picos del SO: WS 409 MiB, commit 864 MiB
+RNF-05: máximo 864 MiB (0.84 GiB) frente a 2048 MiB: CUMPLE
+S-DOC-rc5: red · 137 filas (=137)
+RNF-10: cero conexiones a direcciones que no son de loopback (las UDP/TCP «escucha-local» no cuentan, pero se anotan)
+RNF-04: 4 cargas medidas (peor valor por escena; límite 10 s)
+  MainMenu           n=1  peor 0.121 s  ok
+  TeacherReport      n=3  peor 0.074 s  ok

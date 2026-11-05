@@ -1,0 +1,143 @@
+PF-RNF17-01 · git log --no-merges ca6fd91 -- Assets/ · criterio: con tarjeta = Dnn-n u Onn-n en el mensaje; marcador = literal <id> (tarjeta: <id>) sin resolver; sin nada = ninguno.
+Denominador de codigo = commits que tocan al menos un .cs bajo Assets/ (los demas son de arte, sonido, datos, escenas o documentacion y no entran).
+A) todos los commits que tocan Assets/ (lectura literal del guion): 131 commits; con tarjeta 9 (6.9 %); con marcador <id> 4 (3.1 %); sin nada 118 (90.1 %); de estos citan otro identificador (INC/DEF/R/W/T/Slice/PF/RF) pero no tarjeta: 91; sin ningun identificador: 27
+B) DENOMINADOR DE CODIGO: 92 commits; con tarjeta 9 (9.8 %); con marcador <id> 3 (3.3 %); sin nada 80 (87.0 %); de estos citan otro identificador (INC/DEF/R/W/T/Slice/PF/RF) pero no tarjeta: 65; sin ningun identificador: 15
+   excluidos de B (sin .cs): 39
+C) B desde 02/09/2026 (tras el tablero Kanban): 90 commits; con tarjeta 9 (10.0 %); con marcador <id> 3 (3.3 %); sin nada 78 (86.7 %); de estos citan otro identificador (INC/DEF/R/W/T/Slice/PF/RF) pero no tarjeta: 65; sin ningun identificador: 13
+
+--- con tarjeta
+  a540618 2026-10-02 cs feat(cierre): N1–N3 corregidos, candidato rc2 verificado sobre el ejecutable, tableros cerrados y OE3 vigente 
+  ccf77e6 2026-09-25 cs feat(n3): sonido del Nivel 3 y plano de la recolección con el río asomando (tarjeta: D08-2)
+  f801186 2026-09-24 cs feat(n1-n3): humo animado sobre cada fuego de las narrativas (D08-2)
+  13e2986 2026-09-23 cs docs(slice-3): resultados del carril de arte y sonido, archivo por archivo (D05-2/D07-2)
+  d7ace67 2026-09-23 cs feat(nivel-2): el nivel transcurre en un día con fundidos; laberinto con cuadrícula, contraste, barra de despl
+  03675b9 2026-09-23 cs feat(nivel-2): sonidos del nivel, piedras visibles y refugio con fuego en la 2.5 y el puente II (D05-2)
+  8ec5120 2026-09-22 cs feat(nivel-1): quemado radial del montón, montón mayor y aparición aleatoria fuera de la interfaz (D07-2)
+  aca7acc 2026-09-22 cs feat(nivel-1): piezas giradas al azar, montones de hojas, gesto al tomar y fuego animado (D07-2)
+  2cbe287 2026-09-21 cs feat(nivel-1): integración de audio según dirección y sprites definitivos parciales (D05-2/D07-2)
+--- marcador <id>
+  44fd479 2026-09-25 cs feat(n2-n3): props definitivos del N2 reducidos y balsa del N3 recompuesta en 3/4 (tarjeta: <id>)
+  d3a6cc9 2026-09-25 -- feat(n3): hoguera animada en el horizonte del puente II y en la escena final (tarjeta: <id>)
+  1d5ce58 2026-09-25 cs feat(n2): caja vacía que se desliza sobre los troncos, cuerda en el taller y arbustos que llenan su casilla (t
+  b38c00b 2026-09-24 cs feat(n2): troncos que ruedan como cilindros envueltos en una sola textura (tarjeta: <id>)
+--- sin tarjeta ni marcador (con .cs)
+  86a9898 2026-10-14 otro-id Level summary avatar is Algoritm in the finished level's form: the guide prefab fills the avatar slot, declare
+  0405eba 2026-10-13 otro-id rc3 defects fixed in code (DEF-RC3-05, -09, -10, -11: input guard after each scene load, wider forest tablet, 
+  56897fd 2026-10-13 otro-id rc4 verification: affected PlayMode and full suite green (785/786 EditMode, 427/427 PlayMode), help-intro unlo
+  d8ab0f4 2026-10-13 otro-id Hug and sleep in profile: the family hugs facing each other and lies down to sleep around the fire (INC-154)
+  ca51d02 2026-10-13 otro-id Credit the Phosphor turn arrows next to the pause icons (INC-156)
+  52908f1 2026-10-13 otro-id Student-session fixes: dialogue Back button, forest logs, curved turn arrows, five-button pause menu, help-but
+  52ecca5 2026-10-13 otro-id Lighter opening of Level 1 and a real walk in scene 1.1 (INC-152, INC-153)
+  6d26abb 2026-10-13 otro-id Plainer vocabulary in the narratives and river texts for fifth graders (INC-157)
+  146f4f3 2026-10-10 otro-id Animated dialogue card with the speaker's scripted expression, sleeping and single-mouth fallbacks, 256 px imp
+  2c0f18b 2026-10-10 nada Fix & Docs
+  a44ca96 2026-10-09 otro-id Algoritm's arms drawn behind his whole body (INC-147)
+  83fd986 2026-10-09 otro-id Import five N1 props at 256 px to restore the RNF-06 margin (INC-146)
+  b4aed0e 2026-10-09 otro-id BuildRigsFinal and CharacterRig_DA131 detect deleted sprites in the prefab file (INC-136)
+  2cd8a75 2026-10-09 otro-id Profile legs always behind the torso; Algoritm's final design applied (INC-134, INC-136)
+  123785e 2026-10-09 otro-id Wave joins the INC-134 view table; .meta files for the profile lane's scripts
+  c96846f 2026-10-09 nada Main menu cover with the five characters in the forest; title above a shorter card
+  bd8b802 2026-10-09 otro-id Algoritm drawn in nine parts with a Wave greeting; credits card removed
+  08b6c63 2026-10-09 nada Narrative: bigger dark dialogue text, camera follows the raft, soft glow on every fire
+  108f95e 2026-10-09 nada Maze: one amber backdrop, rounded 8 px frames on environment and card, drop zone restored
+  910c0f0 2026-10-09 otro-id Characters turn to profile while moving, with heading and two-frame blink (INC-134, INC-135)
+  79e3ea7 2026-10-07 nada Maze environment drops the day-light tint and gets the dialogue-panel frame
+  ef37dd9 2026-10-06 otro-id Forearm drawn in front of torso, face and legs; upper arm stays behind (INC-133)
+  64e4b37 2026-10-06 nada Character art into Frontal/Expresiones/Perfil, Niño neutral face in the prefab, family final parts (WIP)
+  63ed2fc 2026-10-06 otro-id Neutral-face fallback, CaraBase layer and art organizer for the final characters
+  a5a887b 2026-10-06 otro-id feat(personajes): brazos delante del torso al golpear y manos de Algoritm sobre la cara (INC-132)
+  0b76bbc 2026-10-05 otro-id feat(personajes): brazos detras del torso y delante de la cabeza en la familia (INC-132)
+  590866f 2026-10-05 otro-id feat(personajes): la familia entera lista para el arte final, brazos delante en los siete (INC-132)
+  8740a64 2026-10-05 otro-id feat(personajes): brazos visibles y coreografia nueva verificable fuera de Unity (INC-132, Plan-Personajes-Fin
+  a12dbb3 2026-10-05 otro-id feat(personajes): rig articulado y caras listas para los personajes finales (Plan-Personajes-Finales Fase 2-3)
+  641c23a 2026-10-05 nada fix(props): sombra de gota debajo del objeto y con la forma de su dibujo (corrige bf62fce)
+  bf62fce 2026-10-02 nada feat(props): sombra de gota elíptica en props con anclaje al suelo y reducción de escala al levantarse
+  d752bef 2026-10-02 nada feat(personajes): plan maestro de personajes finales y corrección de pose en T en CharacterRig
+  4e78f47 2026-10-02 nada test(oe4): suite completa en dos Editores en paralelo y esperas por tiempo en Game.Core
+  37b3cb7 2026-09-30 otro-id fix: el juego cumple lo que piden los documentos (cierre de INC-46 a INC-117)
+  d105838 2026-09-29 otro-id test: plan de pruebas OE4, validación de flujo N2 y corrección de doble clic en UI
+  88fe0ee 2026-09-24 otro-id feat(personajes): la familia y Algoritm animados en las narrativas y las cinco mecánicas; retrato en el diálog
+  9c34924 2026-09-24 otro-id Slice 4
+  585d17d 2026-09-21 otro-id test(nivel-3): checkpoint R-E, resultados del Slice 3 y acta D07
+  1179dae 2026-09-21 otro-id feat(nivel-3): cierre de mecánicas, accesibilidad, flujo final y controles (R13-R16)
+  3fe1e2a 2026-09-20 otro-id feat(nivel-3): ensamblaje de la balsa sobre el río y escena 3.2 (R09-R12)
+  3894426 2026-09-17 otro-id R05–R08: recolección del Nivel 3 — lista de tareas, inventario, orilla con flechas en pantalla y zona de const
+  d81cfc7 2026-09-17 nada feat: rediseño de pausa, scroll de laberinto y correcciones en narrativa y entorno
+  e3575bf 2026-09-16 otro-id R03/R04: andamiaje y las cinco secuencias narrativas del Nivel 3
+  660fd41 2026-09-16 otro-id R01/R02: assembly Game.Levels.River y tres fases persistidas para el Nivel 3
+  a9236f1 2026-09-16 nada fix(arte): corrección de compresión de texturas, color y auditoría de cámara
+  863ef05 2026-09-15 otro-id T25–T27 y W19: el Nivel 1 reúne y luego enciende con dos deslizantes; «Empujar» sale directo a la narrativa
+  8de614f 2026-09-15 otro-id W15–W18 y Checkpoint W-F: cierre de la Fase 5 del Slice 2
+  17ae49a 2026-09-14 otro-id W08/W09 (ampliación): el mazo del taller mecaniza arrastrándolo sobre el tronco
+  b1b423a 2026-09-13 otro-id W10–W14: laberinto del Nivel 2 según el mockup 10 — bloques encajables, matriz 16×11 y reintento
+  1009c5a 2026-09-13 otro-id Ajustes visuales y movimientos de camara
+  b6b886c 2026-09-12 otro-id W08/W09: taller del Nivel 2 — ensamblaje secuencial sobre el claro este
+  fa5d032 2026-09-12 otro-id T20–T24: mecánica nueva del Nivel 1. Mockups y Levelsumary
+  4f69140 2026-09-11 otro-id Fix reconciliar el merge de main (cierre del Slice 1) con el carril del Slice 2
+  416ec79 2026-09-11 otro-id W07: Implementación y ajuste del flujo completo del Nivel 2
+  2d2b7f4 2026-09-11 otro-id T19
+  f8ffcc8 2026-09-11 otro-id T18
+  d9c258a 2026-09-11 otro-id T17
+  6f74a86 2026-09-11 otro-id T16
+  ca6c8c6 2026-09-11 otro-id T15
+  eb941c8 2026-09-10 otro-id W05/W06-R: los objetos del bosque reaccionan al cursor, y una maqueta de personaje
+  79c9b3d 2026-09-10 otro-id T14
+  1b43897 2026-09-10 otro-id T13
+  8d7de77 2026-09-10 otro-id T12
+  faaaa13 2026-09-10 otro-id W06: la escena del bosque y el camino que lleva hasta ella
+  817a327 2026-09-10 otro-id W05: la selección por patrón del bosque
+  9f10485 2026-09-10 otro-id W04: las seis secuencias narrativas del Nivel 2
+  5f7a432 2026-09-10 otro-id W03: HintPolicy por fase, con las tres tareas del Nivel 2
+  a012515 2026-09-10 otro-id W02: PhaseId y desbloqueo secuencial del Nivel 2
+  e7278a2 2026-09-10 otro-id W01: assembly Game.Levels.Wheel y exclusión RNF-16 con dos niveles reales
+  2893cdb 2026-09-09 otro-id enchantment/T05-T11: interfaces segú— hundido de botón, botón secundario, sombra plana y placeholders
+  eb676ed 2026-09-08 otro-id T11: HintPolicy — ayuda a demanda y pista tras tres fallos (RF-13, CP-06, RNF-03)
+  145a63e 2026-09-08 otro-id T05-T08 revisión visual + RF-47: interfaces según los mockups y borrado de perfil
+  2a588f3 2026-09-07 otro-id Fix/ T08, Fest/T09+T10: capa narrativa del andamiaje — NarrativeSequence, DialogueRunner y escena Narrative pa
+  ddcbb42 2026-09-07 otro-id T07: menú de niveles con desbloqueo progresivo (RF-03, RNF-19),  T08: pantalla de créditos mínima (RF-08, CT-0
+  3924333 2026-09-06 otro-id T06: perfil de un solo nombre (RF-02, RF-03, HU-01)
+  eab7c57 2026-09-06 otro-id T05: pantalla de inicio (RF-01, RF-09)
+  e4f7362 2026-09-06 nada Finalizacion fase 0
+  08c4133 2026-09-03 otro-id Fase 0
+  51159f4 2026-08-29 nada initial config
+  7722d84 2026-08-29 nada Registro inicial
+--- excluidos (sin .cs)
+  ca6fd91 2026-10-14 nada Level summary card fits 1080 px on every level: tighter vertical spacing (48 to 32) and a wider skil
+  f49ccc9 2026-10-10 nada Retire the OE4 rc1/rc2 evidence and reset the board for the rc3 pass; OE4 deliverable generator skel
+  fd9adf7 2026-10-10 nada Documentation adjustments under INC-148 to INC-150: Editor round 23d7e8c, suite, captures and the 42
+  8602c79 2026-10-10 nada Remove Algoritm's six provisional face images, unreferenced since the shared final face (INC-148)
+  23d7e8c 2026-10-10 nada Editor round of INC-148 to INC-150: face sets with the final expressions, Algoritm's shared face, an
+  292b108 2026-10-10 nada Family dialogue cards in close-up without arms; Algoritm's cards unchanged (INC-148, decisions of Sa
+  196152f 2026-10-10 nada Documentation adjustments under INC-148, INC-149 and INC-150 (rev. 24), with the Editor-round figure
+  cc938e9 2026-10-10 nada Final faces at 256 px (union box) for the family and Algoritm's shared face, face-less dialogue card
+  ca62b9a 2026-10-09 nada Editor: Algoritm's arms behind his whole body in the prefabs (INC-147)
+  d89e5fb 2026-10-09 nada Documentation adjustments under INC-146: RNF-06 measured, five N1 props at 256 px
+  4062ae3 2026-10-09 nada Reimport five N1 props at 256 px (INC-146)
+  f20b271 2026-10-09 nada Editor round 2: profile legs behind the torso and Algoritm's final art in the prefabs (INC-134, INC-
+  4b37452 2026-10-09 nada Documentation adjustments under INC-134 to INC-136 (profile view, two-frame blink, Algoritm's final 
+  9966bcb 2026-10-09 nada Family prefabs gain the profile body; profile clips and face sets generated in the Editor (INC-134)
+  beb1cfe 2026-10-09 nada Profile art for the family and the tools that build the profile body (INC-134, INC-135)
+  28484f9 2026-10-09 nada Documentation adjustments under INC-137 to INC-145 (design round of 08/10)
+  a938f9a 2026-10-09 nada Family rigs: Papá's upper arm no longer shows at the elbow
+  28337c0 2026-10-06 nada Family rigs: raised shoulder pivot and head gestures applied in the Editor
+  433603f 2026-10-06 nada Family prefabs with final art, registered faces and forearms in front (INC-133)
+  e2bb07a 2026-10-06 nada Documentation adjustments under INC-133
+  233f2e5 2026-10-06 nada Family faces placed by registration; forearm draw order and choreography for the final art
+  a538ab6 2026-10-06 nada Niño neutral expression split into eyes, mouth and face base
+  8cdd4c5 2026-10-05 nada feat(personajes): Algoritm con las manos sobre la cara y clips de Strike con los brazos delante (INC
+  117287c 2026-10-05 nada feat(personajes): familia con los brazos detras del torso y delante de la cabeza (INC-132)
+  5ce0797 2026-10-05 nada feat(personajes): Papa, Mama y Nina con los brazos delante y clips para el arte final (INC-132)
+  6f2b4cf 2026-10-05 nada feat(personajes): prefabs y clips regenerados con brazos visibles y coreografia nueva (INC-132)
+  d127ec9 2026-10-05 nada feat(personajes): arte final del Niño frontal (torso, cabeza, brazos, piernas segmentadas)  Normaliz
+  e9eb6cb 2026-10-05 nada feat(personajes): nodos articulados y caras en los 7 prefabs y 93 clips reescritos (Plan-Personajes-
+  5c44b27 2026-10-05 nada docs(personajes): rig articulado y expresiones del arte final under INC-131
+  649b4d6 2026-09-30 nada docs:
+  d3a6cc9 2026-09-25 marcador feat(n3): hoguera animada en el horizonte del puente II y en la escena final (tarjeta: <id>)
+  dc51804 2026-09-21 nada feat(nivel-1): clips de animación del fuego a partir de las secuencias de fotogramas
+  022023a 2026-09-21 nada Sonidos faltantes y organizacion entre niveles o global
+  83db0f2 2026-09-21 nada nuevos sonidos
+  3403483 2026-09-16 nada nuevos sonidos agregados
+  6790c6b 2026-09-16 nada Cambio de nombre a sonidos para comprension
+  cd561fc 2026-09-13 nada sonidos del juego
+  ad99f0c 2026-09-09 nada Quick fix, escena creditos
+  f135870 2026-09-03 nada Estructura de carpetas para assets

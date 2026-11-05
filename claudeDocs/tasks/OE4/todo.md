@@ -1,12 +1,31 @@
-# Tablero — OE4: Evaluación funcional del prototipo (pasada rc3)
+# Tablero — OE4: Evaluación funcional del prototipo (pasada rc3 y regresión de rc5)
 
-Plan: [`plan.md`](plan.md) · Casos y guiones: [`casos.md`](casos.md) (136 casos) · Resultados:
+Plan: [`plan.md`](plan.md) · Casos y guiones: [`casos.md`](casos.md) (145 casos; 136 en rc3) · Resultados:
 [`OE4-Resultados.md`](OE4-Resultados.md) · Contrato: `claudeDocs/SPEC.md`.
 
 > **Reiniciado el 10/10/2026.** La pasada vigente es sobre **rc3**, compilado desde el estado actual de la
 > rama. El tablero de la pasada rc1/rc2 (01/10/2026), con todas sus casillas, queda en el historial de git, en el
 > commit `4e78f47`; ninguna de sus casillas marcadas se hereda, porque el juego cambió en 108 commits. Los ids
 > `T01`–`T28` se conservan para que los documentos que los citan sigan resolviendo.
+
+## Regresión de aceptación sobre rc5 (desde el 04/11/2026)
+
+Motivo: Corrección 1 del informe de evaluación (`docs/md/Informe_evaluacion_V2.md`): veredictos de una sola versión, con
+commit y huella de todo el contenido. El tablero de rc3, abajo, no se reescribe. Catálogo: 145 casos (136 en rc3).
+
+- [x] **R01 · Congelar rc5** · *04/11/2026: etiqueta `rc5` ya existía; `Build/Algoritmia_rc5/` extraído del zip; `evidencias/rc5/manifiesto-rc5.tsv` reproduce `ab0c386e…46c3` (`build-rc5.md`)*
+- [x] **R02 · Arnés** · *04/11/2026: `Start-Juego` verifica la carpeta con `OE4_MANIFIESTO`; corregido `Restaurar-Registro` (los valores `Binary` fallaban en `SetValue`)*
+- [x] **R03 · T04 contra rc5 y casos nuevos** · *04/11/2026: nueve casos nuevos y textos de `casos.md` al día*
+- [x] **R04 · Hoja humana al día para rc5** · *04/11/2026: `Hoja-HUM.md`*
+- [x] **R05 · Sesiones sobre el ejecutable** · *05/11/2026: evidencia en `evidencias/rc5/<sesión>/`: S-INI, S-N1, S-N2A, S-N2B, S-N2C, S-N3, S-PAU, S-OMI, S-PER, S-DOC, S-RNF, S-TECLAS y los dos recorridos de `GP2/`; el manifiesto siguió coincidiendo*
+- [x] **R06 · S-INSP sobre rc5** · *05/11/2026: `evidencias/rc5/S-INSP/` (documental) y `S-INSP-U/` (`PF-RNF16-01`, `PF-RNF18-01`, en un worktree de `ca6fd91` ya eliminado). Sin Bloqueantes ni Mayores*
+- [ ] **R07 · Comprobaciones humanas H3, H4, H5, H6, H7, H8 y H12** · HUM
+- [ ] **R08 · `veredictos-rc5.csv`, KPI y Anexo E**
+- [ ] **R09 · Tesis**: resumen y abstract, introducción, 9.1.3, 9.2, Tablas 12 a 15, capítulo 10 y recomendaciones
+
+No se repiten: la suite (`evidencias/suites/rc5-06a5b61`, mismo `Assets/` que `ca6fd91`), ni `PF-RNF12-01`, `PF-RNF22-01` y `PF-RNF23-01`, que no dependen de la versión.
+
+---
 
 **Leyenda:** tamaño `XS`–`L` · ejecutor `EXE` (Claude con el arnés sobre el ejecutable), `INSP`
 (inspección de archivos), `SUITE` (pruebas automáticas), `EDIT` (Editor abierto por `coplay-mcp`), `HUM`

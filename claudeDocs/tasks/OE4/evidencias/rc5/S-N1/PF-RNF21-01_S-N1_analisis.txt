@@ -1,0 +1,9 @@
+S-N1 · rc5 · datos para PF-RNF21-01 (no se juzga aqui)
+Rafaga 1: nf01_llama (escena de cierre, 1.a linea, llama con halo), 60 cuadros a 10,1 fps reales en 5,92 s -> PF-RNF21-01_22_rafaga_cierre_llama.csv
+  luminancia global 8 bits: min 63.63, max 64.51 (rango 0.88; 1.4 %), salto maximo entre cuadros consecutivos 0.24 (0.37 %): sin destellos.
+  region lateral izquierda de la llama (x 640-860, y 440-640): 63.94-67.54, sinusoidal con periodo 2.00 s exactos (pico de frecuencia 0.50 Hz) = respiracion del halo.
+  La opacidad del halo no se puede aislar de la escala; la region respira por el cambio de escala, sin saltos.
+Rafaga 2: cueva_21_llama (cueva, Soplar), 70 cuadros a 10,1 fps -> PF-RNF21-01_21_rafaga_cueva_llama.csv
+  1,4-3,4 s tras el clic en la cueva (luma 78-79), fundido a negro a los 3,5-4,2 s (luma 12-16, corte previsto) y escena de cierre (56-64).
+  La cueva con llama dura ~3,5 s antes del fundido: la «rafaga de 6 s del bucle de la llama» se tomo en la escena de cierre.
+  Durante el nacimiento la llama se revela dentro de un circulo creciente con borde dentado rojo oscuro (cueva_21_llama_strip.png): no es un aro fantasma a plena luz; lo dejo anotado para quien juzgue PF-RNF21-01.

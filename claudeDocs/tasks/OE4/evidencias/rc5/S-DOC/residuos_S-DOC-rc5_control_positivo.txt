@@ -1,0 +1,12 @@
+=== CONTROL POSITIVO: rastreo de un nombre que SI existe (OE4_B)
+
+-- Rastreo de: OE4_B (UTF-8 y UTF-16, en nombres y contenido; un término corto da falsos positivos en los binarios)
+  APARECE: [carpeta portable] C:\Dev\Algoritmia\Build\Algoritmia_rc5\Datos\OE4_B.json  <- el nombre contiene «OE4_B»
+  APARECE: [carpeta portable] C:\Dev\Algoritmia\Build\Algoritmia_rc5\Datos\OE4_B.json  <- el contenido incluye «OE4_B» (UTF-8)
+  APARECE: [%TEMP%] C:\Users\benab\AppData\Local\Temp\Algoritmia-OE4\acciones.tsv  <- el contenido incluye «OE4_B» (UTF-8)
+  APARECE: [%TEMP%] C:\Users\benab\AppData\Local\Temp\Algoritmia-OE4\OE4_B3_antes.json  <- el nombre contiene «OE4_B»
+  APARECE: [%TEMP%] C:\Users\benab\AppData\Local\Temp\Algoritmia-OE4\OE4_B3_antes.json  <- el contenido incluye «OE4_B» (UTF-8)
+  APARECE: [%TEMP%] C:\Users\benab\AppData\Local\Temp\Algoritmia-OE4\fotos\PF-RF02-04_3_cueva_OE4_B.png  <- el nombre contiene «OE4_B»
+  APARECE: [%TEMP%] C:\Users\benab\AppData\Local\Temp\Algoritmia-OE4\fotos\PF-RF02-04_3_menu_OE4_B.png  <- el nombre contiene «OE4_B»
+Informe completo: C:\Users\benab\AppData\Local\Temp\Algoritmia-OE4\residuos\S-DOC-rc5.txt
+
