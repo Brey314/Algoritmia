@@ -24,6 +24,8 @@
 | H12 | Oído · lo que suena, pieza por pieza | PF-SON-01, 02 y 03 | ninguna (KPI de sonido del OE4) | parlantes o audífonos |
 | H13 | Mano · lo que el arnés no ve: el clic tras cargar una escena, la papelera del laberinto y la 8.ª fila del informe | PF-RNF02-01, PF-RF34-01, PF-RF46-01 | ninguna (revisión final de rc2, decisión D-OBS) | un *touchpad* si lo hay; los perfiles semilla para el paso 4 |
 
+> **Cierre del 05/11/2026 (INC-163):** esta sesión B no se hizo. Los casos se cerraron con la sesión del 16/10/2026 y los de sonido quedaron NE. Si se ejecuta después, es un complemento.
+
 **Para rc5 (04/11/2026) se repiten H3, H4, H5, H6, H7, H8 y H12**, en una sesión B sobre un equipo del colegio, para
 que el veredicto sea de rc5. H1, H2, H9, H10 y H11 no se repiten en esta hoja: sus resultados del 13/10/2026 son de rc3 y
 así se reportan. H6, H7 y H12 no se repiten porque el audio haya cambiado (entre rc3 y rc5 no cambió ningún clip ni su

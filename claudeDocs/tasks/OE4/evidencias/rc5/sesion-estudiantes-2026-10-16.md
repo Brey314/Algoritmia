@@ -16,6 +16,8 @@ Registro de la segunda sesión con estudiantes. Los datos los entregó el equipo
 
 **Veredictos.** No cambia ninguno: la sesión no siguió el catálogo `PF-*` ni sus plantillas, y la carga y la memoria se midieron en un solo equipo y solo durante el Nivel 1 (`medicion-colegio/`: 1,223 s y 633 MiB). Es evidencia de apoyo sobre rc5 para RNF-07, RNF-08, CT-02 y la ruta principal.
 
+> **Decisión del 05/11/2026 (INC-163).** Para cerrar el trabajo de grado, esta sesión y su medición respaldan como PD los casos `PF-RNF04-01`, `PF-RNF05-01`, `PF-RNF07-02`, `PF-CT02-01`, `PF-RNF08-01` y `PF-RNF13-01`, con sus desviaciones en `S-COLEGIO/veredictos.csv`. El párrafo anterior queda como se escribió el 16/10/2026.
+
 ## Testimonios (10 de estudiantes y 1 de una persona externa, resumidos)
 
 - Los diez estudiantes valoraron bien el juego; ninguno dijo que se bloqueara.

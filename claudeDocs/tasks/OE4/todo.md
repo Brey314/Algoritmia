@@ -19,7 +19,7 @@ commit y huella de todo el contenido. El tablero de rc3, abajo, no se reescribe.
 - [x] **R04 · Hoja humana al día para rc5** · *04/11/2026: `Hoja-HUM.md`*
 - [x] **R05 · Sesiones sobre el ejecutable** · *05/11/2026: evidencia en `evidencias/rc5/<sesión>/`: S-INI, S-N1, S-N2A, S-N2B, S-N2C, S-N3, S-PAU, S-OMI, S-PER, S-DOC, S-RNF, S-TECLAS y los dos recorridos de `GP2/`; el manifiesto siguió coincidiendo*
 - [x] **R06 · S-INSP sobre rc5** · *05/11/2026: `evidencias/rc5/S-INSP/` (documental) y `S-INSP-U/` (`PF-RNF16-01`, `PF-RNF18-01`, en un worktree de `ca6fd91` ya eliminado). Sin Bloqueantes ni Mayores*
-- [ ] **R07 · Comprobaciones humanas H3, H4, H5, H6, H7, H8 y H12** · HUM
+- [x] **R07 · Comprobaciones humanas H3, H4, H5, H6, H7, H8 y H12** · *05/11/2026: no se repitieron; se cierra con la sesión del 16/10/2026 (`evidencias/rc5/S-COLEGIO/`) y los tres casos de sonido quedan NE (INC-163)*
 - [ ] **R08 · `veredictos-rc5.csv`, KPI y Anexo E**
 - [ ] **R09 · Tesis**: resumen y abstract, introducción, 9.1.3, 9.2, Tablas 12 a 15, capítulo 10 y recomendaciones
 

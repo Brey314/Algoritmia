@@ -144,3 +144,16 @@ En la fase de amarre, el triángulo con «!» del espacio vacío es de gris medi
 - Observado: 9 de River (HU12, RNF03 ×3, RNF19 ×2, RNF20, RF36, RF39: tiempos agotados de 30–90 s y solapes de «lista de tareas» con «tablilla del guía» a pantalla de 640×480), 4 de Wheel (RF22 hoja, RF26, Maze RNF03, Workshop RNF03: «pantalla (x:0, y:0, width:640, height:480)»), 3 de `NarrativeScene_RNF21_*` y `TeacherReport_RF46_DEFRC305` (iconos 0,0385 < 0,04). Es la misma familia de DEF-RC3-12 (15 fallos de 640×480). La suite de rc5 en el Editor (Game View 1920×1080) pasó 438 de 438, sobre el mismo `Assets/`.
 - Esperado: que el guion de PF-RNF16-01 diga que `unity test` en batchmode necesita una referencia (la corrida sin retirar nada) para separar el entorno del acoplamiento, o que se corra con `editor.ps1`/Game View fija. Hipótesis de entorno; la decisión de reclasificar es del orquestador.
 - Evidencia: `rc5/S-INSP-U/sinN2-PlayMode.xml`, `sinN1-PlayMode.xml`, `base-PlayMode-filtrada.xml`, `resumen.md`.
+
+## Triaje de cierre (05/11/2026)
+
+Se cierra sobre rc5, sin compilar rc6 (INC-163). Ninguno es Bloqueante ni Mayor, así que ninguno exige recompilar. Las severidades propuestas quedan confirmadas: 5 Menores y 15 Observaciones.
+
+| Disposición | Defectos |
+|---|---|
+| Menores que quedan como conocidos en rc5 | DEF-RC5-07 («La pieza vuelve a tus materiales.»), DEF-RC5-10 (luz de la cueva), DEF-RC5-15 (contraste), DEF-RC5-16 (identificadores en español) |
+| Menor corregido en el catálogo | DEF-RC5-18 (pasos 1b de S-N2B y S-N2C) |
+| Observaciones del juego que quedan como conocidas | DEF-RC5-03, -05, -06, -08, -11, -12, -14, -19 |
+| Observaciones de documento, proceso o arnés | DEF-RC5-01 y -02 (catálogo corregido, salvo «Papá golpea y levanta el puño»), DEF-RC5-04 (INC-161), DEF-RC5-09 (no reproducible con el arnés), DEF-RC5-13 (arnés corregido), DEF-RC5-17 (no se corrige hacia atrás), DEF-RC5-20 (INC-162) |
+
+DEF-RC5-07 figura con severidad Menor por decisión de este triaje, aunque su entrada la dejaba a confirmar.

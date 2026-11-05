@@ -65,7 +65,7 @@ perfil (INC-154), los troncos del bosque (INC-155), las flechas de «Girar» (IN
 aviso del botón de ayuda (INC-158), la pausa de cinco botones, que deja sin efecto a INC-49 (INC-159), y el botón
 «Atrás» del diálogo (INC-160). Quedan cerrados **INC-01** a **INC-160**; INC-154 se cerró con el commit `d8ab0f4`. Su verificación se cerró el 13/10/2026 (commit `56897fd`): la suite completa dio EditMode 785 de 786 (1 omitida por entorno) y
 PlayMode 427 de 427, y el candidato rc4 pesó 426,9 MB (`claudeDocs/tasks/OE4/evidencias/build-rc4.md`). La suite corrió
-antes del último cambio de disposición del diálogo (INC-160); lo que ese cambio afecta se volvió a correr aparte y pasó.
+antes del último cambio de disposición del diálogo (INC-160); lo que ese cambio afecta se volvió a correr aparte y pasó. La rev. 27 (05/11/2026) registra **INC-161** a **INC-163**, del cierre de la pasada sobre rc5.
 El rc4 vigente se recompiló después desde `0405eba` (13/10/2026, noche): 426,9 MB, peor carga de escena de 0,403 s,
 pico de memoria privada de 1 083,3 MiB y suite completa de 792 de 793 en EditMode (1 omitida por entorno) y 435 de 435
 en PlayMode; recoge además los defectos DEF-RC3-05, -09, -10 y -11 del OE4 y los retoques de INC-154.
@@ -253,6 +253,9 @@ Las contradicciones **internas** a un mismo documento se corrigieron editándolo
 | INC-158 | No se entendía para qué sirve el botón de ayuda; la primera mecánica lo explica con un aviso | Interfaces, juego | **Cerrado** (13/10/2026) |
 | INC-159 | La pausa de tres botones de INC-49 pasa a cinco: «Volver a ver la historia» y «Guardar y salir» | OE1, OE2 (RF-07, HU-17), Interfaces, juego | **Cerrado** (13/10/2026); radicados el 14/10/2026 |
 | INC-160 | El diálogo no permitía volver a la línea anterior; se añade «Atrás» | Interfaces, juego | **Cerrado** (13/10/2026) |
+| INC-161 | «Retroceder» lleva círculo en el juego y rombo en el diseño | OE2, `casos.md`, juego | **Cerrado** (05/11/2026); el OE2 no se editó |
+| INC-162 | `PF-RNF16-01`: 17 pruebas fallan por entorno y no por retirar un nivel | `casos.md`, suite | **Cerrado** (05/11/2026) |
+| INC-163 | Cierre sobre rc5 sin una sesión nueva en el colegio | `casos.md`, `Hoja-HUM.md`, veredictos de rc5 | **Cerrado** (05/11/2026) |
 
 ---
 
@@ -3776,6 +3779,36 @@ la fila de botones piden unos 240 px (medidas en `claudeDocs/tasks/OE4/evidencia
 **Verificación.** La suite completa de PlayMode (427 de 427) corrió antes de este cambio de disposición; después se
 volvieron a correr aparte `NarrativeScene_INC160` (3 pruebas) y `RNF03` (9), y pasaron.
 
+### INC-161 · «Retroceder» lleva círculo en el juego y rombo en el diseño — cerrado (05/11/2026)
+
+**El conflicto.** La pasada sobre rc5 (S-N2C, `PF-RF31-01`, DEF-RC5-04) vio que el bloque «Retroceder» termina en un círculo.
+
+**Qué decían los documentos.** `Solucion_OE2_Diseno_final`, «Bloques disponibles», y el paso 4 de S-N2C piden un rombo.
+
+**Qué hacía el juego.** Dibuja el círculo, con la misma imagen desde rc3. «Avanzar» es un rectángulo con muescas y «Girar» una píldora, así que las tres formas se distinguen.
+
+**Decisión (05/11/2026).** Se conserva lo implementado. `PF-RF31-01` queda en PD. El OE2 radicado no se editó: su corrección requiere una autorización aparte.
+
+### INC-162 · `PF-RNF16-01` falla por entorno, no por acoplamiento — cerrado (05/11/2026)
+
+**El conflicto.** El criterio del caso solo admite los fallos que lista. Sobre rc5, 13 pruebas (sin N2) y 17 (sin N1) fallan fuera de esa lista.
+
+**Qué se comprobó.** Esas 17 pruebas distintas fallan igual en la copia de `ca6fd91` sin retirar ningún nivel (`evidencias/rc5/S-INSP-U/base-PlayMode-filtrada.xml`). Corren en batchmode con la Game View de 640×480, y en el Editor a 1920×1080 la suite da 438 de 438.
+
+**Decisión (05/11/2026).** Retirar un nivel no las causa, así que `PF-RNF16-01` pasa de una primera lectura F a PD (DEF-RC5-20). Límite: esas 17 pruebas no aportan evidencia en esas corridas.
+
+### INC-163 · Cierre del trabajo de grado sobre rc5 sin una sesión nueva en el colegio — cerrado (05/11/2026)
+
+**El conflicto.** La Corrección 1 pide veredictos de una sola versión, y siete comprobaciones humanas (H3 a H8 y H12) estaban previstas sobre rc5 en una sesión que no se hizo. Con ellas sin hacer, nueve casos seguían abiertos y la tesis no podía cerrarse.
+
+**Decisión (05/11/2026).** Se cierra sobre rc5, sin compilar rc6. Se usa lo que ya existe sobre rc5 y no se hereda nada de rc3:
+- La sesión del curso 501 y la medición del 16/10/2026 respaldan como PD `PF-RNF04-01`, `PF-RNF05-01`, `PF-RNF07-02`, `PF-CT02-01`, `PF-RNF08-01` y `PF-RNF13-01`, con sus desviaciones en `evidencias/rc5/S-COLEGIO/veredictos.csv`.
+- `PF-SON-01`, `-02` y `-03` quedan NE sobre rc5: nadie los ejecutó. Se reporta su resultado de rc3 como referencia, con esa versión, y que el audio no cambió entre las dos.
+
+**Límites que el texto debe declarar.** La huella de la carpeta no se tomó el 16/10/2026; solo hay log y medidas de un equipo y solo del Nivel 1; la duración del recorrido sobre rc5 no se registró; y la etiqueta SON no tiene dato sobre rc5.
+
+**Resultado.** 130 P, 8 PD, 4 F y 3 NE; eficacia 138 de 142, 97,2 %. La definición de PD no cambia: cada uno de los ocho sigue una decisión registrada en un INC.
+
 ## Residuos y puntos abiertos
 
 **Residuos menores — cerrados el 29/09/2026:**
@@ -3868,6 +3901,7 @@ no.
 
 ## Historial de revisiones
 
+- **rev. 27 (05/11/2026)** — Cierre de la pasada sobre rc5: se registran **INC-161** (círculo de «Retroceder»), **INC-162** (`PF-RNF16-01`) e **INC-163** (cierre sin una sesión nueva en el colegio).
 - **rev. 26 (13/10/2026)** — Correcciones de la sesión con estudiantes (commits `6d26abb`, `52ecca5` y `52908f1`).
   Se registran **INC-152** (luz del Nivel 1 en las narrativas y la cueva), **INC-153** (caminata de la familia en
   la aparición del guía y guarda de contenido), **INC-154** (abrazo y sueño de perfil; cotejado y cerrado con `d8ab0f4`
