@@ -39,6 +39,9 @@ ESPERADO = {"filas": 145, "P": 130, "PD": 8, "F": 4, "NE": 3}
 # Casos de oído sin ejecutar sobre rc5 (INC-163), con la hoja HUM que los ejecuta.
 NO_EJECUTADOS = {"PF-SON-01": "H12", "PF-SON-02": "H12", "PF-SON-03": "H12, H6 y H7"}
 SIN_CAMBIOS_AUDIO = "rc5/S-COLEGIO/sin-cambios-audio.txt"
+# La evidencia del 16/10/2026 dice 30 estudiantes y 30 equipos; fueron 26 y 26 (corrección del 06/11/2026). La evidencia
+# no se reescribe: la cifra se corrige al consolidar.
+CIFRAS_SESION = (("30 estudiantes", "26 estudiantes"), ("30 equipos", "26 equipos"))
 HOJA = "claudeDocs/tasks/OE4/Hoja-HUM.md"
 SECCION = re.compile(r"^## (S-[A-Z0-9]+) · ")
 BLOQUE_PER = re.compile(r"^\*\*(PF-[A-Z0-9]+-\d\d) · ")
@@ -139,6 +142,8 @@ def consolidar():
         vistos = [(s, f) for s, f in partes]
         observado = (una_linea(vistos[0][1]["observado"]) if len(vistos) == 1 else
                      " // ".join(f"{s}: {una_linea(f['observado'])}" for s, f in vistos))
+        for vieja, nueva in CIFRAS_SESION:
+            observado = observado.replace(vieja, nueva)
         rutas = list(dict.fromkeys(r.strip() for _, f in partes for r in f["registro"].split(";") if r.strip()))
         candidatos = {f["candidato"] for _, f in partes}
         huellas = {f["huella"] for _, f in partes}

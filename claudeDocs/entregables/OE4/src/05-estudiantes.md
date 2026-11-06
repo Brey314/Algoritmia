@@ -91,13 +91,13 @@ Las observaciones del 13/10/2026 (apartado 5.1) dejaron diez hallazgos sobre el 
 
 **Lo que mostraron las capturas.** Se revisaron capturas del motor (`claudeDocs/tasks/Personajes/capturas/2026-10-13-inc154/` y `evidencias/rc4/`). En el abrazo de perfil, la línea 5 de `N1_NacimientoDelFuego` se lee; la línea 12 se lee a medias, porque Papá no rodea a la Niña. El sueño de perfil no tapa el fuego. En la caminata de la escena 1.1 (línea 7 de `N1_AparicionGuia`) la familia se desplaza hacia la izquierda: de x entre 0,281 y 0,333 a x entre 0,180 y 0,220, de perfil. Al llegar, Papá (x = 0,180) queda parcialmente detrás de Algoritm (x = 0,168). Esas dos debilidades, el abrazo de la línea 12 y el solapamiento con Algoritm, se retocaron después en `0405eba` (Papá se inclina hacia el abrazo en la 1.4.4 y nadie queda escondido tras Algoritm en la 1.1), y el retoque entró en rc4. Este documento no registra que se hayan revisado las capturas nuevas (`Personajes_N1_*_v2.png`): el efecto del retoque está pendiente de revisión visual por el equipo de desarrollo.
 
-**Qué versión vio cada cosa.** Los estudiantes jugaron rc3 el 13/10/2026 y los hallazgos de la Tabla 5.4 salen de esa sesión. Las correcciones están en rc4 y en rc5. rc4 no se probó con estudiantes; rc5 lo jugaron 30 estudiantes el 16/10/2026 (apartado 5.4). Los resultados de la hoja HUM son de rc3 y los veredictos `PF-*` vigentes, de rc5.
+**Qué versión vio cada cosa.** Los estudiantes jugaron rc3 el 13/10/2026 y los hallazgos de la Tabla 5.4 salen de esa sesión. Las correcciones están en rc4 y en rc5. rc4 no se probó con estudiantes; rc5 lo jugaron 26 estudiantes el 16/10/2026 (apartado 5.4). Los resultados de la hoja HUM son de rc3 y los veredictos `PF-*` vigentes, de rc5.
 
 **Lo que cambia respecto de rc3.** La pausa de cinco botones sustituye a la de tres que fijó `INC-49`. En rc3 los casos `PF-RF07-*` describían el menú de tres botones; sobre rc5 cubren el de cinco, con `PF-RF07-07` y `PF-RF07-08` como casos nuevos.
 
 ## 5.4 Segunda sesión: un curso completo con rc5
 
-El 16/10/2026 los 30 estudiantes del curso 501 de grado quinto del Colegio El Libertador IED, sede A, jugaron el candidato rc5, cada uno en su computador. La sesión se hizo dentro de la investigación doctoral de la docente Bibiana Patricia Rey Barrote, con la autorización institucional del 17/09/2026 (apartado 5.1). Los testimonios en video y la guía que respondieron los estudiantes son de esa investigación; este documento toma de ellos lo que la docente autorizó, sin nombres ni otro dato que identifique a un estudiante.
+El 16/10/2026 los 26 estudiantes del curso 501 de grado quinto del Colegio El Libertador IED, sede A, jugaron el candidato rc5, cada uno en su computador. Los 4 estudiantes del 13/10/2026 son de ese mismo curso y ya habían jugado rc3, así que las dos sesiones no suman 30 participantes distintos: en total son 26. El registro de la sesión decía 30 estudiantes y 30 equipos, 16 con Intel y 14 con AMD; las cifras se corrigieron el 06/11/2026 con el listado del curso y los datos del equipo. La sesión se hizo dentro de la investigación doctoral de la docente Bibiana Patricia Rey Barrote, con la autorización institucional del 17/09/2026 (apartado 5.1). Los testimonios en video y la guía que respondieron los estudiantes son de esa investigación; este documento toma de ellos lo que la docente autorizó, sin nombres ni otro dato que identifique a un estudiante.
 
 **Tabla 5.5.** Sesión del 16/10/2026 con rc5.
 
@@ -105,10 +105,10 @@ El 16/10/2026 los 30 estudiantes del curso 501 de grado quinto del Colegio El Li
 |---|---|
 | Fecha y lugar | 16/10/2026, Colegio El Libertador IED, sede A, curso 501 |
 | Candidato | rc5, compilado desde `ca6fd91` (apartado 2.6) |
-| Participantes | 30 estudiantes de grado quinto, uno por computador |
-| Equipos | 30, con las especificaciones de los equipos de la Tabla 5.3: 16 con procesador Intel y 14 con AMD, sin tarjeta gráfica dedicada |
-| Red | Sin conexión a internet en los 30 equipos |
-| Funcionamiento | El juego funcionó en los 30 equipos sin ninguna complicación |
+| Participantes | 26 estudiantes de grado quinto, uno por computador |
+| Equipos | 26, con las especificaciones de los equipos de la Tabla 5.3: 14 con procesador Intel y 12 con AMD, sin tarjeta gráfica dedicada |
+| Red | Sin conexión a internet en los 26 equipos |
+| Funcionamiento | El juego funcionó en los 26 equipos sin ninguna complicación |
 | Ruta principal | Los estudiantes terminaron los tres niveles |
 | Borrado de los perfiles | Positivo: al terminar se borraron los perfiles y `Datos\` quedó vacía |
 | Testimonios | 10 de estudiantes, grabados para la investigación doctoral, y 1 de una persona adulta ajena al equipo |
@@ -139,11 +139,11 @@ Las comprobaciones humanas H3 a H8 y H12 estaban previstas sobre rc5 en una sesi
 
 | Comprobación | Caso | Resultado sobre rc3 | Resultado sobre rc5 |
 |---|---|---|---|
-| H3, segundo equipo | `PF-RNF07-02` | Aprobado | PD: Windows 10 Education, carpeta descargada y no copiada por USB, sin instalar; `Datos\` creada y luego vacía; 30 equipos sin ninguna complicación |
+| H3, segundo equipo | `PF-RNF07-02` | Aprobado | PD: Windows 10 Education, carpeta descargada y no copiada por USB, sin instalar; `Datos\` creada y luego vacía; 26 equipos sin ninguna complicación |
 | Cifras del equipo 2 | `PF-RNF04-01`, `PF-RNF05-01` | Sin cifras | PD: un equipo del colegio, solo Nivel 1: 1,223 s de peor carga y 633 MiB de memoria privada |
-| H4, sin conexión a internet | `PF-RNF08-01` | Aprobado | PD: los 30 equipos sin conexión, sin complicaciones; no se activó el modo avión del guion |
-| H5, sin tarjeta gráfica dedicada | `PF-CT02-01` | Aprobado | PD: AMD A10-9600P con gráficos integrados y 3,9 GB de RAM dentro de los presupuestos durante el Nivel 1; los 30 equipos eran sin tarjeta dedicada |
-| H8, recorrido con cronómetro | Tercer recorrido de `PF-RNF13-01` | Entre 40 y 45 min | PD: 30 estudiantes terminaron los tres niveles; la duración no se registró |
+| H4, sin conexión a internet | `PF-RNF08-01` | Aprobado | PD: los 26 equipos sin conexión, sin complicaciones; no se activó el modo avión del guion |
+| H5, sin tarjeta gráfica dedicada | `PF-CT02-01` | Aprobado | PD: AMD A10-9600P con gráficos integrados y 3,9 GB de RAM dentro de los presupuestos durante el Nivel 1; los 26 equipos eran sin tarjeta dedicada |
+| H8, recorrido con cronómetro | Tercer recorrido de `PF-RNF13-01` | Entre 40 y 45 min | PD: 26 estudiantes terminaron los tres niveles; la duración no se registró |
 | H12, con H6 y H7, oído | `PF-SON-01`, `PF-SON-02`, `PF-SON-03` | Aprobado | NE: no ejecutado; la meta de sonidos no queda demostrada sobre rc5 |
 
 Estos límites valen para los seis PD:
@@ -151,5 +151,5 @@ Estos límites valen para los seis PD:
 - La huella de la carpeta no se tomó el 16/10/2026. Se identifica como rc5 por el registro de la sesión y por su ruta, compatible con el zip.
 - El log y las medidas son de un solo equipo y solo del Nivel 1.
 - No consta si la cuenta `ESTUDIANTES` tenía privilegios de administrador.
-- No se activó el modo avión del guion, y no se conservaron logs de los 30 equipos.
-- Los resultados de los 30 equipos son los entregados por el equipo.
+- No se activó el modo avión del guion, y no se conservaron logs de los 26 equipos.
+- Los resultados de los 26 equipos son los entregados por el equipo.

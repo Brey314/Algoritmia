@@ -18,6 +18,8 @@ Registro de la segunda sesión con estudiantes. Los datos los entregó el equipo
 
 > **Decisión del 05/11/2026 (INC-163).** Para cerrar el trabajo de grado, esta sesión y su medición respaldan como PD los casos `PF-RNF04-01`, `PF-RNF05-01`, `PF-RNF07-02`, `PF-CT02-01`, `PF-RNF08-01` y `PF-RNF13-01`, con sus desviaciones en `S-COLEGIO/veredictos.csv`. El párrafo anterior queda como se escribió el 16/10/2026.
 
+> **Corrección del 06/11/2026.** Participaron 26 estudiantes en 26 equipos, 14 con Intel y 12 con AMD, y no 30 estudiantes en 30 equipos, 16 y 14, como dice este archivo. El curso 501 tiene 26 estudiantes, y los 4 de la sesión del 13/10/2026 son de ese curso. Lo de arriba queda como se escribió.
+
 ## Testimonios (10 de estudiantes y 1 de una persona externa, resumidos)
 
 - Los diez estudiantes valoraron bien el juego; ninguno dijo que se bloqueara.
